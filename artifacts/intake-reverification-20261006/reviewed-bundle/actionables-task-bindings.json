@@ -1,0 +1,269 @@
+{
+  "basis": "origin/main at 98d46d1e; read-only task-text search; exact checkbox bindings only",
+  "bindings": [
+    {
+      "intake_id": "intake-1239",
+      "task_identity_search": "KB-GS-1",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+        "line": 695,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **KB-GS-1 — Run a four-arm retrieval A/B on our own corpus. Deliberately NOT a replication.**\n      Replicating their GRPO training is weeks of work and answers a question we do not have. Arms: **ColBERT\n      as deployed** / **untrained prompt-only `rg`** / **hybrid** / **GitNexus-only**. Note we already use the\n      grep half constantly and informally — agents grep this repo all day — so the real question the A/B\n      answers is not \"should we add grep\" but **\"is the ColBERT index earning its keep on a corpus this\n      small\"**. Roughly one day, no GPU contention."
+      },
+      "file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "intake_id": "intake-1239",
+      "task_identity_search": "KB-GS-2",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+        "line": 701,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **KB-GS-2 — Build the question set and the ground truth BEFORE any arm runs, and stratify it.**\n      40-60 questions mined from REAL session needs in the last 60 days of progress files and wrap-ups,\n      stratified into four buckets **because the result is bucket-dependent and an unstratified aggregate\n      would hide exactly the effect**: single-hop lookup (expect a tie), **multi-hop composition** (grep\n      predicted to win — the discriminating bucket, and where their gains concentrate), synonym/semantic\n      (ColBERT predicted to win — grep's stated weakness and our corpus's dominant idiom), and\n      code-structural (GitNexus predicted to win outright, included so we do not replace the wrong tool).\n      PRIMARY METRIC **recall@evidence against human-verified spans built BEFORE any arm runs** — never from\n      an arm's output, or the ground truth inherits that arm's blind spots. n=40-60 per stratum is thin, so\n      **report the minimum detectable effect up front and do not claim a null we are not powered to detect.**"
+      },
+      "file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "intake_id": "intake-1239",
+      "task_identity_search": "KB-GS-3",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+        "line": 711,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **KB-GS-3 — Add a STALENESS arm; that axis is invisible in the paper and may decide the question for\n      us regardless of F1.** Re-run the same question set after a 200-commit window **without rebuilding the\n      index**. Grep scores whatever the tree says today by construction; ColBERT scores whatever it was built\n      against. If the staleness delta is large, the operational argument settles this independently of any\n      accuracy result."
+      },
+      "file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "intake_id": "intake-1239",
+      "task_identity_search": "KB-GS-4",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+        "line": 716,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** Their\n      semantics-preserving sharded-parallel execution reaches **7.6x at 32 shards** with byte-exact\n      equivalence to sequential execution — and our 96-core EPYC 9655 is better suited to it than their\n      setup, so 32 shards is not near our ceiling. Note also that **91% of their end-to-end latency is LLM\n      GENERATION, not grep** (8.67 s total = 7.86 s generation + 0.81 s tool exec), so tool latency is not\n      the thing to optimise and the index is not buying much latency either.\n\n_Caveat on the numbers above: everything except the two anchored abstract quotes came from a\nsummariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `intake-1239`. Re-verify before any\nfigure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same\ndirect-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check\nwhether the delta is the TRAINING RECIPE rather than the idea._\n\n## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278#record)\n\n### Record corrections (Z)"
+      },
+      "file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "intake_id": "intake-1240",
+      "task_identity_search": "C5-17",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/agentic-rocm-kernel-authoring.md",
+        "line": 1088,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever\n      build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should\n      not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without\n      running the kernel** — only coarse ordinal bins (8 log-half-octave) are tractable. Adopt the ordinal\n      reward shape, a calibration metric (ECE or Brier) as a first-class ACCEPTANCE gate, and an explicit\n      DEFERRAL policy so a surrogate must escape to real gfx90a measurement. **Decline the trained\n      forecaster**: A100-conditioned with **zero cross-GPU transfer test performed**, despite its own\n      released dataset spanning three GPU types. Note its baseline search BEATS the surrogate-enhanced\n      search on **2 of 6** tasks by 5-7%, so any adoption needs the equal-budget baseline arm run alongside,\n      never a single-arm demo. **Note-the-method-do-not-build-yet**: optimising the search budget of a loop\n      we have not yet made trustworthy is premature while RVP-C2-8/C2-9 are open.\n\n### Recorded so it is not re-derived — a pattern, no longer an incident\n\n**\"SUPPORTS PLATFORM X\" IN THIS LITERATURE IS A CAPABILITY STATEMENT WITH NO EVIDENTIARY CONTENT.** Two\nindependent papers now ASSERT cross-platform capability and never MEASURE cross-platform transfer:\n`intake-1087#record` (KForge) names cross-platform translation as an optional strategy and never ablates it;\n`intake-1250#record` (Kernel-Smith) runs a MetaX MACA arm in which a **separate model was trained, the task\nformulation changed and the benchmark changed** — so nothing measures what knowledge crossed the vendor\nboundary. Treat such claims as unevidenced until an ablation is shown.\n\n**METHOD TRANSFERS, TRAINED ARTIFACT NEVER DOES** — now well enough evidenced to state once rather than\nre-derive per intake. `intake-1222` (KernelPro), `intake-662` (CudaForge) and `intake-1240` (GPU Forecasters)\nall evaluate on one NVIDIA family and ship artifacts that cannot cross to gfx90a. Every number we would ever\nproduce from an NVIDIA-measured corpus on gfx90a is a **RE-MEASUREMENT, never a transfer** — the KLineage and\ndaVinci authors are themselves explicit that they do not claim cross-vendor skill transfer, and we must not\nclaim it on their behalf.\n\n**LICENSING BLOCKERS to clear BEFORE any download** (open-source-self-hosted-only sourcing policy):\n`github.com/GAIR-NLP/daVinci-kernel` has **no LICENSE file** (blocks reuse of its 960-skill corpus);\n`github.com/parallelcodefoundry/ParEval-Repo` has **no root LICENSE** (GitHub reports `license: null`);\nKLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is not permissive.\n\n## Research Intake Update — 2026-09-07 — FreeToken on gfx90a: DECLINE with reasons (intake-1318, 1343, 1345)\n\n- *Classification*: it is a **port, not a rewrite** — Triton slot pool in flashlib (Apache-2.0), generic torch graph API, AVX-512-BF16 CPU branch, 22-line CUDA surface, working RDNA4 precedent. **But port-not-rewrite survives only as a classification, not as a cost estimate**: the community realisation of that \"22-line surface\" is ~750 lines across two unmerged PRs (#132, #378). `intake-1318#record`.\n- *Gate 1 (dependency pins)* — upstream pins `torch>=2.11,<2.12` and `triton==3.6.0`; all three ROCm reporters run torch 2.11–2.15 on ROCm 7.14/10.1 nightlies; **we are on ROCm 6.2 deliberately** (see the ROCm-6.2 build-flag checklist note at :144 — issue #19984's unroll regression is gated behind the same version boundary). A port needs a host-level ROCm major upgrade under a FROZEN production kernel set — an operator decision, not a research task. This **supersedes** \"untuned kernels on a different ISA family\" as the stated reason. `intake-1343#record`.\n- *Gate 2 (HIP-graph API floor) — THE STRONGEST, and it cannot be packaged around*: HIP stream memory operations are **not graph-recordable before HIP 7.14** (`hipGraphAddBatchMemOpNode` / `hipStreamBatchMemOpParams` absent from ROCm 6.2's HIP documentation; confirmed by PR #378's own `#if` guard and source comment), so on ROCm 6.2 even the fixed engine runs cpu/hybrid MoE with graph capture **disabled**. `intake-1345#00`, `intake-1345#01`.\n- *Gate 3 (it does not build)*: `setup.py` requires `CUDA_HOME` and links `cudart`; `cpu_moe` includes `cuda_runtime_api.h`; the only ROCm support is three unmerged PRs whose own compatibility header enumerates **RDNA3/RDNA4 exclusively — no CDNA entry**. `intake-1345#record`.\n- *Gate 4 (payoff)*: 0.73–0.86× vs fully-resident llama.cpp in **every** AMD configuration ever run; the one favourable ratio is set by a 6-core baseline we already beat by 3.2×; local ceiling on the mechanism is +27%. `intake-1343#00`.\n- *Reusable facts banked here for a future ROCm porting session*: flashlib is Apache-2.0 Triton; both `pinned.py` defects are **fork-introduced regressions**, not upstream (upstream raises `ImportError`, the port replaced it with `return None`); PR #378 exists and is the community fix.\n- *Declines recorded, with scope*: **port/adopt/trial FreeToken in any form** (1318#8, 1343#5, 1345#4); **build a q*-style bandwidth-adaptive miss splitter** (1318#9 — refuted on its own arithmetic before any implementation cost; our measured DRAM sub-linearity, 152.6 of 460.8 GB/s, is exactly the condition that makes the split net-negative); **chase Vulkan-vs-ROCm** (1343#6 — structurally unavailable: no Vulkan ICD targets CDNA2 compute-only parts, RADV enumerates zero devices on gfx90a per `design-backlog-triage-2026-07-23.md:229`; independent Linux data also shrinks the gap to +1.6%/+8.8%); **ingest the three further ROCm forks** (1343#7 — surfaced, not read; recording the decline scopes the negative rather than letting the sweep look exhaustive); **file the two architecture-independent findings** — `qsa_block_topk` tie behaviour (misattributed at the pinned commit, harmless by the reporter's own measurement) and `FREETOKEN_CACHE_DIR` (a doc defect in a project we do not run) — **beyond the notes in the entry** (1345#5); **chase the across-process topk tie variability** (30/39/46/62/82 of 2048 on identical seeded input, stable within a process) (1345#6 — the most interesting unexplained observation, needs Triton-level work on hardware we do not have; recorded so a reader knows what was left on the table).\n\n## Research Intake Update — 2026-09-15 (search-strategy confound)"
+      },
+      "file_sha256": "3681d1c73e233a3fa58605bad648e6957ce09be3ff29c8684c81564f927a0a3e"
+    },
+    {
+      "intake_id": "intake-1087",
+      "task_identity_search": "AK-PM-13",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+        "line": 5473,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.**\n      `intake-1250#record` measures SGLang **4.78x isolated → 0.28%-0.87% end-to-end** and LMDeploy\n      **1.36x isolated → 2.03%-3.00%**, on independently-verified MERGED production PRs (sglang#20778,\n      lmdeploy#4345, DLBlas#102). With `intake-1087#record` (1.06x-1.43x per-kernel → +2.12% end-to-end vs\n      TensorRT-LLM), **two independent papers now show ~100x attenuation**. Strong corroboration for the\n      wall-share promotion rule and a standing caution against reading any isolated-op speedup as a\n      deliverable. Zero compute — also read the three merged PRs, which contain the actual LLM-authored\n      kernel source that survived real upstream review."
+      },
+      "file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226"
+    },
+    {
+      "intake_id": "intake-1248",
+      "task_identity_search": "AK-PM-9",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+        "line": 5428,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **AK-PM-9 — Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`\n      with an explicit `reopen_when`.** `intake-1248#record` §4.3 measures skill-free RL at Level 2 Fast_1\n      **51.6%** versus **44.8%** with skills at 8B, and Level 3 **12.3%** versus **10.1%** — i.e. memory is\n      NET NEGATIVE at the loose threshold — while skills dominate at Fast_2 / Fast_1.5, where the skill-free\n      arm collapses to 2.1% and 0.0%. **The effect is threshold-conditional and its SIGN FLIPS between the\n      8B and 14B model** on n=1 cells with zero dispersion, which is the signature of noise and which the\n      paper has no data to rule out. `reopen_when`: a with/without-memory ablation appears with n>=5 repeats\n      and a significance test, OR we run one ourselves on gfx90a (AK-PM-11)."
+      },
+      "file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226"
+    },
+    {
+      "intake_id": "intake-1248",
+      "task_identity_search": "AK-PM-11",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+        "line": 5448,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **AK-PM-11 — Run the ablation nobody in this literature has run.** Replicate daVinci's Ablation-1\n      shape on OUR hardware with **n>=5 seeds per cell and a paired significance test** — same served model,\n      same task set, skill injection ON vs OFF, gfx90a. **Train-free**: the daVinci repo exposes\n      `SKILL_ENABLE` / `SKILL_LIBRARY_FILE` as runtime flags independent of training and can drive an\n      OpenAI-compatible endpoint, so this costs inference time only. Nine systems into this literature that\n      statistic still does not exist. **Gate the entire cross-run-memory build on its outcome**, and note it\n      supersedes nothing in AK-PM-4 — SkillBank is still the cheaper in-house answer and must be checked first.\n      **OPERATOR-RATIFIED 2026-08-21 (option (a) of the decision package): DON'T BUILD YET.** The\n      cross-run memory is not built until this ablation returns; AK-PM-12's write-side receipts land NOW\n      regardless, so waiting loses no data. Sequencing: SkillBank A/B (AK-PM-4) → AK-PM-11 → build\n      decision. **One risk accepted with eyes open:** the ablation needs a stable harness, so C2/C3\n      hardening (RVP-C2-8/C2-9) sits on this path and \"gated on the ablation\" partly means \"gated on the\n      substrate\" — if that stretches past a reasonable horizon, the correct escalation is a decision\n      package on interim substrate, NOT a quiet start on the memory build."
+      },
+      "file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226"
+    },
+    {
+      "intake_id": "intake-1248",
+      "task_identity_search": "AK-PM-12",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+        "line": 5462,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **AK-PM-12 — Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the\n      read side.** `intake-1248#record` §3.5: a candidate enters the library only if re-running the task with\n      it injected yields a measured **>=1.2x** first-turn improvement (`r_verify >= max(beta, alpha*r_1)`,\n      alpha=beta=1.2). Train-free, model-agnostic, no RL. Pair it with the two things every paper in the\n      family lacks — a **commit binding** and a **`reopen_when` predicate**. Per our own doctrine the write\n      side is cheap and permanent while retrofitting the read side is impossible: capture the receipts now,\n      defer the retrieval machinery until AK-PM-11 justifies it. **Add an implausible-speedup cap**: with a\n      1.2x floor and no ceiling, nothing filters the top end — daVinci's released 960-skill corpus carries a\n      `verify_speedup` **max of 297.3x** and ~35 skill names that are shortcut/elision-flavoured\n      (`semantic_shortcut_before_kernelization` at 43.7x). A 297x \"verified speedup\" on a memory-bound op is\n      work elision or a timing artifact, not a kernel optimization."
+      },
+      "file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226"
+    },
+    {
+      "intake_id": "intake-974",
+      "task_identity_search": "Add the Slow/CRR conditional diagnostic",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/architect-model-selection-bench.md",
+        "line": 620,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **Add the Slow/CRR conditional diagnostic** (intake-974): among a model's **correct** outputs, what fraction is no faster than baseline. It separates correctness inflation from genuine efficiency gain, and it is the one number that makes the derived conditional column above interpretable"
+      },
+      "file_sha256": "3a7c97cd8e1aa54bcef82af6ec11b3f6bff4cdd63e03d4189d839ac7cb1f28e3"
+    },
+    {
+      "intake_id": "intake-989",
+      "task_identity_search": "RRR",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/engram-conditional-memory.md",
+        "line": 406,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **RRR — pure log post-processing, computable RETROACTIVELY over traces we already have.** `SequenceMatcher >= 0.85` over stored reflections, no inference cost, no new capture. Measured 0.64 → 0.10 under the fix below (intake-989)"
+      },
+      "file_sha256": "0c17540d487ef9dcdaf113b339c5995a1c06b6dc3fe3848c4832e030f1e15c9d"
+    },
+    {
+      "intake_id": "intake-989",
+      "task_identity_search": "Programmatic feedback extraction",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/engram-conditional-memory.md",
+        "line": 407,
+        "checkbox": "- [ ]",
+        "exact_task_text": "- [ ] **Programmatic feedback extraction** — parse tool output for concrete failure facts instead of asking the model to self-diagnose. Measured object-mention 0/121 → 134/156 (86%). **Rates do not transfer** — largely a weak-model artifact at n=2 environments — but the mechanism and the metric do (intake-989)\n\n### One threat assessed and dismissed, with its mechanism, so it is not re-raised"
+      },
+      "file_sha256": "0c17540d487ef9dcdaf113b339c5995a1c06b6dc3fe3848c4832e030f1e15c9d"
+    },
+    {
+      "intake_id": "intake-983",
+      "task_identity_search": "RA-9 — Round-trip + validator tests;",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/reviewer-typed-artifacts.md",
+        "line": 28,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **RA-9 — Round-trip + validator tests; parse-failure accounting** ✅ 2026-07-17 (57 tests) (count schema-invalid emissions per reviewer config; never silently fall back)."
+      },
+      "file_sha256": "a3ec5b08404936c0aee2e330183a3a69f44c21b8b6c3e2ce0d2d8e65c909f5e0"
+    },
+    {
+      "intake_id": "intake-983",
+      "task_identity_search": "Add a gold-sanity gate to the schema contract",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/reviewer-typed-artifacts.md",
+        "line": 73,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Add a gold-sanity gate to the schema contract for any machine-generated annotation or test.** ✅ 2026-09-16 Procedure, in this order: inject into the real project test file → apply the **gold** solution → run the project's **native** runner → discard and retry at higher temperature on gold-failure → *only then* consult a 3-sample self-consistency judge. **The order is the finding**: the judge reasons about generated test code that may not itself run, and it endorsed **all six** named invalid cases in the source study. Measured per-augmentation defect rate is **61.9% (n=105)** — the author's own nominated headline, and more stable than the 28.5% iterative figure concentrated in 2 of 12 repos.\n  - Evidence: `src/proactive_delegation/gold_sanity.py` @ `e242a156`. `run_gate()` runs inject → apply gold → native runner, retries at the next strictly-higher temperature on gold failure, and only after a native pass takes a 3-sample majority judge. The judge is never called on an unrun or gold-failing test, and a crashed stage or an errored judge sample counts as a failure. `validate_record()` re-checks stored records (stage prefix order, judge only on the final attempt, vote/outcome consistency, no un-retried discard). The schema makes `gold_sanity.outcome: admitted` plus an executable oracle mandatory for `origin: machine_generated`. Hooks are caller-owned, so nothing runs a model here; the first live use is inference-gated."
+      },
+      "file_sha256": "a3ec5b08404936c0aee2e330183a3a69f44c21b8b6c3e2ce0d2d8e65c909f5e0"
+    },
+    {
+      "intake_id": "intake-1028",
+      "task_identity_search": "AK-C6-1",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+        "line": 4753,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **AK-C6-1 — Name syscall confinement explicitly in C6's acceptance criteria.** ✅ 2026-08-10. intake-1028 is a\n  purpose-built, professionally structured distributed execution sandbox — controller, dispatcher,\n  router, Docker workers with `--cpus`/`--memory`/`--gpus device=` limits — that nonetheless launches\n  **every** worker with `--security-opt seccomp=unconfined`, on containers whose entire job is running\n  untrusted model-generated code. \"Runs in a container\" is not \"sandboxed\". Relatedly, its\n  `openmle_gym/sandbox_exec.py` is named for a sandbox and documented as executing \"inside the\n  configured OS sandbox\" while implementing `spec.loader.exec_module` in-process with no isolation —\n  a live instance of the naming hazard this loop's C6 item exists to prevent."
+      },
+      "file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226"
+    },
+    {
+      "intake_id": "intake-979",
+      "task_identity_search": "Give the monitor the WHOLE SEARCH TREE",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/rocm-verify-profile-backend.md",
+        "line": 332,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Give the monitor the WHOLE SEARCH TREE, not the selected candidate.** ✅ 2026-08-11 —\n  `controller/reward_monitor.py` binds the complete evaluated variant set and exactly one selected row. Best-path-only transcripts\n  structurally advantage a saboteur (the authors say so). Hand the monitor every evaluated variant\n  **including discarded higher-scoring ones** — otherwise a candidate that quietly discards its own best\n  result is invisible. This is a plumbing requirement on the journal, not a prompt change"
+      },
+      "file_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182"
+    },
+    {
+      "intake_id": "intake-979",
+      "task_identity_search": "Name the threat model in the monitor prompt",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/rocm-verify-profile-backend.md",
+        "line": 337,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Name the threat model in the monitor prompt.** ✅ 2026-08-11 — the declaration requires the\n  versioned threat-specific id and the compiled prompt renders it. Largest measured effect in the study: a generic\n  \"is this suspicious?\" monitor **rarely fires** on sandbagging; the threat-specific one \"performs well\""
+      },
+      "file_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182"
+    },
+    {
+      "intake_id": "intake-979",
+      "task_identity_search": "Aggregate.",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/rocm-verify-profile-backend.md",
+        "line": 340,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Aggregate.** ✅ 2026-08-11 — the reducer requires a complete model×sample panel and computes\n  mean-of-mean@k. Mean over monitor models ≈ the best single monitor (0.993 vs 0.970); mean@k over\n  repeated samples of one model also improves AUC with fast diminishing returns. Cheap on our stack"
+      },
+      "file_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182"
+    },
+    {
+      "intake_id": "intake-979",
+      "task_identity_search": "Assume monitor-awareness.",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/rocm-verify-profile-backend.md",
+        "line": 343,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Assume monitor-awareness.** ✅ 2026-08-11 — `assume_monitor_aware` is mandatory true. Every monitor scored higher AUC on unaware runs, universally. Any\n  agent that can read the loop's config knows it is monitored — design for the aware case"
+      },
+      "file_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182"
+    },
+    {
+      "intake_id": "intake-979",
+      "task_identity_search": "Preserve CoT visibility.",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/rocm-verify-profile-backend.md",
+        "line": 345,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Preserve CoT visibility.** ✅ 2026-08-11 — every trace requires non-empty reasoning and\n  `include_reasoning_trace` is mandatory true. Hidden reasoning tokens are described as a \"large advantage to the\n  agent\"; a monitor reading only final outputs is the weak configuration"
+      },
+      "file_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182"
+    },
+    {
+      "intake_id": "intake-979",
+      "task_identity_search": "Declare an explicit FPR budget",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/rocm-verify-profile-backend.md",
+        "line": 348,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Declare an explicit FPR budget rather than claiming safety.** ✅ 2026-08-11 — the declaration\n  requires a numeric FPR budget and the reducer emits sensitivity, specificity, observed FPR and\n  `budget_met` — *\"gaining strict safety guarantees\n  may require prohibitively high false positive rates.\"* A C6 layer with no stated FPR is not a gate\n- Secondary signal available free: attempting sabotage **reduced main-task performance** for both\n  scaffolds in the study — a measurable tax usable as corroboration\n- **Cite the qualitative sandbagging finding, never a number**: the AUCs live only in a plot legend that\n  is not text-extractable from either the PDF or the HTML render (NOT-FOUND-IN-SOURCE)\n\n\n## Auto-kernel revival — research-intake integration 2026-07-22 (C6 + task-contract from OpenHyra/HyRA)\n_Via /research-intake Stage-2 (intake-884 HyRA, intake-885 OpenHyra). OpenHyra effectively implements the C6 anti-reward-hacking differentiator this backend owns but never built._"
+      },
+      "file_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182"
+    },
+    {
+      "intake_id": "intake-983",
+      "task_identity_search": "Add a gold-sanity gate for any machine-generated test or annotation",
+      "binding_status": "EXACT_TASK_TEXT_MATCH",
+      "task": {
+        "repo_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/completed/security-review-skill.md",
+        "line": 89,
+        "checkbox": "- [x]",
+        "exact_task_text": "- [x] **Add a gold-sanity gate for any machine-generated test or annotation** (intake-983): inject into the real project test file, apply the **gold** solution, run the project's **native** runner; if it fails on gold, discard and retry at higher temperature. **Only then** consult the self-consistency judge. Order is load-bearing — the judge reasons about generated test code that may not itself run, and in the source study it endorsed **all six** named invalid cases. Measured per-augmentation defect rate **61.9% (n=105)**; carry that figure, not the 28.5% iterative one ✅ 2026-09-16\n  - Same single implementation: `src/proactive_delegation/gold_sanity.py` (`run_gate` / `validate_record`) — see `reviewer-typed-artifacts.md` → RA-9. Wiring it into the skill's pipeline prose is the skill's own concern.\n\n## Progress checklist"
+      },
+      "file_sha256": "3cb2b5c1c5def5d714a893a96337a6c275e3117b45eb11c4f767fb2588f9c32e"
+    }
+  ]
+}

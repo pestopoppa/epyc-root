@@ -1,0 +1,16 @@
+{
+  "status": "scratch preparation only; no companion fetched; no Stage3 plan or source-applicability judgment",
+  "base_json_sha256": "a15299a10be1eafd6738e65d31b2e0177d6656c20e3631d3f0247d1e36a4ac15",
+  "candidate_json_sha256": "bff12896742a9187fe3323b0c41e52e40b1ca3b1e8287aade71a11843c4ced6b",
+  "base_markdown_sha256": "d8ab21c8cb4039f495fd46fc028b95a619217a326d124641d7a780958acf7fcc",
+  "candidate_markdown_sha256": "0a99de4a0984a94f52c98b0a5b4e4048b093f8bad79ecc938db609a6862b9fca",
+  "patch_sha256": "282b4e4e7cbd272f69cd4a1ca84d38b2ea318e125728f1758eb1c3811b2ff64b",
+  "entries": 17,
+  "unfetched_companions": 17,
+  "primary_packet_artifact_files": 60,
+  "source_packet_hash_meaning": "bearing primary intake packet only; never companion source",
+  "input_files": {
+    "json": "/mnt/raid0/llm/tmp/intake-reverify/surfaced-sources.consolidated.json",
+    "markdown": "/mnt/raid0/llm/tmp/intake-reverify/surfaced-sources.consolidated.md"
+  }
+}

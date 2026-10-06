@@ -1,0 +1,28 @@
+{
+  "manifest_path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.json",
+  "pre_amendment_path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.pre-amendment.json",
+  "pre_amendment_file_sha256": "ad2ca6e65bc7f0dc7cbc2c6f3072f84a4ddf8629cfbece5da1a4c4ed3cd165f9",
+  "pre_amendment_canonical_json_sha256": "1c7ddc26d5dec0881556a2af530eccad1b5be0a15cb814d55415a78d23895fcf",
+  "new_file_sha256": "12448182b5122e510b6c6462015f17babc8f1cc84a0fdbe97d998eb2095c6d64",
+  "new_canonical_json_sha256": "6df776280c02bfef08c0fe482929d4ecd755cf3f7ba0ea1c36240f4403714bbf",
+  "candidate_path": "/mnt/raid0/llm/tmp/intake-reverify/candidate.intake_index.yaml",
+  "candidate_sha256": "6ddb74acd628c37cb2a5f51df05670b80b497a26ab47b06b1849adb920da773a",
+  "changed_source_plans": [
+    "intake-272",
+    "intake-664"
+  ],
+  "unchanged_source_plans": 20,
+  "target_records_preserved_exactly": false,
+  "old_target_ids_assertion_hashes_directions_reasons_preserved": true,
+  "272_proposal_sha256": "45818eb222d978361f9c8f06359cc64bbea93e693ed10e9f93274072af6faddb",
+  "664_proposal_sha256": "362cb380713856cfa671eb2472c352d1f8819824d1a2a1952dd9c4ec8f8965fa",
+  "664_slot_1_current_text_sha256": "e5dc57b2708246549e79a25b0c5f3bab10a8ac86902abb66dba81eecfc55db5f",
+  "previous_manifest_path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.failed-before-append.json",
+  "previous_manifest_sha256": "209d57edc55ba64cffbbbc7a0c0b63327d6ffcf77b6d3a056f5c1b8009ec03f3",
+  "previous_canonical_json_sha256": "fd6734e5088810e76766d5dec713b4d30f3bc8b79bdf1a1918d3229160900ca8",
+  "target_records_unchanged": 109,
+  "target_records_single_current_binding_changed": 1,
+  "target_binding_repair_receipt_path": "/mnt/raid0/llm/tmp/intake-reverify/source-manifest-binding-repair-receipt.json",
+  "target_binding_check": "110/110 current claim text hashes verified against unchanged candidate index",
+  "prior_full_native_preflight": "FAILED_BEFORE_APPEND; retained at helper/root-full-refresh.*; caused by stale intake-664 claim_index=1 current_claim_text_sha256"
+}

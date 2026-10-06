@@ -1,0 +1,24 @@
+test_changed_timestamp_cannot_resume_partial_retractions (test_native_opposition_proposed.CorrectionTests.test_changed_timestamp_cannot_resume_partial_retractions) ... ok
+test_demotion_retry_and_unrelated_survives (test_native_opposition_proposed.CorrectionTests.test_demotion_retry_and_unrelated_survives) ... ok
+test_duplicate_targets_and_extra_entries_refused (test_native_opposition_proposed.CorrectionTests.test_duplicate_targets_and_extra_entries_refused) ... ok
+test_generated_frame_validation_is_before_first_append (test_native_opposition_proposed.CorrectionTests.test_generated_frame_validation_is_before_first_append) ... ok
+test_index_digest_is_externally_pinned (test_native_opposition_proposed.CorrectionTests.test_index_digest_is_externally_pinned) ... ok
+test_invalid_final_target_does_not_partially_append (test_native_opposition_proposed.CorrectionTests.test_invalid_final_target_does_not_partially_append) ... ok
+test_invalid_later_entry_is_all_upfront (test_native_opposition_proposed.CorrectionTests.test_invalid_later_entry_is_all_upfront) ... ok
+test_manifest_digest_is_externally_pinned (test_native_opposition_proposed.CorrectionTests.test_manifest_digest_is_externally_pinned) ... ok
+test_omitted_duplicate_active_warrant_refused (test_native_opposition_proposed.CorrectionTests.test_omitted_duplicate_active_warrant_refused) ... ok
+test_opposition_invalid_late_target_has_zero_mutation (test_native_opposition_proposed.CorrectionTests.test_opposition_invalid_late_target_has_zero_mutation) ... ok
+test_opposition_withdrawal_preserves_sibling_and_exact_retry (test_native_opposition_proposed.CorrectionTests.test_opposition_withdrawal_preserves_sibling_and_exact_retry) ... ok
+test_opposition_wrong_direction_or_scope_has_zero_mutation (test_native_opposition_proposed.CorrectionTests.test_opposition_wrong_direction_or_scope_has_zero_mutation) ... ok
+test_partial_append_resumes_exact_events (test_native_opposition_proposed.CorrectionTests.test_partial_append_resumes_exact_events) ... ok
+test_per_claim_overturned_is_not_silently_demoted (test_native_opposition_proposed.CorrectionTests.test_per_claim_overturned_is_not_silently_demoted) ... ok
+test_preexisting_foreign_retraction_refused_by_effective_fold (test_native_opposition_proposed.CorrectionTests.test_preexisting_foreign_retraction_refused_by_effective_fold) ... ok
+test_real_ledger_retry_preserves_hash_chain (test_native_opposition_proposed.CorrectionTests.test_real_ledger_retry_preserves_hash_chain) ... ok
+test_withdraw_only_invalid_after_valid_has_zero_mutation (test_native_opposition_proposed.CorrectionTests.test_withdraw_only_invalid_after_valid_has_zero_mutation) ... ok
+test_withdraw_only_retains_verified_sibling_and_is_idempotent (test_native_opposition_proposed.CorrectionTests.test_withdraw_only_retains_verified_sibling_and_is_idempotent) ... ok
+test_withdraw_only_wrong_native_target_refused (test_native_opposition_proposed.CorrectionTests.test_withdraw_only_wrong_native_target_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.028s
+
+OK

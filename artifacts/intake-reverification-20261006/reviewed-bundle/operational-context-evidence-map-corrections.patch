@@ -1,0 +1,285 @@
+--- a/operational-context-evidence-map.json
++++ b/operational-context-evidence-map.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "read-only operational-context evidence map; NOT a Stage3 plan",
++  "status": "read-only operational-context evidence map; source-rationale corrections prepared, not a Stage3 plan or filed consumer change",
+   "authoritative_root": "/mnt/raid0/llm/worktrees/intake-reverify-20261006",
+   "authoritative_head": "98d46d1e2184ab0a229a1e25b5f8ec20e2d92ad6",
+   "repositories": [
+@@ -147,7 +147,45 @@
+         }
+       ],
+       "operational_interpretation": "Existing corpus/query/evaluator are the integration context; source SPCS shard count and byte-equivalence are author design/results, not tested equivalence on this corpus. Conditional adoption remains conditional; no hardware tuning was authorized or run here.",
+-      "current_source_rationale_scope": "1239 up-to7.6x applies supported sharded shell pipelines; tool latency and full end-to-end latency use separate baselines."
++      "current_source_rationale_scope": "Accepted current GrepSeek v2 source read (`intake-1239#00`, `#04`; `dive-1239/source.txt:L108,L146`): the paper describes SPCS over the raw 14 GB corpus without a learned dense-retrieval index, and a separate optional PACE strategy with a compact auxiliary structure (16.8 GB total). Do not generalize SPCS's no-dense-index description into 'the system uses no index of any kind.' The current source is v2; v1's 0.5691 micro-F1 and seven-benchmark framing are historical. PACE/SPCS throughput and memory figures are author-reported source results; local implementation/equivalence remains untested. Preserve the open conditional adoption task and its separate latency baselines.",
++      "source_rationale_anchors": [
++        {
++          "intake_citation": "intake-1239",
++          "source_revision": "arXiv:2605.29307v2",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.txt",
++          "source_artifact_sha256": "2ec0a5b8df1228f9faefac79b9b8378a46cd4422cfed6322e69e11c7f809c6f8",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
++          "accepted_proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
++          "locators": [
++            {
++              "locator": "source.txt:L108",
++              "claim_index": 0,
++              "quote_sha256": "c86060db069adfb1d227a8a052db4e5569849bd860cbc52d12e3ecdf6e782851"
++            },
++            {
++              "locator": "source.txt:L146",
++              "claim_index": 4,
++              "quote_sha256": "c3ac8cdc4021186a080048c458ce253498769c5ef3dd3d5fed51b8293f3bb566"
++            }
++          ]
++        },
++        {
++          "intake_citation": "intake-1239",
++          "source_revision": "arXiv:2605.29307v1 (historical comparison only)",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/previous-v1.txt",
++          "source_artifact_sha256": "f461b0666c08e416030fe97b58791856fddbf86df8e51f87843834a7a29d1724",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
++          "accepted_proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
++          "locators": [
++            {
++              "locator": "previous-v1.txt:L137",
++              "claim_index": "historical-v1-result",
++              "quote_sha256": null,
++              "anchor_note": "historical v1 artifact reference; no v2 claim anchor"
++            }
++          ]
++        }
++      ]
+     },
+     {
+       "task_id": "AK-PM-9",
+@@ -179,7 +217,39 @@
+         }
+       ],
+       "operational_interpretation": "Inspected PriorAttempt receipt/reopen fields and pure fold_journal; existing conditional-negative carrier is present. A source literature result needs bounded source scope and receipt, not promotion to a measured local kernel negative. Preserve task and reopen predicate; no registry mutation.",
+-      "current_source_rationale_scope": "1248 corrected source:8B Fast1 L2/L3 reversals versus14B full outperforming skill-free in all12 cells. Missing evaluation denominator and dispersion do NOT establish n=1 or a signature of noise; current task rationale needs this narrow correction."
++      "current_source_rationale_scope": "Accepted current arXiv v3 Table 2 source read (`intake-1248#01`; `dive-1248/source.txt:L149-L150,L176,L184`): at Fast_1, skill-free Ablation 5 beats the 8B full system on Level 2 (51.6 vs 44.8) and Level 3 (12.3 vs 10.1), but loses on Level 1 (25.4 vs 26.1); these are two of the three 8B Fast_1 cells. At 14B the full system exceeds skill-free Ablation 5 in all 12 level-by-threshold cells. The paper reports no per-cell sample count or dispersion. Do not say n=1, zero dispersion, or infer a noise signature. Preserve the existing conditional-negative task and reopen predicate; the source supports a threshold/model-conditional result, not a local kernel result.",
++      "source_rationale_anchors": [
++        {
++          "intake_citation": "intake-1248",
++          "source_revision": "arXiv:2606.16497v3",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/source.txt",
++          "source_artifact_sha256": "0ce7e853885bdc7d980879bc79066c208f609eb1f2c4c51209fb7e389ecec6c3",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/proposed_entry_update.json",
++          "accepted_proposal_sha256": "a3c56813f007854cb4d5ce0b2db12749ed2a7099a52ca117a70e5c7acaff455c",
++          "locators": [
++            {
++              "locator": "source.txt:L149",
++              "claim_index": 1,
++              "quote_sha256": "6c6237d11e797e5dcb00f5c5c9863dcea40aee13f825669e9628beaa254b9bb7"
++            },
++            {
++              "locator": "source.txt:L150",
++              "claim_index": 1,
++              "quote_sha256": "46325f628f396ab6b14a2761cd6a7f2a345cd92a1098764a1659a8959292974b"
++            },
++            {
++              "locator": "source.txt:L176",
++              "claim_index": 1,
++              "quote_sha256": "ebe7b76a8ba2e27896e5499212fe13bf06c9d8f1e2b8215348f58aff88e7e385"
++            },
++            {
++              "locator": "source.txt:L184",
++              "claim_index": 1,
++              "quote_sha256": "08216ceb85adb674478569c31a83a7b2effe9315986893b8739db46f4b2fadbb"
++            }
++          ]
++        }
++      ]
+     },
+     {
+       "task_id": "AK-PM-11",
+@@ -211,7 +281,16 @@
+         }
+       ],
+       "operational_interpretation": "Inspected compute_paired_efficacy:528 uses matched question/eval profiles. This is SkillBank inference A/B infrastructure, not proof a gfx90a kernel-skill experiment ran. Preserve2026-08-21 ratification:do not build cross-run memory before approved sequence/outcome. daVinci runtime flags are unread companion claims here, not independently confirmed deployment capabilities.",
+-      "current_source_rationale_scope": "1248 paper bounded ablation motivates a local paired design; do not invent n=1 external cell counts or treat source absence as local failure."
++      "current_source_rationale_scope": "1248 paper bounded ablation motivates a local paired design; do not invent n=1 external cell counts or treat source absence as local failure.",
++      "companion_source_status": {
++        "status": "original captured task context; not verified by the accepted primary source read; selected-source gate pending",
++        "captured_fields": [
++          "daVinci repository runtime flags SKILL_ENABLE / SKILL_LIBRARY_FILE",
++          "OpenAI-compatible endpoint availability",
++          "train-free local deployment path"
++        ],
++        "scope_note": "The 1248 primary-paper read did not inspect the companion repository or execute its runtime flags. Preserve the task and operator ratification; do not treat these details as current primary-source proof or as source-applicability decline."
++      }
+     },
+     {
+       "task_id": "AK-PM-12",
+@@ -250,7 +329,16 @@
+         }
+       ],
+       "operational_interpretation": "Skill exposes source_trajectory_ids,source_outcome,revision,teacher_model and storage; do_not_repeat receipt binds resolvable event/evidence IDs to anchor. These are relevant existing carriers, not proof a kernel-skill execution-admission rule/cap is implemented. Write-side authorization remains approved and independent of deferred read-side build; no record created.",
+-      "current_source_rationale_scope": "1248 verify rule compares original-plus-candidate first-turn speedup against max(beta,alpha*r1),alpha=beta1.2. Source corpus297.3x/shortcut counts require companion read; author threshold alone does not certify correctness or impose a universal speed cap."
++      "current_source_rationale_scope": "1248 verify rule compares original-plus-candidate first-turn speedup against max(beta,alpha*r1),alpha=beta1.2. Source corpus297.3x/shortcut counts require companion read; author threshold alone does not certify correctness or impose a universal speed cap.",
++      "companion_source_status": {
++        "status": "original captured task context; not verified by the accepted primary source read; selected-source gate pending",
++        "captured_fields": [
++          "released 960-skill corpus verify_speedup maximum 297.3x",
++          "approximately 35 shortcut/elision-flavoured skill names",
++          "semantic_shortcut_before_kernelization reported at 43.7x"
++        ],
++        "scope_note": "The accepted 1248 primary-paper read explicitly leaves corpus licensing and the 297x corpus claims unread/unverified. Preserve the existing write-side hook/cap task and checkbox; do not present these companion corpus details as current primary-source findings or decline source applicability."
++      }
+     },
+     {
+       "task_id": "AK-PM-13",
+@@ -281,7 +369,36 @@
+         }
+       ],
+       "operational_interpretation": "Existing report captures source/capture provenance; hypothesis path requires falsifiable claims. Preserve requested provenance banking and completed production PRs; no benchmark or kernel work initiated.",
+-      "current_source_rationale_scope": "1087 reports B200 end-to-end throughput+2.12% againstTensorRT-LLM. Isolated per-kernel ratios and E2E gain are distinct observables/baselines; do not infer a universal~100x attenuation factor from them.1250 companionPRs outside this reviewed primary scope."
++      "current_source_rationale_scope": "Accepted KForge v1 current paper evidence (`intake-1087#06`; `dive-1087/source.txt:L88-L106,L118`) keeps isolated microbench results separate from the end-to-end B200 throughput comparison against TensorRT-LLM: MoE-finalize isolated speedup spans 1.06x\u20131.43x across batch sizes, while the whole-workload throughput change is +2.12% under the paper's pinned 1500 MHz / autotuner-disabled setup. Different operations, denominators, and baselines do not establish a universal ~100x attenuation factor. Preserve AK-PM-13's existing second-datum task identity; intake-1250 and its PR artifacts remain companion evidence outside this selected primary read.",
++      "source_rationale_anchors": [
++        {
++          "intake_citation": "intake-1087",
++          "source_revision": "arXiv:2606.02963v1",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/source.txt",
++          "source_artifact_sha256": "4902cc712f955b2753196d751b0ca50a98e38afb02731f179db464ba8ad4fca9",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/proposed_entry_update.json",
++          "accepted_proposal_sha256": "3efc740483a0f8bd3899a989e5fbefdc76db55ff4ddd8707f732e2e39ad1dac9",
++          "locators": [
++            {
++              "locator": "source.txt:L88-L100",
++              "claim_index": 5,
++              "quote_sha256": null,
++              "anchor_note": "direct source-read locator; not a stored quote anchor"
++            },
++            {
++              "locator": "source.txt:L102-L106",
++              "claim_index": 6,
++              "quote_sha256": null,
++              "anchor_note": "direct source-read locator; not a stored quote anchor"
++            },
++            {
++              "locator": "source.txt:L118",
++              "claim_index": 6,
++              "quote_sha256": "9179d73c1add618c605c17fe9cecb55522dfd83fcae22ca34032e8d9963ce816"
++            }
++          ]
++        }
++      ]
+     },
+     {
+       "task_id": "C5-17",
+@@ -312,7 +429,34 @@
+         }
+       ],
+       "operational_interpretation": "Existing calibrate_monitor concerns suspicion-score threat monitoring, not kernel-runtime forecasting. It is a related declaration/calibration pattern and cannot be cited as an implemented surrogate. Preserve note-method/do-not-build-yet, equal-budget comparator and deferral requirements; no trained artifact deployment.",
+-      "current_source_rationale_scope": "1240 current source supports coarse ordinal modeling rationale and selective utility, not proof numeric inference impossible. All RL rewards lowerECE but increase numeric forecast error;3searchwins/1parity/2losses."
++      "current_source_rationale_scope": "Accepted GPU Forecasters v1 evidence (`intake-1240#04` and `#02`; `dive-1240/source.txt:L86,L131,L148`) says fine-grained numeric speedups are difficult to infer reliably without execution; it does not establish numeric forecasting as impossible or ordinal predictions as the only tractable method in general. Separate calibration from forecast accuracy: all three RL rewards reduce ECE, while all increase numeric forecast error; Brier improves recovered speedup and CRPS lowers ECE but neither makes the numeric error trade disappear. In the six-task search, surrogate wins three tasks, is essentially tied on one, and loses to baseline by about 5% and 7% on two. Preserve the existing ordinal/calibration/deferral and do-not-build-yet task; do not collapse calibration into numeric accuracy.",
++      "source_rationale_anchors": [
++        {
++          "intake_citation": "intake-1240",
++          "source_revision": "arXiv:2605.31464v1",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/source.txt",
++          "source_artifact_sha256": "0389a0d921ccc380bfc99461bad9c9b89bf355c09e2ff829382ff8ea583b040f",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/proposed_entry_update.json",
++          "accepted_proposal_sha256": "c3032b88de9ab202a3352ca6f8f27ce7f2c578472a3349504b757b4f98267fb5",
++          "locators": [
++            {
++              "locator": "source.txt:L86",
++              "claim_index": 4,
++              "quote_sha256": "b104fff87181386dc7e587d7086ef99281b78e8d122501e96565aa44c2880a64"
++            },
++            {
++              "locator": "source.txt:L131",
++              "claim_index": 2,
++              "quote_sha256": "bbb7b64a942135314d1dc00056d048d2494d54633ee5d44b1efd2d41f234a094"
++            },
++            {
++              "locator": "source.txt:L148",
++              "claim_index": 3,
++              "quote_sha256": "8c2b3362fbd5202453e529c004c4c7b608b60b15314b733373a73800a3a19df0"
++            }
++          ]
++        }
++      ]
+     },
+     {
+       "task_id": "RRR",
+@@ -344,7 +488,29 @@
+         }
+       ],
+       "operational_interpretation": "Inspected trace_ir_steps and build_critic_trace_ir deterministic observe-only trace structure. A trace cache and knowledge distillation are concrete existing analysis inputs; no claim these logs contain every required stored reflection or the exactRRR denominator. Token repetition monitoring is a different metric from reflection SequenceMatcher repetition. Preserve retrospective analysis task.",
+-      "current_source_rationale_scope": "989 numerical paper rates remain scoped to its trials; local availability must be checked by exact trace/reflection schema and counts, not a zero grep result."
++      "current_source_rationale_scope": "Accepted Reflexion v2 evidence (`intake-989#03`; `dive-989/paper.txt:L380-L446`) defines RRR as passive post-hoc string-similarity redundancy among reflections after the first, divided by |M|-1, with SequenceMatcher >=0.85; it can be computed without inference only when the required stored reflection traces are available. The memory-wipe result is bounded to selected environments, and the 15-trial original logs versus 10-trial mitigation budgets plus \u00a74.4's 7/8 versus \u00a75.3's 'none within 10' tension prevent treating its numeric change as a same-budget causal estimate. Keep RRR distinct from parser-assisted feedback extraction.",
++      "source_rationale_anchors": [
++        {
++          "intake_citation": "intake-989",
++          "source_revision": "arXiv:2605.29463v2",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/paper.txt",
++          "source_artifact_sha256": "57370c462be8c2948ffb1f9a0688e5a87b29a8e71867c86f87881fa0b91787f6",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/proposed_entry_update.json",
++          "accepted_proposal_sha256": "19ba3f57a94f2976dc7eac8855b40e205fbcce0214c847504c96d42c20019749",
++          "locators": [
++            {
++              "locator": "paper.txt:L380-L446",
++              "claim_index": 3,
++              "quote_sha256": "8f51995bdf3dbab65cd2d35bfa8c83fbae502fcf7ac08d75262ef763bddce9ce"
++            },
++            {
++              "locator": "paper.txt:L735-L739",
++              "claim_index": 0,
++              "quote_sha256": "656cf666b0bf572ef537ad44f82f2d7d47bc2c77d53f6b0224b46668cdf66458"
++            }
++          ]
++        }
++      ]
+     },
+     {
+       "task_id": "Programmatic feedback extraction",
+@@ -376,10 +542,44 @@
+         }
+       ],
+       "operational_interpretation": "Inspected build_critic_trace_ir accepts failure_summary and builds deterministic structured prompt context, explicitly not scoring/safety/acceptance. That is a relevant carrier for tool-derived failure facts; it does not establish parser coverage or prove model-derived diagnosis was replaced. Preserve existing approved feedback work and its owner identity.",
+-      "current_source_rationale_scope": "989 object-mention rates are source-specific; mechanism transfer needs native tool-output fields and local extraction checks, not rate extrapolation."
++      "current_source_rationale_scope": "Accepted Reflexion v2 evidence (`intake-989#03`; `dive-989/paper.txt:L681-L694,L1494-L1547`) describes a trajectory parser that extracts 'Nothing happens' responses and repeated identical actions before an LLM still explains why each failure occurred and writes a new plan. It is parser-plus-LLM, not zero-inference diagnosis replacement. The reported object-mention result (0/121 to 134/156) is paper-specific to selected frozen environments and is not a transferable local rate. Preserve this task separately from RRR; keep its stated rate caveat and do not claim the parser replaces model reasoning.",
++      "source_rationale_anchors": [
++        {
++          "intake_citation": "intake-989",
++          "source_revision": "arXiv:2605.29463v2",
++          "source_artifact_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/paper.txt",
++          "source_artifact_sha256": "57370c462be8c2948ffb1f9a0688e5a87b29a8e71867c86f87881fa0b91787f6",
++          "accepted_proposal_locator": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/proposed_entry_update.json",
++          "accepted_proposal_sha256": "19ba3f57a94f2976dc7eac8855b40e205fbcce0214c847504c96d42c20019749",
++          "locators": [
++            {
++              "locator": "paper.txt:L681-L694",
++              "claim_index": 3,
++              "quote_sha256": "65cd1a533268b75951f7cfc5f5edcd769481f2bbe621b363cd9d6b1966797416"
++            },
++            {
++              "locator": "paper.txt:L1494-L1547",
++              "claim_index": 3,
++              "quote_sha256": "8ef1533b037ec0c580ee22cf70c1e88475c30126ad5df4c0e8ae64426b127df4"
++            },
++            {
++              "locator": "paper.txt:L706-L709",
++              "claim_index": 0,
++              "quote_sha256": "aa04935cb91a5d9e1e9f12092c4850b7ef8d364012f52446c3033c16a2d28898"
++            }
++          ]
++        }
++      ]
+     }
+   ],
+   "limitations": "Static targeted source inspection; no experiment,inference,execution,completion assessment or absence inference. Initial shared/workspace search was a pointer only; exact task bindings come solely from lane98d46.",
+   "preserved_completed_items": "engram-conditional-memory existing checked DarkRoom threat assessment and independent corroboration remain completed; no reopened checkboxes.",
+-  "writes": "This scratch map and its builder only; no handoff/index/bus/canonical ledger writes."
++  "writes": "This scratch map and its builder only; no handoff/index/bus/canonical ledger writes.",
++  "source_rationale_update": {
++    "as_of": "2026-10-06",
++    "scope": "AK-PM-9, AK-PM-13, C5-17, KB-GS-4 (intake-1239 caveat), RRR, Programmatic feedback extraction; companion-source status fields for AK-PM-11 and AK-PM-12",
++    "task_identity_policy": "exact task text, checkbox state, owner, ratification, and implementation-context bindings are preserved",
++    "source_gate": "unread companions are explicitly pending selected-source gate; no applicability decline is inferred",
++    "proposal_only": true
++  }
+ }

@@ -1,0 +1,59 @@
+{
+  "review": "IRV-5 native proposal verification field repair",
+  "date": "2026-10-06",
+  "defect": "Initial proposal generator assigned dive-overturned as a convenience for sources with narrowed/overturned individual claims, instead of retaining the authoritative entry-level verification.",
+  "repair": "Use original intake entry verification; individually corrected claims remain represented by native claim_corrections. For these five IDs only intake-896 is entry-level dive-overturned; four others remain dive-verified.",
+  "entries": [
+    {
+      "entry_id": "intake-896",
+      "authoritative_existing_verification": "dive-overturned",
+      "proposed_verification": "dive-overturned",
+      "matches": true,
+      "proposal_sha256": "2942db524be696354b1d1aae1df5ed3ac19b85c4287b4c17e9390d05b5da1ecf",
+      "read_depth": "FULL",
+      "key_claim_slots": 4,
+      "claim_anchor_count": 13
+    },
+    {
+      "entry_id": "intake-974",
+      "authoritative_existing_verification": "dive-verified",
+      "proposed_verification": "dive-verified",
+      "matches": true,
+      "proposal_sha256": "50760e4bf0cfeba1eaddcad54de1d5ca7d03b613b6525b26e22137610970e605",
+      "read_depth": "PARTIAL",
+      "key_claim_slots": 5,
+      "claim_anchor_count": 8
+    },
+    {
+      "entry_id": "intake-975",
+      "authoritative_existing_verification": "dive-verified",
+      "proposed_verification": "dive-verified",
+      "matches": true,
+      "proposal_sha256": "d4a6f2b990a6c038c8fea8fd136d35caa6f3b2f890a58953ecca7212faa8e2f1",
+      "read_depth": "PARTIAL",
+      "key_claim_slots": 4,
+      "claim_anchor_count": 16
+    },
+    {
+      "entry_id": "intake-976",
+      "authoritative_existing_verification": "dive-verified",
+      "proposed_verification": "dive-verified",
+      "matches": true,
+      "proposal_sha256": "41ffa5ffc324e34133c1c5455cdf21b04cfcd0b6e7439eb2c2fb0d4f8ecbe3a5",
+      "read_depth": "PARTIAL",
+      "key_claim_slots": 5,
+      "claim_anchor_count": 12
+    },
+    {
+      "entry_id": "intake-978",
+      "authoritative_existing_verification": "dive-verified",
+      "proposed_verification": "dive-verified",
+      "matches": true,
+      "proposal_sha256": "53a52e6e62bed43b9b8adac80702199eec9bcf84033b89808895472387387d1a",
+      "read_depth": "PARTIAL",
+      "key_claim_slots": 5,
+      "claim_anchor_count": 13
+    }
+  ],
+  "consumer_proposal_sha256": "ff94c6834459b274c66c4d8b89c1461ec4ed1415579970691e7a83c6a892d1cd"
+}

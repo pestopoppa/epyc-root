@@ -1,0 +1,88 @@
+--- a/handoffs/active/rocm-verify-profile-backend.md
++++ b/handoffs/active/rocm-verify-profile-backend.md
+@@ -1532,8 +1532,10 @@
+ - **Correctness-conditioned speedup rates are structurally survivorship-biased and must never rank arms.**
+   Two independent 2026 benchmarks now exhibit it: CodegenBench reports `Fast_1@1 = 1.00` on LeetSunway for a
+   model whose `Pass@1` is **0.06**, and self-diagnoses the cause; `intake-1227` flagged the same divergence.
+-  Both `fast_p` and `Fast_1@1` condition on the correct subset, so they inflate exactly where correctness is
+-  worst.
++  `Fast_1@1` is computed among correct candidates and can look strong despite low Pass@1. KernelBench
++  `fast_p` counts tasks that are both correct and have speedup greater than threshold `p`, but divides by all `N` tasks;
++  incorrect outputs remain in the denominator. It is a joint success-rate metric, not a correct-subset rate
++  (`intake-664#01`).
+ - **ParEval-Repo: the HIP arm is DROPPED — question closed, do not re-ask.** Word-boundary grep of
+   `arXiv:2506.20938v2` gives HIP 0 / ROCm 0 / gfx 0 and AMD 2 (both host CPUs); the full 254-path repo tree
+   @ `50f7dd8a` contains zero `hip` paths. The OpenMP-Offload arm is **not vendor-neutral**: `target.json`
+--- a/wiki/benchmark-methodology.md
++++ b/wiki/benchmark-methodology.md
+@@ -4373,8 +4373,9 @@
+ **Two portable rules from the same wave.** (1) *Correctness-conditioned speedup rates are structurally
+ survivorship-biased and must never rank arms* — two independent 2026 benchmarks exhibit it
+ (CodegenBench: `Fast_1@1 = 1.00` at `Pass@1 = 0.06`, self-diagnosed; KernelGenBench's accuracy-speedup
+-divergence): `fast_p`-style metrics condition on the correct subset, so they inflate exactly where
+-correctness is worst. (2) *A dtype-keyed tolerance is an attack surface when the candidate chooses its
++divergence). Keep the denominator distinctions clear: CodegenBench `Fast_1@1` is conditional on correct
++outputs; KernelBench `fast_p` counts tasks with correct outputs and speedup greater than threshold `p`, but
++uses all tasks as its denominator, so incorrect outputs remain in its denominator (`intake-664#01`). (2) *A dtype-keyed tolerance is an attack surface when the candidate chooses its
+ own dtype* — an adaptive bar of FP32 1e-5 / BF16 0.016 pays a ~160x looser tolerance as a reward for
+ downgrading. Pin required dtype and accumulate-precision per operator STRUCTURALLY, before tolerance
+ is chosen (`RVP-C6-22`).
+--- a/handoffs/active/architect-model-selection-bench.md
++++ b/handoffs/active/architect-model-selection-bench.md
+@@ -590,14 +590,15 @@
+ are now indexed. Nothing below is comparative authority until it runs under the sealed same-era protocol
+ above._
+ 
+-### The design space is FOUR instruments, not eight
+-
+-Mercury (intake-972) → EffiBench / EffiBench-X (intake-952) → SWE-Perf (intake-951) is **one connected
+-component of four papers**, hubbed on a shared author. So the apparent field-wide consensus that
+-"efficiency scores must be normalized against a reference distribution" is **half one lineage**. The
+-genuinely independent instruments diverge sharply: ENAMEL normalizes against **one expert solution with
+-censoring**; EvalPerf against a **clustered ladder using instruction counts**; GSO against a **single
+-human commit in the same container**; COFFE against **the best ground truth, binary**.
++### Instrument design and evidence independence
++
++The earlier statement that Mercury, EffiBench / EffiBench-X, and SWE-Perf formed a connected lineage
++through a shared author is retained only as historical discussion, not as a verified current-source
++finding. The review did not audit the other papers' author lists; intake-972's source record is the
++appropriate citation for that scope note (`intake-972#record`). The instruments have distinct designs:
++ENAMEL normalizes against **one expert solution with censoring**; EvalPerf against a **clustered ladder
++using instruction counts**; GSO against **a single human commit in the same container**; COFFE against
++**the best ground truth, binary**.
+ 
+ **Ladder shape — operator-selected 2026-08-03:** *one ranking key, three columns*. Rank on the fused,
+ instance-gated, expert-normalized, clipped score; report **correctness** beside it; and report a
+@@ -624,9 +625,9 @@
+ 
+ - **Decline SWE-Perf as a harness.** Its code carries **no licence at all**, unanswered for nine months. Its statistical gate is kept.
+ - **Decline SWE-fficiency's images** — 1.03 TB. **Adopt its `cpu_assignment.py`** (196 lines, Apache-2.0), which produced correct NUMA-and-SMT-aware cpusets on our EPYC on the first run.
+-- **Decline Mercury** (intake-972) — the repo has no licence file at all, so the code is all-rights-reserved. Peer review was not the differentiator it appeared to be: EvalPerf is also peer-reviewed and beats it on licence, maintenance, measurement design and local-endpoint support. Ingest as lineage evidence only.
+-- **Decline an efficiency axis over SWE40 / LCB.** Original correctness tests clear the duration-spread gate for **≤3.8%** of problems, and an independent audit (intake-976: 4 benchmarks, 1,538 tasks, 30 reps each) finds only **6.11%** of purportedly performant reference implementations significantly faster on original tests. **Our sealed tasks physically cannot carry a timing signal** — this is a property of the workload, not of our harness.
+-- **Decline PerfCodeBench** (intake-975) for ~60 days — no licence, anonymous review-only link, nvcc-bound, and CUDA is 5.2% of its test split. Reopen on a licensed public release or any ROCm/HIP path.
++- **Keep the decline of the original Mercury repository under the existing license gate.** The reviewed original repository had no `LICENSE` file or licensing declaration (`intake-972#00`). The separately advertised Mercury_Eval successor declares MIT in its manifest and README but also has no license file; this is distinct repository metadata, not a legal conclusion about either project. Preserve the existing EvalPerf selection and operational decision.
++- **Keep the decline of an efficiency axis over SWE40 / LCB.** intake-939's duration-spread gate remains its own result: original tests meet robust CV ≥0.3 for at most 3.8% of problems (`intake-939#04`). intake-976 provides related, separate evidence: across 1,538 tasks and 30 runs per implementation pair, 94 (6.11%) were significantly faster on original tests (`intake-976#02`). This does not measure CV/IQR or test the 0.3 threshold, and it does not prove sealed tasks cannot carry a timing signal. Its 209/308 manually sampled cases are author-labeled plausible improvements, not verified speedups (`intake-976#03`). Preserve the explicit corpus dependency: 256 of intake-976's 1,538 tasks are Mercury tasks (`intake-976#01`; intake-972 is lineage context, `intake-972#record`). Do not transfer the original Mercury repository's licensing or status to Mercury_Eval, or vice versa.
++- **Keep the ~60-day PerfCodeBench decline and its reopening gate.** The paper-linked repository is public now, but public availability alone does not meet the predeclared licensed-public-release trigger. The repository has no umbrella LICENSE/COPYING or GitHub license metadata; the reviewed CUDA route is NVIDIA-toolkit oriented and no HIP/ROCm route was found. The current paper/repository versions do not substantiate the old 5.2% test-split figure. Reopen only on licensed public terms or a relevant ROCm/HIP path (`intake-975#00`, `intake-975#03`).
+ 
+ ### Model-candidate verdicts — answering the standing search for a faster `worker_general` / `architect_critic`
+ 
+--- a/wiki/agent-architecture.md
++++ b/wiki/agent-architecture.md
+@@ -2861,7 +2861,7 @@
+ 
+ - **Agentic Critical Training (ACT) shows RL-based self-reflection outperforms imitation by +5.07 points** and transfers across model sizes (4B trained with 8B trajectories reaches 92.14% on ALFWorld). ACT also improves general reasoning (MATH-500 87.73%) without reasoning-specific training data. This validates the autopilot's approach of using GRPO-based training for routing model improvement. [intake-106](https://arxiv.org/abs/2603.08706)
+ 
+-- **Agent context files cost more without reliably helping.** ETH Zurich research (intake-272#01) found context files increase inference cost by 20%+ **for both arms** (~19% even for developer-provided files, p=0.0126). CORRECTED 2026-08-20 against v2 of the paper: it does **NOT** find that context files reduce success rates -- it finds no significant effect for LLM-generated files (p=0.87 / p=0.37) and a **+2.4% improvement** for developer-provided ones. The cost finding is the durable half; the earlier "reduce success" reading came from v1 and did not survive revision. The thin-map architecture used by EPYC's agent files may be near-optimal, but requires empirical validation via instruction token budget tracking (AP-16). [intake-272#01](https://arxiv.org/abs/2602.11988)
++- **Agent context files have a measured cost in the cited study; their success effects are version- and arm-specific.** The current arXiv v3 reports no significant success effect for LLM-generated files (p=.87 on SWE-bench; p=.37 on CTXbench). Developer-written files have an author-reported +2.4% average resolution-rate difference versus no file (p=.21, not significant); this is the authors' percentage unit, not a percentage-point conversion (`intake-272#00`). The cost result is separate: LLM-generated files raise cost by 20% and 23%, while developer-written files raise CTXbench cost by about 19%; p=.0126 is the cost comparison (`intake-272#01`). These are source results, not an EPYC measurement. The thin-map architecture remains a hypothesis for local validation via instruction-token tracking (AP-16). [intake-272#00](https://arxiv.org/abs/2602.11988), [intake-272#01](https://arxiv.org/abs/2602.11988)
+ 
+ - **Harness engineering, not model capability, is the primary performance differentiator.** The "Skill Issue" practitioner study (intake-271) showed ~28 rank positions on TerminalBench-2 from harness changes alone on the same Opus model. The "Mismanaged Geniuses" hypothesis (intake-312) extends this: frontier LLMs are already superhuman on hardest exams (IMO, IOI), and the bottleneck is orchestration, not model power. A 4B RLM achieved 100% on MRCRv2 via composition. [intake-271, intake-312]
+ 
+@@ -2948,7 +2948,7 @@
+ - [intake-131](https://arxiv.org/abs/2503.18102) AgentRxiv -- collaborative autonomous research, shared preprint server, 13.7% improvement on MATH-500
+ - [intake-133](https://arxiv.org/abs/2603.08462) Reasoning as Compression -- information bottleneck view of budget forcing; theoretical grounding for think-harder ROI
+ - [intake-271](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents) Skill Issue -- harness engineering drives ~28 rank positions on TerminalBench-2
+-- [intake-272#01](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md -- +20% cost with NO significant success effect (LLM-generated) and +2.4% (developer-provided); corrected against v2 2026-08-20
++- [intake-272#00](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md (current arXiv v3): developer-written files show an author-reported +2.4% average resolution-rate difference (p=.21, not significant; authored percent, not a percentage-point conversion). [intake-272#01](https://arxiv.org/abs/2602.11988) separately reports cost increases of 20% and 23% for LLM-generated files and about 19% for developer-written files. The earlier v2 reading remains dated entry history.
+ - [intake-312](https://alexzhang13.github.io/blog/2026/mgh/) Mismanaged Geniuses Hypothesis -- orchestration, not model power, is the bottleneck; 4B RLM achieves 100% MRCRv2
+ - [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) -- execution trace feedback (+15pts), code mutation search space, GEPA integration
+ - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations

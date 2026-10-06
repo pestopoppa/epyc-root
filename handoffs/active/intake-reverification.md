@@ -2,7 +2,7 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/intake-reverify/` · worktrees: `/mnt/raid0/llm/worktrees/intake-reverify-*`
 
-**Status**: active (draft, awaiting owning-session apply)
+**Status**: active — IRV-1–3 complete; IRV-4–7 remain open pending correction filing and validation
 **Created**: 2026-10-06 (operator-approved with the read-depth fix, commit 4563f8d8e)
 **Categories**: knowledge_management, benchmark_methodology
 
@@ -59,13 +59,22 @@ Output classes (record reason per entry in the triage table):
 
 ## Tasks
 
-- [ ] **IRV-1 — Generate the at-risk list.** Run the script above on current `research/intake_index.yaml`; save TSV and counts to the scratch dir.
-- [ ] **IRV-2 — Run cite-check and citation grep.** `cite-check --as-of <ts>` plus `grep` for `intake-NNN` across handoffs, wiki and docs; join onto the TSV as `cited_by`.
-- [ ] **IRV-3 — Triage.** Apply the rubric; emit RE-DIVE / DEMOTE / KEEP with a one-line reason each.
+- [x] **IRV-1 — Generate the at-risk list.** Run the script above on current `research/intake_index.yaml`; save TSV and counts to the scratch dir. ✅ 2026-10-06
+- [x] **IRV-2 — Run cite-check and citation grep.** `cite-check --as-of <ts>` plus `grep` for `intake-NNN` across handoffs, wiki and docs; join onto the TSV as `cited_by`. ✅ 2026-10-06
+- [x] **IRV-3 — Triage.** Apply the rubric; emit RE-DIVE / DEMOTE / KEEP with a one-line reason each. ✅ 2026-10-06
 - [ ] **IRV-4 — Stage-3 plan for the re-dives.** Plan-mode audit of the RE-DIVE set, operator approval before any handoff edits.
 - [ ] **IRV-5 — Re-dive batches.** Waves of at most 10 under the fixed skill; record verdict changes and `dive_corrections`.
 - [ ] **IRV-6 — Demotions.** Apply approved DEMOTE rows to the index; run `validate_intake.py` (exit 0) and `cite-check`.
 - [ ] **IRV-7 — Final report.** Counts by class, verdict changes, affected handoffs; move this handoff to `completed/` and delete its index row.
+
+### 2026-10-06 checkpoint — screening and triage complete; corrective filing open
+
+- IRV-1 used the 2026-10-06 snapshot (1,918 entries): 352 at-risk entries among 889 dived; flags A=191, B=100, C=109 are overlapping risk signals, not failures. The frozen partition covers all 352 exactly once: 322 KEEP, 22 RE-DIVE, 8 DEMOTE.
+- IRV-2 citation and consumer scan completed: the recorded baseline on lane `98d46d1e` covered 4,341 citations in 282 documents and exited 3 with 11 blocking findings. Treat the scan as complete, not as a passing baseline gate; receipt and findings remain attached to the review bundle. The lane subsequently synchronized to `c714fe1c`; the next rehearsal rescans identical current document bytes before and after its refresh.
+- IRV-3 reviewed triage is complete (322/22/8). The 22 primary-source reads and independent reviews are complete, but their 22-entry updates plus eight verification-status repairs remain a prepared, unapplied candidate. No correction/demotion is claimed filed.
+- The 17 additional surfaced identities are outside this authorized 22+8 round and do not block its corrective checkpoint; preserve their source/action records and do not infer applicability declines. Preserve all 79 extracted recommendation records and their existing task bindings; unresolved disposition remains unreconciled, not declined.
+
+Next action: finish IRV-4's concrete corrective plan, then file and validate the reviewed 22 source-entry updates and eight verification repairs under IRV-5/6. Preserve prior claim history and all 79 recommendation records/task bindings. Attach intake-validation and native refresh/citation receipts before closing IRV-7. The operator's instruction to proceed with these re-dives and demotions authorizes this existing corrective round; it does not add the 17 surfaced sources.
 
 ## Cost guidance
 

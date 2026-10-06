@@ -1,0 +1,6 @@
+intake_assertion_kinds.py: OK
+research_intake.py: OK
+validate_intake.py: OK
+test_record_status.py: OK
+../test_native_opposition_proposed.py: OK
+../research_intake-opposition-proposed.py: OK

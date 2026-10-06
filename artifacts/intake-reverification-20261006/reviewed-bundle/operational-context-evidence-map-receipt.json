@@ -1,0 +1,37 @@
+{
+  "status": "scratch proposal; exact task identity/checkbox/owner/implementation fields preserved; no source/applicability or task completion decision",
+  "base_path": "/mnt/raid0/llm/tmp/intake-reverify/operational-context-evidence-map.json",
+  "base_sha256": "a12275b352efa6b88213c0fca62006336f434e27145a74791431dd9aea342050",
+  "candidate_path": "/mnt/raid0/llm/tmp/intake-reverify/operational-context-corrections/operational-context-evidence-map.candidate.json",
+  "candidate_sha256": "1d3a217ac3df01cf25f7f2eda184c6c9b2fd92155d09141828189b08b2751590",
+  "patch_path": "/mnt/raid0/llm/tmp/intake-reverify/operational-context-corrections/operational-context-evidence-map-corrections.patch",
+  "patch_sha256": "d74847af9aaccebbb2a163331d740b52bd1078c9d2b410d8cf21a8f71817ab4d",
+  "changed_task_ids": [
+    "AK-PM-9",
+    "AK-PM-13",
+    "C5-17",
+    "KB-GS-4",
+    "RRR",
+    "Programmatic feedback extraction",
+    "AK-PM-11",
+    "AK-PM-12"
+  ],
+  "changed_fields": [
+    "status",
+    "source_rationale_update",
+    "current_source_rationale_scope",
+    "source_rationale_anchors",
+    "companion_source_status"
+  ],
+  "unchanged_task_blocks": [
+    "task_id",
+    "authoritative_task_path",
+    "line",
+    "task_file_sha256",
+    "exact_task_text",
+    "checkbox_state",
+    "owner_action",
+    "implementation_context"
+  ],
+  "source_gate_pending": true
+}

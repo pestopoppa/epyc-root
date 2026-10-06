@@ -1,0 +1,9 @@
+# Partition1 main-review revisions
+
+Initial31RE-DIVE proposal imposed an inconsistent extra pin requirement on several papers while allowing formal primaryPDF reads without hashes. Corrected using one threshold: a native explicit primary/full read PLUS source-specific table/figure/theorem/code corrections counts as meaningful legacy read evidence; merely listing precise claims does not. No requirement retroactively invents pinned artifacts for legacy KEEP.
+
+Revised903/904/905/906/908/910/911/915/930/935/936/959/988 to scopedKEEP. HistoricalB and machine-only anchors do not establish reading, but they do not negate independent subsequent explicitfull-read findings either. Source-specific versiondiffs, rawquotes, whole-tree/grep traces and detailed correction scopes supply the bases; each reason/excerpt is in triage-1.json. This is the same threshold used for1042-1044 versionedPDF/theorem reads.
+
+Retained272RE-DIVE after main direction, now for a narrow question rather than absentpin: verify source/arm attribution of~19percent developer cost,p0126 and nonsignificant developer success against actual2602.11988v2. Companion1190 source_revision explicitly says comparator2602.11988v2 ALSO read; fulldive_corrections say BOTH papers IN FULL and allthree costpercentages recomputed from the papertable. Do not conflate1190 primary2601.20404 Lulla with comparatorETH. The record does not itself prove~19came from Lulla; independent primarycheck will settle it.
+
+Remaining18RE-DIVE:272,664,667,896,967,972,974,975,976,978,979,980,982,983,984,985,989,1028. Each either has a concrete unresolvedsource question, explicitpendingread, or claim-level precision without a recorded primaryread operation/scope. SixDEMOTE unchanged. Final117 denominator:93KEEP/18RE-DIVE/6DEMOTE. All artifacts remain PROPOSED until main approves.

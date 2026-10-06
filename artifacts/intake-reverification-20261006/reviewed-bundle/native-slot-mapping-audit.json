@@ -1,0 +1,519 @@
+{
+  "status": "PASS_NATIVE_SLOT_MAPPING; OWNER_REVIEW_PROPOSED",
+  "native_entries": 5,
+  "native_slots": 23,
+  "expanded_assessment_slots": "Wave1 receipt57 covers source-assessment groups across10 entries; do not treat expanded group labels as native claim IDs.",
+  "transport_defect": "No missing key_claims defect: nested proposed_entry_update wrapper is valid.",
+  "changes": [
+    {
+      "entry_id": "intake-896",
+      "native_slot_count": 4,
+      "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-896-proposed_entry_update.json",
+      "before_sha256": "2942db524be696354b1d1aae1df5ed3ac19b85c4287b4c17e9390d05b5da1ecf",
+      "after_sha256": "c589c0e2287f86ca49f8a6a5dac5c523cd3e05e44ebfd6936cb97c22af2e5348",
+      "reason": "Transport wrapper already correct; verify same native slot identity and current supported scope.",
+      "old_exact_claims_preserved_in_dated_history": true,
+      "original_verification": "dive-overturned",
+      "current_verification": "dive-overturned",
+      "existing_depends_on_preserved": [],
+      "source_result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-896/result.json",
+      "source_result_sha256": "1138428720b5eb64e5895ef7e911b4cb8646a5304ef0597e0e7346458b206cdb",
+      "slots": [
+        {
+          "claim_index": 0,
+          "old_native_claim": "Claims over 80% of Claude Code's system prompt was removed for Opus 5 / Fable 5 with no measurable loss on internal coding evaluations. NO protocol, NO named eval suite, NO n, NO date, NO link, NO attestation is given anywhere in the post.",
+          "current_claim": "The post reports removal of over 80% of Claude Code's system prompt with no measurable loss on its coding evaluations; it names no suite, protocol, sample, metric, underlying results, or evaluation date/link. The post itself is dated 2026-07-24, so publication date is not an evaluation date; this remains a vendor-reported observation.",
+          "accepted_assessment_mapping": [
+            0
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "matched span in https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
+            "Introduction / article body, line 17",
+            "Introduction / article body, line 17",
+            "Page metadata, line 6"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "old_native_claim": "Six named shifts: rules -> judgment; examples -> expressive interface design; everything-upfront -> progressive disclosure (skills and tools loaded on demand via ToolSearch); repetition -> single-site tool descriptions; manual memory -> auto-memory; simple specs -> rich code-level references plus rubrics that instantiate verifier agents.",
+          "current_claim": "The article describes six shifts: rules to judgment; examples to interface design; upfront context to progressive disclosure; repeated guidance to simpler tool descriptions; manual memory to auto-memory; simple specs to richer code-level references and rubrics.",
+          "accepted_assessment_mapping": [
+            1
+          ],
+          "latest_effect": "unaffected",
+          "anchor_locators": [
+            "Then and now, line 43",
+            "Then and now, line 57",
+            "Then and now, line 69",
+            "Then and now, line 81",
+            "Then and now, line 89",
+            "Then and now, line 95"
+          ]
+        },
+        {
+          "claim_index": 2,
+          "old_native_claim": "CLAUDE.md is reframed as the thin node of a load-on-demand tree: state the repo purpose plus non-obvious gotchas, and spend zero tokens on anything derivable from the file structure.",
+          "current_claim": "The article frames CLAUDE.md as a lightweight node in a load-on-demand context tree: state the repository purpose and non-obvious gotchas, omit content obvious from the file structure.",
+          "accepted_assessment_mapping": [
+            2
+          ],
+          "latest_effect": "unaffected",
+          "anchor_locators": [
+            "Applying this to your context / CLAUDE.md, line 117"
+          ]
+        },
+        {
+          "claim_index": 3,
+          "old_native_claim": "RETRACTED 2026-08-09 (the 2026-07-25 strike never landed in this file): the four-step /doctor description - dedupe / trim / migrate / report-before-changing - was FABRICATED by a Stage-1 summariser. The source post contains two generic sentences about /doctor and none of those four behaviours. Do not cite any /doctor mechanism to this entry.",
+          "current_claim": "NARROWED /doctor claim: the post mentions a generic /doctor command for rightsizing skills and CLAUDE.md and says it helps simplify automatically. It gives no implementation details. The previously recorded dedupe/trim/migrate/audit/index/traversal/report-before-changing workflow remains fabricated and withdrawn.",
+          "accepted_assessment_mapping": [
+            3
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "Introduction, line 19",
+            "Try simplifying, line 137"
+          ]
+        }
+      ]
+    },
+    {
+      "entry_id": "intake-974",
+      "native_slot_count": 5,
+      "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-974-proposed_entry_update.json",
+      "before_sha256": "50760e4bf0cfeba1eaddcad54de1d5ca7d03b613b6525b26e22137610970e605",
+      "after_sha256": "9a3e4dcbacc90fc409f4131c0d0077c1589d36d111f51bd0ea778c017ffb588b",
+      "reason": "Replace cross-entry independence warrant with separate-study/related architectural evidence; preserve unread939 scope.",
+      "old_exact_claims_preserved_in_dated_history": true,
+      "original_verification": "dive-verified",
+      "current_verification": "dive-verified",
+      "existing_depends_on_preserved": [],
+      "source_result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-974/result.json",
+      "source_result_sha256": "1a37b91f905bfcad2de92214cc3e815564b19b300f4450c195aba8ca5d5a6895",
+      "slots": [
+        {
+          "claim_index": 0,
+          "old_native_claim": "THE INDEPENDENCE TEST RESULT IS PARTIAL, AND THE KIND MATTERS: the corroboration for intake-939 is ARCHITECTURAL, NOT EMPIRICAL. RLPF is a genuinely independent group that independently arrived at a correctness-gated staged reward, with released code implementing a strictly separated outer gate.",
+          "current_claim": "RLPF is a separate study using a correctness-gated staged reward. This is related architectural evidence, not an empirical gate-versus-blend corroboration of intake-939; intake-939 was not re-read in this dive, so comparator authorship and evidence independence are not established here.",
+          "accepted_assessment_mapping": [
+            0
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.3 Eq.6; p.4 Fig.1 caption",
+            "paper PDF p.5, Reward Baselines and Component Ablations"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "old_native_claim": "BUT EVERY REWARD ARM RLPF TESTED IS CORRECTNESS-GATED. There is NO blended arm and NO ungated arm anywhere in the paper or the code. RLPF therefore CANNOT show that gating beats blending - it never ran the comparison. Its ablations test WHICH GATED TERMS matter, not WHETHER THE GATE matters.",
+          "current_claim": "Every reward arm tested remains correctness-gated; there is no ungated or blended arm, so the study cannot show that gating beats blending.",
+          "accepted_assessment_mapping": [
+            1
+          ],
+          "latest_effect": "unaffected",
+          "anchor_locators": [
+            "paper PDF p.4 Fig.1 caption",
+            "official repository run_scripts/run_reward_ablations.sh at commit f4f37214b893d158618c3a576701937a8824d82f, lines 66-80"
+          ]
+        },
+        {
+          "claim_index": 2,
+          "old_native_claim": "RLPF DESIGN CONTRADICTS intake-939 WINNING ARM. 939 winner was the COLLAPSED CONJUNCTION (correct-but-slow -> full failure reward). RLPF explicitly and deliberately does the OPPOSITE: epsilon = 0.05 exists SOLELY to guarantee every correct program outranks every failed one. Two capable groups, OPPOSITE CHOICES within the same family.",
+          "current_claim": "The paper and official reward code set epsilon=0.05 above the wrong-output stage reward 0.10, so correct programs receive at least 0.15. This deliberately preserves positive reward for correct-but-slow outputs; any contrast with intake-939 is cross-entry and was not re-read in this dive.",
+          "accepted_assessment_mapping": [
+            2
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.3 Eq.6 explanatory text",
+            "official repository code/reward.py lines 363-365"
+          ]
+        },
+        {
+          "claim_index": 3,
+          "old_native_claim": "THE PRE-CORRECTNESS PROGRESS LADDER IS THE HIGHEST-VALUE TRANSFER: s(NX)=-0.05 < s(NC)=0.00 < s(NR)=+0.05 < s(WO)=+0.10. Our kernel loop currently treats ALL non-verifying candidates as EQUAL failures; ranking hipcc-fail < runtime-fail < wrong-output gives a SEARCH GRADIENT in the regime where most MI210 candidates die. intake-939 has no analogue.",
+          "current_claim": "The pre-correctness ladder orders extraction failure (-0.05), compile failure (0.00), runtime failure (+0.05), and wrong output (+0.10). This is a source-verified design, while applying it to EPYC is a proposal.",
+          "accepted_assessment_mapping": [
+            3
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.3 Eq.5 and preceding paragraph"
+          ]
+        },
+        {
+          "claim_index": 4,
+          "old_native_claim": "CGRE supplies the CONTINUOUS normalized gap-closure form a hill-climbing search actually needs: (T_base - T_cand)/(T_base - T_ref), clipped to [0,1].",
+          "current_claim": "CGRE is correctness multiplied by clipped task-specific gap closure (baseline-to-candidate over baseline-to-reference), bounded to [0,1].",
+          "accepted_assessment_mapping": [
+            4
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.3 Eq.3 and following explanatory paragraph"
+          ]
+        }
+      ]
+    },
+    {
+      "entry_id": "intake-975",
+      "native_slot_count": 4,
+      "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-975-proposed_entry_update.json",
+      "before_sha256": "d4a6f2b990a6c038c8fea8fd136d35caa6f3b2f890a58953ecca7212faa8e2f1",
+      "after_sha256": "844cd1acc12fe1832f4a57b0ee6d9a3702620cff236398c4242213708b070a13",
+      "reason": "Retain four native identities; add accepted baseline/reference span toslot1 and accepted systems-content span to previously unanchoredslot2.",
+      "old_exact_claims_preserved_in_dated_history": true,
+      "original_verification": "dive-verified",
+      "current_verification": "dive-verified",
+      "existing_depends_on_preserved": [],
+      "source_result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/result.json",
+      "source_result_sha256": "391b1925a2b55066ad99167c0acc78fb4a1e61588d12bdb86796be0b44b1846b",
+      "slots": [
+        {
+          "claim_index": 0,
+          "old_native_claim": "TRACK, DO NOT ADOPT - and the reason is specific rather than general.",
+          "current_claim": "TRACK, DO NOT ADOPT remains the posture pending licensed reuse terms and a relevant ROCm/HIP path.",
+          "accepted_assessment_mapping": [
+            0
+          ],
+          "latest_effect": "unaffected",
+          "anchor_locators": [
+            "arXiv v2 PDF p.1 abstract; p.3 §3",
+            "same PDF p.2 contributions"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "old_native_claim": "ATTRACTIVE: it is the ONLY member of the cluster with genuine SYSTEMS content (OpenMP atomics, SIMD string processing, bitmap filtering, packed integer decoding, CUDA reductions/scans/tiled transpose) and the only one supplying BOTH a baseline AND an expert-optimized reference per task - which is what makes a normalized gap-closure metric possible at all.",
+          "current_claim": "PerfCodeBench v2 describes executable systems performance tasks with baseline and expert-optimized references, correctness oracles, and runtime targets; this makes it potentially relevant, not validated for MI210/ROCm.",
+          "accepted_assessment_mapping": [
+            1
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.3 §3",
+            "official repo README lines 112-119",
+            "arXiv v2 PDF p.1 abstract; p.3 §3"
+          ]
+        },
+        {
+          "claim_index": 2,
+          "old_native_claim": "It is materially closer to MI210 kernel work than LeetCode-style tasks.",
+          "current_claim": "It is materially closer to systems optimization than LeetCode-style tasks, but that does not establish architecture compatibility or a valid EPYC kernel measurement.",
+          "accepted_assessment_mapping": [
+            2
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.3 §3"
+          ]
+        },
+        {
+          "claim_index": 3,
+          "old_native_claim": "FAILS THE BAR TODAY on four counts: not independent (same group as intake-974); NOT RELEASED (only an anonymous 4open.science review link, no licence); CUDA is 5.2% of the test split (16/306); and the CUDA path is NVIDIA-only via _detect_nvcc() with no ROCm/HIP path.",
+          "current_claim": "The public GitHub release overturns the old anonymous-review-only/unreleased assertion. The repo has no umbrella LICENSE/COPYING (GitHub license=null); its reviewed CUDA path is NVIDIA-toolkit oriented, with no HIP/ROCm route found. Paper v2 reports CUDA 128 vs 125 cuda_-prefixed directories in the pinned repo; the old 5.2% test-split claim is unsubstantiated in this version. Eight author overlaps with RLPF mean no independent corroboration.",
+          "accepted_assessment_mapping": [
+            3
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.1 abstract (source.txt lines 35-36)",
+            "inventory-counts.json (pinned repository metadata receipt; public=true)",
+            "GitHub API repo metadata; root listing; checked 2026-10-06",
+            "official repo README line 169",
+            "official repo scripts/run_model_suite.py lines 18-19",
+            "paper PDF p.1 author line; compare current intake-974 author list in lane index",
+            "paper PDF p.4 Figure 1",
+            "inventory-counts.json (top-level executable_tasks directory inventory)",
+            "paper PDF p.1 abstract (source.txt lines 35-36)",
+            "inventory-counts.json (pinned repository metadata receipt; public=true)",
+            "paper PDF p.4 Figure 1",
+            "inventory-counts.json (top-level executable_tasks directory inventory)"
+          ]
+        }
+      ]
+    },
+    {
+      "entry_id": "intake-976",
+      "native_slot_count": 5,
+      "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-976-proposed_entry_update.json",
+      "before_sha256": "41ffa5ffc324e34133c1c5455cdf21b04cfcd0b6e7439eb2c2fb0d4f8ecbe3a5",
+      "after_sha256": "506ac2d821c96e555d1c3004f518df8b33bc0f64e635b7132bd85d3e95503c8d",
+      "reason": "Restore original native identities rather than shifting accepted expanded assessment numbers into native indices; remove independence warrant.",
+      "old_exact_claims_preserved_in_dated_history": true,
+      "original_verification": "dive-verified",
+      "current_verification": "dive-verified",
+      "existing_depends_on_preserved": [
+        {
+          "entry": "intake-972",
+          "claim_index": 1,
+          "why": "The 6.11% figure is computed across a named corpus of benchmarks that includes Mercury (intake-972). If Mercury's record is retracted or its results change, the denominator of this measurement changes with it."
+        }
+      ],
+      "source_result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-976/result.json",
+      "source_result_sha256": "52a0f1bdd2e0e0f2b7820655cc1f7f6f06265309753ecbb746a57a095d20ec4c",
+      "slots": [
+        {
+          "claim_index": 0,
+          "old_native_claim": "THE STRONGEST CORROBORATION THIS BATCH PRODUCED, and it is for a claim we were not testing. intake-939 duration-spread finding - that robust CV >= 0.3 is satisfied for at most 3.8% of problems with ORIGINAL tests versus 48.2% with purpose-built ones - now has GENUINE INDEPENDENT EMPIRICAL CORROBORATION by a completely different route.",
+          "current_claim": "This separate study provides related evidence about performance benchmarks, not an independent replication of intake-939: it measures per-task statistical significance after repeated runtime sampling, not robust CV/IQR or the CV≥0.3 duration-spread criterion. Comparator authorship and trace independence are not established by this current-paper read.",
+          "accepted_assessment_mapping": [
+            "accepted K1 related-evidence scope"
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF pp.10-11 §4.1, Table 2",
+            "paper PDF p.9 §3.2; searched full extracted paper for CV/IQR/duration spread",
+            "paper PDF p.8 Table 1; lane research/intake_index.yaml intake-976 depends_on entry intake-972 claim_index 1",
+            "paper PDF p.1 author and affiliation block; compare current intake-939 author list"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "old_native_claim": "Different group, different method: 30 repetitions per task plus statistical testing across EffiBench, ENAMEL, EvalPerf and Mercury; 1,538 tasks.",
+          "current_claim": "The paper re-evaluates 1,538 tasks from EffiBench (1,000), Enamel (164), EvalPerf (118), and Mercury (256), with 30 runs per implementation pair and per-task Mann–Whitney U testing. Retain the existing intake-972#1 dependency because Mercury supplies 256 denominator tasks; no independent re-read of intake-939 is claimed.",
+          "accepted_assessment_mapping": [
+            "accepted K0 protocol",
+            "accepted K5 denominator dependency"
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.1 abstract; p.9 §3.2; p.10 §4.1; p.11 Table 2",
+            "paper PDF p.9 §3.2",
+            "paper PDF pp.10-11 §4.1, Table 2",
+            "paper PDF p.9 §3.2; searched full extracted paper for CV/IQR/duration spread",
+            "paper PDF p.8 Table 1; lane research/intake_index.yaml intake-976 depends_on entry intake-972 claim_index 1",
+            "paper PDF p.1 author and affiliation block; compare current intake-939 author list"
+          ]
+        },
+        {
+          "claim_index": 2,
+          "old_native_claim": "Same conclusion: only 6.11% of purportedly performant reference implementations show a STATISTICALLY SIGNIFICANT improvement on the ORIGINAL tests.",
+          "current_claim": "On the benchmark-provided original tests, authors report 94 of 1,538 implementations (6.11%) significantly faster than their canonical counterparts under per-task Mann–Whitney U at p<0.05. This is the original slot’s statistical-significance result, not duration spread or proof of an absence of optimization.",
+          "accepted_assessment_mapping": [
+            "accepted K0 94/1538 result"
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.1 abstract; p.9 §3.2; p.10 §4.1; p.11 Table 2",
+            "paper PDF p.9 §3.2"
+          ]
+        },
+        {
+          "claim_index": 3,
+          "old_native_claim": "209 of 308 manually-analysed non-significant cases contain REAL improvements that the ORIGINAL TESTS FAIL TO EXPOSE - so the problem is the test workload, not the optimization.",
+          "current_claim": "In a stratified manual sample of 308 non-significant comparisons, authors classify 209 code changes as plausibly performance-improving. These are potential improvements, not 209 experimentally verified speedups or proof that test workload alone caused every non-significant result.",
+          "accepted_assessment_mapping": [
+            "accepted K2 209/308 analysis"
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.4 Introduction; p.12 §4.2"
+          ]
+        },
+        {
+          "claim_index": 4,
+          "old_native_claim": "Their generated performance-oriented tests raise detection to 24-25%.",
+          "current_claim": "Generated performance-oriented test suites reveal significant differences on 323 of 1,345 (24.01%) and 342 of 1,345 (25.43%) initially non-significant tasks. This is bounded author-reported evidence from four primarily Python function-level benchmarks, not an EPYC kernel result or a guarantee for other systems.",
+          "accepted_assessment_mapping": [
+            "accepted K3 generated-test result",
+            "accepted K4 external validity qualification"
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.2 abstract/contributions; p.5 results",
+            "paper PDF p.28 §7 External Validity (source.txt lines 1252-1257)",
+            "paper PDF p.28 §7 External Validity (source.txt lines 1257-1260)",
+            "paper PDF p.28 §7 External Validity (source.txt lines 1252-1257)",
+            "paper PDF p.28 §7 External Validity (source.txt lines 1257-1260)"
+          ]
+        }
+      ]
+    },
+    {
+      "entry_id": "intake-978",
+      "native_slot_count": 5,
+      "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-978-proposed_entry_update.json",
+      "before_sha256": "53a52e6e62bed43b9b8adac80702199eec9bcf84033b89808895472387387d1a",
+      "after_sha256": "f0f587223e4c884a7c63bda3d12038d9886b049ca968779bcd1749a49dc034c1",
+      "reason": "Transport wrapper already correct; verify same native slot identity and current supported scope.",
+      "old_exact_claims_preserved_in_dated_history": true,
+      "original_verification": "dive-verified",
+      "current_verification": "dive-verified",
+      "existing_depends_on_preserved": [],
+      "source_result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/result.json",
+      "source_result_sha256": "fc4a17e9a635d1ffd0fd63744c4e36275ddc46a11122b0ad00f991f04ded838a",
+      "slots": [
+        {
+          "claim_index": 0,
+          "old_native_claim": "ID CORRECTION, recorded so the wrong pointer is not re-derived: MLEvolve is arXiv 2606.06473 (Du et al., Shanghai AI Laboratory, 2026-06-04). arXiv 2606.11926 is a DIFFERENT paper - see intake-981.",
+          "current_claim": "MLEvolve is arXiv:2606.06473 (Du et al., 2026-06-04); arXiv:2606.11926 is a separate work, not re-read here.",
+          "accepted_assessment_mapping": [
+            0
+          ],
+          "latest_effect": "unaffected",
+          "anchor_locators": [
+            "paper PDF p.1 title, author line and arXiv version mark"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "old_native_claim": "IT IS ON THE OFFICIAL LEADERBOARD, PRE-FREEZE, THIRD-PARTY ACCEPTED. Row dated 2026-02-14: Gemini-3-Pro-Preview, Lite 80.30 +- 1.52, Medium 57.89, High 42.22, All 61.33 +- 1.33, 12h, source available, grading reports available. THE ONLY TOP-10 MAINLINE ENTRY WITH SOURCE CODE AVAILABLE. Licence Apache 2.0.",
+          "current_claim": "Official OpenAI MLE-Bench README records MLEvolve / Gemini-3-Pro-Preview on 2026-02-14: Lite 80.30±1.52, Medium 57.89, High 42.22, All 61.33±1.33, 12h; source and grading reports marked available. The same mainline table also marks Leeroo source available, so MLEvolve is not the only top-10 source-available entry. Apache-2.0 is confirmed in current repo.",
+          "accepted_assessment_mapping": [
+            1
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "openai/mle-bench README at official main commit 507f92e1138bb6e40dac5c6ee7a6758e6424bf97, table row (README SHA-256 586bbc19cb2a3e11be61021866ef6436cf4b4d935bb1db088984b567b76595bb)",
+            "openai/mle-bench README line 19 (saved official-mle-bench-README.md)",
+            "openai/mle-bench README line 19 (saved official-mle-bench-README.md)"
+          ]
+        },
+        {
+          "claim_index": 2,
+          "old_native_claim": "THE PAPER NUMBERS ARE NOT THE LEADERBOARD NUMBERS. The paper reports All 65.3 +- 0.8 on a DIFFERENT backbone (Gemini-3.1-Pro-preview), post-freeze and unverifiable. Only Lite (80.3) is common to both. CITE 61.33 All (verified), NEVER 65.3 (self-reported).",
+          "current_claim": "Paper Table 1 separately reports Gemini-3.1-Pro-preview, 12h, Lite 80.3 / Medium 64.0 / High 46.7 / All 65.3±0.8 over three seeds. Only Lite overlaps the older official row; 65.3 is paper-reported and not the verified 61.33 leaderboard score.",
+          "accepted_assessment_mapping": [
+            2
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.10 Table 1 rows/header",
+            "paper PDF p.9 §§4.1-4.2"
+          ]
+        },
+        {
+          "claim_index": 3,
+          "old_native_claim": "UNDISCLOSED HARDWARE DEVIATION: the paper used \"21 vCPUs, 234 GB RAM, and a single NVIDIA H200\"; the official environment is 36 vCPUs, 440 GB RAM, one 24 GB A10. That is roughly 6x the GPU memory at 58% the vCPUs, and the paper does not acknowledge the deviation.",
+          "current_claim": "Paper lists H200, 21 vCPUs, 234 GB RAM. MLE-Bench recommends A10/36 vCPUs/440 GB as defaults but explicitly says they are not strict requirements; there is no demonstrated compute match, and the official row does not document exact hardware.",
+          "accepted_assessment_mapping": [
+            3
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF p.9 §4.1 Implementation details",
+            "openai/mle-bench README lines 75-77 at official commit 507f92e1138bb6e40dac5c6ee7a6758e6424bf97"
+          ]
+        },
+        {
+          "claim_index": 4,
+          "old_native_claim": "THE PORTABLE METHOD, and nothing in it requires the H200 or Gemini: progressive MCGS (Monte Carlo GRAPH Search) with cross-branch REFERENCE EDGES rather than tree isolation; an entropy-inspired progressive explore-to-exploit annealing schedule; Retrospective Memory (static KB plus dynamic global memory with hybrid lexical-semantic retrieval); and planning decoupled from code generation. Apache-2.0, CUDA optional.",
+          "current_claim": "Paper/repo describe progressive graph search with cross-branch references, explore/exploit scheduling, retrospective/global memory, and separated planning/code generation. Current Apache-2.0 repo says CPU can be selected for memory embeddings only, while defaults/dependencies use CUDA and one GPU. EPYC kernel-search transfer remains untested.",
+          "accepted_assessment_mapping": [
+            4
+          ],
+          "latest_effect": "narrowed",
+          "anchor_locators": [
+            "paper PDF pp.1-3 abstract/contributions; pp.15-17 Appendix B",
+            "current MLEvolve repo README lines 120-124 at HEAD 9c5c8a3b23f0361708b59a401452dddc00f97189",
+            "MLEvolve README lines 156, 200-202 and root LICENSE at repo HEAD 9c5c8a3b23f0361708b59a401452dddc00f97189",
+            "MLEvolve README line 156; config/config.yaml lines 78-89",
+            "current repo requirements_ml.txt lines 2-3, 95 and config/config.yaml lines 80,89"
+          ]
+        }
+      ]
+    }
+  ],
+  "validation": [
+    {
+      "entry_id": "intake-896",
+      "current_slots": 4,
+      "anchored_slots": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "current_effects": [
+        "narrowed",
+        "unaffected",
+        "unaffected",
+        "narrowed"
+      ],
+      "unchanged_slot_count": true,
+      "wrapper_unwrapped": true
+    },
+    {
+      "entry_id": "intake-974",
+      "current_slots": 5,
+      "anchored_slots": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "current_effects": [
+        "narrowed",
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ],
+      "unchanged_slot_count": true,
+      "wrapper_unwrapped": true
+    },
+    {
+      "entry_id": "intake-975",
+      "current_slots": 4,
+      "anchored_slots": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "current_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ],
+      "unchanged_slot_count": true,
+      "wrapper_unwrapped": true
+    },
+    {
+      "entry_id": "intake-976",
+      "current_slots": 5,
+      "anchored_slots": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "current_effects": [
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ],
+      "unchanged_slot_count": true,
+      "wrapper_unwrapped": true
+    },
+    {
+      "entry_id": "intake-978",
+      "current_slots": 5,
+      "anchored_slots": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "current_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ],
+      "unchanged_slot_count": true,
+      "wrapper_unwrapped": true
+    }
+  ],
+  "validated_new_copied_975_spans_exact_disk_refind": true
+}

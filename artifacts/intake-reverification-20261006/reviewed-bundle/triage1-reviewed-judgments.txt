@@ -1,0 +1,117 @@
+272|RE-DIVE|Companion1190 did also read this entry actual2602.11988v2 source, but paired-paper correction leaves source/arm attribution of developer~19percent cost andp0126 needing an independent narrow source check; do not presume contamination before reread.|dive_corrections|~19% cost increase
+346|KEEP|Keep corrected local-OSS capability only: companion intake-1022 pins mem0@4debc58 and records current repository/provider inspection, directly corroborating this overturning.|dive_corrections|official Apache
+408|KEEP|Historical digest wording is superseded by source-specific AppendixB/Table anchors and README@892b22a; preserve paper-versus-leaderboard distinctions.|claim_anchors|Appendix B.3.1
+664|RE-DIVE|HIP/default-correctness/input-distribution correction has no source revision/span; cheap current KernelBench audit is relevant to kernel harness design even though several refs are #record.|dive_corrections|default is ONE correctness trial
+667|RE-DIVE|Cheap relevant backend-interface read should establish this entry's own multi-platform/fork claims, rather than inheriting the unanchored KernelBench correction.|rocm_backend_feasibility|Backend
+772|KEEP|C-only record has per-claim anchors and a source-specific v3/code/archive re-read; retain author-report and current-versus-experiment distinctions.|dive_corrections|arXiv 2505.22954v3
+779|KEEP|C-only record pins ShinkaEvolve@9912af and reports targeted mechanism tests with claim anchors, explicitly separating paper-era and current code.|dive_corrections|Forty-one targeted
+896|KEEP|Keep scoped fabrication correction: recorded source post anchor and dated repair identify the absent /doctor behaviors; do not restore the withdrawn sibling claims.|dive_corrections|two generic sentences
+901|KEEP|Pinned f25f310b primary read plus docs/guide/sessions.md:64-79 and local state.py trace establish actual source inspection; retain n1 observation limit.|dive_corrections|docs/guide/sessions.md:64-79
+903|KEEP|Explicit primary full-text read with Table1/Sec2.1-2.2/Figs4-6 corrections provides meaningful legacy read evidence; absence of an artifact pin alone does not defeat KEEP.|dive_corrections|Table 1 values exact
+904|KEEP|Explicit primary full-text read resolves exact figure/table claims and quotes oracle-exit simulation wording; retain approximate figure values and serving-number prohibition.|dive_corrections|primary full-text read
+905|KEEP|Explicit full primary-paper read plus Tables1-3/architecture corrections and artifact audit establish legacy source reading; preserve the FLOPs-equivalence and mechanism-only limits.|dive_corrections|Tables 1/2/3
+906|KEEP|Explicit NeurIPS-v3 full-text read with Table2Right/Tables10-11 and exact queue-harness correction establishes legacy reading; no unqualified serving gain is permitted.|dive_corrections|NeurIPS v3
+908|KEEP|Explicit read of both arXiv revisions records exactSec2.1/2.4/Table3 differences and22 removed mentions; meaningful versioned legacy source audit supports bounded KEEP.|dive_corrections|BOTH arXiv versions
+910|KEEP|Abstract-only Stage1/machine anchor does not certify depth, but subsequent explicit primary-v2 full-text read corrects task/figure/lens attribution and reports scoped source wording.|dive_corrections|primary full-text read, v2
+911|KEEP|Historical abstract-onlyB is superseded by explicit primary full-text/artifact read with curriculum/compute/quality corrections; machine anchors are excluded as reader evidence.|dive_corrections|primary full-text read + artifact verification
+914|KEEP|Actual repo trace src/configs/runtime.py plus named Table2 baseline rows supports bounded no-masking and corrected-margin findings despite absent anchors.|dive_corrections|src/configs/runtime.py
+915|KEEP|Full2030-path tree inspection and later source-specific CAD contract audit establish meaningful bounded legacy repo reading despite absent source pin; no benchmark runner/quality is implied.|notes|2030 tree paths
+916|KEEP|WebFetch table misalignment was subsequently resolved via24pp PDF text-layout plus independent raw LaTeXML span-grid rederivation, not another digest.|dive_corrections|PDF text layout
+917|KEEP|Raw config/card footnote review and frozen-v8 source pin support bounded artifact/benchmark-attribution findings; retain mirror/tensor-identity limits.|notes|67a433bf4
+918|KEEP|118-byte assigned README and pinned sd.cpp@90e87bc exact file/line wiring provide a real bounded artifact read; no upstream quality conclusion follows.|dive_corrections|diffusion_model.hpp:479
+919|KEEP|B flag reflects prior summarizer; subsequent v1/v2 raw-HTML diff and markup table parse independently supersede it.|dive_corrections|raw HTML v1+v2 diffed
+920|KEEP|Read named config.json fields, both model cards and chart subtitles establish a bounded encoder artifact/throughput-scope audit; retain unresolved beyond8k behavior.|notes|max_position_embeddings
+924|KEEP|Ranged GGUF byte reads, full merge-script read and rendered geometry establish concrete quant-specific MTP/missing-shard evidence without full weight download.|dive_corrections|ranged read of bytes 0-23
+928|KEEP|Pinned sd.cpp trees and conditioner.hpp:1539/auto_encoder_kl.hpp:683 trace substantiate corrected runtime support, historical to the recorded trees.|dive_corrections|conditioner.hpp:1539
+930|KEEP|Version-specificv2 AppendixC.4/Sec4.3/Sec5.2 quotations and corrected matched-compute table comparisons demonstrate substantive legacy source reading; do not require an artifact hash retroactively.|dive_corrections|v2 Appendix C.4
+933|KEEP|Downloaded PDF with pdftotext -layout/-raw plus rawHTML table walker rederived all four tables through independent paths; retain undisclosed architecture boundaries.|dive_corrections|PDF pulled and extracted
+934|KEEP|Full31pp pdftotext read and1710-line corpus plus twice recomputed25-row matrices establish actual source reading/recomputation.|notes|1,710 lines
+935|KEEP|Explicit primaryPDFv1 read with Table6/cross-arm corrections and source-specific scope audit establishes actual legacy reading; no pin-only requirement is applied.|dive_corrections|primary PDF
+936|KEEP|ExplicitPDFv2 selection plus Table4/Table14 duplicate-column comparison and exact cross-split/metric corrections establish substantive source read; figures remain observation-grade.|dive_corrections|Table 4's entire
+937|KEEP|Assigned/upstream card read is corroborated by exact local file bytes and src/ernie_image.hpp inspection; retain source attribution and pipeline-memory distinctions.|notes|8,694,907,584 bytes
+938|KEEP|Every figure was rederived from the PDF via pdftotext, with Table1 header and repeated Table2/3 row checks; source-read depth is concrete despite missing anchors.|notes|re-derived every figure
+939|KEEP|Full125pp/46-table read plus rendered Figure8 and named repository release check document real primary reading; this is not a PDF keyword-only keep.|dive_corrections|full 125pp
+945|KEEP|Bounded assigned-page inspection establishes tagline-only content and explicit/about/blog404 checks; no model sibling number is affirmed by this record.|dive_corrections|single tagline
+947|KEEP|Source-specific util.cuh:518 trace, thirteen build-file flag count and independent LLVM/own-code corroboration establish the corrected capability finding.|dive_corrections|util.cuh:518
+950|KEEP|Repository gem5/benchmarking.py:407 and453/457 trace settles the protocol; quoted v5Sec2/v4 comparison bounds the1.91x tail claim.|dive_corrections|gem5/benchmarking.py:407
+954|KEEP|Own measured counterexample has exact command/setup/repetitions and complementary Eq1 analysis; keep as scoped program-machine falsification, not generalized performance.|dive_corrections|8 repetitions
+957|KEEP|Explicit API-only inspection and compare payload pinned by merge-base/HEAD8bb909 establish the narrow zero-delta mirror finding.|key_claims|merge_base
+958|KEEP|Explicit raw.githubusercontent/API read plus CMakeLists.txt:9-10 and binding/header line traces establish bounded nonbuilding-branch defects.|key_claims|CMakeLists.txt:9-10
+959|KEEP|Named .quixicore/backend.yaml/README quotations and exhaustive1759-path tree counts show bounded actual source inspection; per-kernel measurements remain upstream reports.|key_claims|1759-path tree
+960|KEEP|Native knowledge-file paths and specific per-GCD/per-OAM arithmetic mismatch show an actual bounded knowledge-source inspection; no AMD performance result is adopted.|key_claims|cdna2_mi200/memory.md
+961|DEMOTE|Native notes explicitly say NOT FETCHED and latest correction still says PR itself NOT-YET-READ; sole citation is a historical correction-plan payload, not claim reliance.|dive_corrections|NOT-YET-READ
+962|DEMOTE|Uncited lead explicitly NOT FETCHED; preserve Mojo/CDNA2 discovery without presenting second-hand existence claims as a completed dive.|notes|NOT FETCHED
+963|DEMOTE|Uncited lecture content was unreachable after four routes; existence/retrieval failures do not establish a content dive.|key_claims|FOUR INDEPENDENT RETRIEVAL ROUTES FAILED
+964|KEEP|Named TableGen source lines171/1904/1850 and traced!listconcat feature ancestry establish a real bounded ISA source read, not a throughput result.|key_claims|FeatureISAVersion9_0_A
+965|KEEP|Exact python/tvm/support/rocm.py callback/regex and tensor_intrin/rocm.py intrinsic inventory demonstrate bounded code inspection.|key_claims|tvm_callback_rocm_get_arch
+966|DEMOTE|Uncited companion-blog quotations/count assertions lack recorded raw read/revision scope; retain discovery without certifying the entire blog.|key_claims|THE THESIS IN ONE LINE
+967|RE-DIVE|Entry explicitly says FULL READ PENDING and only existence/headline verified; cheap high-relevance controller source deserves a bounded actual paper read.|notes|FULL READ PENDING
+968|DEMOTE|Uncited vendor29percent/10x figures have no source-read trace or anchored methodology; downgrade verification while retaining prospective ROCm levers.|key_claims|vendor-reported
+969|KEEP|Dated1414-source correction with per-claim scope and LLVMPR147700 identifies independent corroboration; current handoff already says not to cite the obsolete3.7-5x.|dive_corrections|llvm PR #147700
+970|KEEP|Specific sourcegrep and exact censoring/statistical-definition discussion establish bounded methodology inspection; no absent SWE-fficiency attribution is retained.|key_claims|grep -ci
+971|KEEP|Overturning has named SecA.2 source passage and independent GSOAppendixD quote for the same normalization issue; do not interpret refuted attribution as a broken instrument.|key_claims|Sec A.2
+972|RE-DIVE|Live lineage/licence decisions cite this entry; formula/Fig2 prose alone lacks a revision-bound read, so recheck source/licence and bounded statistical interpretation.|key_claims|Figure 2
+973|KEEP|Specific AppendixD/E quotations and exact six-function oracle-contract inventory show bounded primary methodology/code review; do not infer a locally measured gain.|key_claims|Six-function contract
+974|RE-DIVE|Recorded reward/progress ladder is cited in live kernel/eval owners but has no raw-read artifact or source pin; recheck exact code/reward constants.|key_claims|s(NX)
+975|RE-DIVE|Live instrument-selection text uses this benchmark's disposition; no source-read pin/anchor supports release/licence/systems composition assertions.|key_claims|FAILS THE BAR TODAY
+976|RE-DIVE|Live efficiency-axis decision relies on6.11percent/24-25percent audit numbers; no native raw-source reading evidence accompanies those claims.|key_claims|6.11%
+977|KEEP|Explicit dated README closure quote and reconstructible22x3 denominator independently support scoped leaderboard/verification facts; no agent gain is established.|key_claims|Update (04-24-2026)
+978|RE-DIVE|Third-party board figures and manuscript-vs-board distinction are useful but no revision-bound read is recorded; cheap relevant paper/board audit preserves this high-value lineage.|key_claims|PAPER NUMBERS ARE NOT
+979|RE-DIVE|Live C6 design uses quoted sabotage findings, but source-read scope/revision is absent; bounded raw methodology review should anchor the monitor rules.|key_claims|GIVE THE MONITOR
+980|RE-DIVE|Live leakage-audit rationale uses Meerkat taxonomy; source-reading provenance is absent despite corrected benchmark list, so verify paper and companion attribution.|key_claims|nine audited benchmarks
+981|DEMOTE|Uncited Arbor identity/headline entry lacks full-read scope or anchors; preserve corrected identifier as provisional discovery, not an audited benchmark.|key_claims|ID CORRECTION
+982|RE-DIVE|Cheap highly relevant paired-CI recipe points to Tables1-2 and SecE but has no recorded raw source or inspected proof artifact; recheck definitions before reuse.|key_claims|SMALL-K CORRECTION
+983|RE-DIVE|Live reviewer owner cites defect/gold-first findings and precise statistics, yet no revision-bound read/anchors exist; source audit should anchor those statements.|key_claims|61.9%
+984|RE-DIVE|Uncited but cheap relevant stored-denominator/reward-geometry comparison needs a direct source trace; source provenance is missing rather than source applicability rejected.|key_claims|STORED CONSTANT
+985|RE-DIVE|Relevant open test-construction candidate has300M/TPR/TNR assertions without raw-source identity/read scope; cheap artifact/paper inspection is preferable to losing the lead.|key_claims|PER-PROBLEM TPR/TNR
+986|KEEP|Native profiler.sh100us append trace and byte-identical fail-open comparison establish actual bounded code inspection for the re-upload warning.|key_claims|profiler.sh
+987|KEEP|Exact restype=None/error-check and opens3/closes1 API trace establishes the instrument defects at source level; no measured performance is asserted.|key_claims|end.restype
+988|KEEP|ExactTable4 ablation and source-wide negative checks for70.1/ALFWorld/WebShop demonstrate substantive bounded primary-text inspection; KEEP does not establish local transfer.|key_claims|70.1
+989|RE-DIVE|Open memory task depends on entity-polarity/RRR results; prose naming controlled ablations is not recorded raw-read evidence and needs anchored source review.|key_claims|memory-WIPE
+990|KEEP|Dated drift triage explicitly says both versions read in full and names the expanded35pp/new-game scope; keep version-conditioned safe-class result, flag stale v1 empirical prose.|notes|Both versions read in full
+991|KEEP|Fetched v4 PDF SHA plus companion source/workbook audit directly supports corrected proof/empirical verdict; no weakness-rule transfer is affirmed.|notes|PDF SHA-256
+992|KEEP|OSF primary PDF checksum and explicit six-page proof audit of Proposition2 establish direct bounded source reading.|notes|OSF primary-file API
+993|KEEP|Pinned repo35a2a03e/hash and historical/current experiments.py:423-439 trace substantiate the artifact defects.|dive_corrections|experiments.py:423-439
+994|KEEP|PDF SHA/currentv2 and submitted stats.csv/code-hash evidence establish source/experiment-artifact audit; scoped results remain noncausal.|dive_corrections|submitted stats.csv
+996|KEEP|Latest Zenodo20509265 paper+complete appendix checksums and explicit theorem audit identify actual source artifacts supporting the scoped overturning.|notes|Complete appendix PDF SHA-256
+997|KEEP|Indexed37-page primary rendering plus named verify_reduction.py/test.py executions and absentmodule failure demonstrate actual source/algebra audit; no empirical support follows.|dive_corrections|200 randomized identities
+998|KEEP|Full author-uploaded text and specific numerical/theorem audit identify the source read supporting the scoped warning/overturning.|notes|Read full ResearchGate
+999|KEEP|ICLR PDF checksum and explicit full paper/appendices/tables read support scoped experiment-method claims; no autonomous-loop gain inferred.|notes|SHA-256
+1000|KEEP|NeurIPS PDF checksum and explicit full paper/appendices/reviews read support scoped robust-method findings, not universal accuracy claims.|notes|SHA-256
+1001|KEEP|Official IJCAI PDF checksum and complete two-page proceedings audit identify the artifact and prove its summary-only scope.|dive_corrections|complete two-page
+1002|KEEP|PMLR paper/supplement hashes plus full-proof read support the bounded reparameterization argument.|notes|supplement SHA-256
+1003|KEEP|37pp paper/24ppOSF appendix checksums and repeated-measures/prompt audit identify actual source read supporting the empirical limitation.|dive_corrections|complete 24-page
+1004|KEEP|LiveHTML and signed-bundle hashes plus specific eventgraph/version mismatch audit establish a raw provenance-artifact read.|notes|signed bundle JSON SHA-256
+1006|KEEP|Blog checksum and inspected model/config/template/GGUF artifacts substantiate narrow released identity/runtime claims; retain unmeasured replacement superiority.|notes|Blog SHA-256
+1007|KEEP|Pinned repo/manifests plus complete213-Parquet-footer inventory and whole-corpus audit establish actual artifact reading, not a headline restatement.|notes|complete 213-Parquet-footer
+1008|KEEP|Paperchecksum plus inspected code's forced-zero/truthy-match/cumulative-log traces corroborate the scoped negative fixture finding.|dive_corrections|hard-coded to zero
+1009|KEEP|Repo b9a44611494 and commit-API hash plus detailed tested protocol/persistence audit support narrow implementation claims.|notes|Repository commit
+1010|KEEP|Blogchecksum plus companion-repository capability/exploit audit supports qualitative architecture/vendor-report attribution; retain404 scorecard and nontransferability limits.|notes|Blog SHA-256
+1012|KEEP|PDFchecksum plus complete report benchmark-method audit establish real primary reading; unspecified hardware and proprietary architecture remain explicit limits.|dive_corrections|complete technical report
+1014|KEEP|README/config/license hashes and specific declared architecture/template read establish narrow release facts; role quality remains unverified.|notes|config SHA-256
+1015|KEEP|Pinned6740fc3b/tree plus primaryPoC hash and inspected simulation/default-vector/control defects substantiate bounded code reading.|notes|primary PoC SHA-256
+1016|KEEP|PDFchecksum plus repo bbab97ad pin and hardcoded25/100 executor trace substantiate scoped paper/implementation findings.|notes|Companion repository commit
+1017|KEEP|PDFchecksum plus task-local architecture/table/ablations audit establish actual paper reading; no released runtime or transferable quality is claimed.|notes|PDF SHA-256
+1018|KEEP|PDFchecksum/repo4782751c/tree pin and exact missing-DeepSeek/lexical verifier code audit support the artifact-versus-paper distinction.|notes|repository commit
+1019|KEEP|PinnedHFb421ad/API/template hashes and first8MiB GGUF inspection establish bounded metadata/template reading, not quant-quality verification.|notes|first 8 MiB
+1020|KEEP|Concrete bbab97ad commit/tree and four source-file hashes plus hardcoded cadence/exec trace support legacy actual code read, as AUDIT independently sampled.|notes|harness_evolver.py SHA-256
+1021|KEEP|Paperchecksum/repo e0323a521ba4/tree/licensehash plus independently reproduced6682 task count establish actual task/judge artifact inspection.|notes|Static counts reproduce
+1022|KEEP|Paperchecksum/repo4debc58/tree/licensehash plus current ADD-only/provider trace establish raw artifact read and same-capability corroboration for346.|notes|4debc58a83377b18be81ae1e5969a300736b2fac
+1023|KEEP|Paperchecksum/v5/repo9c413a2413c/tree pins support scoped paper/source audit and explicit unreleased training/artifact limitation.|notes|arXiv v5
+1024|KEEP|Tree read at eab0567/790blobs with specific default.yaml and docs/validation quotes establishes direct repository inspection; historical release-state only.|dive_corrections|eab05672624b540278c8cff83a24436b99f6cc69
+1025|KEEP|Article provenance remains unlocatable, but bounded four-kernel/io_struct source traces independently corroborate technical names; no measured-session identity is certified.|dive_corrections|line 314
+1026|KEEP|Raw SKILL.md checksum plus complete562-line/five-reference read and872-line entrypoint trace establish actual source reading.|dive_corrections|562 lines
+1028|RE-DIVE|Cited unmerged sandbox topology/seccomp/credential assertions lack patchcommit or named source spans; cheap fork-patch read should pin this sensitive artifact accurately.|key_claims|seccomp is explicitly disabled
+1029|KEEP|Specific catalog section19 refreshgrep and tracked vocabulary/schema mechanisms corroborate bounded actual reference-file inspection via companion1026 whole-reference read.|notes|§19 refresh grep
+1030|KEEP|Exact four-stage function mapping and source-specific rename comparison establish bounded kernel-tree reading; current-runtime suitability remains separate.|notes|chunk_local_cumsum
+1031|KEEP|Versioned trustyURI/vocabulary/PMC primary-source cross-read identifies actual source scope and corrected field/module behavior; keep reviewed mechanism context.|dive_corrections|trustyuri-spec@2015-02-23
+1032|KEEP|Graphiti pinned425bf248 and named edges.py/nodes.py/edge_operations.py trace substantiate event-time invalidation rather than vague full-text assertion.|dive_corrections|425bf2481b51437e4345
+1033|KEEP|Versioned fulltext/proof audit records exactAnalyzeImpact/AGM restrictions and appendix scope; retain advisory/no-correctness-theorem limit.|dive_corrections|single Cypher ShortestPath
+1034|KEEP|Explicitv3read/v4crosscheck with correctedSS6.4/Table6/SS8 locators substantiates bounded source review of vocabulary and desiderata attribution.|dive_corrections|v3 read + v4 cross-checked
+1035|KEEP|Explicit raw-text recheck overturns prior fetch summary aboutThm17; versioned theorem/Delta-slice locator supports actual source reading.|dive_corrections|overturned by the raw text
+1036|KEEP|Versioned raw-method audit identifies SS4.1item3/AppB.8 and exact extraction-versusledger limits; KEEP scoped mechanism/negative evidence only.|dive_corrections|SS4.1 item 3
+1037|KEEP|Repo9b13955 plus vendoredUncertainpy/tree-depth parity trace and versioned paper read establish bounded code/mechanism evidence.|dive_corrections|9b13955
+1041|KEEP|Explicit primaryPDF page range4-5/9-11 supports the bounded free-absorptive-semiring claim; no unrun circuit-size benefit is implied.|dive_corrections|pp. 4-5, 9-11
+1042|KEEP|VersionedPDF read with preciseThms5.3/5.4/6.2 andCor4.7 bounds documents scoped formal source review; no runtime speedup is asserted.|key_claims|Thms 5.3/5.4
+1043|KEEP|Versioned29ppPDF source read with namedTheorem1/17/34/35 scope supports the formal result; unverifiedSpringer bibliographic details stay excluded.|dive_corrections|v3 PDF, 29 pp
+1044|KEEP|PrimaryPDF review records exactTheorem1.1 bound and explicit prior-case comparison; keep formal scope without claiming implementation gains.|key_claims|Theorem 1.1

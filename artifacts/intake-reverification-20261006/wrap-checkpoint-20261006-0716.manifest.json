@@ -1,0 +1,79 @@
+{
+  "status": "lane-local result locator manifest; scratch evidence remains preserved; no canonical filing",
+  "as_of": "2026-10-06T07:16:12Z",
+  "bundle_manifest_sha256": "8cf5f89cdc09697d91051362528df39d9ae25a7a1af6a6bacc5c7eac2f5c0d08",
+  "files": [
+    {
+      "role": "accepted compact preparation bundle manifest",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/compact-durable-bundle/bundle-manifest.json",
+      "bytes": 14721,
+      "sha256": "8cf5f89cdc09697d91051362528df39d9ae25a7a1af6a6bacc5c7eac2f5c0d08"
+    },
+    {
+      "role": "portable 28 test exit",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/portable28.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "role": "portable 28 test summary",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/portable28.stderr",
+      "bytes": 4659,
+      "sha256": "88e9fc88973961615faeecd7553077a1f934142038b6a952470c27f6218c871e"
+    },
+    {
+      "role": "full refresh exit",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/full-refresh.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "role": "full refresh pre-append failure",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/full-refresh.stderr",
+      "bytes": 901,
+      "sha256": "b7bb7d15441a2ee772b3d2dca683e2e38258874e3061a9d77820f7ed2f35bd9c"
+    },
+    {
+      "role": "candidate corrected index",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/source-refresh-corrected-index.yaml",
+      "bytes": 446724,
+      "sha256": "9786f8b9b290b842a0f895c968a952cf8dd144b155fb51f18f7867ff4a4b3c83"
+    },
+    {
+      "role": "frozen refresh inputs",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/source-refresh-frozen-inputs.json",
+      "bytes": 893,
+      "sha256": "8a3c881297da44a84bffa60d86c666590ea61b0ecb1dcfe9d0a047f2af0d9259"
+    },
+    {
+      "role": "canonical baseline cite-check exit",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/canonical-baseline-cite-check.exit",
+      "bytes": 2,
+      "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2"
+    },
+    {
+      "role": "canonical baseline cite-check receipt",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/canonical-baseline-cite-check.json",
+      "bytes": 4860091,
+      "sha256": "a0e80db392eaf0f10e358d2745463a6ae33d2b54e9921d02b1216bdfac60ec37"
+    },
+    {
+      "role": "rehearsal agreement receipt",
+      "path": "/mnt/raid0/llm/tmp/intake-reverify/guard-integration-98d46/rehearsal/outputs/separate-rehearsal-agreement.json",
+      "bytes": 4281,
+      "sha256": "087fdbc9a0a5dcfa553b2c82bb2c87779a9e275c62133d0ec217ba4f4f339ded"
+    },
+    {
+      "role": "checkpoint report",
+      "path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/artifacts/intake-reverification-20261006/wrap-checkpoint-20261006-0716.md",
+      "bytes": 2651,
+      "sha256": "298eb4994a02ac930d1f4d4a461430c579b8750e6b43a74a8d0a54a297b60a89"
+    },
+    {
+      "role": "agent progress checkpoint",
+      "path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/progress/2026-10/2026-10-06-filing_preparation.md",
+      "bytes": 1162,
+      "sha256": "e872039d76ccb3d4f2df2480e1e78e86a3a679800d1704bea2522f6a8a9a00aa"
+    }
+  ]
+}

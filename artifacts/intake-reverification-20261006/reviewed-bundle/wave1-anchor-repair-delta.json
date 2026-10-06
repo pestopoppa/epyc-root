@@ -1,0 +1,185 @@
+{
+  "status": "independently rechecked; Wave 1 anchor gate passes",
+  "first_pass_artifact_sha256": "e1b119a5006ab3419000fe002bd4584f06aef34918244373c3f759470d4b53ca",
+  "first_pass_denominator": {
+    "entries": 10,
+    "claim_slots": 57,
+    "quote_anchors": 119,
+    "exact_quote_refinds": 115,
+    "stored_quote_hashes_match": 118,
+    "stored_quote_hash_mismatches": 1,
+    "source_or_bound_artifact_support_checked": 119,
+    "record_status_only_slots": 2,
+    "surfaced_source_candidates": [
+      {
+        "source": "https://github.com/Elfsong/Mercury_Eval",
+        "entry": "intake-972",
+        "status": "producer proposes separate ingest-and-dive; not filed or source-selected yet"
+      }
+    ]
+  },
+  "first_pass_anchor_issues": [
+    {
+      "entry_id": "intake-975",
+      "claim_indices": [
+        "K2"
+      ],
+      "locator": "GitHub API repository metadata and root contents; checked 2026-10-06",
+      "quote": "public repository; 1,854 directories under executable_tasks",
+      "quote_sha256": "bf95c3db743aaec536033b62fbc71107f24873bb2cddc077fbeed31035310ea9",
+      "source_re_found": false,
+      "quote_hash_matches": true,
+      "first_pass_match_method": "composite metadata statement; verified API visibility=public plus 1,854 task directories in pinned repo tree"
+    },
+    {
+      "entry_id": "intake-975",
+      "claim_indices": [
+        "K6"
+      ],
+      "locator": "public repository task-tree count, HEAD 7e2bcbfeeed6fb0b843a9efcf7c8f4cfbdd25468",
+      "quote": "125 directories with task IDs beginning cuda_",
+      "quote_sha256": "c35adecdd6da428e247793997e53d81890c97675b1246bcac9cf543271621a13",
+      "source_re_found": false,
+      "quote_hash_matches": true,
+      "first_pass_match_method": "derived task-tree count; independently counted 125 cuda_ directories within 1,854 task directories at pinned HEAD"
+    },
+    {
+      "entry_id": "intake-976",
+      "claim_indices": [
+        "K4"
+      ],
+      "locator": "paper PDF p.28 §7 External Validity",
+      "quote": "Our study focuses on four performance benchmarks ... which primarily consist of Python based programming tasks at the function level.",
+      "quote_sha256": "59aedccad416a09c0476a9f03bdeea74aafe8d3ec878d9bf08891d8eabef7c3f",
+      "source_re_found": false,
+      "quote_hash_matches": false,
+      "first_pass_match_method": "composite quote with ellipsis is not a verbatim span; independently re-read the cited §7 paragraph, which states the four benchmarks are primarily Python based and function level"
+    },
+    {
+      "entry_id": "intake-978",
+      "claim_indices": [
+        "K6"
+      ],
+      "locator": "openai/mle-bench README rows 13 and 19 at commit 507f92e1138bb6e40dac5c6ee7a6758e6424bf97",
+      "quote": "Leeroo | Gemini-3-Pro-preview | 68.2 ± 2.62 | 44.7 ± 1.52 | 40.00 ± 0.00 | 50.67 ± 1.33 | 24 | 2025-12-07 | ✓ | ✓",
+      "quote_sha256": "f00d5edb2188cd5fb5155b25740acf616862276e9d0fae40d787aa7b4940c419",
+      "source_re_found": false,
+      "quote_hash_matches": true,
+      "first_pass_match_method": "anchor is rounded/normalized, not exact README row; independently found Leeroo source-available checkmark in pinned official README"
+    }
+  ],
+  "first_pass_preservation": "Do not erase or revise initial findings; record repair attempt/re-find outcome as a separate delta, with first-pass defects retained.",
+  "repair_artifact": null,
+  "rechecked_repair_ids": [],
+  "repaired_pass_denominator": {
+    "source_packets": 10,
+    "claim_slots": 57,
+    "original_quote_anchor_denominator": 119,
+    "first_pass_exact_refinds": 115,
+    "first_pass_hash_matches": 118,
+    "first_pass_hash_mismatches": 1,
+    "first_pass_problem_anchors": 4,
+    "current_literal_quote_anchors": 118,
+    "current_literal_quote_hash_matches": 118,
+    "current_literal_quote_refinds": 118,
+    "current_bound_inventory_receipts": 2,
+    "inventory_receipt_hash_and_counts_pass": 2,
+    "current_evidence_items_total": 120,
+    "claim_outcomes_first_review": {
+      "yes": 26,
+      "partial": 29,
+      "record_status_only": 2
+    },
+    "new_source_candidates": 1,
+    "special_constraints": [
+      "967 claim slot 2 and 972 claim slot 4 remain record-status-only withdrawals; historical assertions were not adjudicated.",
+      "Ordinary re-ingest of either full entry is prohibited in the reviewed write; use exact two-frame whitelist and preserve sibling claim effects.",
+      "Mercury_Eval remains one distinct surfaced-source candidate and needs separate source-selection/ingest-dive resolution before ordinary Stage-3 closure."
+    ]
+  },
+  "wave1_pass": true,
+  "repair_artifacts": {
+    "975": {
+      "result_json_sha256": "391b1925a2b55066ad99167c0acc78fb4a1e61588d12bdb86796be0b44b1846b",
+      "inventory_receipt_sha256": "e2fcbb6e58a9275bffe066eb7f8b7cf0e3fa4bf52e6305a4809e07e08856f214"
+    },
+    "976": {
+      "result_json_sha256": "52a0f1bdd2e0e0f2b7820655cc1f7f6f06265309753ecbb746a57a095d20ec4c"
+    },
+    "978": {
+      "result_json_sha256": "fc4a17e9a635d1ffd0fd63744c4e36275ddc46a11122b0ad00f991f04ded838a"
+    }
+  },
+  "rechecked_repairs": [
+    {
+      "entry_id": "intake-975",
+      "claim": "K2",
+      "type": "literal_quote",
+      "locator": "paper PDF p.1 abstract (source.txt lines 35-36)",
+      "quote_hash_matches": true,
+      "source_re_found": true,
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/source.txt"
+    },
+    {
+      "entry_id": "intake-975",
+      "claim": "K2",
+      "type": "bound_inventory_receipt",
+      "artifact_sha256": "e2fcbb6e58a9275bffe066eb7f8b7cf0e3fa4bf52e6305a4809e07e08856f214",
+      "expected_sha256": "e2fcbb6e58a9275bffe066eb7f8b7cf0e3fa4bf52e6305a4809e07e08856f214",
+      "artifact_hash_matches": true,
+      "source_revision": "7e2bcbfeeed6fb0b843a9efcf7c8f4cfbdd25468",
+      "task_dirs": 1854,
+      "cuda_dirs": 125,
+      "counts_match_receipt": true
+    },
+    {
+      "entry_id": "intake-975",
+      "claim": "K6",
+      "type": "literal_quote",
+      "locator": "paper PDF p.4 Figure 1",
+      "quote_hash_matches": true,
+      "source_re_found": true,
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/source.txt"
+    },
+    {
+      "entry_id": "intake-975",
+      "claim": "K6",
+      "type": "bound_inventory_receipt",
+      "artifact_sha256": "e2fcbb6e58a9275bffe066eb7f8b7cf0e3fa4bf52e6305a4809e07e08856f214",
+      "expected_sha256": "e2fcbb6e58a9275bffe066eb7f8b7cf0e3fa4bf52e6305a4809e07e08856f214",
+      "artifact_hash_matches": true,
+      "source_revision": "7e2bcbfeeed6fb0b843a9efcf7c8f4cfbdd25468",
+      "task_dirs": 1854,
+      "cuda_dirs": 125,
+      "counts_match_receipt": true
+    },
+    {
+      "entry_id": "intake-976",
+      "claim": "K4",
+      "type": "literal_quote",
+      "locator": "paper PDF p.28 §7 External Validity (source.txt lines 1252-1257)",
+      "quote_hash_matches": true,
+      "source_re_found_after_removing_page_marker": true,
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-976/source.txt"
+    },
+    {
+      "entry_id": "intake-976",
+      "claim": "K4",
+      "type": "literal_quote",
+      "locator": "paper PDF p.28 §7 External Validity (source.txt lines 1257-1260)",
+      "quote_hash_matches": true,
+      "source_re_found_after_removing_page_marker": true,
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-976/source.txt"
+    },
+    {
+      "entry_id": "intake-978",
+      "claim": "K6",
+      "type": "literal_quote",
+      "locator": "openai/mle-bench README line 19 (saved official-mle-bench-README.md)",
+      "quote_hash_matches": true,
+      "source_re_found": true,
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/official-mle-bench-README.md",
+      "source_revision": "commit 507f92e1138bb6e40dac5c6ee7a6758e6424bf97; saved README SHA256 586bbc19cb2a3e11be61021866ef6436cf4b4d935bb1db088984b567b76595bb"
+    }
+  ]
+}

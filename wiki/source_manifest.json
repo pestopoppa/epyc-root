@@ -4,15 +4,30 @@
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 208,
-    "progress": 620,
+    "progress": 623,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-06T06:33:38Z",
-  "mode": "touch",
-  "scan_time": "2026-10-06T06:33:38Z",
+  "last_touch": {
+    "advanced": {
+      "added": 3,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-10-06T09:41:54Z",
+    "scope_paths": [
+      "handoffs/active/intake-reverification.md",
+      "progress/2026-10/2026-10-06-filing_preparation.md",
+      "progress/2026-10/2026-10-06-intake-reverify-main.md",
+      "progress/2026-10/2026-10-06-wave2-review.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-06T09:41:54Z",
   "schema_version": 1,
-  "source_set_hash": "03531b844364058d476aafff01c3d93061063e051d8accad6ef883a0c57afe1e",
+  "source_set_hash": "e84173a5f44531ab642c5943c26a6d03ee9f2020441aeb675967506addaa5137",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -695,10 +710,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "34a15c7dd0ad15447a131ebade4e447735e1950e4a46e503507bb422887f54fb",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "1b1d01ae427575425fa5ec0fbbf3515248425c896c0df509432573a4664066cc",
+      "modified": "2026-10-06T09:41:37Z",
       "path": "handoffs/active/intake-reverification.md",
-      "size": 6497,
+      "size": 8429,
       "title": "Intake re-verification: past dives at risk from the WebFetch-digest read-depth gap",
       "type": "handoff-active"
     },
@@ -9135,6 +9150,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "e84346417c710afa6e19d4518b3722886db1776cffe4c981876e9c0bea92ccd8",
+      "modified": "2026-10-06T08:43:21Z",
+      "path": "progress/2026-10/2026-10-06-filing_preparation.md",
+      "size": 2367,
+      "title": "Filing preparation \u2014 2026-10-06",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5589302f333ebe09c7f1963e4c1a01f6d31f62c1d4bb8b9fa563c4dd3be96f58",
+      "modified": "2026-10-06T08:42:59Z",
+      "path": "progress/2026-10/2026-10-06-intake-reverify-main.md",
+      "size": 9078,
+      "title": "2026-10-06 progress",
+      "type": "progress"
+    },
+    {
       "content_hash": "1335eb232cc4101bdb68288518e17abb99b69b39319ead73f56b3617a803ebf9",
       "modified": "2026-10-06T06:31:53Z",
       "path": "progress/2026-10/2026-10-06-jev-handoff-audit.md",
@@ -9204,6 +9235,14 @@
       "path": "progress/2026-10/2026-10-06-ni76-code-index-admission.md",
       "size": 2377,
       "title": "NI76 compute-claim admission",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f82d2170c91fa2cc16a9d8c437c77f1e61a8c18cf865d9c0449e8fb4cedcc6ae",
+      "modified": "2026-10-06T08:53:21Z",
+      "path": "progress/2026-10/2026-10-06-wave2-review.md",
+      "size": 1971,
+      "title": "Wave2 independent review preparation \u2014 2026-10-06",
       "type": "progress"
     },
     {
@@ -10223,7 +10262,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1276,
+  "total_new": 1279,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

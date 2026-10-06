@@ -1,0 +1,385 @@
+{
+  "status": "read-only operational-context evidence map; NOT a Stage3 plan",
+  "authoritative_root": "/mnt/raid0/llm/worktrees/intake-reverify-20261006",
+  "authoritative_head": "98d46d1e2184ab0a229a1e25b5f8ec20e2d92ad6",
+  "repositories": [
+    {
+      "path": "/workspace/repos/epyc-orchestrator",
+      "resolved_path": "/mnt/raid0/llm/epyc-orchestrator",
+      "head": "300cf5817edccc4f82089f0faa477828496068b6",
+      "inspected_paths": [
+        "orchestration/repl_memory/knowledge_distiller.py",
+        "orchestration/repl_memory/skill_bank.py",
+        "scripts/autopilot/eval_tower_trace_feedback.py",
+        "scripts/autopilot/skill_efficacy_paired_ab.py",
+        "scripts/kb_rag/eval_k7.py",
+        "src/retrieval/kb_rag.py"
+      ],
+      "targeted_dirty_scope": "",
+      "global_posture": "Orchestrator only untracked data/embedder_placement; research has unrelated modifications/untracked artifacts. No whole-repository clean claim."
+    },
+    {
+      "path": "/workspace/repos/epyc-inference-research",
+      "resolved_path": "/mnt/raid0/llm/epyc-inference-research",
+      "head": "f1c6fef56c54d1c9532e964658c8eebedce5b8b7",
+      "inspected_paths": [
+        "scripts/kernel_rnd/autokernel/controller/do_not_repeat.py",
+        "scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+        "scripts/kernel_rnd/autokernel/controller/reward_monitor.py",
+        "scripts/kernel_rnd/autokernel/profile_report.py"
+      ],
+      "targeted_dirty_scope": "",
+      "global_posture": "Orchestrator only untracked data/embedder_placement; research has unrelated modifications/untracked artifacts. No whole-repository clean claim."
+    }
+  ],
+  "items": [
+    {
+      "task_id": "KB-GS-1",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+      "line": 695,
+      "task_file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363",
+      "exact_task_text": "- [ ] **KB-GS-1 \u2014 Run a four-arm retrieval A/B on our own corpus. Deliberately NOT a replication.**\n      Replicating their GRPO training is weeks of work and answers a question we do not have. Arms: **ColBERT\n      as deployed** / **untrained prompt-only `rg`** / **hybrid** / **GitNexus-only**. Note we already use the\n      grep half constantly and informally \u2014 agents grep this repo all day \u2014 so the real question the A/B\n      answers is not \"should we add grep\" but **\"is the ColBERT index earning its keep on a corpus this\n      small\"**. Roughly one day, no GPU contention.",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/src/retrieval/kb_rag.py",
+          "sha256": "e7d336aadff933e1a7c9f70f7266fe7a71cc796b17632b93e62c71d44130ee2f",
+          "symbols": {
+            "query": 698,
+            "_lexical_scores": 360
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/kb_rag/eval_k7.py",
+          "sha256": "d4c64d65f0758b8c5bc868592a7493f17ed6800f143acbcc6f7de4452e6dc588",
+          "symbols": {
+            "evaluate": 281,
+            "run_eval": 325
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Existing query is explicitly hybrid ColBERT with optional lexical/recency/reranking. eval_k7 supplies configurable offline evaluation. These existing components do not by themselves prove completion of the requested four-arm rg/ColBERT/hybrid/GitNexus comparison. Preserve task.",
+      "current_source_rationale_scope": "1239: use current v2 mixed-metric macro-average and distinguish SPCS/PACE; retain local four-arm task identity."
+    },
+    {
+      "task_id": "KB-GS-2",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+      "line": 701,
+      "task_file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363",
+      "exact_task_text": "- [ ] **KB-GS-2 \u2014 Build the question set and the ground truth BEFORE any arm runs, and stratify it.**\n      40-60 questions mined from REAL session needs in the last 60 days of progress files and wrap-ups,\n      stratified into four buckets **because the result is bucket-dependent and an unstratified aggregate\n      would hide exactly the effect**: single-hop lookup (expect a tie), **multi-hop composition** (grep\n      predicted to win \u2014 the discriminating bucket, and where their gains concentrate), synonym/semantic\n      (ColBERT predicted to win \u2014 grep's stated weakness and our corpus's dominant idiom), and\n      code-structural (GitNexus predicted to win outright, included so we do not replace the wrong tool).\n      PRIMARY METRIC **recall@evidence against human-verified spans built BEFORE any arm runs** \u2014 never from\n      an arm's output, or the ground truth inherits that arm's blind spots. n=40-60 per stratum is thin, so\n      **report the minimum detectable effect up front and do not claim a null we are not powered to detect.**",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/kb_rag/eval_k7.py",
+          "sha256": "d4c64d65f0758b8c5bc868592a7493f17ed6800f143acbcc6f7de4452e6dc588",
+          "symbols": {
+            "load_cases": 104,
+            "score_case": 179,
+            "summarize_rows": 219
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Inspected score_case:179 scores evidence FILE identifiers and recall at cutoff against caller-provided ground truth. Task explicitly asks human-verified SPANS, so file-level scoring is a related baseline with a different unit, not proof this task is complete. Current task states40-60 questions, later n40-60 per stratum; preserve exact wording for owner resolution before execution.",
+      "current_source_rationale_scope": "1239 author benchmark denominators do not supply the local question set or human gold spans."
+    },
+    {
+      "task_id": "KB-GS-3",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+      "line": 711,
+      "task_file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363",
+      "exact_task_text": "- [ ] **KB-GS-3 \u2014 Add a STALENESS arm; that axis is invisible in the paper and may decide the question for\n      us regardless of F1.** Re-run the same question set after a 200-commit window **without rebuilding the\n      index**. Grep scores whatever the tree says today by construction; ColBERT scores whatever it was built\n      against. If the staleness delta is large, the operational argument settles this independently of any\n      accuracy result.",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/src/retrieval/kb_rag.py",
+          "sha256": "e7d336aadff933e1a7c9f70f7266fe7a71cc796b17632b93e62c71d44130ee2f",
+          "symbols": {
+            "build_index": 410,
+            "update_files": 568,
+            "query": 698
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/kb_rag/eval_k7.py",
+          "sha256": "d4c64d65f0758b8c5bc868592a7493f17ed6800f143acbcc6f7de4452e6dc588",
+          "symbols": {
+            "_catalog_metadata": 75,
+            "run_eval": 325
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Index build/update paths and catalog metadata expose relevant capture points for frozen-index staleness comparison. No run was made and this inspection does not establish the specified200-commit comparison occurred.",
+      "current_source_rationale_scope": "1239 optionalPACE has a precomputed auxiliary index; do not extend paper no-staleness argument to every DCI strategy. Local stale-index experiment remains separately useful."
+    },
+    {
+      "task_id": "KB-GS-4",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/internal-kb-rag.md",
+      "line": 716,
+      "task_file_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363",
+      "exact_task_text": "- [ ] **KB-GS-4 \u2014 Exploit the hardware we actually have if the sharded engine is adopted.** Their\n      semantics-preserving sharded-parallel execution reaches **7.6x at 32 shards** with byte-exact\n      equivalence to sequential execution \u2014 and our 96-core EPYC 9655 is better suited to it than their\n      setup, so 32 shards is not near our ceiling. Note also that **91% of their end-to-end latency is LLM\n      GENERATION, not grep** (8.67 s total = 7.86 s generation + 0.81 s tool exec), so tool latency is not\n      the thing to optimise and the index is not buying much latency either.\n\n_Caveat on the numbers above: everything except the two anchored abstract quotes came from a\nsummariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `intake-1239`. Re-verify before any\nfigure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same\ndirect-corpus-interaction claim, so the paradigm is not solely this paper's \u2014 a fair reading should check\nwhether the delta is the TRAINING RECIPE rather than the idea._\n\n## Research Intake Update \u2014 2026-08-21 (Stage-2b, intake-1278#record)",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/src/retrieval/kb_rag.py",
+          "sha256": "e7d336aadff933e1a7c9f70f7266fe7a71cc796b17632b93e62c71d44130ee2f",
+          "symbols": {
+            "_walk_corpus": 380,
+            "query": 698
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/kb_rag/eval_k7.py",
+          "sha256": "d4c64d65f0758b8c5bc868592a7493f17ed6800f143acbcc6f7de4452e6dc588",
+          "symbols": {
+            "run_eval": 325
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Existing corpus/query/evaluator are the integration context; source SPCS shard count and byte-equivalence are author design/results, not tested equivalence on this corpus. Conditional adoption remains conditional; no hardware tuning was authorized or run here.",
+      "current_source_rationale_scope": "1239 up-to7.6x applies supported sharded shell pipelines; tool latency and full end-to-end latency use separate baselines."
+    },
+    {
+      "task_id": "AK-PM-9",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+      "line": 5428,
+      "task_file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226",
+      "exact_task_text": "- [ ] **AK-PM-9 \u2014 Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`\n      with an explicit `reopen_when`.** `intake-1248#record` \u00a74.3 measures skill-free RL at Level 2 Fast_1\n      **51.6%** versus **44.8%** with skills at 8B, and Level 3 **12.3%** versus **10.1%** \u2014 i.e. memory is\n      NET NEGATIVE at the loose threshold \u2014 while skills dominate at Fast_2 / Fast_1.5, where the skill-free\n      arm collapses to 2.1% and 0.0%. **The effect is threshold-conditional and its SIGN FLIPS between the\n      8B and 14B model** on n=1 cells with zero dispersion, which is the signature of noise and which the\n      paper has no data to rule out. `reopen_when`: a with/without-memory ablation appears with n>=5 repeats\n      and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/do_not_repeat.py",
+          "sha256": "66c32876760b2f61c1064e0e6767c3ce3b5c22ae4878ee558439e188e7e6aec3",
+          "symbols": {
+            "PriorAttempt": 640,
+            "_receipt": 1532,
+            "fold_journal": 1548
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+          "sha256": "425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75",
+          "symbols": {
+            "check_do_not_repeat": 2957,
+            "HypothesisTracker": 3216
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Inspected PriorAttempt receipt/reopen fields and pure fold_journal; existing conditional-negative carrier is present. A source literature result needs bounded source scope and receipt, not promotion to a measured local kernel negative. Preserve task and reopen predicate; no registry mutation.",
+      "current_source_rationale_scope": "1248 corrected source:8B Fast1 L2/L3 reversals versus14B full outperforming skill-free in all12 cells. Missing evaluation denominator and dispersion do NOT establish n=1 or a signature of noise; current task rationale needs this narrow correction."
+    },
+    {
+      "task_id": "AK-PM-11",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+      "line": 5448,
+      "task_file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226",
+      "exact_task_text": "- [ ] **AK-PM-11 \u2014 Run the ablation nobody in this literature has run.** Replicate daVinci's Ablation-1\n      shape on OUR hardware with **n>=5 seeds per cell and a paired significance test** \u2014 same served model,\n      same task set, skill injection ON vs OFF, gfx90a. **Train-free**: the daVinci repo exposes\n      `SKILL_ENABLE` / `SKILL_LIBRARY_FILE` as runtime flags independent of training and can drive an\n      OpenAI-compatible endpoint, so this costs inference time only. Nine systems into this literature that\n      statistic still does not exist. **Gate the entire cross-run-memory build on its outcome**, and note it\n      supersedes nothing in AK-PM-4 \u2014 SkillBank is still the cheaper in-house answer and must be checked first.\n      **OPERATOR-RATIFIED 2026-08-21 (option (a) of the decision package): DON'T BUILD YET.** The\n      cross-run memory is not built until this ablation returns; AK-PM-12's write-side receipts land NOW\n      regardless, so waiting loses no data. Sequencing: SkillBank A/B (AK-PM-4) \u2192 AK-PM-11 \u2192 build\n      decision. **One risk accepted with eyes open:** the ablation needs a stable harness, so C2/C3\n      hardening (RVP-C2-8/C2-9) sits on this path and \"gated on the ablation\" partly means \"gated on the\n      substrate\" \u2014 if that stretches past a reasonable horizon, the correct escalation is a decision\n      package on interim substrate, NOT a quiet start on the memory build.",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/autopilot/skill_efficacy_paired_ab.py",
+          "sha256": "8f6d99d4a73c3314ab87ccce34bad2f9fdfb3f8d479343d5030b389798da7e19",
+          "symbols": {
+            "resolve_paired_plan": 738,
+            "execute_paired_ab": 891,
+            "compute_paired_efficacy": 528
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-orchestrator/orchestration/repl_memory/skill_bank.py",
+          "sha256": "6966c2dcfcd24363d346947ab2f49faef46e5e2ac5329dc5bf8d31e30d4e9652",
+          "symbols": {
+            "Skill": 75,
+            "store": 257
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Inspected compute_paired_efficacy:528 uses matched question/eval profiles. This is SkillBank inference A/B infrastructure, not proof a gfx90a kernel-skill experiment ran. Preserve2026-08-21 ratification:do not build cross-run memory before approved sequence/outcome. daVinci runtime flags are unread companion claims here, not independently confirmed deployment capabilities.",
+      "current_source_rationale_scope": "1248 paper bounded ablation motivates a local paired design; do not invent n=1 external cell counts or treat source absence as local failure."
+    },
+    {
+      "task_id": "AK-PM-12",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+      "line": 5462,
+      "task_file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226",
+      "exact_task_text": "- [ ] **AK-PM-12 \u2014 Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the\n      read side.** `intake-1248#record` \u00a73.5: a candidate enters the library only if re-running the task with\n      it injected yields a measured **>=1.2x** first-turn improvement (`r_verify >= max(beta, alpha*r_1)`,\n      alpha=beta=1.2). Train-free, model-agnostic, no RL. Pair it with the two things every paper in the\n      family lacks \u2014 a **commit binding** and a **`reopen_when` predicate**. Per our own doctrine the write\n      side is cheap and permanent while retrofitting the read side is impossible: capture the receipts now,\n      defer the retrieval machinery until AK-PM-11 justifies it. **Add an implausible-speedup cap**: with a\n      1.2x floor and no ceiling, nothing filters the top end \u2014 daVinci's released 960-skill corpus carries a\n      `verify_speedup` **max of 297.3x** and ~35 skill names that are shortcut/elision-flavoured\n      (`semantic_shortcut_before_kernelization` at 43.7x). A 297x \"verified speedup\" on a memory-bound op is\n      work elision or a timing artifact, not a kernel optimization.",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/orchestration/repl_memory/skill_bank.py",
+          "sha256": "6966c2dcfcd24363d346947ab2f49faef46e5e2ac5329dc5bf8d31e30d4e9652",
+          "symbols": {
+            "Skill": 75,
+            "store": 257
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/do_not_repeat.py",
+          "sha256": "66c32876760b2f61c1064e0e6767c3ce3b5c22ae4878ee558439e188e7e6aec3",
+          "symbols": {
+            "_receipt": 1532,
+            "fold_journal": 1548
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+          "sha256": "425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75",
+          "symbols": {
+            "HypothesisTracker": 3216
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Skill exposes source_trajectory_ids,source_outcome,revision,teacher_model and storage; do_not_repeat receipt binds resolvable event/evidence IDs to anchor. These are relevant existing carriers, not proof a kernel-skill execution-admission rule/cap is implemented. Write-side authorization remains approved and independent of deferred read-side build; no record created.",
+      "current_source_rationale_scope": "1248 verify rule compares original-plus-candidate first-turn speedup against max(beta,alpha*r1),alpha=beta1.2. Source corpus297.3x/shortcut counts require companion read; author threshold alone does not certify correctness or impose a universal speed cap."
+    },
+    {
+      "task_id": "AK-PM-13",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/autokernel-research-loop.md",
+      "line": 5473,
+      "task_file_sha256": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226",
+      "exact_task_text": "- [ ] **AK-PM-13 \u2014 Bank a SECOND independent isolated-to-end-to-end attenuation datum in \u00a79.4.**\n      `intake-1250#record` measures SGLang **4.78x isolated \u2192 0.28%-0.87% end-to-end** and LMDeploy\n      **1.36x isolated \u2192 2.03%-3.00%**, on independently-verified MERGED production PRs (sglang#20778,\n      lmdeploy#4345, DLBlas#102). With `intake-1087#record` (1.06x-1.43x per-kernel \u2192 +2.12% end-to-end vs\n      TensorRT-LLM), **two independent papers now show ~100x attenuation**. Strong corroboration for the\n      wall-share promotion rule and a standing caution against reading any isolated-op speedup as a\n      deliverable. Zero compute \u2014 also read the three merged PRs, which contain the actual LLM-authored\n      kernel source that survived real upstream review.",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/profile_report.py",
+          "sha256": "5d36a10177625d48bb795a2def924edef4f8131670d48c945373575e4229c149",
+          "symbols": {
+            "ReportManifest": 256,
+            "run_profile_report": 473
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+          "sha256": "425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75",
+          "symbols": {
+            "HypothesisTracker": 3216,
+            "authorize_claim": 3573
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Existing report captures source/capture provenance; hypothesis path requires falsifiable claims. Preserve requested provenance banking and completed production PRs; no benchmark or kernel work initiated.",
+      "current_source_rationale_scope": "1087 reports B200 end-to-end throughput+2.12% againstTensorRT-LLM. Isolated per-kernel ratios and E2E gain are distinct observables/baselines; do not infer a universal~100x attenuation factor from them.1250 companionPRs outside this reviewed primary scope."
+    },
+    {
+      "task_id": "C5-17",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/agentic-rocm-kernel-authoring.md",
+      "line": 1088,
+      "task_file_sha256": "3681d1c73e233a3fa58605bad648e6957ce09be3ff29c8684c81564f927a0a3e",
+      "exact_task_text": "- [ ] **C5-17 \u2014 Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever\n      build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should\n      not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without\n      running the kernel** \u2014 only coarse ordinal bins (8 log-half-octave) are tractable. Adopt the ordinal\n      reward shape, a calibration metric (ECE or Brier) as a first-class ACCEPTANCE gate, and an explicit\n      DEFERRAL policy so a surrogate must escape to real gfx90a measurement. **Decline the trained\n      forecaster**: A100-conditioned with **zero cross-GPU transfer test performed**, despite its own\n      released dataset spanning three GPU types. Note its baseline search BEATS the surrogate-enhanced\n      search on **2 of 6** tasks by 5-7%, so any adoption needs the equal-budget baseline arm run alongside,\n      never a single-arm demo. **Note-the-method-do-not-build-yet**: optimising the search budget of a loop\n      we have not yet made trustworthy is premature while RVP-C2-8/C2-9 are open.",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/reward_monitor.py",
+          "sha256": "5f84855cd76d16a9d82235cb5bcb44f5ea37dc0df39e4d0e9b7220c00f77ae8b",
+          "symbols": {
+            "MonitorDeclaration": 51,
+            "calibrate_monitor": 429
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+          "sha256": "425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75",
+          "symbols": {
+            "check_do_not_repeat": 2957,
+            "authorize_claim": 3573
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Existing calibrate_monitor concerns suspicion-score threat monitoring, not kernel-runtime forecasting. It is a related declaration/calibration pattern and cannot be cited as an implemented surrogate. Preserve note-method/do-not-build-yet, equal-budget comparator and deferral requirements; no trained artifact deployment.",
+      "current_source_rationale_scope": "1240 current source supports coarse ordinal modeling rationale and selective utility, not proof numeric inference impossible. All RL rewards lowerECE but increase numeric forecast error;3searchwins/1parity/2losses."
+    },
+    {
+      "task_id": "RRR",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/engram-conditional-memory.md",
+      "line": 406,
+      "task_file_sha256": "0c17540d487ef9dcdaf113b339c5995a1c06b6dc3fe3848c4832e030f1e15c9d",
+      "exact_task_text": "- [ ] **RRR \u2014 pure log post-processing, computable RETROACTIVELY over traces we already have.** `SequenceMatcher >= 0.85` over stored reflections, no inference cost, no new capture. Measured 0.64 \u2192 0.10 under the fix below (intake-989)",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/autopilot/eval_tower_trace_feedback.py",
+          "sha256": "36e52e1766da1138a5c90aae0de1487aa710425e3efb7ad9b490a6b88de58f3a",
+          "symbols": {
+            "capture_recent_traces": 25,
+            "trace_ir_steps": 49,
+            "update_contrastive_trace_bank": 195
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-orchestrator/orchestration/repl_memory/knowledge_distiller.py",
+          "sha256": "e5714cbbe5f9a3883a5a3375d6c2222108fbd6fbbd082da2ee5512e417a00342",
+          "symbols": {
+            "KnowledgeDistiller": 84,
+            "distill": 106
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Inspected trace_ir_steps and build_critic_trace_ir deterministic observe-only trace structure. A trace cache and knowledge distillation are concrete existing analysis inputs; no claim these logs contain every required stored reflection or the exactRRR denominator. Token repetition monitoring is a different metric from reflection SequenceMatcher repetition. Preserve retrospective analysis task.",
+      "current_source_rationale_scope": "989 numerical paper rates remain scoped to its trials; local availability must be checked by exact trace/reflection schema and counts, not a zero grep result."
+    },
+    {
+      "task_id": "Programmatic feedback extraction",
+      "authoritative_task_path": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/handoffs/active/engram-conditional-memory.md",
+      "line": 407,
+      "task_file_sha256": "0c17540d487ef9dcdaf113b339c5995a1c06b6dc3fe3848c4832e030f1e15c9d",
+      "exact_task_text": "- [ ] **Programmatic feedback extraction** \u2014 parse tool output for concrete failure facts instead of asking the model to self-diagnose. Measured object-mention 0/121 \u2192 134/156 (86%). **Rates do not transfer** \u2014 largely a weak-model artifact at n=2 environments \u2014 but the mechanism and the metric do (intake-989)",
+      "checkbox_state": "open",
+      "owner_action": "preserve existing task identity/approval/completed outcomes; no task mutation",
+      "implementation_context": [
+        {
+          "path": "/workspace/repos/epyc-orchestrator/scripts/autopilot/eval_tower_trace_feedback.py",
+          "sha256": "36e52e1766da1138a5c90aae0de1487aa710425e3efb7ad9b490a6b88de58f3a",
+          "symbols": {
+            "build_critic_trace_ir": 103,
+            "trace_ir_steps": 49,
+            "capture_recent_traces": 25
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        },
+        {
+          "path": "/workspace/repos/epyc-orchestrator/orchestration/repl_memory/knowledge_distiller.py",
+          "sha256": "e5714cbbe5f9a3883a5a3375d6c2222108fbd6fbbd082da2ee5512e417a00342",
+          "symbols": {
+            "distill": 106,
+            "_extract_patterns": 254
+          },
+          "source_class": "actual implementation read; not execution/completion evidence"
+        }
+      ],
+      "operational_interpretation": "Inspected build_critic_trace_ir accepts failure_summary and builds deterministic structured prompt context, explicitly not scoring/safety/acceptance. That is a relevant carrier for tool-derived failure facts; it does not establish parser coverage or prove model-derived diagnosis was replaced. Preserve existing approved feedback work and its owner identity.",
+      "current_source_rationale_scope": "989 object-mention rates are source-specific; mechanism transfer needs native tool-output fields and local extraction checks, not rate extrapolation."
+    }
+  ],
+  "limitations": "Static targeted source inspection; no experiment,inference,execution,completion assessment or absence inference. Initial shared/workspace search was a pointer only; exact task bindings come solely from lane98d46.",
+  "preserved_completed_items": "engram-conditional-memory existing checked DarkRoom threat assessment and independent corroboration remain completed; no reopened checkboxes.",
+  "writes": "This scratch map and its builder only; no handoff/index/bus/canonical ledger writes."
+}

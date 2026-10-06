@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/intake-reverify/helper/rehearse-source-refresh.py", line 190, in <module>
+    mem=MemoryLedger(frames);withdraw=a.emit_warrant_withdrawal(mem,index_path=filtered,target_manifest=manifest,expected_index_sha256=indexhash,expected_manifest_sha256=manifesthash,as_of=args.as_of);retired=mem.frames[len(frames):];assert len(retired)==110
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/intake-reverify/helper/research_intake.py", line 448, in emit_warrant_withdrawal
+    return _emit_warrant_correction(
+        ledger, index_path=index_path, target_manifest=target_manifest,
+    ...<2 lines>...
+        withdraw_only=True,
+    )
+  File "/mnt/raid0/llm/tmp/intake-reverify/helper/research_intake.py", line 578, in _emit_warrant_correction
+    raise ValueError("withdrawal old/current assertion scope binding does not match")
+ValueError: withdrawal old/current assertion scope binding does not match
