@@ -241165,3 +241165,61 @@
   integration_disposition: awaiting_dive
   disposition_evidence:
     - "Stage-1 only: fetched README, LIMITATIONS.md, INSTALL-MANUAL.md, and two PR summaries via WebFetch. No primary source code read, no claim_anchors recorded, no operator dive selection yet. Per the unverified contract, none of reported_results may be quoted in a plan or handoff until a Stage-2 dive promotes this entry."
+- id: intake-1924
+  arxiv_id: null
+  url: https://github.com/ashhart/TensorFold
+  source_type: repo
+  title: "TensorFold: Row-invariant multi-row dequant-GEMV and exact speculative decoding"
+  authors: ["Ash Hart (ashhart, GitHub)"]
+  categories: [speculative_decoding, quantization, hardware_optimization, inference_serving, benchmark_methodology]
+  novelty: high
+  relevance: high
+  credibility_score: null   # open-source repo with empirical claims, author-reported measurements only; no peer review
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  techniques:
+    - "Row-invariant multi-row dequant-GEMV for verify widths 2–16, reusing decoded weight tile across rows with fixed K-split by tensor shape"
+    - "Exact speculative decoding with custom verify kernels: 2–16 rows cost close to 1-row decode (1.4–2.0× weight-streaming floor) vs llama.cpp HIP 4.5×"
+    - "Drafting from DFlash2 block drafters, MTP heads, and prompt n-gram lookup (context copies)"
+    - "Row-invariant verify for both CUDA (sm_89+) and MLX/Metal backends; does NOT support RTX 30 (sm_86)"
+    - "EXL3 3 bpw, NVFP4, FP8 formats; read-only, no GGUF support"
+    - "Per-model hand-written kernels: Qwen3.8-27B, Flash Next, Nemotron, GLM-5.3-Flash, Gemma 4, DeepSeek-V4-Flash, Qwen3.6-35B-A3B, Ternary Bonsai 2"
+  reported_results:
+    - "27B EXL3 3 bpw on DGX Spark GB10 (273 GB/s nominal, 237 measured): 83.4 tok/s code (64-token fixture, 12-row round 75 ms, τ≈6.3)"
+    - "27B MLX 4-bit on GB10: 57.5 tok/s same fixture"
+    - "27B MLX 4-bit on M5 Max: 189 tok/s code, 120–124 short chat (requires τ≥4.4 to stay within peak BW)"
+    - "Nemotron 30B-A3B 4-bit on M5 Max: 550–1000 tok/s on copy-heavy tasks (widened copy window 16→64 rows)"
+    - "Projection if MI210 adopts multi-row GEMV: 77 → ~120 tok/s single-stream 27B Q8_0 (+55%); with 4-bit weights ~2× (~160 tok/s) if quality preserved"
+    - "Verify round time ÷ weight-streaming floor: TensorFold 1.4–2.7×, llama.cpp HIP MI210 4.5× (margin from matmul roofline degradation and row-count scaling)"
+  notes: |
+    Sourced from TensorFold repo (github.com/ashhart/TensorFold, MIT/Apache-2.0, v0.2.0 shipped 2026-09-25, v0.6.5 shipped 2026-10-03).
+    The web research was executed 2026-10-04 by the coordinating session (research-intake-depth subagent) and saved to /mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md.
+
+    CLAIM VERIFICATION NOTES: The repo contains hand-written kernels per model family but publishes no source-code roofline analysis tool. The REPORT normalizes all external claims (HyperQwen, NInfer-3090, TensorFold's own, ours) via bytes-per-forward ÷ peak-BW the same way. TensorFold's headline speeds are self-measured on Mac (M5 Max/Ultra) and AMD Spark hardware, not validated by independent third parties. The claim that "380 t/s on 3090" is actually from HyperQwen (381, verbatim-copy task) and NInfer-3090 (383.4, 6 concurrent on 3B-active MoE model), not TensorFold (TensorFold does NOT run on RTX 30 cards; requires sm_89+).
+
+    TRANSFERABILITY: Multi-row dequant-GEMV is a direct roofline-efficiency technique applicable to both CUDA and ROCm backends. The REPORT ranks three techniques by projected gain: (1) multi-row dequant-GEMV: +55% on single-stream, +100% with 4-bit; (2) lower precision (4-bit or EXL3 3 bpw): conditional on (1) and quality measured; (3) quantized-KV verify: +gains on long-context, unconfirmed on our hardware. The repo's per-model hand-written strategy (no auto-tuned universal kernel) is a different design choice from ours; the multi-row pattern itself is portable.
+
+    HARDWARE SCOPE: The REPORT covers Apple Silicon (M5 Max/Ultra, ROCm R9700, DGX Spark GB10). Our ONE MI210 + CPU system is distinct; Spark GB10 numbers from TensorFold are the closest hardware analog. The Spark nominal 273 GB/s vs MI210 1,638 GB/s makes Spark results not directly transferable. A DGX Spark system is outside our equipment set but the techniques apply.
+
+    NEXT STEPS: (a) Verify the multi-row GEMV projection for MI210 by building a microbench in our HIP backend (AKX-ALL-15c is the first GPU lane task; multi-row is H1 in the inbox). (b) Cross-reference against the low-bit scope program (intake-1923, TensorFold's EXL3 vs our UD-IQ2/IQ4_XS + ppl_contract gate) to ensure consistent technique ranking. (c) A full dive would extract TensorFold's per-model kernel source to check whether the row-invariance pattern is achievable on MI210's MFMA geometry without conditional branches.
+  cross_references:
+    chapters: []
+    handoffs:
+      - autokernel-all-devices-all-dimensions.md
+      - cpu-decode-roofline-program.md
+      - dflash2-block-drafter-experimental-build.md
+      - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries: [intake-1923]
+    intake_entry_notes:
+      - "Intake-1923 (SparkGLM) also uses DGX Spark GB10 hardware and mentions multi-device MoE; a full dive should reconcile their per-node topologies and expert-parallelism strategies against TensorFold's single-GPU numbers from the same hardware class."
+  recommended_actions:
+    - "[unverified] Build a multirow dequant-GEMV microbench on MI210 (HIP MFMA f16 16×16×16, in-register decode) to confirm the +55% projection on our Q8_0 verify. H1 in the AKX-ALL-15c lane inbox."
+    - "[unverified] Cross-reference TensorFold's EXL3 3 bpw techniques with the low-bit ppl_contract gate (intake-1923 notes): both target 4-bit-like compression with verify quality preserved; a unified technique hierarchy would avoid duplicating the research."
+    - "[unverified] Extract the kernel source for Qwen3.8-27B from the TensorFold repo and analyze row-invariance patterns (branch-free?) on MFMA geometry to validate portability to MI210."
+    - "[optional] Obtain or simulate a DGX Spark system to run TensorFold's own benchmarks; compare verifier timings and architecture differences to confirm GB10 numbers are consistent with Spark's published BW."
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+    - "Stage 1 only: web research 2026-10-04 from github.com/ashhart/TensorFold README, INSTALL-MANUAL, PR history. Raw docs saved to /mnt/raid0/llm/tmp/tensorfold-research-20261004/src/. No source code analysis, no operator dive assignment, no claim anchors recorded. Per the unverified contract, no reported_results may be quoted in a plan or handoff until Stage-2 dive."

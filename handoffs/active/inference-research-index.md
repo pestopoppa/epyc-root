@@ -69,7 +69,7 @@
 | INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Re-scope: GLM subject deleted 2026-09-22, so "relaunch GLM" is moot; finish U3-SEED and name the successor health-criterion target | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Review CTC-REVIEW: model-independent stage coordination and resident GPU overlap; implementation requires approval | INF-73 |
 | INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | AKX-P0d — run the W1–W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6 | INF-73, INF-66, INF-65 |
-| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | AKX-ALL-15c-2 merge 4375b5aa + e747d45e, then GPU run 2; -15b re-review d6b1a5ac; -23 measure Q38FN decode vs depth (QSA O(n_kv)?) | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |
+| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | AKX-ALL-15c-2 GPU run 2; AUTO-4..10 harness; cross-lane ppl gate; -23 Q38FN decode vs depth | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |
 | INF-76 | paw compiled specialists | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain
 
