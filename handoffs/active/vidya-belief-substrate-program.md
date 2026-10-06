@@ -2726,6 +2726,8 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 - [x] **VB-NI07-TERMINAL-REPL — ingest timeout structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37469999403/README.md) TRUE123/123, one Judged/Located observation and three canonical frames; no live lease/cancellation/host-effect gate.
 
-- [ ] **VB-PII-ED25519-CONFORMANCE — bind staged-header structural controls.** NI07-31 uses existing native CI carrier/shared grade for disposable Git staged-blob rejection, metadata pass and original token/partial-stage/excluded controls. No real-secret/privacy/promotion warrant, new ladder, policy exemption or historical backfill.
+- [x] **VB-PII-ED25519-CONFORMANCE — bind staged-header structural controls.** ✅ 2026-10-06 — existing native CI carrier/shared grade captured the disposable staged-blob controls; run 37474797195 TRUE9/9; one Judged/Located observation and three canonical frames. No privacy/promotion warrant, extra per-fixture rows, new ladder, policy exemption, or historical backfill.
 
 - [x] **VB-NI07-CALIBRATION-INPUTS — ingest calibration input-binding structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37473538913/README.md) TRUE34/34, one Judged/Located observation and three canonical frames; source hashes are dependency evidence only, no live/calibration-quality gate.
+
+- [x] **VB-NI07-PII-HEADERS — ingest staged-header native structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37474797195/README.md) TRUE9/9; one shared native Judged/Located observation, three canonical frames. Synthetic control outcomes remain inside the single fixture execution; no extra ledger rows or privacy authority.

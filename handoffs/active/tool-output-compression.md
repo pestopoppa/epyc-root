@@ -549,3 +549,7 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
       OAB-9 bundle `INDEX.md` copies (`artifacts/autokernel_ctx_ab_20260925/bundle-manifests/`). This time it
       rewrote the files in place, with `[period redacted]`, rather than blocking. So evidence copies silently
       stop being byte-exact, and the artifact README has to say so. Same exemption shape, second instance.
+
+- [x] **TOC-RD-1a-NI-ED25519 — staged header recognition child.** ✅ 2026-10-06 — ROOT staged-blob scanner recognizes ED25519 while retaining RSA/OPENSSH; source/recipe promoted eb870f0fe697f02f887bedecaeaccaf24df2d531; native run 37474797195 TRUE9/9. This closes only the implementation child. Parent TOC-RD-1a remains unchecked/open for the operator's global whole-file fixture exemption choice.
+
+[Exact two-file exception decision package](../../docs/reference/credential-fixture-hook-decision.md), including the valid unapplied patch and global whole-file risk; no scanner exemption inferred.

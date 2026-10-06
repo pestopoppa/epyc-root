@@ -505,4 +505,4 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 
 | Standalone guard declared NUMA mode (prospective NI07-30) | native CI verifier | Source-pinned fake CLI forwarding/refusal and portable-pin fixtures; preserve diagnostic/default Python callers and pipeline/update behavior | NIB2-76 / VB-STANDALONE-NUMA-GUARD through existing native carrier/shared grade |
 
-| PII ED25519 header recognition (prospective NI07-31) | existing native CI verifier | Original disposable staged-index synthetic headers and compatibility controls; existing PII producer retained unchanged | VB-PII-ED25519-CONFORMANCE / TOC-RD-1a; no whole-file fixture exception or privacy authority |
+| PII ED25519 header recognition (accepted NI07-31) | existing native CI verifier | Original disposable staged-index synthetic headers and compatibility controls; existing PII producer retained unchanged; one TRUE9/9 outer fixture-conformance observation | VB-PII-ED25519-CONFORMANCE / VB-NI07-PII-HEADERS through existing carrier/shared grade; parent TOC-RD-1a whole-file fixture choice remains open, no privacy authority |

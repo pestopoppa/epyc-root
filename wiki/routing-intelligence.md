@@ -1438,3 +1438,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
 ## 2026-10-06 calibration input byte bindings
 
 [Calibration input byte bindings](../docs/reference/calibration-input-byte-bindings.md) attach raw state, question-catalogue, and gold-label byte identities to prospective receipts: CLI reads and parses each original buffer once; direct-API metadata is explicitly caller_asserted or null. [Native evidence](../artifacts/ni07/run-37473538913/README.md) passes34/34 selected synthetic cases. This is dependency evidence, not a calibration-quality or model-validity result. TD-18's broader receipt metrics remain separate; TD-16 no-harm, TD-29 shadow/prefill counts, and TD-1d.3 isolated-question branches remain live gates.
+
+## 2026-10-06 staged ED25519 header recognition
+
+[Staged ED25519 header contract](../docs/reference/staged-ed25519-header-check.md) closes the missing staged-blob PEM header match while preserving OPENSSH/RSA handling. [Native capture](../artifacts/ni07/run-37474797195/README.md) passes 9/9 synthetic cases with one outer CI observation. This is structural fixture evidence, not a privacy or whole-repository coverage claim. The separate whole-file credential-fixture allowlist choice remains open under TOC-RD-1a; UFH-07 retains the trajectory-artifact prerequisite and TOC-SP-3 priority.
