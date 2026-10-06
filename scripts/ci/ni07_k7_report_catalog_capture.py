@@ -47,6 +47,15 @@ def git_head(repo: Path) -> str:
     ).strip()
 
 
+def require_clean_tracked(repo: Path, label: str) -> None:
+    status = subprocess.check_output(
+        ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=no"],
+        text=True,
+    )
+    if status.strip():
+        raise RuntimeError(f"{label} checkout has tracked changes")
+
+
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
@@ -58,10 +67,16 @@ def main() -> int:
     status = {"state": "preparing", "job": "k7-report-catalog", "exit_code": None}
     status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
     try:
+        if os.environ["NI07_RUNNER_CONTEXT"] != "ubuntu-latest":
+            raise RuntimeError("runner context differs from the reviewed single-runner recipe")
+        if git_head(recipe) != os.environ["GITHUB_SHA"]:
+            raise RuntimeError("recipe checkout does not match GITHUB_SHA")
         if git_head(app) != os.environ["APP_PIN"]:
             raise RuntimeError("APP checkout does not match its reviewed pin")
         if git_head(carrier) != os.environ["ROOT_CARRIER_PIN"]:
             raise RuntimeError("ROOT carrier checkout does not match its reviewed pin")
+        for name, repo in repos.items():
+            require_clean_tracked(repo, name)
         freeze = result / "pip-freeze.txt"
         freeze.write_bytes(
             subprocess.check_output([sys.executable, "-m", "pip", "freeze", "--all"])
