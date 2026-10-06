@@ -28,6 +28,9 @@ SELECTION = [
     "tests/vidya/test_evidence_durability_adapter.py",
 ]
 EXPECTED_CASES = 29
+GENERIC_RESEARCH_CHECKOUT = ".ci-research-producers"
+ROOT_INTAKE_INDEX_PATH = "research/intake_index.yaml"
+ROOT_INTAKE_INDEX_BLOB = "cb1e77f0eff60101a280b509b757b88fb370ab93"
 CONFIG_NAMES = {"pytest.ini", "setup.cfg", "tox.ini", "pyproject.toml", "uv.lock"}
 CONFIG_SUFFIXES = {".ini", ".cfg", ".toml", ".yaml", ".yml"}
 INSTALL_COMMAND = (
@@ -138,6 +141,47 @@ def verify_root_sources(repo: Path, pin: str):
     return paths, symlink_facts
 
 
+def verify_generic_research_checkout_isolated(repo: Path, pin: str) -> None:
+    raw = subprocess.check_output(
+        ["git", "-C", str(repo), "ls-tree", "-r", "-z", pin]
+    )
+    tracked: set[str] = set()
+    intake_index_oid = None
+    for entry in raw.split(b"\0"):
+        if not entry:
+            continue
+        metadata, path_bytes = entry.split(b"\t", 1)
+        mode, object_type, oid = metadata.decode("ascii").split(" ")
+        name = path_bytes.decode("utf-8")
+        tracked.add(name)
+        if name == ROOT_INTAKE_INDEX_PATH:
+            if mode not in {"100644", "100755"} or object_type != "blob":
+                raise ValueError("ROOT intake index is not a tracked regular blob")
+            intake_index_oid = oid
+
+    if intake_index_oid != ROOT_INTAKE_INDEX_BLOB:
+        raise ValueError("candidate ROOT intake index differs from reviewed tracked source")
+    destination = PurePosixPath(GENERIC_RESEARCH_CHECKOUT)
+    for name in tracked:
+        tracked_path = PurePosixPath(name)
+        if (
+            tracked_path == destination
+            or tracked_path.is_relative_to(destination)
+            or destination.is_relative_to(tracked_path)
+        ):
+            raise ValueError("generic research checkout destination shadows tracked ROOT content")
+
+    workflow = read_regular(repo / ".github/workflows/tests.yml").decode("utf-8")
+    required = {
+        "path: .ci-research-producers",
+        "KV_QUANT_TEST_RESEARCH_ROOT: ${{ github.workspace }}/.ci-research-producers",
+        "EXL3_TEST_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/kernel_rnd/exl3/evidence.py",
+        "EVIDENCE_DURABILITY_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/validate/check_evidence_durability.py",
+    }
+    if not required.issubset({line.strip() for line in workflow.splitlines()}):
+        raise ValueError("generic test workflow does not use the isolated pinned producer checkout")
+
+
 def verify_research_sources(repo: Path, pin: str) -> list[Path]:
     paths = []
     for name, expected_sha in sorted(RESEARCH_SOURCES.items()):
@@ -212,6 +256,7 @@ def main() -> int:
             raise ValueError("installed fixture dependency versions differ from reviewed pins")
 
         root_paths, symlink_facts = verify_root_sources(root, root_pin)
+        verify_generic_research_checkout_isolated(root, root_pin)
         carrier_paths, carrier_symlink_facts = verify_root_sources(carrier, carrier_pin)
         research_paths = verify_research_sources(research, research_pin)
         source_counts = {
@@ -247,6 +292,8 @@ def main() -> int:
             },
             "selection": SELECTION,
             "expected_case_count": EXPECTED_CASES,
+            "generic_research_checkout": GENERIC_RESEARCH_CHECKOUT,
+            "generic_checkout_isolation_asserted": True,
             "source_counts": source_counts,
             "symlink_facts_metadata_only": symlink_facts,
             "carrier_symlink_facts_metadata_only": carrier_symlink_facts,
