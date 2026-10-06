@@ -11,36 +11,21 @@
   "last_compile": "2026-10-06T06:33:38Z",
   "last_touch": {
     "advanced": {
-      "added": 7,
-      "changed": 9,
-      "removed": 1
+      "added": 0,
+      "changed": 2,
+      "removed": 0
     },
-    "at": "2026-10-06T17:10:56Z",
+    "at": "2026-10-06T17:14:37Z",
     "scope_paths": [
       "docs/reference/intake-reverification-20261006.md",
-      "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "handoffs/active/architect-model-selection-bench.md",
-      "handoffs/active/autokernel-research-loop.md",
-      "handoffs/active/engram-conditional-memory.md",
-      "handoffs/active/intake-reverification.md",
-      "handoffs/active/internal-kb-rag.md",
-      "handoffs/active/rocm-verify-profile-backend.md",
-      "handoffs/active/scoring-infra-standardization.md",
-      "handoffs/active/vidya-belief-substrate-program.md",
-      "handoffs/completed/intake-reverification.md",
-      "progress/2026-10/2026-10-06-application-preparation.md",
-      "progress/2026-10/2026-10-06-closeout-review.md",
-      "progress/2026-10/2026-10-06-final-custody-review.md",
-      "progress/2026-10/2026-10-06-final-report-refresh.md",
-      "progress/2026-10/2026-10-06-intake-reverify-main.md",
-      "progress/2026-10/2026-10-06-tail-verification.md"
+      "progress/2026-10/2026-10-06-intake-reverify-main.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-06T17:10:56Z",
+  "scan_time": "2026-10-06T17:14:37Z",
   "schema_version": 1,
-  "source_set_hash": "82289b6994f1954a566616e761bd5e654fd2532fb26033f8ce1df87fbe26e1f8",
+  "source_set_hash": "4c53b7591394bd4888cbf2495c9474c7557c36318dc78a8ad8462f0bfc67967e",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -9203,10 +9188,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c76a218a4fc079416401fda103b4f69aa105516909c02c5696bff72f35fc70d4",
-      "modified": "2026-10-06T17:09:12Z",
+      "content_hash": "4b0ed1f1eb150f9abeddbc5a85fccf736cfe63f4744415a2ca4d8707d2a449e0",
+      "modified": "2026-10-06T17:14:13Z",
       "path": "progress/2026-10/2026-10-06-intake-reverify-main.md",
-      "size": 14794,
+      "size": 16338,
       "title": "2026-10-06 progress",
       "type": "progress"
     },
@@ -9923,10 +9908,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "894fdbf036409cf89e11d182f48046fa6d89c8eed2569b7babe3ee2c4ad72141",
-      "modified": "2026-10-06T17:09:12Z",
+      "content_hash": "02d9c035572f877184d4f97f4039b4f3d74fa8fd215a29ff16b4076edee6d3fa",
+      "modified": "2026-10-06T17:14:13Z",
       "path": "docs/reference/intake-reverification-20261006.md",
-      "size": 14570,
+      "size": 14550,
       "title": "Intake re-verification \u2014 final findings",
       "type": "docs"
     },
