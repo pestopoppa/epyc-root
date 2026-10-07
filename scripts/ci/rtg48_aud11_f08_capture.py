@@ -266,13 +266,20 @@ def mutate_exact_gate(source_bytes: bytes) -> tuple[bytes, dict[str, Any]]:
     after_tree = ast.parse(mutated.decode("utf-8"), filename="mutated tmux_adapter.py")
     after_function = next(node for node in after_tree.body
                           if isinstance(node, ast.FunctionDef) and node.name == "cmd_nudge")
-    if any(isinstance(node, ast.If) and ast.dump(node.test) == ast.dump(expected)
-           for node in ast.walk(after_function)):
-        raise RuntimeError("mutated AST still contains the nudge interval predicate")
+    disabled = [candidate for candidate in ast.walk(after_function)
+                if isinstance(candidate, ast.If) and candidate.lineno == node.lineno
+                and isinstance(candidate.test, ast.Constant)
+                and candidate.test.value is False]
+    if len(disabled) != 1:
+        raise RuntimeError("mutated AST does not retain the exact conditional with a False predicate")
+    if (ast.dump(disabled[0].body) != ast.dump(node.body)
+            or ast.dump(disabled[0].orelse) != ast.dump(node.orelse)):
+        raise RuntimeError("mutation changed the interval conditional body or else branch")
     return mutated, {"function": "cmd_nudge", "line": node.lineno,
                      "predicate_ast_sha256": digest_bytes(ast.dump(expected).encode()),
                      "original_expression_sha256": digest_bytes(before),
-                     "replacement": "False", "source_offset_bytes": start}
+                     "replacement": "False", "conditional_retained": True,
+                     "body_and_else_retained": True, "source_offset_bytes": start}
 
 
 def run_mutation_control(source: Path, result: Path, python: Path,
@@ -389,8 +396,8 @@ def main() -> int:
         if git(source, "merge-base", BASE_PIN, "HEAD") != BASE_PIN:
             raise RuntimeError("source/recipe commit does not descend from the reviewed ROOT pin")
         history = git(source, "rev-list", "--parents", f"{BASE_PIN}..HEAD").splitlines()
-        if len(history) != 2 or any(len(row.split()) != 2 for row in history):
-            raise RuntimeError("recipe must be exactly two normal commits beyond the reviewed ROOT pin")
+        if len(history) != 3 or any(len(row.split()) != 2 for row in history):
+            raise RuntimeError("recipe must be exactly three normal commits beyond the reviewed ROOT pin")
         changed = set(git(source, "diff", "--name-only", f"{BASE_PIN}..HEAD").splitlines())
         expected_changed = {WORKFLOW, DRIVER, CASES, TEST_MODULE}
         if changed != expected_changed:
