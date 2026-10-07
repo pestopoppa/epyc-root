@@ -89,7 +89,7 @@ for a Haiku-shaped task still spends parent-model tokens. Fork only when the poi
 parent's context (open-ended research questions), never as a shortcut to spawn cheaply.
 
 **Cheap tiers do not relax lock discipline.** Every brief that runs a CPU build, test, or server
-still carries the region-lock / gpu-quiet clause (`OPERATING_CONSTRAINTS.md` → Inference and
+still carries the region-lock / gpu-quiet clause (`agents/shared/OPERATING_CONSTRAINTS.md` → Inference and
 Benchmarks), regardless of which model runs the subagent. There is no subagent GPU work during a
 measurement window, cheap model or not.
 

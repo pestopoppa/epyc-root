@@ -32,8 +32,9 @@ state rebuilds from bus files alone. Read it; a guardrail below that merely repe
   that output, whatever is missing IS the defect.
 - `session_bus_coordinator.py status` — daemon advice. **Compare it against what actually happens**;
   the divergences are acceptance evidence, not noise.
-- `coordination/session-bus/tokens/token-queue.md` — the runtime token queue: pending operator
-  gates. Its durable contract is `coordination/session-bus/BUS_PROTOCOL.md`.
+- `coordination/session-bus/BUS_PROTOCOL.md` — the durable session-bus contract, including how
+  token-efficiency guidance and operator gates are represented. The current bus layout has no
+  separate tracked token-queue file.
 - `coordination/session-bus/compute_policy.yaml` + `recipes/` — what the daemon grants and steps
   through unasked.
 - The owning handoff for whatever is being sequenced.

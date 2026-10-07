@@ -187,7 +187,7 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
   Read the exceptions there before deciding not to fan out — do not infer them.
   Main thread = management + review of completed work; each subagent runs on the cheapest capable
   model/effort, set explicitly (`agents/README.md` → Model Routing); never `fork` for cheap work;
-  no recurring LLM polling, use zero-token watchers (`OPERATING_CONSTRAINTS.md` → *Token-Efficiency
+  no recurring LLM polling, use zero-token watchers (`agents/shared/OPERATING_CONSTRAINTS.md` → *Token-Efficiency
   Operating Rules*).
 - **Index rows, intake entries and handoff stubs: a subagent may PREPARE, the owning session
   APPLIES.** Drafting the row text, running `scripts/handoffs/index_state.py --check` and reporting
