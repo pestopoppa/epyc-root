@@ -1,0 +1,523 @@
+{
+  "bad_names": [],
+  "result/controls-junit.xml": {
+    "cases": [
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[current]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[stale]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[missing]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[unresolved]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[count]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[complete]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[git_stable]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[checker_match]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[boolean_count]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[scope]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[dirty_count]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[unread_source]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[path_normalization]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_original_report_hash_and_duplicate_json_fields_are_refused"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_report_writer_refuses_overwrite_and_symlink_parents"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_missing_scanned_checker_remains_incomplete_without_tuple_upgrade"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[file]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[directory]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[current_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[stale_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[missing_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[unresolved_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[current_FALSE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[current_NULL]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[absent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[tampered]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[mixed]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_partial_write_is_removed_without_deleting_unrelated_output"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_failure_cleanup_refuses_to_unlink_replaced_exclusive_name"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_sidecar_preserves_exact_output_bytes[current_rc0]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_sidecar_preserves_exact_output_bytes[stale_rc1]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_refusal_preserves_original_error_without_report"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[sidecar_tamper]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[report_tamper]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[rc_mismatch]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[report_absent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[sidecar_absent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[duplicate]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[malformed_stdout]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[raw_bytes]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[duplicate_report]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[duplicate_extra]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[report_parent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[extra_parent]"
+      ]
+    ],
+    "counts": {
+      "errors": null,
+      "failures": null,
+      "skipped": null,
+      "tests": null
+    },
+    "sha256": "a37fedd81255dbb8daf8da7fcea586b583ed834521797f747e87a3ba1bca3af6"
+  },
+  "result/controls-native": {
+    "case_identities": [
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[current]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[stale]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[missing]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_roundtrip_preserves_current_stale_and_unknown[unresolved]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[count]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[complete]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[git_stable]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[checker_match]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[boolean_count]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[scope]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[dirty_count]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[unread_source]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_report_metadata_drift_is_refused[path_normalization]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_original_report_hash_and_duplicate_json_fields_are_refused"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_report_writer_refuses_overwrite_and_symlink_parents"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_missing_scanned_checker_remains_incomplete_without_tuple_upgrade"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[file]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[directory]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[current_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[stale_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[missing_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[unresolved_TRUE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[current_FALSE]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_native_attachment_projection_preserves_true_false_null[current_NULL]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[absent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[tampered]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[mixed]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_partial_write_is_removed_without_deleting_unrelated_output"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_failure_cleanup_refuses_to_unlink_replaced_exclusive_name"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_sidecar_preserves_exact_output_bytes[current_rc0]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_sidecar_preserves_exact_output_bytes[stale_rc1]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_refusal_preserves_original_error_without_report"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[sidecar_tamper]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[report_tamper]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[rc_mismatch]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[report_absent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[sidecar_absent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[duplicate]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[malformed_stdout]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_invocation_strict_reader_controls[raw_bytes]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[duplicate_report]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[duplicate_extra]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[report_parent]"
+      ],
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_scan_extra_output_declaration_rejects_overlap[extra_parent]"
+      ]
+    ],
+    "counts": {
+      "collected": 44,
+      "error": 0,
+      "executed": 44,
+      "failure": 0,
+      "passed": 44,
+      "skipped": 0
+    },
+    "exit_code": 0,
+    "generated_outputs": [],
+    "junit_case_count": 44,
+    "metric": "fixture_execution_conformant",
+    "readset_matches_receipt": true,
+    "readset_n": 448,
+    "receipt_seal": "c03a1110a090e5663ade61be5e274f407301f98887b8b5f54c80419441d03841",
+    "receipt_sha256": "8f0022c414015d986407641c697b4cb029d8f43e9cc813fa1ab073237085c60d",
+    "repo_pins": {
+      "lock-source": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "recipe": "139c48aaf454971858268f023b870372ae505ba5",
+      "research": "5c945406cd49f424694de9be4b8716b88e9aa6f9"
+    },
+    "request_recorded_sha256": "b977303496e91663118c332f6ef92777dcf3201a5e52350aae2ba040ad9bc6ae",
+    "request_selections": [
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_actual_report_roundtrip_preserves_current_stale_and_unknown",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_actual_report_metadata_drift_is_refused",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_original_report_hash_and_duplicate_json_fields_are_refused",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_report_writer_refuses_overwrite_and_symlink_parents",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_missing_scanned_checker_remains_incomplete_without_tuple_upgrade",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_actual_native_attachment_projection_preserves_true_false_null",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_partial_write_is_removed_without_deleting_unrelated_output",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_failure_cleanup_refuses_to_unlink_replaced_exclusive_name",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_scan_invocation_sidecar_preserves_exact_output_bytes",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_scan_invocation_refusal_preserves_original_error_without_report",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_scan_invocation_strict_reader_controls",
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_scan_extra_output_declaration_rejects_overlap"
+    ],
+    "request_sha256": "b977303496e91663118c332f6ef92777dcf3201a5e52350aae2ba040ad9bc6ae",
+    "run": {
+      "attempt": "1",
+      "job": "actual-pin-scan",
+      "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "run_id": "37679517879"
+    },
+    "unique_case_count": 44,
+    "value": true
+  },
+  "result/native": {
+    "case_identities": [
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_research_pin_scan_attachment"
+      ]
+    ],
+    "counts": {
+      "collected": 1,
+      "error": 0,
+      "executed": 1,
+      "failure": 0,
+      "passed": 1,
+      "skipped": 0
+    },
+    "exit_code": 0,
+    "generated_outputs": [
+      {
+        "artifact": {
+          "name": "generated-output-000.bin",
+          "sha256": "e653db39a8664a054b715aa9b8d6e2ce4e3f4e007595d8ba6ff23d1b10035e87"
+        },
+        "path": "ci-capture-output/pin-invocation.json"
+      },
+      {
+        "artifact": {
+          "name": "generated-output-001.bin",
+          "sha256": "2fd544e7885bb098cf35569b36d36c7f5b1a8a6721790d29c15bfcafcc368dd3"
+        },
+        "path": "ci-capture-output/pin-report.json"
+      }
+    ],
+    "invocation": {
+      "argv": [
+        "/home/runner/work/_temp/evl42-actual-scan/venv/bin/python",
+        "/home/runner/work/epyc-root/epyc-root/research/scripts/benchmark/check_pin_staleness.py",
+        "--root",
+        "/home/runner/work/epyc-root/epyc-root/research",
+        "--json"
+      ],
+      "report_bytes": 83243,
+      "report_sha256": "2fd544e7885bb098cf35569b36d36c7f5b1a8a6721790d29c15bfcafcc368dd3",
+      "return_code": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5cd48d5a42862c3b147d08f3ac36bccf540a7941b177aeed4dc26fb0ef247a0a"
+    },
+    "junit_case_count": 1,
+    "metric": "fixture_execution_conformant",
+    "readset_matches_receipt": true,
+    "readset_n": 448,
+    "receipt_seal": "75a92d7703c00486427fd8bb277ffc663f816382d661ac74429b30e8a0ba408e",
+    "receipt_sha256": "2ccc8cfa3f75ccbc38b3ab9fa6553f8e1d888c889012b0f84886b1e3a3b3ad73",
+    "repo_pins": {
+      "lock-source": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "recipe": "139c48aaf454971858268f023b870372ae505ba5",
+      "research": "5c945406cd49f424694de9be4b8716b88e9aa6f9"
+    },
+    "report": {
+      "checked_at_utc": null,
+      "complete": false,
+      "counts": {
+        "current": 1,
+        "missing": 3,
+        "stale": 3,
+        "unresolved": 41
+      },
+      "findings": null,
+      "schema": "epyc.benchmark_pin_staleness.v1",
+      "source_sha256": null,
+      "state": null
+    },
+    "request_recorded_sha256": "e839fe4adf2de722b779cd81c95385cf81a35ced640f73e201e28e3d5ddc9c68",
+    "request_selections": [
+      "/home/runner/work/epyc-root/epyc-root/recipe/tests/ci/test_pin_report_fixture.py::test_actual_research_pin_scan_attachment"
+    ],
+    "request_sha256": "e839fe4adf2de722b779cd81c95385cf81a35ced640f73e201e28e3d5ddc9c68",
+    "run": {
+      "attempt": "1",
+      "job": "actual-pin-scan",
+      "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "run_id": "37679517879"
+    },
+    "unique_case_count": 1,
+    "value": true
+  },
+  "result/original-junit.xml": {
+    "cases": [
+      [
+        "tests.ci.test_pin_report_fixture",
+        "test_actual_research_pin_scan_attachment"
+      ]
+    ],
+    "counts": {
+      "errors": null,
+      "failures": null,
+      "skipped": null,
+      "tests": null
+    },
+    "sha256": "e71c6cfe0685c46a0f6d08007dfa933253004c09eaf2fea8b95d3236c08d5087"
+  },
+  "result_files": 2974,
+  "result_uncompressed_bytes": 25492353,
+  "unique_members": 6611,
+  "zip_members": 6611
+}

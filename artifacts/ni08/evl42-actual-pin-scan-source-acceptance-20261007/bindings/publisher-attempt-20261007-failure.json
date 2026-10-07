@@ -1,0 +1,56 @@
+{
+  "approved_publisher_plan_sha256": "ad2a7adaab023c5d33fa65e5f87ba2f4eaea9e58300ea4c6db36a727db836575",
+  "commit_created": false,
+  "diagnostic_count": 106,
+  "diagnostic_paths": [
+    "bindings/handoff-checkbox-proposal.patch",
+    "raw-github-metadata/artifact-api-redirect.headers.bin",
+    "raw-github-metadata/artifact-object.response.bin",
+    "raw-github-metadata/artifact-zip.headers.bin",
+    "raw-github-metadata/artifacts-api.response.bin"
+  ],
+  "lease_token_lifecycle": [
+    {
+      "bytes": 44,
+      "lock": "wrapup",
+      "mode_octal": "0600",
+      "nlink": 1,
+      "release_command_exit_code": 0,
+      "uid": 1000,
+      "verified_absent_after_unlink": true
+    },
+    {
+      "bytes": 44,
+      "lock": "push",
+      "mode_octal": "0600",
+      "nlink": 1,
+      "release_command_exit_code": 0,
+      "uid": 1000,
+      "verified_absent_after_unlink": true
+    }
+  ],
+  "original_journal_bytes": 198017,
+  "original_journal_private_filename": "original-command-journal.jsonl",
+  "original_journal_rows": 217,
+  "original_journal_sha256": "1ab603b3202c071ef9b2990d0a0803f9397c6093cfb2a3394e8f20757bcf5fa9",
+  "own_remote_branch_before_and_after": null,
+  "publication_receipt_created": false,
+  "publisher_helper_sha256": "04d57daac14fb349b51ed1164425a3cb24437b02b13e8409e3c443179c3640a9",
+  "publisher_operation_id": "c106-root-wrap-publish-0xrpmyba",
+  "publisher_outer_exit_code": 1,
+  "publisher_outer_stderr_bytes": 1756,
+  "publisher_outer_stderr_sha256": "5130b8627107862842a835a1f0c2f77086309fe5ebf4e1e38d6e3d3e437bb5b6",
+  "publisher_outer_stdout_bytes": 0,
+  "record_type": "derived summary; not an original command stream or publication receipt",
+  "remote_main_before_and_after": "c986a107fde2c6e7cd6bd8e05ff7cf7243207034",
+  "retained_private_outer_capture": "publisher-execution-20261007/{argv.json,stdout.bin,stderr.bin,rc.txt}",
+  "schema": "derived.evl42_publisher_attempt_failure.v1",
+  "scope_note": "The exact 60-path approved scope remains staged in the private ROOT worktree. No retry, commit, push, cleanup, or source mutation followed this failure.",
+  "stopping_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "stopping_command_exit_code": 2
+}

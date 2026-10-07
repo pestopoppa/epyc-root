@@ -1,0 +1,15 @@
+{
+  "schema": "ni08.main.task_governance_acceptance.v1",
+  "state": "MAIN ACCEPTED",
+  "accepted_at": "2026-10-07T21:27:54.628550+00:00",
+  "operation": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/evl180-task-governance-lulo8kz2",
+  "original_journal_sha256": "9219a4092b8c5b44415901790a41771e73d98a9291338c19218115a44f543b27",
+  "original_receipt_sha256": "aab1f02b1e021e37177398e51ff4ce273de26191f5389ee6c79aad79dc14c4b2",
+  "commands": 31,
+  "commands_all_exit_zero": true,
+  "actual_token_records_stable_44_bytes_mode0600": true,
+  "token_absence_verified": true,
+  "checkbox_closures": 1,
+  "new_open_prospective_tasks": 1,
+  "publication_pending": true
+}

@@ -1,0 +1,41 @@
+{
+  "actual_checker_return_code": 1,
+  "actual_wrapper_passed": 1,
+  "attempt": 1,
+  "controls_passed": 44,
+  "event": "push",
+  "exact_44_junit_identity_order_matches_AST_inventory": true,
+  "extracted_result_files_byte_compared": 2974,
+  "grade_custody_pre_post_matches_current_tree": true,
+  "grade_observations": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "value": true
+    },
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "value": true
+    }
+  ],
+  "limits": "HistoricalResearch5c945 scan; true wrapper/source conformance only. Incompleteactualscan remains rc1; no pinhealth, correctness,performance,production,readiness or automaticrepair claim. Product publication remains pending; original request readsets and mode-aware retrieval custody verified independently.",
+  "original_generated_report_sidecar_stdout_stderr_hashes_verified": true,
+  "readset_count_each": 448,
+  "receipt_selfseals_verified": true,
+  "recipe_commit": "139c48aaf454971858268f023b870372ae505ba5",
+  "report_complete": false,
+  "report_counts": {
+    "current": 1,
+    "missing": 3,
+    "stale": 3,
+    "unresolved": 41
+  },
+  "request_readset_equal": true,
+  "retrieval_typed_tree_digest": "b21c22f5ee65d8972baf7eef3c7f3da5cba2635635308b1d4751b33e6c87b502",
+  "retrieval_typed_tree_entries": 4108,
+  "run_id": "37679517879",
+  "state": "MAIN_ACCEPTED_ORIGINAL_NATIVE_OBSERVATIONS",
+  "zip_sha256": "0f83d6e1dc3dde9f3ba95828aaa2dfb4d24fce0af1d3333bfba714431fc100dd",
+  "zip_unique_crc_members": 6611
+}

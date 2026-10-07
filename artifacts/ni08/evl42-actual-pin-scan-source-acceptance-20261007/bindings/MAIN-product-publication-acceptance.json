@@ -1,0 +1,20 @@
+{
+  "reviewer": "MAIN",
+  "accepted": true,
+  "commit": "c986a107fde2c6e7cd6bd8e05ff7cf7243207034",
+  "tree": "3fec4d217206ce3693e6b06c0e10f52244fc6878",
+  "parent": "aaaf51d9786c7cc012064c4f5a1036fae93c423f",
+  "source_bytes_equal_original_139c": true,
+  "exact_product_paths": 5,
+  "normal_nonforce_pushes": 2,
+  "original_commands_verified": 32,
+  "actual_token_snapshot_count": 6,
+  "public_refs": [
+    "c986a107fde2c6e7cd6bd8e05ff7cf7243207034\trefs/heads/codex/ni08-evl42-product-20261007",
+    "c986a107fde2c6e7cd6bd8e05ff7cf7243207034\trefs/heads/main"
+  ],
+  "original_journal_sha256": "0bea79f0dab88126ea60f5828bada58a62d4ae40d40f8640029c1ae47bbbd6fa",
+  "original_receipt_sha256": "6d074a1977d00346f4b0bbb58b2a3952d6e836b7b11d1a23ff4782a7f22fc01f",
+  "native_main_acceptance": "EVL42-139c-MAIN-original-success-acceptance.json",
+  "scope": "Wiring44+actualwrapper1 source controls only; actual scanner incomplete counts preserved; no pin-health claim or repair"
+}

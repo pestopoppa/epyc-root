@@ -1,0 +1,440 @@
+{
+  "native_records": {
+    "actual": {
+      "category": "CANDIDATE",
+      "fixture_execution_conformant": true,
+      "generated_output_count": 2,
+      "grade": {
+        "judgment": "Judged",
+        "location": "Located",
+        "reasons": [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+          "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+        ]
+      },
+      "metric": "fixture_execution_conformant",
+      "projection": {
+        "attestation_locator": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/github-original-attempt1-extracted/result/native/receipt.json",
+        "binding_kind": "identity",
+        "measurement_id": "ci-fixture:75a92d7703c00486427fd8bb277ffc663f816382d661ac74429b30e8a0ba408e",
+        "source_kind": "vidya.adapters.ci_conformance/v1",
+        "value": true,
+        "value_type": "bool"
+      },
+      "readset_count": 448,
+      "receipt_seal": "75a92d7703c00486427fd8bb277ffc663f816382d661ac74429b30e8a0ba408e",
+      "receipt_sha256": "2ccc8cfa3f75ccbc38b3ab9fa6553f8e1d888c889012b0f84886b1e3a3b3ad73",
+      "repository_pins": {
+        "lock-source": "70096b763939a43409a1f1827ab633d62425a6c1",
+        "recipe": "139c48aaf454971858268f023b870372ae505ba5",
+        "research": "5c945406cd49f424694de9be4b8716b88e9aa6f9"
+      },
+      "runner": {
+        "attempt": "1",
+        "job": "actual-pin-scan",
+        "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "python": "3.13.15",
+        "run_id": "37679517879"
+      },
+      "selection_count": 1,
+      "summary": {
+        "cases": [
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_research_pin_scan_attachment",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 1,
+          "error": 0,
+          "executed": 1,
+          "failure": 0,
+          "passed": 1,
+          "skipped": 0
+        }
+      },
+      "value_type": "bool"
+    },
+    "controls": {
+      "category": "CANDIDATE",
+      "fixture_execution_conformant": true,
+      "generated_output_count": 0,
+      "grade": {
+        "judgment": "Judged",
+        "location": "Located",
+        "reasons": [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+          "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+        ]
+      },
+      "junit_identities_count": 44,
+      "junit_identities_match_final_binding": true,
+      "metric": "fixture_execution_conformant",
+      "projection": {
+        "attestation_locator": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/github-original-attempt1-extracted/result/controls-native/receipt.json",
+        "binding_kind": "identity",
+        "measurement_id": "ci-fixture:c03a1110a090e5663ade61be5e274f407301f98887b8b5f54c80419441d03841",
+        "source_kind": "vidya.adapters.ci_conformance/v1",
+        "value": true,
+        "value_type": "bool"
+      },
+      "readset_count": 448,
+      "receipt_seal": "c03a1110a090e5663ade61be5e274f407301f98887b8b5f54c80419441d03841",
+      "receipt_sha256": "8f0022c414015d986407641c697b4cb029d8f43e9cc813fa1ab073237085c60d",
+      "repository_pins": {
+        "lock-source": "70096b763939a43409a1f1827ab633d62425a6c1",
+        "recipe": "139c48aaf454971858268f023b870372ae505ba5",
+        "research": "5c945406cd49f424694de9be4b8716b88e9aa6f9"
+      },
+      "runner": {
+        "attempt": "1",
+        "job": "actual-pin-scan",
+        "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "python": "3.13.15",
+        "run_id": "37679517879"
+      },
+      "selection_count": 14,
+      "summary": {
+        "cases": [
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[current]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[stale]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[missing]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[unresolved]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[count]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[complete]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[git_stable]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[checker_match]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[boolean_count]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[scope]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[dirty_count]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[unread_source]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_report_metadata_drift_is_refused[path_normalization]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_original_report_hash_and_duplicate_json_fields_are_refused",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_report_writer_refuses_overwrite_and_symlink_parents",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_missing_scanned_checker_remains_incomplete_without_tuple_upgrade",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[file]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[directory]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_native_attachment_projection_preserves_true_false_null[current_TRUE]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_native_attachment_projection_preserves_true_false_null[stale_TRUE]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_native_attachment_projection_preserves_true_false_null[missing_TRUE]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_native_attachment_projection_preserves_true_false_null[unresolved_TRUE]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_native_attachment_projection_preserves_true_false_null[current_FALSE]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_native_attachment_projection_preserves_true_false_null[current_NULL]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[absent]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[tampered]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[mixed]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_partial_write_is_removed_without_deleting_unrelated_output",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_failure_cleanup_refuses_to_unlink_replaced_exclusive_name",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_sidecar_preserves_exact_output_bytes[current_rc0]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_sidecar_preserves_exact_output_bytes[stale_rc1]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_refusal_preserves_original_error_without_report",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[sidecar_tamper]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[report_tamper]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[rc_mismatch]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[report_absent]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[sidecar_absent]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[duplicate]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[malformed_stdout]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_invocation_strict_reader_controls[raw_bytes]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_extra_output_declaration_rejects_overlap[duplicate_report]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_extra_output_declaration_rejects_overlap[duplicate_extra]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_extra_output_declaration_rejects_overlap[report_parent]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.ci.test_pin_report_fixture",
+            "name": "test_scan_extra_output_declaration_rejects_overlap[extra_parent]",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 44,
+          "error": 0,
+          "executed": 44,
+          "failure": 0,
+          "passed": 44,
+          "skipped": 0
+        }
+      },
+      "value_type": "bool"
+    }
+  },
+  "report_projection": {
+    "checker_source": {
+      "after": {
+        "bytes": 23801,
+        "path": "check_pin_staleness.py",
+        "sha256": "2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666",
+        "status": "read"
+      },
+      "before": {
+        "bytes": 23801,
+        "path": "check_pin_staleness.py",
+        "sha256": "2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666",
+        "status": "read"
+      },
+      "matches_scanned_copy": true,
+      "stable": true
+    },
+    "counts": {
+      "current": 1,
+      "missing": 3,
+      "stale": 3,
+      "unresolved": 41
+    },
+    "fixture_projection_count": 1,
+    "fixture_projection_value": true,
+    "fixture_projection_value_type": "bool",
+    "health_tuple_authored": false,
+    "invocation_return_code": 1,
+    "report_complete": false,
+    "report_schema": "epyc.benchmark_pin_staleness.v1",
+    "report_sha256": "2fd544e7885bb098cf35569b36d36c7f5b1a8a6721790d29c15bfcafcc368dd3",
+    "root_git": {
+      "after": {
+        "available": true,
+        "head": "5c945406cd49f424694de9be4b8716b88e9aa6f9",
+        "tracked_change_count": 0,
+        "tracked_dirty": false,
+        "tracked_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "before": {
+        "available": true,
+        "head": "5c945406cd49f424694de9be4b8716b88e9aa6f9",
+        "tracked_change_count": 0,
+        "tracked_dirty": false,
+        "tracked_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stable": true
+    },
+    "row_status_counts": {
+      "current": 1,
+      "missing": 3,
+      "stale": 3,
+      "unresolved": 41
+    },
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 104233,
+    "stdout_sha256": "5cd48d5a42862c3b147d08f3ac36bccf540a7941b177aeed4dc26fb0ef247a0a"
+  },
+  "retrieval_side_typed_tree": {
+    "algorithm": "existing C26 typed_tree/stable, status.json omitted, modes included",
+    "entries": 4108,
+    "equal": true,
+    "extracted_modes": "all directories 0700, regular files 0600",
+    "post_grade_tree_sha256": "b21c22f5ee65d8972baf7eef3c7f3da5cba2635635308b1d4751b33e6c87b502",
+    "pre_grade_tree_sha256": "b21c22f5ee65d8972baf7eef3c7f3da5cba2635635308b1d4751b33e6c87b502",
+    "root": "result/ extracted artifact tree"
+  },
+  "schema": "private.evl42_original_workflow_readonly_projection.v1",
+  "source_files": {
+    "scripts/ci/native_conformance.py": {
+      "read_artifact": "read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    "scripts/ci/pin_report_fixture.py": {
+      "read_artifact": "read-001.bin",
+      "sha256": "0a92a8613b46c1d54d04cf589cf1c4041b3c862df6019baacf3dd8ed787853a6"
+    },
+    "scripts/vidya/adapters/ci_conformance.py": {
+      "read_artifact": "read-009.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    "scripts/vidya/canonical.py": {
+      "read_artifact": "read-013.bin",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    "scripts/vidya/claim_tuple.py": {
+      "read_artifact": "read-010.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    "scripts/vidya/frames.py": {
+      "read_artifact": "read-012.bin",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    "scripts/vidya/lattice.py": {
+      "read_artifact": "read-011.bin",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    }
+  },
+  "workflow": {
+    "attempt": 1,
+    "branch": "codex/ni08-evl42-actual-scan-20261007",
+    "event": "push",
+    "head_sha": "139c48aaf454971858268f023b870372ae505ba5",
+    "job": "actual-pin-scan",
+    "run_id": "37679517879"
+  }
+}
