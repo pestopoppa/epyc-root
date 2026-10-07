@@ -5179,3 +5179,8 @@ Two hosted fixture controls exercise the actual cmd_nudge refusal/elapsed dry-ru
 ## Shared explicit-root exploration source
 
 The shared read-only core supports bounded explicit-root callers while current REPL adapters preserve request and knowledge admission plus legacy character-page semantics. [Source and original11/11 controls](../artifacts/ni08/hs4-p6-exploration-source-20261007/README.md). Catalog-growth and actor consumer acceptance remain separate.
+
+
+### Calendar-independent recent-evaluation fixture — 2026-10-07
+
+[Published source audit](../artifacts/ni08/evl30-relative-clock-source-20261007/README.md) confirms relative UTC old/recent rows in the autopilot recency-window control. Source requirement is satisfied; unit-suite red-baseline resolution remains separate.

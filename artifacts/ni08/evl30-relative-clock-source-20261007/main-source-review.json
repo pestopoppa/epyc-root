@@ -1,0 +1,14 @@
+{
+  "app_commit": "adfe61e93e17134948cd2360c20b1679808d10ec",
+  "path": "tests/unit/test_autopilot_actions.py",
+  "blob": "722fe7e4346aead16f19daf7fc49baa8d2e1d752",
+  "case": "test_recent_eval_qids_excludes_only_rows_inside_recency_window",
+  "case_ast_sha256": "e3a238ec2ddfd4b80c6560f86b59d667cca9a1cf06703bb5e87d42c4c601a85f",
+  "finding": "Published source already uses UTC now, old minus180days and fresh minus5days for 60day window; no duplicate code needed",
+  "draft_checkbox": "- [x] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** \u2014 \u2705 2026-10-07; APP adfe61e93e17134948cd2360c20b1679808d10ec source/AST confirms relative UTC clock with old180/fresh5 days against60-day window. Source requirement satisfied; no whole-unit-suite GREEN claim.",
+  "validation": "Git/AST only; MAIN must apply exact existing task/progress qualification",
+  "main_review": "PASS",
+  "source_only": true,
+  "host_project_execution": false,
+  "publication_verified": true
+}

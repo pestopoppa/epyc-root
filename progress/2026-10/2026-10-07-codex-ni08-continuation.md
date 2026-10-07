@@ -140,3 +140,8 @@ MAIN reviewed and prospectively enrolled the actual governance-reference validat
 ## Voice strict payload and typed choice — prospective source boundary
 
 MAIN reviewed APPbbf38c98 six-file proposal and complete callers/tests, MEDIUM additive route/controller/cascade contract. Explicit protected/verbatim turns bypass unsupported interlocutors; owner-pinned cancel cannot cancel a replacement turn. Prospective CS16-SOURCE/CS18-SOURCE and VB-CS16-18-CONFORMANCE/table enrolled before capture. Normal/default streaming retained; strict modes buffer before exact-text validation. No phrase classifier, audio fidelity, real service, or latency acceptance. Native verification/source integration remain next; NI08 tally remains105.
+
+
+## EVL30 stale relative-clock task
+
+MAIN accepted [published Git/AST source identity](../../artifacts/ni08/evl30-relative-clock-source-20261007/README.md), closed the existing stale checkbox and corrected EVL30 next action (the card still has a real red-baseline task). No host tests or whole-suite GREEN claim. NI08 now106.

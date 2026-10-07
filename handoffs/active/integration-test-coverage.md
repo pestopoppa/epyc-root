@@ -4,6 +4,7 @@
 **Created**: 2026-04-13
 **Updated**: 2026-07-26
 **Priority**: MEDIUM
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`; scoped source-review artifacts only.
 **Primary repo**: `/mnt/raid0/llm/epyc-orchestrator`
 **Parent index**: [master-handoff-index.md](master-handoff-index.md)
 **Completed ledger**: [integration-test-coverage-phases-1-4-completed-through-2026-05-28.md](../completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md)
@@ -87,6 +88,6 @@ handoff owns the shared red-test baseline.
       (`test_legacy_source_change_after_preflight_blocks_scorer_replay`,
       `test_generation_tail_replaces_only_target_response_and_sidecar_bytes`) that no dispatch had claimed as
       pre-existing (found 2026-09-14, noninf sweep).
-- [ ] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** — it
+- [x] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** — it
       fails with the calendar because its hardcoded `2026-07-01T00:00:00Z` row is 75 days old against the
-      test's own 60-day window (`tests/unit/test_autopilot_actions.py:1332`) (found 2026-09-14, noninf sweep).
+      test's own 60-day window (`tests/unit/test_autopilot_actions.py:1332`) (found 2026-09-14, noninf sweep). ✅ 2026-10-07 — MAIN verified [published relative-clock source](../../artifacts/ni08/evl30-relative-clock-source-20261007/README.md); no whole-suite claim.
