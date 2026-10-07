@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **157 completed scoped tasks: 96 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **159 completed scoped tasks: 98 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -413,3 +413,7 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## INF54 already-present IQ source wiring — MAIN disposition
 
 [Four exact frozen Git blobs](../../artifacts/ni08/inf54-current-iq-source-adjudication-20261007/README.md) close the one stale STEP1 implementation checkbox. Actual current dispatch also supports IQ4_XS; its historical native-only instruction is superseded. No kernel mutation, build, binary/runtime or performance/quality/trellis claim. NI08=157 (96 existing+61 children); STEP2/3 and other quantization source/runtime work stay open.
+
+## ET13 exact source and original140/140 acceptance — 2026-10-07
+
+[MAIN source/original acceptance](../../artifacts/ni08/et13-honest-routing-source-acceptance-20261007/README.md) closes the actual routing source and prospective native companion after ordinary APP87ec two-file publication. Native TRUE140/140, exact frozen input/environment/grade/result custody and original failure/deviation distinctions are authenticated. NI08=159 (98 existing+61 children). Raw routes, denominators and policy unchanged; mixed E5/runtime/inference remain open.

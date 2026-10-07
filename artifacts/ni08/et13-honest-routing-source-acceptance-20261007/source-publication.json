@@ -1,0 +1,23 @@
+{
+  "commit": "87ecbf18bc3d3793271d0eaf183e19900ad9726a",
+  "parent": "73984542dc85fc2ecd0f2581877e8e003378ec6b",
+  "exact_paths": [
+    {
+      "path": "scripts/autopilot/eval_tower.py",
+      "old_blob": "a386a4db794f9946302223311eaa73b499a90cd2",
+      "new_blob": "2a6ea74af6d508697dfbbeef0df9e5c2634f7bba",
+      "sha256": "cf72ee13046287d6dc7f2437e70aab42b7912f287e8a510f7d811da375c22971",
+      "bytes": 362682
+    },
+    {
+      "path": "tests/unit/test_eval_tower_decision_partitions.py",
+      "old_blob": "352c2de9ccaaf90596890d9c48121034d205d00e",
+      "new_blob": "76d9beb0d328dd04ae8bc678e2b9a05a0bee2e29",
+      "sha256": "06cdd472070e7cbb37b7227dfdebd83b0e1f035278433de96c7e5f4eceaf31aa",
+      "bytes": 7579
+    }
+  ],
+  "public_main_verified": true,
+  "source_warrant": "Exact accepted two products on frozen14a2; current broader APP suite not certified",
+  "normal_branch_and_main_fast_forward": true
+}
