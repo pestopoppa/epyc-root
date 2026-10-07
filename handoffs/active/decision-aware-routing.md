@@ -102,7 +102,7 @@ DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2
 **Files**: New `bilinear_scorer.py`, `retriever.py`, `q_scorer.py` (config), `episodic_store.py`
 
 - DAR-1.5 verdict (2026-05-07; P4.2 resolved 2026-06-27): DAR-4 proceeds full-rank; sep-CMA-ES only for cold-start/no-label surfaces. Gate artifact: `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/p42_block_separability/report_20260627_sample80k.json`.
-- Feature candidate (intake-408#06): add `is_reasoning_model` to `ModelFeatures`.
+- Feature candidate withdrawn (2026-10-07 citation audit): no independent rationale is recorded in this handoff for adding `is_reasoning_model` to `ModelFeatures`; the cited record contains five claims about an episodic-memory benchmark and none about this descriptor (`intake-408#record`).
 
 ### DAR-4b: Inference-Time Preference Vector + Cost Scaling τ (~50–100 lines, 1–2 sessions)
 
@@ -385,7 +385,7 @@ The rescore surfaced a second defect of the same shape as the `role`/`producer_r
 
 ## Research Intake Update — 2026-09-07
 
-**Risk note — orchestration features carry a capability floor** (`intake-1333#06`, dive-verified).
+**Risk note — orchestration features carry a capability floor** (`intake-1333#01`, dive-verified).
 Richer orchestration **REGRESSED** quality on all three smaller models, concentrated in
 orchestration-heavy capabilities (Qwen 3.6 MCP .65 → .50), and sub-agent delegation scored 0.42–0.45
 on the fast tier. Directional and vendor-internal, so it **cannot gate a decision** — but it suggests
@@ -520,3 +520,5 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
 - Selection score: `_scalarized_selection_score` at `retriever.py:46-57`, called at :286-297 and :786-810.
 - Prior blend: `hybrid_router.py:308-327`.
 - Initial route: `routing_decision.py:259-314`.
+
+- [x] **DAR-CITATION-SOURCE-REPAIR — resolve two dangling claim anchors against actual native intake records.** ✅ 2026-10-07 — MAIN reviews the actual five-claim intake-408#record and withdraws the unsupported reasoning-feature annotation; intake-1333#01 precisely supports the existing source-reported capability risk, with no live/performance or new policy gate. This corrected anchor remains UNKNOWN in the current belief ledger; original failed check and source evidence are retained. No intake/source claim, ledger or grading rule is rewritten.

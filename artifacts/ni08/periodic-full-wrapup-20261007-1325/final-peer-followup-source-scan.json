@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "kind": "project-wiki-source-manifest",
+  "last_compile": "2026-10-07T13:55:09Z",
+  "scan_time": "2026-10-07T14:01:15Z",
+  "mode": "incremental",
+  "sources": [
+    {
+      "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+      "type": "progress",
+      "modified": "2026-10-07T14:00:02Z",
+      "size": 46287,
+      "content_hash": "3a7246ff0d3074dff996de2f247dfe0001caf1b7b004780ff527893244b13a3c",
+      "title": "NI08 continued non-inference implementation \u2014 2026-10-07"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07.md",
+      "type": "progress",
+      "modified": "2026-10-07T13:55:40Z",
+      "size": 63313,
+      "content_hash": "851ceca298a91d58fed34db0789bca6b5a6421cdd7a69d056c066e8f0651c967",
+      "title": "2026-10-07"
+    }
+  ],
+  "total_new": 2,
+  "by_type": {
+    "progress": 2
+  },
+  "source_set_hash": "6544656a5e1f88fee3971893f88b24dcab601ba35d59b2da06561586a4532e8a",
+  "writer_evidence_policy": {
+    "policy_version": 1,
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "requires_source_reference_section": true,
+    "requires_structural_lint": true,
+    "requires_human_or_measured_review": true
+  },
+  "baseline_manifest": "wiki/source_manifest.json",
+  "baseline_source_set_hash": "0eb1c14a7cad8ba2f816fad71edc71d5d9d61009b55c38fb000e70b4b40929ee",
+  "current_source_set_hash": "c30a8ebe3529318f9964579b1be006190914617d41db8d204afb2326a8a8c7ee",
+  "removed_sources": [],
+  "removed_count": 0,
+  "drift": {
+    "added_count": 0,
+    "changed_count": 2,
+    "removed_count": 0,
+    "has_drift": true
+  }
+}

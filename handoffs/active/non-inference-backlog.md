@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 164 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 168 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -720,3 +720,9 @@ MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8
 
 
 2026-10-07 newly available non-inference scopes: [TOC-SP-4](tool-output-compression.md) closes the spill-summary zero-tail/oversized-request source bug through whole15 mocked-worker controls; [RVP-C6-26-C-POINTER-SOURCE](rocm-verify-profile-backend.md) closes the named C-style pointer lexical gap through whole9 controls. Actual source/VB tasks are enrolled before capture and remain unchecked. Discovery finite-score source/native remains next alongside these; their runtime/inference/quote/GPU/content-memo parents remain distinct. No additional completion is counted at enrollment.
+
+2026-10-07 guarded sparse capacity: MAIN filed immutable original operational receipts and completed VB-NI08-SPARSE-CAPACITY-CUSTODY; [bounded source custody](../../artifacts/ni08/sparse-capacity-custody-20261007/README.md), not a native/measurement grade or future admission guarantee. NI08=165 scoped completions (103 existing flips +62 children); remaining source tasks continue.
+
+2026-10-07 C104 future-writer source/native companions are completed after MAIN original8/8 and exact two-file Research9299 publication review. NI08=167 (105 existing flips +62 completed children); historical14store/live-parent acceptance remains independently open.
+
+2026-10-07 exact decision-aware source citation repair closes one bounded child, NI08=168 (105 existing flips +63 completed children). Corrected risk citation intake-1333#01 remains unknown to the current ledger; the source record is unchanged and gives no runtime/policy gate.

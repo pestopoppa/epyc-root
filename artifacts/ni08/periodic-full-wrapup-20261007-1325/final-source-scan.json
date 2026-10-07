@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "kind": "project-wiki-source-manifest",
+  "last_compile": "2026-10-07T12:11:20Z",
+  "scan_time": "2026-10-07T13:55:08Z",
+  "mode": "incremental",
+  "sources": [
+    {
+      "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:22:36Z",
+      "size": 43977,
+      "content_hash": "4c8cc74c99553294a41020f27100c756679c4d8b9094681bdf0ebc6b2bbd2e36",
+      "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs"
+    },
+    {
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:22:36Z",
+      "size": 377616,
+      "content_hash": "21079c6393c92986367bcff8e7fa3986149b793ac3928e0c8133b9061dbe63b1",
+      "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work"
+    },
+    {
+      "path": "handoffs/active/decision-aware-routing.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:49:55Z",
+      "size": 74241,
+      "content_hash": "36d99d2f1b753e2d5ca30155b0da13cfb75a55ad415ae98ebae0ef2aa38f0843",
+      "title": "Decision-Aware Routing for Q-Scorer"
+    },
+    {
+      "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:45:48Z",
+      "size": 148804,
+      "content_hash": "1b4e21d4d694c08189cdde5302f21e5cad3c089125189d176480c123506e051e",
+      "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)"
+    },
+    {
+      "path": "handoffs/active/delegation-context-preassembly.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T12:52:43Z",
+      "size": 36733,
+      "content_hash": "9752bb1327526e6ed86b19cf0b62d2262fc6e65434ff22538bf26154c4d10ba4",
+      "title": "Delegation Context Pre-Assembly (Budget-Bounded)"
+    },
+    {
+      "path": "handoffs/active/non-inference-backlog.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:49:55Z",
+      "size": 131510,
+      "content_hash": "d98adb8dc6c7e7eefaa787b859878c9304c72bd0807a36fa722febb0d4fc22c5",
+      "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)"
+    },
+    {
+      "path": "handoffs/active/rocm-verify-profile-backend.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:22:36Z",
+      "size": 161426,
+      "content_hash": "f3ae960baf87108e961aee6545a88879c0d575b148c4be2a1c51bf70bf94471d",
+      "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring"
+    },
+    {
+      "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:22:36Z",
+      "size": 76361,
+      "content_hash": "3fcdf731836dd69f2e6b90eeb6b89fcbe165eb88daf529727148327c2c31e8d0",
+      "title": "Speculative-Decoding / MTP Refresh"
+    },
+    {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T13:45:48Z",
+      "size": 374613,
+      "content_hash": "38276016fdf496e37b008afe84c628191511fffde8f68f960c6b01c04786b479",
+      "title": "Vidya Belief-Substrate Program"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md",
+      "type": "progress",
+      "modified": "2026-10-07T13:22:36Z",
+      "size": 24655,
+      "content_hash": "f95453322d06fc0c365a35711f2b8a13c0711745c8cd5de459861c5d6a362a7c",
+      "title": "AK Lane Coordinator \u2014 Wrap-up 2026-10-07"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+      "type": "progress",
+      "modified": "2026-10-07T13:55:08Z",
+      "size": 45542,
+      "content_hash": "97114b4adb6c06a580156d7d42ca1f0c6a8e1752d6d75f9c936e86b9a5a3ea71",
+      "title": "NI08 continued non-inference implementation \u2014 2026-10-07"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07.md",
+      "type": "progress",
+      "modified": "2026-10-07T13:22:36Z",
+      "size": 61381,
+      "content_hash": "36c8f9f54594facc85ae5f18635e52444b9f90db52bf34531d3f173a76a38c28",
+      "title": "2026-10-07"
+    },
+    {
+      "path": "docs/reference/ni08-non-inference-continuation.md",
+      "type": "docs",
+      "modified": "2026-10-07T13:49:55Z",
+      "size": 62232,
+      "content_hash": "d9a37348fa7c234d2fdfcc48b584f5ab0c7bff8b1fc691a352cf667cf8af7c85",
+      "title": "NI08 non-inference continuation \u2014 2026-10-06"
+    }
+  ],
+  "total_new": 13,
+  "by_type": {
+    "handoff-active": 9,
+    "progress": 3,
+    "docs": 1
+  },
+  "source_set_hash": "b05460260645544750a63475f1cf4ffd260c4729b5ae5bf2f507a8896ec87dc9",
+  "writer_evidence_policy": {
+    "policy_version": 1,
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "requires_source_reference_section": true,
+    "requires_structural_lint": true,
+    "requires_human_or_measured_review": true
+  },
+  "baseline_manifest": "wiki/source_manifest.json",
+  "baseline_source_set_hash": "6e9b26affc9116fa315e780083c055155a2fb517f728c5348bec02917c8be6f6",
+  "current_source_set_hash": "0eb1c14a7cad8ba2f816fad71edc71d5d9d61009b55c38fb000e70b4b40929ee",
+  "removed_sources": [],
+  "removed_count": 0,
+  "drift": {
+    "added_count": 0,
+    "changed_count": 13,
+    "removed_count": 0,
+    "has_drift": true
+  }
+}

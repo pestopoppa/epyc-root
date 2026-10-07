@@ -1,0 +1,107 @@
+{
+  "MAIN-native-acceptance.json": {
+    "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c104-original-MAIN-acceptance.json",
+    "sha256": "88472d471b1580c91a6b96807b46e3c62718a9cb2f6432f811bef95ed683f769",
+    "bytes": 2121,
+    "public_path": "MAIN-native-acceptance.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "MAIN-original-reopen.json": {
+    "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c104-original-MAIN-reopen.json",
+    "sha256": "f7c24285c1ca1088e0462dcb8bc6b64afcdb53c5d530913ebfbfdcf0054f64e3",
+    "bytes": 288973,
+    "public_path": "MAIN-original-reopen.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "MAIN-product-publication-review.json": {
+    "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c104-product-MAIN-publication-review.json",
+    "sha256": "fff0d65f9e6ab6397d4ee4fef569fe68ed73522a7755b56f4f3561ca674cafbd",
+    "bytes": 487,
+    "public_path": "MAIN-product-publication-review.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "MAIN-prebinding.json": {
+    "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c104-MAIN-prebinding.json",
+    "sha256": "c3a97d77e668cbdcd9b2c2c963c0ce77c6ea6f1be10912b738de66e314dda829",
+    "bytes": 24854,
+    "public_path": "MAIN-prebinding.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-run-api.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/completed-run-api.json",
+    "sha256": "9263bc557e2337b3a1cca2a4ef463b71545bf06d833d48d78373e89ff6277d62",
+    "bytes": 12472,
+    "public_path": "original-run-api.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-jobs-api.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/completed-jobs-api.json",
+    "sha256": "ca2b4631180fe25eb76552857610966ecd7257765a1634959cb1bbad90ca7da1",
+    "bytes": 4240,
+    "public_path": "original-jobs-api.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-artifacts-api.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/completed-artifacts-api.json",
+    "sha256": "f7b9807f9bef41702b8f6b2a5e73e8ecad885223b31b0a89752788f2a833c1b2",
+    "bytes": 756,
+    "public_path": "original-artifacts-api.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-native-receipt.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/original-extracted/result/native/receipt.json",
+    "sha256": "1be28d44958b4df36a2425b335b1a9623df63871e1eed442eab5373a3e4e94ae",
+    "bytes": 23184,
+    "public_path": "original-native-receipt.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-native-request.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/original-extracted/result/native/execution-request.json",
+    "sha256": "2fd50633a3f4ba4d8ada0ef4ef38df51c1f92ff973e3f5c112b3e399618035d4",
+    "bytes": 18737,
+    "public_path": "original-native-request.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-status.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/original-extracted/status.json",
+    "sha256": "8be719efde908eacf27dcfac0cb0445ace5ca5d8f5d297af7fd4b78763dfe053",
+    "bytes": 13003,
+    "public_path": "original-status.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-shared-grade-custody.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/original-extracted/shared-grade-custody.json",
+    "sha256": "94b0a054b5f5d5286025f4133ba04c9e6e9535db6fb15558932c235c2bb20bf1",
+    "bytes": 64630,
+    "public_path": "original-shared-grade-custody.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-pre-grade-custody.json": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/original-extracted/pre-grade-custody.json",
+    "sha256": "214b686b8ccec67124d961673c0f2df74e4ae34cac0361ce8fce0c3473c6c278",
+    "bytes": 66733,
+    "public_path": "original-pre-grade-custody.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-junit.xml": {
+    "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-publication-original-20261007/original-extracted/result/original-junit.xml",
+    "sha256": "60ddcc59a90a6a4cdadd3b00eee9b881fcdd6b7f95710da30f8f12c79ca1bf8f",
+    "bytes": 1437,
+    "public_path": "original-junit.xml",
+    "encoding": "original bytes"
+  },
+  "publication-receipt.json": {
+    "private_original": "/tmp/c104-product-publish-yxfyj8mw/publication-receipt.json",
+    "sha256": "2f628dbe5b478d0136761070d11310aaca1d2c1b5f0e8dbdcc485f5e9a7c1fb6",
+    "bytes": 2644,
+    "public_path": "publication-receipt.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "original-command-journal.jsonl": {
+    "private_original": "/tmp/c104-product-publish-yxfyj8mw/original-command-journal.jsonl",
+    "sha256": "f33d895943f7f90a02e764e7501e158943fb6d68e058ff7ff02ce9761525ac85",
+    "bytes": 11299,
+    "public_path": "original-command-journal.jsonl.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "backlog": {
+    "open_handoffs": 189,
+    "open_tasks": 2418,
+    "open_tasks_done": 3665,
+    "open_tasks_total": 6083,
+    "open_untracked_handoffs": 12,
+    "pct_all_done": 64.3,
+    "pct_open_done": 60.2
+  },
+  "bytes": 247780,
+  "captured_at": "2026-10-07T13:28:59Z",
+  "checkbox_done_total": {
+    "active": {
+      "done": 3644,
+      "total": 6016
+    },
+    "archived": {
+      "done": 840,
+      "total": 1339
+    },
+    "blocked": {
+      "done": 21,
+      "total": 67
+    },
+    "completed": {
+      "done": 1964,
+      "total": 2363
+    }
+  },
+  "column_cards": {
+    "active": 182,
+    "archived": 120,
+    "blocked": 7,
+    "completed": 211
+  },
+  "counts": {
+    "active": 182,
+    "archived": 120,
+    "blocked": 7,
+    "completed": 211
+  },
+  "endpoint": "http://127.0.0.1:8100/api/handoff_board",
+  "http_date": "Wed, 07 Oct 2026 13:29:00 GMT",
+  "sha256": "30fa01a2baac9af4f428c28635c648a832e5c1f015562b52683b9c86cc6ac076"
+}

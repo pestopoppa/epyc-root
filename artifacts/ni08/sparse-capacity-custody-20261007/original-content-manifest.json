@@ -1,0 +1,37 @@
+{
+  "NI08_CAPACITY_SPARSE_HELPER.v2.py": {
+    "original_absolute_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/NI08_CAPACITY_SPARSE_HELPER.v2.py",
+    "original_sha256": "022bea05eb0c52514e84776cfaea0df84665cb653a9a35801dcba79e832e4fe2",
+    "original_bytes": 10966,
+    "public_path": "NI08_CAPACITY_SPARSE_HELPER.v2.py.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "NI08_CAPACITY_SPARSE_PLAN.v2.json": {
+    "original_absolute_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/NI08_CAPACITY_SPARSE_PLAN.v2.json",
+    "original_sha256": "897eaa476f89b8df4126acd3751930a68a7b254597bd661528d2683bcdf03520",
+    "original_bytes": 81331,
+    "public_path": "NI08_CAPACITY_SPARSE_PLAN.v2.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "NI08_CAPACITY_SPARSE_APPLY.v2.json": {
+    "original_absolute_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/NI08_CAPACITY_SPARSE_APPLY.v2.json",
+    "original_sha256": "6ee56e3414bcf2e7da08fa0752e3ba429488eedc7a7e59a4a0ed63861ae36540",
+    "original_bytes": 19266,
+    "public_path": "NI08_CAPACITY_SPARSE_APPLY.v2.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "NI08_CAPACITY_SPARSE_APPLY_ORIGINAL_PROCESS.v2.json": {
+    "original_absolute_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/NI08_CAPACITY_SPARSE_APPLY_ORIGINAL_PROCESS.v2.json",
+    "original_sha256": "21e3a5da77d7af1f6c8c38509c74a7228722b6b771a261eb5efdc6e4be7d9690",
+    "original_bytes": 463,
+    "public_path": "NI08_CAPACITY_SPARSE_APPLY_ORIGINAL_PROCESS.v2.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  },
+  "NI08_CAPACITY_SPARSE_FINAL_SAMPLE_ORIGINAL_PROCESS.v2.json": {
+    "original_absolute_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/NI08_CAPACITY_SPARSE_FINAL_SAMPLE_ORIGINAL_PROCESS.v2.json",
+    "original_sha256": "7b0c6bb5c9744bfed22efcb8928f3f7f3c8e818adbafdb6d3dd1aa5bf3f8c476",
+    "original_bytes": 650,
+    "public_path": "NI08_CAPACITY_SPARSE_FINAL_SAMPLE_ORIGINAL_PROCESS.v2.json.b64",
+    "encoding": "RFC4648 base64 with one terminal newline"
+  }
+}

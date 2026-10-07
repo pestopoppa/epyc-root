@@ -1,0 +1,20 @@
+--- a/handoffs/active/decision-aware-routing.md
++++ b/handoffs/active/decision-aware-routing.md
+@@ -102,7 +102,7 @@
+ **Files**: New `bilinear_scorer.py`, `retriever.py`, `q_scorer.py` (config), `episodic_store.py`
+ 
+ - DAR-1.5 verdict (2026-05-07; P4.2 resolved 2026-06-27): DAR-4 proceeds full-rank; sep-CMA-ES only for cold-start/no-label surfaces. Gate artifact: `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/p42_block_separability/report_20260627_sample80k.json`.
+-- Feature candidate (intake-408#06): add `is_reasoning_model` to `ModelFeatures`.
++- Feature candidate withdrawn (2026-10-07 citation audit): no independent rationale is recorded for adding `is_reasoning_model` to `ModelFeatures`; the cited record contains five claims about an episodic-memory benchmark and none about this descriptor (`intake-408#record`).
+ 
+ ### DAR-4b: Inference-Time Preference Vector + Cost Scaling τ (~50–100 lines, 1–2 sessions)
+ 
+@@ -385,7 +385,7 @@
+ 
+ ## Research Intake Update — 2026-09-07
+ 
+-**Risk note — orchestration features carry a capability floor** (`intake-1333#06`, dive-verified).
++**Risk note — orchestration features carry a capability floor** (`intake-1333#01`, dive-verified).
+ Richer orchestration **REGRESSED** quality on all three smaller models, concentrated in
+ orchestration-heavy capabilities (Qwen 3.6 MCP .65 → .50), and sub-agent delegation scored 0.42–0.45
+ on the fast tier. Directional and vendor-internal, so it **cannot gate a decision** — but it suggests

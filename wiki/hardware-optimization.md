@@ -7,6 +7,19 @@
 
 ## Latest source review — 2026-10-07
 
+## Incremental synthesis — 2026-10-07: source review, runtime validation, and capture remain separate gates
+
+**Confidence: verified for the cited source-record state only.** This update makes no kernel-performance claim.
+
+The current AutoKernel records separate accepted source composition, native control validation, full capture, activation, and promotion. The earlier source cut left consolidated r4 execution behind disk admission. The owner's later13:40Z record reports an original r4 focused failure, then a repaired r5 focused394-control pass while the full suite remained running with additional failures; it records no consolidated PASS, main landing or CPU/GPU activation. The bounded source/native control and full runtime gates remain distinct. DS41 partial mask capture and copied graph controls do not replace the required full sixteen-case capture; the record also distinguishes build/capture-knob evidence from HIP residency, model validation, or a serving result. These boundaries matter because a prepared candidate, a bounded control pass, and a live serving outcome answer different questions. The existing production kernel and source champion are recorded unchanged in this checkpoint.
+
+### Source References
+
+- [AutoKernel unified-surface program](../handoffs/active/autokernel-unified-surface-program.md) — current candidate, admission, capture, and activation boundaries.
+- [AutoKernel all devices and dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md) — DS41 source/build status and remaining tests/capture work.
+- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — named DS41 source children and parent scopes.
+- [AutoKernel coordinator progress](../progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md) — bounded coordinator checkpoint and open runtime outcomes.
+
 ## Incremental synthesis — 2026-10-07: source custody repairs do not reopen a performance gate
 
 **Confidence: verified** for source custody and documented corrections; no new kernel performance measurement follows.
@@ -6173,3 +6186,5 @@ Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-p
 [The fresh experimental rollback child](../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md) consumes the existing per-tensor suite RNG for integer initialization. Actual hosted CPU programs passed3/3, retaining64 raw permutations across16seeds, same-seed replay/across-seed variation and unchanged reference-graph replay. Complete source/compiler/header/build/runtime inputs are preserved. Frozen production remains unchanged, and live seeded campaign events, full-device regression and production promotion remain independent parent gates.
 
 Source references: [stack pipeline finalization](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [RVP parent/source gates](../handoffs/active/rocm-verify-profile-backend.md), [prospective source consumers](../handoffs/active/vidya-belief-substrate-program.md).
+
+The13:40Z owner checkpoint also records atomic activation of the exact reference-hook bytes after its separate seven-control validation; settings/mode/shared checkout HEAD are recorded unchanged. This wiki cites that owner record rather than asserting a new independent runtime verification. [Dated original owner progress](../progress/2026-10/2026-10-07.md), [unified campaign scope](../handoffs/active/autokernel-unified-surface-program.md), [all-device gate boundaries](../handoffs/active/autokernel-all-devices-all-dimensions.md).
