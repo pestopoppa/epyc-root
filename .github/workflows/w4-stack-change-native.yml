@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      APP_PIN: bec3263e6a83f446bf291b7dee938e326cffddfc
+      APP_PIN: dfa6dd55593d9c5e1e1a564b66b7889109b7e133
       RESEARCH_PIN: 01d36835e68d57c231a9b0591802e267531df530
       CI: 'true'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'

@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts/vidya"))
-APP_PIN = "bec3263e6a83f446bf291b7dee938e326cffddfc"
+APP_PIN = "dfa6dd55593d9c5e1e1a564b66b7889109b7e133"
 RESEARCH_PIN = "01d36835e68d57c231a9b0591802e267531df530"
 RESEARCH_REGISTRY = "orchestration/model_registry.yaml"
 RESEARCH_REGISTRY_BLOB = "a3935e7bc1a5ab0a96c1677ae0cb1dae8c788a81"
