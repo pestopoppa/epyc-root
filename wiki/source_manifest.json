@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T12:11:20Z",
+  "last_compile": "2026-10-07T14:01:15Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T12:11:20Z",
+  "scan_time": "2026-10-07T14:01:15Z",
   "schema_version": 1,
-  "source_set_hash": "6e9b26affc9116fa315e780083c055155a2fb517f728c5348bec02917c8be6f6",
+  "source_set_hash": "c30a8ebe3529318f9964579b1be006190914617d41db8d204afb2326a8a8c7ee",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -95,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ecdc8f028fe5ecfb5c97f68d9a262746c55eca3ba44cb2cc28fc148b97882e6c",
-      "modified": "2026-10-07T03:23:02Z",
+      "content_hash": "4c8cc74c99553294a41020f27100c756679c4d8b9094681bdf0ebc6b2bbd2e36",
+      "modified": "2026-10-07T13:22:36Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 41381,
+      "size": 43977,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b73ac0a0dd9972ccc45a4bdfd8cb267aee482c26977635a363463fc9a444fc51",
-      "modified": "2026-10-07T03:23:02Z",
+      "content_hash": "21079c6393c92986367bcff8e7fa3986149b793ac3928e0c8133b9061dbe63b1",
+      "modified": "2026-10-07T13:22:36Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 358240,
+      "size": 377616,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -351,10 +351,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f29f3a56c2f1cbd222380ba2571f69c3943785314d2a54177fb7a1ae98247700",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "36d99d2f1b753e2d5ca30155b0da13cfb75a55ad415ae98ebae0ef2aa38f0843",
+      "modified": "2026-10-07T13:49:55Z",
       "path": "handoffs/active/decision-aware-routing.md",
-      "size": 73475,
+      "size": 74241,
       "title": "Decision-Aware Routing for Q-Scorer",
       "type": "handoff-active"
     },
@@ -367,18 +367,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4ffc37dda8db50ceda52b78661711d8b3613f2c27a71cf5f922a0a0c18fdb8ab",
-      "modified": "2026-10-07T12:06:43Z",
+      "content_hash": "1b4e21d4d694c08189cdde5302f21e5cad3c089125189d176480c123506e051e",
+      "modified": "2026-10-07T13:45:48Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 147982,
+      "size": 148804,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "eab9dd6a3474d298ad2c6dabfb02b5965c6abc8d56b7c6f2d36e4cafad0d8cde",
-      "modified": "2026-10-07T10:28:43Z",
+      "content_hash": "9752bb1327526e6ed86b19cf0b62d2262fc6e65434ff22538bf26154c4d10ba4",
+      "modified": "2026-10-07T12:52:43Z",
       "path": "handoffs/active/delegation-context-preassembly.md",
-      "size": 36494,
+      "size": 36733,
       "title": "Delegation Context Pre-Assembly (Budget-Bounded)",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cad071714dfd143eeff8233edd6653f7025a906dc1da37d2fbe72ce4d9acbd12",
-      "modified": "2026-10-07T11:54:27Z",
+      "content_hash": "d98adb8dc6c7e7eefaa787b859878c9304c72bd0807a36fa722febb0d4fc22c5",
+      "modified": "2026-10-07T13:49:55Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 130579,
+      "size": 131510,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1183,10 +1183,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4264a3ca526555df72aec7d9e5cd0803b327db5234ec03d1b1d7db4d05f3dbdd",
-      "modified": "2026-10-07T12:06:11Z",
+      "content_hash": "f3ae960baf87108e961aee6545a88879c0d575b148c4be2a1c51bf70bf94471d",
+      "modified": "2026-10-07T13:22:36Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 161158,
+      "size": 161426,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1263,10 +1263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9df1a36e7eb376467962c7a9451ee4a00830cec5a73ae97bbf93a3751109564a",
-      "modified": "2026-10-07T11:54:27Z",
+      "content_hash": "3fcdf731836dd69f2e6b90eeb6b89fcbe165eb88daf529727148327c2c31e8d0",
+      "modified": "2026-10-07T13:22:36Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 75896,
+      "size": 76361,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d792f53cb358bdf7e64bdf7e0a9014da31dff4087c6f09781f5722594c8d6b14",
-      "modified": "2026-10-07T12:06:43Z",
+      "content_hash": "38276016fdf496e37b008afe84c628191511fffde8f68f960c6b01c04786b479",
+      "modified": "2026-10-07T13:45:48Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 367494,
+      "size": 374613,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9335,18 +9335,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "5d52a7b36002b7408c29f393a97b044eb4fc617a5d8a77ac2549574d978f690f",
-      "modified": "2026-10-07T03:23:02Z",
+      "content_hash": "f95453322d06fc0c365a35711f2b8a13c0711745c8cd5de459861c5d6a362a7c",
+      "modified": "2026-10-07T13:22:36Z",
       "path": "progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md",
-      "size": 20730,
+      "size": 24655,
       "title": "AK Lane Coordinator \u2014 Wrap-up 2026-10-07",
       "type": "progress"
     },
     {
-      "content_hash": "6eae0263dea70436d692e3fd8ed580ca81c49979dae427248789a5a058062634",
-      "modified": "2026-10-07T08:17:21Z",
+      "content_hash": "3a7246ff0d3074dff996de2f247dfe0001caf1b7b004780ff527893244b13a3c",
+      "modified": "2026-10-07T14:00:02Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 41039,
+      "size": 46287,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
       "type": "progress"
     },
@@ -9407,10 +9407,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "7d8b39502b1736bc28551cfd5e3dadae6e21364a160e15d582dd90ba45cf8c4f",
-      "modified": "2026-10-07T12:06:11Z",
+      "content_hash": "851ceca298a91d58fed34db0789bca6b5a6421cdd7a69d056c066e8f0651c967",
+      "modified": "2026-10-07T13:55:40Z",
       "path": "progress/2026-10/2026-10-07.md",
-      "size": 21418,
+      "size": 63313,
       "title": "2026-10-07",
       "type": "progress"
     },
@@ -10375,10 +10375,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "8289ce2db06b9942cb22a461e18b1ddf8b7a63b21c4cbe53a0ad5dc081d2156f",
-      "modified": "2026-10-07T11:54:27Z",
+      "content_hash": "d9a37348fa7c234d2fdfcc48b584f5ab0c7bff8b1fc691a352cf667cf8af7c85",
+      "modified": "2026-10-07T13:49:55Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 58436,
+      "size": 62232,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

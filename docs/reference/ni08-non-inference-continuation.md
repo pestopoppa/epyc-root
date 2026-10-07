@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **164 completed scoped tasks: 103 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **168 completed scoped tasks: 105 existing checkbox flips and 63 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -430,3 +430,15 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## C-pointer lexical source — MAIN acceptance
 
 [Exact Researchaefa/original9/9](../../artifacts/ni08/c-pointer-literal-source-acceptance-20261007/README.md) closes the named C-style pointer source and native companion. All20 Git/30 native reads, immutable typed phases, original self-seal/directJUnit and existing grade are independently verified. Earlier FALSE8/9 remains unaccepted. Publication occurred without required leases after a failed acquisition; exact two frozen files/ordinary public parent are verified and the deviation remains explicit. NI08=164 (103 existing tasks+61 scoped children). No parent C6-26, arbitrary parser/memoization absence or GPU/kernel acceptance.
+
+## Guarded capacity and original operational-source custody — MAIN acceptance
+
+[Original ungraded receipt wiring](../../artifacts/ni08/sparse-capacity-custody-20261007/README.md) closes one newly discovered bounded custody child, yielding **165 scoped completions (103 existing flips +62 completed children)**. Seven own idle research worktrees exclude only duplicate tracked benchmarks/data copies, conserving sources/Git/originals/KEEP and semantic indices. Original two available-byte samples exceeded the peer gate52.59seconds apart; future capacity is not promised. No project/native tests, inference, foreign signals or retrospective tuple. Exact raw receipts, helper/plan and private rollback backups remain retained; broader source work continues and whole-backlog exhaustion remains unproved.
+
+## C104 future-writer decisive propagation — MAIN source/native acceptance
+
+[Exact two-file publication and original8/8](../../artifacts/ni08/c104-decisive-source-acceptance-20261007/README.md) close both pre-enrolled future-writer source/native tasks, yielding **167 scoped completions (105 existing flips +62 completed children)**. MAIN independently reopens2003custody checks plus actual normal leased Research9299 publication. Existing comparison/keep/grade rules and immutable original source/result/API records remain; historical14kept-store/live parent stays open. No new inference, runtime reload, synthetic-source-as-science claim or grading ladder. Other source tasks continue; whole-backlog exhaustion remains unproved.
+
+## Exact citation-source repair — MAIN acceptance
+
+The full-checkpoint source scan finds two dangling anchors in decision-aware routing. [Native source evidence](../../artifacts/ni08/periodic-full-wrapup-20261007-1325/citation-source-repair/source-context.md) proves the original reasoning-feature annotation cited an unrelated episodic-memory entry; it is explicitly withdrawn for lacking a recorded source rationale in that handoff. The capability risk uses exact intake-1333#01, retains its source-reported/non-gating limitation, and remains unknown to the current ledger because source coverage is absent. One completed bounded repair child yields **168 scoped completions (105 existing flips +63 completed children)**. No research source is deemed inapplicable, intake/native record/grade is amended or live quality claim asserted; existing source-coverage wiring is independently reviewed next.

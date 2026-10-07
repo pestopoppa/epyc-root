@@ -1,0 +1,75 @@
+{
+  "baseline_source_set_hash": "6e9b26affc9116fa315e780083c055155a2fb517f728c5348bec02917c8be6f6",
+  "current_source_set_hash": "fe03bfd93391fb6df4cc5ffe61b22fa69859bca0500f89bd255f737f6826d9d2",
+  "delta_source_set_hash": "f1adb1f8379f33b4955297aa40c4387b89c69e1c00a6e83f1cb07090d5fe8976",
+  "head": "fff1aee9e3d0c7b4317e0bb68f375802bf356b6a",
+  "sources": [
+    {
+      "content_hash": "4c8cc74c99553294a41020f27100c756679c4d8b9094681bdf0ebc6b2bbd2e36",
+      "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "size": 43977,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "21079c6393c92986367bcff8e7fa3986149b793ac3928e0c8133b9061dbe63b1",
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "size": 377616,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "16f85d853483745ea1c23056a18ee85d19414c1bb9b3b59979fe847a10084ea4",
+      "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "size": 148568,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "9752bb1327526e6ed86b19cf0b62d2262fc6e65434ff22538bf26154c4d10ba4",
+      "path": "handoffs/active/delegation-context-preassembly.md",
+      "size": 36733,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "1778aaa98df03e499227498d1b7e5d4e1bae8e5b376d2f622ad6c7eb03e560c0",
+      "path": "handoffs/active/non-inference-backlog.md",
+      "size": 130579,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "f3ae960baf87108e961aee6545a88879c0d575b148c4be2a1c51bf70bf94471d",
+      "path": "handoffs/active/rocm-verify-profile-backend.md",
+      "size": 161426,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "3fcdf731836dd69f2e6b90eeb6b89fcbe165eb88daf529727148327c2c31e8d0",
+      "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "size": 76361,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "9e8be12e40f623e0bb8507441febcf24f7ca7f85baac9ccb10f90b6ae2aec9ef",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "size": 373635,
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "f95453322d06fc0c365a35711f2b8a13c0711745c8cd5de459861c5d6a362a7c",
+      "path": "progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md",
+      "size": 24655,
+      "type": "progress"
+    },
+    {
+      "content_hash": "36c8f9f54594facc85ae5f18635e52444b9f90db52bf34531d3f173a76a38c28",
+      "path": "progress/2026-10/2026-10-07.md",
+      "size": 61381,
+      "type": "progress"
+    },
+    {
+      "content_hash": "9a2dff1c6f184b9da88092afc5b0d69f391afdb3de6ef6b4cc5a0fe10c4e879b",
+      "path": "docs/reference/ni08-non-inference-continuation.md",
+      "size": 59789,
+      "type": "docs"
+    }
+  ],
+  "total_new": 11
+}

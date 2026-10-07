@@ -1,0 +1,19 @@
+{
+  "plan_exit_code": 1,
+  "exit_1_means_KEEP": true,
+  "roots": 176,
+  "entries": 50,
+  "verdict_counts": {
+    "KEEP-MARKED": 13,
+    "KEEP-UNLANDED-CLONE": 5,
+    "KEEP-DIRTY": 10,
+    "KEEP-UNLANDED": 12,
+    "KEEP-REFERENCED": 2,
+    "KEEP-EVIDENCE": 1,
+    "KEEP-UNVERIFIABLE": 2,
+    "KEEP-PROTECTED": 5
+  },
+  "initial_remove_candidate": 1,
+  "candidate_retained_as_declared_C106_staging_worktree": true,
+  "removals": 0
+}

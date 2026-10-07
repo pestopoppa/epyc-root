@@ -1,0 +1,76 @@
+{
+  "source_pins_at_capture": {
+    "HEAD": "fff1aee9e3d0c7b4317e0bb68f375802bf356b6a",
+    "handoffs/active/decision-aware-routing.md": "f29f3a56c2f1cbd222380ba2571f69c3943785314d2a54177fb7a1ae98247700",
+    "research/intake_index.yaml": "ae9e2f11df7def2ba7f23c1164e8a4cf3588440211ad647645c949eba1a077b3",
+    ".vidya/ledger.jsonl": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a"
+  },
+  "handoff_occurrences": {
+    "intake-408": {
+      "old": "- Feature candidate (intake-408#06): add `is_reasoning_model` to `ModelFeatures`.",
+      "draft": "- Feature candidate withdrawn (2026-10-07 citation audit): no independent rationale is recorded for adding `is_reasoning_model` to `ModelFeatures`; the cited record contains five claims about an episodic-memory benchmark and none about this descriptor (`intake-408#record`)."
+    },
+    "intake-1333": {
+      "old": "**Risk note — orchestration features carry a capability floor** (`intake-1333#06`, dive-verified).",
+      "draft": "**Risk note — orchestration features carry a capability floor** (`intake-1333#01`, dive-verified)."
+    }
+  },
+  "intake-408": {
+    "title": "Episodic Memories Generation and Evaluation Benchmark for Large Language Models",
+    "key_claim_count": 5,
+    "key_claims": [
+      "Measures how effectively LLMs encode, store, and retrieve episodic events within extended narratives (10K-1M tokens)",
+      "Even SOTA models (GPT-5 0.942, Gemini-2.5-Pro 0.968) show significant gaps in chronological awareness (0.80 best) versus near-perfect recall",
+      "Dual-metric evaluation: Simple Recall Score (F1 by matching event count groups) and Chronological Awareness Score (latest-state + Kendall tau ordering)",
+      "Synthetic narratives with controlled ground truth avoid data contamination — 11 datasets across 4 styles, 3 lengths",
+      "Fine-tuning fails to embed episodic knowledge — merely overfits to single learned facts without temporal/relational understanding"
+    ],
+    "claim_corrections": [
+      {
+        "claim_index": 0,
+        "effect": "narrowed",
+        "note": "The 10K-1M range is real and the 1M QA parquet is on our disk, but the paper reports NO 1M results — the very-long book is footnote 3 plus an additional_million.ipynb, and the README's own table marks its \"used in\" column \"/\". Cite the range as \"datasets span 10K-1M; published results cover 10K and 100K\"."
+      },
+      {
+        "claim_index": 1,
+        "effect": "narrowed",
+        "note": "THREE corrections. (a) Best chronological is 0.817 (gemini-2.5-flash), not 0.80 — the entry took the value from the models it happened to name. (b) These figures are README leaderboard values from Sept 2025, NOT ICLR 2025 paper results; the paper evaluates GPT-4/Claude/Llama-3.1/o1-mini. Never attribute gpt-5 or claude-sonnet-4 numbers to the paper. (c) \"near-perfect recall\" applies to the top three only; the leaderboard spans 0.300-0.968."
+      },
+      {
+        "claim_index": 2,
+        "effect": "narrowed",
+        "note": "The dual-metric description is accurate and is what our adapter implements — but \"Simple Recall Score\" and \"Chronological Awareness Score\" appear ZERO times in arXiv v1. They are README/leaderboard names for a post-paper aggregation of the paper's per-group lenient F1 (Table 3) and Kendall tau (Table 4). Cite the README for the composite scores and the paper for the underlying F1/tau. CRUCIAL RIDER: the paper's F1 uses an LLM SEMANTIC MATCHER (Appendix B.3.1/B.4); our f1_list replaces it with token-F1. Our scores are on OUR scale, never on the leaderboard's."
+      },
+      {
+        "claim_index": 3,
+        "effect": "narrowed",
+        "note": "11 datasets and 3 lengths CONFIRMED. \"4 styles\" is wrong — there are 3 book styles (default, world news, sci-fi) plus ordered and gpt-4o-generated VARIATIONS. The 4 is the number of Figshare data directories, which is also exactly the four variant dirs on our disk. Say \"11 datasets across 4 released variant directories, 3 book styles, 3 lengths\"."
+      },
+      {
+        "claim_index": 4,
+        "effect": "unaffected",
+        "note": "Confirmed verbatim in the conclusion and quantified in Section 5.2 and Table 3 (fine-tuned gpt-4o-mini: 0.00 on the hallucination bin, 0.83 on single-event, decaying to 0.19 at 6+ events). This is the entry's strongest and most transferable claim, and intake-814 already leans on it — keep it exactly as written."
+      }
+    ]
+  },
+  "intake-1333": {
+    "title": "The Harness Effect: How Orchestration Design Sets the Token Economics of Enterprise Agentic AI",
+    "key_claim_count": 5,
+    "claim_01": "EFFICIENCY IS MODEL-INVARIANT, QUALITY IS NOT. Every one of six models gets cheaper, -33% (Gemini 3.1) to -61% (Flash 3.5), no exception (Table 4); mean quality gain per model correlates with baseline strength at r=0.99, n=6 (\"harness leverage\", Section 6.4: Palmyra +0.079, Sonnet +0.073, Qwen -0.031). Of 48 capability x model cells, 30 improve, 11 flat, 7 regress, and all 7 regressions are on the three smaller models concentrated in orchestration-heavy capabilities (Section 6.3). The one net-new capability, sub-agent delegation, has a CAPABILITY FLOOR: 0.86/0.85 on the two strongest models but 0.42-0.45 on the fast tier (Table 5).",
+    "claim_correction_01": {
+      "claim_index": 1,
+      "effect": "unaffected",
+      "note": "Table 4, Section 6.4 and Table 5 verified cell by cell. Narrowing to remember when citing: r=0.99 is over six points and the authors call it suggestive; the sub-agent floor row has no baseline arm at all."
+    },
+    "reported_results_item_06": "Appendix A Table 6, 48 cells; worst regressions MCP tool use Qwen 3.6 .65->.50 (-0.15) and GLM 5.1 .72->.66; largest gains GDR Palmyra .79->.91 and Sonnet .80->.90, MCP Sonnet .78->.88 and Palmyra .78->.88.",
+    "source_revision": "arXiv:2607.06906v1 (html route, https://arxiv.org/html/2607.06906v1), submitted 2026-07-08 01:58:12 UTC, retrieved 2026-09-07T15:58:49Z, sha256 43b050f6466d; cs.AI only; corresponding author Waseem AlShikh (Writer, Inc. co-founder/CTO)"
+  },
+  "ledger_intake_1333_rows": [],
+  "ledger_intake_408_claim_ids": [
+    "clm_intake_408_00",
+    "clm_intake_408_01",
+    "clm_intake_408_02",
+    "clm_intake_408_03",
+    "clm_intake_408_04"
+  ]
+}

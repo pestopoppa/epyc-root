@@ -1,0 +1,19 @@
+{
+  "head": "fff1aee9e3d0c7b4317e0bb68f375802bf356b6a",
+  "proposals": [
+    {
+      "id": "INF-73",
+      "new": "Recover free space to the 100 GiB admission floor; rerun consolidated r4 lifecycle/focused/full gates, then complete DS41 full16 capture",
+      "old": "AKU-RED-LOOP: full-suite rerun of autokernel/loop after 58c86506; owner call on keep_candidate-vs-kept (run.py:5876)",
+      "path": "handoffs/active/inference-research-index.md",
+      "reason": "Current top checkpoint records r4 lifecycle/focused/full gates unrun below the 100 GiB floor and DS41 full16 still queued; prior candidate-specific next action is stale."
+    },
+    {
+      "id": "INF-81",
+      "new": "Run bounded tests/build for the corrected Astra-reviewed longctx-oracle branch, then land before AKX-ALL-21; real-mask capture remains open",
+      "old": "GPU run 2 (critic now Astra; needs EC GPU window, measurement mode); land longctx-oracle 6f116e55 after Astra re-review",
+      "path": "handoffs/active/inference-research-index.md",
+      "reason": "Current handoff says corrected Python/C++ reviews passed, while bounded tests/build and landing remain; old next action asks for a review already recorded."
+    }
+  ]
+}

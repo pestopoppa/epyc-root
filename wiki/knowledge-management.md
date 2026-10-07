@@ -8,6 +8,20 @@
 
 The operator-requested backlog review covered all 112 pending content-hash sources plus two sources arriving during preparation. Root accepted the three context-bound groups and integrated 17 existing articles while retaining prior history and science/runtime qualifiers. Exact historical source hashes bounded changed-file reads; unmatched history was reviewed as current content. The [review inventory](../artifacts/wiki-compilation-20261007/README.md) records each source disposition. The [root record](../progress/2026-10/2026-10-07-wiki-compile-main.md), [inference review](../progress/2026-10/2026-10-07-wiki-compile-inference.md), [agent/tool review](../progress/2026-10/2026-10-07-wiki-compile-agents.md), [knowledge review](../progress/2026-10/2026-10-07-wiki-compile-knowledge.md), and [completed source-synthesis handoff](../handoffs/completed/wiki-backlog-compilation-20261007.md) preserve the review chain. Source-reference integrity and structural checks govern watermark advancement; the writer policy remains unchanged.
 
+## Incremental synthesis — 2026-10-07: bounded source acceptance keeps parent gates open
+
+**Confidence: verified for the recorded source/publication boundary.** The accepted work is source conformance, not runtime or scientific validation.
+
+The NI08 checkpoint records 168 completed scoped tasks (105 existing-task closures and 63 scoped children), while explicitly leaving whole-backlog exhaustion unclaimed. Two newly accepted source children have narrow boundaries: DCP2 covers finite-score normalization on the parser and direct-hit paths with its original 25-case control; the C-style pointer lexical correction covers its named nine-case source gap while retaining the earlier false original. Their parent integration and broader quality gates remain distinct. C106 and the INF50 generated-lean writer were enrolled prospectively, so their companions prepare future capture rather than report completed conformance. This preserves the useful split between published source evidence, prospective write-side wiring, and unaccepted parent/runtime claims.
+
+### Source References
+
+- [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current scoped total and the accepted/prospective boundaries.
+- [Delegation context preassembly](../handoffs/active/delegation-context-preassembly.md) — DCP2 exact source acceptance and parent gates.
+- [ROCm verification backend](../handoffs/active/rocm-verify-profile-backend.md) — C-pointer source acceptance and retained original failure.
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective C106 and generated-writer companions.
+- [NI08 daily progress](../progress/2026-10/2026-10-07.md) — dated source/publication and acceptance limits.
+
 ## Preserve source history without promoting unsupported attribution
 
 The coordinator ledger withdraws its active recurrence column because the counting unit and surviving independent provenance are not established; no replacement count is supplied. Commit trailers neither prove nor disprove an individual author. A named commit body or contemporaneous wrap-up supports a scoped self-report, while disputed pane actors remain unknown when original records cannot be located. Stable (a)/(b) aliases distinguish original events from delivery-plane defects without renumbering historical references; protected comments remain separately gated. The portable lesson is to preserve source custody and uncertainty rather than convert a later audit narrative into authenticated actors or counts.
@@ -3754,3 +3768,25 @@ Source references: [bounded continuation](../docs/reference/ni08-non-inference-c
 ### One source closure after the full11:19 boundary — 2026-10-07
 
 [NI08](../docs/reference/ni08-non-inference-continuation.md) reaches160 completed scopes,99 existing tasks and61 completed children, after exactly one SR-5 source/prose closure. The four TOC/pointer enrollment tasks and two new INF50 document-projection tasks remain unchecked. This does not exhaust the ongoing23-card actual-source audit or close runtime parents. Accepted source semantics, pending compiler projection and proposed native controls remain distinct; MAIN retains original failed receipts and publication failures without regrading them. [Current progress](../progress/2026-10/2026-10-07.md) and the [remaining backlog](../handoffs/active/non-inference-backlog.md) retain the boundaries.
+
+## Operational custody records keep their native warrant — 2026-10-07
+
+**Confidence: verified for the cited original records only.** Seven preapproved own worktrees used guarded sparse exclusions to reclaim duplicate working-tree allocation without removing source, Git objects, originals or KEEP markers. Two time-bound free-space readings exceeded the peer's admission threshold52.59seconds apart. This operational result is filed as ungraded document/artifact dependency evidence; it does not create a retrospective ClaimTuple, scientific grade, permanent capacity or runtime-owner permission. Future work rechecks current admission.
+
+### Source References
+
+- [MAIN original sparse-operation custody](../artifacts/ni08/sparse-capacity-custody-20261007/README.md) — exact helper/plan/process/sample bytes and limitations.
+- [NI08 current continuation](../docs/reference/ni08-non-inference-continuation.md) — one completed bounded custody child and remaining source work.
+- [Vidya source ownership](../handoffs/active/vidya-belief-substrate-program.md) — existing document/artifact handling, without a new ladder.
+
+C104's prospectively enrolled source/native pair is now accepted after original eight-case custody and exact two-file Research publication. Future effect claims require the already-authored decisive flag to be literal True; existing comparison, disposition and grading rules remain intact. This original synthetic control result does not validate or reconstruct the fourteen historical kept rows. [MAIN source/publication record](../artifacts/ni08/c104-decisive-source-acceptance-20261007/README.md), [owning C104 scope](../handoffs/active/deepseek-v41-flash-evaluation.md), and [Vidya prospective companion](../handoffs/active/vidya-belief-substrate-program.md).
+
+## Source citation repair preserves remaining unknowns — 2026-10-07
+
+**Confidence: verified for original intake-record attribution only.** Decision-aware routing contained two out-of-range claim anchors. The actual episodic-memory entry supplies no rationale for the handoff's reasoning-feature annotation, so that unsupported annotation is withdrawn without rejecting the research source. The orchestration risk now cites the precise recorded claim intake-1333#01 and remains explicitly source-reported and non-gating. The corrected claim is still unknown to the existing belief ledger; an in-range citation does not manufacture coverage or warrant.
+
+### Source References
+
+- [MAIN native-record attribution evidence](../artifacts/ni08/periodic-full-wrapup-20261007-1325/citation-source-repair/source-context.md) — exact five-claim entries and original source hashes.
+- [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — repaired bounded annotation and retained risk limitations.
+- [Canonical intake source](../research/intake_index.yaml) — unchanged entry claims and verification corrections.

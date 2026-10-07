@@ -1,0 +1,130 @@
+{
+  "schema": "epyc.main.periodic-full-wrapup.v1",
+  "utc": "2026-10-07T13:55:08.789743+00:00",
+  "source_head": "fff1aee9e3d0c7b4317e0bb68f375802bf356b6a",
+  "reviewed_source_paths": [
+    "handoffs/active/autokernel-all-devices-all-dimensions.md",
+    "handoffs/active/autokernel-unified-surface-program.md",
+    "handoffs/active/decision-aware-routing.md",
+    "handoffs/active/deepseek-v41-flash-evaluation.md",
+    "handoffs/active/delegation-context-preassembly.md",
+    "handoffs/active/non-inference-backlog.md",
+    "handoffs/active/rocm-verify-profile-backend.md",
+    "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md",
+    "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+    "progress/2026-10/2026-10-07.md",
+    "docs/reference/ni08-non-inference-continuation.md"
+  ],
+  "reviewed_delta_sha256": "f1e8057f856d53ebeae316dfb50ebf8276e92868fb0f9ad46a57db5fb5f4c57b",
+  "source_delta_count": 13,
+  "source_set_hash_before_touch": "0eb1c14a7cad8ba2f816fad71edc71d5d9d61009b55c38fb000e70b4b40929ee",
+  "writer_policy_preserved": {
+    "policy_version": 1,
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "requires_source_reference_section": true,
+    "requires_structural_lint": true,
+    "requires_human_or_measured_review": true
+  },
+  "wiki_pages": [
+    "wiki/knowledge-management.md",
+    "wiki/hardware-optimization.md"
+  ],
+  "MAIN_review": "Exact original source/task/native/API/publication/citation attribution and 179-row inventory reviewed; worker draft corrected/expanded by MAIN; all delta sources synthesized with scope/warrant limitations before touch",
+  "gates": {
+    "index-regen": {
+      "argv": [
+        "python3",
+        "scripts/handoffs/index_state.py"
+      ],
+      "exit_code": 0
+    },
+    "index-check": {
+      "argv": [
+        "python3",
+        "scripts/handoffs/index_state.py",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    "readme": {
+      "argv": [
+        "python3",
+        ".claude/skills/project-wiki/scripts/check_readme_freshness.py"
+      ],
+      "exit_code": 0
+    },
+    "wiki-lint": {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+        "-I",
+        ".claude/skills/project-wiki/scripts/lint_wiki.py"
+      ],
+      "exit_code": 0
+    },
+    "cite-check": {
+      "argv": [
+        "python3",
+        "scripts/vidya/cli.py",
+        "cite-check",
+        "--as-of",
+        "2026-10-07T13:53:12.331704+00:00"
+      ],
+      "exit_code": 0
+    },
+    "whitespace": {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  },
+  "scratch": {
+    "plan_exit_code": 1,
+    "exit_1_means_KEEP": true,
+    "roots": 176,
+    "entries": 50,
+    "verdict_counts": {
+      "KEEP-MARKED": 13,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-DIRTY": 10,
+      "KEEP-UNLANDED": 12,
+      "KEEP-REFERENCED": 2,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2,
+      "KEEP-PROTECTED": 5
+    },
+    "initial_remove_candidate": 1,
+    "candidate_retained_as_declared_C106_staging_worktree": true,
+    "removals": 0
+  },
+  "index_pruning": 0,
+  "handoff_archival": 0,
+  "compaction": 0,
+  "newly_filed_completed_children": 2,
+  "existing_checkbox_flips": 2,
+  "NI08_completed_scopes": 168,
+  "NI08_existing_flips": 105,
+  "NI08_completed_children": 63,
+  "original_failed_cite_check_retained": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/periodic-wrapup-1325-cite-check.stdout",
+  "unknowns_preserved": 839,
+  "no_runtime_inference_or_shared_project_execution": true,
+  "C104_source_public_research": "9299b0a6f5be326e50f4c17674e355bf0d5450a3",
+  "bus": "operator-heldDOWN; ownACKfile not proof of relay delivery",
+  "final_integration_head": "c324597a2f74ce3af2eea9b644794c8c09c7238a",
+  "peer_source_reconciled": "Exact eight-line13:40Z peer progress insertion: r4 failed, r5 focused394 PASS, full suite running with additional failures, no consolidated/activation claim; separate exact reference-hook activation reported by its owning session",
+  "first_ordinary_hook_refusal_preserved": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/periodic-wrapup-1325-publication.stderr",
+  "final_source_set_hash": "c30a8ebe3529318f9964579b1be006190914617d41db8d204afb2326a8a8c7ee",
+  "final_followup_sources": [
+    "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+    "progress/2026-10/2026-10-07.md"
+  ],
+  "final_followup_synthesized_before_touch": true,
+  "all_wiki_lint_errors": 0,
+  "all_wiki_lint_warnings": 96
+}
