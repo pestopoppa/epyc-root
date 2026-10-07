@@ -174,7 +174,12 @@ def _input_paths(app: Path, research: Path, llama: Path, manifest: Path,
         ROOT / "README.md", ROOT / "Makefile", ROOT / "pyproject.toml",
         ROOT / ".pre-commit-config.yaml", ROOT / ".claude/dependency-map.json",
     ]
-    paths.extend(path for path in optional_root_inputs if path.is_file())
+    # Tracked source aliases such as AGENTS.md are bound as literal symlink
+    # targets by evl38_source_context.py and their regular targets are captured
+    # above/below. Do not follow them through the strict no-follow artifact
+    # snapshotter.
+    paths.extend(path for path in optional_root_inputs
+                 if path.is_file() and not path.is_symlink())
     return list(dict.fromkeys(Path(os.path.abspath(path)) for path in paths))
 
 

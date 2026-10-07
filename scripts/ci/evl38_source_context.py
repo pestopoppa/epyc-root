@@ -66,7 +66,7 @@ def repository_context(label: str, path: str) -> dict:
         header, name = item.split(b"\t", 1)
         mode, kind, oid = header.decode("ascii").split()
         relative = os.fsdecode(name)
-        if kind != "blob" or mode not in {"100644", "100755"} or not _include(relative):
+        if kind != "blob" or mode not in {"100644", "100755", "120000"} or not _include(relative):
             continue
         content = _git(path, "cat-file", "blob", oid)
         worktree_path = repository / relative
@@ -74,10 +74,15 @@ def repository_context(label: str, path: str) -> dict:
             info = worktree_path.lstat()
         except OSError as exc:
             raise SystemExit(f"missing physical source input in {label}: {relative}: {exc}") from exc
-        if not stat.S_ISREG(info.st_mode):
-            raise SystemExit(f"nonregular or symlinked source input in {label}: {relative}")
         try:
-            physical = _physical_bytes(worktree_path)
+            if mode == "120000":
+                if not stat.S_ISLNK(info.st_mode):
+                    raise SystemExit(f"tracked symlink is not a physical symlink in {label}: {relative}")
+                physical = os.fsencode(os.readlink(worktree_path))
+            else:
+                if not stat.S_ISREG(info.st_mode):
+                    raise SystemExit(f"nonregular or symlinked source input in {label}: {relative}")
+                physical = _physical_bytes(worktree_path)
         except OSError as exc:
             raise SystemExit(f"cannot read physical source input in {label}: {relative}: {exc}") from exc
         if physical != content:
