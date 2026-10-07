@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts/vidya"))
-APP_PIN = "dfa6dd55593d9c5e1e1a564b66b7889109b7e133"
+APP_PIN = "9cff6583c235ed394179fc2f66a8c4bd8a81405f"
 RESEARCH_PIN = "01d36835e68d57c231a9b0591802e267531df530"
 RESEARCH_REGISTRY = "orchestration/model_registry.yaml"
 RESEARCH_REGISTRY_BLOB = "a3935e7bc1a5ab0a96c1677ae0cb1dae8c788a81"
@@ -333,6 +333,15 @@ def main() -> int:
     install_log, freeze_path, env_path = install_and_verify(app, result)
     environment = json.loads(regular_bytes(env_path))
     environment["absent_binary_config_overrides"] = absent_binary_paths
+    physical_meminfo = result / "runner-physical-meminfo.txt"
+    physical_meminfo.write_bytes(Path("/proc/meminfo").read_bytes())
+    environment["synthetic_launch_import_context"] = {
+        "fixture": "tests/unit/test_stack_change_guard.py::_synthetic_stack_manifest_inputs",
+        "synthetic_memtotal_kb": 1073741824,
+        "physical_runner_context": str(physical_meminfo),
+        "scope": "existing synthetic import-only capacity/backend-dir fixture; "
+                 "no physical-host capacity, kernel-store, runtime or deployment warrant",
+    }
     env_path.write_text(json.dumps(environment, sort_keys=True) + "\n", encoding="utf-8")
     source_context = result / "source-context.json"
     subprocess.run([sys.executable, str(ROOT / "scripts/ci/ni08_source_context.py"),
@@ -348,7 +357,7 @@ def main() -> int:
     read_paths = ([tracked(ROOT, name) for name in ROOT_READS]
                   + [tracked(app, name) for name in APP_READS]
                   + [registry_source, HOSTED_MASTER_REGISTRY, registry_binding,
-                     source_context, install_log, freeze_path, env_path])
+                     source_context, install_log, freeze_path, env_path, physical_meminfo])
     source_before_capture = snapshots(read_paths)
     carrier = load_carrier()
     record = carrier.capture_fixture_execution(
