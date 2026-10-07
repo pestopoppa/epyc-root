@@ -103,6 +103,13 @@ dashboard sees checkbox state only (axiom above).
 - **Nothing may auto-trigger the full routine.** There is no `Stop`, `SessionEnd` or `PreCompact`
   hook, no cron and no nightshift task that calls it, and there must not be one. A per-task wrap-up
   is invoked by the session doing the work.
+- **Scratch and worktree cleanup is part of the wrap-up, not a separate chore.** On 2026-10-07, 562
+  worktrees (414 GiB) plus 255 GiB of `tmp/` had driven free disk to 86 GiB, below the 100 GiB
+  build-retention floor, and that alone refused a lane relaunch outright — nothing upstream was
+  broken, the uncleaned scratch was the defect. A wrap-up that leaves a task's scratch worktrees and
+  tmp dirs behind "for later" is exactly the deferred cleanup that produced the crisis; check disk
+  headroom and retire a task's own scratch paths as a normal wrap-up step, not only when a launch is
+  already refused.
 - **A wrap-up may run via a subagent on a session's behalf** — preferred when the session is
   already dispatched into new work. That subagent may **PREPARE** index edits: draft row text, run
   `scripts/handoffs/index_state.py --check`, and report the exact diff. **The owning session

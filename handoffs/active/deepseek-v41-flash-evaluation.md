@@ -1120,7 +1120,37 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
       newcomer lane's calibration ahead of the incumbent's next batch automatically, rather than needing this
       per-incident watcher.
     - [ ] **(e) serial-control: offer a supported way to resume a drained lane (or make the control UI warn that drain is terminal).** 2026-10-05 Q38FN incident: drained at 11:11Z to open a measurement window sooner; drain is terminal for that state, so the lane could not be resumed from that point.
-  - [x] DS41-C121a — disposition the 27 commits DS41's working branch carried over the champion. ✅ 2026-10-04 — fold
+- [x] DS41-C127 — **served-shape calibration landed and applied on both lanes; new anchors.** ✅
+  2026-10-06/07 Research commits, in order: `9a548baf` (`--timeout-s`, calibration exceeds 1h on
+  DS41), `bed81e59` (three-regime NMSE cap: keep the old served-shape bound wherever the old policy
+  accepted), `ac97318f` (deterministic per-case seeding; refuse binaries built before per-case
+  seeding), `1bace97d` (sharded calibration under ONE build-role region-lock claim; fixes two Codex
+  Astra BLOCKs in the sharded `--execute` claim), `a23af0a7` (shards confined to the lock's own cpu
+  list; default `shards = min(16, cases, lock_cpus // 4)`).
+  - Q38FN: 250 cases, 3392 s, no anchor-relative exception.
+  - DS41: 348 cases, 5252 s on 24 cpus. Two IQ3_XXS shared-expert cases exceeded the 5e-4 NMSE cap
+    and were applied with `--anchor-exceeds-generic` (anchor-relative acceptance, a known low-bit
+    lead): `shexp_down` n=2 = 5.96e-4, `shexp_gate_up` n=4 = 5.22e-4.
+  - Input-identity checks PASS: DS41 348/348, Q38FN 32/32, 0 mismatches.
+  - New anchors: DS41 `3376147f8`, Q38FN `6ed37bec8`.
+  - **Relaunch**: Q38FN on `q38fn_watchdog2.sh` / `state-6ed37b-*`, `LONGCTX=1`, live since
+    2026-10-06T22:18Z. DS41's `ds41_watchdog5.sh` / `state-337614-*` launch was **REFUSED** by build
+    retention (free disk 86 GiB < 100 GiB floor); disk cleanup in progress (see
+    `agents/shared/OPERATING_CONSTRAINTS.md` → disk-retention lesson, 2026-10-07). The prior
+    watchdogs on both lanes died on stale-epoch continuation seeding ("continuation binding does
+    not match its own original arguments") — a new-epoch watchdog must seed only from the new
+    epoch, never continue off the old one. DS41's `owned-targets.json` lacked `cor_build`; the
+    operator added it 2026-10-07.
+  - **Floor contamination, filed not fixed**: Q38FN's floor of 6.528% was contaminated by a
+    5.5-minute degraded block during calibration (previously ~0.65%). A `REMEASURE_REQUEST` was
+    filed for recipe `cff9ad900700…`. The matched-floor outlier guard that would have caught this
+    (Astra R21-R24, research `e3bcf010`) landed the same cycle: a suspect floor never carries
+    forward; an unguarded floor more than 3x the previous floor is refused and writes an atomic
+    `REMEASURE_REQUEST.json` under `<store>/runtime-source-floors/<recipe_hash>/`.
+  - **Harness fix in the same window**: research `de02a21d` — `run.py` was missing the `Mapping`
+    import, a NameError that killed Q38FN's longctx keep-gate batches; adds
+    `test_no_undefined_runtime_names.py` (package-wide AST guard).
+- [x] DS41-C121a — disposition the 27 commits DS41's working branch carried over the champion. ✅ 2026-10-04 — fold
     inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv` (`orig → new` sha, keep id, gate evidence,
     disposition): 4 port + 1 profiling (`ebb68dc55`, compiled out unless `GGML_CPU_PROF`) + 7 serving-gated keeps
     FOLDED; 14 held keeps NOT folded (DS41-C125); `74ee5c502` excluded (un-ledgered, `measurement_invalid`); 3 empty

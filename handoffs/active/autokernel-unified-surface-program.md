@@ -3911,3 +3911,23 @@ Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`
   settlement refusal; `ProducerSourceRefused` in 13 errors; `test_seed.py` prompt text; missing
   `samples_ts`/`n_threads`/`build_commit`; and one test path in a removed worktree. Classify each by reason
   (stale test, code bug, environment), then fix or delete.
+  - 2026-10-07: **re-measured, much larger now** — `python3 -m pytest autokernel/loop -q` on research
+    origin/main (`de02a21d`) shows **376 failed, 75 errors, 4556 passed** in 998s (one foreground pass).
+    Triage: `/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md` (worktree
+    `research-ak-triage-20261007`). **357 of 451 (79%) collapse to ONE root cause**: commit `440b5b5c`
+    ("fix disk-leak sources") changed `test_unified_planner.py`'s `runtime_anchor(target, recipe,
+    tmp_path)` signature and fixed the 9 call sites inside its own file, but 7 other test modules
+    (`test_cpu_profile_runtime.py`, `test_native_retention_catalog.py`,
+    `test_profile_preparation_runtime.py`, `test_standalone_inputs.py`, `test_unified_driver.py`,
+    `test_unified_driver_plan_versions.py`, `test_unified_worker.py`) still call the 2-arg form.
+    Mechanical fix, ~30 min, test-helper only, zero production impact. Remaining ~94 split into: a
+    12-error producer-source schema-drift cluster (fixture vs `native_producer_source.py`'s closed-set
+    schema, v1/v2 split from `f6e0cfe1`); two **UNCLEAR, possibly-real** clusters flagged for priority
+    follow-up — `test_existing_cpu_run.py`'s per-iteration decision-sequence assertions
+    (`measured_null`/`kept`/`regression`, touches `run.py` core) and
+    `pool.prune_anchor_generations` call-count during legacy-keep pruning (touches `pool.py`/`run.py`
+    kernel-lineage retention); two confirmed stale-mock clusters (`gpu_quiet_path` kwarg added by
+    `0cb215c3`, and `test_heartbeat.py`'s brittle string-slice source guards); and an unexamined
+    ~62-count long tail, largest single file `test_campaign_service.py` (13). No evidence found of an
+    actual production bug in `serving.py`, `gates.py`, `longctx.py`, `model_identity.py`, or
+    `serial_run.py`.
