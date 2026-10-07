@@ -13,3 +13,7 @@ MAIN independently reopened all42 success-original API ZIP members and28Git+3con
 ## RTG-23 task-identity boundary
 
 MAIN closes W7 after title-only W3d-panel disambiguation, preserving historical hold/body/artifacts. Independently verified allfive APPsource/test SHA identities supporting W10 cache-versus-journal distinction; no hostsample/testexecution or livefrontier claim. W10 staysopen foritsownerruntimeboundary. NI08now65(45existingflips+20additions); W8sourcefix/AUD11controls/P0/P6/AP60/AP62nativepreparation andfullcardauditcontinue.
+
+## Fixed-verdict summary publication boundary
+
+MAIN original2,831member/API reviewPASS2,818Git+3contexts/exact4/4/receiptseal/unchangedsharedgrade; source224fbf normallymerged/pushedAPP92cb0197. Two pre-enrolled boundedsource tasks complete, NI08now67(45existingflips+22additions). Actual defaultROOTverdictpositive runsrequired/nohashsubstitution/no skip; sensitiveIDs/details excluded, nativeemittedcall/tap/template/joinunknown, descriptivecounts ungraded. FirstMAINreview path-label mismatch corrected againstsameimmutableoriginals; no rerun/source/receiptchange. ParentP0/frozendispatch untouched. AP62native capture andAP60/P6/W8/AUD11sourcepreparation/fullcardauditcontinue.

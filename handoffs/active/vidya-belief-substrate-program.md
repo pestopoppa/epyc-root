@@ -2822,7 +2822,7 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 2026-10-06 MAIN source acceptance: the two prospective report writers/readers and SC80 completed after originalROOT38/38+APP20/20 and byte-identical APP publication. [Bounded source/evidence](../../artifacts/ni08/analysis-report-source-20261006/README.md); legacy reports refused, existing metric/shared-grade authority unchanged.
 
-- [ ] **VB-HS19D-P0-DESCRIPTIVE-CONFORMANCE — bind exact prospective sanitized-summary source controls before hosted capture.** Existing shared CI verifier only; synthetic redaction, unknown/ambiguous/failed-record, filesystem identity refusal and actual default pinned committed-verdict positive controls. Native count readout remains descriptive/ungraded; no global corpus, served-template or dispatch warrant. Preserve all original source/context/JUnit receipts and unchanged shared grade.
+- [x] **VB-HS19D-P0-DESCRIPTIVE-CONFORMANCE — bind exact prospective sanitized-summary source controls before hosted capture.** Existing shared CI verifier only; synthetic redaction, unknown/ambiguous/failed-record, filesystem identity refusal and actual default pinned committed-verdict positive controls. Native count readout remains descriptive/ungraded; no global corpus, served-template or dispatch warrant. Preserve all original source/context/JUnit receipts and unchanged shared grade.
 
 2026-10-06 MAIN accepts VB-RTG02-CONFORMANCE after original23/23 and exact source publication; [review](../../artifacts/ni08/rtg02-echo-source-20261006/README.md). Existing shared grade unchanged, no live pool/effect warrant.
 
@@ -2832,3 +2832,5 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 - [ ] **VB-RTG23-W8-CONFORMANCE — bind planner-display missing-versus-zero source controls before capture.** Preserve legacy stored/helper zero/math; actual missing/malformed display n/a, valid zero and positive unchanged. Exact source/cases/context and existing native carrier/shared grade only; no live frontier, rate improvement or objective amendment.
 
 2026-10-07 MAIN accepts SC76/SC77 and VB-RAW-ANCHOR-CONFORMANCE after exact source review and original51/51 hosted synthetic controls; [evidence/scope](../../artifacts/ni08/raw-anchor-source-20261007/README.md). Retained RAW verification replaces shape-only proof prerequisites through one checker; missing originals stay unknown, machine cap/shared ladder unchanged. SC78/SC79 remain separately open; no actual fetch or historical intake/ledger write.
+
+2026-10-07 MAIN accepts the fixed-verdict descriptive-summary source and its prospective conformance companion after original4/4, full source/API custody review and normal APP publication; [scope](../../artifacts/ni08/hs19d-p0-summary-source-20261007/README.md). Broader P0/template and unknown native fields remain separate; counts ungraded, no historical or global-corpus warrant.

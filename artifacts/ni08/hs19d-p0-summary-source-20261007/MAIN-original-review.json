@@ -1,0 +1,41 @@
+{
+  "reviewed_at": "2026-10-07T00:20:55.421064+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37550928126,
+  "attempt": 1,
+  "artifact": 11452806972,
+  "pins": {
+    "recipe": "2038c1096c035c6476fd0ae2d629a8ae516fdaca",
+    "app": "224fbf991f7b68aa6466ecbaf829a336c20d5f5c",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "root_source": "4295ff6255576d97822661857990b89087e3bcd9"
+  },
+  "zip_sha256": "072957c58a4f2040a06a0758b8fb504151938c77f3adb03b5ce0b9ccad4642a3",
+  "zip_bytes": 13959088,
+  "members": 2831,
+  "readset_count": 2821,
+  "git_inputs": 2818,
+  "contexts": 3,
+  "counts": {
+    "collected": 4,
+    "error": 0,
+    "executed": 4,
+    "failure": 0,
+    "passed": 4,
+    "skipped": 0
+  },
+  "testcase_nodes": 4,
+  "native_value": true,
+  "receipt_file_sha256": "1c6fa4482ac0b5d468184bad67d25b0ec53e51ac020ff2f50479c0ff92cab775",
+  "receipt_self_sha256": "3b7ebd353b20586fc5c138048d42889f460c16e7a08bf28e8e2bd5e11b7fc9f8",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "LOW fixed-source privacy-minimal descriptive projection and synthetic custody controls; no taps/templates/live corpus, inference, endpoint, grading change or historical warrant.",
+  "job_identity": "github_job_112565948850"
+}
