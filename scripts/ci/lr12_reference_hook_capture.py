@@ -112,7 +112,7 @@ def main() -> int:
     if not os.environ.get("GITHUB_SHA"):
         raise RuntimeError("triggering recipe SHA is absent")
     for repo, commit, label in [(ROOT, os.environ["GITHUB_SHA"], "recipe"),
-            (source, SOURCE_COMMIT, "ROOT source"), 
+            (source, SOURCE_COMMIT, "ROOT source"),
             (carrier_root, CARRIER_COMMIT, "native carrier"), (context, CONTEXT_COMMIT, "enrollment context")]:
         pinned(repo, commit, label)
     if sys.version.split()[0] != PYTHON_PIN:
