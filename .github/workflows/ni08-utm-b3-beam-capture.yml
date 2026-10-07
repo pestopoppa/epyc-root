@@ -22,7 +22,6 @@ jobs:
         --require-hashes --no-deps --only-binary=:all: -r
         recipe/scripts/ci/ni08_utm_b3_requirements.txt
       EPYC_ORCHESTRATOR_ROOT: ${{ github.workspace }}/app
-      TULVING_TRACE_DB_DIR: ${{ runner.temp }}/ni08-utm-b3-beam/trace-db
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
@@ -71,6 +70,8 @@ jobs:
           set -euo pipefail
           ${{ env.UTM_B3_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-utm-b3-beam/result/dependency-install.log"
       - name: Capture all 21 BEAM memory provenance controls
+        env:
+          TULVING_TRACE_DB_DIR: ${{ runner.temp }}/ni08-utm-b3-beam/trace-db
         run: |
           set -euo pipefail
           sudo mkdir -p /mnt/raid0/llm
