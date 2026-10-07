@@ -67,6 +67,33 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def file_set_digest(paths: list[Path]) -> dict[str, str]:
+    snapshot = {}
+    for path in paths:
+        if path.is_symlink() or not path.is_file():
+            raise RuntimeError(f"captured input is not a regular file: {path}")
+        snapshot[str(path.resolve())] = sha256(path)
+    return snapshot
+
+
+def result_tree_snapshot(root: Path) -> dict[str, object]:
+    directories = []
+    files = {}
+    for current, dirnames, filenames in os.walk(root, followlinks=False):
+        base = Path(current)
+        for name in sorted(dirnames):
+            child = base / name
+            if child.is_symlink():
+                raise RuntimeError(f"result tree contains a symlink directory: {child}")
+            directories.append(child.relative_to(root).as_posix())
+        for name in sorted(filenames):
+            child = base / name
+            if child.is_symlink() or not child.is_file():
+                raise RuntimeError(f"result tree contains a non-regular file: {child}")
+            files[child.relative_to(root).as_posix()] = sha256(child)
+    return {"directories": sorted(directories), "files": files}
+
+
 def git(repo: Path, *args: str) -> str:
     return subprocess.check_output(
         ["git", "-C", str(repo), *args], text=True
@@ -270,9 +297,10 @@ def main() -> int:
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
     recipe, carrier, root_source, app = (workspace / name for name in
                                          ("recipe", "carrier", "root-source", "app"))
-    result = runner_temp / "sw5-sw6-scg" / "result"
+    run_root = runner_temp / "sw5-sw6-scg"
+    result = run_root / "result"
     result.mkdir(parents=True, exist_ok=True)
-    status_path = result / "status.json"
+    status_path = run_root / "status.json"
     status = {"state": "preparing", "job": "sw5-sw6-scg-synthetic-controls", "exit_code": None}
     status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
     try:
@@ -335,6 +363,9 @@ def main() -> int:
 
         environment_path = result / "environment.json"
         freeze_path = result / "pip-freeze.txt"
+        installer_log_path = result / "dependency-install.log"
+        if not installer_log_path.is_file() or installer_log_path.is_symlink():
+            raise RuntimeError("exact dependency install log is missing or not a regular file")
         with freeze_path.open("xb") as handle:
             handle.write(subprocess.check_output([sys.executable, "-m", "pip", "freeze", "--all"]))
         environment = {
@@ -350,10 +381,12 @@ def main() -> int:
             "expected_cases_path": str(source_map_path),
             "app_revision": APP_PIN,
             "carrier_revision": ROOT_CARRIER_PIN,
+            "root_source_revision": ROOT_SOURCE_PIN,
             "recipe_revision": recipe_pin,
             "app_uv_lock_sha256": source_map["app_uv_lock_sha256"],
             "requirements_sha256": sha256(recipe / REQUIREMENTS),
-            "install_command": "python -m pip install --no-deps --require-hashes -r recipe/" + REQUIREMENTS,
+            "dependency_install_log_sha256": sha256(installer_log_path),
+            "install_command": "python -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/" + REQUIREMENTS,
             "environment": {key: os.environ.get(key) for key in (
                 "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTHONDONTWRITEBYTECODE", "PYTHONHASHSEED",
                 "NI08_SW_SCG_EXECUTION_CONTEXT",
@@ -373,7 +406,7 @@ def main() -> int:
         junit = result / "junit.xml"
         capture_dir = result / "native"
         pytest_argv = [
-            sys.executable, "-m", "pytest", "--noconftest",
+            sys.executable, "-m", "pytest", "-c", "/dev/null", "--rootdir", str(app), "--noconftest",
             "-p", "no:cacheprovider", "-p", "ni08_sw5_sw6_scg_case_guard", "-q", "-o", "addopts=",
             f"--junitxml={junit}", *SELECTIONS,
         ]
@@ -387,9 +420,11 @@ def main() -> int:
             (recipe / WORKFLOW).resolve(),
             (recipe / DRIVER).resolve(), (recipe / CASE_GUARD).resolve(),
             (recipe / REQUIREMENTS).resolve(), environment_path.resolve(), freeze_path.resolve(),
+            installer_log_path.resolve(),
             carrier_script.resolve(), *root_task_inputs, *recipe_inputs, *app_inputs,
             *carrier_inputs,
         ]
+        input_before = file_set_digest(list(dict.fromkeys(read_paths)))
         status.update({"state": "running", "selection_count": len(SELECTIONS)})
         status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
         carrier_api = load_native_carrier(carrier)
@@ -415,15 +450,15 @@ def main() -> int:
         if reopened.get("fixture_execution_conformant") is not True:
             raise RuntimeError("native carrier did not confirm successful fixture execution")
         case_facts = validate_original_junit(junit, reopened, source_map["expected_cases"])
-        originals = [path for path in capture_dir.iterdir() if path.is_file()]
-        originals.extend((junit, freeze_path, environment_path))
-        before = {str(path): sha256(path) for path in originals}
+        original_tree_before = result_tree_snapshot(result)
         shared_grade = grade_original_receipt(carrier, receipt_path)
         reopened_after, _ = carrier_api.read_receipt(receipt_path)
-        after = {str(path): sha256(path) for path in originals}
-        if before != after or reopened_after != reopened:
-            raise RuntimeError("original receipt/artifacts changed during native shared-grade read")
-        write_json(result / "shared-grade.json", shared_grade)
+        original_tree_after = result_tree_snapshot(result)
+        input_after = file_set_digest(list(dict.fromkeys(read_paths)))
+        if (original_tree_before != original_tree_after or input_before != input_after
+                or reopened_after != reopened):
+            raise RuntimeError("original result/source inputs changed during native shared-grade read")
+        write_json(run_root / "shared-grade.json", shared_grade)
         status.update(state="passed", exit_code=0, native_receipt="native/receipt.json",
                       junit="junit.xml", source_readset="native/receipt.json#readset",
                       native_metric=reopened["metric"], native_value=reopened["fixture_execution_conformant"],
