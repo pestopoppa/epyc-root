@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 20
     env:
       ROOT_SOURCE_PIN: 94e7d72a8448c3b77189b77dbb5cdd5d4ccfadbc
-      RESEARCH_PIN: edcae4ac1d6e6b222c38dd1942c7acc54ba13a9c
+      RESEARCH_PIN: 94821e731d65569ab6afd9e89bfecb5ecc812fbd
       APP_PIN: a4132e57c96edb78088dedcfb7eb315497ef28db
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       EXL3_RUNNER_CONTEXT: ubuntu-24.04
