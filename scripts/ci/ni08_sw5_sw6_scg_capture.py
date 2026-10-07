@@ -21,7 +21,7 @@ from pathlib import Path
 
 APP_PIN = "0a40117c9645218a6239d56e337b999440ac383d"
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-ROOT_SOURCE_PIN = "7279dbe38dc29ac71fca3943281b009bd0fca9d5"
+ROOT_SOURCE_PIN = "83004c1137015a9fc8d0cf411e648432bc51a1c9"
 ROOT_TASKS = {
     "handoffs/active/speculative-decoding-mtp-refresh.md",
     "handoffs/active/stack-change-governance-pipeline.md",
@@ -340,6 +340,12 @@ def main() -> int:
             if source.is_symlink() or not source.is_file() or sha256(source) != row.get("sha256"):
                 raise RuntimeError(f"ROOT task source digest differs: {row.get('path')}")
             root_task_inputs.append(source.resolve())
+        root_context_inputs = []
+        for row in source_map.get("root_contexts", []):
+            source = root_source / row["path"]
+            if source.is_symlink() or not source.is_file() or sha256(source) != row.get("sha256"):
+                raise RuntimeError(f"ROOT enrollment context digest differs: {row.get('path')}")
+            root_context_inputs.append(source.resolve())
 
         verify_complete_file_records(app, source_map.get("app_files", []), "APP")
         verify_complete_file_records(carrier, source_map.get("carrier_files", []), "carrier")
@@ -421,7 +427,7 @@ def main() -> int:
             (recipe / DRIVER).resolve(), (recipe / CASE_GUARD).resolve(),
             (recipe / REQUIREMENTS).resolve(), environment_path.resolve(), freeze_path.resolve(),
             installer_log_path.resolve(),
-            carrier_script.resolve(), *root_task_inputs, *recipe_inputs, *app_inputs,
+            carrier_script.resolve(), *root_task_inputs, *root_context_inputs, *recipe_inputs, *app_inputs,
             *carrier_inputs,
         ]
         input_before = file_set_digest(list(dict.fromkeys(read_paths)))

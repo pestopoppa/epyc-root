@@ -15400,8 +15400,16 @@
   "recipe_source_scope": "Same source population rule for APP, carrier, and recipe; source map itself is an explicit read input and bound by the clean recipe Git commit.",
   "recipe_tracked_python_config_count": 851,
   "root_carrier_repository": "pestopoppa/epyc-root",
+  "root_contexts": [
+    {
+      "git_blob": "24c990f9f32021274d7e695f5cf6a266df051694",
+      "path": "scripts/vidya/adapters/README.md",
+      "purpose": "prospective VB-SW-SCG-SOURCE-CONFORMANCE enrollment",
+      "sha256": "579511b3eb41ab4167cda45441df866bc1feebda626b155e81eef3b2bf354c6e"
+    }
+  ],
   "root_source_repository": "pestopoppa/epyc-root",
-  "root_source_revision": "7279dbe38dc29ac71fca3943281b009bd0fca9d5",
+  "root_source_revision": "83004c1137015a9fc8d0cf411e648432bc51a1c9",
   "root_task_ids": [
     "SW-5",
     "SW-6",
@@ -15409,14 +15417,14 @@
   ],
   "root_tasks": [
     {
-      "git_blob": "fdace055770aecd4f3dad30685d04c7212090686",
+      "git_blob": "638c4b0a15af5a2ea8c2042d8af6874329e27a00",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "sha256": "dad9f7677dbbcb3ece21b564260a9111caef1818b4db70e457debb2dfa1afbca"
+      "sha256": "01c36940ec968c371d506fabaff53a95dcb735049c9ccddff149187a5c6f9a1b"
     },
     {
-      "git_blob": "2ff303e878f8996b21619cc22d4f1eee80a055af",
+      "git_blob": "5834afefefaa3dff7c427f7ea1e50856d441e90c",
       "path": "handoffs/active/stack-change-governance-pipeline.md",
-      "sha256": "d7b4e15555f11bbe6bc8ed22e2e8755aea72435361dac9118ee4caeaa6c16297"
+      "sha256": "4b0b98bac3120f763e44d25065f282bece751abe6fb05cf85f951f88539cd8f1"
     }
   ],
   "schema": "epyc.ni08_sw5_sw6_scg.source_readset.v1",
