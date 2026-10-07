@@ -22,12 +22,12 @@ jobs:
       PYTEST_PLUGINS: ''
       ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS: '1'
       ORCHESTRATOR_MOCK_MODE: '1'
-      ORCHESTRATOR_PATHS_LLM_ROOT: ${{ runner.temp }}/isolated-llm
-      TMPDIR: ${{ runner.temp }}/isolated-tmp
     steps:
       - name: Initialize outcome artifact before setup
         run: |
           mkdir -p "$RUNNER_TEMP/vb-cs15-store/result" "$RUNNER_TEMP/isolated-tmp" "$RUNNER_TEMP/isolated-llm"
+          printf 'ORCHESTRATOR_PATHS_LLM_ROOT=%s\n' "$RUNNER_TEMP/isolated-llm" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s\n' "$RUNNER_TEMP/isolated-tmp" >> "$GITHUB_ENV"
           printf '{"state":"setup_pending","job":"cs15-store-native-conformance","exit_code":null}\n' > "$RUNNER_TEMP/vb-cs15-store/result/status.json"
           cp "$RUNNER_TEMP/vb-cs15-store/result/status.json" "$RUNNER_TEMP/vb-cs15-store/result/pre-status.json"
       - name: Checkout exact recipe
