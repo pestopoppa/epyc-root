@@ -2,6 +2,8 @@
 
 ## 2026-10-07 21:43 UTC — serving ownership fix committed; CPU recovery paused for validation
 
+At 21:50 UTC, the pre-launch dependency audit found four calibration cancellation files newly published on research main. The private final candidate now normally merges that source as `9300192d`, preserving both cancellation and socket ownership fixes. Its declaration is 135 files; fresh ROOT source, runner and targeted control approvals supersede the unexecuted 134-file source reviews. No new runtime PASS is claimed. The allocation owner acknowledged the capacity request at 21:47:30 UTC and is reviewing owner-safe recovery; acknowledgment does not restore admission capacity.
+
 Both CPU owners are now genuinely paused. The Q long-context attempt reused an older detached research server on port 18651; its failed attempt remains retained. Recovery terminated only the captured affected native generation, verified its locks released, then retired the captured inherited orphan and proved the port free. Neither operation changed production or historical KEEP records. The earlier 19:43 activation and 5,255-test PASS remain historical evidence for Research 397233f50.
 
 The common CPU/GPU serving fix is committed at 7a18a052: refuse an occupied port and verify the fresh child's PID/start and listening socket ownership before health and around requests, outside the measurement timers. ROOT independently reviewed all 134 committed source bindings and the final runner/supervisor. Fifteen actual-socket controls and one combined focused/full run remain unexecuted; source review does not supply runtime PASS. Fresh DS9/Q6 recovery namespaces preserve the failed Q state and consumed claims.
