@@ -324,6 +324,12 @@
   "root_source_commit": "6e9391f871e3ad00c8cb0fef8ea0a276093e8517",
   "root_source_files": [
     {
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "git_mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
       "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
       "git_mode": "100644",
       "path": "scripts/vidya/adapters/__init__.py",
@@ -354,16 +360,16 @@
       "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
     },
     {
-      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
-      "git_mode": "100644",
-      "path": "scripts/vidya/claim_tuple.py",
-      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
-    },
-    {
       "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
       "git_mode": "100644",
       "path": "scripts/vidya/frames.py",
       "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "git_mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
     },
     {
       "git_blob": "caeae42b0b2e05609dafa240bf9ab4a054ec183f",

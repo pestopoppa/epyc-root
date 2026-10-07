@@ -247,7 +247,7 @@ def main() -> int:
             raise RuntimeError("case identity does not match the complete module")
         root_paths = verify_map(root_source, cases["root_source_files"], "ROOT")
         app_paths = verify_map(app_source, cases["app_source_files"], "APP")
-        if len(cases["root_source_files"]) != 10 or len(cases["app_source_files"]) != 22:
+        if len(cases["root_source_files"]) != 11 or len(cases["app_source_files"]) != 22:
             raise RuntimeError("static import/data closure count differs from reviewed map")
         lock = tracked(app_lock, "uv.lock")
         lock_entry = tomllib.loads(lock.read_text(encoding="utf-8"))
