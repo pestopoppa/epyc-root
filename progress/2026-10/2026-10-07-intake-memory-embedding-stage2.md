@@ -49,3 +49,5 @@ These four are pending operator selection, not dismissed or declined.
 Index entry cardinality 1,972 and maximum allocated ID 1,976 are distinct values. Required gate results follow.
 
 Native intake validation exited 0 (1,972 surviving entries), README freshness exited 0, handoff index-state check exited 0, report cite-check exited 0, and whitespace checks exited 0. Native projection used only this reviewed 14-entry subset and an isolated shadow ledger; source reading supplies no Witnessed measurement or human attestation. Existing index-state advisory warnings are unrelated to this intake. Publication and remote containment are recorded in the retained Stage-2 publication receipt.
+
+Final custody reconciliation binds the 46 accepted recommendation rows to a root-owned immutable scratch snapshot. A late preparatory rewrite combined the swarm proposal with owner-composition wording; root retained the distinct accepted swarm outcome and every existing recommendation identity/action. All primary-source custody and accepted claim payloads are unchanged.
