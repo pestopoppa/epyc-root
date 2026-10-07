@@ -1,0 +1,28 @@
+{
+  "previous_head": "03ee8ef0cb7d1bb3b8c7d92016ef9d2bb10317af",
+  "main_before": "03ee8ef0cb7d1bb3b8c7d92016ef9d2bb10317af",
+  "source": "caa6b5ecf7a9355929f01459aa32cd0a2350519d",
+  "commit": "adfe61e93e17134948cd2360c20b1679808d10ec",
+  "paths": [
+    "src/api/routes/__init__.py",
+    "src/api/routes/openai_compat.py",
+    "src/api/routes/voice.py",
+    "src/backends/llama_server.py",
+    "src/features.py",
+    "src/llm_primitives/inference.py",
+    "src/llm_primitives/primitives.py",
+    "src/voice/__init__.py",
+    "src/voice/cascade.py",
+    "src/voice/contracts.py",
+    "src/voice/controller.py",
+    "tests/unit/test_inference_mixin.py",
+    "tests/unit/test_llama_server.py",
+    "tests/unit/test_openai_client_tool_mode.py",
+    "tests/unit/test_openai_direct_prompt_contract.py",
+    "tests/unit/test_voice_controller_contract.py",
+    "tests/unit/test_voice_route_contract.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

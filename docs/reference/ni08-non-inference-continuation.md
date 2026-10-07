@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **102 completed scoped tasks: 58 existing checkbox flips and 44 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **105 completed scoped tasks: 58 existing checkbox flips and 47 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -263,3 +263,8 @@ MAIN completed the existing [GPU acceleration recording task](../../handoffs/act
 ## BEAM prospective ingest provenance — MAIN acceptance
 
 [Published source and original21/21](../../artifacts/ni08/utm-b3-beam-provenance-source-20261007/README.md) close the bounded source and prospective verifier. MAIN verified complete4,355-input original custody and merged Research01d36835. Counts/range/granularity remain prospective experimental identity, not retrieval-quality or a historical run warrant. NI08 now102 scoped completions (58 existing flips+44 children).
+
+
+## Request-scoped streaming/controller source — MAIN acceptance
+
+[Published source and original276/276](../../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) close the bounded stream/controller scopes and native verifier. MAIN verified complete463-input/475-member originals and normally merged APPadfe61e9; failed269/276 remains unchanged. Concrete transport/harness/formatting/typed retain-cancel source gaps are still free work; real model/audio/50ms/cancel-latency acceptance is separate. NI08 now105 scoped completions (58 existing flips+47 children); backlog work continues.

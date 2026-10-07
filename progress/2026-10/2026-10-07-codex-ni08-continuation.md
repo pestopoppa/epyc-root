@@ -125,3 +125,8 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## BEAM prospective ingest provenance — MAIN acceptance
 
 [Published source and original21/21](../../artifacts/ni08/utm-b3-beam-provenance-source-20261007/README.md) close the bounded source and prospective verifier. MAIN verified complete4,355-input original custody and merged Research01d36835. Counts/range/granularity remain prospective experimental identity, not retrieval-quality or a historical run warrant. NI08 now102 scoped completions (58 existing flips+44 children).
+
+
+## Request-scoped streaming/controller source — MAIN acceptance
+
+[Published source and original276/276](../../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) close the bounded stream/controller scopes and native verifier. MAIN verified complete463-input/475-member originals and normally merged APPadfe61e9; failed269/276 remains unchanged. Concrete transport/harness/formatting/typed retain-cancel source gaps are still free work; real model/audio/50ms/cancel-latency acceptance is separate. NI08 now105 scoped completions (58 existing flips+47 children); backlog work continues.

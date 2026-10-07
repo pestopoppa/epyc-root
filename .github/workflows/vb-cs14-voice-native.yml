@@ -1,0 +1,93 @@
+name: VB CS-14 voice stream native fixture conformance
+on:
+  push:
+    branches: [codex/cs14-voice-native-conformance-20261007]
+permissions:
+  contents: read
+jobs:
+  cs14-voice-native-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      RECIPE_PIN: ${{ github.sha }}
+      SOURCE_PIN: caa6b5ecf7a9355929f01459aa32cd0a2350519d
+      ROOT_CONTEXT_PIN: f018782258f65118019a555f6832125f25646f11
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      APP_PIN: 94a6e8d41ec7d3f7a122f66bad53aa673d401d8a
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/vb-cs14-voice/result" "$RUNNER_TEMP/isolated-tmp" "$RUNNER_TEMP/isolated-llm"
+          printf 'ORCHESTRATOR_PATHS_LLM_ROOT=%s\n' "$RUNNER_TEMP/isolated-llm" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$RUNNER_TEMP/vb-cs14-voice/absent/cpu" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$RUNNER_TEMP/vb-cs14-voice/absent/llama-mtmd-cli" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$RUNNER_TEMP/vb-cs14-voice/absent/llama-server" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s\n' "$RUNNER_TEMP/isolated-tmp" >> "$GITHUB_ENV"
+          printf '{"state":"setup_pending","job":"cs14-voice-native-conformance","exit_code":null}\n' > "$RUNNER_TEMP/vb-cs14-voice/result/status.json"
+          cp "$RUNNER_TEMP/vb-cs14-voice/result/status.json" "$RUNNER_TEMP/vb-cs14-voice/result/pre-status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout reviewed native conformance carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout frozen APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.SOURCE_PIN }}
+          path: source
+          persist-credentials: false
+      - name: Checkout actual published task and source-table context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CONTEXT_PIN }}
+          path: context
+          persist-credentials: false
+      - name: Checkout APP dependency lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated Python environment
+        run: python -m venv "$RUNNER_TEMP/vb-cs14-voice/venv"
+      - name: Install exact selected-test wheel closure
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/vb-cs14-voice/venv/bin/python" -m pip install --only-binary=:all: --no-deps --require-hashes -r recipe/scripts/ci/vb_cs14_voice_native_requirements.txt 2>&1 | tee "$RUNNER_TEMP/vb-cs14-voice/result/pip-install.log"
+      - name: Record exact installed versions
+        if: always()
+        run: |
+          "$RUNNER_TEMP/vb-cs14-voice/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-cs14-voice/result/pip-freeze.txt" || true
+      - name: Capture original JUnit, source readset, receipt, and shared grade
+        run: |
+          "$RUNNER_TEMP/vb-cs14-voice/venv/bin/python" recipe/scripts/ci/vb_cs14_voice_native_capture.py
+      - name: Retain every capture outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vb-cs14-voice-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb-cs14-voice/result/
+          if-no-files-found: error
+          include-hidden-files: true

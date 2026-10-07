@@ -1202,3 +1202,8 @@ The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../
 ### Prospective BEAM ingest identity — 2026-10-07
 
 [Source and original21/21](../artifacts/ni08/utm-b3-beam-provenance-source-20261007/README.md) bind all-role source order, indexed range and pair-chunk granularity prospectively. A silent role filter or chunking choice is now visible in future artifacts; real BEAM/model/retrieval-quality acceptance remains open.
+
+
+### Voice streaming/controller source — 2026-10-07
+
+[Source and original276/276](../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) accept request-scoped real chunks, async stream/cancel ownership, bounded injected controller/cascade and successful-turn persistence. HTTP speech clients, WAV harness and typed speech/preserve/retain decisions remain implementation work; real audio/model/timing acceptance is separate.
