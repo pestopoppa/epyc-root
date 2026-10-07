@@ -1,0 +1,69 @@
+{
+  "cases": [
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_owner_disabled_provider_has_explicit_authority_without_lease"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_owner_is_not_an_automatic_holder_bypass"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_owner_refuses_another_holder_missing_task_or_lease_claim"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_owner_roster_must_be_unique_and_current"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_owner_missing_policy_refuses"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_delegation_still_requires_enabled_known_provider"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_delegated_active_lease_passes"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_delegated_lease_checks_remain_fail_closed"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_delegated_mode_refuses_owner_only_task_argument"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_live_or_unreadable_kfd_refuses_both_modes"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_cli_owner_preflight_never_starts_a_process_or_claim"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_cli_owner_and_delegated_modes_are_mutually_exclusive"
+    },
+    {
+      "classname": "test_claimed_run.AuthorityTests",
+      "name": "test_both_modes_keep_physical_claim_kfd_and_residency_checks"
+    },
+    {
+      "classname": "test_claimed_run.KfdTeardownPollingTests",
+      "name": "test_reaped_pid_waits_for_kfd_bookkeeping_and_retains_samples"
+    },
+    {
+      "classname": "test_claimed_run.KfdTeardownPollingTests",
+      "name": "test_unknown_or_persistent_kfd_census_fails_only_at_deadline"
+    }
+  ],
+  "count": 15,
+  "derivation": "static AST: class TestCase methods beginning test_; no pytest collection or execution",
+  "source_commit": "edcae4ac1d6e6b222c38dd1942c7acc54ba13a9c",
+  "test_file": "scripts/kernel_rnd/exl3_gfx90a/test_claimed_run.py",
+  "test_file_sha256": "96e9d178ad3140cefdbda5aacf56a460e67c262da5a821ae5f0603a56012f4d5"
+}
