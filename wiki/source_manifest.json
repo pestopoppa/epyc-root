@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T07:44:25Z",
+  "last_compile": "2026-10-07T08:18:41Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T07:44:25Z",
+  "scan_time": "2026-10-07T08:18:41Z",
   "schema_version": 1,
-  "source_set_hash": "f222edf823388ebd0e5da42bed06fae258111fce038cfc377af4cd4f1dbed399",
+  "source_set_hash": "fe392e6c316dcb006a9c189ca8eab24d31cd6e9f48a00d75b92cdfc6eac24f40",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -151,10 +151,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b5e65016ad7fdf2b37f051f0f2c762ecb265381518a6af6ae7a256ab3cd34bad",
-      "modified": "2026-10-07T06:35:28Z",
+      "content_hash": "09b05526f38d05876bc18d16725edc6dc475f712dab8528b3e3a731b4505294a",
+      "modified": "2026-10-07T08:18:41Z",
       "path": "handoffs/active/autokernel-restart-and-strip.md",
-      "size": 23067,
+      "size": 23980,
       "title": "AutoKernel \u2014 restart-loop fix, v28 launch, and the dead-weight strip",
       "type": "handoff-active"
     },
@@ -407,10 +407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7dc7a8f3eb7240c0e8f3f4ceb751c09858f0c561ca27dc9991c18a2d2ec4aaa8",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "4500fd41aa58a727675558b95c0c1d3aa15ed3ab9e82a54ddf92ba5b86224bd7",
+      "modified": "2026-10-07T08:14:08Z",
       "path": "handoffs/active/document-parser-table-bench.md",
-      "size": 16327,
+      "size": 17289,
       "title": "Document Parser Table-Extraction Benchmark \u2014 PaddleOCR-VL-1.6 pipeline vs ODL",
       "type": "handoff-active"
     },
@@ -591,10 +591,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "03e31cc7783b2a2c7a110f7516bca77a16b25ee7527d95f6ddaf20cdb1d51b0f",
-      "modified": "2026-10-07T02:30:20Z",
+      "content_hash": "aceebf5a115d9c1b0e4ba66d15dc0610022c3e0bd09588961def824783fc2778",
+      "modified": "2026-10-07T08:18:41Z",
       "path": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
-      "size": 141066,
+      "size": 142426,
       "title": "Gemma-Challenge Kernel Techniques \u2192 v7-Experimental Candidates",
       "type": "handoff-active"
     },
@@ -927,8 +927,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "43fc7cb6d4ea28e26cc414742a178dd92bc7a2b11e8a2cdf3c2e206e4727db96",
-      "modified": "2026-10-07T07:31:30Z",
+      "content_hash": "5b876078aa6413e75a2b2f255dd1460197b0c6f3165593256d4728ba6f0247bd",
+      "modified": "2026-10-07T07:57:27Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 129614,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -959,10 +959,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8e5e08182bc3a4934d7fabe678fef58791462b040e419fa1e9ac4b56af50f51f",
-      "modified": "2026-10-07T06:20:56Z",
+      "content_hash": "da229ebb016e7d050c2e9a986125c9e163b317fe4234f53d32c02b61bd561ee9",
+      "modified": "2026-10-07T07:47:59Z",
       "path": "handoffs/active/objective-task-rate-goodput.md",
-      "size": 32606,
+      "size": 33132,
       "title": "Objective: task_rate Axis + Goodput Frontier Rebuild",
       "type": "handoff-active"
     },
@@ -1223,10 +1223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "371eff63c0bb4d27fb53e09644e6ec5a62afec4ac7420e1ffba67ddd902b8e90",
-      "modified": "2026-10-07T07:08:19Z",
+      "content_hash": "56e00d01d3132106e617e80c96a03499ae5d28a8324d210ee588b0b586eac2b6",
+      "modified": "2026-10-07T07:50:39Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 47188,
+      "size": 47776,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f43030f176a2590de137b95985bd6dda3c1d1d5bce08818c5f8f46f5bee77422",
-      "modified": "2026-10-07T07:31:30Z",
+      "content_hash": "de546445f616ad885f0427faf1861a30cabf43303fff707a5c97805abc1942b9",
+      "modified": "2026-10-07T08:14:08Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 358350,
+      "size": 360226,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9343,10 +9343,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e055563b4dad665bbc5575f3e99cd017bea3ebeefa0ae9e7c4e9a34060cc1659",
-      "modified": "2026-10-07T07:44:22Z",
+      "content_hash": "6eae0263dea70436d692e3fd8ed580ca81c49979dae427248789a5a058062634",
+      "modified": "2026-10-07T08:17:21Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 36671,
+      "size": 41039,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "fc6cdff370e5c7a49456551ffd1dc91e3a076bf29e608f23c2dfe7a729084de1",
-      "modified": "2026-10-07T07:31:30Z",
+      "content_hash": "404a314cb3f6c75abb2b44aeef84c5b342d1fa198803443d332132ee6de01a1d",
+      "modified": "2026-10-07T07:57:27Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 50711,
+      "size": 52358,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

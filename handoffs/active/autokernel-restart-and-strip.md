@@ -1,5 +1,7 @@
 # AutoKernel — restart-loop fix, v28 launch, and the dead-weight strip
 
+> **NI08 source-only start here — 2026-10-07:** the [completed per-file manifest](../../artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md) retains all19 candidate/test units. The next bounded source gate is `VB-INF64-REACHABILITY-CONFORMANCE` in the [belief program](vidya-belief-substrate-program.md); it grants no runtime reachability or deletion authority. The dated launch and benchmark history below does not establish current live campaign state. Campaign execution remains with its owner.
+
 **Owner:** operator audit session (2026-08-27), which now holds GPU compute.
 **Code branch:** `lane/autokernel-restructure-20260827` in **epyc-inference-research**
 (the code fixes live there; this rider lives in epyc-root with the rest of `handoffs/`).
