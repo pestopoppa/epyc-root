@@ -211,3 +211,18 @@ FW-1 source 1533dd0b is published in APP main6712eecf; original37577590308 TRUE1
 MAIN completed manual LOW source/caller review for concrete voice HTTP/WAV clients, actual MockTransport controller/cascade/CLI integration, bounded media-type/identity/cancellation and iterator cleanup; exact three-file private source9c768 is frozen. W6 source129a58 uses actual scored+task_failed partition denominators and nullable descriptive core-minus-fresh means without changing the objective; actual journal writer directly carries details. Both are prospectively enrolled before any native capture; existing journal informational support carry is separately filed. No new completion is claimed.
 
 MAIN prepared the exact two-file additive LR-11/LR-13 policy patch and ordinary signing script, ran syntax and review-only validation with protected preimages unchanged and no receipts. OP-LR11-LR13 routes the recommended ratify-versus-retain decision; typed human terminal signature is the named remaining gate. No cleanup, policy change, operator attestation or live runtime claim.
+
+
+## 06:37 UTC — physical-core guard source published and stale deletion premise corrected
+
+APP maineb115cbe9903006943dc16f23395c7058bb58ad4 publishes the exact3 reviewed SMT guard/test blobs. Hosted37579644041 originalTRUE81/81,1130Git+5generated inputs and1147members passed MAIN independent original custody review. SSBENCH-SMT-SOURCE andVB companion close:131 scoped NI08 completions (74existing+57children). Runtime activation remains owning-session work. MAIN current-source review corrects INF64 historical19-dead assertion: actual3 noncandidate loop imports, compiler dynamic entry and held least-commitment producers remain. Per-file reachability manifest and prospective native evidence task are surfaced; no removal or whole-program completion. Full backlog review/source implementation continues.
+
+
+## 06:39 UTC — experimental rollback native/source accepted
+
+MAIN independently authenticates original37580634048 TRUE3/3,4413members/4326read inputs/64actual rawcaptures and unchanged shared Judged/Located. Public experimentalbranch verified via exactGitHubHTTPS8e09 freshparentffc1. Two existing source/native flips bring NI08 to133 (76existing+57children). ActualCPU initializer/referencegraph controls only; no production edits, fullGPU/CPU regression, performance, live seeded campaign event or promotion. Earlier setup refusal remains immutable. Periodic full wrap-up follows accepted SMT/rollback boundary.
+
+
+## 06:44 UTC — operator-requested periodic full wrap-up
+
+Full routine covers accepted SMT/experimental rollback sources,4 existing checkbox flips, source enrollment and corrected INF64 task routing, and the prevalidated LR11/LR13 terminal package. Wiki synthesis distinguishes source acceptance from operational evidence and reflects CS20/W6 preparations; indices regenerate/check and README/wiki checks gate publication. No pruning, archival or compaction candidate was approved. Exact native/archive/compiler custody and active worker scratch remain retained; no peer removal or production/inference/runtime action.

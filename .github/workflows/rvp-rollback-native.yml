@@ -1,0 +1,76 @@
+name: RVP actual SSM rollback CPU source controls
+on:
+  push:
+    branches: [codex/ni08-rvp-rollback-native-20261007]
+permissions:
+  contents: read
+jobs:
+  rollback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONHASHSEED: '0'
+    steps:
+      - name: Initialize original status envelope
+        run: |
+          mkdir -p "$RUNNER_TEMP/rvp-rollback/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/rvp-rollback/result/status.json"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/llama.cpp
+          ref: 8e09a5e003f61b7ce7d58088f2f34595118068b4
+          path: experimental-source
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock-source
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: e6afe15f966d175d20756d8cff3fcbcc1becf756
+          path: enrollment-context
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install hosted CPU toolchain and isolated locked pytest
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y build-essential cmake ninja-build
+          python -m venv "$RUNNER_TEMP/rvp-rollback/venv"
+          "$RUNNER_TEMP/rvp-rollback/venv/bin/python" -m pip install --disable-pip-version-check --require-hashes --only-binary=:all: -r recipe/scripts/ci/rvp_rollback_requirements.txt > "$RUNNER_TEMP/rvp-rollback/result/install.log" 2>&1
+          "$RUNNER_TEMP/rvp-rollback/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/rvp-rollback/result/pip-freeze.txt"
+      - name: Build and capture actual experimental CPU controls
+        env:
+          LD_LIBRARY_PATH: ""
+        run: |
+          set +e
+          "$RUNNER_TEMP/rvp-rollback/venv/bin/python" recipe/scripts/ci/rvp_rollback_capture.py "$GITHUB_WORKSPACE/experimental-source" "$GITHUB_WORKSPACE/carrier" "$GITHUB_WORKSPACE/lock-source" "$GITHUB_WORKSPACE/enrollment-context"
+          rc=$?
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/rvp-rollback/result/status.json"
+          exit "$rc"
+      - name: Retain all original native and build-bound inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rvp-rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rvp-rollback/result/
+          if-no-files-found: error
+          retention-days: 90

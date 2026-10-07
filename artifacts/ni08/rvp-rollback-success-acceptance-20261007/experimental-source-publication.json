@@ -1,0 +1,10 @@
+{
+  "remote": "https://github.com/pestopoppa/llama.cpp.git",
+  "branch": "refs/heads/llama.cpp-experimental-ni08-rvp-ssm-seeded-20261007",
+  "commit": "8e09a5e003f61b7ce7d58088f2f34595118068b4",
+  "parent": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "ls_remote_original": "8e09a5e003f61b7ce7d58088f2f34595118068b4\trefs/heads/llama.cpp-experimental-ni08-rvp-ssm-seeded-20261007",
+  "pushed": true,
+  "production_modified": false,
+  "production_promotion": false
+}

@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T06:04:17Z",
+  "last_compile": "2026-10-07T06:46:08Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T06:04:17Z",
+  "scan_time": "2026-10-07T06:46:08Z",
   "schema_version": 1,
-  "source_set_hash": "f15f97cae963c8040ac3b2e4466d637f3454bf6e3b7119d9c807a780312a3aac",
+  "source_set_hash": "ea474e9f70d6f7c090ac93c5a1a61b0dc5e38101eaec25953ac0f61dd974af0e",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -151,10 +151,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cb045d5a7da01e6ea74c2b22b888256ca31df5cb21fbdd9be78e63fc1158b62b",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "b5e65016ad7fdf2b37f051f0f2c762ecb265381518a6af6ae7a256ab3cd34bad",
+      "modified": "2026-10-07T06:35:28Z",
       "path": "handoffs/active/autokernel-restart-and-strip.md",
-      "size": 21607,
+      "size": 23067,
       "title": "AutoKernel \u2014 restart-loop fix, v28 launch, and the dead-weight strip",
       "type": "handoff-active"
     },
@@ -287,10 +287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5a72292a680fdfc1cf76b5dbf7277f7b3198ff74b9714199f362e17a29d24114",
-      "modified": "2026-10-07T05:13:42Z",
+      "content_hash": "44d61dcbad969ce231cfb66efd1d61bc0ce586da1de10273535f5e761c749f81",
+      "modified": "2026-10-07T06:20:56Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 51714,
+      "size": 52217,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7f79024c17452cc0f35fe4ac460dada07c43d31c4515cad84ce48e5a22bc251f",
-      "modified": "2026-10-07T05:59:06Z",
+      "content_hash": "ea6d4e48805ac79b6406e03c189a7d3a210224fbecb98029b40c78825cb1ddcd",
+      "modified": "2026-10-07T06:39:26Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 129082,
+      "size": 129614,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -959,10 +959,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5612360aec6766a34039d6907525ab9b35bba8218fe732b884cd2f0ac0ec7f7a",
-      "modified": "2026-10-07T02:30:20Z",
+      "content_hash": "8e5e08182bc3a4934d7fabe678fef58791462b040e419fa1e9ac4b56af50f51f",
+      "modified": "2026-10-07T06:20:56Z",
       "path": "handoffs/active/objective-task-rate-goodput.md",
-      "size": 31970,
+      "size": 32606,
       "title": "Objective: task_rate Axis + Goodput Frontier Rebuild",
       "type": "handoff-active"
     },
@@ -1183,10 +1183,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dd90b69f25671be341bc41742f200726d75581c083d13ac7b6fe3ae94ee5d22d",
-      "modified": "2026-10-07T04:56:39Z",
+      "content_hash": "dced2ba8e30491bd9d5e6a7f84eca4862b57c3cf2050a73da9f5458124a81c56",
+      "modified": "2026-10-07T06:39:26Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 159368,
+      "size": 159773,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1287,10 +1287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4d67afacee5bcadbd5f19f6c5890b1e56ee829db388e821c81874f549b1fbf69",
-      "modified": "2026-10-07T00:59:28Z",
+      "content_hash": "595d57206600d04b680ed225733cc4857df397f4eea16580a43930440db42612",
+      "modified": "2026-10-07T06:35:28Z",
       "path": "handoffs/active/standardized-stack-update-pipeline-finalization.md",
-      "size": 23919,
+      "size": 24184,
       "title": "Standardized Stack Update Pipeline Finalization",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9ed387dcc3a1fcbd10b3e372e182cf1fc991b1c0bfe08eb1504c9130f17a18f9",
-      "modified": "2026-10-07T06:01:17Z",
+      "content_hash": "b18435c0b2e0f0aa3d37dc23892aaebb63235f328bffda5dc9084ae324e95cb1",
+      "modified": "2026-10-07T06:39:26Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 351516,
+      "size": 354553,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9343,10 +9343,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "1bae6bc6ac495ccb8de9018209b223c8eb59dc175e92c7114b55908d09b3fe1a",
-      "modified": "2026-10-07T05:59:28Z",
+      "content_hash": "65158475f1599e2e766f26fb7ab5d9d49eae12fb59b563322e785b614bbcf841",
+      "modified": "2026-10-07T06:43:38Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 29079,
+      "size": 32192,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "1e4fb9f0c82d3874f23193452b9874e58137567bd5c9a40667fa8d7e2b6bdf9e",
-      "modified": "2026-10-07T05:59:06Z",
+      "content_hash": "6984074226be8aa1932fe1a86dbb0e9447a3a9503c244712226efce6d80e3c74",
+      "modified": "2026-10-07T06:39:26Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 47199,
+      "size": 48932,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

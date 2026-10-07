@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **129 completed scoped tasks: 72 existing checkbox flips and 57 newly completed scoped subtasks; mocked workflow and pin-checker controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **133 completed scoped tasks: 76 existing checkbox flips and 57 newly completed scoped subtasks; physical-core guard and experimental rollback controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -337,3 +337,13 @@ MAIN accepted [FW-1 original10/10](../../artifacts/ni08/fw1-success-acceptance-2
 ## Prepared next source and operator boundaries — 2026-10-07
 
 Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN manual caller/metric-direction review and are prospectively enrolled for their own full hosted controls. These are preparations, not completions; NI08 remains129 scoped completions. W6 future journal metadata uses the existing journal family, with separate informational support carry. The [prevalidated LR-11/LR-13 package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md) is an operator terminal-signature decision; protected shared rules and receipts remain unchanged.
+
+
+## Physical SMT placement guard — 2026-10-07
+
+[Original81/81 and exact source](../../artifacts/ni08/ssbench-smt-success-acceptance-20261007/README.md) complete SSBENCH-SMT-SOURCE and its prospective native companion. Two existing flips bring NI08 to131 (74existing+57children). Synthetic topology/spawn controls grant no live placement or capacity claim; owning-session runtime activation remains separate. W6 source enrollment now explicitly distinguishes34 source functions from38 expanded native identities. Further source audits continue; the whole backlog remains unexhausted.
+
+
+## Experimental seeded rollback initializer — 2026-10-07
+
+[Actual original3/3 and64raw captures](../../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md) complete the fresh experimental rollback source child and its prospective native companion. Two existing flips bring NI08 to133 (76existing+57children). Production is unchanged; full-device regression, promotion and live seeded events remain parent requirements. New source work and final all-card audit continue.
