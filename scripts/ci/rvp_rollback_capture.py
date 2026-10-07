@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import subprocess
 import shutil
+import shlex
 import sys
 import tomllib
 
@@ -106,6 +107,83 @@ def pinned(repo: Path, commit: str, label: str) -> None:
         raise RuntimeError(f"{label} checkout is not clean")
 
 
+def compiler_input_context(toolchain: dict, build: Path) -> tuple[dict, list[Path]]:
+    """Bind actual GCC driver children and inputs named by generated build metadata."""
+    records = {"children": [], "driver_queries": [], "link_inputs": []}
+    reads = []
+    compilers = [toolchain[name]["invoked_path"] for name in ("gcc", "g++")]
+    def bind(raw: str) -> Path:
+        candidate = Path(raw)
+        if not candidate.is_absolute():
+            located = shutil.which(raw)
+            if not located:
+                raise RuntimeError(f"compiler child/input does not resolve: {raw}")
+            candidate = Path(located)
+        resolved = candidate.resolve(strict=True)
+        data = regular_bytes(resolved)
+        reads.append(resolved)
+        return resolved
+    for compiler in compilers:
+        for name in ("cc1", "cc1plus", "collect2", "as", "lto-wrapper"):
+            argv = [compiler, "--print-prog-name=" + name]
+            completed = subprocess.run(argv, text=True, capture_output=True, check=False)
+            if completed.returncode or not completed.stdout.strip():
+                raise RuntimeError("compiler child discovery failed")
+            resolved = bind(completed.stdout.strip())
+            records["children"].append({"argv": argv, "stdout": completed.stdout,
+                "stderr": completed.stderr, "resolved_path": str(resolved),
+                "sha256": digest(regular_bytes(resolved))})
+    commands_argv = ["ninja", "-C", str(build), "-t", "commands"]
+    commands = subprocess.check_output(commands_argv, text=True)
+    records["commands_argv"] = commands_argv
+    records["original_generated_commands"] = commands
+    compiler_paths = {Path(value).resolve(strict=True) for value in compilers}
+    for line in commands.splitlines():
+        tokens = shlex.split(line)
+        invocation = None
+        for index, token in enumerate(tokens):
+            if token in {"&&", ";", "||"}:
+                continue
+            located = shutil.which(token) if "/" not in token else token
+            if located and Path(located).exists() and Path(located).resolve() in compiler_paths:
+                end = next((i for i in range(index + 1, len(tokens)) if tokens[i] in {"&&", ";", "||"}), len(tokens))
+                invocation = tokens[index:end]
+                break
+        if invocation is None:
+            continue
+        argv = invocation + ["-###"]
+        completed = subprocess.run(argv, cwd=build, text=True, capture_output=True, check=False)
+        if completed.returncode:
+            raise RuntimeError("actual generated compiler command introspection failed")
+        records["driver_queries"].append({"argv": argv, "cwd": str(build),
+            "stdout": completed.stdout, "stderr": completed.stderr})
+        for item in shlex.split(completed.stderr):
+            if item.startswith("/") and Path(item).is_file():
+                bind(item)
+        # GCC's emitted link metadata names the selected start files and -l inputs.
+        requested = {Path(item).name for item in shlex.split(completed.stderr)
+                     if item.startswith("/") and Path(item).is_file() and item.endswith(".o")}
+        libraries = {item[2:] for item in shlex.split(completed.stderr) if item.startswith("-l") and len(item) > 2}
+        requested.update("lib" + name + suffix for name in libraries for suffix in (".so", ".a"))
+        for name in sorted(requested):
+            query = [invocation[0], "--print-file-name=" + name]
+            result = subprocess.run(query, text=True, capture_output=True, check=False)
+            raw = result.stdout.strip()
+            if result.returncode:
+                raise RuntimeError("compiler link-input discovery failed")
+            if raw == name:
+                records["link_inputs"].append({"argv": query, "stdout": result.stdout,
+                    "stderr": result.stderr, "available": False})
+                continue
+            resolved = bind(raw)
+            data = regular_bytes(resolved)
+            records["link_inputs"].append({"argv": query, "stdout": result.stdout,
+                "stderr": result.stderr, "available": True, "resolved_path": str(resolved),
+                "bytes": len(data), "sha256": digest(data)})
+    if not records["driver_queries"] or not records["link_inputs"]:
+        raise RuntimeError("generated compiler/link input metadata is empty")
+    return records, list(dict.fromkeys(reads))
+
 def main() -> int:
     if len(sys.argv) != 5:
         raise SystemExit("usage: rvp_rollback_capture.py EXPERIMENTAL_SOURCE CARRIER LOCK_SOURCE CONTEXT")
@@ -185,12 +263,24 @@ def main() -> int:
         "-G", "Ninja", "-DCMAKE_BUILD_TYPE=Release", f"-DEPYC_EXPERIMENTAL_SOURCE={source}"]
     commands = [(configure, result / "configure.log"),
         (["cmake", "--build", str(build), "--parallel", "2", "--target", "rvp-actual-initializer", "test-backend-ops"], result / "build.log")]
-    for argv, log in commands:
+    source_before_build_paths = list(dict.fromkeys(reads))
+    source_before_build = source_snapshot(source_before_build_paths)
+    for command_index, (argv, log) in enumerate(commands):
         completed = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=1200, check=False)
         log.write_bytes(completed.stdout)
         if completed.returncode:
             raise RuntimeError(f"hosted build command failed: {argv[0]}")
-    if source_snapshot(reads[:len(source_before_build)]) != source_before_build:
+        if command_index == 0:
+            if source_snapshot(source_before_build_paths) != source_before_build:
+                raise RuntimeError("declared source/toolchain changed during configure")
+            compiler_context, compiler_reads = compiler_input_context(toolchain, build)
+            reads += compiler_reads
+            toolchain_record = json.loads(regular_bytes(toolchain_path))
+            toolchain_record["compiler_driver_context"] = compiler_context
+            toolchain_path.write_text(json.dumps(toolchain_record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+            source_before_build_paths = list(dict.fromkeys(reads))
+            source_before_build = source_snapshot(source_before_build_paths)
+    if source_snapshot(source_before_build_paths) != source_before_build:
         raise RuntimeError("declared source changed during hosted build")
     # Ninja retains actual compile dependencies, including system headers from -MD.
     dependencies = subprocess.check_output(["ninja", "-C", str(build), "-t", "deps"], text=True)
