@@ -6,8 +6,11 @@ would pass while the two halves disagreed — the write and read sides were auth
 sitting, which is exactly when that mistake is easiest to make and hardest to see.
 """
 
+import hashlib
+import functools
 import json
 import os
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -23,6 +26,27 @@ ORCH = Path(os.environ.get("EPYC_ORCH_ROOT") or ROOT / "repos" / "epyc-orchestra
 # A writer-side branch not yet on the default clone can be checked against this reader by
 # pointing VIDYA_ORCH_WRITER_ROOT at its worktree.
 WRITER = Path(os.environ.get("VIDYA_ORCH_WRITER_ROOT") or ORCH)
+
+
+def _redirect_trace_store(monkeypatch, tmp_path):
+    """Keep the real emitter, but direct its SQLite output into this test's temp tree."""
+    from src.trace import emit as trace_emit
+
+    target = tmp_path / "trace" / "events.sqlite"
+    source_db = ORCH / "data" / "trace" / "events.sqlite"
+    before = hashlib.sha256(source_db.read_bytes()).hexdigest() if source_db.is_file() else None
+    monkeypatch.setattr(
+        trace_emit, "emit", functools.partial(trace_emit.emit, db_path=target))
+    return target, source_db, before
+
+
+def _assert_real_trace_write(trace):
+    target, source_db, source_before = trace
+    with sqlite3.connect(target) as conn:
+        (count,) = conn.execute("SELECT COUNT(*) FROM event").fetchone()
+    assert count > 0, "real trace emitter did not write its isolated event store"
+    source_after = hashlib.sha256(source_db.read_bytes()).hexdigest() if source_db.is_file() else None
+    assert source_after == source_before, "writer touched the source checkout's default trace store"
 
 
 def write_journal(tmp_path: Path, rows: list[dict]) -> Path:
@@ -332,10 +356,12 @@ def _writer_emits_ap55_gate() -> bool:
 
 @pytest.mark.skipif(not _writer_emits_ap55_gate(),
                     reason="orchestrator writer does not emit ap55_gate (set VIDYA_ORCH_WRITER_ROOT)")
-def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path):
+def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     sys.path.insert(0, str(WRITER / "scripts" / "autopilot"))
     sys.path.insert(0, str(WRITER))
     from experiment_journal import ExperimentJournal, JournalEntry
+
+    trace = _redirect_trace_store(monkeypatch, tmp_path)
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
@@ -365,6 +391,7 @@ def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path):
         legs.update(would_hold_enforce=True, would_hold_enforce_reasons=["seed_rerun:MISSING"],
                     would_hold_strict=True)
     assert got == legs
+    _assert_real_trace_write(trace)
 
 
 def test_a_trial_is_always_a_candidate(tmp_path):
@@ -381,6 +408,8 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     sys.path.insert(0, str(ORCH / "scripts" / "autopilot"))
     sys.path.insert(0, str(ORCH))  # the writer imports `src.autopilot_core.*`
     from experiment_journal import ExperimentJournal, JournalEntry
+
+    trace = _redirect_trace_store(monkeypatch, tmp_path)
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
@@ -422,6 +451,7 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     assert rec["w6_generalization"] == w6_report
     support = _support(shard, r)
     assert support["assertion"]["w6_generalization"] == w6_report
+    _assert_real_trace_write(trace)
 
     import measurement_record
     orig, measurement_record.REPO_ROOT = measurement_record.REPO_ROOT, tmp_path
@@ -529,7 +559,7 @@ def test_a_speed_axis_reseed_event_is_neither_a_commit_nor_projected(tmp_path):
 
 @pytest.mark.skipif(not (ORCH / "scripts" / "autopilot" / "experiment_journal.py").exists(),
                     reason="orchestrator repo not present")
-def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
+def test_decision_fields_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     """The writer's vocabulary and the ledger event shape, produced by the real journal code."""
     sys.path.insert(0, str(ORCH / "scripts" / "autopilot"))
     sys.path.insert(0, str(ORCH))
@@ -537,6 +567,8 @@ def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
     from safety_gate import PROMOTION_RULE_FRONTIER
     from src.autopilot_core.learning_exclusions import (
         FRONTIER_ADMISSION_KEY, FRONTIER_ADMISSION_REPRESENTATIVE)
+
+    trace = _redirect_trace_store(monkeypatch, tmp_path)
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
@@ -561,3 +593,4 @@ def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
     assert sup["assertion"]["promotion_committed"] is True
     # Trial 2 is the newest row and its commit never landed: held back, not projected.
     assert apj.frames_for_row(*got[2], as_of="t") == []
+    _assert_real_trace_write(trace)
