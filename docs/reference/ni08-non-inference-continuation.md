@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **74 completed scoped tasks: 50 existing checkbox flips and 24 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **76 completed scoped tasks: 51 existing checkbox flips and 25 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -187,3 +187,7 @@ SMT launch-guard and server-only vision fallback bounded source/VB scopes are en
 ## AP60 per-instance environment source — MAIN acceptance
 
 [Exact115/115, all3,455 API ZIP members, 3,442 Git inputs plus3 contexts and APP publication](../../artifacts/ni08/ap60-instance-settings-source-20261007/README.md) close AP-60 and its prospective VB companion. **74 scoped completions (50 existing flips +24 additions)**. All source/case identities and prior failures retained; default-off/k10, integer parsing, work payload and score math preserved. No runtime/quality/population-capture claim; wider source work continues. AUD11 passing baseline/mutant requires another artifact-preservation repair because GitHub omitted one copied hidden workflow; it remains unaccepted.
+
+## AP62 invocation-ring source — MAIN acceptance
+
+[Original14/14, all463 API ZIP members, 449 inputs plus3 contexts and APP publication](../../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md) close AP-62 and its prospective VB companion. **76 scoped completions (51 existing flips +25 additions)**. Explicit append/snapshot/clear locking and request-local durable records preserve dispatch outside lock. Prior failures stay immutable; no live concurrency/deployment claim. Other source scopes and exact task-level eligibility audit continue.
