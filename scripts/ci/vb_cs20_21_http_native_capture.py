@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 ROOT_CONTEXT_PIN = "7981a9acf2b8e2c328b9add8e21a68656c99c1d6"
-SOURCE_PIN = "9c76824f549f45f22cf315e1fb3cb7f832558a13"
+SOURCE_PIN = "1958d759ca1d1b0cb3fa58a9f8754971c2882887"
 APP_PIN = "3fc9f947bd3240fdb65daa719f37625e3ac6c7df"
 PYTHON_PIN = "3.13.15"
 WORKFLOW = ".github/workflows/vb-cs20-21-http-native.yml"
