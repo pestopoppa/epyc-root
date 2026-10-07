@@ -1,0 +1,40 @@
+{
+  "reviewed_at": "2026-10-07T01:18:05.687821+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37555338790,
+  "attempt": 1,
+  "artifact": 11454935646,
+  "pins": {
+    "recipe": "6a26b80b60cba29322c8938b7fccb2f229c5df62",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "app": "a4132e57c96edb78088dedcfb7eb315497ef28db"
+  },
+  "zip_sha256": "6640af3b6f029dd046a2d3bd21361189725af9c93f82328660dfbd6bf9c68df0",
+  "zip_bytes": 17733721,
+  "members": 3455,
+  "readset_count": 3445,
+  "git_inputs": 3442,
+  "contexts": 3,
+  "counts": {
+    "collected": 115,
+    "error": 0,
+    "executed": 115,
+    "failure": 0,
+    "passed": 115,
+    "skipped": 0
+  },
+  "testcase_nodes": 115,
+  "native_value": true,
+  "receipt_file_sha256": "d76d9d05cb53da8336ba94eeac2e576de81043e6148523743fa31df7554082f1",
+  "receipt_self_sha256": "d4b713328875fe77aae1d277c666fd6d9836ec841b71f79eb5ace88f80d23e67",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "MEDIUM: constructor-local environment snapshots, existing default-off write/match behavior and temporary-store compatibility only; no production memory/model/embedding/server or reward/scoring-policy change.",
+  "job_identity": "github_job_112580152477"
+}

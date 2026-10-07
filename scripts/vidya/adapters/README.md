@@ -541,7 +541,7 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 | AP61 current-route invocation-log guard source census | document dependency evidence only; ungraded | Exact test/source Git identities and static AST46-route census; test-only method/direct-name guard, meaningful forbidden/allowed source controls. No executed fixture, runtime behavior, diagnostic-ring concurrency or new ladder. | Accepted [MAIN source review](../../../artifacts/ni08/invocation-route-guard-source-20261006/README.md); existing VB-NI07-DOC-DEPS source contract |
 
 
-| AP60 per-instance QScorer environment source controls | existing native CI verifier | Bind constructor environment snapshots, default-off/k10, independent instances and unchanged row-update/work-payload compatibility before synthetic capture; no real model or production memory execution. | VB-AP60-CONFORMANCE; private recipe under MAIN review |
+| AP60 per-instance QScorer environment source controls | existing native CI verifier | Bind constructor environment snapshots, default-off/k10, independent instances and unchanged row-update/work-payload compatibility before synthetic capture; no real model or production memory execution. | VB-AP60-CONFORMANCE; private recipe under MAIN review Accepted2026-10-07: [original115/115 and source](../../../artifacts/ni08/ap60-instance-settings-source-20261007/README.md). |
 
 
 | AP62 invocation ring snapshot source controls | existing native CI verifier | Real-lock writer/reader synthetic controls plus unchanged current route guard; no shared serving activity. | VB-AP62-CONFORMANCE; private source/recipe review |

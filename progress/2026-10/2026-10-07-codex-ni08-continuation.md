@@ -43,3 +43,7 @@ SMT launch-guard and server-only vision fallback bounded source/VB scopes are en
 ### WEB-1 decision preparation — no completion counted
 
 MAIN verified exact site Git blobs and both historical screenshot hashes, published a remotely reviewable contact/publication decision package, and linked existing OP-57. No destination exists in source; the operator must supply it and confirm launch readiness. The running total remains 72. AUD11 original 49-member capture has baseline 2/2 TRUE with shared Judged/Located but a failed AST mutation witness; implementation remains unaccepted. Independently rebound corrected AUD11 20-input successor and P6 2,822-input depth-only successor; one exact hosted capture for each is authorized, no inference or host process change.
+
+## AP60 per-instance environment source — MAIN acceptance
+
+[Exact115/115, all3,455 API ZIP members, 3,442 Git inputs plus3 contexts and APP publication](../../artifacts/ni08/ap60-instance-settings-source-20261007/README.md) close AP-60 and its prospective VB companion. **74 scoped completions (50 existing flips +24 additions)**. All source/case identities and prior failures retained; default-off/k10, integer parsing, work payload and score math preserved. No runtime/quality/population-capture claim; wider source work continues. AUD11 passing baseline/mutant requires another artifact-preservation repair because GitHub omitted one copied hidden workflow; it remains unaccepted.

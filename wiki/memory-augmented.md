@@ -1175,3 +1175,7 @@ The curation-layer row (D-d in the REPL session-memory handoff) gained two accep
 ## 2026-10-06 synthetic structural conformance
 
 The [UTM conformance contract](../docs/reference/utm-synthetic-conformance-contract.md) characterizes eight native store categories and separates five typed-parser batches/six attempts. [Original off-host CI37444684189](../artifacts/ni07/run-37444684189/README.md) passes2/2 with generated readout captured at execution and custody reopened by MAIN. Existing store acceptance of a record does not establish privacy, source resolution or semantic correctness; all six axes remain unassessed and gold accuracy is null. Human semantic calibration and UTM-M9 remain open.
+
+## QScorer construction settings
+
+Each QScorer now snapshots the existing write-enable and match-k environment keys at construction, so later fixture/configuration changes do not alter existing instances. Defaults and reward/score semantics remain unchanged. [AP-60 source and original115/115 hosted conformance](../artifacts/ni08/ap60-instance-settings-source-20261007/README.md); no live memory or quality outcome is claimed.

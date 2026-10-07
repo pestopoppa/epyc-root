@@ -177,11 +177,12 @@ First full smoke run of the trial loop. Four defects, three silent.
       it is superseded by `ruling_op19_e8_chain_20260827.json` and not by RTG-02's work
       (`handoffs/active/autopilot-continuous-optimization.md:1714`) (found 2026-09-14, noninf sweep).
 
-- [ ] **AP-60 — remove the import-time `Q_TD_WRITE` test trap** by snapshotting write enablement and match-k
+- [x] **AP-60 — remove the import-time `Q_TD_WRITE` test trap** by snapshotting write enablement and match-k
       from the existing environment keys at each QScorer construction, preserving default-off/k10 and integer
       parsing. Set fixture environments before construction and prove existing instances retain their settings
       when later instances use different environments. Existing row-update/work-payload cases must remain.
       Current production launcher supplies the environment before construction; no serving reload is implied.
+      ✅2026-10-07 — MAIN accepts original115/115 and exact APP publication; [source/custody](../../artifacts/ni08/ap60-instance-settings-source-20261007/README.md).
       The earlier pytest-always-False wording was overbroad: one fixture patched a module flag after construction,
       while another patched it before construction (found2026-09-14; refined2026-10-06 from APP816/sourceec852).
 
