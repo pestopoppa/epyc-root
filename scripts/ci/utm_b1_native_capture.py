@@ -25,6 +25,20 @@ CASES = "scripts/ci/utm_b1_native_cases.json"
 TASK = "handoffs/active/unified-trace-memory-service.md"
 SOURCE_TABLE = "scripts/vidya/adapters/README.md"
 VB_PROGRAM = "handoffs/active/vidya-belief-substrate-program.md"
+ENROLLED_CONTEXT = {
+    TASK: (
+        "**UTM-B1-SOURCE — prepare the existing read-only trace navigation registrar and synthetic MCP/SQLite controls.**",
+        "Actual off-host FastMCP schema/defaults and synthetic SQLite navigation controls through VB-UTM-B1-CONFORMANCE.",
+    ),
+    SOURCE_TABLE: (
+        "| Read-only trace MCP registration source controls | existing native CI verifier |",
+        "VB-UTM-B1-CONFORMANCE; source proposal pending MAIN binding",
+    ),
+    VB_PROGRAM: (
+        "**VB-UTM-B1-CONFORMANCE — bind read-only trace MCP registrar source controls prospectively.**",
+        "Actual off-host FastMCP dotted-name/schema/defaults and synthetic SQLite navigation",
+    ),
+}
 SELECTIONS = (
     "tests/unit/test_trace_mcp_tools.py::test_default_orchestrator_catalog_does_not_activate_candidate_tools",
     "tests/unit/test_trace_mcp_tools.py::test_opt_in_registration_exposes_dotted_names_and_exact_optional_schemas",
@@ -233,7 +247,7 @@ def verify_lock(lock_path: Path, requirements: Path, dependency_packages: dict) 
 
 def expected_cases(path: Path) -> tuple[dict, set[tuple[str, str]]]:
     data = json.loads(read_text(path))
-    if (data.get("schema") != "epyc.vb.utm_b1.selected_cases.v1"
+    if (data.get("schema") != "epyc.utm_b1.native_selected_cases.v1"
             or data.get("source_commit") != SOURCE_PIN or data.get("count") != 5):
         raise RuntimeError("UTM-B1 selected-case manifest schema/source/count differs")
     provenance = data.get("provenance") or {}
@@ -323,6 +337,11 @@ def main() -> int:
         context_paths = []
         for relative, label in context_specs:
             path = tracked(context, relative)
+            content = read_text(path)
+            missing_contract = [snippet for snippet in ENROLLED_CONTEXT[relative]
+                                if snippet not in content]
+            if missing_contract:
+                raise RuntimeError(f"published {label} enrollment contract is absent")
             context_paths.append(path)
             input_rows.append({"repository": "context", "pin": ROOT_CONTEXT_PIN, "path": relative,
                                "git_blob": blob(context, relative), "sha256": digest(path),

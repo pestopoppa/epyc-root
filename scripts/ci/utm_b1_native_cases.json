@@ -28,7 +28,7 @@
   ],
   "count": 5,
   "provenance": {
-    "dependency_basis": "Recursive APP uv.lock dependency graph closure for fastmcp[client,server] plus pytest; extras propagated, Windows/emscripten/Python<3.12 markers excluded for Ubuntu 24.04/Python 3.13.15; only universal or CPython 3.13-compatible manylinux x86_64 wheel hashes included. Full wheel hash set for every locked package is recorded and enforced; installer selects compatible binary wheels.",
+    "dependency_basis": "Recursive APP uv.lock dependency graph closure for fastmcp[client,server] plus pytest; extras propagated, Windows/emscripten/Python<3.12 markers excluded for Ubuntu 24.04/Python 3.13.15. The manifest and requirements bind every wheel hash in the pinned uv.lock for each selected dependency; installation uses only compatible binary wheels.",
     "dependency_packages": {
       "aiofile": {
         "extras": [],
