@@ -1,0 +1,77 @@
+name: DS41 C104 future writer native controls
+on:
+  push:
+    branches: [codex/ni08-ds41-c104-native-20261007]
+permissions:
+  contents: read
+jobs:
+  complete-repeat-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Preserve original setup status before imports
+        run: |
+          mkdir -p "$RUNNER_TEMP/ds41-c104"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ds41-c104/status.json"
+      - name: Checkout exact ROOT recipe and unchanged carrier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout approved exact APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 188087701c963d57eb622ff8279081fae55f8049
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout MAIN exact prospective source and native enrollment
+        uses: actions/checkout@v4
+        with:
+          ref: 09c7b2df444beb70fc97e0ee6feefbc6f36fd9af
+          path: context
+          persist-credentials: false
+      - name: Checkout exact carrier input
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact lock input
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock
+          persist-credentials: false
+      - name: Setup exact bounded interpreter
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install isolated ALL-wheel locked pytest closure
+        run: |
+          python -m venv "$RUNNER_TEMP/ds41-c104-venv"
+          "$RUNNER_TEMP/ds41-c104-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/ds41_c104_requirements.txt > "$RUNNER_TEMP/ds41-c104/dependency-install.log" 2>&1
+      - name: Capture whole original unit module and existing shared grade
+        run: |
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/ds41-c104-venv/bin/python" recipe/scripts/ci/ds41_c104_capture.py
+      - name: Preserve all original setup and native outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ds41-c104-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ds41-c104
+          include-hidden-files: true
+          retention-days: 90
