@@ -22,7 +22,7 @@ PROPOSITION = ("For the sixteen captured DS41 raw-plus-compressed top-k F16 mask
                "each recorded anchor/candidate probe configuration has identical inputs, "
                "three internally stable output repetitions, and bit-identical output rows.")
 # Reviewed source bytes, populated at source integration; never execute archived code.
-PRODUCERS = {'probe-source.cpp': '8ff4580ad3920d45c75c216acd0d6b3cfac0e98ae61ca46cac873b3b0f76f8e5', 'verifier-source.py': '17fae6d96855db42a2b13f0e9e81786abb1b9acbe6a472edd7dcaf4bf278dd06', 'reference-source.py': 'ad028c93bccd49e227c2aa78466c7170421cd4e84d632d9d6af38f78591d55bf', 'capture-source.py': 'f1f82191be9d0bbdc1f90aec7852111315d7d51d20340ac1b8f977c0937395c6'}
+PRODUCERS = {'probe-source.cpp': 'eca6a1acd105e41548265ee6afc3359360273b005877ba1a2d3321b77774f5cb', 'verifier-source.py': '17fae6d96855db42a2b13f0e9e81786abb1b9acbe6a472edd7dcaf4bf278dd06', 'reference-source.py': 'ad028c93bccd49e227c2aa78466c7170421cd4e84d632d9d6af38f78591d55bf', 'capture-source.py': 'f1f82191be9d0bbdc1f90aec7852111315d7d51d20340ac1b8f977c0937395c6'}
 
 
 def canonical(value):
