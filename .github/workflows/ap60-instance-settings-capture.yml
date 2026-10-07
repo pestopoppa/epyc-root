@@ -1,7 +1,7 @@
 name: AP60 QScorer instance settings capture
 on:
   push:
-    branches: [codex/ni08-ap60-instance-env-capture-20261006]
+    branches: [codex/ni08-ap60-instance-env-capture-successor-20261007]
 permissions:
   contents: read
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
-      APP_PIN: ec8529c26eb464a5f705e3e517c204ab59da660e
+      APP_PIN: a4132e57c96edb78088dedcfb7eb315497ef28db
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       AP60_RUNNER_CONTEXT: ubuntu-24.04
       AP60_EXECUTION_CONTEXT: offline-qscorer-fixtures-temp-sqlite-faiss

@@ -13,7 +13,7 @@ import sys
 import tomllib
 import xml.etree.ElementTree as ET
 
-APP_PIN = "ec8529c26eb464a5f705e3e517c204ab59da660e"
+APP_PIN = "a4132e57c96edb78088dedcfb7eb315497ef28db"
 CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 PACKAGES = {
     "annotated-doc": "0.0.4", "annotated-types": "0.7.0", "anyio": "4.13.0",
@@ -51,9 +51,9 @@ APP_CONFIG_EXTRAS = (
     "orchestration/workload_model.yaml",
 )
 ROOT_TASK = "handoffs/active/autopilot-continuous-optimization.md"
-ROOT_TASK_SHA256 = "0016d587eae9842c89f2029a7dfc6f50238ca8e3691a696a089a09ef4952a5fb"
+ROOT_TASK_SHA256 = "bd8ef4bbf4b90fbcf211986de11b804f0e59a1ff13c4a9d86631524c8f822c16"
 ROOT_VB_TABLE = "scripts/vidya/adapters/README.md"
-ROOT_VB_TABLE_SHA256 = "b2ca24a53690daeda3b24732842517cd43c4e6b316f41ae745164a6751421ba6"
+ROOT_VB_TABLE_SHA256 = "139ef409529f02b987dcd4dbd850320d415ee073de1fd9aba9bdf444464b67e1"
 TEST_FILES = (
     "tests/unit/test_q_td_write_path.py",
     "tests/unit/test_episodic_work_payload.py",
