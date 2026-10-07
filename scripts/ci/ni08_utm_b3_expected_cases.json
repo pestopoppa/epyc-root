@@ -34,15 +34,15 @@
     },
     {
       "classname": "scripts.benchmark.test_beam_memory_arms",
-      "name": "test_bad_arm_configuration_is_refused[kwargs0-exc0]"
+      "name": "test_bad_arm_configuration_is_refused[kwargs0-ValueError]"
     },
     {
       "classname": "scripts.benchmark.test_beam_memory_arms",
-      "name": "test_bad_arm_configuration_is_refused[kwargs1-exc1]"
+      "name": "test_bad_arm_configuration_is_refused[kwargs1-ValueError]"
     },
     {
       "classname": "scripts.benchmark.test_beam_memory_arms",
-      "name": "test_bad_arm_configuration_is_refused[kwargs2-exc2]"
+      "name": "test_bad_arm_configuration_is_refused[kwargs2-TypeError]"
     },
     {
       "classname": "scripts.benchmark.test_beam_memory_arms",
@@ -86,7 +86,7 @@
     }
   ],
   "count": 21,
-  "derivation": "19 top-level AST test functions; one @pytest.mark.parametrize decorator expands to 3 exact JUnit items; complete-module JUnit classnames derive from the rootdir-relative module path; no pytest collection or execution",
+  "derivation": "19 top-level AST test functions; one @pytest.mark.parametrize decorator expands to 3 exact JUnit items with pytest default IDs (kwargs index plus exception class __name__); complete-module JUnit classnames derive from the rootdir-relative module path; no pytest collection or execution",
   "research_commit": "180a772445e2c227979998cdec9b7a50ae5aa54e",
   "test_file": "scripts/benchmark/test_beam_memory_arms.py",
   "test_file_sha256": "5225e6913253d27e90c8d10070785c3468a8cb3a14b9513d65e78d9ad0506cd3",

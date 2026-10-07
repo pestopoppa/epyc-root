@@ -212,8 +212,21 @@ def ast_cases(path: Path) -> list[dict[str, str]]:
                 if not values or any(not isinstance(row, ast.Tuple) or len(row.elts) != len(names)
                                      for row in values):
                     raise RuntimeError(f"unsupported pytest parameter shape: {node.name}")
-                parameter_rows = ["-".join(f"{name}{index}" for name in names)
-                                  for index, _ in enumerate(values)]
+                parameter_rows = []
+                for index, row in enumerate(values):
+                    ids = []
+                    for name, value in zip(names, row.elts):
+                        # Match pytest's default ID for these supported scalar
+                        # parameter values. Class-valued arguments use __name__
+                        # (for example ValueError), not the argument name.
+                        if isinstance(value, ast.Name):
+                            value_id = value.id
+                        elif isinstance(value, ast.Constant) and isinstance(value.value, (str, int, float, bool, type(None))):
+                            value_id = str(value.value)
+                        else:
+                            value_id = str(index)
+                        ids.append(f"{name}{index}" if name == "kwargs" else value_id)
+                    parameter_rows.append("-".join(ids))
                 break
         if parameter_rows:
             cases.extend({"classname": module,
