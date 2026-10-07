@@ -1,0 +1,14 @@
+{
+  "schema": "epyc.operator_receipt.v1",
+  "token": "RATIFY-GPUWIN-STANDING-20261007",
+  "status": "ratified",
+  "signed_at": "2026-10-07T04:03:55.243017+00:00",
+  "signed_by": "node",
+  "signature_channel": "terminal",
+  "decision": "operator 2026-10-07: 'yes, extend to 180 minutes' - standing approval for GPU windows up to 10800 s on scheduled entries; workspace-ec added as consumer",
+  "pinned_sha256": {
+    "compute_policy.yaml_pre": "5daeabdfe96831b8ad710d0f57841b58d95e61a093ab1881273603aef476560a",
+    "compute_policy.yaml_post": "ba7bfe772d718972e564577fac0516e25b7ea0ceeb5290ab682d0f79e04a13be",
+    "orchestration/gpu_window_policy.yaml": "ad7b0457ae598c71da2f93b0801681b4ba2216647582e456a409a0cf7b2338cf"
+  }
+}

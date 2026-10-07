@@ -31,6 +31,7 @@ consumers:
   - {id: mainB,       devices: [gpu, cpu], priority: 50}
   - {id: mainC,       devices: [cpu],      priority: 50}
   - {id: mainD,       devices: [cpu],      priority: 50}
+  - {id: workspace-ec, devices: [gpu, cpu], priority: 50, note: "stack-owner session; negotiates MI210 windows with workspace-89. Standing approval: scheduled windows up to 180 min (operator 2026-10-07), see orchestration/gpu_window_policy.yaml"}
 
 # Reservations are the blunt instrument and are meant to be rare. A window here
 # EXCLUDES every consumer not named in `for`. Times are UTC, 24h, inclusive-start
