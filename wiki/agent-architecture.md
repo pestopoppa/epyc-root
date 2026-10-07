@@ -5138,3 +5138,7 @@ The recovered historical C5 policy is now carried byte-exactly in Research and v
 ### Fixed-source descriptive preflight counts — 2026-10-07
 
 [HS19d source summary and original4/4](../artifacts/ni08/hs19d-p0-summary-source-20261007/README.md) provide privacy-minimal counts from one already committed verdict. Hash/source identity and refusal controls are verified; absent native emitted-call/template/tap evidence remains unknown, counts ungraded. Broader preflight and frozen dispatch consumers are unchanged.
+
+## Invocation-ring snapshots
+
+The shared diagnostic invocation ring uses an explicit per-instance lock for append, snapshot and clear; actual tool dispatch remains outside the lock. Request telemetry continues to use request-local tool calls rather than the shared ring. [AP-62 source and original14/14 conformance](../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md). No production concurrency or deployment result is claimed.

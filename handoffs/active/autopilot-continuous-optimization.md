@@ -192,10 +192,11 @@ First full smoke run of the trial loop. Four defects, three silent.
       guarded set (found 2026-09-14, noninf sweep).
       ✅2026-10-06 — [MAIN source acceptance](../../artifacts/ni08/invocation-route-guard-source-20261006/README.md): all-current-route guard, method/direct-name negative controls, independent46-file Git/AST census; APPmain041ec98a exact source. Test-only/static validation, no runtime/native-quality claim.
 
-- [ ] **AP-62 — document the shared invocation ring's synchronisation contract**: `invoke()` appends from
+- [x] **AP-62 — document the shared invocation ring's synchronisation contract**: `invoke()` appends from
       whatever thread is dispatching and the bound holds only because `deque.append` is atomic under CPython,
       which a future free-threaded or non-CPython build would not guarantee
       (`src/registry/tool_registry.py`) (found 2026-09-14, noninf sweep).
+      ✅2026-10-07 — explicit per-instance append/snapshot/clear lock; dispatch outside lock. MAIN accepts original14/14 and exact APP publication; [source/custody](../../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md).
 
 - [ ] **`request.files` vision input still has no telemetry image reference.**
       `vision_stage.py:76` treats `request.files` as vision input, but routing telemetry records
