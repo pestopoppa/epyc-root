@@ -93,67 +93,67 @@
     {
       "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
       "name": "test_archive_nonexistent_session",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore.test_archive_nonexistent_session"
+      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_archive_nonexistent_session"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
       "name": "test_archive_session",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore.test_archive_session"
+      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_archive_session"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
       "name": "test_build_resume_context",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore.test_build_resume_context"
+      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_build_resume_context"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
       "name": "test_build_resume_context_missing_session",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore.test_build_resume_context_missing_session"
+      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_build_resume_context_missing_session"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestCheckpointProtocolNormalization",
       "name": "test_normalize_forward_payload_drops_unknown_fields",
-      "nodeid": "tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization.test_normalize_forward_payload_drops_unknown_fields"
+      "nodeid": "tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization::test_normalize_forward_payload_drops_unknown_fields"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestCheckpointProtocolNormalization",
       "name": "test_normalize_legacy_payload_missing_version",
-      "nodeid": "tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization.test_normalize_legacy_payload_missing_version"
+      "nodeid": "tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization::test_normalize_legacy_payload_missing_version"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestSessionStoreProtocol",
       "name": "test_mock_store_implements_protocol",
-      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol.test_mock_store_implements_protocol"
+      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_mock_store_implements_protocol"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestSessionStoreProtocol",
       "name": "test_session_crud_operations",
-      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol.test_session_crud_operations"
+      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_session_crud_operations"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestSessionStoreProtocol",
       "name": "test_tag_operations",
-      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol.test_tag_operations"
+      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_tag_operations"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestWhereFilter",
       "name": "test_where_filter_combined",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter.test_where_filter_combined"
+      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_combined"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestWhereFilter",
       "name": "test_where_filter_comparison_operators",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter.test_where_filter_comparison_operators"
+      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_comparison_operators"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestWhereFilter",
       "name": "test_where_filter_in_operator",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter.test_where_filter_in_operator"
+      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_in_operator"
     },
     {
       "classname": "tests.unit.test_session_protocol.TestWhereFilter",
       "name": "test_where_filter_simple",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter.test_where_filter_simple"
+      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_simple"
     }
   ],
   "count": 31,
