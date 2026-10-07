@@ -1,0 +1,62 @@
+{
+  "encoding": "RFC4648 base64 of exact raw bytes followed by one LF (no other whitespace)",
+  "files": {
+    "MAIN-native-acceptance.json.b64": {
+      "outer_bytes": 1017,
+      "outer_sha256": "57bfcf4552f374c915920df7044bb1ce65d8c564c7dde0c400046c314163f7e5",
+      "raw_bytes": 762,
+      "raw_name": "MAIN-native-acceptance.json",
+      "raw_sha256": "ed1b5e6e5d6578d4a9e50762de7735a8f321b047b1186e10708b81da704bb09b"
+    },
+    "MAIN-product-binding-review.json.b64": {
+      "outer_bytes": 1993,
+      "outer_sha256": "5537ae4ca35be3bd1f12ef4b69be8ef6845004895b5ece53bf587710327fca6c",
+      "raw_bytes": 1492,
+      "raw_name": "MAIN-product-binding-review.json",
+      "raw_sha256": "61540b5f322c32179b57c6102b982a2aef286a343b51499f5887bebdb1b6400b"
+    },
+    "MAIN-typed-grade-acceptance.json.b64": {
+      "outer_bytes": 549,
+      "outer_sha256": "383bcb689564dcd4dd25d64ae3362906843b86d72badf8650b5954e81f868ccb",
+      "raw_bytes": 410,
+      "raw_name": "MAIN-typed-grade-acceptance.json",
+      "raw_sha256": "bafb15fd74d8822f7bd316af524f37cb2eb408b97cb5fc0d4e664edac22b9713"
+    },
+    "junit.original.xml.b64": {
+      "outer_bytes": 3233,
+      "outer_sha256": "40534105beb9346965a1a68985514211d855e2982bf5790146e98554b577039f",
+      "raw_bytes": 2424,
+      "raw_name": "junit.original.xml",
+      "raw_sha256": "163b69d76fad09e4bd0f34f0eca023a03d34e80d6555bdd9461adf6eff30ea08"
+    },
+    "native-receipt.original.json.b64": {
+      "outer_bytes": 1196277,
+      "outer_sha256": "a02857bd938c8e0a01a755f24b416990e53076f5b5b6c1a1afb6cb113ba08a6a",
+      "raw_bytes": 897207,
+      "raw_name": "native-receipt.original.json",
+      "raw_sha256": "20443aa24e27502d4fedb265659f2d9e1cbf7526bad4becfbd05e332e8b2cd72"
+    },
+    "product-publication-journal.original.jsonl.b64": {
+      "outer_bytes": 1760333,
+      "outer_sha256": "ef795dd1db6cef6cdd3a277ebdf63d8fa34933eb803bc3a9b607d09f0769dd98",
+      "raw_bytes": 1320247,
+      "raw_name": "product-publication-journal.original.jsonl",
+      "raw_sha256": "b4fcf21b8833e44656e4bac900725182cd7a5730bd9d2499277c629d890ee35c"
+    },
+    "product-publication-receipt.original.json.b64": {
+      "outer_bytes": 849,
+      "outer_sha256": "424f6189f05e0667c55988cf1b3e7d78fe9ee3e697d2634467895d0db0588c37",
+      "raw_bytes": 635,
+      "raw_name": "product-publication-receipt.original.json",
+      "raw_sha256": "7bdfac3b50fae8461b67ae64cdd578f5c1aeae9d4fcb394c3484dca267a26b83"
+    },
+    "status.original.json.b64": {
+      "outer_bytes": 1437,
+      "outer_sha256": "abfa961cf303f52d53d4baee63ca7458377b79eac1ad2af90a9293fdfde1d31d",
+      "raw_bytes": 1075,
+      "raw_name": "status.original.json",
+      "raw_sha256": "b75d1d9a932e4db584543ac42f6302d8fd0fc5aa699af494198970d9dca26e73"
+    }
+  },
+  "schema": "private.ni08_ufh_transport_base64_lf.v1"
+}
