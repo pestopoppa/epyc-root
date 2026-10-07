@@ -29,7 +29,7 @@ jobs:
       - name: Initialize status before setup
         run: |
           mkdir -p "$RUNNER_TEMP/m11-work-cap/result"
-          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/m11-work-cap/result/status.json"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/m11-work-cap/status.json"
       - name: Checkout exact recipe and enrolled task context
         uses: actions/checkout@v4
         with:
@@ -73,5 +73,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: m11-work-cap-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/m11-work-cap/result/
+          path: |
+            ${{ runner.temp }}/m11-work-cap/result/
+            ${{ runner.temp }}/m11-work-cap/status.json
           if-no-files-found: error

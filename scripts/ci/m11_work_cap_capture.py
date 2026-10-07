@@ -189,7 +189,7 @@ def main() -> int:
     recipe, carrier, app = (workspace / n for n in ("recipe", "carrier", "app"))
     result = temp / "m11-work-cap" / "result"
     result.mkdir(parents=True, exist_ok=True)
-    status_path = result / "status.json"
+    status_path = temp / "m11-work-cap" / "status.json"
     status = {"state": "preparing", "exit_code": None}
     status_path.write_text(json.dumps(status, sort_keys=True) + "\n")
     try:
@@ -199,11 +199,14 @@ def main() -> int:
             raise RuntimeError("execution context differs from reviewed recipe")
         if os.environ.get("M11_WORK_CAP_INSTALL_COMMAND") != INSTALL:
             raise RuntimeError("install command differs from reviewed recipe")
-        for name in ("ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
-                     "ORCHESTRATOR_PATHS_LLAMA_MTMD",
-                     "ORCHESTRATOR_PATHS_LLAMA_SERVER"):
+        expected_overrides = {
+            "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": temp / "m11-work-cap" / "absent" / "cpu",
+            "ORCHESTRATOR_PATHS_LLAMA_MTMD": temp / "m11-work-cap" / "absent" / "llama-mtmd-cli",
+            "ORCHESTRATOR_PATHS_LLAMA_SERVER": temp / "m11-work-cap" / "absent" / "llama-server",
+        }
+        for name, expected_path in expected_overrides.items():
             value = Path(os.environ[name]).resolve()
-            if value.exists() or value.parent != temp / "m11-work-cap" / "absent":
+            if value != expected_path.resolve() or value.exists():
                 raise RuntimeError(f"unexpected non-absent kernel path override: {name}")
         if platform.python_version() != "3.13.15":
             raise RuntimeError(f"Python runtime differs from pin: {platform.python_version()}")
