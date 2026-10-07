@@ -158,7 +158,8 @@ def main() -> int:
         path = source / row["path"]
         if os.path.lexists(path):
             raise RuntimeError("synthetic runtime-layout input must be absent at checkout")
-        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.resolve() != Path(row["absolute_path"]) or not path.parent.is_dir():
+            raise RuntimeError("synthetic runtime parent differs from the explicitly prepared hosted layout")
         data = row["content"].encode("utf-8")
         with path.open("xb") as handle:
             handle.write(data)

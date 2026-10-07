@@ -66,6 +66,24 @@ jobs:
         run: |
           sudo apt-get update > "$RUNNER_TEMP/lr12-reference-hook/result/tool-install.log" 2>&1
           sudo apt-get install -y bash git python3 ripgrep jq coreutils sed >> "$RUNNER_TEMP/lr12-reference-hook/result/tool-install.log" 2>&1
+      - name: Prepare only the absent hosted synthetic runtime-link target
+        run: |
+          set -euo pipefail
+          target=/mnt/raid0/llm/bus-runtime/tokens
+          for parent in /mnt /mnt/raid0 /mnt/raid0/llm /mnt/raid0/llm/bus-runtime; do
+            if [ -L "$parent" ] || { [ -e "$parent" ] && [ ! -d "$parent" ]; }; then
+              echo "Unsafe existing synthetic runtime parent: $parent" >&2
+              exit 1
+            fi
+          done
+          if [ -e "$target" ] || [ -L "$target" ]; then
+            echo "Synthetic runtime target must be absent on this fresh hosted runner" >&2
+            exit 1
+          fi
+          test "$(readlink root-source/coordination/session-bus/tokens)" = "$target"
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0755 "$target"
+          test -d "$target"
+          test ! -L "$target"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13.15'

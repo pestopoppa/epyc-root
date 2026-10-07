@@ -175,6 +175,7 @@
   ],
   "synthetic_runtime_inputs": [
     {
+      "absolute_path": "/mnt/raid0/llm/bus-runtime/tokens/token-queue.md",
       "content": "# Synthetic empty runtime-layout fixture\n\nExistence-only hook input; no actual session bus, liveness or operator queue evidence.\n",
       "path": "coordination/session-bus/tokens/token-queue.md"
     }
@@ -186,6 +187,13 @@
       "path": "AGENTS.md",
       "sha256": "6ebdb617a8104a7756d0cf36578ab01103dc9f07e4dc6feb751296b9c402faf7",
       "target": "CLAUDE.md"
+    },
+    {
+      "blob": "5b2f5c0d6b56ade396523d9ebada35ed28da1f84",
+      "bytes": 33,
+      "path": "coordination/session-bus/tokens",
+      "sha256": "fd310ccaf8e9e46ce40f57cb679a87a81a0c8d4f0fb266b911a036e6231006c1",
+      "target": "/mnt/raid0/llm/bus-runtime/tokens"
     }
   ]
 }
