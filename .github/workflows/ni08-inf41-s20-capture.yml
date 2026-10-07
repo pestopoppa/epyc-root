@@ -24,11 +24,14 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: ${{ runner.temp }}/ni08-inf41-s20/absent/cpu
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: ${{ runner.temp }}/ni08-inf41-s20/absent/llama-mtmd-cli
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: ${{ runner.temp }}/ni08-inf41-s20/absent/llama-server
     steps:
       - name: Initialize status before setup
         run: |
           mkdir -p "$RUNNER_TEMP/ni08-inf41-s20/result"
-          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ni08-inf41-s20/result/status.json"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ni08-inf41-s20/status.json"
       - name: Checkout exact recipe
         uses: actions/checkout@v4
         with:
@@ -71,5 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ni08-inf41-s20-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/ni08-inf41-s20/result/
+          path: |
+            ${{ runner.temp }}/ni08-inf41-s20/result/
+            ${{ runner.temp }}/ni08-inf41-s20/status.json
           if-no-files-found: error

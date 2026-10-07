@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 import platform
 import re
 import subprocess
+import stat
 import sys
 import tomllib
 
@@ -145,13 +146,60 @@ def native_files(directory: Path) -> list[Path]:
     return files
 
 
+def hash_regular(path: Path) -> str:
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise RuntimeError(f"evidence cannot be opened safely: {path}: {exc}") from exc
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode):
+            raise RuntimeError(f"evidence is not a regular file: {path}")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            data = stream.read()
+        after = os.fstat(fd)
+        identity = lambda row: (row.st_dev, row.st_ino, row.st_size, row.st_mtime_ns,
+                                row.st_ctime_ns)
+        if identity(before) != identity(after) or len(data) != after.st_size:
+            raise RuntimeError(f"evidence changed while hashing: {path}")
+        return hashlib.sha256(data).hexdigest()
+    finally:
+        os.close(fd)
+
+
 def file_manifest(paths: list[Path]) -> dict[str, str]:
-    result = {}
-    for path in paths:
-        if path.is_symlink() or not path.is_file() or not stat.S_ISREG(path.lstat().st_mode):
-            raise RuntimeError(f"original capture input is not a regular nonsymlink file: {path}")
-        result[str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
-    return result
+    unique = {str(path.absolute()): path for path in paths}
+    return {name: hash_regular(unique[name]) for name in sorted(unique)}
+
+
+def manifest_digest(manifest: dict[str, str]) -> str:
+    data = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(data).hexdigest()
+
+
+def result_tree_manifest(root: Path) -> dict[str, str]:
+    if root.is_symlink() or not stat.S_ISDIR(root.lstat().st_mode):
+        raise RuntimeError(f"result root is missing, not a directory, or symlinked: {root}")
+    found: dict[str, str] = {".": "directory"}
+
+    def walk(directory: Path) -> None:
+        for entry in sorted(os.scandir(directory), key=lambda item: item.name):
+            path = Path(entry.path)
+            mode = entry.stat(follow_symlinks=False).st_mode
+            relative = path.relative_to(root).as_posix()
+            if stat.S_ISLNK(mode):
+                raise RuntimeError(f"result tree contains a symlink: {path}")
+            if stat.S_ISDIR(mode):
+                found[relative + "/"] = "directory"
+                walk(path)
+            elif stat.S_ISREG(mode):
+                found[relative] = hash_regular(path)
+            else:
+                raise RuntimeError(f"result tree contains a special file: {path}")
+
+    walk(root)
+    return found
 
 
 def main() -> int:
@@ -161,7 +209,7 @@ def main() -> int:
                                          ("recipe", "carrier", "app", "root-source"))
     result = runner_temp / "ni08-inf41-s20" / "result"
     result.mkdir(parents=True, exist_ok=True)
-    status_path = result / "status.json"
+    status_path = result.parent / "status.json"
     status = {"state": "preparing", "exit_code": None}
     status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
     try:
@@ -172,6 +220,12 @@ def main() -> int:
             "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONHASHSEED": "0",
+            "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": str(
+                runner_temp / "ni08-inf41-s20" / "absent" / "cpu"),
+            "ORCHESTRATOR_PATHS_LLAMA_MTMD": str(
+                runner_temp / "ni08-inf41-s20" / "absent" / "llama-mtmd-cli"),
+            "ORCHESTRATOR_PATHS_LLAMA_SERVER": str(
+                runner_temp / "ni08-inf41-s20" / "absent" / "llama-server"),
         }
         for key, value in expected_env.items():
             if os.environ.get(key) != value:
@@ -260,6 +314,13 @@ def main() -> int:
             "isolation": "Only five explicit server-only fallback controls; test replaces HTTP/OCR clients, performs no CLI/model call, and forbids live vision endpoints. No inference, live service, or latency acceptance.",
             "pytest_plugins": ["pytest_asyncio.plugin"], "conftest_autoload": "disabled",
             "bytecode_writes": "disabled", "python_hash_seed": "0",
+            "kernel_path_overrides": {
+                key: expected_env[key] for key in (
+                    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                    "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                    "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                )
+            },
         }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
         junit = result / "original-junit.xml"
@@ -269,6 +330,16 @@ def main() -> int:
         read_paths = [workflow, runner, manifest_path, requirements_path, task_path, table_path,
                       *recipe_context, *app_context, *app_inputs, *carrier_reads, lock_path,
                       test_path, source_path, install_log, pip_freeze, environment_path]
+        producer_inputs_before = file_manifest(read_paths)
+        input_readset_path = result / "producer-input-readset.json"
+        if input_readset_path.exists() or input_readset_path.is_symlink():
+            raise RuntimeError("refusing to overwrite producer input readset")
+        input_readset_path.write_text(json.dumps({
+            "kind": "pre-execution-source-input-hashes",
+            "count": len(producer_inputs_before),
+            "sha256": manifest_digest(producer_inputs_before),
+            "inputs": producer_inputs_before,
+        }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         producer = [sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
                     "--cwd", str(app), "--junit", str(junit), "--output", str(native),
                     "--repo", f"recipe={recipe}", "--repo", f"carrier={carrier}",
@@ -293,6 +364,9 @@ def main() -> int:
                            ORCHESTRATOR_PATHS_TOOL_REGISTRY_PATH=str(app / "orchestration/tool_registry.yaml"),
                            ORCHESTRATOR_PATHS_STACK_PRIORS_PATH=str(app / "orchestration/derived/stack_priors.yaml"))
         code = subprocess.call([*producer, "--", *command], cwd=app, env=capture_env)
+        producer_inputs_after = file_manifest(read_paths)
+        if producer_inputs_after != producer_inputs_before:
+            raise RuntimeError("producer inputs changed during native capture")
         receipt_path = native / "receipt.json"
         if not receipt_path.is_file():
             status.update(state="capture_failed", exit_code=code or 1,
@@ -314,6 +388,7 @@ def main() -> int:
         original_names = [path.relative_to(native).as_posix() for path in original_native]
         originals = [*original_native, junit, pip_freeze, environment_path, install_log, requirements_path]
         before = file_manifest(originals)
+        tree_before = result_tree_manifest(result)
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
         from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
@@ -323,17 +398,28 @@ def main() -> int:
             raise RuntimeError("original native receipt did not project to exactly one conformance row")
         claim = project_ci_conformance(rows[0])
         q, t, reasons = grade(claim)
+        producer_inputs_after_grade = file_manifest(read_paths)
+        if producer_inputs_after_grade != producer_inputs_before:
+            raise RuntimeError("producer inputs changed during shared-grade analysis")
         after_native = native_files(native)
         after_names = [path.relative_to(native).as_posix() for path in after_native]
         after_paths = [*after_native, junit, pip_freeze, environment_path, install_log, requirements_path]
         after = file_manifest(after_paths)
         if before != after or original_names != after_names:
             raise RuntimeError("shared-grade analysis changed original capture inputs or membership")
+        tree_after = result_tree_manifest(result)
+        if tree_before != tree_after:
+            raise RuntimeError("shared-grade analysis changed full result-tree membership or bytes")
         grade_path = result / "shared-grade.json"
         with grade_path.open("x", encoding="utf-8") as handle:
             json.dump({"kind": "analysis_of_existing_fixture_receipt", "fixture_rerun": False,
                        "new_native_receipt_authored_by_analysis": False, "repositories": pins,
                        "original_before_sha256": before, "original_after_sha256": after,
+                       "result_tree_before_sha256": tree_before,
+                       "result_tree_after_sha256": tree_after,
+                       "producer_input_count": len(producer_inputs_before),
+                       "producer_input_sha256_before": manifest_digest(producer_inputs_before),
+                       "producer_input_sha256_after": manifest_digest(producer_inputs_after_grade),
                        "measurement_id": claim.measurement_id, "source_kind": claim.source_kind,
                        "binding_kind": claim.binding_kind,
                        "grade": {"Q": q, "T": t, "reasons": reasons}},
