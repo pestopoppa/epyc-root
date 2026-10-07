@@ -1,0 +1,41 @@
+{
+  "reviewed_at": "2026-10-07T00:56:33.490916+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37554353775,
+  "attempt": 1,
+  "artifact": 11453687943,
+  "pins": {
+    "source": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "app_lock": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+    "recipe": "e4570545580bc41f3a79d1e714f8558f1e613e16"
+  },
+  "zip_sha256": "8792f5bb2409a03da97f837d9e2769b207665e989384703cc407dc955ce849cc",
+  "zip_bytes": 602519,
+  "members": 55,
+  "readset_count": 43,
+  "git_inputs": 38,
+  "contexts": 5,
+  "counts": {
+    "collected": 3,
+    "error": 0,
+    "executed": 3,
+    "failure": 1,
+    "passed": 2,
+    "skipped": 0
+  },
+  "testcase_nodes": 3,
+  "native_value": false,
+  "receipt_file_sha256": "1b8582148bf4e216e24f481f8c40cf7d02e679b3f8552b028e78e7427567f939",
+  "receipt_self_sha256": "f8b3860e1e8f7e4089751a0f8997a97a24236c0a46916e18ce43a094fe623af6",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "LOW-MEDIUM display-only unavailable task rate becomes n/a; valid zero/rate and historical objective/scoring math preserved. No live rate, archive or runtime change.",
+  "job_identity": "github_job_112577005662"
+}

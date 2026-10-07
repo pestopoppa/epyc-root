@@ -31,3 +31,7 @@ MAIN reopens23upstream APIoriginals/exactGitSHA+bytes/all10evaluator bodies/11ca
 [Exact source reconciliation](../../artifacts/ni08/rtg52-hygiene-source-20261007/README.md) closes two existing tasks: stale redirection-parser bookkeeping and the refusal-text operator path. **70 scoped completions (48 existing checkbox flips +22 new bounded subtasks)**. Source/AST review only; no new native pass, hook bypass, enforcement change, protected coordination merge or runtime action. Whole-backlog audit and source implementation continue.
 
 SC78/SC79 bounded numeric source child and its native CI companion are enrolled before capture. Enrollment adds no completion; positive retained-source fixtures and full source proposal remain under review. Existing literature ladder and parent semantic/extraction requirements unchanged.
+
+## Additional source enrollment and failed-preparation custody
+
+SMT launch-guard and server-only vision fallback bounded source/VB scopes are enrolled; periodic candidate-gate native wiring is enrolled before any capture. [MAIN original failure custody](../../artifacts/ni08/source-preparation-failures-20261007/README.md) preserves AP60 FALSE114/115, W8 NULL preflight and W8 FALSE2/3 without claiming acceptance. P6 unpublished-input checkout failure is under original review; exact source is now published. All preparations add zero completions; **NI08 remains70 (48 existing flips +22 additions)**. Task-level eligibility/source audits continue; whole-backlog exhaustion is unproved.
