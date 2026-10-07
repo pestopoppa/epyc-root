@@ -1,0 +1,55 @@
+{
+  "boundary": "2026-10-07T07:38Z",
+  "accepted_scoped_tasks": 138,
+  "existing_task_flips": 79,
+  "completed_scoped_children": 59,
+  "this_cut_checked_added_lines": 2,
+  "source_changes": 7,
+  "wiki_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "wiki_lint": {
+    "errors": 0,
+    "existing_warnings": 96
+  },
+  "index": {
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "readme_warning_output": "",
+  "scratch": {
+    "exit": 1,
+    "declared_roots": 41,
+    "entries": 41,
+    "verdicts": {
+      "KEEP-MARKED": 9,
+      "KEEP-DIRTY": 10,
+      "KEEP-UNLANDED": 8,
+      "KEEP-REFERENCED": 2,
+      "KEEP-PROTECTED": 4,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": [],
+    "scope": "Exact own or named active worker/operator roots; canonical readonly no-fetch plan. Source-prebinding lookup tree retained under explicit evidence lock; no peer/prefix-wide removal."
+  },
+  "index_pruning": [],
+  "archived": [],
+  "compacted": [],
+  "runtime_changed": false,
+  "review": "MAIN original bytes/API/JUnit/source binding review; first W6 integrity retained with implementation acceptance withheld; fresh captures not accepted at this cut.",
+  "private_validation_sha256": {
+    "periodic-wrapup-0738-wiki-delta.json": "6a132140d019f79b41058943d5202f38b5f72cf9ca1a4f7370e79ea6cf33c835",
+    "periodic-wrapup-0738-after-touch.json": "c5b136a51f239ddc16bffafe0b8283f51c3675f6b08d693cb907c11c7c2334e1",
+    "periodic-wrapup-0738-manifest-check.json": "026ca4e81524414ae08ff6b731823e43152073baa17011b9ee962fc0976f9d63",
+    "periodic-wrapup-0738-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-0738-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-0738-index-check.txt": "7a7eaf21e6be4ecf8d375b48435c9669407ebd3bf508f78feee6c960d525a00e",
+    "periodic-wrapup-0738-scratch-plan.json": "31f5ca43212bea1332cb5fbc6e8b3b1185c6a8dc45ba69a51deb2de9ea42804c",
+    "periodic-wrapup-0738-scratch-summary.json": "ac176b2111b379cc33f1d0fe6488a8a9e22f85fade1e86875796f5bb4b21a304"
+  }
+}

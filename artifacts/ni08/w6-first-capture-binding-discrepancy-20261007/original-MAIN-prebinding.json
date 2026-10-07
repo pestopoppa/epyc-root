@@ -1,0 +1,549 @@
+{
+  "schema": "epyc.main.native_prebinding.v1",
+  "review": "PASS",
+  "recipe_pin": "d51edaf7f25280b69332a45b5ed48e8fd9305588",
+  "tracked_files": [
+    {
+      "repo": "root_recipe",
+      "repo_pin": "d51edaf7f25280b69332a45b5ed48e8fd9305588",
+      "path": ".github/workflows/vb-rtg23-w6e-native.yml",
+      "mode": "100644",
+      "git_blob": "e34135c4c51ad70702e5f2e4afe22d53b947d108",
+      "bytes": 4210,
+      "sha256": "ad81cc30f66a56735589324995a02464d6c033ce360f3504b1208864b7e429dd"
+    },
+    {
+      "repo": "root_recipe",
+      "repo_pin": "d51edaf7f25280b69332a45b5ed48e8fd9305588",
+      "path": "scripts/ci/vb_rtg23_w6e_native_capture.py",
+      "mode": "100644",
+      "git_blob": "fb0b1470f83015f9d5b348988d02282b39874973",
+      "bytes": 23234,
+      "sha256": "720daf6f8c9fd7392f1c871e696a5218cc3883b83607560748e78bca13e81686"
+    },
+    {
+      "repo": "root_recipe",
+      "repo_pin": "d51edaf7f25280b69332a45b5ed48e8fd9305588",
+      "path": "scripts/ci/vb_rtg23_w6e_native_requirements.txt",
+      "mode": "100644",
+      "git_blob": "9893af353428f24c67a30ec20dd5a93bab2aa836",
+      "bytes": 14136,
+      "sha256": "320217df1eba0ec645a5fc4c741f009af9f8840c74c44558b3497af91c676aa7"
+    },
+    {
+      "repo": "root_recipe",
+      "repo_pin": "d51edaf7f25280b69332a45b5ed48e8fd9305588",
+      "path": "scripts/ci/vb_rtg23_w6e_native_cases.json",
+      "mode": "100644",
+      "git_blob": "685bbc806db0382ca94a63b6daba47ada7e51861",
+      "bytes": 16795,
+      "sha256": "39fc7fb9932a72ce4965342f947bdcb8fb4dd9ff5bdce0a4d2f2f29fcc4761e8"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/autopilot.py",
+      "mode": "100755",
+      "git_blob": "3351ed54052727174e503050e874ce1629b2d071",
+      "bytes": 531527,
+      "sha256": "f07d13af377d3f9b5da4bce1628301b1314017add62ab1bdf28742509b5f3c24"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/eval_tower.py",
+      "mode": "100644",
+      "git_blob": "a386a4db794f9946302223311eaa73b499a90cd2",
+      "bytes": 362432,
+      "sha256": "fbb6d6decb8cf0b0739d836b9b7021e3af99d824239b47cca3a29d3f2029514f"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/eval_tower_trace_feedback.py",
+      "mode": "100644",
+      "git_blob": "43352f747d86515060e350b5709ce1f0ebddf5d9",
+      "bytes": 11281,
+      "sha256": "36e52e1766da1138a5c90aae0de1487aa710425e3efb7ad9b490a6b88de58f3a"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/journal_shards.py",
+      "mode": "100644",
+      "git_blob": "2430372f2d6f1cdba0503a82816a941f5e01e800",
+      "bytes": 4019,
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/paired_stats.py",
+      "mode": "100755",
+      "git_blob": "faba05796e424014a3291d92432927c6fc28fed4",
+      "bytes": 19049,
+      "sha256": "c81001fb4c01713247f4edfe1a99667a207d0e35aec501448fc4ce269fccff80"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/rubric_scoring.py",
+      "mode": "100644",
+      "git_blob": "787ae30c24010f6a35ac7d8c4b901523a6f3eeb0",
+      "bytes": 13601,
+      "sha256": "0f46d1f1cb29363ac10a8f04725d73744cf4b18f01ce64e67805550a2f53555e"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "scripts/autopilot/safety_gate.py",
+      "mode": "100644",
+      "git_blob": "24e4b6ce7a8077c85cd831ea1634c012d07be025",
+      "bytes": 181976,
+      "sha256": "47e040738ddbd97ddac59ffadd5345b25ed55f996cef6452a3d69bad870b5520"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/action_identity.py",
+      "mode": "100644",
+      "git_blob": "de768dfce1199a1011a30d1db8db78ec5820e605",
+      "bytes": 6706,
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/authority_consent.py",
+      "mode": "100644",
+      "git_blob": "7a89e01affc8c86cfe0c79a08f8571c99cf44cb0",
+      "bytes": 3947,
+      "sha256": "50541fbda093e0560005a60195d3e8f82f95151aadf3cbab968d1842d5073022"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/instrument_era_guard.py",
+      "mode": "100644",
+      "git_blob": "c266865d225d9d455cc2a974e8359392de94773d",
+      "bytes": 14508,
+      "sha256": "c21b3746c8cbd0261055078c306a5820bb1c52acc07a883382f2c4917e2c7174"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/journal_reconstruction.py",
+      "mode": "100644",
+      "git_blob": "25e224dd700087aa4f8acc545c9505434df50bf7",
+      "bytes": 14483,
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/learning_exclusions.py",
+      "mode": "100644",
+      "git_blob": "82adbc3dab68470570ec8fe0edf62d238ff8b093",
+      "bytes": 7883,
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/measurement_guards.py",
+      "mode": "100644",
+      "git_blob": "d01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6",
+      "bytes": 18893,
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/pareto_math.py",
+      "mode": "100644",
+      "git_blob": "91f3e59e0918c93004ad4a4f61fe1d384eb48d78",
+      "bytes": 5839,
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/rlvr_tiers.py",
+      "mode": "100644",
+      "git_blob": "19d3813492f3b26807db22daad491fc1bf470e05",
+      "bytes": 11863,
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/tier_specs.py",
+      "mode": "100644",
+      "git_blob": "ba47f3dd40b19521c4939a064493362c57ccc998",
+      "bytes": 33689,
+      "sha256": "a601205f8e0311e675cf0146e3b6b28e038fc2d38b3256a5631a9489c1d1ca94"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/autopilot_core/verification_families.py",
+      "mode": "100644",
+      "git_blob": "2ee068efd08fcc123e3cea8e05ff1cd7ac6a0986",
+      "bytes": 7432,
+      "sha256": "ade8b71905760b6595d9be4f746b791de5635e5cb3a9685f35041561883efc03"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/behavior_signature.py",
+      "mode": "100644",
+      "git_blob": "ed936ab97c7cd5dae204f87840885e9539734141",
+      "bytes": 9675,
+      "sha256": "5666e929ef58785751ce094b0b38575f06361dc42dbd246e697d5b35cd8336ef"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/bradley_terry.py",
+      "mode": "100644",
+      "git_blob": "80e0b5cd85fcca73e8cb27e0e8e3e98025539b9b",
+      "bytes": 14079,
+      "sha256": "2360d4372a7698d3d9e8c27b07bbe6595de26f36bd5e99545aa2b738b060696d"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/llm_primitives/stat_tests.py",
+      "mode": "100644",
+      "git_blob": "2b03a8720db93e188256e94516a5a67320e5c008",
+      "bytes": 11509,
+      "sha256": "d0886ef1b32498475d804b9597347d2934b3dc0553224c0443a98654436af2dc"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/prompt_builders/code_utils.py",
+      "mode": "100644",
+      "git_blob": "d5f8bfedb5c3fcd6ef2eca0535ce174844f7a483",
+      "bytes": 32040,
+      "sha256": "03c5b7c0e3dd93c436740572d3df220030e08c8fdc1c034410a9d477e2fbea41"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/structured_output/repair.py",
+      "mode": "100644",
+      "git_blob": "57e1b30a3f7756131a1fd9527656413adfc7c25d",
+      "bytes": 47365,
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "src/trace/harness_schema.py",
+      "mode": "100644",
+      "git_blob": "74a4c434ab19bab67d779f45cc7e32f197e7db1a",
+      "bytes": 25663,
+      "sha256": "a0251128d9a091a86b54def2021b052908e3baaa72966ca747437043bbc5384d"
+    },
+    {
+      "repo": "app_source",
+      "repo_pin": "129a58c29d3ed1814caa1acfa29d14f604020886",
+      "path": "tests/unit/test_eval_tower_instrument_repair.py",
+      "mode": "100644",
+      "git_blob": "cf2bcd7c30ae4498b3d80431d71238975c1e9a41",
+      "bytes": 51174,
+      "sha256": "259a8adef0e37f7633da3fc3629735be7d2b63fe2419418d942015e3137be782"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/lattice.py",
+      "mode": "100644",
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/frames.py",
+      "mode": "100644",
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "repo": "root_carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/canonical.py",
+      "mode": "100644",
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "repo": "root_context",
+      "repo_pin": "7981a9acf2b8e2c328b9add8e21a68656c99c1d6",
+      "path": "handoffs/active/conversation-stack.md",
+      "mode": "100644",
+      "git_blob": "de2e3ec7cec6137475c12bc80b9d5143c6eb2979",
+      "bytes": 52217,
+      "sha256": "44d61dcbad969ce231cfb66efd1d61bc0ce586da1de10273535f5e761c749f81"
+    },
+    {
+      "repo": "root_context",
+      "repo_pin": "7981a9acf2b8e2c328b9add8e21a68656c99c1d6",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "27c57997ff7b0990cbb0351ffb53c17749514730",
+      "bytes": 260236,
+      "sha256": "32633774ffb96d17c97b357b55f8c18de4b3ac1d9b2c7f9846620c021a6d229d"
+    },
+    {
+      "repo": "root_context",
+      "repo_pin": "7981a9acf2b8e2c328b9add8e21a68656c99c1d6",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "mode": "100644",
+      "git_blob": "fa050f08fba6d6e59e1af681e4cd772557a24dce",
+      "bytes": 354553,
+      "sha256": "b18435c0b2e0f0aa3d37dc23892aaebb63235f328bffda5dc9084ae324e95cb1"
+    },
+    {
+      "repo": "app_lock",
+      "repo_pin": "3fc9f947bd3240fdb65daa719f37625e3ac6c7df",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_programmatic_scorer_runs_with_empty_expected"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_empty_expected_still_blocks_plain_exact_match"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_empty_expected_text_scorer_is_not_scoreable"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_code_execution_requires_executable_oracle"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_sampling_replaces_unscoreable_items_from_same_suite"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_sample_globally_backfills_when_suite_underfills"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_question_records_chat_response_routed_to"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instruction_route_labels_map_to_runtime_roles"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instruction_token_accounting_uses_active_prompts_not_prompt_library"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_t0_sentinel_suites_are_namespaced_without_mutating_source"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_uses_designed_core_when_enabled"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_requires_matching_instrument_era"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_missing_designed_core_fails_closed"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_core_path_without_core_id_fails_closed"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_rejects_metadata_mismatch"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_rejects_unscoreable_rows"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_can_reference_question_pool_ids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_legacy_sampling_records_core_id"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_dataset_content_sha256_includes_suite_and_scoring_oracle"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_instrument_stamp_warns_on_core_id_drift"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_durable_instrument_ledger_detects_execution_scheduler_drift"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instrument_transition_message_names_policy_axis_not_stable_dataset"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instrument_transition_message_keeps_dataset_drift_loud"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[True-False-3.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[False-True--3.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[True-True-0.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[False-False-0.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_can_count_audit_in_decision_metrics"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_honors_cadence_and_reports_unavailable_reason[True-trial_not_on_audit_cadence]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_honors_cadence_and_reports_unavailable_reason[False-w6_audit_disabled]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_does_not_promote_empty_fresh_partition_to_zero"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_does_not_promote_unscored_core_to_zero_gap"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_requires_trial_id"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_non_promotion_excludes_legacy_t1_core_qids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_promotion_eval_uses_trial_seed_and_excludes_recent_qids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_promotion_eval_fails_closed_without_trial_id"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_nonpromotion_excludes_t1_core_and_caller_qids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_nonpromotion_fails_closed_when_t1_core_exhausts_pool"
+    }
+  ],
+  "module_ast_identities": [
+    {
+      "repo": "app_source",
+      "path": "tests/unit/test_eval_tower_instrument_repair.py",
+      "source_sha256": "259a8adef0e37f7633da3fc3629735be7d2b63fe2419418d942015e3137be782",
+      "module_ast_sha256": "3757fa26b43c50e6a2f95be7f40f7d42432365b398e3e164164074ac668bc683"
+    }
+  ],
+  "expected_generated_contexts": [
+    "source-manifest.json",
+    "pre-status.json",
+    "pip-install.log",
+    "pip-freeze.txt",
+    "environment.json"
+  ],
+  "packages": {
+    "anyio": "4.13.0",
+    "attrs": "26.1.0",
+    "certifi": "2026.2.25",
+    "h11": "0.16.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "idna": "3.11",
+    "iniconfig": "2.3.0",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pyyaml": "6.0.3",
+    "pytest": "9.0.3",
+    "referencing": "0.37.0",
+    "rpds-py": "0.30.0"
+  },
+  "wheel_hashes": 162,
+  "manual_blast_radius": "LOW: reviewed synthetic HTTP/WAV or informational audit telemetry source controls, unchanged CI carrier/shared grade; no real endpoint/model/host runtime or promotion authority",
+  "host_project_execution": false
+}

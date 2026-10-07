@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T06:46:08Z",
+  "last_compile": "2026-10-07T07:44:25Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T06:46:08Z",
+  "scan_time": "2026-10-07T07:44:25Z",
   "schema_version": 1,
-  "source_set_hash": "ea474e9f70d6f7c090ac93c5a1a61b0dc5e38101eaec25953ac0f61dd974af0e",
+  "source_set_hash": "f222edf823388ebd0e5da42bed06fae258111fce038cfc377af4cd4f1dbed399",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -287,10 +287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "44d61dcbad969ce231cfb66efd1d61bc0ce586da1de10273535f5e761c749f81",
-      "modified": "2026-10-07T06:20:56Z",
+      "content_hash": "88429a076190df968ca6ed2e1686d4460571a29a952646cc5e6939032ade6211",
+      "modified": "2026-10-07T07:31:30Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 52217,
+      "size": 52796,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -871,10 +871,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4fd27798e625bdfb26a49df58fca22f75c91840a695a4efd456b693a3829e4de",
-      "modified": "2026-10-07T02:46:29Z",
+      "content_hash": "671a4b29219fea467f03d9c1733b788495c376592c1fa42e58cce5d45d8c6780",
+      "modified": "2026-10-07T07:00:39Z",
       "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "size": 87831,
+      "size": 88438,
       "title": "Model Stack Single-Source Update Pipeline",
       "type": "handoff-active"
     },
@@ -927,8 +927,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ea6d4e48805ac79b6406e03c189a7d3a210224fbecb98029b40c78825cb1ddcd",
-      "modified": "2026-10-07T06:39:26Z",
+      "content_hash": "43fc7cb6d4ea28e26cc414742a178dd92bc7a2b11e8a2cdf3c2e206e4727db96",
+      "modified": "2026-10-07T07:31:30Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 129614,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -1223,10 +1223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "56541ec5134bec43fe888fd3977c2ce20b40677436ab80c5d28ee524a28daa25",
-      "modified": "2026-10-07T06:02:53Z",
+      "content_hash": "371eff63c0bb4d27fb53e09644e6ec5a62afec4ac7420e1ffba67ddd902b8e90",
+      "modified": "2026-10-07T07:08:19Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 46660,
+      "size": 47188,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b18435c0b2e0f0aa3d37dc23892aaebb63235f328bffda5dc9084ae324e95cb1",
-      "modified": "2026-10-07T06:39:26Z",
+      "content_hash": "f43030f176a2590de137b95985bd6dda3c1d1d5bce08818c5f8f46f5bee77422",
+      "modified": "2026-10-07T07:31:30Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 354553,
+      "size": 358350,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9343,10 +9343,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "65158475f1599e2e766f26fb7ab5d9d49eae12fb59b563322e785b614bbcf841",
-      "modified": "2026-10-07T06:43:38Z",
+      "content_hash": "e055563b4dad665bbc5575f3e99cd017bea3ebeefa0ae9e7c4e9a34060cc1659",
+      "modified": "2026-10-07T07:44:22Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 32192,
+      "size": 36671,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "6984074226be8aa1932fe1a86dbb0e9447a3a9503c244712226efce6d80e3c74",
-      "modified": "2026-10-07T06:39:26Z",
+      "content_hash": "fc6cdff370e5c7a49456551ffd1dc91e3a076bf29e608f23c2dfe7a729084de1",
+      "modified": "2026-10-07T07:31:30Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 48932,
+      "size": 50711,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

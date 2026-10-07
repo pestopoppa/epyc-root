@@ -1,0 +1,43 @@
+{
+  "reviewed_at": "2026-10-07T07:29:19.063689+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37586779521,
+  "attempt": 1,
+  "job_identity": "github_job_112678632287",
+  "artifact": 11466528061,
+  "pins": {
+    "recipe": "d51edaf7f25280b69332a45b5ed48e8fd9305588",
+    "source": "129a58c29d3ed1814caa1acfa29d14f604020886",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "context": "7981a9acf2b8e2c328b9add8e21a68656c99c1d6",
+    "app": "3fc9f947bd3240fdb65daa719f37625e3ac6c7df"
+  },
+  "zip_sha256": "f204a5b1355dc656f76389ced73f5434a4adb6bbb7388d8a6c9ba1b10a2f3972",
+  "zip_bytes": 1017922,
+  "members": 56,
+  "readset_count": 44,
+  "git_inputs": 39,
+  "static_git_context": 39,
+  "contexts": 5,
+  "counts": {
+    "collected": 38,
+    "error": 0,
+    "executed": 38,
+    "failure": 0,
+    "passed": 38,
+    "skipped": 0
+  },
+  "testcase_nodes": 38,
+  "native_value": true,
+  "receipt_file_sha256": "4891c940c790e287ba028f43543cdbbe61cd83b6804321dc1e111a4cbf29d012",
+  "receipt_self_sha256": "3dea58e3c191c28ae64f1fd245bd294117b105b1b600dbe553b35d5f73e9343a",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "Original first W6 native TRUE38/38 integrity only: prior MAIN context-map row was wrong; corrected expected context was reconciled after first capture, so implementation acceptance is withheld. No regrading, original mutation or prespecified-correct-map claim."
+}
