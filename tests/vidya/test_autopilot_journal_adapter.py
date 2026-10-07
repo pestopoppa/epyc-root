@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 from adapters import autopilot_journal as apj  # noqa: E402
+from frames import FrameValidationError, validate_frame  # noqa: E402
 
 # A worktree has no `repos/` symlinks; EPYC_ORCH_ROOT points the real-writer tests at a checkout.
 ORCH = Path(os.environ.get("EPYC_ORCH_ROOT") or ROOT / "repos" / "epyc-orchestrator")
@@ -345,14 +346,22 @@ def test_w6_generalization_is_optional_informational_support_only(tmp_path, repo
     new_support = next(frame for frame in new_frames if frame["frame_type"] == support_type)
 
     assert "w6_generalization" not in old_support["assertion"]
-    assert new_support["assertion"]["w6_generalization"] == report
+    assert json.loads(new_support["assertion"]["w6_generalization_json"]) == report
+    assert new_support["assertion"]["w6_generalization_json"] == json.dumps(
+        report, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    )
+    validate_frame(new_support)
+    raw_float_frame = json.loads(json.dumps(new_support))
+    raw_float_frame["assertion"]["w6_generalization"] = {"core_quality": 2.25}
+    with pytest.raises(FrameValidationError, match="float values are forbidden"):
+        validate_frame(raw_float_frame)
     assert new_support["assertion"]["grade"] == old_support["assertion"]["grade"]
     assert new_support["provenance"]["grade_reasons"] == old_support["provenance"]["grade_reasons"]
     assert [frame for frame in new_frames if frame["frame_type"] != support_type] == [
         frame for frame in old_frames if frame["frame_type"] != support_type
     ]
     assert {key: value for key, value in new_support["assertion"].items()
-            if key != "w6_generalization"} == old_support["assertion"]
+            if key != "w6_generalization_json"} == old_support["assertion"]
 
 
 def test_w6_generalization_does_not_backfill_legacy_eval_details(tmp_path):
@@ -369,6 +378,7 @@ def test_w6_generalization_does_not_backfill_legacy_eval_details(tmp_path):
         support = next(frame for frame in apj.frames_for_row(shard, journal_row, as_of="t")
                        if frame["frame_type"] == support_type)
         assert "w6_generalization" not in support["assertion"]
+        assert "w6_generalization_json" not in support["assertion"]
 
 
 def _writer_emits_ap55_gate() -> bool:
@@ -478,7 +488,7 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     assert len(rec["attestation"]["sha256"]) == 64
     assert rec["w6_generalization"] == w6_report
     support = _support(shard, r)
-    assert support["assertion"]["w6_generalization"] == w6_report
+    assert json.loads(support["assertion"]["w6_generalization_json"]) == w6_report
     _assert_real_trace_write(trace)
     _record_real_writer_custody(
         tmp_path,
