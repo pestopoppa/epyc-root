@@ -1,0 +1,391 @@
+{
+  "app_source_commit": "129a58c29d3ed1814caa1acfa29d14f604020886",
+  "app_source_files": [
+    {
+      "git_blob": "c981baf9b046ffb8c26882b90fa2b588e52498b4",
+      "git_mode": "100644",
+      "path": "scripts/autopilot/experiment_journal.py",
+      "sha256": "4eee049b136ac3f79e42bfa4c7fc8a88084cef621f38c95e4dbae5d50c2ac6e8"
+    },
+    {
+      "git_blob": "2430372f2d6f1cdba0503a82816a941f5e01e800",
+      "git_mode": "100644",
+      "path": "scripts/autopilot/journal_shards.py",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "git_blob": "24e4b6ce7a8077c85cd831ea1634c012d07be025",
+      "git_mode": "100644",
+      "path": "scripts/autopilot/safety_gate.py",
+      "sha256": "47e040738ddbd97ddac59ffadd5345b25ed55f996cef6452a3d69bad870b5520"
+    },
+    {
+      "git_blob": "ff893046a8e7d2598657b950e9e41449f358d25f",
+      "git_mode": "100644",
+      "path": "src/__init__.py",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    {
+      "git_blob": "27c9fe394da9d9ea2f2f4b64d254bf99fa8aaa37",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/__init__.py",
+      "sha256": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa"
+    },
+    {
+      "git_blob": "de768dfce1199a1011a30d1db8db78ec5820e605",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/action_identity.py",
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    {
+      "git_blob": "aaf8c70f6284b4f78eab138ce73b5a3de167f04c",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/ap55_promotion_gate.py",
+      "sha256": "9f49087c373e4e0d1dadccd1d61ba5d7004ab07155f0fe75bc91688a78b8b48c"
+    },
+    {
+      "git_blob": "7a89e01affc8c86cfe0c79a08f8571c99cf44cb0",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/authority_consent.py",
+      "sha256": "50541fbda093e0560005a60195d3e8f82f95151aadf3cbab968d1842d5073022"
+    },
+    {
+      "git_blob": "5673025fff54213490cc6eee12a91ab1645074e3",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/infra_fingerprint.py",
+      "sha256": "e89d2d3caa5a6ab314c7df47da59d5ebe97e80c7c25c66feb47082209f45abbd"
+    },
+    {
+      "git_blob": "25e224dd700087aa4f8acc545c9505434df50bf7",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/journal_reconstruction.py",
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    {
+      "git_blob": "82adbc3dab68470570ec8fe0edf62d238ff8b093",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/learning_exclusions.py",
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    {
+      "git_blob": "d01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/measurement_guards.py",
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4"
+    },
+    {
+      "git_blob": "5dce1594af423b7a91e7eec916741fb39de02854",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/multitier_decision.py",
+      "sha256": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e"
+    },
+    {
+      "git_blob": "91f3e59e0918c93004ad4a4f61fe1d384eb48d78",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/pareto_math.py",
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    {
+      "git_blob": "19d3813492f3b26807db22daad491fc1bf470e05",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/rlvr_tiers.py",
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26"
+    },
+    {
+      "git_blob": "5086b05f9e7517b1c8b7a9b3934f2b57da5f0356",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/sequential_verdict.py",
+      "sha256": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d"
+    },
+    {
+      "git_blob": "ba47f3dd40b19521c4939a064493362c57ccc998",
+      "git_mode": "100644",
+      "path": "src/autopilot_core/tier_specs.py",
+      "sha256": "a601205f8e0311e675cf0146e3b6b28e038fc2d38b3256a5631a9489c1d1ca94"
+    },
+    {
+      "git_blob": "d41fdcbf3531a919f2d831fe234c23b68870a418",
+      "git_mode": "100644",
+      "path": "src/trace/__init__.py",
+      "sha256": "d6978c32242961f757072076d161ac3def6f3c85f34f48280560bb0015f74356"
+    },
+    {
+      "git_blob": "aa527a7dd2c1d80984354690b3964b0b8e2f3c26",
+      "git_mode": "100644",
+      "path": "src/trace/emit.py",
+      "sha256": "172727605332928b18c701e13c11301faf15debc2cf973216bf59109d5e8079c"
+    },
+    {
+      "git_blob": "74a4c434ab19bab67d779f45cc7e32f197e7db1a",
+      "git_mode": "100644",
+      "path": "src/trace/harness_schema.py",
+      "sha256": "a0251128d9a091a86b54def2021b052908e3baaa72966ca747437043bbc5384d"
+    },
+    {
+      "git_blob": "baffcd504a33e1d1cb20ac2372e705b09733aab6",
+      "git_mode": "100644",
+      "path": "src/trace/query.py",
+      "sha256": "95311606a66c24be3cf430d7a986c40665e4ca7c172dd51d51d20e423a32fbd0"
+    },
+    {
+      "git_blob": "3506ebee3be49051d2c47eea9d5406f8db6aad8f",
+      "git_mode": "100644",
+      "path": "src/trace/store.py",
+      "sha256": "47c3420f14808b5f25261471bc3e8f4923ef7a2f17622fbe46a21fec23091320"
+    }
+  ],
+  "cases": [
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_row_without_a_tuple_is_skipped_not_backfilled",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_row_without_a_tuple_is_skipped_not_backfilled"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_capture_error_row_is_skipped",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_capture_error_row_is_skipped"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_ledger_events_are_not_trials",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_ledger_events_are_not_trials"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_torn_line_does_not_abort_the_scan",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_torn_line_does_not_abort_the_scan"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_trial_ids_from_different_shards_do_not_collide",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_trial_ids_from_different_shards_do_not_collide"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_full_tuple_with_the_shard_on_disk_reaches_attested",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_full_tuple_with_the_shard_on_disk_reaches_attested"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_missing_protocol_makes_it_an_observation",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_missing_protocol_makes_it_an_observation"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_an_attempted_denominator_is_flagged_in_the_reasons",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_an_attempted_denominator_is_flagged_in_the_reasons"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_infra_comparability_is_carried_not_graded",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_infra_comparability_is_carried_not_graded"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_eval_fence_state_is_carried_not_graded",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_eval_fence_state_is_carried_not_graded"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_run_manifest_digest_is_carried_not_graded",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_run_manifest_digest_is_carried_not_graded"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_ap55_gate_legs_are_carried_not_graded",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_ap55_gate_legs_are_carried_not_graded"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_ap55_would_hold_counterfactual_is_carried_verbatim",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_ap55_would_hold_counterfactual_is_carried_verbatim"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[core-fresh]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[core-fresh]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[disabled]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[disabled]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[off-cadence]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[off-cadence]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[empty]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[empty]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[task-failed-in-denominator]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[task-failed-in-denominator]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[infra-failure-excluded]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[infra-failure-excluded]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_is_optional_informational_support_only[scoring-failure-excluded]",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_is_optional_informational_support_only[scoring-failure-excluded]"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_w6_generalization_does_not_backfill_legacy_eval_details",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_w6_generalization_does_not_backfill_legacy_eval_details"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_ap55_gate_end_to_end_against_the_real_writer",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_ap55_gate_end_to_end_against_the_real_writer"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_trial_is_always_a_candidate",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_trial_is_always_a_candidate"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_end_to_end_against_the_real_writer",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_end_to_end_against_the_real_writer"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_rows_without_decision_fields_project_unchanged_frames",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_rows_without_decision_fields_project_unchanged_frames"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_frontier_admission_and_rule_are_carried_not_graded",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_frontier_admission_and_rule_are_carried_not_graded"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_pending_promotion_is_committed_only_by_its_ledger_event",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_pending_promotion_is_committed_only_by_its_ledger_event"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_commit_events_from_another_shard_do_not_commit",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_commit_events_from_another_shard_do_not_commit"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_an_unsettled_pending_promotion_on_the_newest_trial_is_not_projected",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_an_unsettled_pending_promotion_on_the_newest_trial_is_not_projected"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_a_speed_axis_reseed_event_is_neither_a_commit_nor_projected",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_a_speed_axis_reseed_event_is_neither_a_commit_nor_projected"
+    },
+    {
+      "classname": "tests.vidya.test_autopilot_journal_adapter",
+      "name": "test_decision_fields_end_to_end_against_the_real_writer",
+      "nodeid": "tests/vidya/test_autopilot_journal_adapter.py::test_decision_fields_end_to_end_against_the_real_writer"
+    }
+  ],
+  "count": 31,
+  "junit_classname": "tests.vidya.test_autopilot_journal_adapter",
+  "provenance": "static AST expansion only; no project imports, pytest collection, or execution",
+  "real_writer_cases": [
+    {
+      "case_id": "tests/vidya/test_autopilot_journal_adapter.py::test_ap55_gate_end_to_end_against_the_real_writer",
+      "expected_rows": 1,
+      "journal_path": "repos/epyc-orchestrator/orchestration/autopilot_journal.jsonl",
+      "trace_path": "trace/events.sqlite"
+    },
+    {
+      "case_id": "tests/vidya/test_autopilot_journal_adapter.py::test_end_to_end_against_the_real_writer",
+      "expected_rows": 1,
+      "journal_path": "repos/epyc-orchestrator/orchestration/autopilot_journal.jsonl",
+      "trace_path": "trace/events.sqlite"
+    },
+    {
+      "case_id": "tests/vidya/test_autopilot_journal_adapter.py::test_decision_fields_end_to_end_against_the_real_writer",
+      "expected_rows": 2,
+      "journal_path": "repos/epyc-orchestrator/orchestration/autopilot_journal.jsonl",
+      "trace_path": "trace/events.sqlite"
+    }
+  ],
+  "real_writer_row_count": 4,
+  "root_source_ancestry": [
+    "d882143900b323093460d8286cbf973d41985213",
+    "419f4250b52d2a424e40da017992ede3c0251cdf",
+    "7a5e8852cf57c9cc94c343e288fc437482b3a728",
+    "6e9391f871e3ad00c8cb0fef8ea0a276093e8517"
+  ],
+  "root_source_commit": "6e9391f871e3ad00c8cb0fef8ea0a276093e8517",
+  "root_source_files": [
+    {
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "git_mode": "100644",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "git_blob": "88c774716016c527f0243a34259e90e9d244a9be",
+      "git_mode": "100644",
+      "path": "scripts/vidya/adapters/autopilot_journal.py",
+      "sha256": "003ff66aaa63005259c4855c35aaf32678b5948ae84d713bb7e5924b311ef7c2"
+    },
+    {
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "git_mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "git_mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "git_mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "git_mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "git_mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "git_blob": "caeae42b0b2e05609dafa240bf9ab4a054ec183f",
+      "git_mode": "100644",
+      "path": "scripts/vidya/measurement_record.py",
+      "sha256": "3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945"
+    },
+    {
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "git_mode": "100644",
+      "path": "tests/__init__.py",
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "git_blob": "de5cff0c7e82f290ddf03264377f274891b36ccd",
+      "git_mode": "100644",
+      "path": "tests/vidya/test_autopilot_journal_adapter.py",
+      "sha256": "6fa96969d2904954992f66d0cad630956b6deac1cb9ad020d2509dcbfd4d4087",
+      "size_bytes": 32732
+    }
+  ],
+  "schema": "epyc.vb.rtg23.w6e_carry.selected_cases.v1",
+  "source_function_count": 25,
+  "source_module": "tests/vidya/test_autopilot_journal_adapter.py"
+}

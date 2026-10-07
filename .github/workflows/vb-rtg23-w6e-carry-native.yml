@@ -1,0 +1,137 @@
+name: VB RTG23 W6e journal diagnostic carry native conformance
+on:
+  push:
+    branches: [codex/rtg23-w6e-carry-native-recipe-20261007]
+permissions:
+  contents: read
+jobs:
+  vb-rtg23-w6e-carry-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      RECIPE_PIN: ${{ github.sha }}
+      ROOT_SOURCE_PIN: 6e9391f871e3ad00c8cb0fef8ea0a276093e8517
+      APP_SOURCE_PIN: 129a58c29d3ed1814caa1acfa29d14f604020886
+      ROOT_CONTEXT_PIN: 7981a9acf2b8e2c328b9add8e21a68656c99c1d6
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      APP_LOCK_PIN: 3fc9f947bd3240fdb65daa719f37625e3ac6c7df
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+    steps:
+      - name: Initialize isolated paths and outcome artifact
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/vb-w6e-carry/result" "$RUNNER_TEMP/isolated-tmp" "$RUNNER_TEMP/isolated-llm"
+          printf 'ORCHESTRATOR_PATHS_LLM_ROOT=%s\n' "$RUNNER_TEMP/isolated-llm" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$RUNNER_TEMP/vb-w6e-carry/absent/cpu" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$RUNNER_TEMP/vb-w6e-carry/absent/llama-mtmd-cli" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$RUNNER_TEMP/vb-w6e-carry/absent/llama-server" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s\n' "$RUNNER_TEMP/isolated-tmp" >> "$GITHUB_ENV"
+          printf 'EPYC_ORCH_ROOT=%s/app_source\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          printf 'VIDYA_ORCH_WRITER_ROOT=%s/app_source\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          printf 'VB_W6E_CARRY_RESULT=%s\n' "$RUNNER_TEMP/vb-w6e-carry/result" >> "$GITHUB_ENV"
+          printf '{"state":"setup_pending","job":"vb-rtg23-w6e-carry-conformance","exit_code":null,"fixture_execution_conformant":null,"promotion_or_release_acceptance":null}\n' > "$RUNNER_TEMP/vb-w6e-carry/result/status.json"
+          cp "$RUNNER_TEMP/vb-w6e-carry/result/status.json" "$RUNNER_TEMP/vb-w6e-carry/result/pre-status.json"
+      - name: Checkout exact recipe commit
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout private ROOT source commit with custody instrumentation
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_PIN }}
+          path: root_source
+          persist-credentials: false
+      - name: Checkout actual APP writer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_PIN }}
+          path: app_source
+          persist-credentials: false
+      - name: Checkout exact task and source table context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CONTEXT_PIN }}
+          path: context
+          persist-credentials: false
+      - name: Checkout shared native carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout APP dependency lock
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_LOCK_PIN }}
+          path: app_lock
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+          architecture: x64
+      - name: Verify hosted runner and create isolated virtual environment
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = push
+          test "$GITHUB_REF" = "refs/heads/codex/rtg23-w6e-carry-native-recipe-20261007"
+          test "$GITHUB_SHA" = "$RECIPE_PIN"
+          test "$(uname -s)" = Linux
+          test "$(uname -m)" = x86_64
+          . /etc/os-release
+          test "$ID" = ubuntu
+          test "$VERSION_ID" = 24.04
+          python -c 'import platform; assert platform.python_version()=="3.13.15"'
+          python -m venv "$RUNNER_TEMP/vb-w6e-carry/venv"
+          "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" -c 'import platform,sys; assert platform.python_version()=="3.13.15"; assert sys.prefix != sys.base_prefix'
+      - name: Install complete locked import and test closure
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" -m pip install --only-binary=:all: --no-deps --require-hashes -r recipe/scripts/ci/vb_rtg23_w6e_carry_native_requirements.txt 2>&1 | tee "$RUNNER_TEMP/vb-w6e-carry/result/pip-install.log"
+      - name: Record exact environment
+        if: always()
+        run: |
+          "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-w6e-carry/result/pip-freeze.txt" || true
+      - name: Capture full ROOT reader module against the real APP writer
+        run: "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" recipe/scripts/ci/vb_rtg23_w6e_carry_native_capture.py
+      - name: Preserve pre-capture setup failure as ungraded NULL
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ["RUNNER_TEMP"]) / "vb-w6e-carry" / "result" / "status.json"
+          p.parent.mkdir(parents=True, exist_ok=True)
+          try:
+              current = json.loads(p.read_text())
+          except Exception:
+              current = {}
+          if current.get("state") == "setup_pending":
+              p.write_text(json.dumps({
+                  "state": "setup_failed", "job": "vb-rtg23-w6e-carry-conformance",
+                  "exit_code": None, "fixture_execution_conformant": None,
+                  "promotion_or_release_acceptance": None,
+                  "diagnostic": "checkout, Python setup, or dependency installation failed before capture",
+              }, sort_keys=True) + "\n")
+      - name: Retain complete original result and custody
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vb-rtg23-w6e-carry-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb-w6e-carry/result/
+          if-no-files-found: error
+          include-hidden-files: true
