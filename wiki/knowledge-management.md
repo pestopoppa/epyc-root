@@ -3783,7 +3783,7 @@ C104's prospectively enrolled source/native pair is now accepted after original 
 
 ## Source citation repair preserves remaining unknowns — 2026-10-07
 
-**Confidence: verified for original intake-record attribution only.** Decision-aware routing contained two out-of-range claim anchors. The actual episodic-memory entry supplies no rationale for the handoff's reasoning-feature annotation, so that unsupported annotation is withdrawn without rejecting the research source. The orchestration risk now cites the precise recorded claim intake-1333#01 and remains explicitly source-reported and non-gating. The corrected claim is still unknown to the existing belief ledger; an in-range citation does not manufacture coverage or warrant.
+**Confidence: verified for original intake-record attribution only.** Decision-aware routing contained two out-of-range claim anchors. The actual episodic-memory entry supplies no rationale for the handoff's reasoning-feature annotation, so that unsupported annotation is withdrawn without rejecting the research source. The orchestration risk now cites the precise recorded claim intake-1333#01 and remains explicitly source-reported and non-gating. At that citation-repair checkpoint the corrected claim was still unknown to the existing belief ledger; the later accepted one-entry projection is recorded below. An in-range citation alone does not manufacture coverage or warrant.
 
 ### Source References
 
@@ -3794,7 +3794,7 @@ C104's prospectively enrolled source/native pair is now accepted after original 
 
 ### Prospective literature coverage and original transport gaps — 2026-10-07
 
-The corrected citation to intake-1333#01 remains source-reported/non-gating. Its separately enrolled one-entry projection reuses the existing adapter and ladder with explicit retrofit provenance. All five anchors lack retained source_artifact originals, so no original span or Attested support can be reconstructed. A frozen13-frame private projection is preparation; MAIN reviews unchanged source, exact full-ledger extension and fold delta under the existing owned-inode writer lease before canonical append.
+At this earlier checkpoint the corrected citation to intake-1333#01 remained source-reported/non-gating. Its separately enrolled one-entry projection reuses the existing adapter and ladder with explicit retrofit provenance. All five anchors lack retained source_artifact originals, so no original span or Attested support can be reconstructed. A frozen13-frame private projection is preparation; MAIN reviews unchanged source, exact full-ledger extension and fold delta under the existing owned-inode writer lease before canonical append.
 
 INF50's first native-writer archive omitted hidden cache bytes despite a typed64-byte hash record; it remains an immutable partial diagnostic. The separately approved direct-child upload correction has a new original. MAIN independently reopened all361 members,19 Git inputs,23roles/all47 locked wheel hashes and actual hidden cache0644/64bytes/hash. Native banner and typed YAML match the dry run with only the retired prose scalar changed. The record remains ungraded with receipt/JUnit/ClaimTuple NULL; product publication/task acceptance remain separate.
 
@@ -3807,3 +3807,9 @@ Source references: [source ownership](../handoffs/active/vidya-belief-substrate-
 The operator requests periodic full wrap-ups. MAIN owns the wiki synthesis, content-hash watermark, canonical indices and publication; workers prepare isolated source/evidence and proposed edits. The latest seven-document delta combines the two completed source/custody boundaries with the separately published AutoKernel owner checkpoint. C26 cancellation, UFH spill-budget native acceptance and literature coverage remain explicit work in progress; prospective enrollment does not establish capture or grade.
 
 Source references: [NI08 tally and limits](../docs/reference/ni08-non-inference-continuation.md), [live non-inference queue](../handoffs/active/non-inference-backlog.md), [source consumers](../handoffs/active/vidya-belief-substrate-program.md), [MAIN progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+
+## One-entry native literature coverage completed — 2026-10-07
+
+**Confidence: verified for the original ledger extension and fold only.** MAIN accepted exactly13 native frames for intake-1333#record through the existing literature adapter and owned-inode write lease. The complete before-prefix, exact frame objects and full fold retain five new Verified/Located beliefs and zero changes to existing beliefs. Claim04 remains review-required; missing retained source-artifact anchors stay UNKNOWN and support remains Located. The source record, fourteen governance modules and shared grading are unchanged. [Original command/frame/fold custody](../artifacts/ni08/intake1333-literature-coverage-20261007/README.md).
+
+NI08 reaches175 completed scoped tasks:110 existing checkbox closures and65 completed children. The accepted three-source-view custody is an operational child; C26 and UFH source/native acceptance remain pending. MAIN owns the incremental wiki and source watermark in each operator-requested full wrap-up. [Current tally and limits](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [live queue](../handoffs/active/non-inference-backlog.md), [source consumers](../handoffs/active/vidya-belief-substrate-program.md).

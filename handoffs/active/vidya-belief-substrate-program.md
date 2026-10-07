@@ -1,6 +1,6 @@
 # Vidya Belief-Substrate Program
 
-**Scratch**: `/mnt/raid0/llm/tmp/vidya-belief-substrate-program/` · worktrees: `/mnt/raid0/llm/worktrees/vidya-belief-substrate-program-*` NI08 source and native review and private ledger coverage preparation: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/`, `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`; MAIN acceptance originals `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`.
+**Scratch**: `/mnt/raid0/llm/tmp/vidya-belief-substrate-program/` · worktrees: `/mnt/raid0/llm/worktrees/vidya-belief-substrate-program-*` NI08 source and native review and private ledger coverage preparation: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/`, `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`; MAIN acceptance originals `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`. Further own recipe and original publication custody: `/mnt/raid0/llm/worktrees/ni08-c26-native-recipe-20261007/`, `/mnt/raid0/llm/tmp/c106-root-wrap-publish-*`, `/mnt/raid0/llm/tmp/threeview-narrow-validation-*`, `/mnt/raid0/llm/tmp/intake175-narrow-validation-*`.
 
 **Status**: active
 **Created**: 2026-08-09 (via research intake, operator-approved Stage-3 plan `linear-kindling-possum`)

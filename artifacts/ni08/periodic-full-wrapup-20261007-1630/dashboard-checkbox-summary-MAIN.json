@@ -1,0 +1,42 @@
+{
+  "original_generated_at": "2026-10-07T16:26:59Z",
+  "original_body_sha256": "ab112fba8d5f82584e65e897ad8ca9895b4c33c9ac9653d50eecbde31c410256",
+  "columns": {
+    "active": {
+      "handoffs": 182,
+      "done": 3662,
+      "total": 6031,
+      "without_checklist": 10
+    },
+    "blocked": {
+      "handoffs": 7,
+      "done": 21,
+      "total": 67,
+      "without_checklist": 2
+    },
+    "completed": {
+      "handoffs": 211,
+      "done": 1873,
+      "total": 2363,
+      "without_checklist": 86
+    },
+    "archived": {
+      "handoffs": 120,
+      "done": 751,
+      "total": 1339,
+      "without_checklist": 56
+    }
+  },
+  "active_and_blocked": {
+    "done": 3683,
+    "total": 6098,
+    "unchecked": 2415,
+    "percent": 60.4,
+    "without_checklist": 12
+  },
+  "all_columns": {
+    "done": 6307,
+    "total": 9800
+  },
+  "scope": "Original serving-repository checkbox scan; separate from the NI08 accepted-task tally and publication branch. Checkbox totals exclude marker-only historical progress according to the native board contract."
+}

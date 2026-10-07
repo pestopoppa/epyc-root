@@ -1,0 +1,228 @@
+{
+  "classification": "Actual final governance command custody; wrappers executed once under MAIN approval. Source/index manifests native, no project tests/inference.",
+  "original_commands": 43,
+  "return_codes": {
+    "zero": 40,
+    "explicit_allowed_one": 3
+  },
+  "lease_acquisition_release_checked": true,
+  "no_deletion": true,
+  "files": [
+    {
+      "original_name": "both-handoff-scratch-plan.json",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/both-handoff-scratch-plan.json",
+      "original_bytes": 16401,
+      "original_sha256": "950038a685fb0ca105191ca48f42c17749b23191f97df7b39ad934f3c84909a2",
+      "original_mode": 420,
+      "transport_file": "both-handoff-scratch-plan.json.b64",
+      "transport_sha256": "d13773becff8c3cdfb5e22fc63cbeedef665b384375eba8d86429f383e6c347e"
+    },
+    {
+      "original_name": "cite-check.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/cite-check.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "cite-check.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "cite-check.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/cite-check.stdout",
+      "original_bytes": 80802,
+      "original_sha256": "3cf5a286dfa601b84d30829599fafa64e547c89614913a5b16cb33db52642e83",
+      "original_mode": 420,
+      "transport_file": "cite-check.stdout.b64",
+      "transport_sha256": "b5355ef439348aa1f8f9c3dd998a31346700bdb85f2bec9eeccf8a9577e20a6b"
+    },
+    {
+      "original_name": "diff-check.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/diff-check.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "diff-check.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "diff-check.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/diff-check.stdout",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "diff-check.stdout.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "governance-receipt.json",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/governance-receipt.json",
+      "original_bytes": 12619,
+      "original_sha256": "e5aa9d3f9b7158fdd0a22cd79991589f90b356846fea36d52e8d070da9e29063",
+      "original_mode": 420,
+      "transport_file": "governance-receipt.json.b64",
+      "transport_sha256": "a5ed828d22a07ae6f37fbd2116bba0be7cae2764d8cb3fad0f67d388fd4ae733"
+    },
+    {
+      "original_name": "index-check.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/index-check.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "index-check.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "index-check.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/index-check.stdout",
+      "original_bytes": 4710,
+      "original_sha256": "c408d1277f2d06cf30c666b0007f205ab7ada6f18b2a34950ee14bca5bfffb9b",
+      "original_mode": 420,
+      "transport_file": "index-check.stdout.b64",
+      "transport_sha256": "bc8ede8937cf77e5d183913e0c82537449fec4cbf704835fe418226eebc867a9"
+    },
+    {
+      "original_name": "index-regeneration.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/index-regeneration.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "index-regeneration.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "index-regeneration.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/index-regeneration.stdout",
+      "original_bytes": 684,
+      "original_sha256": "8be6008303c56762840585272a225130c9fbdd54feeb93c6f28c1db2d193b2c9",
+      "original_mode": 420,
+      "transport_file": "index-regeneration.stdout.b64",
+      "transport_sha256": "3f2286aa4454953767c9893ae2effde8111e687afa4f762637b6423bc0ef91ee"
+    },
+    {
+      "original_name": "non-inference-backlog-scratch-plan.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/non-inference-backlog-scratch-plan.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "non-inference-backlog-scratch-plan.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "non-inference-backlog-scratch-plan.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/non-inference-backlog-scratch-plan.stdout",
+      "original_bytes": 10458,
+      "original_sha256": "515ebdf29bde0e9c0be5e668210d4b321cdcbfe2bde15130f9e3859a0e0e05cf",
+      "original_mode": 420,
+      "transport_file": "non-inference-backlog-scratch-plan.stdout.b64",
+      "transport_sha256": "fdcc3b60e19cb4c61fa9a099bd5b1b4fb1272456c3b580e782ea79ace2c4d22f"
+    },
+    {
+      "original_name": "original-command-journal.jsonl",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/original-command-journal.jsonl",
+      "original_bytes": 246618,
+      "original_sha256": "1c5e2399c432f467e3a7d980d29b35077064ccc725ab42e6d60654fd85956f27",
+      "original_mode": 420,
+      "transport_file": "original-command-journal.jsonl.b64",
+      "transport_sha256": "3bda4595a211c22bb8bab5143ad02f8aceb4ba284dea40a89b9bda7553527ee8"
+    },
+    {
+      "original_name": "readme-check.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/readme-check.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "readme-check.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "readme-check.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/readme-check.stdout",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "readme-check.stdout.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "scratch-KEEP-check.json",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/scratch-KEEP-check.json",
+      "original_bytes": 1498,
+      "original_sha256": "35f6a92174096be4674a4febc0737d444588833b471e43f4a90cdfe3c1e87390",
+      "original_mode": 420,
+      "transport_file": "scratch-KEEP-check.json.b64",
+      "transport_sha256": "bb4c2e74b4b036fc2b8d3a089932372b9c620594503539f31671bca871605263"
+    },
+    {
+      "original_name": "vidya-belief-substrate-program-scratch-plan.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/vidya-belief-substrate-program-scratch-plan.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "vidya-belief-substrate-program-scratch-plan.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "vidya-belief-substrate-program-scratch-plan.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/vidya-belief-substrate-program-scratch-plan.stdout",
+      "original_bytes": 3431,
+      "original_sha256": "ecb82554977cb83b1c914d3ccdfeb771a7e92cbb88ec149c1f55ebbb74272053",
+      "original_mode": 420,
+      "transport_file": "vidya-belief-substrate-program-scratch-plan.stdout.b64",
+      "transport_sha256": "30c0a73e0facc5bd000a4fabe2eafcc7f187d2ca25765bf85cd31a4d702c3371"
+    },
+    {
+      "original_name": "wiki-lint.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/wiki-lint.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "wiki-lint.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "wiki-lint.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/wiki-lint.stdout",
+      "original_bytes": 29369,
+      "original_sha256": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+      "original_mode": 420,
+      "transport_file": "wiki-lint.stdout.b64",
+      "transport_sha256": "9909c4113661b6729922c800ddc6aa75a39657d2bcfbb2f2300ecec3758c9c1e"
+    },
+    {
+      "original_name": "wiki-manifest-check.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/wiki-manifest-check.stderr",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420,
+      "transport_file": "wiki-manifest-check.stderr.b64",
+      "transport_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "original_name": "wiki-manifest-check.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/wiki-manifest-check.stdout",
+      "original_bytes": 609,
+      "original_sha256": "59c9f25247e2b5edf45af87a087a5557d03e480e26a7d3f753f5c77b8b38d99c",
+      "original_mode": 420,
+      "transport_file": "wiki-manifest-check.stdout.b64",
+      "transport_sha256": "42df6870f37c506c5700ac9cf5fbeed598c22e81d0d956fd4e5cb461c7713adb"
+    },
+    {
+      "original_name": "wiki-touch.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/wiki-touch.stderr",
+      "original_bytes": 184,
+      "original_sha256": "d99768f7d49117cba31a6fa1081acc6a11e636bad5ecc1290e43e848f512e93f",
+      "original_mode": 420,
+      "transport_file": "wiki-touch.stderr.b64",
+      "transport_sha256": "7c472a41c2f8b557fff403e235bb861ef408ce7d6ba03c1b38f3ace912402daa"
+    },
+    {
+      "original_name": "wiki-touch.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/full1630-MAIN-governance-j_i1pzoq/wiki-touch.stdout",
+      "original_bytes": 3081,
+      "original_sha256": "b9ae31ebd6be79e17d84bf4515b9be9738dbc48705db1b23ac22464f918b76c0",
+      "original_mode": 420,
+      "transport_file": "wiki-touch.stdout.b64",
+      "transport_sha256": "eb65c5ba6e57b664fa6dfe10516648d4db488b0141930943335bd5732d18c273"
+    }
+  ]
+}
