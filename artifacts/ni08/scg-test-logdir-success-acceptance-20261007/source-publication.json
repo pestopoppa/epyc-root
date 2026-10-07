@@ -1,0 +1,27 @@
+{
+  "review": "PASS",
+  "canonical_publication": "b87998e3b5a0cbb9da36c8db9fd2fcfbb69aba0d",
+  "source_pin": "0816f7b3e537d2815f0e35076785b489282b8f9b",
+  "source_parent": "eb115cbe9903006943dc16f23395c7058bb58ad4",
+  "canonical_parent": "7134d796493b8da8c4637c1e53ff1906f9c8ea34",
+  "paths": [
+    {
+      "path": "orchestration/repl_memory/progress_logger.py",
+      "sha256": "dfaddbcc78e45b87d086969ecb85a4740decb7c8c1356079c72c185093342575",
+      "bytes": 41209
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "ed5d97956af9229d561c058e7c8d6f4ec05f894de5d95ff1a6a36fbb90251e0c",
+      "bytes": 14796
+    },
+    {
+      "path": "tests/unit/test_progress_logger_interaction.py",
+      "sha256": "1ae71cf0f1a21910cd506dca9e34254ebf0dfa2690f95f48feb879fc446ef695",
+      "bytes": 6116
+    }
+  ],
+  "all_three_product_preimages_exact": true,
+  "all_unrelated_current_source_preserved": true,
+  "full_current_application_suite_claimed": false
+}

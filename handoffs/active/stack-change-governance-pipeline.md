@@ -1,5 +1,7 @@
 # Stack Change Governance Pipeline
 
+**Scratch**: `/mnt/raid0/llm/worktrees/ni08-scg-test-logdir-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-private-recipe-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-child-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-original-run-37602092844-20261007` (KEEP source and original custody).
+
 **Status**: IN PROGRESS - canonical stack-change command, generated
 stack-prior contract, guard/scanner ownership, runtime attestation, launch and
 preflight gates, promotion-gate execution, and representative swap-CI witnesses
@@ -103,7 +105,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   tests drive `main()` with `cmd_start` booby-trapped, plus a negative control
   (`tests/unit/test_orchestrator_stack_validate_only.py`). Same class as the 2026-08-12 inert `--validate-only`
   (orch `2c421c1c`). Incident: `INC-20261003-start-dry-run-launched-stack`.
-- [ ] **SCG-TEST-LOGDIR — tests must never write to the live `/workspace/logs/progress/`.** (filed 2026-10-03,
+- [x] **SCG-TEST-LOGDIR — tests must never write to the live `/workspace/logs/progress/`.** (filed 2026-10-03, ✅ 2026-10-07 — [MAIN source/original4/4 acceptance](../../artifacts/ni08/scg-test-logdir-success-acceptance-20261007/README.md), APPb87998e3; actual root bootstrap/real during-test logger, constructor override/default/sentinel/teardown and authenticated temporary JSONL copies. Original NULL/setup evidence unchanged; no shared-host tests/logs or runtime warrant.
   workspace-ec) An API test falls back to that directory when run from a worktree with no `logs/`; on 2026-10-03 it
   wrote 2 synthetic `contention_denied` rows into the live 2026-10-03 progress file (deleted with operator OK).
   Point the fallback at a tmp dir under pytest (conftest fixture) and add a test that the live dir is untouched.

@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **149 completed scoped tasks: 88 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **151 completed scoped tasks: 90 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -393,3 +393,7 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## UFH05 finite actor source package — 2026-10-07
 
 [MAIN exact seven-blob source-only publication](../../artifacts/ni08/ufh05-finite-runner-source-20261007/README.md) closes one bounded source child RC-XLLM-PREFILL-SOURCE. Research6e06fae72 preserves current source and publishes the approved actor/primary patch/shim/provenance only. No native execution, weights, device compatibility or feasibility is claimed. Actual runtime and VB-RI-OPS-WIRE parents remain open. NI08=149 (88 existing+61 scoped children); more non-inference source work remains.
+
+## Actual pytest logging bootstrap source — 2026-10-07
+
+[Exact APP three-file publication and original4/4](../../artifacts/ni08/scg-test-logdir-success-acceptance-20261007/README.md) close SCG-TEST-LOGDIR and its prospective native companion. Actual temporary log rows and before-teardown byte copies are retained; live/default sentinel remains unchanged. One opaque Git symlink is not miscounted as a native regular read; ZIP topology limitations are explicit. NI08=151 (90 existing+61 children). No runtime/API/inference or full current application-suite warrant.

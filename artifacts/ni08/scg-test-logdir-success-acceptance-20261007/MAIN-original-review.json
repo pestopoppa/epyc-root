@@ -1,0 +1,50 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T09:56:01.614762+00:00",
+  "run": 37602092844,
+  "attempt": 1,
+  "job_identity": "github_job_112728658017",
+  "recipe_pin": "1c65dd2bc72ae35378b7d2811225ff330238ae04",
+  "source_pin": "0816f7b3e537d2815f0e35076785b489282b8f9b",
+  "artifact_id": 11472784147,
+  "zip_sha256": "d4db45dbc45daa8c1231a3562d31655b745415c122e33152bd6691b11962cc83",
+  "zip_bytes": 35351968,
+  "original_regular_member_copies": 3832,
+  "frozen_git_envelope": 3801,
+  "original_native_regular_Git_reads": 3800,
+  "opaque_APP_symlink_in_Git_envelope_not_native_opened": [
+    {
+      "repo": "app",
+      "repo_pin": "0816f7b3e537d2815f0e35076785b489282b8f9b",
+      "path": "orchestration/model_registry_full.yaml",
+      "mode": "120000",
+      "git_blob": "b1ddcf7cd97b4c7d90b86f5eba3be6d9c39d6021",
+      "bytes": 72,
+      "sha256": "4bb5aa6e3d07c55864f2b3a92364dc85388d741df3c52690d78e821e09707537"
+    }
+  ],
+  "generated_original_native_inputs": 3,
+  "native_readset": 3803,
+  "cases": 4,
+  "native_value": true,
+  "original_shared_grade": {
+    "quality": "Judged",
+    "traceability": "Located"
+  },
+  "receipt_self_sha256": "b2df00d9535eced3ce2347289388ff8cb680c3993c2c2b1bc9aa683794b4209e",
+  "receipt_sha256": "751e6229b4e804759f4da1490041d66bd0f958a8c34ac14638b5056526f7f685",
+  "actual_temp_JSONL_copies_authenticated": 2,
+  "typed_original_result_counts": {
+    "directory": 22,
+    "regular_file": 3820,
+    "symlink": 8
+  },
+  "zip_symlink_copy_and_empty_directory_limits_qualified": true,
+  "input_stable_before_after_capture_and_grade": true,
+  "result_tree_after_capture_equals_after_grade": true,
+  "MAIN_executed_grade": false,
+  "MAIN_executed_project_code": false,
+  "implementation_accepted_for_exact_pinned_source": true,
+  "current_canonical_integration_review_required": true,
+  "scope": "Actual root conftest temporary logging/default logger override source controls; runtime/deployment/inference acceptance excluded"
+}

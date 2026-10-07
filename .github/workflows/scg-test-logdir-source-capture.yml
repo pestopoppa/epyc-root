@@ -1,0 +1,97 @@
+name: SCG TEST LOGDIR conformance source controls
+
+on:
+  push:
+    branches: [codex/scg-test-logdir-source-capture-20261007]
+
+permissions:
+  contents: read
+
+jobs:
+  scg-test-logdir-synthetic-controls:
+    name: scg-test-logdir-synthetic-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RECIPE_PIN: ${{ github.sha }}
+      APP_PIN: 0816f7b3e537d2815f0e35076785b489282b8f9b
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      ROOT_SOURCE_PIN: 954145a1b722feff4b1b1bc3ee0896d857b13606
+      SCG_LOGDIR_RUNNER_CONTEXT: ubuntu-24.04
+      SCG_LOGDIR_EXECUTION_CONTEXT: offline-synthetic-pytest-progress-log-destination-control
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+      ORCHESTRATOR_LOG_DIR: /dev/null
+      ORCHESTRATOR_SERVING_CALLS_LOG: 'off'
+      ORCHESTRATOR_COHERENCE_JUDGE_LOG: 'off'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/scg-test-logdir/result"
+          printf '{"state":"setup_pending","job":"scg-test-logdir-synthetic-controls","exit_code":null}\n' > "$RUNNER_TEMP/scg-test-logdir/status.json"
+          mkdir -p "$RUNNER_TEMP/scg-test-logdir/absent-binaries"
+          for pair in \
+            'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN:llama-cpp-bin' \
+            'ORCHESTRATOR_PATHS_LLAMA_MTMD:llama-mtmd-cli' \
+            'ORCHESTRATOR_PATHS_LLAMA_SERVER:llama-server'; do
+            key=${pair%%:*}
+            leaf=${pair#*:}
+            path="$RUNNER_TEMP/scg-test-logdir/absent-binaries/$leaf"
+            test ! -e "$path" && test ! -L "$path"
+            printf '%s=%s\n' "$key" "$path" >> "$GITHUB_ENV"
+          done
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout immutable native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact ROOT enrollment context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_PIN }}
+          path: root-source
+          persist-credentials: false
+      - name: Checkout reviewed APP proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact APP uv.lock pytest import closure
+        env:
+          PIP_CONFIG_FILE: /dev/null
+          PIP_DISABLE_PIP_VERSION_CHECK: '1'
+          PIP_INDEX_URL: https://pypi.org/simple
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/scg-test-logdir-venv"
+          "$RUNNER_TEMP/scg-test-logdir-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/scg_test_logdir_test_requirements.txt 2>&1 | tee "$RUNNER_TEMP/scg-test-logdir/result/dependency-install.log"
+      - name: Run real-conftest controls and capture native receipt
+        run: >-
+          "$RUNNER_TEMP/scg-test-logdir-venv/bin/python" recipe/scripts/ci/scg_test_logdir_capture.py
+      - name: Retain native receipt, original JUnit, readset, and status on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scg-test-logdir-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/scg-test-logdir/
+          if-no-files-found: error
