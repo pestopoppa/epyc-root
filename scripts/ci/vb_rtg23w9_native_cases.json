@@ -1,0 +1,153 @@
+{
+  "cases": [
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_candidate_blocks_include_question_diff_and_provenance",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_candidate_blocks_include_question_diff_and_provenance",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_corrupted_and_audit_only_rows_are_excluded",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_corrupted_and_audit_only_rows_are_excluded",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_dataclass_rows_are_normalized_at_boundary",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_dataclass_rows_are_normalized_at_boundary",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_empty_evidence_section_is_stable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_empty_evidence_section_is_stable",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_missing_replay_e_values_remain_blocked_and_measured_zero_stays_below_floor",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_missing_replay_e_values_remain_blocked_and_measured_zero_stays_below_floor",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_provenance_distinguishes_missing_and_invalid_counters_from_measured_zero",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_provenance_distinguishes_missing_and_invalid_counters_from_measured_zero",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rate_display_distinguishes_absent_invalid_zero_and_positive",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rate_display_distinguishes_absent_invalid_zero_and_positive",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rows_explain_seed_batch_is_not_w8_replayable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rows_explain_seed_batch_is_not_w8_replayable",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rows_fold_by_candidate_and_skip_malformed_z",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rows_fold_by_candidate_and_skip_malformed_z",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rows_ignore_non_matching_core_ids",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rows_ignore_non_matching_core_ids",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rows_mark_benign_excluded_accumulating_candidate_replayable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rows_mark_benign_excluded_accumulating_candidate_replayable",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rows_mark_latest_reverted_candidate_not_replayable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rows_mark_latest_reverted_candidate_not_replayable",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_seq_rows_mark_terminal_excluded_candidate_not_replayable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_seq_rows_mark_terminal_excluded_candidate_not_replayable",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_unavailable_task_rate_renders_na_and_keeps_valid_values",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_unavailable_task_rate_renders_na_and_keeps_valid_values",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_vector_rows_collapse_by_behavioral_fingerprint",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_vector_rows_collapse_by_behavioral_fingerprint",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_w8_replay_pressure_blocks_vague_consult_gate_probe",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_w8_replay_pressure_blocks_vague_consult_gate_probe",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_w8_replay_pressure_counts_concrete_consult_gate_probe_as_replayable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_w8_replay_pressure_counts_concrete_consult_gate_probe_as_replayable",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_w8_replay_pressure_counts_empty_numeric_params_as_blocked",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_w8_replay_pressure_counts_empty_numeric_params_as_blocked",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_w8_replay_pressure_enforces_quality_floor",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_w8_replay_pressure_enforces_quality_floor",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_w8_replay_pressure_names_structural_prune_as_unreplayable",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_w8_replay_pressure_names_structural_prune_as_unreplayable",
+      "status": "passed"
+    }
+  ],
+  "count": 20,
+  "provenance": {
+    "identity_derivation": "All module-level test functions selected from the exact pinned source AST; no parametrization applies.",
+    "module_level_code_executed": false,
+    "source_paths_sha256": {
+      "src/__init__.py": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "src/autopilot_core/__init__.py": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa",
+      "src/autopilot_core/action_identity.py": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c",
+      "src/autopilot_core/infra_fingerprint.py": "e89d2d3caa5a6ab314c7df47da59d5ebe97e80c7c25c66feb47082209f45abbd",
+      "src/autopilot_core/journal_reconstruction.py": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f",
+      "src/autopilot_core/learning_exclusions.py": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68",
+      "src/autopilot_core/measurement_guards.py": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4",
+      "src/autopilot_core/multitier_decision.py": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e",
+      "src/autopilot_core/pareto_math.py": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6",
+      "src/autopilot_core/planner_evidence.py": "ae1c9d4448c84d56de6b894a3d2734af981864ab6804f77cd6d23ed1a0d7871a",
+      "src/autopilot_core/rlvr_tiers.py": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26",
+      "src/autopilot_core/sequential_verdict.py": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d",
+      "src/autopilot_core/tier_specs.py": "a601205f8e0311e675cf0146e3b6b28e038fc2d38b3256a5631a9489c1d1ca94",
+      "src/registry/__init__.py": "50ddc75e291c2caaae688bbe94c4f3144a5751eb11e0a65ee35b5632ea3a9c6d",
+      "src/registry/kernel_paths.py": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "tests/__init__.py": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108",
+      "tests/unit/__init__.py": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c",
+      "tests/unit/test_planner_evidence.py": "3e2871e05f4cc4025ceca7e142915374d080d35f66abc920802941a7099a7005"
+    },
+    "test_bodies_executed": false,
+    "test_modules_imported": false
+  },
+  "schema": "epyc.vb_rtg23w9.native_selected_cases.v1",
+  "source_commit": "6d2be3c4c73d34cf3a93626d722b84b6218a5dec"
+}
