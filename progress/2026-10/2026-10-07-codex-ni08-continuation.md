@@ -262,3 +262,8 @@ MAIN independently verifies attempt2 run37586779521/job112682464200/artifact1146
 ## Pin-report original and exact source boundary — 2026-10-07
 
 MAIN independently accepts source112217two blobs/recipe96c7 after fresh APIs, original ZIP5442aaa2,1682members,24readset and29/29 native identities. All source/result hashes stable through original shared grade; no local grading.10unique nested receipts retain8TRUE/1FALSE/1NULL;13path copies are aliases, notdistinctexecutions. Original11symlink/91emptydirectory upload limits remain explicit without topology reconstruction. Actual pin-health scan/wiring remains open. One existingVB closure plus one completed bounded source child:NI08=142 (82existing+60children).
+
+
+## INF64 completed bounded source manifest boundary — 2026-10-07
+
+MAIN independently verifies64unique actual ROOT/Research source blobs,145exact incoming refs, all19candidate/test units,2adjacent data/3guards plus outgoing AST imports/path/config/CLI evidence. Conservative retain19/remove0 corrects blanket-dead premise without deleting or touching owner-held campaigns. One existingmanifest closure:NI08=143 (83existing+60children). Native VB source controls remain open; no runtime reachability proof or disposal authority inferred.

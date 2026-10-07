@@ -1,0 +1,3228 @@
+{
+  "focus": {
+    "baseline_honesty": [
+      {
+        "blob": "66d6ef34ad885270381097a9efd4f8a76af9c261",
+        "line": 146,
+        "path": "scripts/benchmark/run_autokernel_cpu_baseline_honesty.py",
+        "text": "holder_label=\"run_autokernel_cpu_baseline_honesty.py\","
+      },
+      {
+        "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+        "line": 173,
+        "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+        "text": "| `evaluator/baseline_honesty.py` | 186 | no | AK-BH-4 exact-surface strongest-provider selector; it rejects AUTO and cross-surface transfer before a campaign can claim an honest floor |"
+      },
+      {
+        "blob": "f8a44d1e49770bb351fb41536e608828d4657892",
+        "line": 8,
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_baseline_honesty.py",
+        "text": "from . import baseline_honesty as B"
+      }
+    ],
+    "gpu_hot_residency_runner": [
+      {
+        "blob": "531f6060cc58d0d18b4a25468900a20ff1e07a67",
+        "line": 8,
+        "path": "scripts/kernel_rnd/autokernel/controller/test_gpu_hot_residency_runner.py",
+        "text": "from . import gpu_hot_residency_runner as H"
+      }
+    ],
+    "placement_context": [
+      {
+        "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+        "line": 143,
+        "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+        "text": "| `placement_context.py` | 216 | no | P2-5j hash-bound placement-belief projection; it exposes observation-only topology context to authoring without gaining selection, ranking, launch, or promotion authority |"
+      },
+      {
+        "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+        "line": 374,
+        "path": "scripts/kernel_rnd/autokernel/README.md",
+        "text": "| `placement_context.py` | **AutoKernel G1 host-topology bridge.** Loads only hash-valid P2-5j receipts, preserves all four placements and their uncertainty rather than passing a winner alone, and carries the no-speedup/"
+      },
+      {
+        "blob": "ca11f6ca98c9839b18183c00ab5f57b0ee618207",
+        "line": 10,
+        "path": "scripts/kernel_rnd/autokernel/test_placement_context.py",
+        "text": "from scripts.kernel_rnd.autokernel import placement_context as C"
+      }
+    ],
+    "reward_monitor": [
+      {
+        "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+        "line": 235,
+        "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+        "text": "| `controller/reward_monitor.py` | 453 | no | C6 monitor adapter: binds campaign/candidate traces and the whole journal tree to a predeclared monitor panel, requires awareness plus reasoning visibility, and reports sensi"
+      },
+      {
+        "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+        "line": 362,
+        "path": "scripts/kernel_rnd/autokernel/README.md",
+        "text": "| `controller/reward_monitor.py` | **C6 sabotage/sandbagging monitor contract (off campaign path).** Compiles the named threat model with monitor-awareness and reasoning visibility mandatory, binds every reasoning trace "
+      },
+      {
+        "blob": "b542cad3d2b969e2d3fc398753263b327e6dd44e",
+        "line": 6,
+        "path": "scripts/kernel_rnd/autokernel/controller/test_reward_monitor.py",
+        "text": "from . import reward_monitor as M"
+      }
+    ],
+    "substrate": [
+      {
+        "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+        "line": 148,
+        "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+        "text": "| `substrate.py` | 340 | no | validated planning facts; it reads checked-in measured/datasheet receipts before proposal construction and never joins the mutation/build path |"
+      },
+      {
+        "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+        "line": 384,
+        "path": "scripts/kernel_rnd/autokernel/README.md",
+        "text": "| `substrate.py` | Validates the checked-in MI210 compute/bandwidth/PCIe/NUMA facts, preserves measured and datasheet bases separately, re-derives both roofline ridges, and builds exact-quant diagnostic surfaces. Cross-v"
+      },
+      {
+        "blob": "7def34ddda478da16b084d56bb0870ec1ac8aa1e",
+        "line": 5,
+        "path": "scripts/kernel_rnd/autokernel/test_substrate.py",
+        "text": "from . import substrate as F"
+      }
+    ],
+    "turn_productivity": [
+      {
+        "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+        "line": 139,
+        "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+        "text": "| `turn_productivity.py` | 481 | no | AK-PT-1/AK-X-6 archive reducer; it consumes completed refine-turn records and may only withhold future search advancement, so campaign #1 must not give it live rank or mutation autho"
+      },
+      {
+        "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+        "line": 395,
+        "path": "scripts/kernel_rnd/autokernel/README.md",
+        "text": "| `turn_productivity.py` | **AK-PT-1 / AK-X-6.** Immutable per-refine-turn `(turn, task, correct?, speedup)` records, mechanically derived rescued/persistent classes, and a campaign-calibration-derived e-process rule. It"
+      },
+      {
+        "blob": "41ef4549745baa6087531b9d0e036285dd146ac0",
+        "line": 8,
+        "path": "scripts/kernel_rnd/autokernel/test_turn_productivity.py",
+        "text": "from scripts.kernel_rnd.autokernel import turn_productivity as P"
+      },
+      {
+        "blob": "cec9575a87141502ff8d40b4e62dbe0199940a6d",
+        "line": 32,
+        "path": "scripts/kernel_rnd/autokernel/turn_productivity.py",
+        "text": "PRODUCTIVITY_MODULE_ID = \"autokernel.turn_productivity/v1\""
+      }
+    ]
+  },
+  "focused_findings": [
+    {
+      "candidate": "scripts/kernel_rnd/autokernel/evaluator/baseline_honesty.py",
+      "disposition": "retain; task text cannot justify removal without a reviewed explicit caller/test/data change.",
+      "finding": "The exact runner imports recipes and execution modules but not baseline_honesty; its paired test is the sole direct Python importer found. The runner task and active handoff establish related output contract only."
+    },
+    {
+      "candidate": "scripts/kernel_rnd/autokernel/placement_context.py",
+      "disposition": "retain source/test and preserve no-selection/no-activation authority.",
+      "finding": "The module imports scripts.benchmark.autokernel_p2_5j_receipt; its paired test calls load_placement_context. No dynamic/CLI consumer was found; README and active GPU-serving handoff describe the observation-only bridge."
+    },
+    {
+      "candidate": "scripts/kernel_rnd/autokernel/turn_productivity.py",
+      "disposition": "retain; source integration/adapter changes would be a separate authored task, not evidence of deadness.",
+      "finding": "PRODUCTIVITY_MODULE_ID is declared and serialized by its own module; repository search finds no separate registry/adapter consumer of that exact ID. The paired test, README and FOOTPRINT preserve the public contract."
+    },
+    {
+      "candidate": "scripts/kernel_rnd/autokernel/substrate.py",
+      "disposition": "retain the adjacent source/data/test unit.",
+      "finding": "Loads adjacent substrate_facts.json using Path(__file__).with_name. Registry YAML references only unrelated prose/bulk evidence substrate; no exact substrate.py or substrate_facts.json module/data consumer there."
+    },
+    {
+      "candidate": "scripts/kernel_rnd/autokernel/controller/gpu_hot_residency_runner.py",
+      "disposition": "HOLD/retain pending actual campaign selector closure.",
+      "finding": "No separate production importer found; paired test and active autokernel-concurrent-target-coordination handoff document the seam and ownership boundary."
+    },
+    {
+      "candidate": "scripts/kernel_rnd/autokernel/controller/reward_monitor.py",
+      "disposition": "HOLD/retain; off-path is an authority constraint, not deadness.",
+      "finding": "No separate production importer found; paired test, controller package off-path note, README C6 contract and active rocm-verify-profile-backend handoff preserve the seam."
+    }
+  ],
+  "guards": [
+    {
+      "blob": "a675f6e875e9777796101abba070fa58f0d19ccd",
+      "git_mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/test_campaign_footprint.py",
+      "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+    },
+    {
+      "blob": "f263bfd71c8b48d1433ec0da3b3984dc65ea6be3",
+      "git_mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/test_readme.py",
+      "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+    },
+    {
+      "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+      "git_mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+      "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+    }
+  ],
+  "research_commit": "f770a52514f3193db44268d61da86f1235122a20",
+  "root_capture_inputs": [
+    {
+      "blob": "2b801e005523fa1930d1a19b90d1e7f4b1c684b8",
+      "git_mode": "100644",
+      "path": "scripts/ci/ni08_c5_policy_path_capture.py",
+      "referenced_lines": [
+        {
+          "line": 22,
+          "text": "\"scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py\","
+        },
+        {
+          "line": 58,
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.py\","
+        },
+        {
+          "line": 59,
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.json\","
+        }
+      ],
+      "repo_commit": "1b2c0c0aa959e162d492ba367ce15b36074033eb"
+    },
+    {
+      "blob": "ed11bc52e942092fec69b49a0a598512cb2146cd",
+      "git_mode": "100644",
+      "path": "scripts/ci/ni08_c5_policy_path_expected_cases.json",
+      "referenced_lines": [
+        {
+          "line": 60,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 64,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 68,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 72,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 76,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 80,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 84,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 88,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 92,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 96,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 100,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 104,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 108,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 112,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 122,
+          "text": "\"scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py\": \"43defaae36cb08189c670ca5cad9b9522f143c3631bd9ed6d40127b99ec42ee8\","
+        }
+      ],
+      "repo_commit": "1b2c0c0aa959e162d492ba367ce15b36074033eb"
+    },
+    {
+      "blob": "c0c8b6ceefab24f08ef4185fffc839203fcbc135",
+      "git_mode": "100644",
+      "path": "scripts/ci/ni08_c5_seed_map_capture.py",
+      "referenced_lines": [
+        {
+          "line": 22,
+          "text": "\"scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py\","
+        },
+        {
+          "line": 46,
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.py\","
+        },
+        {
+          "line": 47,
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.json\","
+        }
+      ],
+      "repo_commit": "1b2c0c0aa959e162d492ba367ce15b36074033eb"
+    },
+    {
+      "blob": "4be79facc39bee3416fa17de04bd9be4c522c2fb",
+      "git_mode": "100644",
+      "path": "scripts/ci/ni08_c5_seed_map_expected_cases.json",
+      "referenced_lines": [
+        {
+          "line": 56,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 60,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 64,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 68,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 72,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest\","
+        },
+        {
+          "line": 76,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 80,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 84,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 88,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 92,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 96,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 100,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 104,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 108,
+          "text": "\"classname\": \"scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest\","
+        },
+        {
+          "line": 118,
+          "text": "\"scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py\": \"43defaae36cb08189c670ca5cad9b9522f143c3631bd9ed6d40127b99ec42ee8\","
+        }
+      ],
+      "repo_commit": "1b2c0c0aa959e162d492ba367ce15b36074033eb"
+    }
+  ],
+  "root_commit": "1b2c0c0aa959e162d492ba367ce15b36074033eb",
+  "root_source_readset_search": {
+    "result": "No candidate module file path occurs in the ROOT JSON source-readset manifests. The two C5 expected-case manifests bind the paired C5 test blob; their C5 capture scripts explicitly read the provider, paired test and adjacent JSON (see root_capture_inputs).",
+    "scope": "scripts/ci/*.json at ROOT pin; exact candidate basename.py tokens, static only",
+    "unrelated_substring_hits": [
+      {
+        "line": 7420,
+        "path": "scripts/ci/ap_me1_me3_source_readset.json",
+        "text": "tests/unit/test_dashboard_substrate.py"
+      },
+      {
+        "line": 5961,
+        "path": "scripts/ci/ni08_sw5_sw6_scg_source_readset.json",
+        "text": "tests/unit/test_dashboard_substrate.py"
+      }
+    ]
+  },
+  "rows": [
+    {
+      "adjacent_data": {
+        "blob": "9f56a7cbcd12af914ea04355c5a497ac48be5707",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/c5_rocm_oracle.json",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate": {
+        "blob": "48ea76a6a1a140129e9581d5c6ae424d3f8f1cb0",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/c5_rocm_oracle.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 146,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `c5_rocm_oracle.py` | 592 | no | C5 offline correctness-provider contract; it re-attests pinned source bytes, stages an unconditional no-timing driver, and reduces raw trace bytes without gaining inaugural campaign exe"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 377,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `c5_rocm_oracle.py` | **C5 offline ROCm correctness contract (not on the inaugural execution graph).** Re-attests the pinned port and exact 193-workload population, stages an unconditional pre-timing correctness driver"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 516,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "The separate `c5_rocm_oracle.py` provider remains deliberately outside the"
+        },
+        {
+          "blob": "48ea76a6a1a140129e9581d5c6ae424d3f8f1cb0",
+          "line": 236,
+          "path": "scripts/kernel_rnd/autokernel/c5_rocm_oracle.py",
+          "text": "return Path(__file__).with_name(\"c5_rocm_oracle.json\")"
+        },
+        {
+          "blob": "358013c090b3c9b5445d2198b4b216be50bd33bb",
+          "line": 13,
+          "path": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py",
+          "text": "from . import c5_rocm_oracle as C"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "361de6bad25b8da72dcbcefe93074aefe979161d",
+          "line": 919,
+          "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+          "text": "`c5_rocm_oracle.json`; the requested joined field remained open at that checkpoint."
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 77,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`c5_rocm_oracle.json`). Deletion MUST regenerate `FOOTPRINT.md` in the same commit"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 85,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "are live): `c5_rocm_oracle` \u00b7 `controller/completed_campaign_adapter` \u00b7"
+        },
+        {
+          "blob": "2b801e005523fa1930d1a19b90d1e7f4b1c684b8",
+          "line": 22,
+          "path": "scripts/ci/ni08_c5_policy_path_capture.py",
+          "text": "\"scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py\","
+        },
+        {
+          "blob": "2b801e005523fa1930d1a19b90d1e7f4b1c684b8",
+          "line": 58,
+          "path": "scripts/ci/ni08_c5_policy_path_capture.py",
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.py\","
+        },
+        {
+          "blob": "2b801e005523fa1930d1a19b90d1e7f4b1c684b8",
+          "line": 59,
+          "path": "scripts/ci/ni08_c5_policy_path_capture.py",
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.json\","
+        },
+        {
+          "blob": "c0c8b6ceefab24f08ef4185fffc839203fcbc135",
+          "line": 22,
+          "path": "scripts/ci/ni08_c5_seed_map_capture.py",
+          "text": "\"scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py\","
+        },
+        {
+          "blob": "c0c8b6ceefab24f08ef4185fffc839203fcbc135",
+          "line": 46,
+          "path": "scripts/ci/ni08_c5_seed_map_capture.py",
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.py\","
+        },
+        {
+          "blob": "c0c8b6ceefab24f08ef4185fffc839203fcbc135",
+          "line": 47,
+          "path": "scripts/ci/ni08_c5_seed_map_capture.py",
+          "text": "\"scripts/kernel_rnd/autokernel/c5_rocm_oracle.json\","
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 13,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 18,
+          "target": "re"
+        },
+        {
+          "kind": "import",
+          "line": 19,
+          "target": "subprocess"
+        },
+        {
+          "kind": "from",
+          "line": 20,
+          "target": "collections.abc"
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 22,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 23,
+          "target": "types"
+        },
+        {
+          "kind": "from",
+          "line": 24,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 26,
+          "target": "."
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 236,
+          "text": "return Path(__file__).with_name(\"c5_rocm_oracle.json\")"
+        }
+      ],
+      "paired_test": {
+        "blob": "358013c090b3c9b5445d2198b4b216be50bd33bb",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / data-coupled ROOT capture input"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "928f51faeec207bfdc75ace9e4553e691a997cf2",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/controller/completed_campaign_adapter.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 210,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `controller/completed_campaign_adapter.py` | 105 | no | strict live-journal-to-sequencer join; banks only event-bound dispatch/mechanism-confirmed wins above floor and MDE and launches nothing |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 355,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `controller/completed_campaign_adapter.py` | **Live journal\u2192lean sequencer join (off campaign path).** Projects one clean completed campaign into `CampaignRun`; a KEEP becomes banked only when journaled passing T0/T1 d"
+        },
+        {
+          "blob": "b79edd73aa59a61e196171b7101d178bc5687444",
+          "line": 17,
+          "path": "scripts/kernel_rnd/autokernel/controller/test_completed_campaign_adapter.py",
+          "text": "from . import completed_campaign_adapter as A"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 85,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "are live): `c5_rocm_oracle` \u00b7 `controller/completed_campaign_adapter` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 9,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "target": "copy"
+        },
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 13,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 15,
+          "target": ".."
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": "..evaluator"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "."
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "b79edd73aa59a61e196171b7101d178bc5687444",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/controller/test_completed_campaign_adapter.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / sequencer edge"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "b350b66a4a1387b0b8a6223eced14a22eaf63d6f",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/controller/gpu_hot_residency_runner.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "531f6060cc58d0d18b4a25468900a20ff1e07a67",
+          "line": 8,
+          "path": "scripts/kernel_rnd/autokernel/controller/test_gpu_hot_residency_runner.py",
+          "text": "from . import gpu_hot_residency_runner as H"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "9479607c98f16e86b0070e164a841756b5b9c016",
+          "line": 55,
+          "path": "handoffs/active/autokernel-concurrent-target-coordination.md",
+          "text": "| `controller/gpu_hot_residency_runner.py` and `gpu_load_admission.py` | Cold serialized/overlap admission and exact persistent-session reuse | Loader window is released after positive residency proof. Preserve device ow"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 86,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`controller/gpu_hot_residency_runner` \u00b7 `controller/reward_monitor` \u00b7 `evaluator/baseline_honesty` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 9,
+          "target": "__future__"
+        },
+        {
+          "kind": "from",
+          "line": 11,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 14,
+          "target": "..execution"
+        },
+        {
+          "kind": "from",
+          "line": 15,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": ".split_runtime_verifier"
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "531f6060cc58d0d18b4a25468900a20ff1e07a67",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/controller/test_gpu_hot_residency_runner.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / active ownership handoff; no production importer found"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "47579dab21354ddaf85a593d5231beb423906df4",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/controller/reward_monitor.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 235,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `controller/reward_monitor.py` | 453 | no | C6 monitor adapter: binds campaign/candidate traces and the whole journal tree to a predeclared monitor panel, requires awareness plus reasoning visibility, and reports sensi"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 362,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `controller/reward_monitor.py` | **C6 sabotage/sandbagging monitor contract (off campaign path).** Compiles the named threat model with monitor-awareness and reasoning visibility mandatory, binds every reasoning trace "
+        },
+        {
+          "blob": "b542cad3d2b969e2d3fc398753263b327e6dd44e",
+          "line": 6,
+          "path": "scripts/kernel_rnd/autokernel/controller/test_reward_monitor.py",
+          "text": "from . import reward_monitor as M"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "4ba4139bb92bb7c06aa754067ccfd9443cf47620",
+          "line": 50,
+          "path": "artifacts/audit/read-certification-tranche4-20260812.md",
+          "text": "**rocm-verify (19)**: L156/160/162/164/166/168 (C6 monitor design \u2192 `reward_monitor.py`"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 86,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`controller/gpu_hot_residency_runner` \u00b7 `controller/reward_monitor` \u00b7 `evaluator/baseline_honesty` \u00b7"
+        },
+        {
+          "blob": "8a745e9da5b8eb94bf7f2244d3dd65157d0e9131",
+          "line": 330,
+          "path": "handoffs/active/rocm-verify-profile-backend.md",
+          "text": "`controller/reward_monitor.py` binds the complete evaluated variant set and exactly one selected row. Best-path-only transcripts"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 8,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "target": "re"
+        },
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 13,
+          "target": "statistics"
+        },
+        {
+          "kind": "from",
+          "line": 14,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": ".."
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": ".."
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "b542cad3d2b969e2d3fc398753263b327e6dd44e",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/controller/test_reward_monitor.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / intentionally off-path C6 contract"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "75c07b10754b20f55cbdca76b51e29096462849c",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/baseline_honesty.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "66d6ef34ad885270381097a9efd4f8a76af9c261",
+          "line": 146,
+          "path": "scripts/benchmark/run_autokernel_cpu_baseline_honesty.py",
+          "text": "holder_label=\"run_autokernel_cpu_baseline_honesty.py\","
+        },
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 173,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evaluator/baseline_honesty.py` | 186 | no | AK-BH-4 exact-surface strongest-provider selector; it rejects AUTO and cross-surface transfer before a campaign can claim an honest floor |"
+        },
+        {
+          "blob": "f8a44d1e49770bb351fb41536e608828d4657892",
+          "line": 8,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_baseline_honesty.py",
+          "text": "from . import baseline_honesty as B"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "4ba4139bb92bb7c06aa754067ccfd9443cf47620",
+          "line": 37,
+          "path": "artifacts/audit/read-certification-tranche4-20260812.md",
+          "text": "(`baseline_honesty.py`, `historical_tasks.py` et al.) \u2014 recheck after that session lands."
+        },
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 4995,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "`scripts/benchmark/run_autokernel_cpu_baseline_honesty.py`."
+        },
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 4997,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "`evaluator/baseline_honesty.py` requires both rocBLAS and hipBLASLt observations for one identical"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 86,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`controller/gpu_hot_residency_runner` \u00b7 `controller/reward_monitor` \u00b7 `evaluator/baseline_honesty` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 2,
+          "target": "__future__"
+        },
+        {
+          "kind": "from",
+          "line": 4,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 5,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 7,
+          "target": ".."
+        },
+        {
+          "kind": "from",
+          "line": 8,
+          "target": "..execution"
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "f8a44d1e49770bb351fb41536e608828d4657892",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_baseline_honesty.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "paired-test-only direct import; runner output contract is related but does not call module"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "5eca67ae2996a08b85548c38bb080c55d4be3baa",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 178,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evaluator/c3_apex_runner.py` | 1,222 | no | INF-48 exact Apex mapping seam: binds one reviewed gfx90a k228 trace or the ordered branch-aware k175 composite plus governed tensor/source/model/toolchain identities, and r"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 382,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `evaluator/c3_apex_runner.py` + `evaluator/c3_apex_mapping_audit.v1.json` | **INF-48 exact Apex mapping seam.** Mapping v2 requires one reviewed gfx90a k228 trace or the strict ordered, branch-aware, multi-stream eight"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 545,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "the absent unrelated SGLang tree. `c3_apex_runner.py` instead validates the"
+        },
+        {
+          "blob": "ad8724616b51acdff5ee445ef0f674ca75b4b8a0",
+          "line": 15,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_apex_runner.py",
+          "text": "from scripts.kernel_rnd.autokernel.evaluator import c3_apex_runner as A"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 87,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`evaluator/c3_apex_runner` \u00b7 `evaluator/c3_epyc_capture_provider` \u00b7 `evaluator/c3_epyc_compiler` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [
+        {
+          "kind": "import_module",
+          "line": 1127,
+          "target": [
+            "kernel_tracing.runner"
+          ]
+        }
+      ],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 19,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 21,
+          "target": "ast"
+        },
+        {
+          "kind": "import",
+          "line": 22,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 23,
+          "target": "importlib"
+        },
+        {
+          "kind": "import",
+          "line": 24,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 25,
+          "target": "os"
+        },
+        {
+          "kind": "from",
+          "line": 26,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 27,
+          "target": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 28,
+          "target": "re"
+        },
+        {
+          "kind": "import",
+          "line": 29,
+          "target": "subprocess"
+        },
+        {
+          "kind": "import",
+          "line": 30,
+          "target": "sys"
+        },
+        {
+          "kind": "from",
+          "line": 31,
+          "target": "typing"
+        },
+        {
+          "kind": "import",
+          "line": 33,
+          "target": "yaml"
+        },
+        {
+          "kind": "from",
+          "line": 35,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 36,
+          "target": "."
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 62,
+          "text": "APEX_REGISTRY_RELATIVE = Path(\"pipeline/kernel_tracing/supported_kernels.yaml\")"
+        },
+        {
+          "line": 64,
+          "text": "MISSING_MAPPING_ARTIFACT = \"c3_apex_case_mapping.v2.json\""
+        },
+        {
+          "line": 65,
+          "text": "DEFAULT_MAPPING_AUDIT = Path(__file__).with_name(\"c3_apex_mapping_audit.v1.json\")"
+        },
+        {
+          "line": 67,
+          "text": "\"trace_result.json\","
+        },
+        {
+          "line": 68,
+          "text": "\"workload_ranges.json\","
+        },
+        {
+          "line": 69,
+          "text": "\"patched_files/patch_manifest.json\","
+        },
+        {
+          "line": 1164,
+          "text": "trace = _read_json(paths[\"trace_result.json\"], \"trace result\")"
+        },
+        {
+          "line": 1169,
+          "text": "ranges = _read_json(paths[\"workload_ranges.json\"], \"workload ranges\")"
+        },
+        {
+          "line": 1173,
+          "text": "patch = _read_json(paths[\"patched_files/patch_manifest.json\"], \"patch manifest\")"
+        }
+      ],
+      "paired_test": {
+        "blob": "ad8724616b51acdff5ee445ef0f674ca75b4b8a0",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_apex_runner.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / dynamic compiler entrypoint"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "f1cbda6bd7b09dc01808e6d7e933fde0405582da",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_capture_provider.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 159,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 177,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 177,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evaluator/c3_epyc_capture_provider.py` | 178 | no | INF-48 tracked real-model provider protocol; admits only clean, hash-bound exact-case/model hooks returning ordered ROCm tensors and emits a typed missing-hook refus"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 381,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `evaluator/c3_epyc_capture_provider.py` | **INF-48 real-model provider adapter.** Implements the tracked `--epyc-c3-tensor-capture-v1` protocol and accepts only a clean-commit, hash-bound hook manifest for the exact ca"
+        },
+        {
+          "blob": "7b2af786b185a88af2f2cf1b35c6238672067d10",
+          "line": 562,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_tensor_capture.py",
+          "text": "from . import c3_epyc_capture_provider"
+        },
+        {
+          "blob": "83123b044bb075685240b55c381897e59ad213b5",
+          "line": 9,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_capture_provider.py",
+          "text": "from scripts.kernel_rnd.autokernel.evaluator import c3_epyc_capture_provider as P"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 87,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`evaluator/c3_apex_runner` \u00b7 `evaluator/c3_epyc_capture_provider` \u00b7 `evaluator/c3_epyc_compiler` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 10,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "importlib.util"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "subprocess"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "target": "sys"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 19,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": "scripts.kernel_rnd.autokernel.evaluator"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 141,
+          "text": "(output_root / \"captured_tensor_manifest.json\").write_text("
+        }
+      ],
+      "paired_test": {
+        "blob": "83123b044bb075685240b55c381897e59ad213b5",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_capture_provider.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / conditional producer-ID runtime import"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "878f4fb7a59ae99c6959e578e315c2032b142bd8",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_compiler.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 490,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 515,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 175,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evaluator/c3_epyc_compiler.py` | 519 | no | INF-48 offline JSON plan/receipt compiler; it is the callable controller/backend seam but cannot launch captures, benchmarks, builds, patches, inference, or promotion |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 379,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `evaluator/c3_epyc_compiler.py` | **INF-48 controller/backend JSON seam.** Emits a source-hash-bound three-case plan and compiles only hash-bound vendor, candidate, correctness, integrity, capture, integration, and who"
+        },
+        {
+          "blob": "12a26769211cee5a67ddd02bdfee9f2a04a13f81",
+          "line": 13,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_compiler.py",
+          "text": "from . import c3_epyc_compiler as P"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 87,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`evaluator/c3_apex_runner` \u00b7 `evaluator/c3_epyc_capture_provider` \u00b7 `evaluator/c3_epyc_compiler` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 8,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "sys"
+        },
+        {
+          "kind": "from",
+          "line": 15,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 19,
+          "target": ".."
+        },
+        {
+          "kind": "from",
+          "line": 20,
+          "target": "."
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 44,
+          "text": "\"outputs\": [\"ordered per-component trace_result.json\","
+        },
+        {
+          "line": 45,
+          "text": "\"ordered per-component workload_ranges.json\","
+        },
+        {
+          "line": 46,
+          "text": "\"ordered per-component patched_files/patch_manifest.json\"],"
+        },
+        {
+          "line": 75,
+          "text": "\"outputs\": [\"captured_tensor_manifest.json\"],"
+        },
+        {
+          "line": 173,
+          "text": "\"compiler_source_sha256\": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),"
+        }
+      ],
+      "paired_test": {
+        "blob": "12a26769211cee5a67ddd02bdfee9f2a04a13f81",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_compiler.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "CLI + dynamic Apex entrypoint"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "44887ad1fbfd3362b6331fb5af25a2fa01fc3ee6",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_suite.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 174,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evaluator/c3_epyc_suite.py` | 754 | no | INF-48 offline C3/C5 contract reducer; it binds EPYC op cases to exact vendor evidence and a captured-workload whole-model exit without launch, mutation, release, or promotion "
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 378,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `evaluator/c3_epyc_suite.py` | **INF-48 C3/C5 exit contract.** Selects hash-bound attention and MoE C5 cases plus an explicitly EPYC-native Q4_K dequant case; requires exact captured-tensor surfaces, vendor rather than"
+        },
+        {
+          "blob": "5eca67ae2996a08b85548c38bb080c55d4be3baa",
+          "line": 35,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py",
+          "text": "from . import c3_epyc_suite as c3"
+        },
+        {
+          "blob": "878f4fb7a59ae99c6959e578e315c2032b142bd8",
+          "line": 20,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_compiler.py",
+          "text": "from . import c3_epyc_suite as c3"
+        },
+        {
+          "blob": "7b2af786b185a88af2f2cf1b35c6238672067d10",
+          "line": 33,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_tensor_capture.py",
+          "text": "from . import c3_epyc_suite as c3"
+        },
+        {
+          "blob": "12a26769211cee5a67ddd02bdfee9f2a04a13f81",
+          "line": 14,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_compiler.py",
+          "text": "from . import c3_epyc_suite as C"
+        },
+        {
+          "blob": "4c5c105157c394c60d40e9c06b7bcee8a52729f6",
+          "line": 9,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_suite.py",
+          "text": "from . import c3_epyc_suite as C"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "6ffc956794934b879d2969d438c17bce5954beb5",
+          "line": 52,
+          "path": "artifacts/operator/runbook-autokernel-at-promotion-20260922.md",
+          "text": "| 15 | Hardcoded production constants | `autokernel/campaign.py:1148-1150`; `autokernel/evaluator/c3_epyc_suite.py:45-47`; `autokernel/controller/discovery_deployment.py:28-30` | All pin v9 (`0db32c06e\u2026`, `production-con"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 88,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`evaluator/c3_epyc_suite` \u00b7 `evaluator/c3_epyc_tensor_capture` \u00b7 `evidence_path_rehearsal` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "ast"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "math"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 19,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": ".."
+        },
+        {
+          "kind": "from",
+          "line": 22,
+          "target": "..execution"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 65,
+          "text": "#:   artifacts/operator/ratify_v9_final_freeze_20260811.json"
+        },
+        {
+          "line": 71,
+          "text": "\"artifacts/operator/ratify_v10_final_freeze_20260922.json\")"
+        },
+        {
+          "line": 765,
+          "text": "tree = ast.parse(Path(__file__).read_text(encoding=\"utf-8\"))"
+        }
+      ],
+      "paired_test": {
+        "blob": "4c5c105157c394c60d40e9c06b7bcee8a52729f6",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_suite.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / shared C3 contract"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "7b2af786b185a88af2f2cf1b35c6238672067d10",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_tensor_capture.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 1320,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 1424,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 176,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evaluator/c3_epyc_tensor_capture.py` | 1,425 | no | INF-48 live inventory/request compiler and governed real-model producer; dual authorization, canonical unexpired claims, descendant KFD/device sampling, bounded tear"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 380,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `evaluator/c3_epyc_tensor_capture.py` | **INF-48 governed EPYC tensor producer.** Its CLI produces and re-probes a hash-bound live ROCm logical/BDF inventory, compiles an exact request manifest without inference, then "
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 579,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "Before either mapping may launch, `c3_epyc_tensor_capture.py` must publish a"
+        },
+        {
+          "blob": "5eca67ae2996a08b85548c38bb080c55d4be3baa",
+          "line": 36,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py",
+          "text": "from . import c3_epyc_tensor_capture as tensor_capture"
+        },
+        {
+          "blob": "f1cbda6bd7b09dc01808e6d7e933fde0405582da",
+          "line": 21,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/c3_epyc_capture_provider.py",
+          "text": "from scripts.kernel_rnd.autokernel.evaluator import c3_epyc_tensor_capture as capture"
+        },
+        {
+          "blob": "ad8724616b51acdff5ee445ef0f674ca75b4b8a0",
+          "line": 16,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_apex_runner.py",
+          "text": "from scripts.kernel_rnd.autokernel.evaluator import c3_epyc_tensor_capture as T"
+        },
+        {
+          "blob": "4118710dfe17cc0d9eb50c97262b688dfa60c9cb",
+          "line": 12,
+          "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_tensor_capture.py",
+          "text": "from scripts.kernel_rnd.autokernel.evaluator import c3_epyc_tensor_capture as T"
+        },
+        {
+          "blob": "88216ae94493fa068bb728001befc7dabeb213ff",
+          "line": 27,
+          "path": "scripts/kernel_rnd/autokernel/loop/cpu_profile.py",
+          "text": "from ..evaluator import c3_epyc_tensor_capture as tensor_capture"
+        },
+        {
+          "blob": "af3b1ccfdf416aff59a8008245729e401212f9eb",
+          "line": 9,
+          "path": "scripts/kernel_rnd/autokernel/loop/native_model_preparation.py",
+          "text": "from ..evaluator import c3_epyc_tensor_capture as tensor_capture"
+        },
+        {
+          "blob": "c4eda213265b4751c17b9dc1fa6b563bb9f19077",
+          "line": 23,
+          "path": "scripts/kernel_rnd/autokernel/loop/native_scientific_witness.py",
+          "text": "from ..evaluator import c3_epyc_tensor_capture as tensor_capture"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "0a6f3f66195b920bf3d795d36f1f051958c52c1a",
+          "line": 83,
+          "path": "artifacts/autokernel/glm53-expected-inventory-20260909/test_expected_inventory.py",
+          "text": "from scripts.kernel_rnd.autokernel.evaluator import c3_epyc_tensor_capture as owner"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 88,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`evaluator/c3_epyc_suite` \u00b7 `evaluator/c3_epyc_tensor_capture` \u00b7 `evidence_path_rehearsal` \u00b7"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 279,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "MAIN independently reopens Research01d36835 and confirms three noncandidate loop imports of `evaluator/c3_epyc_tensor_capture.py`, the compiler's dynamic Apex entry, and the documented least-commitment producer family. R"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 10,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "os"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "target": "re"
+        },
+        {
+          "kind": "import",
+          "line": 18,
+          "target": "signal"
+        },
+        {
+          "kind": "import",
+          "line": 19,
+          "target": "socket"
+        },
+        {
+          "kind": "import",
+          "line": 20,
+          "target": "stat"
+        },
+        {
+          "kind": "import",
+          "line": 21,
+          "target": "subprocess"
+        },
+        {
+          "kind": "import",
+          "line": 22,
+          "target": "threading"
+        },
+        {
+          "kind": "import",
+          "line": 23,
+          "target": "time"
+        },
+        {
+          "kind": "from",
+          "line": 24,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 25,
+          "target": "datetime"
+        },
+        {
+          "kind": "from",
+          "line": 26,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 27,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 29,
+          "target": ".."
+        },
+        {
+          "kind": "from",
+          "line": 30,
+          "target": "..execution"
+        },
+        {
+          "kind": "from",
+          "line": 31,
+          "target": "..execution"
+        },
+        {
+          "kind": "from",
+          "line": 32,
+          "target": "..resource"
+        },
+        {
+          "kind": "from",
+          "line": 33,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 562,
+          "target": "."
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 705,
+          "text": "manifest_path = Path(plan.output_root) / \"captured_tensor_manifest.json\""
+        },
+        {
+          "line": 1034,
+          "text": "receipt_path = Path(plan.output_root) / \"tensor_capture_receipt.json\""
+        },
+        {
+          "line": 1073,
+          "text": "claim_slice_path = plan.output_root / \"resource_claim_window.json\""
+        },
+        {
+          "line": 1076,
+          "text": "plan.output_root / \"tensor_capture_receipt.json\","
+        },
+        {
+          "line": 1077,
+          "text": "_sha256_file(plan.output_root / \"tensor_capture_receipt.json\"),"
+        },
+        {
+          "line": 1401,
+          "text": "window_path = plan.output_root / \"tensor_capture_window_receipt.json\""
+        }
+      ],
+      "paired_test": {
+        "blob": "4118710dfe17cc0d9eb50c97262b688dfa60c9cb",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evaluator/test_c3_epyc_tensor_capture.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / active loop and ROOT expected-inventory consumers"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "1c27dfbfb3c11f26c2b9751b001adbe9073f7046",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/evidence_path_rehearsal.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 197,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 278,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 138,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `evidence_path_rehearsal.py` | 279 | no | architecture-only CLI proving proposal/capture/control/AP-WM/champion/readiness/T3/package producer coverage; emits no empirical evidence or live authority |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 249,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "`evidence_path_rehearsal.py` is a no-inference dress rehearsal. It derives the"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 393,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `evidence_path_rehearsal.py` | No-inference control/proposal/AP-WM/champion/readiness/T3/package producer inventory; architecture fixture only. |"
+        },
+        {
+          "blob": "3d005dc1212fa28eb1eef57e9007bb5d4c0ee48d",
+          "line": 11,
+          "path": "scripts/kernel_rnd/autokernel/test_evidence_path_rehearsal.py",
+          "text": "from . import evidence_path_rehearsal as R"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 3286,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "durable campaign roots. `evidence_path_rehearsal.py` resolves those exact files, proves one changed"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 88,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`evaluator/c3_epyc_suite` \u00b7 `evaluator/c3_epyc_tensor_capture` \u00b7 `evidence_path_rehearsal` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 10,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "contextlib"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "io"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "json"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 20,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 22,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 23,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 24,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 25,
+          "target": ".controller"
+        },
+        {
+          "kind": "from",
+          "line": 26,
+          "target": ".release"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 184,
+          "text": "\"projection-plan.json --output-dir /absolute/new/output\","
+        },
+        {
+          "line": 186,
+          "text": "\"/absolute/new/output/archive.json --projection-result \""
+        },
+        {
+          "line": 187,
+          "text": "\"/absolute/new/output/projection-result.json --output ap-wm-report.json\","
+        }
+      ],
+      "paired_test": {
+        "blob": "3d005dc1212fa28eb1eef57e9007bb5d4c0ee48d",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_evidence_path_rehearsal.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "CLI / campaign-root harness"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "c7642de97b0ff5b97669a5404c51f2f2bf4cb689",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/heldout_bound_pipeline.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 331,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 353,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "1059022b13312dde4529af4f470099222b6d7433",
+          "line": 9,
+          "path": "scripts/kernel_rnd/autokernel/test_heldout_bound_pipeline.py",
+          "text": "from . import heldout_bound_pipeline as H"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 711,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "`heldout_bound_pipeline.py` lack FOOTPRINT.md rows from later AutoKernel commits) \u2014 reproduced on a"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 89,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`heldout_bound_pipeline` \u00b7 `least_commitment_archive_builder` \u00b7 `least_commitment_receipts` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "copy"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "target": "os"
+        },
+        {
+          "kind": "import",
+          "line": 18,
+          "target": "shutil"
+        },
+        {
+          "kind": "import",
+          "line": 19,
+          "target": "tempfile"
+        },
+        {
+          "kind": "from",
+          "line": 20,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 23,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 24,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 25,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 26,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 27,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 28,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 29,
+          "target": ".least_commitment_capture"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 142,
+          "text": "proposal = _load(root / \"proposal-v4.json\", \"prepared proposal\")"
+        },
+        {
+          "line": 155,
+          "text": "\"--proposal-manifest\", str(root / \"proposal-v4.json\"),"
+        },
+        {
+          "line": 157,
+          "text": "str(root / \"least-commitment-capture-plan.json\"),"
+        },
+        {
+          "line": 160,
+          "text": "\"--physical-envelope\", str(root / \"physical-envelope.json\"),"
+        },
+        {
+          "line": 226,
+          "text": "receipt_path = staging / f\"{role}-heldout.json\""
+        },
+        {
+          "line": 233,
+          "text": "if _load(output / \"proposal-v4.json\", f\"published {role} proposal\") \\"
+        },
+        {
+          "line": 264,
+          "text": "\"path\": str(roots[role] / \"least-commitment-heldout-outcome.json\"),"
+        },
+        {
+          "line": 266,
+          "text": "roots[role] / \"least-commitment-heldout-outcome.json\"),"
+        },
+        {
+          "line": 313,
+          "text": "archive_record = _load(output / \"archive.json\", \"projected archive\")"
+        }
+      ],
+      "paired_test": {
+        "blob": "1059022b13312dde4529af4f470099222b6d7433",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_heldout_bound_pipeline.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / retained helper graph"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "9480d3e0ac3177f51fa50f5592dc8d70b00ddc0c",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/least_commitment_archive_builder.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 416,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 428,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 133,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `least_commitment_archive_builder.py` | 429 | no | AK-WM-2a strict real-record projection; it reads hash-bound completed campaign evidence into an observe-only archive and cannot launch, rank, mutate, or promote |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 146,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "`least_commitment_archive_builder.py` is the strict AK-WM-2a join in front of that"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 388,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `least_commitment_archive_builder.py` | The AK-WM-2a real-record join: resolves proposal-v3 or proposal-v4 and clean terminal journal events, verifies hash-bound diagnostic/outcome/matched-one-factor receipts, and emit"
+        },
+        {
+          "blob": "63f5649e779189fc43a4d229fc447462b2fa31c4",
+          "line": 49,
+          "path": "scripts/kernel_rnd/autokernel/least_commitment_receipts.py",
+          "text": "import least_commitment_archive_builder as builder"
+        },
+        {
+          "blob": "18553e76e6e4969142043aee7657b40dabd48dc1",
+          "line": 10,
+          "path": "scripts/kernel_rnd/autokernel/test_least_commitment_archive_builder.py",
+          "text": "from . import least_commitment_archive_builder as B"
+        },
+        {
+          "blob": "b2b4cc48b31de3b01af9e1852db88a4311cda465",
+          "line": 21,
+          "path": "scripts/kernel_rnd/autokernel/test_least_commitment_receipts.py",
+          "text": "from . import least_commitment_archive_builder as B"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 3267,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "`least_commitment_archive_builder.py`. It accepts only real proposal-v3/v4 events joined to clean"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 89,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`heldout_bound_pipeline` \u00b7 `least_commitment_archive_builder` \u00b7 `least_commitment_receipts` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "json"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 19,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 22,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 23,
+          "target": ".controller"
+        },
+        {
+          "kind": "from",
+          "line": 24,
+          "target": ".evaluator"
+        },
+        {
+          "kind": "import",
+          "line": 26,
+          "target": "journal"
+        },
+        {
+          "kind": "import",
+          "line": 27,
+          "target": "offline_least_commitment"
+        },
+        {
+          "kind": "import",
+          "line": 28,
+          "target": "schemas"
+        },
+        {
+          "kind": "from",
+          "line": 29,
+          "target": "controller"
+        },
+        {
+          "kind": "from",
+          "line": 30,
+          "target": "evaluator"
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "18553e76e6e4969142043aee7657b40dabd48dc1",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_least_commitment_archive_builder.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / imported producer family"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "63f5649e779189fc43a4d229fc447462b2fa31c4",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/least_commitment_receipts.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 1175,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 1220,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 134,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `least_commitment_receipts.py` | 836 | no | AK-WM-2a governed offline producer; it copies only explicitly SHA-pinned journal fields into receipts, rejects torn completed journals, and cannot launch, rank, mutate, or pr"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 216,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "`least_commitment_receipts.py` is the governed producer for those three receipt"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 229,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "python3 -m scripts.kernel_rnd.autokernel.least_commitment_receipts \\"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 233,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "python3 -m scripts.kernel_rnd.autokernel.least_commitment_receipts \\"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 391,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `least_commitment_receipts.py` | The AK-WM-2a governed receipt producer: derives SHA-pinned journal bindings from distinct clean completed campaigns, proves the sole matched intervention factor, rejects non-real eviden"
+        },
+        {
+          "blob": "928f51faeec207bfdc75ace9e4553e691a997cf2",
+          "line": 15,
+          "path": "scripts/kernel_rnd/autokernel/controller/completed_campaign_adapter.py",
+          "text": "from .. import least_commitment_receipts, schemas"
+        },
+        {
+          "blob": "1c27dfbfb3c11f26c2b9751b001adbe9073f7046",
+          "line": 22,
+          "path": "scripts/kernel_rnd/autokernel/evidence_path_rehearsal.py",
+          "text": "from . import least_commitment_receipts as receipts"
+        },
+        {
+          "blob": "1c27dfbfb3c11f26c2b9751b001adbe9073f7046",
+          "line": 183,
+          "path": "scripts/kernel_rnd/autokernel/evidence_path_rehearsal.py",
+          "text": "\"python3 -m scripts.kernel_rnd.autokernel.least_commitment_receipts \""
+        },
+        {
+          "blob": "c7642de97b0ff5b97669a5404c51f2f2bf4cb689",
+          "line": 24,
+          "path": "scripts/kernel_rnd/autokernel/heldout_bound_pipeline.py",
+          "text": "from . import least_commitment_receipts as receipts"
+        },
+        {
+          "blob": "b2b4cc48b31de3b01af9e1852db88a4311cda465",
+          "line": 23,
+          "path": "scripts/kernel_rnd/autokernel/test_least_commitment_receipts.py",
+          "text": "from . import least_commitment_receipts as P"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 3273,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "research `e8de8bfa` adds the non-test `least_commitment_receipts.py` projection path for"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 89,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`heldout_bound_pipeline` \u00b7 `least_commitment_archive_builder` \u00b7 `least_commitment_receipts` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 26,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 28,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 29,
+          "target": "copy"
+        },
+        {
+          "kind": "import",
+          "line": 30,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 31,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 32,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 33,
+          "target": "os"
+        },
+        {
+          "kind": "import",
+          "line": 34,
+          "target": "re"
+        },
+        {
+          "kind": "import",
+          "line": 35,
+          "target": "shutil"
+        },
+        {
+          "kind": "import",
+          "line": 36,
+          "target": "tempfile"
+        },
+        {
+          "kind": "from",
+          "line": 37,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 38,
+          "target": "datetime"
+        },
+        {
+          "kind": "from",
+          "line": 39,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 40,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 43,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 44,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 45,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 46,
+          "target": ".evaluator"
+        },
+        {
+          "kind": "import",
+          "line": 48,
+          "target": "journal"
+        },
+        {
+          "kind": "import",
+          "line": 49,
+          "target": "least_commitment_archive_builder"
+        },
+        {
+          "kind": "import",
+          "line": 50,
+          "target": "least_commitment_capture"
+        },
+        {
+          "kind": "import",
+          "line": 51,
+          "target": "offline_least_commitment"
+        },
+        {
+          "kind": "import",
+          "line": 52,
+          "target": "schemas"
+        },
+        {
+          "kind": "from",
+          "line": 53,
+          "target": "evaluator"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 369,
+          "text": "path = (root / \"least-commitment-capture-plan.json\").resolve()"
+        },
+        {
+          "line": 1082,
+          "text": "diagnostic_path = row_dir / \"diagnostics.json\""
+        },
+        {
+          "line": 1083,
+          "text": "outcome_path = row_dir / \"outcome.json\""
+        },
+        {
+          "line": 1101,
+          "text": "match_path = row_dir / \"matched-intervention.json\""
+        },
+        {
+          "line": 1146,
+          "text": "manifest_path = staging / \"archive-build-manifest.json\""
+        },
+        {
+          "line": 1147,
+          "text": "archive_path = staging / \"archive.json\""
+        },
+        {
+          "line": 1164,
+          "text": "_write_json_exclusive(staging / \"projection-result.json\", result)"
+        }
+      ],
+      "paired_test": {
+        "blob": "b2b4cc48b31de3b01af9e1852db88a4311cda465",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_least_commitment_receipts.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / imported and README-protected integration"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "53b95b87be5ff7012eb0b8fda30d6f446a1b06a0",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/offline_least_commitment.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 439,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 464,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 132,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `offline_least_commitment.py` | 465 | no | AP-WM-1 observe-only archive analysis; importing an offline hypothesis diagnostic into the mutation/build path would give it accidental live authority |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 140,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "`offline_least_commitment.py` implements the AP-WM-1 shadow protocol over matched,"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 236,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "python3 -m scripts.kernel_rnd.autokernel.offline_least_commitment \\"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 387,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `offline_least_commitment.py` | The observe-only AK-WM-2/AP-WM-1 diagnostic over matched completed-proposal archives; it has no live selection authority. |"
+        },
+        {
+          "blob": "1c27dfbfb3c11f26c2b9751b001adbe9073f7046",
+          "line": 23,
+          "path": "scripts/kernel_rnd/autokernel/evidence_path_rehearsal.py",
+          "text": "from . import offline_least_commitment as offline"
+        },
+        {
+          "blob": "1c27dfbfb3c11f26c2b9751b001adbe9073f7046",
+          "line": 185,
+          "path": "scripts/kernel_rnd/autokernel/evidence_path_rehearsal.py",
+          "text": "\"python3 -m scripts.kernel_rnd.autokernel.offline_least_commitment \""
+        },
+        {
+          "blob": "c7642de97b0ff5b97669a5404c51f2f2bf4cb689",
+          "line": 25,
+          "path": "scripts/kernel_rnd/autokernel/heldout_bound_pipeline.py",
+          "text": "from . import offline_least_commitment as offline"
+        },
+        {
+          "blob": "9480d3e0ac3177f51fa50f5592dc8d70b00ddc0c",
+          "line": 27,
+          "path": "scripts/kernel_rnd/autokernel/least_commitment_archive_builder.py",
+          "text": "import offline_least_commitment as protocol"
+        },
+        {
+          "blob": "63f5649e779189fc43a4d229fc447462b2fa31c4",
+          "line": 45,
+          "path": "scripts/kernel_rnd/autokernel/least_commitment_receipts.py",
+          "text": "from . import offline_least_commitment as protocol, schemas"
+        },
+        {
+          "blob": "63f5649e779189fc43a4d229fc447462b2fa31c4",
+          "line": 51,
+          "path": "scripts/kernel_rnd/autokernel/least_commitment_receipts.py",
+          "text": "import offline_least_commitment as protocol"
+        },
+        {
+          "blob": "1059022b13312dde4529af4f470099222b6d7433",
+          "line": 10,
+          "path": "scripts/kernel_rnd/autokernel/test_heldout_bound_pipeline.py",
+          "text": "from . import offline_least_commitment as L"
+        },
+        {
+          "blob": "18553e76e6e4969142043aee7657b40dabd48dc1",
+          "line": 11,
+          "path": "scripts/kernel_rnd/autokernel/test_least_commitment_archive_builder.py",
+          "text": "from . import offline_least_commitment as L"
+        },
+        {
+          "blob": "b2b4cc48b31de3b01af9e1852db88a4311cda465",
+          "line": 24,
+          "path": "scripts/kernel_rnd/autokernel/test_least_commitment_receipts.py",
+          "text": "from . import offline_least_commitment as L"
+        },
+        {
+          "blob": "190ee3199409491a2d68ee2933aa1c116a988086",
+          "line": 13,
+          "path": "scripts/kernel_rnd/autokernel/test_offline_least_commitment.py",
+          "text": "from . import offline_least_commitment as L"
+        },
+        {
+          "blob": "190ee3199409491a2d68ee2933aa1c116a988086",
+          "line": 16,
+          "path": "scripts/kernel_rnd/autokernel/test_offline_least_commitment.py",
+          "text": "import offline_least_commitment as L"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 90,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`offline_least_commitment` \u00b7 `placement_context` \u00b7 `prepare_iqk_matched_pair` \u00b7 `substrate` \u00b7"
+        },
+        {
+          "blob": "f219cca15bae4e1d9f7852fd46202638b09efe38",
+          "line": 571,
+          "path": "handoffs/active/autopilot-continuous-optimization.md",
+          "text": "`epyc-inference-research/scripts/kernel_rnd/autokernel/offline_least_commitment.py` validates one common"
+        },
+        {
+          "blob": "b762450c6a2d4a0c2262c2d1c78fb9e2e04e9383",
+          "line": 3117,
+          "path": "handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+          "text": "`epyc-inference-research/scripts/kernel_rnd/autokernel/offline_least_commitment.py` validates one common"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 9,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "math"
+        },
+        {
+          "kind": "from",
+          "line": 15,
+          "target": "collections"
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "statistics"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": "."
+        },
+        {
+          "kind": "import",
+          "line": 23,
+          "target": "schemas"
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "190ee3199409491a2d68ee2933aa1c116a988086",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_offline_least_commitment.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / imported protocol"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "db425ea3c1d8788c9a6f01fc790e014fd48b3419",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/placement_context.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 143,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `placement_context.py` | 216 | no | P2-5j hash-bound placement-belief projection; it exposes observation-only topology context to authoring without gaining selection, ranking, launch, or promotion authority |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 374,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `placement_context.py` | **AutoKernel G1 host-topology bridge.** Loads only hash-valid P2-5j receipts, preserves all four placements and their uncertainty rather than passing a winner alone, and carries the no-speedup/"
+        },
+        {
+          "blob": "ca11f6ca98c9839b18183c00ab5f57b0ee618207",
+          "line": 10,
+          "path": "scripts/kernel_rnd/autokernel/test_placement_context.py",
+          "text": "from scripts.kernel_rnd.autokernel import placement_context as C"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 931,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "the checkout Python lacks `pytest` for `test_placement_context.py`."
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 90,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`offline_least_commitment` \u00b7 `placement_context` \u00b7 `prepare_iqk_matched_pair` \u00b7 `substrate` \u00b7"
+        },
+        {
+          "blob": "e90203e1ea00427b4e6a91911b15f7a2f3762876",
+          "line": 177,
+          "path": "handoffs/active/gpu-serving-tie-in-program.md",
+          "text": "observation-only receipt. `placement_context.py` preserves every arm and the no-selection,"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 8,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 10,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 11,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 12,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "re"
+        },
+        {
+          "kind": "from",
+          "line": 14,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 15,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "scripts.benchmark"
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "ca11f6ca98c9839b18183c00ab5f57b0ee618207",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_placement_context.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / observation-only placement bridge"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "12d19118b097c470929f1c3732dfd955e0738d78",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/prepare_iqk_matched_pair.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [
+        {
+          "kind": "callable",
+          "line": 679,
+          "target": "main"
+        },
+        {
+          "kind": "module_guard",
+          "line": 693,
+          "target": "__name__ == '__main__'"
+        }
+      ],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 137,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `prepare_iqk_matched_pair.py` | 388 | no | deterministic pre-claim intervention/control publisher; derives shared seeds and the complete one-factor frame, validates both capture plans, and explicitly cannot infer, buil"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 176,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "`prepare_iqk_matched_pair.py` is the single regeneration entry point for a"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 204,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "python3 -m scripts.kernel_rnd.autokernel.prepare_iqk_matched_pair \\"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 392,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `prepare_iqk_matched_pair.py` | Deterministically publishes the intervention/control proposals, shared matched frame, physical envelopes, and v2 capture plans into two new directories without executing either campaign."
+        },
+        {
+          "blob": "c7642de97b0ff5b97669a5404c51f2f2bf4cb689",
+          "line": 26,
+          "path": "scripts/kernel_rnd/autokernel/heldout_bound_pipeline.py",
+          "text": "from . import prepare_iqk_matched_pair as pair"
+        },
+        {
+          "blob": "6da36f2b6845dada0a5d77535ddb476f36a66f86",
+          "line": 12,
+          "path": "scripts/kernel_rnd/autokernel/test_prepare_iqk_matched_pair.py",
+          "text": "from . import prepare_iqk_matched_pair as P"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 3328,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "adds `prepare_iqk_matched_pair.py`, a repository-relative deterministic producer that accepts one"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 90,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`offline_least_commitment` \u00b7 `placement_context` \u00b7 `prepare_iqk_matched_pair` \u00b7 `substrate` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 11,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 13,
+          "target": "argparse"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "copy"
+        },
+        {
+          "kind": "import",
+          "line": 15,
+          "target": "hashlib"
+        },
+        {
+          "kind": "import",
+          "line": 16,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 17,
+          "target": "os"
+        },
+        {
+          "kind": "from",
+          "line": 18,
+          "target": "pathlib"
+        },
+        {
+          "kind": "import",
+          "line": 19,
+          "target": "shutil"
+        },
+        {
+          "kind": "import",
+          "line": 20,
+          "target": "tempfile"
+        },
+        {
+          "kind": "from",
+          "line": 21,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 23,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 24,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 25,
+          "target": ".execution"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 37,
+          "text": "HYPOTHESIS_STORE_FILENAME = \"hypotheses.json\""
+        },
+        {
+          "line": 253,
+          "text": "calibration_path / \"campaign_declaration.json\","
+        },
+        {
+          "line": 290,
+          "text": "source_path = calibration_path / \"runtime-source-label.json\""
+        },
+        {
+          "line": 322,
+          "text": "diagnostic_path = staging / \"least-commitment-diagnostic-source.json\""
+        },
+        {
+          "line": 323,
+          "text": "heldout_path = staging / \"least-commitment-heldout-outcome.json\""
+        },
+        {
+          "line": 381,
+          "text": "published / \"least-commitment-diagnostic-source.json\")"
+        },
+        {
+          "line": 384,
+          "text": "published / \"least-commitment-heldout-outcome.json\")"
+        },
+        {
+          "line": 386,
+          "text": "_write_json(staging / \"least-commitment-capture-plan.json\", durable)"
+        },
+        {
+          "line": 575,
+          "text": "_write_json(staged[\"intervention\"] / \"proposal-v4.json\", proposal)"
+        },
+        {
+          "line": 576,
+          "text": "_write_json(staged[\"control\"] / \"proposal-v4.json\", control)"
+        },
+        {
+          "line": 604,
+          "text": "_write_json(staged[name] / \"physical-envelope.json\","
+        },
+        {
+          "line": 642,
+          "text": "\"producer_sha256\": _sha256(Path(__file__).resolve()),"
+        }
+      ],
+      "paired_test": {
+        "blob": "6da36f2b6845dada0a5d77535ddb476f36a66f86",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_prepare_iqk_matched_pair.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "IMPORTED / heldout pipeline dependency"
+    },
+    {
+      "adjacent_data": {
+        "blob": "dc0b0d0c58bac937ddfa88e4c7cce5f66a7b3d10",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/substrate_facts.json",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate": {
+        "blob": "dd8e9ddaee5ddd4738b9a9828ab0ed44ef502950",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/substrate.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 148,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `substrate.py` | 340 | no | validated planning facts; it reads checked-in measured/datasheet receipts before proposal construction and never joins the mutation/build path |"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 384,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `substrate.py` | Validates the checked-in MI210 compute/bandwidth/PCIe/NUMA facts, preserves measured and datasheet bases separately, re-derives both roofline ridges, and builds exact-quant diagnostic surfaces. Cross-v"
+        },
+        {
+          "blob": "7def34ddda478da16b084d56bb0870ec1ac8aa1e",
+          "line": 5,
+          "path": "scripts/kernel_rnd/autokernel/test_substrate.py",
+          "text": "from . import substrate as F"
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "04f46f71402704dd87bc99f680f66c2386f917ca",
+          "line": 366,
+          "path": "docs/reviews/gpu-linkage-retro-certification-20260812.md",
+          "text": "`substrate_facts.json` / `substrate.py`)."
+        },
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 3016,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "basis-preserving ridges, crossover points, receipt paths, and the MI210 NUMA identity; `substrate.py`"
+        },
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 4860,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "\u2705 2026-08-11 \u2014 `substrate.py` now constructs exact-quant observations and comparisons, refuses"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 90,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`offline_least_commitment` \u00b7 `placement_context` \u00b7 `prepare_iqk_matched_pair` \u00b7 `substrate` \u00b7"
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 3,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 5,
+          "target": "json"
+        },
+        {
+          "kind": "import",
+          "line": 6,
+          "target": "math"
+        },
+        {
+          "kind": "import",
+          "line": 7,
+          "target": "re"
+        },
+        {
+          "kind": "from",
+          "line": 8,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 9,
+          "target": "pathlib"
+        },
+        {
+          "kind": "from",
+          "line": 10,
+          "target": "typing"
+        }
+      ],
+      "outgoing_path_config_references": [
+        {
+          "line": 338,
+          "text": "source = Path(path) if path is not None else Path(__file__).with_name("
+        },
+        {
+          "line": 339,
+          "text": "\"substrate_facts.json\")"
+        }
+      ],
+      "paired_test": {
+        "blob": "7def34ddda478da16b084d56bb0870ec1ac8aa1e",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_substrate.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "DATA-COUPLED / adjacent JSON and paired test"
+    },
+    {
+      "adjacent_data": null,
+      "candidate": {
+        "blob": "cec9575a87141502ff8d40b4e62dbe0199940a6d",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/turn_productivity.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "candidate_entrypoints": [],
+      "concrete_action": "Preserve tracked candidate and exact paired test; preserve adjacent data with its loader. No deletion authorization. Finish unresolved CLI/dynamic/readset/HOLD checks before any separate deletion proposal.",
+      "disposition": "retain",
+      "incoming_research": [
+        {
+          "blob": "476add64bf11a3158a9f704bc30eaa63caa2636d",
+          "line": 139,
+          "path": "scripts/kernel_rnd/autokernel/FOOTPRINT.md",
+          "text": "| `turn_productivity.py` | 481 | no | AK-PT-1/AK-X-6 archive reducer; it consumes completed refine-turn records and may only withhold future search advancement, so campaign #1 must not give it live rank or mutation autho"
+        },
+        {
+          "blob": "25ecf960455a04cdbd2bf473b08e9a8a0125cd45",
+          "line": 395,
+          "path": "scripts/kernel_rnd/autokernel/README.md",
+          "text": "| `turn_productivity.py` | **AK-PT-1 / AK-X-6.** Immutable per-refine-turn `(turn, task, correct?, speedup)` records, mechanically derived rescued/persistent classes, and a campaign-calibration-derived e-process rule. It"
+        },
+        {
+          "blob": "41ef4549745baa6087531b9d0e036285dd146ac0",
+          "line": 8,
+          "path": "scripts/kernel_rnd/autokernel/test_turn_productivity.py",
+          "text": "from scripts.kernel_rnd.autokernel import turn_productivity as P"
+        },
+        {
+          "blob": "cec9575a87141502ff8d40b4e62dbe0199940a6d",
+          "line": 32,
+          "path": "scripts/kernel_rnd/autokernel/turn_productivity.py",
+          "text": "PRODUCTIVITY_MODULE_ID = \"autokernel.turn_productivity/v1\""
+        }
+      ],
+      "incoming_root": [
+        {
+          "blob": "361de6bad25b8da72dcbcefe93074aefe979161d",
+          "line": 764,
+          "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+          "text": "exactly where it is still paying. \u2705 2026-08-11 \u2014 AutoKernel `turn_productivity.py` implements an"
+        },
+        {
+          "blob": "47d32f6206a62aea512daa65f4a9daa1c0eab627",
+          "line": 5096,
+          "path": "handoffs/active/autokernel-research-loop.md",
+          "text": "`turn_productivity.py` consumes the immutable AK-PT-1 archive, binds the contribution floor before"
+        },
+        {
+          "blob": "1cd3adefb16ba129c03d6349db63a9e9bed9fb79",
+          "line": 91,
+          "path": "handoffs/active/autokernel-restart-and-strip.md",
+          "text": "`turn_productivity`."
+        }
+      ],
+      "outgoing_dynamic_imports": [],
+      "outgoing_imports": [
+        {
+          "kind": "from",
+          "line": 12,
+          "target": "__future__"
+        },
+        {
+          "kind": "import",
+          "line": 14,
+          "target": "math"
+        },
+        {
+          "kind": "from",
+          "line": 15,
+          "target": "dataclasses"
+        },
+        {
+          "kind": "from",
+          "line": 16,
+          "target": "datetime"
+        },
+        {
+          "kind": "from",
+          "line": 17,
+          "target": "typing"
+        },
+        {
+          "kind": "from",
+          "line": 19,
+          "target": "."
+        },
+        {
+          "kind": "from",
+          "line": 20,
+          "target": ".evaluator"
+        }
+      ],
+      "outgoing_path_config_references": [],
+      "paired_test": {
+        "blob": "41ef4549745baa6087531b9d0e036285dd146ac0",
+        "git_mode": "100644",
+        "path": "scripts/kernel_rnd/autokernel/test_turn_productivity.py",
+        "repo_commit": "f770a52514f3193db44268d61da86f1235122a20"
+      },
+      "source_state": "HOLD / public module ID, no separate consumer found"
+    }
+  ],
+  "schema": "epyc.inf64.exact-reference-disposition/v1",
+  "scope": "Git text + prior source/AST review; no raw run data, traces, TOC or ClaimTuples"
+}

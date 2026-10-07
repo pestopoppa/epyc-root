@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **142 completed scoped tasks: 82 existing checkbox flips and 60 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **143 completed scoped tasks: 83 existing checkbox flips and 60 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -372,3 +372,8 @@ Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN m
 ## Pin-report bounded source acceptance — 2026-10-07
 
 [Original29/29 and exact two-file source](../../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md) complete the bounded source child plus existing prospective conformance task. MAIN authenticates1682unchanged archive members/24readset and10unique nested native seals (8TRUE/1FALSE/1NULL);13receipt path copies are dereferenced aliases, with11symlinks/91emptydirectories archive limits preserved explicitly. Actual scan/pin-health parent remains open. NI08=142 (82existing+60children).
+
+
+## INF64 pinned disposition manifest — 2026-10-07
+
+[MAIN completed source-manifest review](../../artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md) authenticates19candidate/test units,2data,3guards,64unique blobs and145incomingrefs plus exact outgoing AST/path/CLI evidence. All19retain; no deletion qualified or campaign interference. One existingmanifest checkbox closes:NI08=143 (83existing+60children). Native source controls and future owner-reviewed disposal remain independent.
