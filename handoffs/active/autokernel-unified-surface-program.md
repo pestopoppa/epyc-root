@@ -4029,3 +4029,18 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     death and a complete empty census, retaining failure state. The `runtime_driver_fix` owner is
     correcting source and runner together; new review/runtime validation remain pending. ROOT
     approval is absent; no runtime gate, activation, asset apply, deployment, or performance claim.
+
+## Runtime gates and live monitor — 2026-10-07 09:55Z
+
+- Consolidated attempt `consolidated-20261007T084059Z-r1`: lifecycle-control subgate passed (raw wait rc 0); final cleanup receipt verifies original-owner retention through child cleanup and an empty verified tree. The focused stage timed out at 1,800s (`popen_wait_returncode=-15`, effective rc 124). Source remained unchanged; consolidated runtime validation remains incomplete.
+- Environment-roster import-fix r2: 6 passed / 2 failed; both failures are generated-serving cases rejecting serving affinity beyond `resources.cpu_logical`. `validation.json` is explicitly `validated: false`.
+- OP80 candidate `896ea0697c207aa8e7ea4d352bd8353485a8ff28`: the three-module Python gate passed 82 tests in 11.07s at 08:19:15Z under a successful native claim. Pre/post receipts agree on HEAD, 11 source hashes and review hash. ROOT accepted the proposal hash `217e0c729bcef82bff2b0198ddc14c493cf96d22578f0a47cc985617afaa89f6`; the accepted receipt is `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/current-gate-checkpoint/OP80_PYTHON_ACCEPTED.json` and covers the three-module Python gate only. No global gate PASS is asserted. This records no landing/FF, live mask capture, activation or production result.
+- At 09:55Z, a fresh authenticated one-shot watcher snapshot reports both DS41 and Q38FN paused (desired and observed, revision 1), with no active target and completed batches. Target workers are gone; serial-run parent children and observe-only watchdogs remain. The continuous event file last changed at 09:25Z, so this one-shot refreshed monitoring without printing or persisting tokens. The accepted pause window remains open and is expected to auto-resume near 10:09Z. Continue observing across that edge. The GPU :8083 stack-owner route/grant remains absent; no activation is recorded.
+
+## CPU lane resume and current source status — 2026-10-07 10:09Z
+
+The original maintenance wrapper returned 0; its closure receipt verified same-owner DS41/Q38FN desired and observed `running` at revision 2 before writing the original `EC_AK_CODEX_HARNESS_20261007T064638Z_WINDOW_DONE`. A fresh authenticated watcher snapshot at 10:09:27Z showed DS41 starting and Q38FN running, both with live target workers. No control command or signal was issued for the read-only check.
+
+DS41's +16.157% `runtime-arm-omp-places-48-sib` result is an adopted local runtime recipe arm, not a source champion advance or production claim. Current accumulator candidate `3376147f8ae03a62ae595aee6cfbab5e4d5928b9` still records champion-of-record `b0ba1d42783585e15b0a0464715fd1fb6a808888`, `measurement_validity=stale_runtime_recipe_epoch`, and no serving gate. Revalidate prior comparisons under the selected OMP placement recipe before promotion. See the DS41 store `loop-status.json` and `experiments.md` linked in the 10:07Z progress entry.
+
+The environment-roster geometry correction is committed as `aae9c15fbd7155781e5101313a61f3de9bb05f73`; source is accepted and tests/runtime remain unrun. The consolidated timeout correction is assembled at `05badcaa9cb0dce6c710e43e7316e5ff883d5e13` across 62 files; independent review is pending, no full gate was launched, and the 11 isolated controls belong to the earlier proposed correction only.
