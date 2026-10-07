@@ -164,3 +164,8 @@ Completed since the previous published checkpoint: EVL30 source-clock task, UTM-
 Full wrap-up is an operator-invoked checkpoint, not a session stop or exhaustion claim. MAIN owns canonical docs, indices, wiki synthesis, checks and publication; workers continue private implementation/audits. Separate exact source changes, synthetic proof and real model/runtime acceptance. Pending operator packages retain their prior decisions and do not block independent work.
 
 The full checkpoint additionally closes NI08-WIKI-WARNING, one diagnostic-only CLI fix. Since ROOT3178, eight checked task boundaries (four existing+four scoped companions) are recorded, with three new prospective unchecked tasks. Current NI08 cumulative scoped tally113=62existing+51children. No pruning candidate passed the generated conservative screen; no handoff or index row is removed. All original custody and ongoing private source/recipe branches remain retained for their declared continuing purposes.
+
+
+## CS14 original manifest correction — 2026-10-07
+
+[MAIN static correction](../../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the voice/controller native verifier because eight existing import inputs were absent from the original map. Original276/276, its declared463-input custody and shared Judged/Located observation remain unchanged; full import closure requires a prospective corrected capture. Source implementation items remain complete. NI08 now112 scoped completions (62existing+50children), reduced by one reopened verifier; no whole-backlog exhaustion is claimed.

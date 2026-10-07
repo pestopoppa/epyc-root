@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **113 completed scoped tasks: 62 existing checkbox flips and 51 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **112 completed scoped tasks: 62 existing checkbox flips and 50 newly completed scoped subtasks; one prior verifier was reopened for incomplete import provenance, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -292,3 +292,8 @@ Completed since the previous published checkpoint: EVL30 source-clock task, UTM-
 Full wrap-up is an operator-invoked checkpoint, not a session stop or exhaustion claim. MAIN owns canonical docs, indices, wiki synthesis, checks and publication; workers continue private implementation/audits. Separate exact source changes, synthetic proof and real model/runtime acceptance. Pending operator packages retain their prior decisions and do not block independent work.
 
 The full checkpoint also corrected a stale mtime warning on healthy content-hash scans: a diagnostic-only single-caller change, with default and explicit --since scans checked. NI08 now113 (62existing+51children). No watermark algorithm changed.
+
+
+## CS14 original manifest correction — 2026-10-07
+
+[MAIN static correction](../../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the voice/controller native verifier because eight existing import inputs were absent from the original map. Original276/276, its declared463-input custody and shared Judged/Located observation remain unchanged; full import closure requires a prospective corrected capture. Source implementation items remain complete. NI08 now112 scoped completions (62existing+50children), reduced by one reopened verifier; no whole-backlog exhaustion is claimed.
