@@ -418,7 +418,7 @@ def verify_runtime() -> None:
         raise RuntimeError("reviewed Linux x86_64 runtime differs")
     if Path(sys.prefix).resolve() != Path(os.environ["RUNNER_TEMP"]).resolve() / "scg-test-logdir-venv" or sys.prefix == sys.base_prefix:
         raise RuntimeError("reviewed isolated venv prefix differs")
-    if platform.python_version() != PYTHON_VERSION:
+    if platform.python_implementation() != "CPython" or platform.python_version() != PYTHON_VERSION:
         raise RuntimeError(f"Python runtime differs from pin: {platform.python_version()}")
     for package, expected in LOCKED_PACKAGES.items():
         actual = importlib.metadata.version(package)
