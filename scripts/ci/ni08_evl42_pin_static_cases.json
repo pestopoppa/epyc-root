@@ -1,0 +1,16 @@
+{
+  "schema": "ni08.evl42.pin_static_cases/v1",
+  "test_file": "scripts/benchmark/tests/test_pin_staleness.py",
+  "test_classname": "scripts.benchmark.tests.test_pin_staleness",
+  "case_count": 8,
+  "cases": [
+    "test_literal_pin_reports_current_then_stale_content",
+    "test_keyword_file_identity_arguments_are_checked",
+    "test_missing_pin_target_is_distinct_from_mismatch",
+    "test_dynamic_missing_argument_and_unpaired_pin_remain_unresolved",
+    "test_symlink_parent_outside_and_fifo_are_refused_without_following",
+    "test_replacement_during_read_is_reported_unresolved",
+    "test_inspect_tree_and_cli_exit_contract_on_tracked_synthetic_checkout",
+    "test_json_binds_checker_and_scanned_source_to_git_snapshot"
+  ]
+}
