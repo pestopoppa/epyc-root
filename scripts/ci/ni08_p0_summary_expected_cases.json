@@ -1,0 +1,16 @@
+{
+  "schema": "ni08.p0-descriptive-summary.expected-cases.v1",
+  "app_commit": "224fbf991f7b68aa6466ecbaf829a336c20d5f5c",
+  "test_file": "tests/unit/test_hs19d_p0_descriptive_summary.py",
+  "test_file_sha256": "909197ee4ff423bff5b2b0d9e2d76c541b0eb9d1be9c78f86b1aff914c74b798",
+  "source_file": "scripts/harness_p0/hs19d_p0_summary.py",
+  "source_file_sha256": "d8ddc15cf8e6e2fc21a984b8c929ab1b771282132df45fa79708518b3ae25045",
+  "cases": [
+    {"classname": "tests.unit.test_hs19d_p0_descriptive_summary", "name": "test_summary_projects_counts_without_exporting_private_detail_or_claims"},
+    {"classname": "tests.unit.test_hs19d_p0_descriptive_summary", "name": "test_missing_count_is_unknown_not_zero_and_failed_summary_is_not_promoted"},
+    {"classname": "tests.unit.test_hs19d_p0_descriptive_summary", "name": "test_pinned_source_loader_refuses_byte_drift_and_symlink"},
+    {"classname": "tests.unit.test_hs19d_p0_descriptive_summary", "name": "test_actual_pinned_root_verdict_projects_only_sanitized_counts"}
+  ],
+  "count": 4,
+  "derivation": "static AST function identities from the pinned APP test source; no project import, collection, or test execution"
+}
