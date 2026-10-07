@@ -1,0 +1,63 @@
+name: W4 real stack-change promotion gate fixture
+on:
+  push:
+    branches: [codex/ni08-w4-native-proposal-20261007]
+permissions:
+  contents: read
+jobs:
+  w4-stack-change-gate:
+    name: w4-stack-change-gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      APP_PIN: bec3263e6a83f446bf291b7dee938e326cffddfc
+      CI: 'true'
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+    steps:
+      - name: Initialize retained status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/w4-stack-change/result"
+          printf '%s\n' "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=$RUNNER_TEMP/w4-stack-change/absent-binaries/llama-server" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_PATHS_LLAMA_MTMD=$RUNNER_TEMP/w4-stack-change/absent-binaries/mtmd-cli" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_PATHS_LLAMA_SERVER=$RUNNER_TEMP/w4-stack-change/absent-binaries/llama-server-wrapper" >> "$GITHUB_ENV"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/w4-stack-change/result/status.json"
+      - name: Checkout exact recipe and ROOT carrier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          persist-credentials: false
+      - name: Checkout the exact APP source under test
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - name: Set up accepted Python patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated runner environment
+        run: python -m venv "$RUNNER_TEMP/w4-stack-change/venv"
+      - name: Capture real gate, inner outputs, outer JUnit and shared-grade receipt
+        id: capture
+        run: |
+          set +e
+          "$RUNNER_TEMP/w4-stack-change/venv/bin/python" root/scripts/ci/w4_native_capture.py "$GITHUB_WORKSPACE/app"
+          rc=$?
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/w4-stack-change/result/status.json"
+          exit "$rc"
+      - name: Preserve setup/capture status and every original fixture artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w4-stack-change-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/w4-stack-change/result/
+          if-no-files-found: error
+          retention-days: 90
