@@ -487,7 +487,17 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     assert (rec["reps"], rec["reps_basis"]) == (30, "scored:quality_denominator")
     assert len(rec["attestation"]["sha256"]) == 64
     assert rec["w6_generalization"] == w6_report
+    import measurement_record
+    before_root = measurement_record.REPO_ROOT
+    original_tuple = measurement_record.to_tuple(rec)
+    assert original_tuple.attestation_present is False
+    assert original_tuple.attestation_verified is True
     support = _support(shard, r)
+    assert measurement_record.REPO_ROOT == before_root
+    assert support["assertion"]["grade"] == {"Q": "Witnessed", "T": "Anchored"}
+    assert support["provenance"]["method"] == apj.ADAPTER_ID
+    assert any("artifact is not on disk" in reason
+               for reason in support["provenance"]["grade_reasons"])
     assert json.loads(support["assertion"]["w6_generalization_json"]) == w6_report
     _assert_real_trace_write(trace)
     _record_real_writer_custody(
@@ -501,8 +511,12 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     orig, measurement_record.REPO_ROOT = measurement_record.REPO_ROOT, tmp_path
     try:
         assert measurement_record.grade(rec)[:2] == ("Witnessed", "Attested")
+        resolved_tuple = measurement_record.to_tuple(rec)
+        assert resolved_tuple.attestation_present is True
+        assert resolved_tuple.attestation_verified is True
+        # Earlier frames retain the original resolver context; no retroactive regrading.
         assert support["assertion"]["grade"] == {
-            "Q": "Witnessed", "T": "Attested",
+            "Q": "Witnessed", "T": "Anchored",
         }
     finally:
         measurement_record.REPO_ROOT = orig
