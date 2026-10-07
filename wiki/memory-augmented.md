@@ -1183,3 +1183,7 @@ Each QScorer now snapshots the existing write-enable and match-k environment key
 ## Work-payload capture wiring
 
 The existing shared policy and completion producers carry bounded/redacted work through progress JSONL into routing/external episodic first writes. [M-11a2b source closure and existing end-to-end native case](../artifacts/ni08/m11-work-capture-source-20261007/README.md). The July28 zero-payload count is historical; current corpus prevalence and the benefit of re-distilling real trajectories remain unmeasured.
+
+### Bounded work-payload marker source correction — 2026-10-07
+
+The sanitizer now bounds the prefix and decimal metadata before trusting a truncation marker; oversized forged markers cannot bypass the cap through the idempotence path. Legitimate redaction-shortened prefixes remain idempotent. MAIN accepted [exact source and hosted41/41 controls](../artifacts/ni08/m11-work-cap-source-20261007/README.md), APP31185ca5, with unchanged original native custody and shared grade. This is synthetic source conformance, not live-population, privacy or semantic-quality evidence.

@@ -244,3 +244,5 @@ drawn distinctly, because that is the arrow AutoKernel was missing).
 - How are fuzzy-node contracts versioned when the underlying model or compiled program changes?
 
 ✅ 2026-10-06 MAIN accepted FW-2 [APP contract plus inert hub-row draft](../../artifacts/ni08/workflow-contract-design-20261006/README.md), APP `be8d46f61edcf5cb795d485b1a8171c562ee4971`, and FW-3 [official-documentation survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md). No actual registry/nav/page or executor added. FW-1 runtime and VB-FW-1 prospective producer remain open.
+
+2026-10-07 MAIN source-reviewed the bounded mocked GUI/CLI example at APP `38d4ab72fe95ef7c1064d6574b3552a182023850`: explicit worker/validation/terminal edges, typed-value routing and independent refusal/budget controls. VB-FW1-MOCK-CONFORMANCE is enrolled prospectively before hosted synthetic execution. This preparation closes no checkbox. The synthetic example does not require a model call; real GUI-authored measurement runs still require the separate FW-4/VB-FW-1 write-side contract.

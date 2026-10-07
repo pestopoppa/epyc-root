@@ -93,3 +93,11 @@ MAIN accepted frozen source proposals for hosted preparation: SC42 actual Unlimi
 ## INF41 server-only fallback source accepted
 
 MAIN independently authenticated and reconstructed run37563431358 originals: five passed/zero skipped, nativeTRUE, existing Judged/Located; full2,830 Git plus3 generated input identity and fresh result custody unchanged. Exact APPee345 source merged/pushed asdcccfa1d. [Evidence](../../artifacts/ni08/inf41-s20-source-20261007/README.md) closes only INF41-S20-SOURCE/VB-INF41-S20-CONFORMANCE. Parent S-20 timing/live gate remains open; failed zero-job predecessor is retained without test credit. Two new bounded scopes bring NI08 to90 (55 preexisting task flips+35 scoped children).
+
+## FW1 mocked-example prospective source boundary
+
+MAIN reviewed the full APP `38d4ab72` mock example and enrolled its existing-native-verifier companion before execution. Actual pure decision/classifier/gate seams plus explicit mock-worker → validation → terminal/refusal paths preserve confidence-as-record-only. This is a synthetic example, not a production executor or model measurement; measurement VB-FW-1 remains open. No completion added; NI08 remains90.
+
+## Memory payload cap — MAIN acceptance
+
+[Actual source and original41/41](../../artifacts/ni08/m11-work-cap-source-20261007/README.md) close the bounded cap fix and native-verifier companion. NativeTRUE/Judged-Located, full2,835 Git+3 generated readset and complete ZIP/source/result custody independently verified; source merged/pushed APP31185ca5. No runtime or privacy warrant. **92 scoped completions:55 existing flips+37 scoped children**. FW1 mock verifier enrollment at this boundary adds no completion.
