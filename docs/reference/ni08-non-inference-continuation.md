@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **88 completed scoped tasks: 55 existing checkbox flips and 33 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **90 completed scoped tasks: 55 existing checkbox flips and 35 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -231,3 +231,7 @@ MAIN reviewed Research180a772445e2c227979998cdec9b7a50ae5aa54e against current d
 ## MAIN prospective enrollment — SC42, W4 and EVL reference correction
 
 MAIN accepted frozen source proposals for hosted preparation: SC42 actual Unlimited-OCR write-time provenance plus strict reader/roundtrip; W4 invoking-interpreter/absolute-target actual swap gate; EVL twelve stale-reference corrections across nine tracked docs. Source-table and prospective native verification companions are enrolled before capture. No checkbox is closed at this review boundary; NI08 remains88. Real ODL inference, production stack readiness and later full-gate checks remain separate evidence requirements.
+
+## INF41 server-only fallback source accepted
+
+MAIN independently authenticated and reconstructed run37563431358 originals: five passed/zero skipped, nativeTRUE, existing Judged/Located; full2,830 Git plus3 generated input identity and fresh result custody unchanged. Exact APPee345 source merged/pushed asdcccfa1d. [Evidence](../../artifacts/ni08/inf41-s20-source-20261007/README.md) closes only INF41-S20-SOURCE/VB-INF41-S20-CONFORMANCE. Parent S-20 timing/live gate remains open; failed zero-job predecessor is retained without test credit. Two new bounded scopes bring NI08 to90 (55 preexisting task flips+35 scoped children).

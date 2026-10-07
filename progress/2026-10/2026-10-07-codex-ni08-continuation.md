@@ -89,3 +89,7 @@ MAIN source-reviewed and prospectively enrolled UTM-B3 BEAM ingest metadata (iso
 ## MAIN prospective enrollment — SC42, W4 and EVL reference correction
 
 MAIN accepted frozen source proposals for hosted preparation: SC42 actual Unlimited-OCR write-time provenance plus strict reader/roundtrip; W4 invoking-interpreter/absolute-target actual swap gate; EVL twelve stale-reference corrections across nine tracked docs. Source-table and prospective native verification companions are enrolled before capture. No checkbox is closed at this review boundary; NI08 remains88. Real ODL inference, production stack readiness and later full-gate checks remain separate evidence requirements.
+
+## INF41 server-only fallback source accepted
+
+MAIN independently authenticated and reconstructed run37563431358 originals: five passed/zero skipped, nativeTRUE, existing Judged/Located; full2,830 Git plus3 generated input identity and fresh result custody unchanged. Exact APPee345 source merged/pushed asdcccfa1d. [Evidence](../../artifacts/ni08/inf41-s20-source-20261007/README.md) closes only INF41-S20-SOURCE/VB-INF41-S20-CONFORMANCE. Parent S-20 timing/live gate remains open; failed zero-job predecessor is retained without test credit. Two new bounded scopes bring NI08 to90 (55 preexisting task flips+35 scoped children).

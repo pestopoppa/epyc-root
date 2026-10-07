@@ -1,0 +1,13 @@
+{
+  "previous_head": "753074aac7a17a67835604cd886112859127abeb",
+  "main_before": "753074aac7a17a67835604cd886112859127abeb",
+  "source": "ee345dc972ef4e798841aad41a141f649482ed35",
+  "commit": "dcccfa1d6f64b99334811aa5b18e7c45476bbf81",
+  "paths": [
+    "src/api/routes/chat_vision.py",
+    "tests/unit/test_chat_vision.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}
