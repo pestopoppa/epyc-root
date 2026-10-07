@@ -17,3 +17,7 @@ MAIN closes W7 after title-only W3d-panel disambiguation, preserving historical 
 ## Fixed-verdict summary publication boundary
 
 MAIN original2,831member/API reviewPASS2,818Git+3contexts/exact4/4/receiptseal/unchangedsharedgrade; source224fbf normallymerged/pushedAPP92cb0197. Two pre-enrolled boundedsource tasks complete, NI08now67(45existingflips+22additions). Actual defaultROOTverdictpositive runsrequired/nohashsubstitution/no skip; sensitiveIDs/details excluded, nativeemittedcall/tap/template/joinunknown, descriptivecounts ungraded. FirstMAINreview path-label mismatch corrected againstsameimmutableoriginals; no rerun/source/receiptchange. ParentP0/frozendispatch untouched. AP62native capture andAP60/P6/W8/AUD11sourcepreparation/fullcardauditcontinue.
+
+## AP62 second original-failure review boundary
+
+MAIN [463member original review](../../artifacts/ni08/ap62-second-failure-20261007/README.md) binds449Git+3contexts/all14cases/full3318sourcecontext/seals/unchangedinputs. NativeFALSE13/14: eager document-upload route needs absent python-multipart. Complete locked API-import closure successor remains engineering work; no source acceptance/completion or host project execution. Tally67 remains; AP60 successor independently approved3442Git/115ASTcases/48versions782wheels, P6/W8 recipe corrections and full-card task audit continue.

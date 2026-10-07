@@ -1,0 +1,5 @@
+# AP62 second hosted capture — retained failure
+
+MAIN independently reopened the exact Actions API and all 463 original ZIP members for [run37551187085](https://github.com/pestopoppa/epyc-root/actions/runs/37551187085), recipe41e86f8, APP578865fb. Artifact11452093858 has SHA-256 `414ae6396fc44d6a324b3bf6c1a1bde2c1d7cf7b1b81f1e8de52711ced6746da` (3,286,504bytes). [MAIN review](MAIN-original-review.json) binds449Git inputs,3generated contexts, complete3318source-context records, all14case identities, receipt seals and unchanged original inputs.
+
+Native result is FALSE:13passed,1failed,0errors/skips. The existing request-work-payload control eagerly imports the document upload route, whose FastAPI form declaration requires the missing `python-multipart` dependency. This is a hosted recipe dependency-closure defect. It supplies no implementation acceptance, and AP62/VB companion remain open. The prior missing-FastAPI failure is retained separately. No host project execution, API/model start, new grading rule or historical warrant. A complete locked eager-import closure correction must pass MAIN source/recipe binding before another capture.

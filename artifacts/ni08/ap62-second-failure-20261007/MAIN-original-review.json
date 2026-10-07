@@ -1,0 +1,36 @@
+{
+  "reviewed_at": "2026-10-07T00:28:22.561063+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37551187085,
+  "attempt": 1,
+  "artifact": 11452093858,
+  "pins": {
+    "root": "41e86f8beaf8036a47a3eca3b3d75bb6c18440a4",
+    "app": "578865fb633d09839547a54f6bf9378b0b934dd6"
+  },
+  "zip_sha256": "414ae6396fc44d6a324b3bf6c1a1bde2c1d7cf7b1b81f1e8de52711ced6746da",
+  "zip_bytes": 3286504,
+  "members": 463,
+  "readset_count": 452,
+  "git_inputs": 449,
+  "contexts": 3,
+  "counts": {
+    "collected": 14,
+    "error": 0,
+    "executed": 14,
+    "failure": 1,
+    "passed": 13,
+    "skipped": 0
+  },
+  "testcase_nodes": 14,
+  "native_value": false,
+  "receipt_file_sha256": "136d6805e894e2ff9c952801db8f7a25bc04a7017f03f6e109f2100aad196292",
+  "receipt_self_sha256": "32dfd9deaeaa31084b6f137ff122b4e630b7069b2b81fe6fab36f76f6dbd1a9d",
+  "shared_grade": null,
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "MEDIUM per-instance invocation-ring lock protects append/read snapshot/clear only; dispatcher outsidelock, no live API/model/concurrencyrate/deployment.",
+  "job_identity": "github_job_112566801747"
+}
