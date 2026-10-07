@@ -717,8 +717,8 @@
     },
     {
       "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_leaves_other_clients_alone",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_leaves_other_clients_alone"
+      "name": "test_guard_leaves_other_clients_alone[]",
+      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_leaves_other_clients_alone[]"
     },
     {
       "classname": "tests.unit.test_openai_client_tool_mode",
