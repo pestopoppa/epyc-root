@@ -172,8 +172,17 @@ def fetch_text(url: str, *, timeout: int = 45) -> str | None:
     return text
 
 
-def verify_source_anchor(anchor: dict, *, entry_url: str | None = None) -> tuple[bool, str]:
-    """Re-find a quote from its retained original bytes; never trust shape alone."""
+def verify_source_anchor(
+    anchor: dict,
+    *,
+    entry_url: str | None = None,
+    claim: str | None = None,
+) -> tuple[bool, str]:
+    """Re-find a quote from retained bytes and, when supplied, check claim magnitudes.
+
+    This reuses `numeric_agreement`: a claim with numbers passes if any one claim magnitude
+    appears in the quote. That is only a mismatch refusal, not full numeric or semantic entailment.
+    """
     artifact = anchor.get("source_artifact") if isinstance(anchor, dict) else None
     if not isinstance(artifact, dict):
         return False, "unknown: original artifact metadata absent"
@@ -202,6 +211,9 @@ def verify_source_anchor(anchor: dict, *, entry_url: str | None = None) -> tuple
             raise ArtifactUnavailable("quoted span is absent from the extracted original")
         if hashlib.sha256(normalized_quote(quote).encode("utf-8")).hexdigest() != anchor.get("quote_sha256"):
             raise ArtifactUnavailable("normalized quote digest does not match")
+        if claim is not None:
+            if not isinstance(claim, str) or not numeric_agreement(claim, quote):
+                raise ArtifactUnavailable("claim magnitudes are not supported by the verified quote")
     except (ArtifactUnavailable, OSError, UnicodeError, TypeError, ValueError) as exc:
         return False, f"unknown: {exc}"
     return True, "verified"

@@ -57,13 +57,19 @@ def _response(raw: bytes, *, effective_url: str = URL, media_type: str = "text/h
     return Response()
 
 
-def _anchor(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, located_by: str | None = None):
+def _anchor(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    located_by: str | None = None,
+    claim: str = "The state-recomputation kernel uses a fixed 64-wide block dimension.",
+):
     monkeypatch.setenv("EPYC_VIDYA_RAW_ANCHOR_ROOT", str(tmp_path / "private-vault"))
     raw = f"<html><body><p>{TEXT}</p></body></html>".encode()
     monkeypatch.setattr(machine_anchor.urllib.request, "urlopen", lambda *_a, **_k: _response(raw))
     extracted, artifact = machine_anchor.fetch_document(URL)
     assert artifact is not None
-    entry = {"url": URL, "key_claims": ["The state-recomputation kernel uses a fixed 64-wide block dimension."]}
+    entry = {"url": URL, "key_claims": [claim]}
     anchor = machine_anchor.anchor_entry(entry, document=extracted, source_artifact=artifact)[0]
     if located_by:
         anchor["located_by"] = located_by
@@ -77,8 +83,38 @@ def test_response_bytes_are_retained_and_reopened_by_content_identity(tmp_path, 
     assert hashlib.sha256(retained).hexdigest() == metadata["raw_sha256"]
     assert len(retained) == metadata["byte_length"]
     assert Path(metadata["relative_path"]).name == f"{metadata['raw_sha256']}.raw"
-    assert machine_anchor.verify_source_anchor(anchor, entry_url=URL) == (True, "verified")
+    claim = entry["key_claims"][0]
+    assert machine_anchor.verify_source_anchor(anchor, entry_url=URL, claim=claim) == (True, "verified")
     assert _t_level({"url": URL}, anchor) == "MachineLocated"
+
+
+def test_claim_number_must_match_the_verified_quote(tmp_path, monkeypatch):
+    entry, anchor, _root = _anchor(
+        tmp_path, monkeypatch, located_by="human",
+        claim="Throughput improves by 18 percent on the long-context benchmark.",
+    )
+    claim = "Throughput improves by 81 percent on the long-context benchmark."
+    valid, status = machine_anchor.verify_source_anchor(anchor, entry_url=URL, claim=claim)
+    assert not valid
+    assert status.startswith("unknown: claim magnitudes")
+    assert _t_level(entry, anchor, (valid, status), claim=claim) == "Located"
+    projected = _frames_for_entry(
+        dict(entry, id="intake-1234", key_claims=[claim], claim_anchors=[anchor],
+             verification="dive-verified"),
+        "2026-10-07T00:00:00Z",
+    )
+    support = next(frame for frame in projected if frame["frame_type"] == FT_SUPPORT)
+    assert support["provenance"]["anchor"]["source_verification"] == "unknown"
+
+
+def test_matching_claim_number_remains_source_verified(tmp_path, monkeypatch):
+    entry, anchor, _root = _anchor(
+        tmp_path, monkeypatch, located_by="human",
+        claim="Throughput improves by 18 percent on the long-context benchmark.",
+    )
+    claim = "Throughput improves by 18 percent on the long-context benchmark."
+    assert machine_anchor.verify_source_anchor(anchor, entry_url=URL, claim=claim) == (True, "verified")
+    assert _t_level(entry, anchor, (True, "verified"), claim=claim) == "Attested"
 
 
 def test_human_tier_requires_valid_retained_source_and_machine_tier_stays_capped(tmp_path, monkeypatch):
