@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 175 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 177 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -745,3 +745,8 @@ MAIN independently reopened all16 publication command records, successful origin
 ## Existing literature coverage task completed — 2026-10-07
 
 MAIN accepted the one-entry native projection of intake-1333#record through the existing literature adapter and owned-inode ledger lease. Exactly 13 reviewed frames were appended. Independent whole-prefix and full-fold review confirms 14,354 records with a clean chain, five new Verified/Located beliefs, no changes to existing beliefs, and claim 04 still review-required. The index record and all fourteen governance modules remain unchanged. Missing retained source-artifact anchors stay UNKNOWN; the existing shared grade remains Located. [Original custody](../../artifacts/ni08/intake1333-literature-coverage-20261007/README.md). NI08 now **175 = 110 existing checkbox closures + 65 completed scoped children**.
+
+
+## RTG-39 source/documentation checkpoint
+
+MAIN reconciled the two existing RTG-39 source/documentation tasks using the retained official v1 source. Table 6 does not establish a KL gain; Table 7 prompt results, same-task retention and OOD transfer retain their separate metrics. The inert 13-field contract separates frozen teacher target generation from trainable-student SFT and preserves actual observations. Only two administrative action strings in intake-913#record change; status, claims, dive corrections and native ledger remain unchanged. Strand Phase B, operator domain selection and P1–P5 remain gated. NI08 now **177 = 112 existing checkbox closures + 65 completed scoped children**.

@@ -1,6 +1,7 @@
 # Swarm-as-Dataset-Generator — Narrow-Domain SFT Distillation
 
 **Status**: BLOCKED STUB / gated on [`strand-rust-coder-rustevo2-verification.md`](../active/strand-rust-coder-rustevo2-verification.md) Phase B outcome
+**Scratch**: `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/rtg39-paper-capture-v1/`, `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg39-task-checkpoint-private-20261007/`, `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg39-governance-gates-private-20261007/`, `/mnt/raid0/llm/tmp/rtg39-gates-*`; original paper, review and gate custody are KEEP.
 **Created**: 2026-05-27 (from research-intake of Fortytwo Network)
 **Categories**: training_distillation, swarm_techniques, autonomous_research
 **Priority**: HIGH-conditional — promotes to HIGH the moment the RustEvo2 verification clears the GO gate; STUB-only until then.
@@ -135,29 +136,21 @@ The single largest design decision. The narrow domain governs every downstream c
 
 ## Research Intake Update — 2026-07-29 (Experience Distillation, arXiv 2607.21051)
 
-### Premise correction — this paper SUPPORTS dataset distillation
+### Premise correction — primary source reopened
 
-An earlier reading treated arXiv 2607.21051 ("Experience Distillation") as evidence *against*
-the dataset-distillation thesis. That framing was inverted. The paper's own ablations put the
-weight on the **data**, not the objective:
+The official [arXiv v1 HTML](https://arxiv.org/html/2607.21051v1) and [PDF](https://arxiv.org/pdf/2607.21051v1) are available. The earlier stage-1 retrieval failure remains historical provenance.
 
-- **Table 6** — the distillation *objective* is worth **~2pp** versus plain cross-entropy.
-- **Table 7** — a teacher **prompting** change is worth **~38pp**.
+The paper supports the narrower conclusion that construction of training targets matters. Table 6 compares sampled-token next-token prediction/cross-entropy (84.2% mean task-level ICL-normalized gain) with full-distribution KL (82.0%); the authors report no clear gain from full-distribution KL. Table 7's enhanced-teacher-reasoning prompt ablation on Detective changes ICL-normalized gain from 34.9% to 72.5% (+37.6pp) under a fixed teacher-generation budget. Table 3 reports branch packing at more than 10x lower normalized total teacher-generation/training time with similar aggregate results. These are distinct experiments and metrics.
 
-Experience Distillation is therefore SFT on a hindsight-conditioned, regenerated corpus — the same
-shape as P2→P3→P4 in this handoff, with a concrete data-construction recipe attached. It is a
-recipe source, not a refutation.
+Experience Distillation uses repeated attempts and prior experience as teacher context, preprocesses that history, and generates teacher decisions at recorded branch points. Teacher parameters are frozen for target generation; a student initialized from the same checkpoint is trained without the experience context using sampled-token NTP. A one-step branch stops at the teacher decision and makes no synthetic environment observation. Branch packing is an approximation: later targets condition on previous teacher targets, while each following observation is the one recorded after the original action.
 
-**Two qualifiers that must travel with any number lifted from this paper:**
+Keep 64.8% scoped to same-task ICL-gain retention on curated SWE; TaleSuite reports 93.4%. The separate 494-task OOD SWE pass@1 result is 4.62% to 8.84% (+4.22pp). The curated 749-task SWE set is in-house, not an available independent evaluation set. The paper reports distinct in-house base models but no parameter count, named checkpoint, accelerator, GPU-hours, or absolute compute cost. Retain UNSIZED. The method trains a student; no claim of frozen student weights or no-training feasibility is warranted.
 
-1. The headline **64.8% is same-task retention**. The out-of-distribution transfer number is
-   **+4.22pp**. Do not quote 64.8% as capability or transfer evidence.
-2. The paper is **UNSIZED**: it publishes **no model size, no GPU count and no compute figure at
-   all**. Any GPU-gated scoping built on it would rest on a guess — mark the gap explicitly rather
-   than imputing a scale.
+This is a source for experience-derived SFT, not direct evidence for RTG-39's separate swarm-generation-plus-pairwise-ranking mechanism. The Strand Phase-B gate and P1–P5 boundary stay unchanged.
 
-- [ ] Correct the premise: arXiv 2607.21051's own Table 6 shows the distillation objective is worth ~2pp vs plain cross-entropy while a teacher PROMPTING change is worth ~38pp (Table 7). Experience Distillation IS SFT on a hindsight-conditioned regenerated corpus, so this paper SUPPORTS dataset distillation with a recipe attached rather than refuting it. Carry the same-task-retention (64.8%) vs OOD-transfer (+4.22pp) distinction and the UNSIZED flag into any downstream scoping.
-- [ ] Import the three data-construction levers (hindsight conditioning; enhanced teacher-reasoning prompt; branch packing, >10× time reduction at equal-or-better quality). All text-space, all run on frozen models, no GPU.
+- [x] Correct the paper premise using Tables 6 and 7: Table 6 sampled-token NTP is 84.2% vs full-distribution KL 82.0% mean task-level G_ICL, with no clear gain for KL; Table 7 enhanced teacher-reasoning prompt on Detective changes G_ICL from 34.9% to 72.5%. Preserve task/metric boundaries, same-task vs OOD distinction, and UNSIZED scope. ✅ 2026-10-07 — MAIN source review; [inert data contract](../../docs/design/experience-distillation-data-contract.md).
+- [x] Document the three source-grounded data-construction levers—hindsight-conditioned experience, enhanced teacher-reasoning prompt, and branch packing—while distinguishing the frozen target-generating teacher from the trainable student. ✅ 2026-10-07 — MAIN source review; [inert data contract](../../docs/design/experience-distillation-data-contract.md).
+
 
 ## Progress checklist
 

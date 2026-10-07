@@ -1,0 +1,69 @@
+{
+  "paper": "Full official HTML/PDF and extracts retained PRIVATE KEEP only; no article text copied into transports.",
+  "records": [
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 1679,
+      "original_mode": 420,
+      "original_sha256": "c86739893e6f34f90c71515a9307004669a5a468c97053d10c2ff2aa4d952b41",
+      "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/RTG39-MAIN-source-acceptance.json",
+      "transport": "MAIN-source-acceptance.b64",
+      "transport_sha256": "692e5445fb3ec0e0d9916dfdc990492b48202ee204ca568b4fbcf27f15878667"
+    },
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 16080,
+      "original_mode": 384,
+      "original_sha256": "0dd1e94a4ac82ca9b5da61185015d9d08f35cbb805e0861c8bb117341e689789",
+      "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg39-governance-gates-private-20261007/rtg39_governance_gates.py",
+      "transport": "original-governance-helper.b64",
+      "transport_sha256": "3a95fa01acb11003593cd44f80ad6cd6f87c2456c08c0ba264d3cb40bb5aae92"
+    },
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 6765,
+      "original_mode": 384,
+      "original_sha256": "7f84a95f4497a833b1fe8dc81c523829029d3fe7b1686e8b6f9ba1c761862474",
+      "private_original": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg39-governance-gates-private-20261007/rtg39-gates-input-proposed.json",
+      "transport": "original-governance-input.b64",
+      "transport_sha256": "e949b8bc6cffbc0b5cd5a7ffa46a0d39efe17df372b5aa40bed94cf264d6c3d8"
+    },
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 115604,
+      "original_mode": 384,
+      "original_sha256": "23b334b20c8f3f3fcbc4623da65e33e95235236db90a6f274ebfe55ae56dce85",
+      "private_original": "/mnt/raid0/llm/tmp/rtg39-gates-2mgf4et1/command-journal.jsonl",
+      "transport": "original-governance-journal.b64",
+      "transport_sha256": "c3ba13f7e5d5b3cf6c94f19b8c61a4f0a65a40243350d2cc4c8e0d5f7829b6b7"
+    },
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 3847,
+      "original_mode": 384,
+      "original_sha256": "06adcacc9817168f9cae45060edcbd9f7eb5ff2827fad3d78a922e382f292eb4",
+      "private_original": "/mnt/raid0/llm/tmp/rtg39-gates-2mgf4et1/receipt.json",
+      "transport": "original-governance-receipt.b64",
+      "transport_sha256": "27ba103ae904edf26b6cfbf880a9b8054f11163d440f164503b18de3ceea3e3a"
+    },
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 1379,
+      "original_mode": 384,
+      "original_sha256": "4e07992049d90e09a21395cab613126d2ce75a20a1057b56656817f844783a81",
+      "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/RTG39-MAIN-peer-ff-njwhciwd/MAIN-receipt.json",
+      "transport": "MAIN-peer-ff-receipt.b64",
+      "transport_sha256": "70ccc44ed5e06762fcdd930c583e0a0dd8f8c8b7190c7d807dbd08c9f3483086"
+    },
+    {
+      "encoding": "base64-original-bytes-LF",
+      "original_bytes": 219020,
+      "original_mode": 384,
+      "original_sha256": "621a856e1d8acd2b368f4486d6ca59a790b0c8e21ecdd04314ee1b7c0eb99581",
+      "private_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/RTG39-MAIN-peer-ff-njwhciwd/original-commands.jsonl",
+      "transport": "original-peer-ff-journal.b64",
+      "transport_sha256": "942fd99689b8caf5c3a4acdb559313ec9e961c8b022173cef7a02340a78de340"
+    }
+  ],
+  "schema": "epyc.original-byte-transports.v1"
+}
