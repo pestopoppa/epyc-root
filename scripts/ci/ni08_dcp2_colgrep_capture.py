@@ -20,6 +20,7 @@ CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_PIN = "b21e45af6fea25340bddf15e28b633ccc99b0604"
 APP_PARENT_PIN = "6c050e783b05a5c7354ee1b61a6a90227664b9fe"
 PYTHON_PIN = "3.13.15"
+LITERAL_BRANCH = "codex/ni08-dcp2-colgrep-recipe-20261007"
 SELECTION = "tests/unit/test_context_discovery.py"
 WORKFLOW = ".github/workflows/ni08-dcp2-colgrep-score-capture.yml"
 RUNNER = "scripts/ci/ni08_dcp2_colgrep_capture.py"
@@ -136,6 +137,31 @@ def app_envelope_matches(app: Path, source_map: dict) -> list[Path]:
     return source_config_paths(app)
 
 
+def verify_frozen_envelope(repo: Path, envelope: dict, pin: str, *, recipe_self_excludes: str | None = None) -> None:
+    """Compare complete source/config path, mode and Git blob envelope at an exact commit."""
+    envelope_pin=envelope.get("git_pin", envelope.get("base_git_pin"))
+    if recipe_self_excludes is None and envelope_pin != pin:
+        raise RuntimeError("source-map envelope Git pin differs")
+    if recipe_self_excludes is not None and subprocess.run(["git","-C",str(repo),"merge-base","--is-ancestor",envelope_pin,pin]).returncode != 0:
+        raise RuntimeError("recipe source/config envelope base is not an ancestor of the exact recipe commit")
+    expected = {row["path"]:row for row in envelope.get("files",[])}
+    raw = subprocess.check_output(["git","-C",str(repo),"ls-tree","-r","-z",pin])
+    actual = {}
+    for item in raw.split(b"\0"):
+        if not item: continue
+        meta,name=item.split(b"\t",1); mode,kind,oid=meta.decode().split(); name=name.decode()
+        pure=PurePosixPath(name)
+        if not (name.endswith(".py") or pure.name in CONFIG_NAMES or pure.suffix in CONFIG_SUFFIXES): continue
+        if name==recipe_self_excludes: continue
+        actual[name]=(mode,oid)
+    if recipe_self_excludes is not None and recipe_self_excludes in actual:
+        actual.pop(recipe_self_excludes)
+    if set(actual)!=set(expected): raise RuntimeError("complete source/config envelope path set differs")
+    for name,row in expected.items():
+        wanted=(row.get("mode"),row.get("candidate_git_blob",row.get("blob")))
+        if actual[name]!=wanted: raise RuntimeError(f"source/config Git blob/mode differs: {name}")
+    if len(actual)!=envelope.get("file_count"): raise RuntimeError("source/config envelope count differs")
+
 def derive_case_ids(test_path: Path) -> list[tuple[str, str]]:
     """Resolve pytest identities from AST names and literal IDs only; never evaluate values."""
     tree = ast.parse(test_path.read_text(encoding="utf-8"))
@@ -235,6 +261,72 @@ def verify_locked_requirements(app: Path, requirements: Path, source_map: dict) 
     return {name: declared[name] for name in sorted(expected)}
 
 
+
+def hash_regular(path: Path) -> str:
+    """Hash one no-follow regular input and reject replacement during the read."""
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags)
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+            raise RuntimeError(f"custody input is not a single-link regular file: {path}")
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            data = os.read(fd, 1024 * 1024)
+            if not data:
+                break
+            digest.update(data)
+            total += len(data)
+        after = os.fstat(fd)
+        identity = lambda row: (row.st_dev, row.st_ino, row.st_mode, row.st_size, row.st_nlink, row.st_mtime_ns, row.st_ctime_ns)
+        if identity(before) != identity(after) or total != after.st_size:
+            raise RuntimeError(f"custody input changed while hashing: {path}")
+        if identity(after) != identity(path.lstat()):
+            raise RuntimeError(f"custody input path changed while hashing: {path}")
+        return digest.hexdigest()
+    finally:
+        os.close(fd)
+
+def typed_tree(root: Path, *, omit_status: bool = True) -> dict:
+    """Sorted lstat inventory. Symlinks are opaque metadata and are never traversed."""
+    if root.is_symlink() or not stat.S_ISDIR(root.lstat().st_mode):
+        raise RuntimeError(f"result root is not a real directory: {root}")
+    found = {".": {"kind": "directory"}}
+    def walk(directory: Path) -> None:
+        for entry in sorted(os.scandir(directory), key=lambda row: row.name):
+            path = Path(entry.path)
+            mode = entry.stat(follow_symlinks=False).st_mode
+            rel = path.relative_to(root).as_posix()
+            if omit_status and rel == "status.json":
+                continue
+            if stat.S_ISLNK(mode):
+                target = os.readlink(path).encode("utf-8", "surrogateescape")
+                found[rel] = {"kind": "symlink_opaque", "target_bytes": len(target), "target_sha256": hashlib.sha256(target).hexdigest()}
+            elif stat.S_ISDIR(mode):
+                found[rel + "/"] = {"kind": "directory"}
+                walk(path)
+            elif stat.S_ISREG(mode):
+                found[rel] = {"kind": "regular", "bytes": path.lstat().st_size, "sha256": hash_regular(path)}
+            else:
+                raise RuntimeError(f"result tree contains a special file: {rel}")
+    walk(root)
+    return found
+
+def stable_digest(value: object) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+def durable_json(path: Path, value: dict) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    if temporary.exists() or temporary.is_symlink() or path.exists() or path.is_symlink():
+        raise RuntimeError(f"refusing to overwrite custody record: {path.name}")
+    with temporary.open("x", encoding="utf-8") as handle:
+        json.dump(value, handle, sort_keys=True, indent=2)
+        handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(temporary, path)
+
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
@@ -242,7 +334,15 @@ def main() -> int:
     result = runner_temp / RESULT_NAME / "result"
     result.mkdir(parents=True, exist_ok=True)
     status_path = result / "status.json"
-    status = {"state": "preparing", "exit_code": None, "native_conformance": None}
+    status = {"state": "preparing", "exit_code": None, "native_conformance": None, "native_receipt_state": "no_receipt", "capture_started": False}
+    boundary = "setup"
+    error_record = None
+    read_paths = []
+    source_before = None
+    result_before = None
+    result_after_capture = None
+    receipt = None
+    exit_code = None
     status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
     try:
         expected_env = {
@@ -285,8 +385,12 @@ def main() -> int:
         recipe_pin = git(recipe, "rev-parse", "HEAD")
         carrier_pin = check_clean_pin("carrier", carrier, CARRIER_PIN)
         app_pin = check_clean_pin("APP", app, APP_PIN)
+        if subprocess.run(["git", "-C", str(app), "merge-base", "--is-ancestor", APP_PARENT_PIN, APP_PIN]).returncode != 0:
+            raise RuntimeError("declared APP source parent is not in exact source ancestry")
         if Path(os.environ.get("PYTHONPATH", "")).resolve() != app.resolve():
             raise RuntimeError("PYTHONPATH is not the exact APP checkout")
+        if os.environ.get("GITHUB_REF") != "refs/heads/" + LITERAL_BRANCH or os.environ.get("GITHUB_EVENT_NAME") != "push":
+            raise RuntimeError("workflow trigger is not the exact reviewed literal branch push")
         if recipe_pin != os.environ.get("GITHUB_SHA"):
             raise RuntimeError("recipe checkout does not match triggering GITHUB_SHA")
         if git(recipe, "status", "--porcelain", "--untracked-files=all"):
@@ -301,6 +405,10 @@ def main() -> int:
         requirements = regular_file(recipe, REQUIREMENTS)
         source_map = json.loads(source_map_path.read_text(encoding="utf-8"))
         expected = json.loads(expected_path.read_text(encoding="utf-8"))
+        envelopes = source_map["source_readset_contract"]
+        verify_frozen_envelope(recipe, envelopes["ROOT_enrolled_context_source_config_envelope"], ROOT_CONTEXT_PIN)
+        verify_frozen_envelope(carrier, envelopes["existing_carrier_source_config_envelope"], CARRIER_PIN)
+        verify_frozen_envelope(recipe, envelopes["recipe_source_config_envelope"], recipe_pin, recipe_self_excludes=SOURCE_MAP)
         if source_map["binding"]["ROOT_parent"] != ROOT_CONTEXT_PIN:
             raise RuntimeError("static map ROOT parent differs")
         if (source_map["binding"]["APP_source"] != APP_PIN
@@ -383,7 +491,16 @@ def main() -> int:
                                                   "PYTHONPATH": str(app),
                                                   "REPL_COLGREP_BIN": str(absent_binary),
                                               }}, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-        status.update(state="running", repositories={"recipe": recipe_pin, "carrier": carrier_pin, "app": app_pin})
+        boundary = "pre_capture_inventory"
+        source_before = {str(path): hash_regular(path) for path in dict.fromkeys(p.resolve() for p in read_paths)}
+        result_before = typed_tree(result)
+        durable_json(result / "pre-capture-custody.json", {
+            "phase": "before_native_invocation", "source_inventory": source_before,
+            "source_inventory_sha256": stable_digest(source_before),
+            "typed_result_tree": result_before, "typed_result_tree_sha256": stable_digest(result_before),
+            "status_excluded_from_tree": True, "scope": "regular source/config inputs and typed existing result tree; symlinks opaque"})
+        boundary = "capture"
+        status.update(state="running", capture_started=True, repositories={"recipe": recipe_pin, "carrier": carrier_pin, "app": app_pin})
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         run_env = dict(os.environ, PYTHONPATH=str(app), REPL_COLGREP_BIN=str(absent_binary))
         completed = subprocess.run([*producer, "--", *test_command], cwd=app, env=run_env,
@@ -392,11 +509,13 @@ def main() -> int:
         stderr_path.write_bytes(completed.stderr)
         exit_code = completed.returncode
         receipt_path = native / "receipt.json"
-        if not receipt_path.is_file():
-            status.update(state="capture_failed", exit_code=exit_code or 1,
-                          error_type="MissingReceipt", error_message="native producer did not create receipt")
-            return exit_code or 1
+        if not receipt_path.is_file() or receipt_path.is_symlink():
+            status.update(state="capture_failed", exit_code=exit_code or 1, native_receipt_state="no_receipt")
+            boundary = "missing_receipt"
+            raise RuntimeError("native producer did not create a regular original receipt")
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        metric_value = receipt.get("fixture_execution_conformant")
+        status["native_receipt_state"] = ("native_null" if metric_value is None else "native_true" if metric_value is True else "native_false" if metric_value is False else "native_invalid_type")
         summary = receipt.get("summary") or {}
         counts = summary.get("counts") or {}
         rows = summary.get("cases") or []
@@ -413,45 +532,94 @@ def main() -> int:
             originals_list = list(dict.fromkeys([*read_paths, freeze, environment, command_record,
                                                   junit, stdout_path, stderr_path, *outputs]))
             return originals_list
+        boundary = "post_capture_inventory"
         original_before_paths = originals()
-        original_before = {str(path): sha256_path(path) for path in original_before_paths}
-        sys.path.insert(0, str(carrier))
-        sys.path.insert(0, str(carrier / "scripts/vidya"))
-        from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
-        from claim_tuple import grade
-        projected = native_rows(receipt_path)
-        if len(projected) != 1:
-            raise RuntimeError("existing CI adapter did not project exactly one original native row")
-        claim = project_ci_conformance(projected[0])
-        quality, trust, reasons = grade(claim)
+        original_before = {str(path): hash_regular(path) for path in original_before_paths}
+        source_after_capture = {str(path): hash_regular(path) for path in dict.fromkeys(p.resolve() for p in read_paths)}
+        result_after_capture = typed_tree(result)
+        durable_json(result / "post-capture-custody.json", {
+            "phase": "after_capture_before_grade", "source_before_capture": source_before,
+            "source_after_capture": source_after_capture, "source_stable": source_before == source_after_capture,
+            "source_after_capture_sha256": stable_digest(source_after_capture),
+            "typed_result_tree_before_capture": result_before, "typed_result_tree_after_capture_before_grade": result_after_capture,
+            "typed_result_tree_after_capture_sha256": stable_digest(result_after_capture),
+            "native_receipt_state": status["native_receipt_state"], "native_metric_value": metric_value,
+            "original_exit_code": exit_code, "exact_case_set": cases_ok,
+            "inventory_self_exclusion":"this custody record is excluded from its embedded tree; the following result tree includes it"})
+        result_after_capture = typed_tree(result)
+        boundary = "shared_grade"
+        if metric_value is None:
+            projected = ()
+            grade_rows = []
+        else:
+            sys.path.insert(0, str(carrier))
+            sys.path.insert(0, str(carrier / "scripts/vidya"))
+            from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+            from claim_tuple import grade
+            projected = native_rows(receipt_path)
+            if len(projected) != 1:
+                raise RuntimeError("existing CI adapter did not project exactly one non-NULL native row")
+            claim = project_ci_conformance(projected[0])
+            quality, trust, reasons = grade(claim)
+            grade_rows = [{"measurement_id": claim.measurement_id, "source_kind": claim.source_kind, "binding_kind": claim.binding_kind, "Q": quality, "T": trust, "reasons": reasons}]
         original_after_paths = originals()
         original_after = {str(path): sha256_path(path) for path in original_after_paths}
         if [str(path) for path in original_after_paths] != [str(path) for path in original_before_paths]:
             raise RuntimeError("shared grade changed original evidence membership")
         if original_after != original_before:
             raise RuntimeError("shared grade changed original source/result/error/native evidence")
-        shared_grade = result / "shared-grade.json"
-        shared_grade.write_text(json.dumps({
-            "analysis_of_existing_native_receipt": True,
-            "original_hashes_before": original_before,
-            "original_hashes_after": original_after,
-            "measurement_id": claim.measurement_id,
-            "source_kind": claim.source_kind,
-            "binding_kind": claim.binding_kind,
-            "grade": {"Q": quality, "T": trust, "reasons": reasons},
-            "new_grade_authored": False,
-        }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        result_after_grade = typed_tree(result)
+        source_after_grade = {str(path): hash_regular(path) for path in dict.fromkeys(p.resolve() for p in read_paths)}
+        if source_before != source_after_capture or source_after_capture != source_after_grade:
+            raise RuntimeError("regular source/config readset changed across capture or grading")
+        if result_after_capture != result_after_grade:
+            raise RuntimeError("typed result/error tree changed during shared grading")
+        durable_json(result / "shared-grade-custody.json", {
+            "phase": "after_existing_shared_grade", "source_before_capture": source_before,
+            "source_after_grade": source_after_grade, "source_stable": source_before == source_after_grade,
+            "source_after_grade_sha256": stable_digest(source_after_grade),
+            "typed_result_tree_before_capture": result_before, "typed_result_tree_after_capture_before_grade": result_after_capture,
+            "typed_result_tree_after_grade": result_after_grade, "typed_result_tree_after_grade_sha256": stable_digest(result_after_grade),
+            "native_receipt_state": status["native_receipt_state"], "native_metric_value": metric_value,
+            "grade_projection": grade_rows, "grade_projection_expected": metric_value is not None,
+            "new_grade_authored": False})
         fixture_metric = receipt.get("fixture_execution_conformant")
         passed = (exit_code == 0 and fixture_metric is True and cases_ok)
         status.update(state="passed" if passed else "failed", exit_code=0 if passed else (exit_code or 1),
                       fixture_execution_conformant=fixture_metric, junit_counts=counts,
                       exact_case_set=cases_ok, expected_case_count=25,
-                      shared_grade={"Q": quality, "T": trust, "recorded_by_existing_grade": True})
+                      shared_grade=grade_rows, grade_projection_expected=metric_value is not None)
         return 0 if passed else (exit_code or 1)
     except Exception as exc:
-        status.update(state="capture_failed", exit_code=1, error_type=type(exc).__name__, error_message=str(exc))
+        error_record = {"stage": boundary, "capture_started": status.get("capture_started", False),
+                        "native_receipt_state": status.get("native_receipt_state", "no_receipt"),
+                        "native_metric_value": (receipt.get("fixture_execution_conformant") if receipt else None),
+                        "error_type": type(exc).__name__, "error_message": str(exc),
+                        "original_exit_code": exit_code, "receipt_present": bool(receipt),
+                        "source_before_capture": source_before, "source_before_capture_sha256": stable_digest(source_before) if source_before is not None else None,
+                        "typed_result_tree_before_capture": result_before, "typed_result_tree_after_capture_before_grade": result_after_capture,
+                        "proposition_invented": False}
+        status.update(state="capture_failed", exit_code=1, error_type=type(exc).__name__, error_message=str(exc),
+                      failure_stage=boundary, error_custody_state="pending_finalized")
         return 1
     finally:
+        try:
+            if error_record is not None and not (result / "error-custody.json").exists():
+                try:
+                    source_current = {str(path): hash_regular(path) for path in dict.fromkeys(p.resolve() for p in read_paths) if p.is_file() and not p.is_symlink()}
+                    tree_current = typed_tree(result)
+                    error_record.update(phase="after_error_before_final_status", source_after_error=source_current,
+                                        source_after_error_sha256=stable_digest(source_current),
+                                        typed_result_tree_after_error=tree_current,
+                                        typed_result_tree_after_error_sha256=stable_digest(tree_current),
+                                        status_excluded=True, error_record_self_excluded=True)
+                except Exception as custody_exc:
+                    error_record["custody_snapshot_error"] = type(custody_exc).__name__ + ": " + str(custody_exc)
+                durable_json(result / "error-custody.json", error_record)
+                status["error_custody_state"] = "written_before_final_status; inventory excludes mutable status and its own final error record"
+        except Exception as custody_exc:
+            status["error_custody_state"] = "failed"
+            status["error_custody_error"] = type(custody_exc).__name__ + ": " + str(custody_exc)
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
 
 
