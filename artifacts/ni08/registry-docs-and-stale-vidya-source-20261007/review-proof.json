@@ -1,0 +1,59 @@
+{
+  "APP_publication": {
+    "previous_head": "3d93b7a0a253d4f123ce0c7470b795e01e6de072",
+    "main_before": "3d93b7a0a253d4f123ce0c7470b795e01e6de072",
+    "source": "fa6c3d4f0b96eb85dbf02a2e0f449753e4d104a6",
+    "commit": "553934f74b175993580b58a7b6fdcc474413037a",
+    "paths": [
+      "docs/SETUP.md",
+      "docs/chapters/07-memrl-system.md",
+      "docs/chapters/11-procedure-registry.md",
+      "docs/reference/commands/QUICK_REFERENCE.md",
+      "docs/reference/stack-change-launch-runbook.md",
+      "docs/runbooks/role-alias-change-runbook.md"
+    ],
+    "pushed": true,
+    "promoted": true,
+    "live_reload": false
+  },
+  "stale_source_review": {
+    "schema": "epyc.ni08.evl47.source-adjudication/v1",
+    "root_commit": "83004c1137015a9fc8d0cf411e648432bc51a1c9",
+    "files": [
+      {
+        "path": "scripts/vidya/impact.py",
+        "blob": "920def4950edb909f1b41ea938f122376daee837",
+        "sha256": "d457eece659fffb9015e4ab359f55285bb0410f571c9924fa1cbb664945ed800",
+        "bytes": 16732,
+        "module_ast_sha256": "d35a71c955d2416a01200e21fca71fc5d27a6edfd9b051b7cfa9803c28a01f6b"
+      },
+      {
+        "path": "tests/vidya/test_vidya_obligation_vacuity.py",
+        "blob": "78fd8b478c212b16bf24900951ac019d4bee3d22",
+        "sha256": "692971410a084e28996d3dc87a17bb6832e7b01b6268127d8cba06c32aedc755",
+        "bytes": 3647,
+        "module_ast_sha256": "f3fe65c0c085ed3290d9e7a95acd6eaf7467da9eada4107fd3bcb59159a9cca7"
+      },
+      {
+        "path": "docs/design/vidya-pilot-spec.md",
+        "blob": "94351b5b606e49cab57d09ca38df85a0c0a39a14",
+        "sha256": "2739b8e944604362c3052d9748a910335f7f616398a0b4127f59e204897b4589",
+        "bytes": 58322
+      }
+    ],
+    "task_dispositions": [
+      {
+        "task": "SC71 vacuous obligation satisfaction",
+        "source_finding": "Actual _evaluate rejects empty all/any before calling combinators; actual5testmodule includes empty satisfaction, activation, any, nestedempty andnonempty controls. Existing task text already records2026-09-08 correction5d7f14be but checkbox remainsopen.",
+        "prepared_qualified_closure": "Source correction already present at ROOT830; source/whole-module AST identity verified, no new native or mutation execution claim. Preserve dated red-first historical receipt text."
+      },
+      {
+        "task": "SC74 intake1300 citation narrowing",
+        "source_finding": "Actual paragraph docs/design/vidya-pilot-spec.md188 explicitly cites intake-1300#02 plus intake-1297#record. The formerly stated entry-level ambiguity is resolved by current canonical source; no new author/operator choice to infer.",
+        "prepared_qualified_closure": "Existing paragraph is already claim-scoped to #02; close source citation correction after MAIN reviews exact paragraph. No new cite-check execution or claimtruth adjudication."
+      }
+    ]
+  },
+  "MAIN_current_source_blobs_match": true,
+  "MAIN_review_scope": "Exact six-doc diff + active authoring-reference grep; current empty-combinator guard/full five control sources; exact current claim02 citation paragraph. Static source review only, no new test execution, grade or claimtruth determination."
+}

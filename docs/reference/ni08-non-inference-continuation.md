@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **113 completed scoped tasks: 62 existing checkbox flips and 51 newly completed scoped subtasks; the voice verifier remains reopened for incomplete import provenance, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **116 completed scoped tasks: 65 existing checkbox flips and 51 newly completed scoped subtasks; the voice verifier remains reopened for incomplete import provenance, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -302,3 +302,8 @@ The full checkpoint also corrected a stale mtime warning on healthy content-hash
 ## Reference portability source — 2026-10-07
 
 [MAIN accepted source and original1/1](../../artifacts/ni08/evl38-reference-conformance-20261007/README.md) close the pre-enrolled reference verifier:90Git+5generated inputs,109authenticated original members, seal and unchanged full source/result custody. Fifteen document corrections preserve validation policy and measurement authority. NI08 now113scoped completions (62existing+51children); CS14 corrected closure remains pending, and full backlog work continues.
+
+
+## Registry prose and stale Vidya source tasks — 2026-10-07
+
+[MAIN source-only review/publication](../../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md) closes SW-5, SC71 and SC74: actual six-doc authoring guidance and two already-implemented stale source rows. No new native tests or intake truth claim. NI08 now116scoped completions (65existing+51children). Prospectively enrolled RVP rollback source/CPU verifier remains open; actual parentGPU/regression/promotion/live event acceptance is separate. Full wrap-up cleanup removed14own obsolete clean/landed/idle worktrees through the gate, preserving all branch references, active lanes and KEEP original custody.
