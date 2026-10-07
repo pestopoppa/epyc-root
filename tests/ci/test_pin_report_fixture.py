@@ -1,6 +1,7 @@
 """Prospective controls use the unchanged actual checker on synthetic Git roots."""
 from __future__ import annotations
 import copy
+import base64
 import hashlib
 import importlib.util
 import json
@@ -9,10 +10,13 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 import pytest
 from scripts.ci.pin_report_fixture import (capture_report_fixture, project_report_fixture,
-                                          read_report, read_report_fixture, validate_report, write_report)
+                                          read_report, read_report_fixture,
+                                          read_scan_invocation_fixture, validate_report,
+                                          write_report, write_scan_invocation)
 
 
 def _report(tmp_path, world="current", *, track_checker=True):
@@ -294,3 +298,183 @@ def test_failure_cleanup_refuses_to_unlink_replaced_exclusive_name(tmp_path, mon
     with pytest.raises(FileExistsError):
         write_report(tmp_path, "report.json", report)
     assert path.read_bytes() == b"different owner's replacement\n"
+
+
+@pytest.mark.parametrize("world,return_code", [("current", 0), ("stale", 1)],
+                         ids=["current_rc0", "stale_rc1"])
+def test_scan_invocation_sidecar_preserves_exact_output_bytes(tmp_path, world, return_code):
+    from scripts.ci.pin_report_fixture import _pairs, _scan_invocation
+    report = _report(tmp_path, world)
+    stdout = (json.dumps(report, sort_keys=True, indent=2) + "\n").encode()
+    stderr = b"checker diagnostic bytes\n"
+    pin = write_report(tmp_path, "report.json", report)
+    invocation = {
+        "schema": "epyc.benchmark_pin_scan_invocation.v1",
+        "argv": ["python", "check_pin_staleness.py", "--root", str(tmp_path), "--json"],
+        "cwd": str(tmp_path),
+        "environment": {key: None for key in ("LANG", "LC_ALL", "PATH", "PYTHONHASHSEED", "PYTHONPATH", "PYTHONUTF8")},
+        "return_code": return_code,
+        "elapsed_ns": 17,
+        "stdout_b64": base64.b64encode(stdout).decode("ascii"),
+        "stdout_bytes": len(stdout),
+        "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
+        "stderr_b64": base64.b64encode(stderr).decode("ascii"),
+        "stderr_bytes": len(stderr),
+        "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
+        "report_bytes": pin["bytes"],
+        "report_sha256": pin["sha256"],
+    }
+    write_scan_invocation(tmp_path, "invocation.json", invocation)
+    reopened = json.loads((tmp_path / "invocation.json").read_bytes(), object_pairs_hook=_pairs)
+    validated, raw_stdout, raw_stderr, parsed = _scan_invocation(reopened)
+    assert validated == reopened
+    assert raw_stdout == stdout and raw_stderr == stderr and parsed == report
+    assert (tmp_path / "report.json").read_bytes() != stdout
+    if world == "stale":
+        assert parsed["complete"] is True and parsed["counts"]["stale"] == 1
+
+
+def test_scan_invocation_refusal_preserves_original_error_without_report(tmp_path):
+    from scripts.ci.pin_report_fixture import _scan_invocation
+    stdout, stderr = b"", b"Cannot inspect benchmark source tree: OSError: refused\n"
+    invocation = {
+        "schema": "epyc.benchmark_pin_scan_invocation.v1",
+        "argv": ["python", "check_pin_staleness.py", "--root", str(tmp_path), "--json"],
+        "cwd": str(tmp_path),
+        "environment": {key: None for key in ("LANG", "LC_ALL", "PATH", "PYTHONHASHSEED", "PYTHONPATH", "PYTHONUTF8")},
+        "return_code": 2,
+        "elapsed_ns": 19,
+        "stdout_b64": base64.b64encode(stdout).decode("ascii"),
+        "stdout_bytes": 0,
+        "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
+        "stderr_b64": base64.b64encode(stderr).decode("ascii"),
+        "stderr_bytes": len(stderr),
+        "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
+        "report_bytes": 0,
+        "report_sha256": None,
+    }
+    validated, raw_stdout, raw_stderr, parsed = _scan_invocation(invocation)
+    assert validated == invocation and raw_stdout == stdout and raw_stderr == stderr
+    assert parsed is None
+
+
+def test_actual_research_pin_scan_attachment():
+    """Dedicated hosted recipe captures the unchanged actual Research CLI."""
+    from scripts.ci.pin_report_fixture import _pairs
+    research_value = os.environ.get("EPYC_INFERENCE_RESEARCH_REPO")
+    if not research_value:
+        pytest.skip("dedicated actual-scan recipe did not provide Research checkout")
+    research = Path(research_value).resolve()
+    checker = research / "scripts/benchmark/check_pin_staleness.py"
+    assert checker.is_file() and not checker.is_symlink()
+    report_relative = "ci-capture-output/pin-report.json"
+    invocation_relative = "ci-capture-output/pin-invocation.json"
+    output_root = Path.cwd()
+    (output_root / "ci-capture-output").mkdir(mode=0o700)
+    argv = [sys.executable, str(checker), "--root", str(research), "--json"]
+    started = time.monotonic_ns()
+    completed = subprocess.run(argv, cwd=research, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               check=False)
+    elapsed = time.monotonic_ns() - started
+    parsed = None
+    report_pin = None
+    try:
+        parsed = json.loads(completed.stdout.decode("utf-8"), object_pairs_hook=_pairs)
+        validate_report(parsed)
+        if completed.returncode in (0, 1):
+            report_pin = write_report(output_root, report_relative, parsed)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        parsed = None
+    invocation = {
+        "schema": "epyc.benchmark_pin_scan_invocation.v1",
+        "argv": argv,
+        "cwd": str(research),
+        "environment": {key: os.environ.get(key) for key in
+                        ("LANG", "LC_ALL", "PATH", "PYTHONHASHSEED", "PYTHONPATH", "PYTHONUTF8")},
+        "return_code": completed.returncode,
+        "elapsed_ns": elapsed,
+        "stdout_b64": base64.b64encode(completed.stdout).decode("ascii"),
+        "stdout_bytes": len(completed.stdout),
+        "stdout_sha256": hashlib.sha256(completed.stdout).hexdigest(),
+        "stderr_b64": base64.b64encode(completed.stderr).decode("ascii"),
+        "stderr_bytes": len(completed.stderr),
+        "stderr_sha256": hashlib.sha256(completed.stderr).hexdigest(),
+        "report_bytes": report_pin["bytes"] if report_pin else 0,
+        "report_sha256": report_pin["sha256"] if report_pin else None,
+    }
+    write_scan_invocation(output_root, invocation_relative, invocation)
+    assert parsed is not None and report_pin is not None and completed.returncode in (0, 1)
+
+
+@pytest.mark.parametrize("damage", ["sidecar_tamper", "report_tamper", "rc_mismatch",
+                                     "report_absent", "sidecar_absent", "duplicate",
+                                     "malformed_stdout", "raw_bytes"])
+def test_scan_invocation_strict_reader_controls(tmp_path, monkeypatch, damage):
+    """Exercise original attachment custody without launching the Research CLI."""
+    from scripts.ci import native_conformance
+    from scripts.ci.pin_report_fixture import _scan_invocation
+    report = _report(tmp_path, "current")
+    stdout = (json.dumps(report, sort_keys=True) + "\n").encode()
+    report_pin = write_report(tmp_path, "report.json", report)
+    sidecar = {
+        "schema": "epyc.benchmark_pin_scan_invocation.v1",
+        "argv": ["python", "checker.py", "--root", str(tmp_path), "--json"],
+        "cwd": str(tmp_path),
+        "environment": {key: None for key in ("LANG", "LC_ALL", "PATH", "PYTHONHASHSEED", "PYTHONPATH", "PYTHONUTF8")},
+        "return_code": 0, "elapsed_ns": 1,
+        "stdout_b64": base64.b64encode(stdout).decode("ascii"),
+        "stdout_bytes": len(stdout), "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
+        "stderr_b64": base64.b64encode(b"\x00diagnostic\xff").decode("ascii"),
+        "stderr_bytes": 12, "stderr_sha256": hashlib.sha256(b"\x00diagnostic\xff").hexdigest(),
+        "report_bytes": report_pin["bytes"], "report_sha256": report_pin["sha256"],
+    }
+    sidecar["stderr_bytes"] = len(b"\x00diagnostic\xff")
+    sidecar_pin = write_scan_invocation(tmp_path, "invocation.json", sidecar)
+    record = {"generated_outputs": [
+        {"path": "invocation.json", "artifact": {"name": "invocation.json", "sha256": sidecar_pin["sha256"]}},
+        {"path": "report.json", "artifact": {"name": "report.json", "sha256": report_pin["sha256"]}},
+    ]}
+    monkeypatch.setattr(native_conformance, "read_receipt", lambda path: (record, "original-receipt-digest"))
+    receipt = tmp_path / "receipt.json"
+    if damage == "raw_bytes":
+        reopened = read_scan_invocation_fixture(receipt, "invocation.json", "report.json")
+        assert reopened[2] == report and reopened[4] == stdout
+        assert reopened[5] == b"\x00diagnostic\xff"
+        return
+    if damage == "sidecar_tamper":
+        (tmp_path / "invocation.json").write_bytes((tmp_path / "invocation.json").read_bytes() + b" ")
+    elif damage == "report_tamper":
+        (tmp_path / "report.json").write_bytes((tmp_path / "report.json").read_bytes() + b" ")
+    elif damage == "rc_mismatch":
+        sidecar["return_code"] = 1
+    elif damage == "report_absent":
+        record["generated_outputs"].pop()
+    elif damage == "sidecar_absent":
+        record["generated_outputs"].pop(0)
+    elif damage == "duplicate":
+        record["generated_outputs"].append(dict(record["generated_outputs"][0]))
+    elif damage == "malformed_stdout":
+        bad = b"{invalid json"
+        sidecar["stdout_b64"] = base64.b64encode(bad).decode("ascii")
+        sidecar["stdout_bytes"] = len(bad)
+        sidecar["stdout_sha256"] = hashlib.sha256(bad).hexdigest()
+    if damage in {"rc_mismatch", "malformed_stdout"}:
+        (tmp_path / "invocation.json").unlink()
+        pin = write_scan_invocation(tmp_path, "invocation.json", sidecar) if damage == "rc_mismatch" else None
+        if pin is not None:
+            record["generated_outputs"][0]["artifact"]["sha256"] = pin["sha256"]
+        else:
+            # A malformed child output cannot be attached as a successful report.
+            with pytest.raises(ValueError):
+                _scan_invocation(sidecar)
+            return
+    with pytest.raises(ValueError):
+        read_scan_invocation_fixture(receipt, "invocation.json", "report.json")
+
+
+@pytest.mark.parametrize("extra", [["report.json"], ["other.json", "other.json"],
+                                   ["report.json/child"], ["other.json", "other.json/child"]],
+                         ids=["duplicate_report", "duplicate_extra", "report_parent", "extra_parent"])
+def test_scan_extra_output_declaration_rejects_overlap(extra):
+    with pytest.raises(ValueError):
+        capture_report_fixture(report_relative="report.json", additional_output_paths=extra)
