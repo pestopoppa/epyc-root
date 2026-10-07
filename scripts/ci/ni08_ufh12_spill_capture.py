@@ -261,16 +261,16 @@ def hash_regular(path: Path) -> str:
 
 def typed_tree(root: Path, *, omit_status: bool = True) -> dict:
     if root.is_symlink() or not stat.S_ISDIR(root.lstat().st_mode): raise RuntimeError("result root is not a real directory")
-    found = {".": {"kind":"directory"}}
+    found = {".": {"kind":"directory", "mode":stat.S_IMODE(root.lstat().st_mode)}}
     def walk(directory: Path) -> None:
         for entry in sorted(os.scandir(directory),key=lambda row:row.name):
             path=Path(entry.path); mode=entry.stat(follow_symlinks=False).st_mode; rel=path.relative_to(root).as_posix()
             if omit_status and rel=="status.json": continue
             if stat.S_ISLNK(mode):
                 target=os.readlink(path).encode("utf-8","surrogateescape")
-                found[rel]={"kind":"symlink_opaque","target_bytes":len(target),"target_sha256":hashlib.sha256(target).hexdigest()}
-            elif stat.S_ISDIR(mode): found[rel+"/"]={"kind":"directory"}; walk(path)
-            elif stat.S_ISREG(mode): found[rel]={"kind":"regular","bytes":path.lstat().st_size,"sha256":hash_regular(path)}
+                found[rel]={"kind":"symlink_opaque","mode":stat.S_IMODE(mode),"target_bytes":len(target),"target_sha256":hashlib.sha256(target).hexdigest()}
+            elif stat.S_ISDIR(mode): found[rel+"/"]={"kind":"directory", "mode":stat.S_IMODE(mode)}; walk(path)
+            elif stat.S_ISREG(mode): found[rel]={"kind":"regular","mode":stat.S_IMODE(mode),"bytes":path.lstat().st_size,"sha256":hash_regular(path)}
             else: raise RuntimeError(f"special result entry: {rel}")
     walk(root); return found
 
@@ -483,7 +483,7 @@ def main() -> int:
         }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         boundary = "pre_capture_inventory"
         fixture_before_capture = typed_tree(spill_root, omit_status=False)
-        if fixture_before_capture != {".": {"kind":"directory"}}:
+        if fixture_before_capture != {".": {"kind":"directory", "mode":0o700}}:
             raise RuntimeError("owned spill fixture root is not empty at pre-capture inventory")
         source_before = {str(path):hash_regular(path) for path in dict.fromkeys(p.resolve() for p in read_paths)}
         result_before = typed_tree(result)

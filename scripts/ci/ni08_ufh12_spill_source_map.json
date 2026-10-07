@@ -27720,21 +27720,21 @@
     "no_follow_inventory": "regular evidence opens O_NOFOLLOW and single-link checks; symlinks recorded only as opaque lstat/Git mode, length and target digest metadata, never followed",
     "precise_declared_regular_reads": [
       {
-        "candidate_bytes": 14263,
-        "candidate_git_blob": "eb72df3b66d1c63dfdfa3db7ea92e6798fd3b8dd",
+        "candidate_bytes": 14722,
+        "candidate_git_blob": "96868cfe3cee611a9270b8d3501ca375eb4915e6",
         "kind": "regular",
         "mode": "100644",
         "path": ".github/workflows/ni08-ufh12-spill-summary-capture.yml",
-        "sha256": "a0a645c31354f806ed23b19554518dccaab706b0f3815bbb0660cf9faf96940b",
+        "sha256": "cf11dae39551e4cc623530955e8deab8be3053b3b4a59344e147d9f3d9a3b084",
         "status": "regular exact native read"
       },
       {
-        "candidate_bytes": 39657,
-        "candidate_git_blob": "993364231a8d93dcd575663789cbacee90382f19",
+        "candidate_bytes": 39793,
+        "candidate_git_blob": "d9d8f4cebd3df48e465e3ebc8b34ac398a52a153",
         "kind": "regular",
         "mode": "100644",
         "path": "scripts/ci/ni08_ufh12_spill_capture.py",
-        "sha256": "00a3384804326519ec8a1a06b7f159f4448bf1f133f4d543b252dae44e831e7e",
+        "sha256": "e9dfb6296ecb2f5907d38995ad80badb3385bd8fb601cd300dd69e1666844d19",
         "status": "regular exact native read"
       },
       {
@@ -28636,10 +28636,10 @@
           "path": ".github/workflows/ni08-sw5-sw6-scg-source-capture.yml"
         },
         {
-          "candidate_bytes": 14263,
-          "candidate_git_blob": "eb72df3b66d1c63dfdfa3db7ea92e6798fd3b8dd",
+          "candidate_bytes": 14722,
+          "candidate_git_blob": "96868cfe3cee611a9270b8d3501ca375eb4915e6",
           "candidate_only": false,
-          "candidate_sha256": "a0a645c31354f806ed23b19554518dccaab706b0f3815bbb0660cf9faf96940b",
+          "candidate_sha256": "cf11dae39551e4cc623530955e8deab8be3053b3b4a59344e147d9f3d9a3b084",
           "git_blob": "eb72df3b66d1c63dfdfa3db7ea92e6798fd3b8dd",
           "kind": "regular",
           "mode": "100644",
@@ -31006,10 +31006,10 @@
           "path": "scripts/ci/ni08_sw5_sw6_scg_capture.py"
         },
         {
-          "candidate_bytes": 39657,
-          "candidate_git_blob": "993364231a8d93dcd575663789cbacee90382f19",
+          "candidate_bytes": 39793,
+          "candidate_git_blob": "d9d8f4cebd3df48e465e3ebc8b34ac398a52a153",
           "candidate_only": false,
-          "candidate_sha256": "00a3384804326519ec8a1a06b7f159f4448bf1f133f4d543b252dae44e831e7e",
+          "candidate_sha256": "e9dfb6296ecb2f5907d38995ad80badb3385bd8fb601cd300dd69e1666844d19",
           "git_blob": "993364231a8d93dcd575663789cbacee90382f19",
           "kind": "regular",
           "mode": "100644",
