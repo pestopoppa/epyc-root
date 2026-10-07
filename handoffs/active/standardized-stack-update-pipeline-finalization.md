@@ -325,3 +325,11 @@ For promotion-gate or launch-boundary changes:
 ```bash
 uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate
 ```
+
+## Newly found SMT placement source gap — 2026-10-07
+
+**Scratch**: `/mnt/raid0/llm/tmp/ni08-ss-bench-smt-proposal-20261007/`; MAIN custody `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`.
+
+MAIN current-source review at APP `92cb0197e8e8e0b491909f669ed4b0c43c16f850` finds the launcher guard excludes only logical IDs. Its historical 0–95 → 96–191 example does not establish physical-core isolation when those ranges are SMT siblings. All three existing children and historical receipts are retained; the parent stays open. Existing REGION-SIBLING-1 toolkit is already present, but its logical→primary/lenient-parser contract loses the complete symmetric-group information needed by this guard. No running process, topology probe or kernel was changed.
+
+- [ ] **SSBENCH-SMT-SOURCE — exclude the full physical SMT closure of a live CPU-bench claim in the shared CLI/API launch guard.** Use the existing strict CPU-list parser, complete symmetric sysfs groups, injected synthetic topology, and fail-closed missing/malformed/asymmetric/candidate-map controls. Preserve no-claim quiet path and existing force authority. Cover both direct and actual API spawn layers with fake boundaries; source publication is separate from runtime-owner activation and real isolation evidence.

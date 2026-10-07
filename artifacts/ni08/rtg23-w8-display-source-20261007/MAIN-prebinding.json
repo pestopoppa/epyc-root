@@ -1,0 +1,373 @@
+{
+  "expected_generated_contexts": [
+    "source-manifest.json",
+    "environment.json",
+    "pip-freeze.txt",
+    "pre-status.json",
+    "pip-install.log"
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_unavailable_task_rate_renders_na_and_keeps_valid_values"
+    },
+    {
+      "classname": "tests.unit.test_task_rate_goodput_replay",
+      "name": "test_row_table_renders_unavailable_rate_as_na_and_preserves_measured_values"
+    },
+    {
+      "classname": "tests.unit.test_autopilot_core_contracts",
+      "name": "test_task_rate_shadow_objectives_from_journal_row"
+    }
+  ],
+  "host_project_execution": false,
+  "manual_blast_radius": "LOW-MEDIUM display-only unavailable task rate becomes n/a; valid zero/rate and historical objective/scoring math preserved. No live rate, archive or runtime change.",
+  "recipe_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "tracked_file_count": 38,
+  "tracked_files": [
+    {
+      "bytes": 16198,
+      "git_blob": "5688fcab7766f12ac8ce9292fbcf852fc7d79cd0",
+      "mode": "100644",
+      "path": "scripts/analysis/task_rate_goodput_replay.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "f400a04096cb9f68b9f820fb8b8e3d84633b2a655e9439c8492f660f71048427"
+    },
+    {
+      "bytes": 4019,
+      "git_blob": "2430372f2d6f1cdba0503a82816a941f5e01e800",
+      "mode": "100644",
+      "path": "scripts/autopilot/journal_shards.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "bytes": 60882,
+      "git_blob": "4ff3f53fb9b9bb744f4bcfdc5f926ac9a4dce228",
+      "mode": "100644",
+      "path": "scripts/autopilot/pareto_archive.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "838d8bc9c74f80a4b08c01c5765056b212f3d1875787f0c6010b6ecfed933518"
+    },
+    {
+      "bytes": 4047,
+      "git_blob": "ff893046a8e7d2598657b950e9e41449f358d25f",
+      "mode": "100644",
+      "path": "src/__init__.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    {
+      "bytes": 3904,
+      "git_blob": "27c9fe394da9d9ea2f2f4b64d254bf99fa8aaa37",
+      "mode": "100644",
+      "path": "src/autopilot_core/__init__.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa"
+    },
+    {
+      "bytes": 6706,
+      "git_blob": "de768dfce1199a1011a30d1db8db78ec5820e605",
+      "mode": "100644",
+      "path": "src/autopilot_core/action_identity.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    {
+      "bytes": 24376,
+      "git_blob": "5673025fff54213490cc6eee12a91ab1645074e3",
+      "mode": "100644",
+      "path": "src/autopilot_core/infra_fingerprint.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "e89d2d3caa5a6ab314c7df47da59d5ebe97e80c7c25c66feb47082209f45abbd"
+    },
+    {
+      "bytes": 14483,
+      "git_blob": "25e224dd700087aa4f8acc545c9505434df50bf7",
+      "mode": "100644",
+      "path": "src/autopilot_core/journal_reconstruction.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    {
+      "bytes": 7883,
+      "git_blob": "82adbc3dab68470570ec8fe0edf62d238ff8b093",
+      "mode": "100644",
+      "path": "src/autopilot_core/learning_exclusions.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    {
+      "bytes": 18893,
+      "git_blob": "d01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6",
+      "mode": "100644",
+      "path": "src/autopilot_core/measurement_guards.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4"
+    },
+    {
+      "bytes": 11966,
+      "git_blob": "5dce1594af423b7a91e7eec916741fb39de02854",
+      "mode": "100644",
+      "path": "src/autopilot_core/multitier_decision.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e"
+    },
+    {
+      "bytes": 5839,
+      "git_blob": "91f3e59e0918c93004ad4a4f61fe1d384eb48d78",
+      "mode": "100644",
+      "path": "src/autopilot_core/pareto_math.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    {
+      "bytes": 20395,
+      "git_blob": "40e5626e8fdeb4f236337b6ef46dc2fb42abb772",
+      "mode": "100644",
+      "path": "src/autopilot_core/planner_evidence.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "49d90079eb4f3935aeaef5ec61712aeee635eac48d091be7e08d40d225df4418"
+    },
+    {
+      "bytes": 11863,
+      "git_blob": "19d3813492f3b26807db22daad491fc1bf470e05",
+      "mode": "100644",
+      "path": "src/autopilot_core/rlvr_tiers.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26"
+    },
+    {
+      "bytes": 29215,
+      "git_blob": "5086b05f9e7517b1c8b7a9b3934f2b57da5f0356",
+      "mode": "100644",
+      "path": "src/autopilot_core/sequential_verdict.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d"
+    },
+    {
+      "bytes": 33689,
+      "git_blob": "ba47f3dd40b19521c4939a064493362c57ccc998",
+      "mode": "100644",
+      "path": "src/autopilot_core/tier_specs.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "a601205f8e0311e675cf0146e3b6b28e038fc2d38b3256a5631a9489c1d1ca94"
+    },
+    {
+      "bytes": 14079,
+      "git_blob": "80e0b5cd85fcca73e8cb27e0e8e3e98025539b9b",
+      "mode": "100644",
+      "path": "src/bradley_terry.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "2360d4372a7698d3d9e8c27b07bbe6595de26f36bd5e99545aa2b738b060696d"
+    },
+    {
+      "bytes": 80,
+      "git_blob": "287333a63889217a52c0082a7e316dc64670ee1f",
+      "mode": "100644",
+      "path": "src/registry/__init__.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "50ddc75e291c2caaae688bbe94c4f3144a5751eb11e0a65ee35b5632ea3a9c6d"
+    },
+    {
+      "bytes": 6472,
+      "git_blob": "6bb3dad23130a763dc4c456c7c432a9535536f30",
+      "mode": "100644",
+      "path": "src/registry/kernel_paths.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066"
+    },
+    {
+      "bytes": 16,
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "mode": "100644",
+      "path": "tests/__init__.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    {
+      "bytes": 21,
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "mode": "100755",
+      "path": "tests/unit/__init__.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
+    },
+    {
+      "bytes": 11407,
+      "git_blob": "09603eb9ee5bf34305e79b429790fe9553f793ce",
+      "mode": "100644",
+      "path": "tests/unit/test_autopilot_core_contracts.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "fa71da36be49cf730417c4a1f72b10cde277235ec84b8c853a22aefa94c22ebd"
+    },
+    {
+      "bytes": 17178,
+      "git_blob": "48d4d9ee437ce0f4c052e4dc78a44bdbc71f757a",
+      "mode": "100644",
+      "path": "tests/unit/test_planner_evidence.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "cb396dcad174b5d8d88452eacae8a21d9494b0e774cba34a8253a3afaf7d94ca"
+    },
+    {
+      "bytes": 7380,
+      "git_blob": "28b423aafb714c4b94baaeac991e42eb809b0106",
+      "mode": "100644",
+      "path": "tests/unit/test_task_rate_goodput_replay.py",
+      "repo": "source",
+      "repo_pin": "e94c2dc5f3129d150602bae1710cfa4c47f5e19b",
+      "sha256": "ea81925d6deb2db8e05bd66b101a87ba3d125036d3e501a007e9a4cfc3d8ff44"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 6832,
+      "git_blob": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+      "mode": "100644",
+      "path": "pyproject.toml",
+      "repo": "app_lock",
+      "repo_pin": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app_lock",
+      "repo_pin": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    },
+    {
+      "bytes": 3115,
+      "git_blob": "27a0e0371113b983ae1f08e09b655ed7afa9e3bc",
+      "mode": "100644",
+      "path": ".github/workflows/vb-rtg23w8-native-conformance.yml",
+      "repo": "recipe",
+      "repo_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+      "sha256": "b9bc3f20713c973d3ecede1a9542d38fe5343167acca50b01566e8c7113391d1"
+    },
+    {
+      "bytes": 31399,
+      "git_blob": "687b663d9ff526eed39de72253a91a3d0ebbb93d",
+      "mode": "100644",
+      "path": "handoffs/active/objective-task-rate-goodput.md",
+      "repo": "recipe",
+      "repo_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+      "sha256": "27deb9f4877ba8c9433c3035a5b3e92d9676055ebfde7b313ece1dfc653db4a4"
+    },
+    {
+      "bytes": 26549,
+      "git_blob": "866a7fe9692da8d62ad2edfac7d007402c1c825a",
+      "mode": "100644",
+      "path": "scripts/ci/vb_rtg23w8_native_capture.py",
+      "repo": "recipe",
+      "repo_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+      "sha256": "8d316b59fa46baf05b3e54c63cccc3d685c8c547db864981e761534a4fb9b244"
+    },
+    {
+      "bytes": 4077,
+      "git_blob": "da761895babb4d6c7a80ee05f9b3dc0825523b1c",
+      "mode": "100644",
+      "path": "scripts/ci/vb_rtg23w8_native_cases.json",
+      "repo": "recipe",
+      "repo_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+      "sha256": "f7e414cabbd61e665cda46a941097f8f697eea1808642ae6e4a1b05878bfa448"
+    },
+    {
+      "bytes": 675,
+      "git_blob": "3bb3e36ee811bb9e545640eb7534cad49806de22",
+      "mode": "100644",
+      "path": "scripts/ci/vb_rtg23w8_native_requirements.txt",
+      "repo": "recipe",
+      "repo_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+      "sha256": "dd9a9e3abf22f585479eed68ef6384442e9f181bfee391b4aaddde591f0c63e6"
+    },
+    {
+      "bytes": 247333,
+      "git_blob": "2a2ef04a35c97c4abad5026c2e9c5169b449e7e6",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "recipe",
+      "repo_pin": "3880edf101856e38f3e1cd44b26efc40ae46082d",
+      "sha256": "1ca5187bb0fabb729336c934e37bee3a3dc5e55abdb145238f365e2b044882f7"
+    }
+  ]
+}

@@ -24,6 +24,10 @@
 - [ ] **WEB-2 — publish the reviewed snapshot:** configure GitHub Pages for the private `epyc-web` repo under the available plan, verify its public URL, connect the GoDaddy domain, then check HTTPS, links, responsive layout, and that no private research paths or credentials are exposed.
 - [ ] **WEB-3 — refresh evidence when measured:** if a frozen-kernel Flash-Next UD-IQ4_XS CPU np × context throughput sweep is produced, replace the card's unmeasured grid with its source-backed cells. The September 24 sweep was explicitly skipped by the operator; this task does not authorize running it.
 
+## Operator decision package
+
+[Contact choices, exact source, reviewable copy and retained desktop/mobile screenshots](../../artifacts/operator/decisions/WEB1-contact-publication-20261007/README.md). The screenshots are dated September 25; the pinned source remains the content authority. Contact destination and launch readiness remain separate operator inputs; no completion or publication is claimed.
+
 ## Measurement limits
 
 The Qwen3.6 GPU 112.676 and 310.958 tok/s maxima were measured on predecessor `ef81196d5`, not frozen v10. Its current card uses the best located frozen-v10 cells, 104.8 tok/s per request and 229.6 tok/s wall aggregate at different operating points. Flash-Next's 52.661 tok/s post-BIOS study likewise used `ef81196d5` and IQ4_XS-uniform weights; the served model uses UD-IQ4_XS. Do not present either predecessor result as frozen-v10 throughput.

@@ -1,0 +1,7 @@
+# BEAM published-judge caveat — MAIN source review
+
+MAIN independently retrieved and checked 23 exact GitHub contents API originals at `mohammadtavakoli78/BEAM@b2da22eac88bb0874c64665f13457eb99835774a`, including their Git blob SHA-1, byte length and SHA-256. [Source review and complete file identities](MAIN-source-review.json). No model or project test was run.
+
+All ten [task evaluator bodies](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py) accept the probing question but never read that argument. All ten receive it at eleven [driver call sites](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/run_evaluation.py). The actual prompt substitutes the rubric item and model response, so the question argument does not reach its responsiveness check. Across the exact twenty published 100K prompt files, all forty abstention cases have a single rubric item using a refusal template. This count describes that split only.
+
+CME-3 is reconciled at the four current numeric-consumer locations plus the count-granularity explanation. Existing numbers and historical source records are retained; the corrected local scorer does not repair upstream historical scores. This is descriptive source review, with no new grading ladder, policy threshold, scientific or serving warrant.

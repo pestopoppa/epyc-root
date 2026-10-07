@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **64 completed scoped tasks: 44 existing checkbox flips and 20 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **74 completed scoped tasks: 50 existing checkbox flips and 24 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -157,3 +157,33 @@ Full active/blocked inventory covers189 tracked Markdown files/179 canonical-ind
 ## Prospective RAW-anchor source verification — MAIN acceptance
 
 [Original51/51 and retained-source proof prerequisites](../../artifacts/ni08/raw-anchor-source-20261007/README.md) close SC76/SC77 and pre-enrolled VB companion: **64 scoped completions (44 existing flips +20 additions)**. First50/51 failure remains immutable. Machine cap and shared ladder stay unchanged; actual fetch, canonical intake/ledger write, historical backfill and semantic judgments remain outside this acceptance. Remaining-card eligibility audit/source implementation continue; whole-backlog exhaustion is unproved.
+
+## RTG-23 task identity cleanup — MAIN acceptance
+
+[W7 title disambiguation and W10 source explanation](rtg23-handoff-identity-and-cache-source-20261007.md) close W7: **65 scoped completions (45 existing flips +20 additions)**. W10 historical live-state reconciliation remains open to its runtime owner; empty persisted cache is deliberately distinct from journal-authoritative in-memory frontier. No tests/runtime sampling or historical measurement edits. Audit and source implementation continue.
+
+## Fixed-verdict descriptive-summary source — MAIN acceptance
+
+[Original4/4 and exact fixed-source custody](../../artifacts/ni08/hs19d-p0-summary-source-20261007/README.md) close pre-enrolled source/VB companions: **67 scoped completions (45 existing flips +22 additions)**. Descriptive counts are ungraded and absent native/tap/template fields remain unknown. Broader P0/template work remains open; source/audit implementation continues and backlog exhaustion is unproved.
+
+## BEAM numeric-consumer caveat — MAIN acceptance
+
+[Independent23-file upstream API/source review](../../artifacts/ni08/beam-caveat-source-20261007/README.md) closes CME-3 after reconciling every identified live numeric consumer, including the second Table8 wiki paragraph found in MAIN review. **68 scoped completions (46 existing flips +22 additions)**. All ten evaluator bodies omit the question argument; the twenty published100K fixture files carry40single-item abstention rubrics. Historical figures and local scorer behavior unchanged; no host/model/test execution, new grade or policy threshold. Whole-backlog audit/source work continues.
+
+## RTG-52 hook source boundary — MAIN acceptance
+
+[Exact source reconciliation](../../artifacts/ni08/rtg52-hygiene-source-20261007/README.md) closes two existing tasks: stale redirection-parser bookkeeping and the refusal-text operator path. **70 scoped completions (48 existing checkbox flips +22 new bounded subtasks)**. Source/AST review only; no new native pass, hook bypass, enforcement change, protected coordination merge or runtime action. Whole-backlog audit and source implementation continue.
+
+SC78/SC79 bounded numeric source child and its native CI companion are enrolled before capture. Enrollment adds no completion; positive retained-source fixtures and full source proposal remain under review. Existing literature ladder and parent semantic/extraction requirements unchanged.
+
+## Additional source enrollment and failed-preparation custody
+
+SMT launch-guard and server-only vision fallback bounded source/VB scopes are enrolled; periodic candidate-gate native wiring is enrolled before any capture. [MAIN original failure custody](../../artifacts/ni08/source-preparation-failures-20261007/README.md) preserves AP60 FALSE114/115, W8 NULL preflight and W8 FALSE2/3 without claiming acceptance. P6 unpublished-input checkout failure is under original review; exact source is now published. All preparations add zero completions; **NI08 remains70 (48 existing flips +22 additions)**. Task-level eligibility/source audits continue; whole-backlog exhaustion is unproved.
+
+## W8 optional display source — MAIN acceptance
+
+[Independent38Git+5context/all55member/original3/3 review and APP publication](../../artifacts/ni08/rtg23-w8-display-source-20261007/README.md) close W8 plus its pre-enrolled VB companion. **72 scoped completions (49 existing flips +23 additions)**. Actual unknown/zero/positive displays are distinct; old storage/helper and objective math preserved. Prior NULL/FALSE originals retained; no live frontier/rate improvement/runtime claim. Other source/audit work continues; whole-backlog exhaustion is unproved.
+
+## AP60 per-instance environment source — MAIN acceptance
+
+[Exact115/115, all3,455 API ZIP members, 3,442 Git inputs plus3 contexts and APP publication](../../artifacts/ni08/ap60-instance-settings-source-20261007/README.md) close AP-60 and its prospective VB companion. **74 scoped completions (50 existing flips +24 additions)**. All source/case identities and prior failures retained; default-off/k10, integer parsing, work payload and score math preserved. No runtime/quality/population-capture claim; wider source work continues. AUD11 passing baseline/mutant requires another artifact-preservation repair because GitHub omitted one copied hidden workflow; it remains unaccepted.

@@ -1,0 +1,13 @@
+{
+  "previous_head": "89ac173a8871b706298d2499b373038325318e0a",
+  "main_before": "89ac173a8871b706298d2499b373038325318e0a",
+  "source": "224fbf991f7b68aa6466ecbaf829a336c20d5f5c",
+  "commit": "92cb0197e8e8e0b491909f669ed4b0c43c16f850",
+  "paths": [
+    "scripts/harness_p0/hs19d_p0_summary.py",
+    "tests/unit/test_hs19d_p0_descriptive_summary.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

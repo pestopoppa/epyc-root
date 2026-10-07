@@ -4130,3 +4130,7 @@ sources) and for the serving-gate verdicts the loop itself recorded.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — lineup change, floor incident, C84–C90.
 - [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — abstention storm, C96/C97, the 8-keep divergence.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — outage recovery.
+
+## Task-rate display availability
+
+Planner and replay displays render absent or malformed task rate as `n/a`, preserving valid zero and positive measurements. The legacy helper/storage zero sentinel stays compatible with historical rows; objective/frontier math is unchanged. [W8 source and synthetic acceptance](../artifacts/ni08/rtg23-w8-display-source-20261007/README.md). This change supplies no live-rate or runtime deployment evidence.

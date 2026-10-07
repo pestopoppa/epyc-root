@@ -1,0 +1,32 @@
+{
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37553654396,
+  "job_identity": "github_job_112574740932",
+  "artifact": 11454181625,
+  "recipe_pin": "6392592790c1d6f794edf0fe7d43adccbbf66662",
+  "zip_sha256": "65864be723471df6213616297a227f31d1980e66262a3b0de4804992e528da31",
+  "zip_bytes": 1244,
+  "members": [
+    {
+      "name": "pip-install.log",
+      "bytes": 1492,
+      "sha256": "f283da44ca19a77defcff5a097eae12033976c85877dfe924ac3f358d3dd5cf5"
+    },
+    {
+      "name": "pre-status.json",
+      "bytes": 78,
+      "sha256": "2a2622abdd56a8a7db10b35fb7fd5f4737b4b82ea114805fabc81839b52d9f9b"
+    },
+    {
+      "name": "status.json",
+      "bytes": 680,
+      "sha256": "7a454b64a291c6713bb08b7aef50d4c7f88070c539899a4c10fea267a337d407"
+    }
+  ],
+  "native_value": null,
+  "junit": null,
+  "shared_grade": null,
+  "diagnostic": "NameError: name 're' is not defined",
+  "scope": "Preflight failed before tests/native receipt; no implementation acceptance or grade."
+}

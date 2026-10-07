@@ -25,12 +25,16 @@ STALE = {"EPYC_FETCH_MAX_AGE_S": "0"}           # force rule B
 
 
 def run(cmd: str, env: dict | None = None) -> int:
+    return run_result(cmd, env).returncode
+
+
+def run_result(cmd: str, env: dict | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(HOOK)],
         input=json.dumps({"tool_name": "Bash", "tool_input": {"command": cmd}}),
         capture_output=True, text=True, cwd=str(REPO_ROOT),
         env={**os.environ, "CLAUDE_PROJECT_DIR": str(REPO_ROOT), **(env or {})},
-    ).returncode
+    )
 
 
 # (command, expected_rc, env, description)
@@ -245,6 +249,19 @@ def _run_cases() -> int:
     print(f"  {'PASS' if ok else 'FAIL'}  rc={rc} want=0  malformed quoting degrades open")
     if not ok:
         failures.append("malformed quoting")
+
+    refusal = run_result("git add -A", FRESH)
+    override_ok = (
+        refusal.returncode == 2
+        and "Only the operator may authorize this bypass" in refusal.stderr
+        and "`!` shell line" in refusal.stderr
+        and "session environment" in refusal.stderr
+        and "does not set the PreToolUse hook's environment" in refusal.stderr
+        and "EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git add" not in refusal.stderr
+    )
+    print(f"  {'PASS' if override_ok else 'FAIL'}  operator bypass instruction matches hook environment")
+    if not override_ok:
+        failures.append("bypass instruction")
 
     print(f"\n{'FAILED: ' + '; '.join(failures) if failures else 'all checks passed'}")
     return 1 if failures else 0

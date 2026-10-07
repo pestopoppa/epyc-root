@@ -997,3 +997,9 @@ capability against the resident VL server.
   the same image are not comparable. **Gate this on a zero-inference prompt-token probe** — measure
   tokens-in as a function of input pixels first, before spending an MMMU-class evaluation window on a
   normalisation whose magnitude we have not measured.
+
+## Cold-vision refusal bounded source follow-on — 2026-10-07
+
+**Scratch**: `/mnt/raid0/llm/worktrees/ni08-inf41-s20-app-proposal-20261007/`; MAIN custody `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`.
+
+- [ ] **INF41-S20-SOURCE — honor explicit server-only vision policy at the route fallback boundary.** After configured role endpoints fail, refuse through the existing error contract without POSTing the legacy `/vision/analyze` endpoint. Preserve auto/cli/default behavior and healthy-server responses. Verify the actual handler with fake HTTP/OCR boundaries and exact source/case identities. This closes only redundant legacy fallback source behavior; parent S-20 timing diagnosis/bound and live cold-server acceptance remain separate. No service/model/CLI launch or latency claim.

@@ -1,0 +1,23 @@
+{
+  "review": "PASS",
+  "method": "independent exact Git preimage/postimage and AST/source review; no project execution",
+  "manual_blast_radius": "LOW: refusal text and existing script assertions only; parser task already implemented",
+  "files": [
+    {
+      "path": "scripts/hooks/check_commit_hygiene.py",
+      "source_commit": "19176ad19bd08c25f0c404d49c5ec8ace1e392be",
+      "preimage_sha256": "bf050f7f7235752c5e66156cf77e7b4d16c4393952776c37610a0e885b4f98d5",
+      "sha256": "3da9696fbcb9cd9a363cd07a039ca9484e24f1f980ccc517722964a064242b0b",
+      "bytes": 29027
+    },
+    {
+      "path": "scripts/hooks/tests/test_commit_hygiene.py",
+      "source_commit": "19176ad19bd08c25f0c404d49c5ec8ace1e392be",
+      "preimage_sha256": "8855a8ad945179d4f508aeb0201f1d0e9ca1b638f4b30736afbd57df9c716b57",
+      "sha256": "cea2235f043d813862bede70c3e3630d470489bd24e7b337700167b4ca4e4836",
+      "bytes": 12994
+    }
+  ],
+  "protected_coordination_integrated": false,
+  "new_native_pass": false
+}
