@@ -527,8 +527,8 @@
     },
     {
       "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_parses_server_usage_including_cached_tokens[usage0-None-expected_cached0]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_parses_server_usage_including_cached_tokens[usage0-None-expected_cached0]"
+      "name": "test_backend_parses_server_usage_including_cached_tokens[usage0-None-7168]",
+      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_parses_server_usage_including_cached_tokens[usage0-None-7168]"
     },
     {
       "classname": "tests.unit.test_openai_client_tool_mode",
