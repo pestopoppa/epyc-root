@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **90 completed scoped tasks: 55 existing checkbox flips and 35 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **92 completed scoped tasks: 55 existing checkbox flips and 37 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -235,3 +235,7 @@ MAIN accepted frozen source proposals for hosted preparation: SC42 actual Unlimi
 ## INF41 server-only fallback source accepted
 
 MAIN independently authenticated and reconstructed run37563431358 originals: five passed/zero skipped, nativeTRUE, existing Judged/Located; full2,830 Git plus3 generated input identity and fresh result custody unchanged. Exact APPee345 source merged/pushed asdcccfa1d. [Evidence](../../artifacts/ni08/inf41-s20-source-20261007/README.md) closes only INF41-S20-SOURCE/VB-INF41-S20-CONFORMANCE. Parent S-20 timing/live gate remains open; failed zero-job predecessor is retained without test credit. Two new bounded scopes bring NI08 to90 (55 preexisting task flips+35 scoped children).
+
+## Memory work-payload cap source accepted
+
+[Source and original41/41](../../artifacts/ni08/m11-work-cap-source-20261007/README.md) close M11-WORK-CAP-SOURCE/VB-M11-WORK-CAP-CONFORMANCE. MAIN rebound all2,838 captured inputs and complete original custody, then merged APP31185ca5. Forged-marker and scanner-limit bypass controls preserve legitimate idempotence; existing fail-open redaction remains unchanged. **NI08:92 scoped completions (55 existing flips +37 scoped children)**. Full backlog audit/source work continues.

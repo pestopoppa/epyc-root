@@ -6096,3 +6096,11 @@ A separate fused-decoder investigation found a correctness blocker: Flash-Next f
 The Oct 3 CPU quant research review separates measured speed from unresolved quality: local uniform IQ4_XS was +15.2% at N=1 before BIOS and +10.5% under clean placement versus UD-IQ4_XS, while the production MTP serving shape and file quality were still unmeasured. The DS41 lossless MXFP4 expert repack was estimated at at most +2%, below the stated 3.4–4.5% admission floor; it was retained as a quality option, not a decode-speed result. Follow-up IQ*_K/KS self-quant work for Q38FN is a gated proposal with download, port and quality requirements, not an executed measurement. The companion variant survey is a recommendation/derivation over that same evidence, not an independent benchmark.
 
 Sources: [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.md), [Llama.cpp DSA contribution](../handoffs/active/llama-cpp-dsa-contribution.md), [CPU quant research](../docs/reviews/cpu-quant-research-20261003.md), [quant variant survey](../docs/reviews/quant-variant-survey-20261003.md), [IQK i-quant enablement](../handoffs/active/iqk-iquant-enablement.md), [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md), [Oct 4 AK progress](../progress/2026-10/2026-10-04-ak-ds41-main.md), [Oct 5 AK progress](../progress/2026-10/2026-10-05-ak-ds41-main.md).
+
+## Incremental synthesis — 2026-10-07: Q38FN on 2x DGX Spark is physics parity with our CPU champion
+
+- Like-for-like (official 10-expert NVFP4, TP2) the independent measurement is 53.7 tok/s on 2x DGX Spark against our CPU champion's 52.7 tok/s. Two-Spark aggregate bandwidth (546 GB/s peak, not pooled) is within 2% of our 537.6 GB/s.
+- Our CPU decode streams 137-174 GB/s against 446.8 GB/s measured on the reference, so the headroom is in streaming efficiency, not in raw bandwidth (task Q38P-1 measures it).
+- ROCm 10.1 still supports gfx90a; the host amdgpu driver is in-kernel (6.14), not DKMS; vLLM lists gfx90a at ROCm 6.3+. The 5-expert cut (D1) was declined.
+
+Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md).
