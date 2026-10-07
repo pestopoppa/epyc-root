@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import stat
 import subprocess
 import sys
 
@@ -37,17 +38,81 @@ def _load_carrier():
 
 def _artifact_snapshot(paths: tuple[Path, ...]) -> dict[str, str]:
     result: dict[str, str] = {}
-    for path in paths:
-        if path.is_dir() and not path.is_symlink():
-            for leaf in sorted(path.rglob("*")):
-                if leaf.is_file() and not leaf.is_symlink():
-                    result[str(leaf)] = hashlib.sha256(leaf.read_bytes()).hexdigest()
-                elif leaf.is_symlink():
-                    result[str(leaf)] = "symlink-refused"
-        elif path.is_file() and not path.is_symlink():
-            result[str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
-        else:
-            result[str(path)] = "absent-or-nonregular"
+
+    def snapshot(path: Path) -> None:
+        try:
+            before = path.lstat()
+        except OSError as exc:
+            raise RuntimeError(f"snapshot path is missing or unreadable: {path}: {exc}") from exc
+        if stat.S_ISLNK(before.st_mode):
+            raise RuntimeError(f"snapshot refuses symlink: {path}")
+        if stat.S_ISDIR(before.st_mode):
+            result[str(path)] = "directory"
+            directory_flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+            try:
+                fd = os.open(path, directory_flags)
+                try:
+                    opened = os.fstat(fd)
+                    if not stat.S_ISDIR(opened.st_mode) or (before.st_dev, before.st_ino) != (
+                            opened.st_dev, opened.st_ino):
+                        raise RuntimeError(f"snapshot directory identity changed before open: {path}")
+                    with os.scandir(fd) as entries:
+                        for entry in sorted(entries, key=lambda item: item.name):
+                            snapshot(path / entry.name)
+                    closed = os.fstat(fd)
+                finally:
+                    os.close(fd)
+                after = path.lstat()
+            except OSError as exc:
+                raise RuntimeError(f"snapshot directory changed or unreadable: {path}: {exc}") from exc
+            directory_identity = lambda info: (info.st_dev, info.st_ino, info.st_mode,
+                                               info.st_mtime_ns, info.st_ctime_ns)
+            if (directory_identity(before) != directory_identity(closed) or
+                    directory_identity(before) != directory_identity(after)):
+                raise RuntimeError(f"snapshot directory identity changed while reading: {path}")
+            return
+        if not stat.S_ISREG(before.st_mode):
+            raise RuntimeError(f"snapshot refuses non-regular file: {path}")
+        flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0)
+        try:
+            fd = os.open(path, flags)
+            try:
+                opened = os.fstat(fd)
+                if not stat.S_ISREG(opened.st_mode) or (before.st_dev, before.st_ino) != (
+                        opened.st_dev, opened.st_ino):
+                    raise RuntimeError(f"snapshot file identity changed before open: {path}")
+                digest = hashlib.sha256()
+                while True:
+                    chunk = os.read(fd, 1024 * 1024)
+                    if not chunk:
+                        break
+                    digest.update(chunk)
+                closed = os.fstat(fd)
+            finally:
+                os.close(fd)
+            after = path.lstat()
+        except OSError as exc:
+            raise RuntimeError(f"snapshot file changed or unreadable: {path}: {exc}") from exc
+        identity = lambda info: (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+                                 info.st_mtime_ns, info.st_ctime_ns)
+        if identity(before) != identity(closed) or identity(before) != identity(after):
+            raise RuntimeError(f"snapshot file changed while reading: {path}")
+        result[str(path)] = digest.hexdigest()
+
+    for declared in paths:
+        path = Path(os.path.abspath(declared))
+        # Preserve and inspect lexical path components; resolve() would erase a
+        # source symlink before the no-follow snapshot can reject it.
+        current = Path(path.anchor)
+        for component in path.parts[1:]:
+            current = current / component
+            try:
+                mode = current.lstat().st_mode
+            except OSError as exc:
+                raise RuntimeError(f"snapshot path component is missing: {current}: {exc}") from exc
+            if stat.S_ISLNK(mode):
+                raise RuntimeError(f"snapshot refuses symlink path component: {current}")
+        snapshot(path)
     return result
 
 
@@ -110,7 +175,7 @@ def _input_paths(app: Path, research: Path, llama: Path, manifest: Path,
         ROOT / ".pre-commit-config.yaml", ROOT / ".claude/dependency-map.json",
     ]
     paths.extend(path for path in optional_root_inputs if path.is_file())
-    return list(dict.fromkeys(path.resolve() for path in paths))
+    return list(dict.fromkeys(Path(os.path.abspath(path)) for path in paths))
 
 
 def main() -> int:
