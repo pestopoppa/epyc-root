@@ -31,7 +31,7 @@
 
 Measurement policy is canonical in `agents/shared/MEASUREMENT_POLICY.md` (region claim, codified
 recipes, reps, claim grammar, era labeling) — follow it, don't restate it. Workflow-specific
-step: update `repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` when a run
+step: update [epyc-inference-research RESULTS.md](https://github.com/pestopoppa/epyc-inference-research/blob/01d36835e68d57c231a9b0591802e267531df530/docs/reference/benchmarks/RESULTS.md) when a run
 changes the master table.
 
 ## Handoff Closure And Roadmap Refresh

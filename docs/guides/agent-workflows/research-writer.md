@@ -13,7 +13,7 @@ brief, not by holding a "research writer" role.
 
 Use `scripts/utils/report_update_workflow.sh` (in `epyc-inference-research`) to gather validated
 source data before writing updates. The report it maintains is
-`repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` (the script's
+[epyc-inference-research RESULTS.md](https://github.com/pestopoppa/epyc-inference-research/blob/01d36835e68d57c231a9b0591802e267531df530/docs/reference/benchmarks/RESULTS.md) (the script's
 `REPORT_FILE`).
 
 ## Common Commands

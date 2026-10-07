@@ -15,10 +15,10 @@ only the root file while six sub-repo agent files existed unaccounted.
 
 | Path | Scope | Action |
 |---|---|---|
-| `repos/epyc-orchestrator/CLAUDE.md` | Child repo policy | Maintain in child repo |
-| `repos/epyc-orchestrator/AGENTS.md` | Child symlink | Keep symlinked to its CLAUDE.md |
-| `repos/epyc-inference-research/CLAUDE.md` | Child repo policy | Maintain in child repo |
-| `repos/epyc-inference-research/AGENTS.md` | Child symlink | Keep symlinked to its CLAUDE.md |
+| [epyc-orchestrator CLAUDE.md](https://github.com/pestopoppa/epyc-orchestrator/blob/53079bee9eabc4243171b4efaf0d77782bec07eb/CLAUDE.md) | Child repo policy | Maintain in child repo |
+| [epyc-orchestrator AGENTS.md](https://github.com/pestopoppa/epyc-orchestrator/blob/53079bee9eabc4243171b4efaf0d77782bec07eb/AGENTS.md) | Child symlink | Keep symlinked to its CLAUDE.md |
+| [epyc-inference-research CLAUDE.md](https://github.com/pestopoppa/epyc-inference-research/blob/01d36835e68d57c231a9b0591802e267531df530/CLAUDE.md) | Child repo policy | Maintain in child repo |
+| [epyc-inference-research AGENTS.md](https://github.com/pestopoppa/epyc-inference-research/blob/01d36835e68d57c231a9b0591802e267531df530/AGENTS.md) | Child symlink | Keep symlinked to its CLAUDE.md |
 
 ## Upstream / Unmanaged (frozen tree)
 
