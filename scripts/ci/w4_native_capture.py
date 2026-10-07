@@ -58,6 +58,12 @@ ABSENT_BINARY_OVERRIDES = {
     "ORCHESTRATOR_PATHS_LLAMA_SERVER": "llama-server-wrapper",
 }
 APP_READS = (
+    'orchestration/model_registry.yaml',
+    'orchestration/model_descriptors.yaml',
+    'orchestration/derived/stack_priors.yaml',
+    'orchestration/launch_manifest.yaml',
+    'orchestration/stack_topology.yaml',
+    'docs/reference/stack-truth-precedence.md',
     "uv.lock", "pyproject.toml",
     "orchestration/repl_memory/__init__.py", "orchestration/repl_memory/embedder.py",
     "orchestration/repl_memory/episodic_store.py", "orchestration/repl_memory/failure_graph.py",
