@@ -20,7 +20,7 @@ import tomllib
 import xml.etree.ElementTree as ET
 from pathlib import Path, PurePosixPath
 
-APP_PIN = "__MAIN_PUBLISHED_APP_SOURCE_PIN__"
+APP_PIN = "0816f7b3e537d2815f0e35076785b489282b8f9b"
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 ROOT_SOURCE_PIN = "954145a1b722feff4b1b1bc3ee0896d857b13606"
 ROOT_TASKS = {
@@ -342,6 +342,8 @@ def verify_requirements(recipe: Path, app: Path, source_map: dict) -> None:
     expected_hashes = source_map.get("test_dependency_artifact_hashes_from_uv_lock")
     if not isinstance(expected, dict) or not expected or not isinstance(expected_hashes, dict):
         raise RuntimeError("source map has no exact locked test dependency set")
+    if expected != LOCKED_PACKAGES:
+        raise RuntimeError("driver locked package set differs from exact source map")
     observed = {}
     current = ""
     for raw in (recipe / REQUIREMENTS).read_text(encoding="utf-8").splitlines():
@@ -360,6 +362,8 @@ def verify_requirements(recipe: Path, app: Path, source_map: dict) -> None:
         artifact_hashes = sorted(token.removeprefix("--hash=") for token in tokens[1:])
         if any(not value.startswith("sha256:") for value in artifact_hashes):
             raise RuntimeError("requirements contain an unsupported artifact hash")
+        if package.lower() in observed:
+            raise RuntimeError("duplicate exact dependency requirement")
         observed[package.lower()] = {"version": version, "hashes": artifact_hashes}
     if current:
         raise RuntimeError("unterminated exact dependency requirement")
@@ -388,6 +392,10 @@ def write_json(path: Path, value: dict) -> None:
     with path.open("x", encoding="utf-8") as handle:
         json.dump(value, handle, indent=2, sort_keys=True)
         handle.write("\n")
+        handle.flush(); os.fsync(handle.fileno())
+    fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
 
 
 def replace_json(path: Path, value: dict) -> None:
@@ -400,9 +408,16 @@ def replace_json(path: Path, value: dict) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(temporary, path)
+    fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
 
 
 def verify_runtime() -> None:
+    if platform.system() != "Linux" or platform.machine().lower() not in {"x86_64", "amd64"}:
+        raise RuntimeError("reviewed Linux x86_64 runtime differs")
+    if Path(sys.prefix).resolve() != Path(os.environ["RUNNER_TEMP"]).resolve() / "scg-test-logdir-venv" or sys.prefix == sys.base_prefix:
+        raise RuntimeError("reviewed isolated venv prefix differs")
     if platform.python_version() != PYTHON_VERSION:
         raise RuntimeError(f"Python runtime differs from pin: {platform.python_version()}")
     for package, expected in LOCKED_PACKAGES.items():
@@ -481,6 +496,9 @@ def main() -> int:
     status_path = run_root / "status.json"
     status = {"state": "preparing", "job": "scg-test-logdir-synthetic-controls", "exit_code": None}
     status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
+    read_paths = []
+    custody_path = run_root / "capture-custody.json"
+    custody = {"schema": "epyc.scg_test_logdir.capture_custody.v1", "state": "setup", "grade_attempted": False}
     try:
         if "__MAIN_" in APP_PIN or "__MAIN_" in ROOT_SOURCE_PIN:
             raise RuntimeError("MAIN enrollment/source pins must be rebound before any hosted capture")
@@ -497,6 +515,10 @@ def main() -> int:
         verify_identity(root_source, ROOT_SOURCE_PIN, "ROOT enrollment source")
         verify_identity(app, APP_PIN, "APP source")
         recipe_pin = os.environ.get("RECIPE_PIN", "")
+        if (recipe_pin != os.environ.get("GITHUB_SHA")
+                or os.environ.get("GITHUB_REF") != "refs/heads/codex/scg-test-logdir-source-capture-20261007"
+                or os.environ.get("GITHUB_EVENT_NAME") != "push"):
+            raise RuntimeError("exact GitHub recipe SHA/literal branch push differs")
         if not recipe_pin:
             raise RuntimeError("workflow did not bind its exact recipe revision")
         verify_identity(recipe, recipe_pin, "workflow recipe")
@@ -641,6 +663,7 @@ def main() -> int:
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONHASHSEED": "0",
             "PYTHONUNBUFFERED": "1",
+            "PYTHONNOUSERSITE": "1",
             "SCG_LOGDIR_RUNNER_CONTEXT": "ubuntu-24.04",
             "SCG_LOGDIR_EXECUTION_CONTEXT": "offline-synthetic-pytest-progress-log-destination-control",
             "SCG_LOGDIR_EXPECTED_CASES": str(source_map_path),
@@ -666,6 +689,9 @@ def main() -> int:
         result_before_capture = result_tree_snapshot(result)
         status.update({"state": "running", "selection_count": len(SELECTIONS)})
         status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
+        custody.update(state="before_native_capture", input_before=input_before,
+                       result_tree_before_capture=result_before_capture, native_record=None)
+        write_json(custody_path, custody)
         carrier_api = load_native_carrier(carrier)
         inherited = dict(os.environ)
         try:
@@ -691,7 +717,7 @@ def main() -> int:
             "capture_outcome": record.get("fixture_execution_conformant"),
             "grade_attempted": False,
         }
-        write_json(custody_path, custody)
+        replace_json(custody_path, custody)
         status.update({"state": "captured", "native_metric": record.get("metric"),
                        "native_value": record.get("fixture_execution_conformant")})
         status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
@@ -799,6 +825,19 @@ def main() -> int:
                                     "traceability": shared_grade["traceability"]})
         return 0
     except Exception as exc:
+        errors = {}
+        snapshots = {}
+        for source in dict.fromkeys(read_paths):
+            try: snapshots[str(source)] = sha256(source)
+            except Exception as snapshot_error: errors[str(source)] = f"{type(snapshot_error).__name__}: {snapshot_error}"
+        custody.update(state="exception", error=f"{type(exc).__name__}: {exc}",
+                       input_after_exception=snapshots, input_snapshot_errors=errors)
+        try: custody["result_tree_after_exception"] = result_tree_snapshot(result)
+        except Exception as snapshot_error: custody["result_snapshot_error"] = f"{type(snapshot_error).__name__}: {snapshot_error}"
+        try:
+            if custody_path.exists(): replace_json(custody_path, custody)
+            else: write_json(custody_path, custody)
+        except Exception as custody_error: status["custody_error"] = f"{type(custody_error).__name__}: {custody_error}"
         status.update(state="capture_failed", exit_code=1,
                       error=f"{type(exc).__name__}: {exc}")
         return 1

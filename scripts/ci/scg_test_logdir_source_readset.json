@@ -9459,7 +9459,7 @@
     {
       "git_mode": "100644",
       "path": "tests/unit/test_progress_logger_interaction.py",
-      "sha256": "effbe27534a31ec717356720229269e4368d9e437f620e70b6164c3e08d03e1d"
+      "sha256": "1ae71cf0f1a21910cd506dca9e34254ebf0dfa2690f95f48feb879fc446ef695"
     },
     {
       "git_mode": "100644",
@@ -11038,7 +11038,7 @@
     }
   ],
   "app_repository": "pestopoppa/epyc-orchestrator",
-  "app_revision": "__MAIN_PUBLISHED_APP_SOURCE_PIN__",
+  "app_revision": "0816f7b3e537d2815f0e35076785b489282b8f9b",
   "app_tracked_python_config_count": 2207,
   "app_uv_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
   "carrier_files": [
@@ -15020,7 +15020,7 @@
     {
       "git_mode": "100644",
       "path": ".github/workflows/scg-test-logdir-source-capture.yml",
-      "sha256": "109a68685eda29ca482c6d7ee4e53a31971aa8ae4918a510128a0032e31feadb"
+      "sha256": "61ca531755ec916deb572d78030accc044476f40aa435e4f87a9d02cb4bc0a56"
     },
     {
       "git_mode": "100644",
@@ -16190,7 +16190,7 @@
     {
       "git_mode": "100644",
       "path": "scripts/ci/scg_test_logdir_capture.py",
-      "sha256": "f731e2cacfedbe1c8c8d833303871df81a3c301bccaa4d7ebc27ced65c5a8ea6"
+      "sha256": "2bef08cf08c3d6380640f51763bb79942084c27f3a81ccfe5b53908aa5c34f45"
     },
     {
       "git_mode": "100644",
@@ -19033,7 +19033,7 @@
       "sha256": "e2f30f4a1b3c862519a0773b51c8599eb4a05f5c0d6c2cfb04dad13f5f9c497b"
     }
   ],
-  "recipe_manifest_sha256": "a916543ba57f854334fe07d97c3673bb36ddae546991883b82a1dd206eaa790f",
+  "recipe_manifest_sha256": "50a502b79bcbc1acdc5273b90632d2afb044b8d5a6a9da3d61cc5a7dabcff299",
   "recipe_map_self_exclusion": "scripts/ci/scg_test_logdir_source_readset.json",
   "recipe_revision": "bound by hosted workflow github.sha and native receipt repository identity",
   "recipe_source_scope": "Real tests/conftest.py; no copied conftest and no --noconftest. Static all-source maps for APP, ROOT carrier, ROOT recipe plus exact task/source tables.",
