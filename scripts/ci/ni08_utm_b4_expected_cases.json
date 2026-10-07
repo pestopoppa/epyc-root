@@ -1,0 +1,32 @@
+{
+  "count": 23,
+  "derivation": "AST-derived top-level test functions; no pytest collection",
+  "research_commit": "de02a21d88e006dd542b7a1a56bf8090a27de1f3",
+  "test_file": "scripts/benchmark/test_tulving_context_mode.py",
+  "test_file_sha256": "a53f38acbb890966317a7dbf0de9a076b552635992b25118b058f421e66b7c63",
+  "cases": [
+    {"classname": "test_tulving_context_mode", "name": "test_full_is_byte_identical_to_the_legacy_prompt"},
+    {"classname": "test_tulving_context_mode", "name": "test_default_mode_is_full"},
+    {"classname": "test_tulving_context_mode", "name": "test_none_has_no_book_text"},
+    {"classname": "test_tulving_context_mode", "name": "test_retrieved_uses_only_the_injected_passages"},
+    {"classname": "test_tulving_context_mode", "name": "test_retrieved_with_no_hits_says_so"},
+    {"classname": "test_tulving_context_mode", "name": "test_retrieved_without_a_retriever_raises_not_degrades"},
+    {"classname": "test_tulving_context_mode", "name": "test_invalid_mode_and_retriever_are_refused"},
+    {"classname": "test_tulving_context_mode", "name": "test_env_selects_the_arm_for_get_adapter"},
+    {"classname": "test_tulving_context_mode", "name": "test_explicit_argument_beats_env"},
+    {"classname": "test_tulving_context_mode", "name": "test_ground_truth_and_ids_are_identical_across_arms"},
+    {"classname": "test_tulving_context_mode", "name": "test_the_arm_reads_back_from_the_prompt_header"},
+    {"classname": "test_tulving_context_mode", "name": "test_split_book_chapters"},
+    {"classname": "test_tulving_context_mode", "name": "test_split_refuses_an_undivided_book"},
+    {"classname": "test_tulving_context_mode", "name": "test_fts_query_quotes_terms_and_drops_noise"},
+    {"classname": "test_tulving_context_mode", "name": "test_trace_retriever_finds_the_right_chapters"},
+    {"classname": "test_tulving_context_mode", "name": "test_trace_retriever_ranks_by_bm25_not_recency"},
+    {"classname": "test_tulving_context_mode", "name": "test_trace_retriever_uses_a_private_store_and_cleans_it"},
+    {"classname": "test_tulving_context_mode", "name": "test_adapter_builds_the_default_retriever_on_load"},
+    {"classname": "test_tulving_context_mode", "name": "test_retrieved_load_without_a_book_raises"},
+    {"classname": "test_tulving_context_mode", "name": "test_missing_trace_surface_is_loud"},
+    {"classname": "test_tulving_context_mode", "name": "test_missing_pandas_raises_instead_of_scoring_everything_missing"},
+    {"classname": "test_tulving_context_mode", "name": "test_unreadable_parquet_raises"},
+    {"classname": "test_tulving_context_mode", "name": "test_absent_data_dir_is_still_an_empty_dataset"}
+  ]
+}
