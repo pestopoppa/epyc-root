@@ -169,3 +169,9 @@ Full active/blocked inventory covers189 tracked Markdown files/179 canonical-ind
 ## BEAM numeric-consumer caveat — MAIN acceptance
 
 [Independent23-file upstream API/source review](../../artifacts/ni08/beam-caveat-source-20261007/README.md) closes CME-3 after reconciling every identified live numeric consumer, including the second Table8 wiki paragraph found in MAIN review. **68 scoped completions (46 existing flips +22 additions)**. All ten evaluator bodies omit the question argument; the twenty published100K fixture files carry40single-item abstention rubrics. Historical figures and local scorer behavior unchanged; no host/model/test execution, new grade or policy threshold. Whole-backlog audit/source work continues.
+
+## RTG-52 hook source boundary — MAIN acceptance
+
+[Exact source reconciliation](../../artifacts/ni08/rtg52-hygiene-source-20261007/README.md) closes two existing tasks: stale redirection-parser bookkeeping and the refusal-text operator path. **70 scoped completions (48 existing checkbox flips +22 new bounded subtasks)**. Source/AST review only; no new native pass, hook bypass, enforcement change, protected coordination merge or runtime action. Whole-backlog audit and source implementation continue.
+
+SC78/SC79 bounded numeric source child and its native CI companion are enrolled before capture. Enrollment adds no completion; positive retained-source fixtures and full source proposal remain under review. Existing literature ladder and parent semantic/extraction requirements unchanged.

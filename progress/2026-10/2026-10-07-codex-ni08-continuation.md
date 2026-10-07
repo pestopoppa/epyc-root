@@ -25,3 +25,9 @@ MAIN [463member original review](../../artifacts/ni08/ap62-second-failure-202610
 ## BEAM caveat source boundary
 
 MAIN reopens23upstream APIoriginals/exactGitSHA+bytes/all10evaluator bodies/11calls/all40abstention rubrics across20published100K files. Reconciles current quoted figures and count-granularity consumers; additional Table8 wiki consumer found in MAIN sweep corrected. CME-3 checked; NI08now68(46existingflips+22additions). [Source review](../../artifacts/ni08/beam-caveat-source-20261007/README.md), no hostprojectexecution/model/test or grading/threshold amendment. Other source/CIPE and full-card audits continue.
+
+## RTG-52 hook source boundary — MAIN acceptance
+
+[Exact source reconciliation](../../artifacts/ni08/rtg52-hygiene-source-20261007/README.md) closes two existing tasks: stale redirection-parser bookkeeping and the refusal-text operator path. **70 scoped completions (48 existing checkbox flips +22 new bounded subtasks)**. Source/AST review only; no new native pass, hook bypass, enforcement change, protected coordination merge or runtime action. Whole-backlog audit and source implementation continue.
+
+SC78/SC79 bounded numeric source child and its native CI companion are enrolled before capture. Enrollment adds no completion; positive retained-source fixtures and full source proposal remain under review. Existing literature ladder and parent semantic/extraction requirements unchanged.

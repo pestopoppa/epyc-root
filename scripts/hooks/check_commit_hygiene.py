@@ -34,7 +34,8 @@ SCOPE. Enforced only for the shared repos, and skipped when the command
 navigates elsewhere (`cd` / `-C` into a sandbox), so throwaway git fixtures for
 tests stay frictionless. The heuristic errs permissive on purpose.
 
-Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1
+An explicitly authorized bypass is set in the hook/session environment; prefixing
+the git command itself does not change the PreToolUse hook's environment.
 Tune:     EPYC_FETCH_MAX_AGE_S (default 600)
 Tests:    scripts/hooks/tests/test_commit_hygiene.py
 """
@@ -70,6 +71,12 @@ SHARED_REPOS = [
 _SEP_TOKENS = {"&&", "||", ";", "|"}
 
 WHOLESALE_ADD_FLAGS = {"-A", "--all", "-u", "--update"}
+OPERATOR_BYPASS_NOTE = (
+    "Only the operator may authorize this bypass. If authorized, the operator must "
+    "run the command from a `!` shell line with EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 "
+    "in that shell's environment, or set it in the session environment. Prefixing "
+    "this git command with the variable does not set the PreToolUse hook's environment."
+)
 # Flags that take a value we must not scan for short flags (the message text).
 _VALUE_FLAGS = {"-m", "--message", "-F", "--file", "-C", "--reuse-message",
                 "-c", "--reedit-message", "--author", "--date", "-S", "--gpg-sign"}
@@ -545,7 +552,7 @@ Stage explicit paths, then verify:
     git add path/one path/two
     git diff --cached --name-only
 
-Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 (once you have checked the staged set).""")
+{OPERATOR_BYPASS_NOTE}""")
 
             if sub in {"checkout", "restore"}:
                 # A path-restore that reverts a PEER's uncommitted work leaves no
@@ -584,7 +591,7 @@ Inspect first, and if the hunks are not yours, leave them alone:
 
 To unstage without touching the worktree, use:  git restore --staged <path>
 
-Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 (once you have confirmed the loss is yours to take).""")
+{OPERATOR_BYPASS_NOTE}""")
 
             if sub == "stash":
                 verb = positionals[0] if positionals else "push"
@@ -599,7 +606,7 @@ leaves the untracked half in an entry that looks like lost work.
 Compare against a clean tree without touching this one:
     git worktree add --detach /tmp/clean origin/main     # `remove` after, NEVER `prune`
 
-Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
+{OPERATOR_BYPASS_NOTE}""")
 
             if sub == "commit":
                 if positionals:
@@ -614,7 +621,7 @@ Stage exactly your own hunks, then commit the index with NO pathspec:
     git add -p {positionals[0]}           # or: git apply --cached mine.patch
     git commit -m "..."                    # no pathspec: commits the index
 
-Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
+{OPERATOR_BYPASS_NOTE}""")
 
                 if "--all" in flags or short_cluster_has(flags, "a"):
                     return block(f"""BLOCKED: `git commit -a/--all` on a shared repo ({repo}).
@@ -623,7 +630,7 @@ Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
 parallel sessions in this shared clone. Stage explicit paths instead:
     git add path/one path/two && git commit -m "..."
 
-Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
+{OPERATOR_BYPASS_NOTE}""")
 
                 # `git fetch && git commit` in ONE command is exactly the idiom
                 # this rule wants, but a PreToolUse hook runs BEFORE any of it
@@ -651,8 +658,9 @@ you do not know whether you are behind upstream. Run:
 
     git -C {repo} fetch && git -C {repo} log --oneline @{{u}}..HEAD
 
-then commit. Tune EPYC_FETCH_MAX_AGE_S, or set
-EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 for a deliberate offline commit.""")
+then commit. Tune EPYC_FETCH_MAX_AGE_S, or use the operator-only bypass described
+below for a deliberate offline commit:
+{OPERATOR_BYPASS_NOTE}""")
     return 0
 
 
