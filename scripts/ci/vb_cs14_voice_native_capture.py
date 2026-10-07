@@ -260,7 +260,7 @@ def main() -> int:
         package_versions = verify_lock(lock, requirements)
         selected = expected_cases(cases_file)
         source_map = json.loads(read_text(cases_file))["source_files"]
-        if len(source_map) != 444:
+        if len(source_map) != 452:
             raise RuntimeError("static source manifest has unexpected file count")
         source_paths = []
         manifest_rows = []
