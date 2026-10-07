@@ -3966,3 +3966,14 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     Heartbeat source guards are repaired in `52d871f9` and queued. Campaign-service long-tail
     tracing found another stale helper caller and a possible deployment package-path defect;
     those are being fixed and checked without changing grading or historical evidence.
+
+  - 2026-10-07 06:40Z source checkpoint: all 451 original failed/error IDs (376 failures, 75
+    errors) are mapped to exact owners and prerequisites in `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/runtime-statistics-triage/ORIGINAL_FAILURE_MAP.json`
+    and `COVERAGE.md`. Research `850ca061` adds the real legacy-v1 label/outcome fixture;
+    `50c4a829` adds the CPU-repeat fixture negative control; `622b926c` has independent source
+    review PASS for four semantic/capture/statistics tests; and `7df68340` has independent source
+    review PASS for seven scratch-lifecycle files. Their runtime gates remain queued. Runtime r1/r2
+    raw rc 0 attempts were canceled and superseded, not passed. Six disk-floor roster tests plus two
+    hard-floor controls are durably queued (launcher PID 627900, region-lock waiter PID 627915;
+    manifest `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/environment-roster/manifest.json`);
+    pytest has not started. No source landing/FF or production change is recorded.
