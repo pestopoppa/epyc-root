@@ -49,6 +49,28 @@ def _assert_real_trace_write(trace):
     assert source_after == source_before, "writer touched the source checkout's default trace store"
 
 
+def _record_real_writer_custody(tmp_path, *, case_id, shard, trace):
+    """Bind one real-writer test case to its original journal and isolated trace bytes."""
+    shard = Path(shard)
+    trace_path = Path(trace[0])
+    root = tmp_path.resolve()
+    shard_rel = shard.resolve().relative_to(root).as_posix()
+    trace_rel = trace_path.resolve().relative_to(root).as_posix()
+    marker = {
+        "schema": "epyc.vidya.real_writer_custody.v1",
+        "case_id": case_id,
+        "root": ".",
+        "journal_path": shard_rel,
+        "journal_sha256": hashlib.sha256(shard.read_bytes()).hexdigest(),
+        "trace_path": trace_rel,
+        "trace_sha256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
+    }
+    marker_path = root / ".vidya-real-writer-custody.json"
+    with marker_path.open("x", encoding="utf-8") as stream:
+        json.dump(marker, stream, sort_keys=True)
+        stream.write("\n")
+
+
 def write_journal(tmp_path: Path, rows: list[dict]) -> Path:
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
@@ -392,6 +414,12 @@ def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
                     would_hold_strict=True)
     assert got == legs
     _assert_real_trace_write(trace)
+    _record_real_writer_custody(
+        tmp_path,
+        case_id="tests/vidya/test_autopilot_journal_adapter.py::test_ap55_gate_end_to_end_against_the_real_writer",
+        shard=d / "autopilot_journal.jsonl",
+        trace=trace,
+    )
 
 
 def test_a_trial_is_always_a_candidate(tmp_path):
@@ -452,6 +480,12 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     support = _support(shard, r)
     assert support["assertion"]["w6_generalization"] == w6_report
     _assert_real_trace_write(trace)
+    _record_real_writer_custody(
+        tmp_path,
+        case_id="tests/vidya/test_autopilot_journal_adapter.py::test_end_to_end_against_the_real_writer",
+        shard=d / "autopilot_journal.jsonl",
+        trace=trace,
+    )
 
     import measurement_record
     orig, measurement_record.REPO_ROOT = measurement_record.REPO_ROOT, tmp_path
@@ -594,3 +628,9 @@ def test_decision_fields_end_to_end_against_the_real_writer(tmp_path, monkeypatc
     # Trial 2 is the newest row and its commit never landed: held back, not projected.
     assert apj.frames_for_row(*got[2], as_of="t") == []
     _assert_real_trace_write(trace)
+    _record_real_writer_custody(
+        tmp_path,
+        case_id="tests/vidya/test_autopilot_journal_adapter.py::test_decision_fields_end_to_end_against_the_real_writer",
+        shard=d / "autopilot_journal.jsonl",
+        trace=trace,
+    )
