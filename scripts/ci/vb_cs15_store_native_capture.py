@@ -6,6 +6,7 @@ import importlib.metadata
 import json
 import os
 import platform
+import stat
 import subprocess
 import sys
 import tomllib
@@ -46,9 +47,22 @@ EXPECTED_ENV = {
 
 def digest(path: Path) -> str:
     h = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1 << 20), b""):
-            h.update(block)
+    flags = (os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+             | getattr(os, "O_NONBLOCK", 0))
+    fd = os.open(path, flags)
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+            raise RuntimeError(f"custody input is not a single-link regular file: {path}")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            for block in iter(lambda: stream.read(1 << 20), b""):
+                h.update(block)
+        after = os.fstat(fd)
+        if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            raise RuntimeError(f"custody input changed while reading: {path}")
+    finally:
+        os.close(fd)
     return h.hexdigest()
 
 
@@ -64,13 +78,73 @@ def identity(repo: Path, expected: str, label: str) -> None:
 
 
 def tracked(repo: Path, relative: str) -> Path:
-    path = repo / relative
-    if path.is_symlink() or not path.is_file():
-        raise RuntimeError(f"declared input is not a regular file: {relative}")
+    rel = Path(relative)
+    if rel.is_absolute() or not rel.parts or any(part in {"", ".", ".."} for part in rel.parts):
+        raise RuntimeError(f"declared input path is not normalized: {relative}")
+    path = repo
+    for index, part in enumerate(rel.parts):
+        path = path / part
+        try:
+            info = path.lstat()
+        except OSError as exc:
+            raise RuntimeError(f"declared input is missing: {relative}") from exc
+        if stat.S_ISLNK(info.st_mode):
+            raise RuntimeError(f"declared input traverses a symlink: {relative}")
+        if index < len(rel.parts) - 1 and not stat.S_ISDIR(info.st_mode):
+            raise RuntimeError(f"declared input parent is not a directory: {relative}")
+    if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+        raise RuntimeError(f"declared input is not a single-link regular file: {relative}")
     entry = git(repo, "ls-tree", "HEAD", "--", relative).split()
     if len(entry) < 3 or entry[1] != "blob" or entry[0] not in {"100644", "100755"}:
         raise RuntimeError(f"declared input is not a tracked regular blob: {relative}")
-    return path.resolve()
+    return path
+
+
+def read_text(path: Path) -> str:
+    flags = (os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+             | getattr(os, "O_NONBLOCK", 0))
+    fd = os.open(path, flags)
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+            raise RuntimeError(f"input is not a single-link regular file: {path}")
+        with os.fdopen(fd, "r", encoding="utf-8", closefd=False) as stream:
+            content = stream.read()
+        after = os.fstat(fd)
+        if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            raise RuntimeError(f"input changed while reading: {path}")
+        return content
+    finally:
+        os.close(fd)
+
+
+def snapshot_tree(root: Path, *, omit: set[str] = frozenset()) -> dict[str, str]:
+    """Hash a complete tree without following symlinks or silently skipping entries."""
+    info = root.lstat()
+    if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+        raise RuntimeError(f"result tree root is not a real directory: {root}")
+    found: dict[str, str] = {}
+    stack = [(root, "")]
+    while stack:
+        directory, prefix = stack.pop()
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                rel = f"{prefix}/{entry.name}" if prefix else entry.name
+                if rel in omit:
+                    continue
+                entry_path = directory / entry.name
+                item = entry.stat(follow_symlinks=False)
+                if stat.S_ISLNK(item.st_mode):
+                    raise RuntimeError(f"result tree contains a symlink: {rel}")
+                if stat.S_ISDIR(item.st_mode):
+                    found[f"{rel}/"] = "directory"
+                    stack.append((entry_path, rel))
+                elif stat.S_ISREG(item.st_mode) and item.st_nlink == 1:
+                    found[rel] = digest(entry_path)
+                else:
+                    raise RuntimeError(f"result tree contains a non-regular entry: {rel}")
+    return found
 
 
 def blob(repo: Path, relative: str) -> str:
@@ -80,10 +154,10 @@ def blob(repo: Path, relative: str) -> str:
     return fields[2]
 
 
-def verify_lock(app: Path, req: Path) -> dict[str, str]:
-    lock = tomllib.loads((app / "uv.lock").read_text(encoding="utf-8"))
+def verify_lock(lock_path: Path, req: Path) -> dict[str, str]:
+    lock = tomllib.loads(read_text(lock_path))
     packages = {item["name"].lower(): item for item in lock["package"]}
-    text = req.read_text(encoding="utf-8")
+    text = read_text(req)
     found = {}
     for name, version in LOCKED.items():
         item = packages.get(name)
@@ -104,7 +178,7 @@ def verify_lock(app: Path, req: Path) -> dict[str, str]:
 
 
 def expected_cases(path: Path) -> set[tuple[str, str]]:
-    data = json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(read_text(path))
     if (data.get("schema") != "epyc.vb.cs15_store.selected_cases.v1"
             or data.get("source_commit") != SOURCE_PIN or data.get("count") != 31):
         raise RuntimeError("selected case manifest schema, source, or count differs")
@@ -164,9 +238,9 @@ def main() -> int:
                 "app_lock": APP_PIN, "context": ROOT_CONTEXT_PIN}
         cases_file, requirements = tracked(recipe, CASES), tracked(recipe, REQUIREMENTS)
         lock = tracked(app, "uv.lock")
-        package_versions = verify_lock(app, requirements)
+        package_versions = verify_lock(lock, requirements)
         selected = expected_cases(cases_file)
-        source_map = json.loads(cases_file.read_text(encoding="utf-8"))["source_files"]
+        source_map = json.loads(read_text(cases_file))["source_files"]
         if len(source_map) != 438:
             raise RuntimeError("static source manifest has unexpected file count")
         source_paths = []
@@ -199,11 +273,32 @@ def main() -> int:
                                                "repositories": pins, "inputs": manifest_rows},
                                               sort_keys=True, indent=2) + "\n", encoding="utf-8")
         pre_status = result / "pre-status.json"
-        if not pre_status.is_file():
+        if not pre_status.exists():
             raise RuntimeError("immutable setup pre-status is missing")
+        pip_install = result / "pip-install.log"
+        pip_freeze = result / "pip-freeze.txt"
+        environment = result / "environment.json"
+        environment.write_text(json.dumps({
+            "python_version": platform.python_version(),
+            "python_executable": sys.executable,
+            "venv_prefix": sys.prefix,
+            "base_prefix": sys.base_prefix,
+            "installed_versions": package_versions,
+            "expected_environment": EXPECTED_ENV,
+            "observed_environment": {key: os.environ.get(key) for key in EXPECTED_ENV},
+            "pytest_argv": ["python -m pytest", "-c /dev/null", "--noconftest",
+                            "--rootdir=<source>", "--import-mode=importlib",
+                            "-p no:cacheprovider", "-o addopts=", "selected 31 exact cases"],
+            "plugin_autoload_disabled": True,
+            "conftest_disabled": True,
+            "bytecode_disabled": True,
+        }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        for path in (pre_status, pip_install, pip_freeze, environment):
+            digest(path)
         junit, native_dir = result / "original-junit.xml", result / "native"
         read_paths = [workflow, driver, requirements, cases_file, lock, source_manifest, pre_status,
-                      *source_paths, *context_paths, *carrier_paths]
+                      pip_install, pip_freeze, environment, *source_paths, *context_paths,
+                      *carrier_paths]
         pytest_argv = [sys.executable, "-m", "pytest", "-c", "/dev/null", "--noconftest",
                        "--rootdir", str(source), "--import-mode=importlib", "-p", "no:cacheprovider",
                        "-o", "addopts=", "-q", *SELECTIONS, f"--junitxml={junit}"]
@@ -218,17 +313,20 @@ def main() -> int:
         api = module_from_spec(spec)
         sys.modules[spec.name] = api
         spec.loader.exec_module(api)
+        if (result / "shared-grade.json").exists():
+            raise RuntimeError("unexpected shared-grade record exists before original-grade evaluation")
+        result_omit = {"status.json"}
+        readset_before = {str(path): digest(path) for path in dict.fromkeys(read_paths)}
         record = api.capture_fixture_execution(
             argv=pytest_argv, cwd=source, junit=junit, output=native_dir,
             repositories={"recipe": recipe, "source": source, "carrier": carrier,
                            "app": app, "context": context},
-            read_paths=list(dict.fromkeys(x.resolve() for x in read_paths)), selections=SELECTIONS)
+            read_paths=list(dict.fromkeys(read_paths)), selections=SELECTIONS)
+        result_before_grade = snapshot_tree(result, omit=result_omit)
+        readset_after_capture = {str(path): digest(path) for path in dict.fromkeys(read_paths)}
         receipt_path = native_dir / "receipt.json"
         native, receipt_sha = api.read_receipt(receipt_path)
         cases = verify_junit(junit, native, selected)
-        originals = [path for path in native_dir.rglob("*") if path.is_file()]
-        originals.extend((junit, source_manifest, pre_status))
-        before = {str(path): digest(path) for path in originals}
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
         from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
@@ -238,17 +336,24 @@ def main() -> int:
             raise RuntimeError("native carrier adapter did not project one receipt")
         claim = project_ci_conformance(rows[0])
         quality, traceability, reasons = grade(claim)
-        after = {str(path): digest(path) for path in originals}
+        result_after = snapshot_tree(result, omit=result_omit)
+        readset_after = {str(path): digest(path) for path in dict.fromkeys(read_paths)}
         reopened, reopened_sha = api.read_receipt(receipt_path)
-        if before != after or reopened != native or reopened_sha != receipt_sha:
-            raise RuntimeError("native originals changed during shared-grade review")
+        if (result_before_grade != result_after or readset_before != readset_after_capture
+                or readset_after_capture != readset_after
+                or reopened != native or reopened_sha != receipt_sha):
+            raise RuntimeError("native result tree, source readset, or receipt changed during shared-grade review")
         if (quality, traceability) != ("Judged", "Located"):
             raise RuntimeError("original native conformance did not retain expected shared grade")
         (result / "shared-grade.json").write_text(json.dumps({
             "kind": "original_native_receipt_only", "fixture_rerun": False,
             "grade": {"Q": quality, "T": traceability, "reasons": reasons},
             "measurement_id": claim.measurement_id, "receipt_sha256": receipt_sha,
-            "original_artifact_hashes_before": before, "original_artifact_hashes_after": after,
+            "result_tree_hashes_before_grade": result_before_grade,
+            "result_tree_hashes_after_grade": result_after,
+            "source_readset_hashes_before": readset_before,
+            "source_readset_hashes_after_capture": readset_after_capture,
+            "source_readset_hashes_after_grade": readset_after,
         }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         status.update(state="passed", exit_code=0, native_receipt="native/receipt.json",
                       junit="original-junit.xml", cases=cases,
