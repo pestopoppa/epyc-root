@@ -75,9 +75,11 @@ jobs:
           "$RUNNER_TEMP/vb-cs15-store/venv/bin/python" -m pip install --only-binary=:all: --no-deps --require-hashes -r recipe/scripts/ci/vb_cs15_store_native_requirements.txt 2>&1 | tee "$RUNNER_TEMP/vb-cs15-store/result/pip-install.log"
       - name: Record exact installed versions
         if: always()
-        run: "$RUNNER_TEMP/vb-cs15-store/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-cs15-store/result/pip-freeze.txt" || true
+        run: |
+          "$RUNNER_TEMP/vb-cs15-store/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-cs15-store/result/pip-freeze.txt" || true
       - name: Capture original JUnit, source readset, receipt, and shared grade
-        run: "$RUNNER_TEMP/vb-cs15-store/venv/bin/python" recipe/scripts/ci/vb_cs15_store_native_capture.py
+        run: |
+          "$RUNNER_TEMP/vb-cs15-store/venv/bin/python" recipe/scripts/ci/vb_cs15_store_native_capture.py
       - name: Retain every capture outcome
         if: always()
         uses: actions/upload-artifact@v4
