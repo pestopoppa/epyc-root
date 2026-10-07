@@ -249023,3 +249023,387 @@
   integration_disposition: knowledge_only
   disposition_evidence:
   - Context for Q38P-3; no action beyond a proposed runbook correction
+- arxiv_id: null
+  url: https://cognition.com/agent-memory-repo
+  source_type: blog
+  title: Agent Memory Repo — Cognition Git-backed linked memory proposal
+  categories:
+  - knowledge_management
+  - memory_augmented
+  - context_management
+  - swarm_techniques
+  - search_retrieval
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-07'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
+    any later Stage-3 filing approval remain required.
+  authors:
+  - Cognition
+  key_claims:
+  - The proposal uses an ordinary Git repository with a compact MEMORY.md entry point and linked topic
+    files for cross-session memory.
+  - Individual note entries may carry source and date metadata and link to related notes or reusable artifacts
+    such as queries.
+  - Separate per-owner repositories may be composed at session time without merging their ownership or
+    histories.
+  - Periodic memory consolidation is proposed to discover patterns, merge duplicates and reconcile outdated
+    or contradictory notes.
+  - A task-scoped swarm workspace may collect per-agent findings, cross-agent questions and a common measurement
+    artifact.
+  techniques:
+  - Git-backed memory
+  - compact entry point and progressive linked retrieval
+  - per-entry source/date metadata
+  - per-owner composition
+  - task-scoped swarm findings/questions
+  - periodic consolidation
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - episodic-memory-integrity.md
+    - internal-kb-rag.md
+    - repl-session-memory-maturity.md
+    - session-bus-thin-dispatcher.md
+    - knowledge-base-governance-improvements.md
+    - wiki-backlog-compilation-20261007.md
+    experiments: []
+    intake_entries:
+    - intake-268
+    - intake-269
+    - intake-270
+    - intake-492
+  recommended_actions:
+  - '[UNVERIFIED] Compare task-focused cold-start knowledge briefs and links to reusable diagnostic artifacts
+    with current project-wiki queries, ContextBundle preparation and episodic recall; retain only a demonstrated
+    consumer gap.'
+  - '[UNVERIFIED] Assess per-owner/project memory composition and cross-agent question/finding discoverability
+    against the existing session bus and per-writer records.'
+  - '[UNVERIFIED] Evaluate whether a source-change-driven, proposal-only maintenance pass can preserve
+    supersession and exceptions better than current review; do not install a periodic job or alter approved
+    compilation cadence.'
+  contradicting_evidence:
+  - 'Primary publication differs in edit cadence: Cognition page says push after edits, repository README
+    says commit; the documented local trial has no remote and does not provide automatic startup or scheduled
+    Dreaming. This bounds implementation claims; Stage 1 does not adjudicate the difference.'
+  - No independent controlled memory-quality or swarm-performance evaluation surfaced in the bounded search.
+    Search absence is provisional; illustrative example timings are not empirical results.
+  reader_should_conclude: Treat this as transferable memory packaging and workflow patterns. Much overlaps
+    the existing compiled wiki, source provenance, query tools and episodic memory. Potential added value
+    in task-focused briefs, reusable diagnostic links, owner-scoped composition and source-driven maintenance
+    requires source/current-consumer verification. Git conflict detection does not resolve semantic contradictions.
+    Do not infer demonstrated latency/quality gains or install autonomous editing, startup or maintenance
+    from this record.
+  notes: 'Stage 1 only; no empirical run. Source illustrative checkout and SQL examples are not benchmark
+    results. Root rejected a redundant blanket broken-link audit: wiki lint and the completed 114-source
+    compilation already cover structural links/status and source deltas. Query-based discovery and episodic
+    recall exist; whether source-linked project knowledge is supplied effectively at cold start remains
+    a question, not an established missing capability. Orchestrator source snapshot 2b0a727e490b1e4a01f1d2d720dcc7d0349d630e:
+    orchestration/repl_memory/routing.py:81-155, episodic_store.py:231,388 and memory_record.py:299-349.
+    Wiki review pinned root c94915da9; native claim provenance and semantic belief conflicts remain under
+    existing Vidya rules. Full primary HTML retained as custody, not Stage-2 verification.'
+  id: intake-1963
+- arxiv_id: null
+  url: https://huggingface.co/google/embeddinggemma-2
+  source_type: repo
+  title: EmbeddingGemma 2 — Google DeepMind modular text/code and multimodal embedder
+  categories:
+  - search_retrieval
+  - memory_augmented
+  - knowledge_management
+  - multimodal
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
+    any later Stage-3 filing approval remain required.
+  authors:
+  - Google DeepMind
+  key_claims:
+  - Publisher describes a 270M-parameter text model and optional 170M vision/300M audio components, totaling
+    740M, projecting into a shared 768-dimensional space.
+  - Publisher reports full-precision MTEB multilingual v2 mean 61.36 versus predecessor 61.15 and code
+    v1 NDCG@10 78.68 versus 68.76; these are not comparisons with EPYC incumbents.
+  - The model card specifies an 8192-token context, task-steering prefixes and asymmetric query/document
+    formatting for retrieval.
+  - MRL supports 768/512/256/128 dimensions with L2 renormalization after truncation; queries and indexed
+    documents must share the selected dimension.
+  - The model card recommends BF16 or FP32 and warns FP16 activations can produce NaNs or silent degradation.
+  techniques:
+  - modular multimodal encoders
+  - Matryoshka Representation Learning
+  - task-steered asymmetric prefixes
+  - mean pooling
+  - shared cross-modal embedding space
+  reported_results:
+  - 'Publisher full-precision MTEB multilingual v2 mean(task): 61.36 vs 61.15, higher is better.'
+  - 'Publisher MTEB code v1 NDCG@10: 78.68 vs 68.76, an absolute 9.92-point change vs EmbeddingGemma 1,
+    not BGE/MiniLM/ColBERT.'
+  - 'Publisher 256d multilingual/code scores: 60.41/76.18; 128d: 57.89/71.41. No local retrieval or latency
+    result.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-embedding-retrieval.md
+    - internal-kb-rag.md
+    - learned-routing-controller.md
+    - retrain-routing-models.md
+    - colbert-reranker-web-research.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-519
+  recommended_actions:
+  - '[UNVERIFIED] First verify text-only runtime, revision, pooling and prompt semantics against a separate
+    configured REPL context.search candidate; compare held-out native code/document retrieval against
+    the incumbent without changing its serving or index.'
+  - '[UNVERIFIED] Consider a separate MiniLM text-description retrieval comparison and, independently,
+    a multimodal retrieval branch; preserve the existing CLIP store and its vector identity.'
+  - '[UNVERIFIED] Treat episodic/routing substitution as a later schema/retraining decision: its default
+    1024d BGE stores are not compatible with 768d/256d candidate vectors. Re-embedding and isolated identity
+    are required.'
+  - '[UNVERIFIED] A later deciding screen must freeze corpus/query inputs and baseline, retain per-item
+    raw outputs and all failure/abstention counts, use held-out/later queries, and declare quality/latency
+    stop or promotion criteria before compute.'
+  contradicting_evidence:
+  - Publisher table shows only a 0.21-point multilingual change against its own predecessor. The larger
+    code improvement cannot establish a win against configured BGE-large, MiniLM descriptions, or the
+    separate ColBERT KB route.
+  - Official card explicitly warns against FP16 and unnormalized truncation. The bounded search did not
+    surface an independent candidate-vs-EPYC-incumbent reproduction; older EmbeddingGemma-300M reports
+    are not evidence about version 2.
+  reader_should_conclude: A plausible workload-specific candidate, especially code retrieval, not an established
+    orchestration upgrade. Distinguish configured consumers from observed live services. Use isolated
+    model/revision/prompt/pooling/dimension identity and freshly encoded candidate vectors; never mix
+    with BGE, MiniLM, CLIP or ColBERT representations. Vendor metrics, phone RAM figures, a GGUF publication
+    and library claims are not local quality/runtime validation.
+  notes: 'Stage-1 only. HF snapshot 914f7f89142e33e77833254d9c9b90c3cef7303b; raw README SHA256 b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    retained. Credibility rubric: recent +1, lab +1, commercial bias -1; no independent corroboration
+    or peer-review bonus. Current orchestrator snapshot 2b0a727e490b1e4a01f1d2d720dcc7d0349d630e: context_search.py:121-126,292-297
+    already applies BGE query prefixes, raw document chunks at369-373, model-ID-bound reset at339-342;
+    embedding_pool/cache.py:17-22 keys model and exact text. This corrects the preliminary reader blanket
+    no-prefix assertion. TaskEmbedder BGE 1024d defaults and generic task text are distinct; absence of
+    retrieval prefixes there alone is not a bug. episodic_store default1024 and routing_graph DOUBLE[1024]
+    require explicit migration review. vision TextEmbedAnalyzer defaults MiniLM at clip_embed.py:150-160,
+    with a separate CLIP image path. KB ColBERT is a distinct configured route, not proven live here.
+    Dependency/API and CPU latency remain unverified. Frozen llama.cpp source ffc1bac82 maps gemma-embedding
+    but not the official artifact gemma-embedding2; source inspection is not a model-load or running-binary
+    test. No kernel, endpoint, dependency or schema change performed.'
+  id: intake-1964
+- arxiv_id: null
+  url: https://github.com/AgentMemoryRepo/agentmemoryrepo
+  source_type: repo
+  title: AgentMemoryRepo official specification and local trial skill
+  categories:
+  - knowledge_management
+  - memory_augmented
+  - context_management
+  - tool_implementation
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-07'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
+    any later Stage-3 filing approval remain required.
+  authors:
+  - AgentMemoryRepo
+  - Cognition
+  key_claims:
+  - The official format specifies a short MEMORY.md entry point, topic files, per-entry source/date metadata
+    and root-relative wiki links.
+  - The repository ships a local agent-memory skill and plugin metadata; the README documents an opt-in
+    two-session local trial.
+  - The documented trial does not include automatic session startup or scheduled Dreaming; connecting
+    a private remote is separate from that trial.
+  techniques:
+  - compact memory entry point
+  - root-relative wiki links
+  - per-entry metadata
+  - opt-in local trial
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - repl-session-memory-maturity.md
+    experiments: []
+    intake_entries:
+    - intake-268
+    - intake-269
+    - intake-492
+    - intake-1963
+  recommended_actions:
+  - '[UNVERIFIED] Read the exact skill and format with the Cognition source to distinguish implemented
+    local behavior from the broader proposed maintenance and sharing loop; feature-mine before any adoption
+    decision.'
+  contradicting_evidence:
+  - README local trial explicitly omits automatic startup and scheduled maintenance, so the format alone
+    is not a deployed autonomous-memory system.
+  reader_should_conclude: Distinct companion implementation artifact, not an independent corroboration
+    of the Cognition proposal. Useful for verifying supported local format/ownership behavior. Do not
+    execute installation instructions, auto-load external memory as authority, or assume scheduled Dreaming
+    exists.
+  notes: Observed via Cognition official GitHub link; no prior canonical-URL collision. Repository revision
+    8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e. Raw README and SPEC retained. No clone/install/execution
+    or Stage-2 code verification performed.
+  id: intake-1965
+  expanded_from: intake-1963
+- arxiv_id: null
+  url: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+  source_type: blog
+  title: 'EmbeddingGemma 2: The Developer Guide — task prompts, modular loading and vector truncation'
+  categories:
+  - search_retrieval
+  - multimodal
+  - local_inference
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
+    any later Stage-3 filing approval remain required.
+  authors:
+  - Maarten Grootendorst
+  - Ian Ballantyne
+  key_claims:
+  - The official developer guide names sentence-transformers v6.1.0 or later and documents selectively
+    omitting vision/audio encoders.
+  - Queries and documents use separate retrieval prompts; disabling unused encoders retains the same checkpoint-defined
+    vector space across supported modality configurations.
+  - The guide requires consistent vector dimensions and normalized truncation, recommending smaller vectors
+    only according to workload quality/storage tradeoffs.
+  techniques:
+  - selective encoder loading
+  - asymmetric task prompts
+  - normalized MRL truncation
+  - shared checkpoint vector space
+  reported_results:
+  - Publisher repeats the version1-to-version2 code benchmark improvement; this is the same publisher
+    evidence, not independent corroboration.
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-embedding-retrieval.md
+    - internal-kb-rag.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-519
+    - intake-1964
+  recommended_actions:
+  - '[UNVERIFIED] Verify pinned library/model APIs and query/document/pooling identity before designing
+    one isolated workload comparison; compare current dependency locks rather than globally upgrading
+    the environment.'
+  contradicting_evidence:
+  - Publisher guidance explicitly says quality depends on dimension/workload. Its shared-space compatibility
+    claim concerns configurations of the same EmbeddingGemma2 checkpoint, not BGE/MiniLM/CLIP or arbitrary
+    model revisions.
+  reader_should_conclude: Companion usage contract for the same Google model, not an independent benchmark
+    or permission to upgrade packages. Its cross-modal space claims do not establish compatibility with
+    any incumbent EPYC store.
+  notes: Observed from official Google launch link, dated 2026-10-06. No instructions executed. The launch
+    announcement is retained as supporting discovery/custody, not a second independent corroborating source
+    or additional intake entry.
+  id: intake-1966
+  expanded_from: intake-1964
+- arxiv_id: null
+  url: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF
+  source_type: repo
+  title: EmbeddingGemma 2 GGUF — official ggml-org converted text-model artifacts
+  categories:
+  - search_retrieval
+  - local_inference
+  - quantization
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
+    any later Stage-3 filing approval remain required.
+  authors:
+  - ggml-org
+  key_claims:
+  - The ggml-org collection publishes converted EmbeddingGemma2 text-model artifacts with gemma-embedding2
+    architecture metadata.
+  - The collection lists BF16 and Q8_0 variants and identifies the Google model as its source.
+  - The card describes automatic conversion; the existence of a converted checkpoint does not validate
+    its embeddings or frozen EPYC runtime support.
+  techniques:
+  - GGUF conversion
+  - BF16 and Q8_0 model variants
+  - OpenAI-compatible embedding-serving candidate
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-embedding-retrieval.md
+    - internal-kb-rag.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-519
+    - intake-1964
+  recommended_actions:
+  - '[UNVERIFIED] Verify upstream architecture and conversion/pooling/prefix support against the frozen
+    production source and a fresh experimental candidate; keep a full-precision reference, do not patch/build
+    the frozen tree.'
+  - '[UNVERIFIED] If an approved deciding probe later runs, pin checkpoint/converter/runtime and retain
+    finite-vector, shape, normalization and native retrieval/latency outputs for each variant in an isolated
+    index.'
+  contradicting_evidence:
+  - Existing frozen sourceffc1bac82 registers gemma-embedding, not gemma-embedding2. This is a compatibility
+    gap to verify, not an executed load failure. Historical version1 pooling issues cannot be transferred
+    as version2 failures.
+  reader_should_conclude: Distinct artifact that makes a llama.cpp route worth inspecting. Automatic conversion
+    and generic quickstarts do not establish correct vectors, multimodal support, kernel compatibility
+    or production readiness. No download of model weights or runtime trial occurred.
+  notes: Observed through Google launch official llama.cpp link. Collection snapshot bfcd298762cc34d0357ece5ebdd31791a3a374d8;
+    raw 410-byte card retained. Size/quantization metadata are not empirical retrieval-quality claims;
+    credibility left null. BF16/Q8 text artifact is not proof of full multimodal encoding support.
+  id: intake-1967
+  expanded_from: intake-1964
