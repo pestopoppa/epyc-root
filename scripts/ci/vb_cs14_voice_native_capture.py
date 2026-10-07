@@ -26,67 +26,15 @@ TASK = "handoffs/active/conversation-stack.md"
 SOURCE_TABLE = "scripts/vidya/adapters/README.md"
 VB_PROGRAM = "handoffs/active/vidya-belief-substrate-program.md"
 SELECTIONS = (
-        'tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role',
-    'tests/unit/test_llama_server.py::TestLlamaServerBackend::test_chat_completions_stream_forwards_registry_chat_template_kwargs',
-    'tests/unit/test_openai_client_tool_mode.py::test_openai_thread_stream_close_waits_for_worker_quiescence',
-    'tests/unit/test_openai_client_tool_mode.py::test_primitives_streams_content_chunks_and_returns_whole_tool_calls',
-    'tests/unit/test_openai_client_tool_mode.py::test_stream_tool_call_is_emitted_as_tool_call_deltas',
-    'tests/unit/test_openai_direct_prompt_contract.py::test_streaming_reasoning_filter_preserves_nonleading_tag_text',
-    'tests/unit/test_openai_direct_prompt_contract.py::test_streaming_reasoning_filter_recognizes_tags_split_across_chunks',
-    'tests/unit/test_openai_direct_prompt_contract.py::test_streaming_reasoning_filter_refuses_unbounded_leading_whitespace',
-    'tests/unit/test_voice_controller_contract.py::test_cancel_marks_active_turn_before_cleanup_and_attempts_all_hooks_on_errors',
-    'tests/unit/test_voice_controller_contract.py::test_cascade_synthesizes_only_a_complete_text_turn_and_emits_pcm_order',
-    'tests/unit/test_voice_controller_contract.py::test_controller_rejects_a_second_active_turn_and_idle_cancel_only_stops_queue',
-    'tests/unit/test_voice_controller_contract.py::test_controller_rejects_malformed_turns_events_and_missing_terminal',
-    'tests/unit/test_voice_controller_contract.py::test_empty_explicit_transcript_is_valid_and_malformed_route_data_fails_closed',
-    'tests/unit/test_voice_controller_contract.py::test_healthy_supported_interlocutor_is_used_and_cancel_order_is_explicit',
-    'tests/unit/test_voice_controller_contract.py::test_incomplete_or_failed_voice_turn_never_reaches_synthesizer',
-    'tests/unit/test_voice_controller_contract.py::test_inject_hook_can_reenter_cancel_without_holding_controller_lock',
-    'tests/unit/test_voice_controller_contract.py::test_interlocutor_falls_back_for_unsupported_language_and_unhealthy_backend',
-    'tests/unit/test_voice_controller_contract.py::test_owner_remains_reserved_until_stream_and_cancel_hooks_finish',
-    'tests/unit/test_voice_controller_contract.py::test_route_answer_accumulation_has_a_fixed_upper_bound',
-    'tests/unit/test_voice_route_contract.py::test_consumer_exception_keeps_session_lease_until_worker_exits',
-    'tests/unit/test_voice_route_contract.py::test_thread_chunk_close_waits_for_underlying_worker_quiescence',
-    'tests/unit/test_voice_route_contract.py::test_thread_chunk_deadline_expiry_after_chunk_cancels_and_drains_worker',
-    'tests/unit/test_voice_route_contract.py::test_thread_chunk_disconnect_cancels_and_drains_worker',
-    'tests/unit/test_voice_route_contract.py::test_voice_route_does_not_persist_partial_answer_on_generation_failure',
-    'tests/unit/test_voice_route_contract.py::test_voice_route_is_disabled_by_default_until_explicit_enable',
-    'tests/unit/test_voice_route_contract.py::test_voice_route_refuses_header_identity_mismatch_before_write',
-    'tests/unit/test_voice_route_contract.py::test_voice_route_streams_native_chunks_and_persists_only_completed_answer',
-    'tests/unit/test_voice_route_contract.py::test_voice_setup_timeout_returns_http_504_before_stream_headers',
-    'tests/unit/test_voice_route_contract.py::test_voice_timeout_uses_timeout_event_and_deadline',
-    'tests/unit/test_voice_route_contract.py::test_voice_turn_feature_defaults_off_in_both_profiles',
-    'tests/unit/test_session_conversation_messages.py::test_archive_retains_messages_and_explicit_delete_removes_them',
-    'tests/unit/test_session_conversation_messages.py::test_delete_winning_during_summary_callback_does_not_recreate_session',
-    'tests/unit/test_session_conversation_messages.py::test_empty_summary_result_does_not_replace_previous_state',
-    'tests/unit/test_session_conversation_messages.py::test_equal_frontier_does_not_call_summary_callback',
-    'tests/unit/test_session_conversation_messages.py::test_existing_database_recreates_additive_message_table',
-    'tests/unit/test_session_conversation_messages.py::test_message_window_returns_newest_rows_in_chronological_order',
-    'tests/unit/test_session_conversation_messages.py::test_message_write_requires_existing_session_and_json_display',
-    'tests/unit/test_session_conversation_messages.py::test_messages_round_trip_in_order_and_are_scoped_to_session',
-    'tests/unit/test_session_conversation_messages.py::test_newer_concurrent_frontier_wins_over_slow_older_summary',
-    'tests/unit/test_session_conversation_messages.py::test_summary_frontier_cannot_move_backwards',
-    'tests/unit/test_session_conversation_messages.py::test_summary_frontier_tracks_highest_appended_id_when_timestamps_are_out_of_order',
-    'tests/unit/test_session_conversation_messages.py::test_summary_refresh_empty_window_returns_existing_summary_without_callback',
-    'tests/unit/test_session_conversation_messages.py::test_summary_refresh_is_injected_and_preserves_previous_state_on_failure',
-    'tests/unit/test_session_conversation_messages.py::test_summary_refresh_passes_prior_state_and_only_unseen_suffix',
-    'tests/unit/test_session_conversation_messages.py::test_summary_refresh_refuses_unseen_backlog_over_cap_without_callback',
-    'tests/unit/test_session_conversation_messages.py::test_summary_refresh_uses_ordered_messages_and_records_its_frontier',
-    'tests/unit/test_session_conversation_messages.py::test_transcript_writes_require_the_current_token_for_a_leased_session',
-    'tests/unit/test_session_protocol.py::TestBaseSessionStore::test_archive_nonexistent_session',
-    'tests/unit/test_session_protocol.py::TestBaseSessionStore::test_archive_session',
-    'tests/unit/test_session_protocol.py::TestBaseSessionStore::test_build_resume_context',
-    'tests/unit/test_session_protocol.py::TestBaseSessionStore::test_build_resume_context_missing_session',
-    'tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization::test_normalize_forward_payload_drops_unknown_fields',
-    'tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization::test_normalize_legacy_payload_missing_version',
-    'tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_mock_store_implements_protocol',
-    'tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_session_crud_operations',
-    'tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_tag_operations',
-    'tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_combined',
-    'tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_comparison_operators',
-    'tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_in_operator',
-    'tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_simple',
-    'tests/unit/test_session_lease.py::test_writes_are_fenced_and_reads_are_not',
+    'tests/unit/test_inference_mixin.py',
+    'tests/unit/test_llama_server.py',
+    'tests/unit/test_openai_client_tool_mode.py',
+    'tests/unit/test_openai_direct_prompt_contract.py',
+    'tests/unit/test_voice_controller_contract.py',
+    'tests/unit/test_voice_route_contract.py',
+    'tests/unit/test_session_conversation_messages.py',
+    'tests/unit/test_session_protocol.py',
+    'tests/unit/test_session_lease.py',
 )
 LOCKED = {"pytest": "9.0.3", "iniconfig": "2.3.0", "packaging": "26.0", "pluggy": "1.6.0", "pygments": "2.20.0", "numpy": "2.4.4", "pyyaml": "6.0.3", "pydantic": "2.13.0", "pydantic-core": "2.46.0", "pydantic-settings": "2.13.1", "annotated-types": "0.7.0", "typing-extensions": "4.15.0", "typing-inspection": "0.4.2", "python-dotenv": "1.2.2", "anyio": "4.13.0", "certifi": "2026.2.25", "fastapi": "0.135.3", "h11": "0.16.0", "httpcore": "1.0.9", "httpx": "0.28.1", "idna": "3.11", "sniffio": "1.3.1", "starlette": "1.0.0"}
 EXPECTED_ENV = {
@@ -241,18 +189,18 @@ def verify_lock(lock_path: Path, req: Path) -> dict[str, str]:
 def expected_cases(path: Path) -> set[tuple[str, str]]:
     data = json.loads(read_text(path))
     if (data.get("schema") != "epyc.vb.cs14_voice.selected_cases.v1"
-            or data.get("source_commit") != SOURCE_PIN or data.get("count") != 61):
+            or data.get("source_commit") != SOURCE_PIN or data.get("count") != 276):
         raise RuntimeError("selected case manifest schema, source, or count differs")
     provenance = data.get("provenance") or {}
     if any(provenance.get(key) is not False for key in
            ("test_bodies_executed", "test_modules_imported", "module_level_code_executed")):
         raise RuntimeError("case manifest lacks static-only provenance")
     rows = data.get("cases")
-    if not isinstance(rows, list) or len(rows) != 61:
+    if not isinstance(rows, list) or len(rows) != 276:
         raise RuntimeError("selected case list is incomplete")
     pairs = {(x.get("classname"), x.get("name")) for x in rows
              if isinstance(x, dict) and x.get("nodeid")}
-    if len(pairs) != 61:
+    if len(pairs) != 276:
         raise RuntimeError("selected case identities are malformed or duplicated")
     return pairs
 
@@ -265,8 +213,8 @@ def verify_junit(path: Path, native: dict, expected: set[tuple[str, str]]) -> di
     if not isinstance(summary, dict) or not isinstance(summary.get("counts"), dict):
         raise RuntimeError("native receipt has no case summary; fixture result remains ungraded")
     counts = summary["counts"]
-    if (set(cases) != expected or len(cases) != 61 or len(set(cases)) != 61
-            or counts.get("collected") != 61 or counts.get("executed") != 61
+    if (set(cases) != expected or len(cases) != 276 or len(set(cases)) != 276
+            or counts.get("collected") != 276 or counts.get("executed") != 276
             or counts.get("skipped") != 0 or counts.get("failure") != 0
             or counts.get("error") != 0 or native.get("fixture_execution_conformant") is not True):
         raise RuntimeError("original JUnit/native summary differs from exact reviewed case set")
@@ -358,7 +306,7 @@ def main() -> int:
             },
             "pytest_argv": ["python -m pytest", "-c /dev/null", "--noconftest",
                             "--rootdir=<source>", "--import-mode=importlib",
-                            "-p no:cacheprovider", "-o addopts=", "selected 61 AST-bound exact cases"],
+                            "-p no:cacheprovider", "-o addopts=", "selected 276 AST-bound exact cases"],
             "plugin_autoload_disabled": True,
             "conftest_disabled": True,
             "bytecode_disabled": True,
@@ -373,7 +321,7 @@ def main() -> int:
                        "--rootdir", str(source), "--import-mode=importlib", "-p", "no:cacheprovider",
                        "-o", "addopts=", "-q", *SELECTIONS, f"--junitxml={junit}"]
         os.environ["PYTHONPATH"] = str(source)
-        status.update(state="running", repositories=pins, selected_case_count=61)
+        status.update(state="running", repositories=pins, selected_case_count=276)
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         from importlib.util import module_from_spec, spec_from_file_location
         carrier_file = tracked(carrier, "scripts/ci/native_conformance.py")
