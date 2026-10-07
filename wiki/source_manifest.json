@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T09:07:10Z",
+  "last_compile": "2026-10-07T09:41:34Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T09:07:10Z",
+  "scan_time": "2026-10-07T09:41:34Z",
   "schema_version": 1,
-  "source_set_hash": "26b27b3cc24d175ee72b15dd73d3c56c23dc6858cbdafbb6dac8b9fe00164a67",
+  "source_set_hash": "8cdfd18d6c18223383a65df2ea13412016981fb5983681e5ae53f5dfab44055a",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -911,10 +911,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1778cd3c03b67d5ecb97a9e25df8f0343cea66250722e502171afa529ad220d0",
-      "modified": "2026-10-07T02:51:53Z",
+      "content_hash": "3535538ccf2de394929f33383d9889e6eee51a13ce5f3d829fac5b74043af376",
+      "modified": "2026-10-07T09:37:38Z",
       "path": "handoffs/active/multimodal-pipeline.md",
-      "size": 105025,
+      "size": 105239,
       "title": "Multimodal Pipeline: Vision + TTS + ASR",
       "type": "handoff-active"
     },
@@ -927,8 +927,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8b4f9059f5c7800e3861a4077b985902b394121b3de4bd3f067c423fba29a95b",
-      "modified": "2026-10-07T09:04:33Z",
+      "content_hash": "a772a4587cdbc0d03a88f442a3d92e8fffb3c92abb0f7dcf6acbc8b26deb6a87",
+      "modified": "2026-10-07T09:37:38Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 129991,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fecd43e52913efa2cca83c91a2388607ed81b03e23f3eed95417a3244e21c16f",
-      "modified": "2026-10-07T09:04:33Z",
+      "content_hash": "e8f95a247eb5aeffe7f4a8fe872cdb93d14c10e00f3489e49d1d5a3246cb1fc0",
+      "modified": "2026-10-07T09:37:38Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 361221,
+      "size": 361529,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9399,10 +9399,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "6f7165ae9c55bc8598b8a71722635a7924042371a10d50d28563b7d8a703eb8d",
-      "modified": "2026-10-07T09:04:33Z",
+      "content_hash": "c9e96df7970209f8110fac91afec31b401ae81921b707fb3e99ec972049ab84b",
+      "modified": "2026-10-07T09:41:11Z",
       "path": "progress/2026-10/2026-10-07.md",
-      "size": 8773,
+      "size": 10474,
       "title": "2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "b11a49da3f4951f5f4502b64de3943a996d0d5eb49a7718f5e8f2e1363741459",
-      "modified": "2026-10-07T09:04:33Z",
+      "content_hash": "f29a04a5aadbf0cdaec5950dde289ea775f32d9a3ccabeb4383e5db87232172e",
+      "modified": "2026-10-07T09:37:38Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 52991,
+      "size": 53465,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
