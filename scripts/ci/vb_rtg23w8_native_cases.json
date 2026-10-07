@@ -1,0 +1,57 @@
+{
+  "cases": [
+    {
+      "classname": "tests.unit.test_planner_evidence",
+      "name": "test_unavailable_task_rate_renders_na_and_keeps_valid_values",
+      "nodeid": "tests/unit/test_planner_evidence.py::test_unavailable_task_rate_renders_na_and_keeps_valid_values",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_task_rate_goodput_replay",
+      "name": "test_row_table_renders_unavailable_rate_as_na_and_preserves_measured_values",
+      "nodeid": "tests/unit/test_task_rate_goodput_replay.py::test_row_table_renders_unavailable_rate_as_na_and_preserves_measured_values",
+      "status": "passed"
+    },
+    {
+      "classname": "tests.unit.test_autopilot_core_contracts",
+      "name": "test_task_rate_shadow_objectives_from_journal_row",
+      "nodeid": "tests/unit/test_autopilot_core_contracts.py::test_task_rate_shadow_objectives_from_journal_row",
+      "status": "passed"
+    }
+  ],
+  "count": 3,
+  "provenance": {
+    "identity_derivation": "Each selected node ID was independently derived from the exact module-level test function name in the pinned AST; no parametrization applies.",
+    "module_level_code_executed": false,
+    "source_paths_sha256": {
+      "scripts/analysis/task_rate_goodput_replay.py": "f400a04096cb9f68b9f820fb8b8e3d84633b2a655e9439c8492f660f71048427",
+      "scripts/autopilot/journal_shards.py": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
+      "scripts/autopilot/pareto_archive.py": "838d8bc9c74f80a4b08c01c5765056b212f3d1875787f0c6010b6ecfed933518",
+      "src/__init__.py": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "src/autopilot_core/__init__.py": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa",
+      "src/autopilot_core/action_identity.py": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c",
+      "src/autopilot_core/infra_fingerprint.py": "e89d2d3caa5a6ab314c7df47da59d5ebe97e80c7c25c66feb47082209f45abbd",
+      "src/autopilot_core/journal_reconstruction.py": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f",
+      "src/autopilot_core/learning_exclusions.py": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68",
+      "src/autopilot_core/measurement_guards.py": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4",
+      "src/autopilot_core/multitier_decision.py": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e",
+      "src/autopilot_core/pareto_math.py": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6",
+      "src/autopilot_core/planner_evidence.py": "49d90079eb4f3935aeaef5ec61712aeee635eac48d091be7e08d40d225df4418",
+      "src/autopilot_core/rlvr_tiers.py": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26",
+      "src/autopilot_core/sequential_verdict.py": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d",
+      "src/autopilot_core/tier_specs.py": "a601205f8e0311e675cf0146e3b6b28e038fc2d38b3256a5631a9489c1d1ca94",
+      "src/bradley_terry.py": "2360d4372a7698d3d9e8c27b07bbe6595de26f36bd5e99545aa2b738b060696d",
+      "src/registry/__init__.py": "50ddc75e291c2caaae688bbe94c4f3144a5751eb11e0a65ee35b5632ea3a9c6d",
+      "src/registry/kernel_paths.py": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "tests/__init__.py": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108",
+      "tests/unit/__init__.py": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c",
+      "tests/unit/test_autopilot_core_contracts.py": "fa71da36be49cf730417c4a1f72b10cde277235ec84b8c853a22aefa94c22ebd",
+      "tests/unit/test_planner_evidence.py": "33f28ed6dac95b6e1360c31ccfe8d210968eebd1233200662f62e426892ff839",
+      "tests/unit/test_task_rate_goodput_replay.py": "ea81925d6deb2db8e05bd66b101a87ba3d125036d3e501a007e9a4cfc3d8ff44"
+    },
+    "test_bodies_executed": false,
+    "test_modules_imported": false
+  },
+  "schema": "epyc.vb_rtg23w8.native_selected_cases.v1",
+  "source_commit": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
+}
