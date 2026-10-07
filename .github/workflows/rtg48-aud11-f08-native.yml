@@ -36,7 +36,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           path: source
-          fetch-depth: 6
+          fetch-depth: 7
           persist-credentials: false
       - name: Checkout reviewed native carrier and shared grader
         uses: actions/checkout@v4
@@ -63,4 +63,5 @@ jobs:
         with:
           name: rtg48-aud11-f08-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/rtg48-aud11/result/
+          include-hidden-files: true
           if-no-files-found: error
