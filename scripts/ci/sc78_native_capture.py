@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""Capture SC78 mechanical anchor controls through the existing verifier carrier."""
+from __future__ import annotations
+
+import hashlib
+import importlib.metadata
+import importlib.util
+import json
+import os
+from pathlib import Path
+import platform
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+APP_PIN = "cfcf3768716de888a971bf66489397f5b91241df"
+ROOT_READS = (
+    ".github/workflows/sc78-numeric-anchor-native.yml",
+    "scripts/ci/sc78_native_capture.py",
+    "scripts/ci/sc78_expected_cases.json",
+    "scripts/ci/sc78_hosted_requirements.txt",
+    "scripts/ci/ni08_source_context.py",
+    "scripts/ci/native_conformance.py",
+    "scripts/vidya/adapters/README.md",
+    "scripts/vidya/adapters/__init__.py",
+    "scripts/vidya/adapters/ci_conformance.py",
+    "scripts/vidya/adapters/research_intake.py",
+    "scripts/vidya/alias_candidates.py",
+    "scripts/vidya/canonical.py",
+    "scripts/vidya/claim_tuple.py",
+    "scripts/vidya/frames.py",
+    "scripts/vidya/intake_assertion_kinds.py",
+    "scripts/vidya/lattice.py",
+    "scripts/vidya/machine_anchor.py",
+    "scripts/vidya/raw_anchor_store.py",
+    "tests/__init__.py",
+    "tests/vidya/test_raw_anchor_store.py",
+    "tests/vidya/test_research_intake_nonclaim_fixtures.py",
+    "handoffs/active/vidya-belief-substrate-program.md",
+)
+PACKAGES = {"colorama": "0.4.6", "iniconfig": "2.3.0", "packaging": "26.0",
+            "pluggy": "1.6.0", "Pygments": "2.20.0", "pytest": "9.0.3",
+            "PyYAML": "6.0.3"}
+
+
+def write_once(path: Path, data: bytes) -> None:
+    with path.open("xb") as handle:
+        handle.write(data)
+
+
+def source_context(app: Path, path: Path) -> None:
+    command = [sys.executable, str(ROOT / "scripts/ci/ni08_source_context.py"),
+               "--repo", f"root={ROOT}", "--repo", f"app={app}", "--output", str(path)]
+    result = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, text=True, check=False)
+    if result.returncode:
+        raise RuntimeError(f"source context failed: {result.stdout[-2000:]}")
+
+
+def load_carrier():
+    path = ROOT / "scripts/ci/native_conformance.py"
+    spec = importlib.util.spec_from_file_location("sc78_native_conformance", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load existing native verifier carrier")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def main() -> int:
+    if len(sys.argv) != 3:
+        raise SystemExit("usage: sc78_native_capture.py APP_ROOT RESULT_DIR")
+    app, result = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()
+    if platform.python_implementation() != "CPython" or platform.python_version() != "3.13.15":
+        raise RuntimeError("capture requires the accepted CPython 3.13.15 runner")
+    if subprocess.check_output(["git", "-C", str(app), "rev-parse", "HEAD"], text=True).strip() != APP_PIN:
+        raise RuntimeError("APP lock checkout differs from the bound dependency source")
+    requirements = ROOT / "scripts/ci/sc78_hosted_requirements.txt"
+    install_log = result / "dependency-install.log"
+    result.mkdir(parents=True, exist_ok=False)
+    install = subprocess.run([sys.executable, "-m", "pip", "install", "--require-hashes",
+                              "--no-deps", "--only-binary=:all:", "-r", str(requirements)],
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             text=True, check=False)
+    write_once(install_log, install.stdout.encode())
+    if install.returncode:
+        raise RuntimeError(f"locked wheel installation failed: {install.returncode}")
+    actual = {name: importlib.metadata.version(name) for name in PACKAGES}
+    if actual != PACKAGES:
+        raise RuntimeError("installed packages differ from pinned minimal test closure")
+    environment = {"python": sys.version, "python_version": platform.python_version(),
+                   "platform": platform.platform(), "packages": actual,
+                   "app_pin": APP_PIN}
+    write_once(result / "environment.json",
+               (json.dumps(environment, sort_keys=True, separators=(",", ":")) + "\n").encode())
+    context = result / "source-context.json"
+    source_context(app, context)
+    junit = result / "selected.junit.xml"
+    receipt_dir = result / "native"
+    command = [sys.executable, "-m", "pytest", "--noconftest", "-c", "/dev/null", "--rootdir", str(ROOT),
+               "-o", "addopts=", "-p", "no:cacheprovider", "-q", f"--junitxml={junit}", "tests/vidya/test_raw_anchor_store.py",
+               "tests/vidya/test_research_intake_nonclaim_fixtures.py"]
+    read_paths = [ROOT / item for item in ROOT_READS] + [app / "uv.lock", context]
+    carrier = load_carrier()
+    record = carrier.capture_fixture_execution(
+        argv=command, cwd=ROOT, junit=junit, output=receipt_dir,
+        repositories={"root": ROOT, "app": app}, read_paths=read_paths,
+        selections=["tests/vidya/test_raw_anchor_store.py",
+                    "tests/vidya/test_research_intake_nonclaim_fixtures.py"])
+    expected = json.loads((ROOT / "scripts/ci/sc78_expected_cases.json").read_bytes())
+    summary = record.get("summary")
+    wanted = [(row["classname"], row["name"]) for row in expected["cases"]]
+    actual_cases = [(row["classname"], row["name"]) for row in summary["cases"]]
+    counts = summary["counts"]
+    if actual_cases != wanted or counts != {"collected": 23, "executed": 23, "passed": 23,
+                                            "failure": 0, "error": 0, "skipped": 0}:
+        raise RuntimeError("native JUnit identities/counts differ from the exact 23-case manifest")
+    if record.get("fixture_execution_conformant") is not True:
+        raise RuntimeError("existing fixture verifier did not produce a conformant receipt")
+    sys.path.insert(0, str(ROOT / "scripts/vidya"))
+    from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+    from claim_tuple import grade
+    rows = native_rows(str(receipt_dir / "receipt.json"))
+    if len(rows) != 1:
+        raise RuntimeError("existing CI conformance adapter did not project one native row")
+    judgment = grade(project_ci_conformance(rows[0]))
+    if judgment[0:2] != ("Judged", "Located"):
+        raise RuntimeError("existing shared ClaimTuple ladder did not return Judged/Located")
+    check = {"receipt": str(receipt_dir / "receipt.json"), "fixture_cases": 23,
+             "grade": judgment[0], "location": judgment[1],
+             "scope": "synthetic mechanical anchor fixtures only"}
+    write_once(result / "shared-grade-check.json",
+               (json.dumps(check, sort_keys=True, separators=(",", ":")) + "\n").encode())
+    print(json.dumps(check, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

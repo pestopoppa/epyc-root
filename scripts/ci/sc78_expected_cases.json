@@ -1,0 +1,97 @@
+{
+  "cases": [
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_response_bytes_are_retained_and_reopened_by_content_identity"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_claim_number_must_match_the_verified_quote"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_matching_claim_number_remains_source_verified"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_human_tier_requires_valid_retained_source_and_machine_tier_stays_capped"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_legacy_shape_and_unknown_metadata_never_raise_anchor_tier"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_frame_retains_the_exact_source_binding_metadata"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_tampered_or_symlinked_artifact_is_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_hardlinked_retained_file_is_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_fifo_at_content_path_is_refused_without_blocking"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_arxiv_verification_requires_three_explicit_exact_revision_urls"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_missing_original_wrong_quote_and_wrong_source_revision_are_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_traversal_and_unsafe_root_permissions_refuse"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_symlinked_artifact_root_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_store_is_missing_only_and_conflicting_existing_object_refuses"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_unversioned_arxiv_and_revision_redirect_mismatch_do_not_bind"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_unsupported_media_never_produces_a_retained_anchor"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_no_configured_root_returns_no_source_warrant"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[abstract-only]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[results-table-stripped]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[figure-number-only]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[readme-without-license]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_missing_synthetic_source_is_unknown_not_a_negative_claim"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_present_claim_is_positive_control_from_retained_response"
+    }
+  ],
+  "schema": "epyc.sc78.expected_cases/v1"
+}
