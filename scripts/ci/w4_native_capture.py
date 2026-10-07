@@ -21,6 +21,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts/vidya"))
 APP_PIN = "bec3263e6a83f446bf291b7dee938e326cffddfc"
+RESEARCH_PIN = "01d36835e68d57c231a9b0591802e267531df530"
+RESEARCH_REGISTRY = "orchestration/model_registry.yaml"
+RESEARCH_REGISTRY_BLOB = "a3935e7bc1a5ab0a96c1677ae0cb1dae8c788a81"
+HOSTED_MASTER_REGISTRY = Path("/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml")
 APP_LOCK_BLOB = "ef2306018773ff9a1e80389970d92f66fcf8d5b7"
 PYTHON_PIN = "3.13.15"
 WORKFLOW = ".github/workflows/w4-stack-change-native.yml"
@@ -260,9 +264,10 @@ def install_and_verify(app: Path, result: Path) -> tuple[Path, Path, Path]:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: w4_native_capture.py APP_ROOT")
+    if len(sys.argv) != 3:
+        raise SystemExit("usage: w4_native_capture.py APP_ROOT RESEARCH_ROOT")
     app = Path(sys.argv[1]).resolve()
+    research = Path(sys.argv[2]).resolve()
     if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD") != "1" or os.environ.get("PYTHONDONTWRITEBYTECODE") != "1":
         raise RuntimeError("pytest autoload and bytecode controls differ from the reviewed recipe")
     if os.environ.get("PYTEST_ADDOPTS", "") or os.environ.get("PYTEST_PLUGINS", ""):
@@ -295,6 +300,30 @@ def main() -> int:
     root_pin = require_clean(ROOT, "ROOT")
     if app_pin != APP_PIN:
         raise RuntimeError("APP HEAD differs from exact reviewed source")
+    if os.environ.get("GITHUB_ACTIONS") != "true" or require_clean(research, "Research") != RESEARCH_PIN:
+        raise RuntimeError("registry materialization requires the exact hosted Research checkout")
+    registry_source = tracked(research, RESEARCH_REGISTRY)
+    if git(research, "rev-parse", f"HEAD:{RESEARCH_REGISTRY}") != RESEARCH_REGISTRY_BLOB:
+        raise RuntimeError("Research registry Git blob differs from the approved input")
+    registry_bytes = regular_bytes(registry_source)
+    for parent in reversed(HOSTED_MASTER_REGISTRY.parents):
+        if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
+            raise RuntimeError("hosted registry layout traverses a non-directory or symlink")
+    if os.path.lexists(HOSTED_MASTER_REGISTRY):
+        raise RuntimeError("hosted registry input path must be fresh")
+    HOSTED_MASTER_REGISTRY.parent.mkdir(parents=True, exist_ok=True)
+    with HOSTED_MASTER_REGISTRY.open("xb") as handle:
+        handle.write(registry_bytes)
+    if regular_bytes(HOSTED_MASTER_REGISTRY) != registry_bytes:
+        raise RuntimeError("hosted registry materialization differs from its actual Git input")
+    registry_binding = result / "research-registry-binding.json"
+    registry_binding.write_text(json.dumps({
+        "research_commit": RESEARCH_PIN, "path": RESEARCH_REGISTRY,
+        "git_blob": RESEARCH_REGISTRY_BLOB, "bytes": len(registry_bytes),
+        "sha256": hashlib.sha256(registry_bytes).hexdigest(),
+        "materialized_path": str(HOSTED_MASTER_REGISTRY),
+        "scope": "byte-identical hosted layout input; no production store or runtime warrant",
+    }, sort_keys=True) + "\n", encoding="utf-8")
     install_log, freeze_path, env_path = install_and_verify(app, result)
     environment = json.loads(regular_bytes(env_path))
     environment["absent_binary_config_overrides"] = absent_binary_paths
@@ -302,6 +331,7 @@ def main() -> int:
     source_context = result / "source-context.json"
     subprocess.run([sys.executable, str(ROOT / "scripts/ci/ni08_source_context.py"),
                     "--repo", f"root={ROOT}", "--repo", f"app={app}",
+                    "--repo", f"research={research}",
                     "--output", str(source_context)], check=True)
     os.environ["W4_PROMOTION_GATE_CAPTURE_DIR"] = str(world_root)
     junit = result / "outer.junit.xml"
@@ -311,12 +341,13 @@ def main() -> int:
                "--import-mode=importlib", "-q", f"--junitxml={junit}", selection]
     read_paths = ([tracked(ROOT, name) for name in ROOT_READS]
                   + [tracked(app, name) for name in APP_READS]
-                  + [source_context, install_log, freeze_path, env_path])
+                  + [registry_source, HOSTED_MASTER_REGISTRY, registry_binding,
+                     source_context, install_log, freeze_path, env_path])
     source_before_capture = snapshots(read_paths)
     carrier = load_carrier()
     record = carrier.capture_fixture_execution(
         argv=command, cwd=app, junit=junit, output=result / "native",
-        repositories={"root": ROOT, "app": app}, read_paths=read_paths,
+        repositories={"root": ROOT, "app": app, "research": research}, read_paths=read_paths,
         selections=[selection],
     )
     if require_absent_binary_overrides(runner_temp) != absent_binary_paths:

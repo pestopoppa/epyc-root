@@ -11,6 +11,7 @@ jobs:
     timeout-minutes: 30
     env:
       APP_PIN: bec3263e6a83f446bf291b7dee938e326cffddfc
+      RESEARCH_PIN: 01d36835e68d57c231a9b0591802e267531df530
       CI: 'true'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
@@ -39,6 +40,13 @@ jobs:
           ref: ${{ env.APP_PIN }}
           path: app
           persist-credentials: false
+      - name: Checkout actual immutable Research registry source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_PIN }}
+          path: research
+          persist-credentials: false
       - name: Set up accepted Python patch release
         uses: actions/setup-python@v5
         with:
@@ -49,7 +57,7 @@ jobs:
         id: capture
         run: |
           set +e
-          "$RUNNER_TEMP/w4-stack-change/venv/bin/python" root/scripts/ci/w4_native_capture.py "$GITHUB_WORKSPACE/app"
+          "$RUNNER_TEMP/w4-stack-change/venv/bin/python" root/scripts/ci/w4_native_capture.py "$GITHUB_WORKSPACE/app" "$GITHUB_WORKSPACE/research"
           rc=$?
           printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/w4-stack-change/result/status.json"
           exit "$rc"
