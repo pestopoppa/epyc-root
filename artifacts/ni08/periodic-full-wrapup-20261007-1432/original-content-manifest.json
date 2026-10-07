@@ -1,0 +1,65 @@
+[
+  {
+    "path": "read-only-preparation.md",
+    "original_sha256": "95280f66e89e19d86bedaf9ebfdcf5377294f0d1428e6f294c0323cef489027e",
+    "original_bytes": 5390,
+    "encoding": "raw",
+    "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/full-next-readonly-prep-20261007/review_packet.md"
+  },
+  {
+    "path": "original-handoff-board.json.b64",
+    "original_sha256": "db19c0e0ca3261af507b1d6839c30fe463dc957d9f4a43323c8e3742d01e1371",
+    "original_bytes": 247779,
+    "encoding": "RFC4648-base64",
+    "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/full-next-readonly-prep-20261007/handoff_board.json"
+  },
+  {
+    "path": "original-api-health.json.b64",
+    "original_sha256": "dc282ee649e84404d49c1942d61da29b30bb4132f8be3b0738c2455b0a15acb6",
+    "original_bytes": 20629,
+    "encoding": "RFC4648-base64",
+    "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/full-next-readonly-prep-20261007/api_health.json"
+  },
+  {
+    "path": "original-handoff-board.headers.b64",
+    "original_sha256": "e4f4ff16df795bd57b626602db2150644695796e4ce414b0b75237868983edbb",
+    "original_bytes": 180,
+    "encoding": "RFC4648-base64",
+    "source": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/full1432-original-handoff-board.headers.original"
+  },
+  {
+    "path": "initial-index-check.txt",
+    "original_sha256": "36fd6288771a6410dc2a1aeb237c80fc43597ab7e2a52dba40b5345a4f0a2e7c",
+    "original_bytes": 477,
+    "encoding": "raw",
+    "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/full-next-readonly-prep-20261007/index_state_check.txt"
+  },
+  {
+    "path": "initial-wiki-lint.txt.b64",
+    "original_sha256": "490fd7ea68ca47be67e87ae4c49a5d8c01172c985b92b8f3f659f7698118b6d3",
+    "original_bytes": 29376,
+    "encoding": "RFC4648-base64",
+    "source": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/full1432-initial-wiki-lint.txt.original"
+  },
+  {
+    "path": "initial-readme-freshness.txt",
+    "original_sha256": "19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061",
+    "original_bytes": 7,
+    "encoding": "raw",
+    "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/full-next-readonly-prep-20261007/readme_freshness.txt"
+  },
+  {
+    "path": "MAIN-INF50-complete-custody-review.json.b64",
+    "original_sha256": "1a8ccd68f7e3ce8416e7d73f8e11479806c7db8cac7dc8d3c98df8b064f5fb7f",
+    "original_bytes": 1569,
+    "encoding": "RFC4648-base64",
+    "source": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/inf50-corrected-original-MAIN-reopen.json"
+  },
+  {
+    "path": "final-wiki-lint.txt.b64",
+    "original_sha256": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "original_bytes": 29369,
+    "encoding": "RFC4648-base64",
+    "source": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/full1432-final-wiki-lint.txt.original"
+  }
+]

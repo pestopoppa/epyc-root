@@ -3790,3 +3790,12 @@ C104's prospectively enrolled source/native pair is now accepted after original 
 - [MAIN native-record attribution evidence](../artifacts/ni08/periodic-full-wrapup-20261007-1325/citation-source-repair/source-context.md) — exact five-claim entries and original source hashes.
 - [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — repaired bounded annotation and retained risk limitations.
 - [Canonical intake source](../research/intake_index.yaml) — unchanged entry claims and verification corrections.
+
+
+### Prospective literature coverage and original transport gaps — 2026-10-07
+
+The corrected citation to intake-1333#01 remains source-reported/non-gating. Its separately enrolled one-entry projection reuses the existing adapter and ladder with explicit retrofit provenance. All five anchors lack retained source_artifact originals, so no original span or Attested support can be reconstructed. A frozen13-frame private projection is preparation; MAIN reviews unchanged source, exact full-ledger extension and fold delta under the existing owned-inode writer lease before canonical append.
+
+INF50's first native-writer archive omitted hidden cache bytes despite a typed64-byte hash record; it remains an immutable partial diagnostic. The separately approved direct-child upload correction has a new original. MAIN independently reopened all361 members,19 Git inputs,23roles/all47 locked wheel hashes and actual hidden cache0644/64bytes/hash. Native banner and typed YAML match the dry run with only the retired prose scalar changed. The record remains ungraded with receipt/JUnit/ClaimTuple NULL; product publication/task acceptance remain separate.
+
+Source references: [source ownership](../handoffs/active/vidya-belief-substrate-program.md), [bounded NI08 scope](../docs/reference/ni08-non-inference-continuation.md), [MAIN dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [original citation correction](../handoffs/active/decision-aware-routing.md).

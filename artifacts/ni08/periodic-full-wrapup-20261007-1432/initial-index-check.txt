@@ -1,0 +1,6 @@
+ADVISORY WARNING: generated graph is stale: handoffs/active/.index-graph.json differs from the graph built from this checkout
+cite-check: no scanned paths changed, skipping
+SCRATCH (warning): 141 handoff(s) declare no **Scratch** field (e.g. agent-file-prose-compression.md, agent-world-env-synthesis.md, agentic-serving-harness-fixes.md) — add one when you next touch the handoff; docs/guides/agent-workflows/handoff-index-authoring.md § Scratch roots
+
+0 problem(s)
+exit=0

@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "kind": "project-wiki-source-manifest",
+  "last_compile": "2026-10-07T14:01:15Z",
+  "scan_time": "2026-10-07T14:49:55Z",
+  "mode": "incremental",
+  "sources": [
+    {
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T14:45:10Z",
+      "size": 379202,
+      "content_hash": "05848b2f62b748084adf1b2d565480f86612c697410cf21d06bb82fd572112fc",
+      "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work"
+    },
+    {
+      "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T14:45:45Z",
+      "size": 150081,
+      "content_hash": "4d39fd8ad51b6be6bd753c53085a5e044d586b237d701add68313b707544ee1e",
+      "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)"
+    },
+    {
+      "path": "handoffs/active/non-inference-backlog.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T14:42:34Z",
+      "size": 132879,
+      "content_hash": "8378f19be81a24f4f00a565934da5056ca8e5fe6a0eb9d0fd90f0b8573a31d0d",
+      "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)"
+    },
+    {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "type": "handoff-active",
+      "modified": "2026-10-07T14:45:45Z",
+      "size": 376615,
+      "content_hash": "c6bab2f262319c3bf4cfda724e42894374c4969b1696862bb18774eda58dddb5",
+      "title": "Vidya Belief-Substrate Program"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+      "type": "progress",
+      "modified": "2026-10-07T14:49:03Z",
+      "size": 49397,
+      "content_hash": "2e7674f8d6e99c63d6c0dc3a06388f47e40c49e7f94d285548fdb8fdd12cb358",
+      "title": "NI08 continued non-inference implementation \u2014 2026-10-07"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07.md",
+      "type": "progress",
+      "modified": "2026-10-07T14:45:10Z",
+      "size": 65378,
+      "content_hash": "c46037e948c8b88a47845c1c4453e60bdd7bc0949e937c75a9d7f7ffbed8c414",
+      "title": "2026-10-07"
+    },
+    {
+      "path": "docs/reference/ni08-non-inference-continuation.md",
+      "type": "docs",
+      "modified": "2026-10-07T14:42:34Z",
+      "size": 63601,
+      "content_hash": "b5edeb44843d9312590f4061c56a31bc0c3f0a3b099fe0474c3b6fd483e932fc",
+      "title": "NI08 non-inference continuation \u2014 2026-10-06"
+    }
+  ],
+  "total_new": 7,
+  "by_type": {
+    "handoff-active": 4,
+    "progress": 2,
+    "docs": 1
+  },
+  "source_set_hash": "6191a3a0713886ad247ec78bab7b5ae2b835ef63c20feebedf31bc24acb52c77",
+  "writer_evidence_policy": {
+    "policy_version": 1,
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "requires_source_reference_section": true,
+    "requires_structural_lint": true,
+    "requires_human_or_measured_review": true
+  },
+  "baseline_manifest": "wiki/source_manifest.json",
+  "baseline_source_set_hash": "c30a8ebe3529318f9964579b1be006190914617d41db8d204afb2326a8a8c7ee",
+  "current_source_set_hash": "e4b42bf7abc6541f2adc0a58f0b2bb157e68c71a637f78e8d89d2e227a31f4aa",
+  "removed_sources": [],
+  "removed_count": 0,
+  "drift": {
+    "added_count": 0,
+    "changed_count": 7,
+    "removed_count": 0,
+    "has_drift": true
+  }
+}

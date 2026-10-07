@@ -1,0 +1,20 @@
+{
+  "current_source_set_hash": "e4b42bf7abc6541f2adc0a58f0b2bb157e68c71a637f78e8d89d2e227a31f4aa",
+  "drift": {
+    "added": [],
+    "added_count": 0,
+    "changed": [],
+    "changed_count": 0,
+    "has_drift": false,
+    "removed": [],
+    "removed_count": 0
+  },
+  "kind": "project-wiki-source-manifest-drift",
+  "manifest_path": "wiki/source_manifest.json",
+  "ok": true,
+  "saved_source_set_hash": "e4b42bf7abc6541f2adc0a58f0b2bb157e68c71a637f78e8d89d2e227a31f4aa",
+  "scan_time": "2026-10-07T14:52:36Z",
+  "schema_version": 1,
+  "writer_evidence_policy_errors": [],
+  "writer_evidence_policy_ok": true
+}

@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 168 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 170 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -726,3 +726,10 @@ MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8
 2026-10-07 C104 future-writer source/native companions are completed after MAIN original8/8 and exact two-file Research9299 publication review. NI08=167 (105 existing flips +62 completed children); historical14store/live-parent acceptance remains independently open.
 
 2026-10-07 exact decision-aware source citation repair closes one bounded child, NI08=168 (105 existing flips +63 completed children). Corrected risk citation intake-1333#01 remains unknown to the current ledger; the source record is unchanged and gives no runtime/policy gate.
+
+
+## C106 exact HOLD source acceptance — 2026-10-07
+
+MAIN accepted the original whole16 synthetic controls and independently reopened the exact two-file Research public product `3613455d5114d78968fab464b9cdc8a18df2f306` on parent9299. Unsupported ROLLBACK was removed and unsupported constructor selectors now refuse; default HOLD and floor/cadence/keep/serving behavior are preserved. The existing DS41-C106 and native companion close: NI08 now **170 = 107 existing checkbox closures + 63 completed scoped children**. [Original custody and scope](../../artifacts/ni08/c106-hold-source-acceptance-20261007/README.md) binds all16 test bodies,23 Git inputs, ALL5 locked wheel identities, original native receipt/JUnit/API/archive and successful publication records. Source conformance does not warrant live loop deployment, inference, performance or production promotion. Mixed parent work remains open.
+
+Operator-requested full wrap-up is in progress at this boundary. The first INF50 native-writer original remains an accepted partial diagnostic: upload omitted the hidden cache file. The separately approved direct-child recipe now has a new original capture with hidden bytes retained; independent MAIN review remains required before any product or task closure. C26 and UFH source/custody recipes are private preparation, not completed implementation or captures.
