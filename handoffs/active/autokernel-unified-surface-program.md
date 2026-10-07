@@ -1,5 +1,11 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
+## Original full-suite result and 64k capture checkpoint — 14:18Z
+
+The original r5 focused gate passed 394/394 with wait 0. Full validation finished with 5,129 passed, 103 failed, 11 skipped, two xfailed and 287 subtests; original full/native waits 1 preserve the failure. Original full-stage cleanup false and later worker-final cleanup true are separate receipts. Three private r6 repair cohorts are underway: the CPU cohort `25253ee2` passed 73 tests and 25 subtests under its original native q3 claim after committed sparse dependency hydration; the capacity cohort passed 91 controls plus seven lifecycle controls, and the GPU cohort includes a real serial preclaim bug. CPU original pytest/native waits were 0 with unchanged source and owner-held cleanup. A complete newly composed candidate must pass the whole native gate before normal main landing or fresh epochs.
+
+G3 retains twelve original 4k/8k/32k masks with Nb=2–5 and is computing the 64k group. The original zero-token watcher observed kv_pos 58,510/progress 0.91 at 14:13:32Z. Full16 geometry, both-arm three-repetition native identity, strict existing ClaimTuple grade and original server/native cleanup remain prerequisites for publishing the exact 35 original corpus files. ROOT's shared reference hook has actually been activated; wide CPU v2, corpus publication and GPU activation remain uncompleted. The finite same-owner validation helper retains its original bound; any reviewed supersession must preserve intentional cancellation waits and prove that helper dead before a no-resume replacement boundary.
+
 ## AutoKernel activation and remaining runtime validation — 12:26Z
 
 OP80 research main `2caf4f735ce4555739605ed5828ee0da07d32c31` was fast-forwarded into the live pinned lane checkout at 11:36:06Z under the original paused owners. The finite NEXT maintenance window closed at 12:21:03Z with original wait 0 and both same owners resumed at revision 4; fresh secure snapshots confirmed them running. DS41 plain and Q38FN LONGCTX=1 were preserved. Wide CPU v2 has not been activated. Receipts are in `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/cpu-activation-next/`.
