@@ -25,8 +25,12 @@ EXPECTED_CASES = [{'classname': 'tests.ci.test_pin_report_fixture', 'name': 'tes
 TEST_PATH = 'tests/ci/test_pin_report_fixture.py'
 CHECKER_PATH = 'scripts/benchmark/check_pin_staleness.py'
 CHECKER_SHA256 = '2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666'
-CONTEXT_PIN = 'UNENROLLED_MAIN_BOUNDARY_REQUIRED'
-CONTEXT_INPUTS = {}
+CONTEXT_PIN = '7981a9acf2b8e2c328b9add8e21a68656c99c1d6'
+CONTEXT_INPUTS = {'handoffs/active/scoring-infra-standardization.md': '56541ec5134bec43fe888fd3977c2ce20b40677436ab80c5d28ee524a28daa25', 'handoffs/active/vidya-belief-substrate-program.md': 'b18435c0b2e0f0aa3d37dc23892aaebb63235f328bffda5dc9084ae324e95cb1', 'scripts/vidya/adapters/README.md': '32633774ffb96d17c97b357b55f8c18de4b3ac1d9b2c7f9846620c021a6d229d'}
+REQUIREMENTS_SHA256 = 'e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a'
+TEST_AST_SHA256 = '50fa33618644c75a54e8d0d8ff425ded0d2c29ed4f52c07a034ff932bcce40d6'
+LITERAL_BRANCH = 'codex/ni08-evl42-report-native-20261007'
+CONTEXT_MARKERS = {'handoffs/active/scoring-infra-standardization.md': 'SC-EVL42-PIN-REPORT-WIRING', 'handoffs/active/vidya-belief-substrate-program.md': 'SC-EVL42-PIN-REPORT-WIRING', 'scripts/vidya/adapters/README.md': 'SC-EVL42-PIN-REPORT-WIRING'}
 ENVIRONMENT = {'PYTEST_DISABLE_PLUGIN_AUTOLOAD': '1', 'PYTEST_ADDOPTS': '', 'PYTEST_PLUGINS': '', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONHASHSEED': '0', 'PYTHONUNBUFFERED': '1'}
 
 def git(repo: Path, *args: str) -> str:
@@ -80,24 +84,26 @@ def hash_regular(path: Path) -> str:
     finally:
         os.close(fd)
 
-def inventory(root: Path) -> dict[str, str]:
+def inventory(root: Path, *, omit_root_status=False) -> dict:
     if root.is_symlink() or not stat.S_ISDIR(root.lstat().st_mode):
         raise RuntimeError("fresh result tree is not a real directory")
-    found = {".": "directory"}
+    found = {".": {"kind": "directory"}}
 
     def walk(directory: Path) -> None:
         for entry in sorted(os.scandir(directory), key=lambda row: row.name):
             path = Path(entry.path)
             mode = entry.stat(follow_symlinks=False).st_mode
             rel = path.relative_to(root).as_posix()
+            if omit_root_status and rel == "status.json":
+                continue
             if stat.S_ISLNK(mode):
                 found[rel] = {"kind": "symlink", "target": os.readlink(path)}
                 continue
             if stat.S_ISDIR(mode):
-                found[rel + "/"] = "directory"
+                found[rel + "/"] = {"kind": "directory"}
                 walk(path)
             elif stat.S_ISREG(mode):
-                found[rel] = hash_regular(path)
+                found[rel] = {"kind": "regular", "bytes": path.stat().st_size, "sha256": hash_regular(path)}
             else:
                 raise RuntimeError(f"result tree contains a special file: {rel}")
 
@@ -148,6 +154,42 @@ def verify_requirements(data: bytes, lock_data: bytes) -> None:
             raise RuntimeError(f"requirements differ from ALL pinned lock wheels: {name}")
 
 
+def expanded_test_cases(source: bytes):
+    """Enumerate literal actual parameterizations without importing source code."""
+    import itertools
+    tree=ast.parse(source,filename=TEST_PATH)
+    if hashlib.sha256(ast.dump(tree,include_attributes=False).encode()).hexdigest()!=TEST_AST_SHA256:
+        raise RuntimeError('actual whole-module test AST differs')
+    found=[]
+    for node in tree.body:
+        if not isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) or not node.name.startswith('test_'):
+            continue
+        suffixes=[[]]
+        for decorator in reversed(node.decorator_list):
+            if not isinstance(decorator,ast.Call) or not isinstance(decorator.func,ast.Attribute) or decorator.func.attr!='parametrize':
+                raise RuntimeError('unexpected actual test decorator')
+            if len(decorator.args)!=2:
+                raise RuntimeError('nonliteral parameterization shape')
+            values=ast.literal_eval(decorator.args[1])
+            options={k.arg:ast.literal_eval(k.value) for k in decorator.keywords}
+            if set(options)-{'ids'}:
+                raise RuntimeError('unreviewed parameterization options')
+            ids=options.get('ids')
+            if ids is None:
+                if any(not isinstance(value,(str,int)) or type(value) is bool for value in values):
+                    raise RuntimeError('default parameter IDs are not explicit scalar literals')
+                ids=[str(value) for value in values]
+            if len(ids)!=len(values) or len(set(ids))!=len(ids) or any(not isinstance(x,str) for x in ids):
+                raise RuntimeError('invalid literal parameter IDs')
+            suffixes=[[*prefix,value] for prefix,value in itertools.product(suffixes,ids)]
+        for parts in suffixes:
+            found.append({'classname':'tests.ci.test_pin_report_fixture',
+                          'name':node.name+('['+'-'.join(parts)+']' if parts else '')})
+    if len(found)!=29 or len({(r['classname'],r['name']) for r in found})!=29:
+        raise RuntimeError('actual expanded case count differs')
+    return found
+
+
 def main():
     workspace = Path(os.environ['GITHUB_WORKSPACE']).resolve()
     run = Path(os.environ['RUNNER_TEMP']).resolve() / 'evl42-report'
@@ -158,7 +200,8 @@ def main():
     try:
         if len(CONTEXT_PIN) != 40 or not CONTEXT_INPUTS:
             raise RuntimeError('prospective MAIN enrollment is not bound; capture forbidden')
-        if platform.python_version() != '3.13.15' or platform.system() != 'Linux':
+        if (platform.python_version() != '3.13.15' or platform.system() != 'Linux'
+                or platform.machine().lower() not in {'x86_64', 'amd64'}):
             raise RuntimeError('reviewed Python/Linux runtime differs')
         if Path(sys.prefix).resolve() != Path(os.environ['RUNNER_TEMP']).resolve() / 'evl42-report-venv' or sys.prefix == sys.base_prefix:
             raise RuntimeError('isolated venv differs')
@@ -171,6 +214,11 @@ def main():
         if {name:require_clean(repo,name) for name,repo in repos.items()} != expected:
             raise RuntimeError('actual checkout pins differ')
         source = repos['source']
+        if os.environ.get('GITHUB_REF') != 'refs/heads/' + LITERAL_BRANCH or os.environ.get('GITHUB_EVENT_NAME') != 'push':
+            raise RuntimeError('only exact reviewed literal push branch is eligible')
+        git(repos['recipe'], 'merge-base', '--is-ancestor', SOURCE_PIN, 'HEAD')
+        if set(CONTEXT_INPUTS) != set(CONTEXT_MARKERS):
+            raise RuntimeError('all three prospective enrollment files must be bound')
         reads = []
         for rel, digest in SOURCE_INPUTS.items():
             path = tracked_file(source,rel)
@@ -181,6 +229,8 @@ def main():
             path=tracked_file(repos['context'],rel)
             if hash_regular(path)!=digest:
                 raise RuntimeError('MAIN enrollment bytes differ')
+            if CONTEXT_MARKERS[rel] not in path.read_text(encoding='utf-8'):
+                raise RuntimeError('prospective MAIN enrollment marker missing')
             reads.append(path)
         checker=tracked_file(repos['research'],CHECKER_PATH)
         if hash_regular(checker)!=CHECKER_SHA256:
@@ -193,13 +243,17 @@ def main():
             raise RuntimeError('explicit dependency lock differs')
         req=tracked_file(repos['recipe'],'scripts/ci/ni08_evl42_report_requirements.txt')
         verify_requirements(req.read_bytes(),lock.read_bytes())
+        if hash_regular(req) != REQUIREMENTS_SHA256:
+            raise RuntimeError('requirements bytes differ')
         if {name:importlib.metadata.version(name) for name in LOCKED_PACKAGES}!=LOCKED_PACKAGES:
             raise RuntimeError('installed dependency versions differ')
         reads.extend([lock,req,tracked_file(repos['recipe'],'scripts/ci/ni08_evl42_report_capture.py'),
                       tracked_file(repos['recipe'],'.github/workflows/ni08-evl42-report-native.yml')])
         environment=run/'environment.json'
         environment.write_text(json.dumps({'pins':expected,'environment':ENVIRONMENT,'python':sys.version,
-            'platform':platform.platform(),'cases':EXPECTED_CASES,'scope':'29 outer synthetic controls; original nested TRUE/FALSE/NULL retained; no actual Research scan or pin-health warrant'},sort_keys=True,indent=2)+'\n')
+            'platform':platform.platform(),'cases':EXPECTED_CASES,'source_import_closure':SOURCE_INPUTS,
+            'pytest_argv_isolation':['--noconftest','-c /dev/null','--import-mode=importlib','-o addopts=','-p no:cacheprovider'],
+            'dependency_versions':LOCKED_PACKAGES,'artifact_custody':'regular bytes, directory membership and links without following; root status.json alone is mutable/excluded','scope':'29 outer synthetic controls; original nested TRUE/FALSE/NULL retained; no actual Research scan or pin-health warrant'},sort_keys=True,indent=2)+'\n')
         freeze=run/'pip-freeze.txt'
         freeze.write_bytes(subprocess.check_output([sys.executable,'-m','pip','freeze','--all']))
         versions=run/'tool-versions.json'
@@ -212,7 +266,10 @@ def main():
         reads.extend([environment,freeze,versions,install])
         before={str(p):hash_regular(p) for p in reads}
         result=run/'result';result.mkdir()
+        tree_before_capture=inventory(run,omit_root_status=True)
         test=tracked_file(source,TEST_PATH)
+        if expanded_test_cases(test.read_bytes()) != EXPECTED_CASES:
+            raise RuntimeError('complete expanded AST case identity differs')
         argv=[sys.executable,'-m','pytest','--noconftest','-c','/dev/null','--import-mode=importlib',
               '--rootdir='+str(source),'-o','addopts=','-p','no:cacheprovider','-q',str(test),
               '--basetemp='+str(result/'actual-test-worlds'),'--junitxml='+str(result/'original-junit.xml')]
@@ -230,7 +287,7 @@ def main():
         summary=receipt.get('summary') or {};counts=summary.get('counts') or {}
         actual=[(c.get('classname'),c.get('name')) for c in summary.get('cases') or []]
         exact=Counter(actual)==Counter((c['classname'],c['name']) for c in EXPECTED_CASES) and len(actual)==29
-        tree_before=inventory(result);before_grade={str(p):hash_regular(p) for p in reads}
+        tree_before=inventory(run,omit_root_status=True);before_grade={str(p):hash_regular(p) for p in reads}
         sys.path.insert(0,str(source));sys.path.insert(0,str(source/'scripts/vidya'))
         from scripts.vidya.adapters.ci_conformance import native_rows,project_ci_conformance
         from claim_tuple import grade
@@ -239,15 +296,18 @@ def main():
         for row in rows:
             claim=project_ci_conformance(row);quality,trust,reasons=grade(claim)
             grades.append({'measurement_id':claim.measurement_id,'Q':quality,'T':trust,'reasons':reasons})
-        tree_after=inventory(result);after_grade={str(p):hash_regular(p) for p in reads}
+        tree_after=inventory(run,omit_root_status=True);after_grade={str(p):hash_regular(p) for p in reads}
         if tree_before!=tree_after or before!=before_grade or before_grade!=after_grade:
             raise RuntimeError('original source/result custody changed')
-        custody={'result_before_grade':tree_before,'result_after_grade':tree_after,'source_before_capture':before,
+        custody={'full_result_tree_before_capture':tree_before_capture,
+                 'full_result_tree_after_capture_before_grade':tree_before,'full_result_tree_after_grade':tree_after,
+                 'only_mutable_exclusion':'root status.json', 'source_before_capture':before,
                  'source_before_grade':before_grade,'source_after_grade':after_grade,'grades':grades,'new_grade_authored':False}
         with (run/'shared-grade-custody.json').open('x') as handle:json.dump(custody,handle,indent=2,sort_keys=True)
         metric=receipt.get('fixture_execution_conformant')
-        passed=code==0 and metric is True and exact and counts.get('executed')==29 and all(counts.get(k)==0 for k in ('failure','error','skipped')) and len(grades)==1 and (grades[0]['Q'],grades[0]['T'])==('Judged','Located')
-        status.update(state='passed' if passed else 'failed',native_metric=metric,junit_counts=counts,exact_cases=exact,grades=grades,exit_code=0 if passed else code or 1)
+        passed=code==0 and metric is True and exact and counts.get('collected')==29 and counts.get('executed')==29 and counts.get('passed')==29 and all(counts.get(k)==0 for k in ('failure','error','skipped')) and len(grades)==1 and (grades[0]['Q'],grades[0]['T'])==('Judged','Located')
+        status.update(full_result_tree_after_analysis=inventory(run,omit_root_status=True),
+                      state='passed' if passed else 'failed',native_metric=metric,junit_counts=counts,exact_cases=exact,grades=grades,exit_code=0 if passed else code or 1)
         return status['exit_code']
     except Exception as exc:
         status.update(state='capture_failed',error=type(exc).__name__+': '+str(exc),exit_code=1)

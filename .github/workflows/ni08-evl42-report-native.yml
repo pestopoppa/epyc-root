@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: context
-          ref: UNENROLLED_MAIN_BOUNDARY_REQUIRED
+          ref: 7981a9acf2b8e2c328b9add8e21a68656c99c1d6
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13.15'
