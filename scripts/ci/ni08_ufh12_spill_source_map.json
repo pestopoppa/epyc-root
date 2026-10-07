@@ -27762,7 +27762,7 @@
     ],
     "qualification": "map self bytes are named regular reads but excluded from its recursive recipe content envelope; exact recipe commit tree/GITHUB_SHA and native readset bind them. No self-referential SHA claim.",
     "recipe_source_config_envelope": {
-      "base_git_pin": "8b540512ed8017fc0ed80ea8f5d3a0381fc08ead",
+      "base_git_pin": "f096d2bc34383460de421f95b897f486824ab8b1",
       "file_count": 907,
       "files": [
         {
@@ -28608,9 +28608,9 @@
         {
           "candidate_bytes": 9879,
           "candidate_git_blob": "8ed26f29bf896a1951acac8f0b5d53755379745c",
-          "candidate_only": true,
+          "candidate_only": false,
           "candidate_sha256": "e8cb102896aa63797e3103aa3ec87a087836d248a158333bef34cb7604c10ea8",
-          "git_blob": "untracked",
+          "git_blob": "8ed26f29bf896a1951acac8f0b5d53755379745c",
           "kind": "regular",
           "mode": "100644",
           "path": ".github/workflows/ni08-ufh12-spill-summary-capture.yml"
@@ -30976,11 +30976,11 @@
           "path": "scripts/ci/ni08_sw5_sw6_scg_capture.py"
         },
         {
-          "candidate_bytes": 38890,
-          "candidate_git_blob": "c9956e6e301c0f6970dab11f94eff0043d4f8da7",
-          "candidate_only": true,
-          "candidate_sha256": "bb21c7a51e1a8abbd374923f1b83c43dab68df6386a7955b496dd789bf7c1cf7",
-          "git_blob": "untracked",
+          "candidate_bytes": 38967,
+          "candidate_git_blob": "7e6de8021cdb33f62dcdcf19dc3731a88b0d0d4f",
+          "candidate_only": false,
+          "candidate_sha256": "b046ba36d793735dcd631e5934a82c68fee697857cea308ca7a8b957c056100f",
+          "git_blob": "7e6de8021cdb33f62dcdcf19dc3731a88b0d0d4f",
           "kind": "regular",
           "mode": "100644",
           "path": "scripts/ci/ni08_ufh12_spill_capture.py"
@@ -36836,9 +36836,9 @@
           "path": "wiki.yaml"
         }
       ],
-      "map_self_excluded": "map itself is an exact regular native read and is bound by committed recipe tree/GITHUB_SHA and carrier readset; no recursive digest claim",
+      "map_self_excluded": "map itself is an exact regular native read and is bound by final recipe commit/GITHUB_SHA and carrier readset; no recursive digest claim",
       "opaque_symlink_count": 0,
-      "predicate": "complete current tracked and nonignored candidate *.py, named config, *.toml,*.ini,*.cfg,*.yaml,*.yml",
+      "predicate": "complete recursively tracked *.py, named config, *.toml,*.ini,*.cfg,*.yaml,*.yml",
       "regular_count": 907
     }
   }
