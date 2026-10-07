@@ -131,3 +131,10 @@ Retired (clean, `worktree remove` without --force; build dirs went with them): j
 **Task 3 (prune) — all five KEPT.** browser-agent-surface: dormant stub whose first task is an operator decision. conversational-memory-eval-instrument: CME-3 unticked. cpu-shape-specialized-gemv-decode: receipts holder with live CPU18/CPU26 re-open triggers. design-backlog-triage-2026-07-23: operator-decision backlog, tiers A-D open. model-stack-change-standardization-audit: status READY FOR MAIN IMPLEMENTATION, remaining W5/hardcoded-surface cleanup. No index rows to delete (`/mnt/raid0/llm/tmp/ec-final-1007/INDEX_DELETES.md`).
 
 **Disk freed this task: about 3.1 GiB** (on top of the 15 GiB above).
+
+## Final wrap-up delta 2 (workspace-ec)
+
+(a) Shared clone /workspace reset from aeac9ab4e to origin/main (operator-approved) via backup, revert, `reset --keep`, reapply. Backup and patch kept in /mnt/raid0/llm/tmp/shared-clone-backup-20261007/. Six local edits preserved (CLAUDE.md 3-way reapplied); master-handoff-index.md and observer_registry.json went to upstream with local copies backed up; differing untracked scripts/safety/guarded_rm.sh and trash-sweep.sh backed up. workspace-89 informed.
+(b) ds41-specdec-recipe (4.4G) is not workspace-ec's (likely main-dsv41's): left. copy-spec-eval-20261006 kept: width/champ-build/ holds champion candidate binaries for workspace-89 fold gates.
+(c) All 5 prune candidates read and KEPT (reasons in the f9c7b466b note).
+Gates: no new flips; nothing filed.
