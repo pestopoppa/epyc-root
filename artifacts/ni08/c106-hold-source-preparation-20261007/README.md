@@ -1,0 +1,5 @@
+# C106 implemented HOLD source preparation
+
+MAIN reviewed the actual existing DS41-C106 task, exact two-file sourceb223 onc497 and all sixteen AST control identities. Removing the unused ROLLBACK enum is explicitly one of the task options. AccumulatorPolicy refuses unsupported constructor values; the existing operator HOLD, default caller, thresholds, cadence, keep decisions, serving predicate and planner evidence stay unchanged. No rollback selector consumer exists in the pinned Python source.
+
+The source task is already tracked as DS41-C106, so no duplicate source child is added. Its prospective whole-module synthetic native companion is enrolled before any capture. All nine selected Git source/config inputs are independently hash/blob/size checked; the recipe must bind the complete actual import/readset and locked environment at final MAIN review. Deferred journal transition validators and optional YAML paths require concrete control-path review; this proposal is not proof of general execution closure. No hosted run, local project import/test, product publication, kernel or owner runtime/reload is accepted here.

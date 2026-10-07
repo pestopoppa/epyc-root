@@ -1,0 +1,81 @@
+{
+  "source_commit": "b223b53aeee78f243618f45da8a6bffe9e55effd",
+  "source_parent": "c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "checkout": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c106-source-candidate-20261007",
+  "source_only": true,
+  "publication_or_execution_authorized": false,
+  "exact_product_files": [
+    "scripts/kernel_rnd/autokernel/loop/accumulate.py",
+    "scripts/kernel_rnd/autokernel/loop/test_accumulate.py"
+  ],
+  "cases": [
+    {
+      "name": "test_fire_threshold_is_multiple_times_floor",
+      "ast_sha256": "1331091d5f2bbcf809f5e4733f7fed806a24fc63039623800805c2d16694e25e"
+    },
+    {
+      "name": "test_below_threshold_accumulates",
+      "ast_sha256": "8193b9f234bc00ed5eb69b0c841b617c9ec39201d0455e6da7e3f824a180dc97"
+    },
+    {
+      "name": "test_at_or_above_threshold_fires",
+      "ast_sha256": "d345dcc93a1aa1c506399de4f314179acc3924fb6dc2a853df0be95a4cd235dd"
+    },
+    {
+      "name": "test_uncalibrated_floor_never_fires",
+      "ast_sha256": "0e549ff301a7907ef17088e16a05b62700a0bfb84ab386efc956f0509e278f11"
+    },
+    {
+      "name": "test_classify_promote_only_on_decisive_positive",
+      "ast_sha256": "f0abba87ad03893e52a005a09af6c4e2fe1d29412c9c0c20d3ffb89da5e08d01"
+    },
+    {
+      "name": "test_resolve_promote_advances_champion_to_tip",
+      "ast_sha256": "90f84c401fae006fa0881053bfde584153db7da20db7c70660c7796e15db6c34"
+    },
+    {
+      "name": "test_default_divergence_is_hold_with_planner_evidence",
+      "ast_sha256": "cdb3496e8ca30292f90129b62c8ecbb053af8101b22a4508c7658b82122a2162"
+    },
+    {
+      "name": "test_unsupported_rollback_refuses_before_resolving_or_mutating_bundle",
+      "ast_sha256": "d9eea91cb971343439030ac075d422ce4402355240ce2f3db8fcfd01f60e165c"
+    },
+    {
+      "name": "test_promote_carries_no_planner_evidence",
+      "ast_sha256": "dc0db45ba90350b1eddba93975cba91a1dcaea34d1364d6894d6bcb475f4c267"
+    },
+    {
+      "name": "test_bundle_add_keep_tracks_tip_and_compounded",
+      "ast_sha256": "1c352eb2055679ad75ab98bbe35d4df4698c717b254463f99ebe62d7fa2c8f41"
+    },
+    {
+      "name": "test_bundle_persists_exact_comparison_reference",
+      "ast_sha256": "f418209e8e7ba6a678f8905b523ee54bdd4e1a625e6d42471a917bb34e490d98"
+    },
+    {
+      "name": "test_bundle_v2_without_comparison_reference_remains_readable",
+      "ast_sha256": "f026b5ed069c3b7d4bc12227a200232691f40c04718267687fe69da3c64f13ab"
+    },
+    {
+      "name": "test_negative_excursion_requires_finite_effect_beyond_floor",
+      "ast_sha256": "72bed9a4e09f7e09e849bd570a54d039703429bf328dc2f07983dd0695891254"
+    },
+    {
+      "name": "test_bundle_survives_a_restart",
+      "ast_sha256": "7aa6cda26f351dcc0a9bc64fedc52bf1e62cabe6bb9408828b1f9b7f8f69f0c5"
+    },
+    {
+      "name": "test_bundle_load_rejects_state_the_tree_no_longer_contains",
+      "ast_sha256": "3b8d3104aa8006a2da429056a9d9462317049b9831fa9051cdce4893c0769399"
+    },
+    {
+      "name": "test_anchor_ahead_of_bundle_keeps_the_cor_and_advances_only_the_tip",
+      "ast_sha256": "f437227258a385e71890d3ec4547837a076ac4f9adbba94a4d8778adc60082cc"
+    }
+  ],
+  "source_closure": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c106-eager-closure-preparation-20261007/actual-source-closure-and-data-call-map.json",
+  "enrollment_draft": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c106-eager-closure-preparation-20261007/prospective-MAIN-enrollment-draft.md",
+  "caller_review": "run.py uses default HOLD; test_gate_cadence and test_bundle_recovery use default HOLD. No rollback selector or contrary consumer found. Existing resolve and serving predicates unchanged.",
+  "scope": "Remove unused enum and refuse unsupported constructor values; preserve operator HOLD and actual planner evidence, thresholds, cadence, producer/grade. No runtime or parent acceptance."
+}

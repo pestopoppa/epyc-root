@@ -1,0 +1,15 @@
+{
+  "review": "PASS source-only prospective enrollment",
+  "utc": "2026-10-07T13:03:18.797508+00:00",
+  "source": "b223b53aeee78f243618f45da8a6bffe9e55effd",
+  "source_parent": "c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "source_files": 2,
+  "whole_AST_controls": 16,
+  "source_inputs_checked": 9,
+  "manual_blast_radius": "AccumulatorPolicy constructor/enum and existing run default HOLD callers; no ROLLBACK selector consumer, no floor/cadence/keep/resolve/grade behavior change. MEDIUM source risk; synthetic complete original required before acceptance.",
+  "operator_choice": "Existing operator HOLD is implemented; unused ROLLBACK removal explicitly permitted by actual DS41-C106 task. No new runtime policy decision.",
+  "host_project_execution": false,
+  "capture_or_product_publication_authorized": false,
+  "owning_task": "DS41-C106 existing source task; duplicate source child is not added",
+  "native_companion": "VB-DS41-C106-HOLD-CONFORMANCE"
+}
