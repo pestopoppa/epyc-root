@@ -206,7 +206,7 @@ def install_and_verify(app: Path, result: Path) -> tuple[Path, Path, Path]:
     current = None
     for line in regular_bytes(requirements).decode("utf-8").splitlines():
         row = line.strip()
-        if not row:
+        if not row or row.startswith("#"):
             continue
         if not line[:1].isspace():
             if not row.endswith("\\"):
@@ -217,7 +217,7 @@ def install_and_verify(app: Path, result: Path) -> tuple[Path, Path, Path]:
             current = match.group(1).lower().replace("_", "-")
             declared[current] = {"version": match.group(2), "hashes": set()}
         else:
-            match = re.fullmatch(r"--hash=sha256:([0-9a-f]{64})", row)
+            match = re.fullmatch(r"--hash=sha256:([0-9a-f]{64})", row.removesuffix("\\").rstrip())
             if not match or current is None:
                 raise RuntimeError("invalid or orphan wheel hash in requirements")
             declared[current]["hashes"].add(match.group(1))
@@ -230,9 +230,6 @@ def install_and_verify(app: Path, result: Path) -> tuple[Path, Path, Path]:
             raise RuntimeError(f"locked package version differs: {name}=={version}")
         compatible = {
             wheel["hash"].removeprefix("sha256:") for wheel in package.get("wheels", [])
-            if (wheel["url"].lower().endswith("-py3-none-any.whl")
-                or ("cp313-cp313-manylinux" in wheel["url"].lower()
-                    and "x86_64" in wheel["url"].lower()))
         }
         if not compatible or declared[key]["hashes"] != compatible:
             raise RuntimeError(f"requirements wheel hashes differ from APP lock: {name}")
