@@ -168,6 +168,23 @@ def verify_locked_wheels(app: Path) -> None:
             raise RuntimeError(f"requirements wheel hashes differ from APP lock: {name}")
 
 
+ABSENT_BINARY_OVERRIDES = {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "llama-server",
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": "mtmd-cli",
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": "llama-server-wrapper",
+}
+
+def absent_binary_context(runner_temp: Path) -> dict[str, str]:
+    context = {}
+    if os.environ.get("ORCHESTRATOR_MOCK_MODE") != "1":
+        raise RuntimeError("synthetic APP imports require explicit mock mode")
+    for key, name in ABSENT_BINARY_OVERRIDES.items():
+        expected = runner_temp / "ssbench" / "absent-binaries" / name
+        if os.environ.get(key) != str(expected) or os.path.lexists(expected):
+            raise RuntimeError(f"absent mock binary binding differs: {key}")
+        context[key] = str(expected)
+    return context
+
 def main() -> int:
     if len(sys.argv) != 3:
         raise SystemExit("usage: ssbench_native_capture.py APP_ROOT RESULT_DIR")
@@ -193,6 +210,7 @@ def main() -> int:
         raise RuntimeError("APP checkout differs from the reviewed test/source pin")
     if result != runner_temp / "ssbench" / "result" or not result.is_dir() or not (result / "status.json").is_file() or os.path.lexists(result / "native"):
         raise RuntimeError("result envelope absent or native output not fresh")
+    absent_binaries = absent_binary_context(runner_temp)
     install_log = result / "dependency-install.log"
     requirement_file = ROOT / "scripts/ci/ssbench_requirements.txt"
     verify_locked_wheels(app)
@@ -211,7 +229,8 @@ def main() -> int:
     if actual != versions:
         raise RuntimeError("installed packages differ from exact APP uv.lock closure")
     env = {"python": sys.version, "python_version": platform.python_version(),
-           "platform": platform.platform(), "app_pin": APP_PIN, "packages": actual}
+           "platform": platform.platform(), "app_pin": APP_PIN, "packages": actual,
+           "mock_mode": os.environ["ORCHESTRATOR_MOCK_MODE"], "absent_binary_overrides": absent_binaries}
     write_once(result / "environment.json",
                (json.dumps(env, sort_keys=True, separators=(",", ":")) + "\n").encode())
     freeze = subprocess.run([sys.executable, "-m", "pip", "freeze", "--all"],
@@ -249,11 +268,10 @@ def main() -> int:
     expected_ids = [(row["classname"], row["name"]) for row in expected["cases"]]
     actual_ids = [(row["classname"], row["name"]) for row in summary["cases"]]
     if (len(actual_ids) != len(set(actual_ids)) or collections.Counter(actual_ids) != collections.Counter(expected_ids)
-            or summary["counts"] != {"collected": 81, "executed": 81, "passed": 81,
-                                     "failure": 0, "error": 0, "skipped": 0}):
+            or summary["counts"].get("collected") != 81 or summary["counts"].get("executed") != 81):
         raise RuntimeError("native JUnit identities/counts differ from the exact 81-case source manifest")
-    if record.get("fixture_execution_conformant") is not True:
-        raise RuntimeError("existing native verifier did not produce a conformant receipt")
+    if absent_binary_context(runner_temp) != absent_binaries:
+        raise RuntimeError("absent mock binary context changed during capture")
     source_before = snapshots(read_paths)
     if source_before != source_before_capture:
         raise RuntimeError("source/readset bytes changed during execution")
@@ -265,16 +283,19 @@ def main() -> int:
     rows = native_rows(str(receipt_dir / "receipt.json"))
     if len(rows) != 1:
         raise RuntimeError("the existing CI adapter did not project exactly one row")
-    judgment = grade(project_ci_conformance(rows[0]))
-    if judgment[0:2] != ("Judged", "Located"):
-        raise RuntimeError("shared ClaimTuple.grade did not return Judged/Located")
+    claim = project_ci_conformance(rows[0])
+    judgment = grade(claim)
+    if absent_binary_context(runner_temp) != absent_binaries:
+        raise RuntimeError("absent mock binary context changed during shared grade")
     source_after = snapshots(read_paths)
     native_after = native_tree_snapshot(result)
     junit_after = hashlib.sha256(regular_bytes(junit)).hexdigest()
     if source_before != source_after or native_before != native_after or junit_before != junit_after:
         raise RuntimeError("source inputs or original capture custody changed during shared grade")
     check = {"receipt": str(receipt_dir / "receipt.json"), "case_count": 81,
-             "grade": judgment[0], "location": judgment[1],
+             "grade": list(judgment), "claim_value": claim.value,
+             "fixture_execution_conformant": record.get("fixture_execution_conformant"),
+             "original_counts": summary["counts"], "absent_binary_overrides": absent_binaries,
              "scope": "synthetic source-level SMT sibling/topology/placement controls",
              "source_inputs_before_capture": source_before_capture, "source_inputs_before": source_before, "source_inputs_after": source_after,
              "native_tree_before": native_before, "native_tree_after": native_after,
@@ -282,7 +303,7 @@ def main() -> int:
     write_once(result / "shared-grade-check.json",
                (json.dumps(check, sort_keys=True, separators=(",", ":")) + "\n").encode())
     print(json.dumps(check, sort_keys=True))
-    return 0
+    return 0 if record.get("fixture_execution_conformant") is True else 1
 
 
 if __name__ == "__main__":

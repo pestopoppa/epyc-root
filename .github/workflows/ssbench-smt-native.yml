@@ -35,6 +35,15 @@ jobs:
           ref: 3e34eaeca079c440f31b2f26710fd09790544cc9
           path: app
           persist-credentials: false
+      - name: Bind absent mock binaries before any APP imports
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/ssbench/absent-binaries"
+          test ! -e "$base"
+          test ! -L "$base"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/llama-server\n' "$base" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/mtmd-cli\n' "$base" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/llama-server-wrapper\n' "$base" >> "$GITHUB_ENV"
       - name: Set up accepted CPython patch release
         uses: actions/setup-python@v5
         with:
