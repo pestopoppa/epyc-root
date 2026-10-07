@@ -16,7 +16,7 @@ _SOURCE_SUFFIXES = {".py", ".pyi", ".sh", ".toml", ".lock", ".yaml", ".yml",
 _SOURCE_JSON_NAMES = {"package.json", "tsconfig.json", "pyrightconfig.json",
                       ".eslintrc.json", "settings.json"}
 _SOURCE_BASENAMES = {"Makefile", "Dockerfile", ".clang-format",
-                     ".pre-commit-config.yaml"}
+                     ".pre-commit-config.yaml", "CMakeLists.txt"}
 
 
 def _git(repo: str, *args: str) -> bytes:
@@ -25,7 +25,8 @@ def _git(repo: str, *args: str) -> bytes:
 
 def _include(path: str) -> bool:
     p = PurePosixPath(path)
-    if p.suffix.lower() in _SOURCE_SUFFIXES or p.name in _SOURCE_BASENAMES:
+    if (p.suffix.lower() in _SOURCE_SUFFIXES or p.name in _SOURCE_BASENAMES
+            or p.name.startswith("README")):
         return True
     if p.suffix.lower() == ".json":
         parts = set(p.parts)
