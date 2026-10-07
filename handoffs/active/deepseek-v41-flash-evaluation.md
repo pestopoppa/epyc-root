@@ -1150,6 +1150,25 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - **Harness fix in the same window**: research `de02a21d` — `run.py` was missing the `Mapping`
     import, a NameError that killed Q38FN's longctx keep-gate batches; adds
     `test_no_undefined_runtime_names.py` (package-wide AST guard).
+  - 2026-10-07 03:03Z: **REMEASURE_REQUEST resolved** — the `cff9ad900700…` request is now
+    `REMEASURE_REQUEST.claimed-20261007T030349159542Z-1658951.json`, consumed automatically when
+    Q38FN relaunched on the new epoch (DS41-C128 below). No action needed.
+  - Disk retention note above is now **resolved**: operator ran
+    `/mnt/raid0/llm/tmp/disk-audit-20261007/delete_safe.sh`; free disk is 175 GiB (was 86 GiB).
+- [x] DS41-C128 — **critic swap: both AK lanes now run with zero Claude models.** ✅ 2026-10-07
+  03:03Z — critic switched from `claude-opus-5-5` to `gpt-6-astra@high` in all 4 common-args files
+  under `/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/` (backups `*.bak-20261007-critic`).
+  New-epoch watchdogs (same directory): `q38fn_watchdog3.sh` (`state-6ed37a-*`, `LONGCTX=1`),
+  `ds41_watchdog6.sh` (`state-337615-*`, hold file `DS41_WATCHDOG6_HOLD`). Confirms the DS41-C127
+  continuation-binding lesson generalizes to any common-args edit (`serial_run.py:824-827`), not
+  just a served-shape recalibration: seeding from an old continuation dies with "continuation
+  binding does not match its own original arguments" regardless of what changed in the config.
+  - 2026-10-07 ~02:55Z: Q38FN was SIGKILLed mid-batch (SIGTERM did not stop it within minutes) for
+    an EC Jet-Long GPU window; EC then cancelled the window anyway. A control-endpoint pause only
+    lands at batch boundaries (~3.4h), too coarse for a window request.
+    - [ ] Give `serial_run`/`run.py` a pause/yield that lands at measurement granularity (one case),
+      so a GPU-window request doesn't need a kill. Tracked in `autokernel-unified-surface-program.md`
+      → AKU-RED-LOOP.
 - [x] DS41-C121a — disposition the 27 commits DS41's working branch carried over the champion. ✅ 2026-10-04 — fold
     inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv` (`orig → new` sha, keep id, gate evidence,
     disposition): 4 port + 1 profiling (`ebb68dc55`, compiled out unless `GGML_CPU_PROF`) + 7 serving-gated keeps
