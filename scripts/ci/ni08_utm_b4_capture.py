@@ -290,7 +290,7 @@ def main() -> int:
             "pycache": "disabled", "hash_seed": "0",
             "trace_root": str(app), "trace_db_root": env_expected["TULVING_TRACE_DB_DIR"],
             "execution_scope": "Synthetic BOOK text + temporary SQLite/FTS5 database; all four trace-only cases required. No benchmark dataset, model, embedding service, network or production DB.",
-            "dependency_closure": "Minimal pytest + PyYAML closure verified against complete APP uv.lock wheel hashes.",
+            "dependency_closure": "The reviewed 12-package pytest/runtime closure, including NumPy, pandas and PyArrow, is verified against complete APP uv.lock wheel hashes.",
         }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
         junit, native = result / "original-junit.xml", result / "native"
