@@ -20,7 +20,6 @@ jobs:
         "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python" -m pip install
         --no-deps --only-binary=:all: --require-hashes -r
         recipe/scripts/ci/ni08_dcp2_colgrep_requirements.txt
-      REPL_COLGREP_BIN: ${{ runner.temp }}/ni08-dcp2-colgrep-score/absent/colgrep
       ORCHESTRATOR_MOCK_MODE: '1'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTEST_ADDOPTS: ''
@@ -75,6 +74,8 @@ jobs:
           "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/ni08-dcp2-colgrep-score/result/pip-freeze.txt"
       - name: Capture original whole-module source controls
         id: capture
+        env:
+          REPL_COLGREP_BIN: ${{ runner.temp }}/ni08-dcp2-colgrep-score/absent/colgrep
         run: |
           export PYTHONPATH="$GITHUB_WORKSPACE/app"
           "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python" recipe/scripts/ci/ni08_dcp2_colgrep_capture.py
