@@ -1,0 +1,226 @@
+{
+  "schema": "epyc.main.native_prebinding.v1",
+  "review": "PASS",
+  "recipe_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+  "tracked_files": [
+    {
+      "repo": "recipe",
+      "repo_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+      "path": ".github/workflows/ni08-evl42-pin-static-capture.yml",
+      "mode": "100644",
+      "git_blob": "2c4fbf9e502762cb8ebb4a04e9a6f94ef0f4ff86",
+      "bytes": 3567,
+      "sha256": "46633cc9d530921ecf27f48310e3bc0837ca207d09f0139c07f51b2617ea7239"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+      "path": "scripts/ci/ni08_evl42_pin_static_capture.py",
+      "mode": "100644",
+      "git_blob": "3d4cf01ce2198abfc36dd6527b6ca160945e5d5e",
+      "bytes": 22931,
+      "sha256": "bf3db3a62d836f9a40c22958c4d93a4d4529d7a1f2d66d3ec7bb3f7d34338b74"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+      "path": "scripts/ci/ni08_evl42_pin_static_cases.json",
+      "mode": "100644",
+      "git_blob": "371b8f1ccef20e3de68f02aad813f9d2435b7a92",
+      "bytes": 735,
+      "sha256": "34366649c2b06dfed3f928def165c5e5d74fa775437660fbbaff01f132aa82c8"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+      "path": "scripts/ci/ni08_evl42_pin_static_requirements.txt",
+      "mode": "100644",
+      "git_blob": "7cef491638d6ac627cc35d6c38d94ea1306223bf",
+      "bytes": 591,
+      "sha256": "e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+      "path": "handoffs/active/scoring-infra-standardization.md",
+      "mode": "100644",
+      "git_blob": "e9cacaa0a6a5abb7f86d26659cfe8bf121089e8b",
+      "bytes": 45834,
+      "sha256": "990590b2b0a6cf806d6ac4af458dc909376f288d89dabfe40b9c18a21a5d3660"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9214ca983694c4fd994fd487d65612dc66281e75",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "f60cdfb677aed6273523c5a5982fa16c4a5246e8",
+      "bytes": 257312,
+      "sha256": "382b9562bf61de76dfcca52addc9d880ed3a2ea846eda77100ec9eae75d088bd"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/lattice.py",
+      "mode": "100644",
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/frames.py",
+      "mode": "100644",
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/canonical.py",
+      "mode": "100644",
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "scripts/benchmark/tests/test_pin_staleness.py",
+      "mode": "100644",
+      "git_blob": "378e9676f160794601b03474a55b19eaa79f6c7b",
+      "bytes": 12740,
+      "sha256": "52d841fec67b2ce6f4678c802b6accc4dcab76a0451507b4c58dd0b4d11d71c2"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "scripts/benchmark/check_pin_staleness.py",
+      "mode": "100644",
+      "git_blob": "c4c9fcd7e17171c2ed78a3a0eb85579ace8eaf38",
+      "bytes": 23801,
+      "sha256": "2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "git_blob": "5b26a20549d897c74484b4d7ae4022c88f5dd7c0",
+      "bytes": 1481,
+      "sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "efdf097df2a8355f952073fc25ac1c8a35fcc7d8",
+      "bytes": 520883,
+      "sha256": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d"
+    },
+    {
+      "repo": "lock_source",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_literal_pin_reports_current_then_stale_content"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_keyword_file_identity_arguments_are_checked"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_missing_pin_target_is_distinct_from_mismatch"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_dynamic_missing_argument_and_unpaired_pin_remain_unresolved"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_symlink_parent_outside_and_fifo_are_refused_without_following"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_replacement_during_read_is_reported_unresolved"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_inspect_tree_and_cli_exit_contract_on_tracked_synthetic_checkout"
+    },
+    {
+      "classname": "scripts.benchmark.tests.test_pin_staleness",
+      "name": "test_json_binds_checker_and_scanned_source_to_git_snapshot"
+    }
+  ],
+  "module_ast_identities": [
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/tests/test_pin_staleness.py",
+      "source_sha256": "52d841fec67b2ce6f4678c802b6accc4dcab76a0451507b4c58dd0b4d11d71c2",
+      "module_ast_sha256": "442ad35ea5b8581b31bd8911a72a231507116494b38f762d268320ada89d005f"
+    }
+  ],
+  "expected_generated_contexts": [
+    "RUNNER_TEMP/evl42-pin-static/pip-freeze.txt",
+    "RUNNER_TEMP/evl42-pin-static/environment.json",
+    "RUNNER_TEMP/evl42-pin-static/dependency-install.log"
+  ],
+  "packages": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pytest": "9.0.3"
+  },
+  "wheel_hashes": 5,
+  "manual_blast_radius": "LOW bounded prospective synthetic pin-checker controls, no benchmark repository execution/measurement or loaded-code attestation",
+  "host_project_execution": false
+}

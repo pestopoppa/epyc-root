@@ -1,0 +1,17 @@
+{
+  "previous_head": "553934f74b175993580b58a7b6fdcc474413037a",
+  "main_before": "553934f74b175993580b58a7b6fdcc474413037a",
+  "source": "bbf38c98b6a9984d6fc6f8f9f7656dd0cad0ec3f",
+  "commit": "3fc9f947bd3240fdb65daa719f37625e3ac6c7df",
+  "paths": [
+    "src/api/routes/voice.py",
+    "src/voice/cascade.py",
+    "src/voice/contracts.py",
+    "src/voice/controller.py",
+    "tests/unit/test_voice_controller_contract.py",
+    "tests/unit/test_voice_route_contract.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

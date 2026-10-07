@@ -1,0 +1,32 @@
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -407,6 +407,12 @@
+   root, with worktrees named `/mnt/raid0/llm/worktrees/<id>-<purpose>` — and the subagent writes
+   nowhere else. That is what lets the wrap-up's scratch step (§ *Filesystem and Storage*) clean up
+   after the whole fan-out by listing one directory.
++- **Every subagent brief names its completion records and scratch lifetime.** The subagent
++  updates its own private logs/progress after MAIN approves completed work and prepares handoff
++  edits; MAIN applies canonical updates under the existing single-writer rules. The main decides
++  which exact scratch paths remain needed for review, promotion, evidence or follow-on work.
++  A subagent clears only paths the main releases after acceptance, through the existing cleanup
++  gate; no lane-prefix sweep, shared-clone cleanup or automatic full wrap-up.
+ - **Every subagent brief requires a CPU-region claim for local compute.** Builds, self-launched servers and
+   test suites run as `/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build
+   --tag <tag> -- <cmd>`, so they queue behind a held window instead of running inside it. `taskset`, `nice` or
+--- a/agents/shared/SESSION_LIFECYCLE.md
++++ b/agents/shared/SESSION_LIFECYCLE.md
+@@ -103,6 +103,14 @@
+ - **Nothing may auto-trigger the full routine.** There is no `Stop`, `SessionEnd` or `PreCompact`
+   hook, no cron and no nightshift task that calls it, and there must not be one. A per-task wrap-up
+   is invoked by the session doing the work.
++- **Ticket/PR close includes the same task-owned scratch gate.** Before closing a completed
++  ticket, its main inventories the exact declared scratch roots and lane worktrees, including
++  `codex-ni*` and `ni0X` lanes, and records which remain needed for review, evidence or follow-on
++  work. Release only the main-approved paths through the existing cleanup gate in
++  `agents/commands/wrap-up.md` §7b; retain any path refused by that gate. The close record carries
++  the cleanup result or the named continuing owner/purpose. Prefixes identify inventory, never
++  deletion authority. This is a close-time step of the owning task, never a hook, cron, broad
++  sweep or automatic invocation of the full wrap-up routine.
+ - **Scratch and worktree cleanup is part of the wrap-up, not a separate chore.** On 2026-10-07, 562
+   worktrees (414 GiB) plus 255 GiB of `tmp/` had driven free disk to 86 GiB, below the 100 GiB
+   build-retention floor, and that alone refused a lane relaunch outright — nothing upstream was

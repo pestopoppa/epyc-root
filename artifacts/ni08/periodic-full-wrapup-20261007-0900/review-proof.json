@@ -1,0 +1,62 @@
+{
+  "boundary": "2026-10-07T09:04:49Z",
+  "label": "0900 periodic full; actual scan/touch timestamps recorded separately",
+  "accepted_scoped_tasks": 145,
+  "existing_task_closures": 85,
+  "completed_scoped_children": 60,
+  "new_checked_lines_since_prior_full": 2,
+  "new_prospective_tasks_since_prior_full": 2,
+  "source_changes": 6,
+  "wiki_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "manifest": {
+    "total_new_after_touch": 0,
+    "source_drift": false,
+    "last_compile": "2026-10-07T09:07:10Z"
+  },
+  "index": {
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "readme_warning_output": "",
+  "scratch": {
+    "exit": 1,
+    "declared_roots": 46,
+    "entries": 46,
+    "verdicts": {
+      "KEEP-MARKED": 11,
+      "KEEP-DIRTY": 11,
+      "KEEP-UNLANDED": 10,
+      "KEEP-REFERENCED": 2,
+      "KEEP-PROTECTED": 4,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": [],
+    "scope": "Exact owned and named worker/human-signature roots. Readonly canonical no-fetch plan; originals and active proposals retained."
+  },
+  "index_pruning": [],
+  "archived": [],
+  "compacted": [],
+  "runtime_changed": false,
+  "review": "MAIN accepts exact published K11 reporting source and original30/30; two tasks closed. S49/K11 original failures retained, SCG setup has no receipt. ET13 two prospective tasks applied before capture. Unaccepted PIP29/29/S49fresh originals excluded from this cut await independent acceptance; W6 source-map repair pending. No whole backlog exhaustion.",
+  "private_validation_sha256": {
+    "periodic-wrapup-0900-delta.json": "09dd5eceb83fc93f7bb7d6bc26c403579706f6224ab46ed43f4779b5a8e32abb",
+    "periodic-wrapup-0900-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-0900-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-0900-manifest-check.json": "ed650ad9e0e892967b14493054f9f42e3443ab986e03fcbff318aeb323775361",
+    "periodic-wrapup-0900-after-touch.json": "de5ed3547c371904072e29751526455fada48d6c34f58699d17d0644fe74d042",
+    "periodic-wrapup-0900-index-check.txt": "f34637a73dae868ec6faec8d36af740ca2feae404c22ac2d22e083ef63e810ff",
+    "periodic-wrapup-0900-scratch-plan.json": "733b5296c328be6339e456a1cd24dcdafbd3a8d7b8d8b7a1662dae499e457e4d",
+    "periodic-wrapup-0900-scratch-summary.json": "2025db0cd49539235548dd2d31e6d068963641c49ebc0072c67aea9160e4204a"
+  },
+  "wiki_lint": {
+    "errors": 0,
+    "existing_warnings": 96
+  }
+}

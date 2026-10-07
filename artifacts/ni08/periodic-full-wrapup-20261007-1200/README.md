@@ -1,0 +1,5 @@
+# Periodic full wrap-up — 2026-10-07 12:08 UTC
+
+MAIN owns the full routine and exact publication boundary. One prior SR-5 source-only closure advances NI08 to160 (99 existing+61 completed children). Pointer literal repair and DS41-C104 future-writer source/native tasks are prospectively enrolled; failed/pre-job originals remain unchanged and unaccepted. Canonical final validation and manifest identities are in MAIN-review-proof.json. Original private draft seals are retained separately; final MAIN additions are not represented as worker-authored artifacts.
+
+All179 domain rows were reopened against exact cfb0 sources. No-open entries remain for qualitative scope review: CPU GEMV research routes to INF70/champion owner; historical design triage contains routed decisions; CME adapters retain separate served-judge CJ10 question; fuzzy GUI real measurement hook/acceptance belongs VB-FW-1 rather than the completed mocked example; browser stub awaits an operator-named interactive workflow. No row was pruned by checkbox count. Declared proposal/original/dirty/unlanded scratch remains KEEP; no delete/prune/gc/archive/compaction was run.

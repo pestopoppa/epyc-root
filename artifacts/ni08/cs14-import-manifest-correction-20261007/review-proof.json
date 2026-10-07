@@ -1,0 +1,65 @@
+{
+  "schema": "epyc.main.static_manifest_correction.v1",
+  "reviewed_at": "2026-10-07T04:42:16.606044+00:00",
+  "source_pin": "caa6b5ecf7a9355929f01459aa32cd0a2350519d",
+  "original_run": 37567554456,
+  "original_recipe": "6c8cf2acca5cb15c5a20206747d5c789e26a2a85",
+  "declared_git_inputs": 458,
+  "declared_native_inputs": 463,
+  "original_native_value": true,
+  "original_cases_passed": 276,
+  "missing_existing_import_inputs": [
+    {
+      "path": "src/api/routes/voice.py",
+      "git_blob": "dfaf0d92bdf6c0149dd8f127183ffd976c9f084f",
+      "bytes": 13539,
+      "sha256": "4645c7383550f3f7f84f3c3f95582da06a8cd27eda0d4bfaee19c8b86c44cc91"
+    },
+    {
+      "path": "src/repl_environment/exploration_core.py",
+      "git_blob": "84c895c4c35d8f2bd80edd2c48d6f23509449248",
+      "bytes": 11958,
+      "sha256": "4f203b7ab59ad6467ade8d5cd3540fb203ca9b047620749f36a780adbb0ad310"
+    },
+    {
+      "path": "src/voice/__init__.py",
+      "git_blob": "0a13da2691f3c29fa2e1cf156253550bd25564b9",
+      "bytes": 299,
+      "sha256": "16c841aff5dfdf1a9b311e26bde859dae6effad6b7a4473e23a99a3ae55be6cb"
+    },
+    {
+      "path": "src/voice/cascade.py",
+      "git_blob": "c3aff42f3e7adad4e1392395ccfa65810c0a754f",
+      "bytes": 6248,
+      "sha256": "19084a62af2518fe498ec66cbd8f996dbcbf6383c6cbd6ecbcdf82282c5b7551"
+    },
+    {
+      "path": "src/voice/contracts.py",
+      "git_blob": "3be4fbf6d7946a50ee1ab4b7d93b840624938f19",
+      "bytes": 1675,
+      "sha256": "29dd9f07523d316cea376866d479a4279a40ff288da729a061e8ccd0b2080b8c"
+    },
+    {
+      "path": "src/voice/controller.py",
+      "git_blob": "ec9b5f59c6dd0bae159882d72fcc6c6305025389",
+      "bytes": 9577,
+      "sha256": "a235bb3e7b49aefccc9f2a86a148ca66cea436380b808463d0b942deed3134fe"
+    },
+    {
+      "path": "tests/__init__.py",
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "bytes": 16,
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    {
+      "path": "tests/unit/__init__.py",
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "bytes": 21,
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
+    }
+  ],
+  "original_records_unchanged": true,
+  "full_import_closure_accepted": false,
+  "source_execution_on_host": false,
+  "required_action": "Prospective corrected full276 native rerun with all eight source files bound before capture; reopen only verifier completion until MAIN original review."
+}

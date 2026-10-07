@@ -1233,7 +1233,7 @@ The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../
 
 ### Voice streaming/controller source — 2026-10-07
 
-[Source and original276/276](../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) accept request-scoped real chunks, async stream/cancel ownership, bounded injected controller/cascade and successful-turn persistence. HTTP speech clients, WAV harness and typed speech/preserve/retain decisions remain implementation work; real audio/model/timing acceptance is separate.
+[Published source and original276/276](../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) cover request-scoped real chunks, async stream/cancel ownership, bounded injected controller/cascade and successful-turn persistence for the original declared inputs. [MAIN later correction](../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the native verifier: eight existing imported source files were omitted, so full import closure awaits a prospectively bound rerun. HTTP speech clients, WAV harness and typed speech/preserve/retain decisions remain implementation work; real audio/model/timing acceptance is separate.
 
 
 ### Read-only trace MCP registrar — 2026-10-07
@@ -1252,3 +1252,10 @@ The [read-only MCP registrar](../artifacts/ni08/utm-b1-read-only-mcp-source-2026
 - [MCP source and original custody](../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md).
 - [Unified service](../handoffs/active/unified-trace-memory-service.md).
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).
+
+
+### Typed voice payload and owner-pinned turn choice — 2026-10-07
+
+[Original31/31 and published APP source](../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md) cover explicit normal/verbatim/display contracts, protected text before emission/persistence/TTS, typed retain/cancel choice and replacement-turn cleanup. [Corrected276/276](../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) restores the voice verifier after prospectively adding omitted import inputs; historical maps remain unchanged. Each review binds467Git+5generated inputs and484 authenticated original ZIP members. Synthetic source conformance supports these bounded implementations; real speech quality, audio realization and latency still need their own evidence.
+
+Source references: [conversation stack](../handoffs/active/conversation-stack.md), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md), [NI08 published boundaries](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).

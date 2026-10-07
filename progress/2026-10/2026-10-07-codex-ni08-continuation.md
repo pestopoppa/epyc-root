@@ -164,3 +164,117 @@ Completed since the previous published checkpoint: EVL30 source-clock task, UTM-
 Full wrap-up is an operator-invoked checkpoint, not a session stop or exhaustion claim. MAIN owns canonical docs, indices, wiki synthesis, checks and publication; workers continue private implementation/audits. Separate exact source changes, synthetic proof and real model/runtime acceptance. Pending operator packages retain their prior decisions and do not block independent work.
 
 The full checkpoint additionally closes NI08-WIKI-WARNING, one diagnostic-only CLI fix. Since ROOT3178, eight checked task boundaries (four existing+four scoped companions) are recorded, with three new prospective unchecked tasks. Current NI08 cumulative scoped tally113=62existing+51children. No pruning candidate passed the generated conservative screen; no handoff or index row is removed. All original custody and ongoing private source/recipe branches remain retained for their declared continuing purposes.
+
+
+## CS14 original manifest correction — 2026-10-07
+
+[MAIN static correction](../../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the voice/controller native verifier because eight existing import inputs were absent from the original map. Original276/276, its declared463-input custody and shared Judged/Located observation remain unchanged; full import closure requires a prospective corrected capture. Source implementation items remain complete. NI08 now112 scoped completions (62existing+50children), reduced by one reopened verifier; no whole-backlog exhaustion is claimed.
+
+
+## Reference portability source — 2026-10-07
+
+[MAIN accepted source and original1/1](../../artifacts/ni08/evl38-reference-conformance-20261007/README.md) close the pre-enrolled reference verifier:90Git+5generated inputs,109authenticated original members, seal and unchanged full source/result custody. Fifteen document corrections preserve validation policy and measurement authority. NI08 now113scoped completions (62existing+51children); CS14 corrected closure remains pending, and full backlog work continues.
+
+
+## Registry prose and stale Vidya source tasks — 2026-10-07
+
+[MAIN source-only review/publication](../../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md) closes SW-5, SC71 and SC74: actual six-doc authoring guidance and two already-implemented stale source rows. No new native tests or intake truth claim. NI08 now116scoped completions (65existing+51children). Prospectively enrolled RVP rollback source/CPU verifier remains open; actual parentGPU/regression/promotion/live event acceptance is separate. Full wrap-up cleanup removed14own obsolete clean/landed/idle worktrees through the gate, preserving all branch references, active lanes and KEEP original custody.
+
+
+## Voice original custody and typed payload/choice source — 2026-10-07
+
+MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) and [typed payload/choice original31/31](../../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md): each binds467Git+5generated inputs and all484 authenticated ZIP members, full unchanged result/source inventories, exact complete module identities and the existing shared grade. APPmain3fc9f947 publishes the actual reviewed six-file response/choice source; no runtime reload. Four child closures restore the CS14 verifier and complete CS16-SOURCE, CS18-SOURCE and their verifier; prior CS14 source is counted once. NI08 now120scoped completions (65existing+55children), not whole-backlog exhaustion. Free source/audit work continues.
+
+
+## Prospective ODL source — MAIN boundary, 2026-10-07
+
+[Source and original8/8](../../artifacts/ni08/sc42-odl-write-source-20261007/README.md) close SC42-SOURCE and the pre-enrolled native verifier after full source/API/34Git+4generated/50member original review. Research source normally published; ROOT writer-reader/ingest and exact capture recipe integrated here. Existing SC42 stays open until actual canonical A/B and first measured tuple; historical demo and originalFALSE remain unchanged. NI08 now122scoped completions (65existing+57children). Further non-inference source work and full task audit continue.
+
+
+## RTG-51 command documentation — MAIN reviewed boundary
+
+MAIN completed the RTG-51 Phase-4 command documentation: request identity, immutable receipt cut, one writer/lease, ordered mutations, Coordinator promotion, completion receipt and failure/reboot barriers. The contract explicitly retains operator-only pruning/wiki authority until protected Phase-5 ratification. Manual source/caller review is LOW risk; no runtime execution or new test result is claimed. One existing checkbox closes; NI08 now123 scoped completions (66existing+57children). Remaining Phase-5 migration reconciliation and actual Auditor canary stay open.
+
+
+## LR12 reference hook — MAIN accepted boundary
+
+Published LR12 edited-file Git-root hook and accepted original hosted5/5 controls after MAIN independent API/48-member/34-readset review. Existing native TRUE/shared Judged/Located and complete immutable source/result custody retained. Two existing checkbox flips bring NI08 to125 scoped completions (68existing+57children). Prior startup failure stays original; no live queue/bus, host hook execution or protected policy ratification is claimed.
+
+
+## 05:59 UTC — accepted workflow mock and generalized pin checker
+
+FW-1 source 1533dd0b is published in APP main6712eecf; original37577590308 TRUE10/10 binds69Git+4generated inputs and85 authenticated ZIP members. EVL42 source cb801b9b is published in Research mainf770a525; original37577080153 TRUE8/8 binds18Git+3generated inputs and31 members. MAIN reviewed complete source/caller/recipe scope and immutable API originals, retaining existing shared Judged/Located grades and prior FALSE captures. Four existing task flips yield129 NI08 scoped completions (72existing+57children). Real GUI measurement wiring and future actual-scan report projection remain independently open. No host imports/tests, inference, runtime activation or new grading ladder. Periodic operator-requested full wrap-up follows this accepted boundary.
+
+
+## 06:20 UTC — reviewed next source and human-only signing package
+
+MAIN completed manual LOW source/caller review for concrete voice HTTP/WAV clients, actual MockTransport controller/cascade/CLI integration, bounded media-type/identity/cancellation and iterator cleanup; exact three-file private source9c768 is frozen. W6 source129a58 uses actual scored+task_failed partition denominators and nullable descriptive core-minus-fresh means without changing the objective; actual journal writer directly carries details. Both are prospectively enrolled before any native capture; existing journal informational support carry is separately filed. No new completion is claimed.
+
+MAIN prepared the exact two-file additive LR-11/LR-13 policy patch and ordinary signing script, ran syntax and review-only validation with protected preimages unchanged and no receipts. OP-LR11-LR13 routes the recommended ratify-versus-retain decision; typed human terminal signature is the named remaining gate. No cleanup, policy change, operator attestation or live runtime claim.
+
+
+## 06:37 UTC — physical-core guard source published and stale deletion premise corrected
+
+APP maineb115cbe9903006943dc16f23395c7058bb58ad4 publishes the exact3 reviewed SMT guard/test blobs. Hosted37579644041 originalTRUE81/81,1130Git+5generated inputs and1147members passed MAIN independent original custody review. SSBENCH-SMT-SOURCE andVB companion close:131 scoped NI08 completions (74existing+57children). Runtime activation remains owning-session work. MAIN current-source review corrects INF64 historical19-dead assertion: actual3 noncandidate loop imports, compiler dynamic entry and held least-commitment producers remain. Per-file reachability manifest and prospective native evidence task are surfaced; no removal or whole-program completion. Full backlog review/source implementation continues.
+
+
+## 06:39 UTC — experimental rollback native/source accepted
+
+MAIN independently authenticates original37580634048 TRUE3/3,4413members/4326read inputs/64actual rawcaptures and unchanged shared Judged/Located. Public experimentalbranch verified via exactGitHubHTTPS8e09 freshparentffc1. Two existing source/native flips bring NI08 to133 (76existing+57children). ActualCPU initializer/referencegraph controls only; no production edits, fullGPU/CPU regression, performance, live seeded campaign event or promotion. Earlier setup refusal remains immutable. Periodic full wrap-up follows accepted SMT/rollback boundary.
+
+
+## 06:44 UTC — operator-requested periodic full wrap-up
+
+Full routine covers accepted SMT/experimental rollback sources,4 existing checkbox flips, source enrollment and corrected INF64 task routing, and the prevalidated LR11/LR13 terminal package. Wiki synthesis distinguishes source acceptance from operational evidence and reflects CS20/W6 preparations; indices regenerate/check and README/wiki checks gate publication. No pruning, archival or compaction candidate was approved. Exact native/archive/compiler custody and active worker scratch remain retained; no peer removal or production/inference/runtime action.
+
+
+## W4 accepted publication boundary — 2026-10-07
+
+MAIN independently authenticates original hosted37580631576:2/2 outer controls and4×202 actual original gate cases plus invalid-world refusal;320Git+7generated file contexts,360 unchanged uploaded file members. Exact APP9cff source is merged and pushed to APP mainfd1869b1cc020c21402f85799eb28259212928f4. Six empty directories appear only in original snapshot records; ZIP filesystem proof is explicitly unavailable and none were reconstructed. Existing source and VB tasks close (2flips), NI08=135 (78existing+57children). No inference, host runtime or production registry changed. Remaining W4 migration and owner-confirmation work is surfaced by the owning index.
+
+Prospective enrollment at this boundary: S49 shared MTMD helper and SCG test-log isolation each receive an exact native-source companion and source-table row before capture. MAIN corrects the draft’s nonexistent collection-time writer premise: conftest sets the override before imports, and the logger writes during test execution. Private recipe preparation continues; no further completion or runtime claim.
+
+
+## Original-failure custody review boundary — 2026-10-07
+
+MAIN independently reopens twelve original endpoints through fresh GitHub run/job/artifact metadata and ZIP digests, verifies all byte-identical members, native self-seals, attached request/log/JUnit/readset hashes and original case statuses.10FALSE+1NULL+1setup/no receipt retained, no grader invoked or implementation accepted. [Exact report](../../artifacts/ni08/failed-original-custody-review-20261007/README.md). One newly completed custody subtask:NI08=136 (78existing+58children). CS source integration review also detects unrelated inherited GPU-window/MCP ancestry; only its3reviewed voice blobs are being isolated on a fresh current-main child before capture.
+
+Prospective EVL42 report native child now enrolled before capture: actual29 whole-module synthetic controls, actual nested TRUE/FALSE/NULL original attachments, strict write/reader and owned-inode failure cleanup through existing native carrier/shared grade. Existing SC-EVL42-PIN-REPORT-WIRING remains open for the future actual scan boundary; no pin-health grading or new ladder. MAIN applies only exact reviewed anchors, preserving later source additions.
+
+
+## HTTP/WAV source acceptance and W6 binding correction boundary — 2026-10-07
+
+APP mainb713d8b3d2d7744224f1696a5682d18a71ce5e21 publishes only3reviewed voice blobs from isolated1958source. MAIN original37586771357 independently verifies26/26 cases,26Git+5generated inputs,43unchanged members and native/sharedgrade stability. One existingVB flip plus one completed source subtask:NI08=138 (79existing+59children). No service/model/runtime acceptance. W6 original37586779521 attempt1 is TRUE38/38 and originalgrade unchanged, but prior MAIN prebinding mistakenly named conversation-stack.md instead of the driver’s actual objective-task-rate-goodput.md. MAIN preserves wrong original map, authenticates first original integrity without implementation acceptance, and freezes corrected39Git/38case/162wheel binding BEFORE a fresh approved attempt. No tuple/outcome is rewritten or regraded.
+
+
+## Operator-requested periodic full wrap-up — 2026-10-07 07:38 UTC cut
+
+MAIN performs the full routine at the138 accepted-scope checkpoint, including original W4/FALSE/NULL custody findings, accepted isolated HTTP/WAV source and transparent first-W6 binding discrepancy. Fresh W6 attempt2 and EVL42 report originals completed but are not accepted at this cut; their independent MAIN review continues afterward. Index coverage/freshness, README freshness, incremental wiki synthesis and canonical scratch retention are checked before normal leased publication. No index pruning, archival or handoff compaction is selected; all active evidence/proposals remain retained. No protected amendment, production kernel change, inference or runtime activation occurs.
+
+Full-wrap validation:179 indexed handoffs (132 ready/41 blocked/6 no-open), zero index/README/diff failures, wiki structural lint zero errors/96 existing warnings, seven changed source documents synthesized into two existing pages. Canonical scratch gate retains all41 exact areas (no removal); exit1 denotes KEEP, with evidence-source lookup explicitly locked. Bus remains operator-held DOWN, zero routed actions owed. Original evidence and human-only ratification boundaries remain intact.
+
+
+## W6 fresh original and source publication boundary — 2026-10-07
+
+MAIN independently verifies attempt2 run37586779521/job112682464200/artifact11467407213, all56 unchanged ZIP members,44readset and38/38 cases under pre-capture corrected objective context. APPce48ed2c publishes only two reviewed source blobs; original first capture/map/outcome/grade untouched. W6e producer plus its VB companion are closed with explicit descriptive-only scope. NI08=140 (81existing+59children); optional future journal carry remains open. ROOT preceding full-wrap3a29d2298 is public and verified with seven-source wiki synthesis, zero drift,41retained scratch roots, zero errors/96existing warnings.
+
+
+## Pin-report original and exact source boundary — 2026-10-07
+
+MAIN independently accepts source112217two blobs/recipe96c7 after fresh APIs, original ZIP5442aaa2,1682members,24readset and29/29 native identities. All source/result hashes stable through original shared grade; no local grading.10unique nested receipts retain8TRUE/1FALSE/1NULL;13path copies are aliases, notdistinctexecutions. Original11symlink/91emptydirectory upload limits remain explicit without topology reconstruction. Actual pin-health scan/wiring remains open. One existingVB closure plus one completed bounded source child:NI08=142 (82existing+60children).
+
+
+## INF64 completed bounded source manifest boundary — 2026-10-07
+
+MAIN independently verifies64unique actual ROOT/Research source blobs,145exact incoming refs, all19candidate/test units,2adjacent data/3guards plus outgoing AST imports/path/config/CLI evidence. Conservative retain19/remove0 corrects blanket-dead premise without deleting or touching owner-held campaigns. One existingmanifest closure:NI08=143 (83existing+60children). Native VB source controls remain open; no runtime reachability proof or disposal authority inferred.
+
+
+K11 source-only follow-on prospectively enrolled before any hosted capture: MAIN full caller/diff review finds LOW reporting/input-refusal risk, exact complete repeat denominator/unknown oracle and zero-repeat refusal, with producer-level persisted original regressions. Natural free-form serving parent remains open; no live model or kernel operation. Source and CI preparation continue, no completion counted yet.
+
+### Prospective PIP02 selected-executable library source gate — 2026-10-07
+
+MAIN reviewed the exact two-file Research candidate `ccbca3e80ba5281bf061f77406ad0672d66e6f6b`: the actual launcher accepted `config.binary` but supplied a fixed legacy experimental library directory. The correction uses the resolved selected executable's parent, with original direct-path and symlink argv controls. Manual caller review found LOW impact, confined to experimental launch argument construction; no launcher, project tests/imports, models, libraries or kernels ran on the shared host. MAIN prospectively enrolled the parent companion, source-table row and existing CI-family task before final hosted context binding. The whole original 29-control recipe remains private and requires durable pre-grade/error custody plus explicit sanitized environments before MAIN capture approval. No completion is claimed; NI08 remains 143 bounded accepted scopes (83 existing task closures plus60 completed children).
+
+### Operator-requested periodic full wrap-up — 2026-10-07 08:15 source cut
+
+MAIN performed the next manually invoked full routine under the user's explicit periodic-wrap instruction. The source cut includes143 accepted bounded scopes (83 existing task closures plus60 completed children), including already-pushed W6, EVL42 report and INF64 completion boundaries. K11 and PIP02 prospective task/source-table enrollment claims no completion. Nine changed source documents since the prior07:44 manifest are synthesized into existing tool-implementation and knowledge-management wiki pages with original source references and scope limits. MAIN reviews conservative pruning signals, first-screen usability and exact own/worker/human-package scratch roots; no automatic pruning, archival, compaction or peer removal. Index/README/wiki/manifest checks and normal own-lane publication are captured in [the full-wrap receipt](../../artifacts/ni08/periodic-full-wrapup-20261007-0820/README.md). No inference, model, build, project test/import, live reload, bus restart or protected amendment.

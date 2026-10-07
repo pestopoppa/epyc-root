@@ -1,0 +1,120 @@
+{
+  "reviewed_at": "2026-10-07T07:49:15.156927+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37586226428,
+  "attempt": 1,
+  "job_identity": "github_job_112676854580",
+  "artifact": 11467390121,
+  "pins": {
+    "context": "1b2c0c0aa959e162d492ba367ce15b36074033eb",
+    "lock-source": "70096b763939a43409a1f1827ab633d62425a6c1",
+    "recipe": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+    "research": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+    "source": "112217d1422a74b6b4a13dbc8354381a0bf058d1"
+  },
+  "zip_sha256": "5442aaa2cb6a0b8d7e51f6e42f7c2450c77b8b16dc4d9c5fa54e2259d632466c",
+  "zip_bytes": 2893153,
+  "members": 1682,
+  "readset_count": 24,
+  "static_git_context": 20,
+  "contexts": 4,
+  "counts": {
+    "collected": 29,
+    "error": 0,
+    "executed": 29,
+    "failure": 0,
+    "passed": 29,
+    "skipped": 0
+  },
+  "native_value": true,
+  "receipt_file_sha256": "c5c4919939c790c22957e05ac11dae2a8d79523173a35cc6d12a7969ee68e630",
+  "receipt_self_sha256": "309b6dd6cfb33f39548ba922dfe8484e9684eaa397a814da5b38ac7bc98af1e0",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "original_inventory_kind_counts": {
+    "directory": 748,
+    "regular": 1244,
+    "symlink": 11
+  },
+  "archive_empty_directories_missing": 91,
+  "original_symlink_records": 11,
+  "archive_dereferenced_regular_copies": 436,
+  "nested_unique_receipts": 10,
+  "nested_original_path_copies": 13,
+  "nested_unique_outcomes": {
+    "None": 1,
+    "False": 1,
+    "True": 8
+  },
+  "nested_identity": {
+    "16dd4bcf229f676ef707669bbc355ebbb4a1262938dfe79c0c038fa97b22001d": {
+      "value": null,
+      "paths": [
+        "result/actual-test-worlds/test_actual_native_attachment_5/captured-original/receipt.json",
+        "result/actual-test-worlds/test_actual_native_attachment_current/captured-original/receipt.json"
+      ]
+    },
+    "2695b6edc66af690bd9739995e6152f9e361a1294a73356610430b5ad172ff4b": {
+      "value": false,
+      "paths": [
+        "result/actual-test-worlds/test_actual_native_attachment_4/captured-original/receipt.json"
+      ]
+    },
+    "996bac13f25a35a48e84cce30c2e6454fb5eb06c501854824c662c0139dd1b6b": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_native_attachment_0/captured-original/receipt.json"
+      ]
+    },
+    "ba1f2e5312c225e10f1c677c3e09e5e4d93eb21bb0d89829d1f7035f54a40c04": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_native_attachment_3/captured-original/receipt.json"
+      ]
+    },
+    "c2116d957b2deff83c03786a40b9c62bef73d8118632ba618e3d903a9d42bd22": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_native_attachment_1/captured-original/receipt.json"
+      ]
+    },
+    "cae99136a32ea8e4b863b238a6c7def3c8cf71f0551f277563d8bd92e48214a6": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_native_attachment_2/captured-original/receipt.json"
+      ]
+    },
+    "9f38eefb6a9c92409d570dc4b5f2d99cdd0b8adfde98269cfbdda8790be14014": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_original_attachmencurrent/right/captured-original/receipt.json",
+        "result/actual-test-worlds/test_actual_original_attachmen2/right/captured-original/receipt.json"
+      ]
+    },
+    "68af9b20e08c9ccd9fc2663b187b80517c844f6ff8ac848a164ec7eea4f54050": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_original_attachmencurrent/left/captured-original/receipt.json",
+        "result/actual-test-worlds/test_actual_original_attachmen2/left/captured-original/receipt.json"
+      ]
+    },
+    "ca34623594fd7f37c52f181e3e80a3fbdc3d05677f388f1d8676699171a98b79": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_original_attachmen0/left/captured-original/receipt.json"
+      ]
+    },
+    "552a243f78fac9bc79f92ea2548fc0941cf4e96f46c0175d40b32139b7366c0a": {
+      "value": true,
+      "paths": [
+        "result/actual-test-worlds/test_actual_original_attachmen1/left/captured-original/receipt.json"
+      ]
+    }
+  },
+  "scope": "Synthetic report source conformance only; complete stale report is not healthy. ZIP preserves original file bytes and dereferenced aliases but not original symlink topology or empty directories; no reconstructed archive filesystem proof."
+}

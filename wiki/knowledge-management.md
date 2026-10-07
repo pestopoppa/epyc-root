@@ -3671,3 +3671,86 @@ The [belief-source program](../handoffs/active/vidya-belief-substrate-program.md
 - [Belief-source program](../handoffs/active/vidya-belief-substrate-program.md).
 - [Producer table](../scripts/vidya/adapters/README.md).
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).
+
+
+### Research intake and backlog evidence limits — 2026-10-07
+
+The [memory/embedding intake checkpoint](../progress/2026-10/2026-10-07-intake-memory-embedding.md) retains five provisional Stage-1 records, awaiting deeper review and approved filing. Publisher mechanisms and benchmarks are reported source content, without independent EPYC reproduction or automatic adoption. Existing wiki/source hashes, per-writer records, cache/model identity separation and episodic recall provide concrete comparison points; candidate vector migration and experimental runtime compatibility remain separate work.
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) now records120 completed bounded scopes, including the corrected voice verifier and the typed response/choice source. This tally does not establish exhaustion of the [non-inference backlog](../handoffs/active/non-inference-backlog.md): actual unchecked task/source adjudication and eligible implementation continue. New verified producers are enrolled prospectively; no missing historical warrant is reconstructed.
+
+
+### Lane-root reference checks — 2026-10-07
+
+[LR12 source and five real subprocess controls](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md) resolve references against the edited file’s Git checkout. This prevents a lagging launch checkout from rejecting valid lane-local references. The isolated hosted queue was synthetic; production bus liveness and protected policy amendment authority remain separate.
+
+
+### Conditional heavy-wrap contract and source acceptance — 2026-10-07
+
+The [RTG-51 Phase-4 command contract](../artifacts/ni08/rtg51-phase4-command-source-20261007/README.md) binds accepted request identity, immutable receipt cut, one writer/lease, ordered changes, Coordinator promotion and a completion receipt. Failure/reboot barriers retain partial progress without granting completion. Protected Phase-5 ratification still controls any change to operator-only pruning/wiki authority; the contract grants no runtime activation.
+
+MAIN also accepted the [edited-file Git-root reference hook](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md): five original real-subprocess controls verify lane-relative references against the edited file's own checkout. An empty hosted token queue is an existence fixture, not evidence about the live bus. New [mocked workflow and pin-checker source acceptance](../docs/reference/ni08-non-inference-continuation.md) brings the NI08 scoped tally to129 (72existing task flips +57completed children). The whole [backlog](../handoffs/active/non-inference-backlog.md) remains under source-level adjudication; failed captures and external owner/policy gates stay open.
+
+Source references: [heavy-wrap handoff](../handoffs/active/wrap-up-division-of-labor-policy.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/non-inference-backlog.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+
+
+### Bounded source completion and human close-policy signature — 2026-10-07
+
+At the06:42 checkpoint, [NI08](../docs/reference/ni08-non-inference-continuation.md) had133 published scoped completions (76 existing checkbox flips plus57 scoped children). This closes the accepted physical placement/experimental rollback source scopes and their prospective conformance tasks; it does not exhaust the [non-inference backlog](../handoffs/active/non-inference-backlog.md) or close runtime/inference parent gates. Earlier failed/NULL originals remain immutable. Current source work, original-evidence review and complete task eligibility adjudication continue.
+
+[LR11/LR13's prevalidated human package](../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md) proposes two additive shared-policy rules: close-time exact scratch inventory/retention ownership and brief-level subagent records/scratch lifetime. The dedicated checkout is clean and review-only validation passes. It requires a typed human terminal signature; no protected amendment, signed receipt or cleanup authority is inferred from preparation. Main-owned canonical edits remain separate from private subagent completion records.
+
+The periodic full wrap checks indices, README/wiki structure and source-hash synthesis, retains active evidence/scratch through the canonical gate, and uses normal per-repository commits/pushes. No pruning, archival or compaction is selected. Source references: [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [NI08 running tally](../docs/reference/ni08-non-inference-continuation.md), [non-inference queue](../handoffs/active/non-inference-backlog.md).
+
+
+### Original custody, binding corrections and source tally — 2026-10-07 07:38 checkpoint
+
+The [twelve failed-original custody review](../artifacts/ni08/failed-original-custody-review-20261007/README.md) authenticates10FALSE, oneNULL and one setup/no-receipt endpoint through fresh APIs, ZIP digests, self-seals and attached native inputs/JUnit. This proves original integrity only; it executes no grader and accepts no failed implementation. Later successful captures do not replace those records.
+
+The [first W6 capture](../artifacts/ni08/w6-first-capture-binding-discrepancy-20261007/README.md) retains native TRUE38/38 and its original shared grade, but MAIN's prior map named the wrong handoff context. The original map remains immutable and implementation acceptance is withheld. A corrected39Git/38case/162wheel binding checks the actual objective-task-rate-goodput handoff before a separate fresh capture; it supplies no retrospective warrant for attempt1.
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches138 completed bounded scopes (79 existing checkbox flips plus59 completed children), including the accepted isolated voice source and original-custody subtask. This is a precise scoped tally, not eligible-backlog exhaustion. The source table and prospective belief tasks preserve producer identities before use; no historical tuples or extra source ladders are introduced. MAIN owns integration, canonical updates and this full wrap-up while private workers continue independent source preparation.
+
+Source references: [NI08 running tally](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/non-inference-backlog.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [producer table](../scripts/vidya/adapters/README.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+
+### Accepted scopes and prospective sources — 2026-10-07 08:15 checkpoint
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) now records143 accepted bounded scopes:83 existing task closures plus60 completed children. Since the07:38 cut, MAIN accepted the independently rebound W6 capture, the pin-report source/reader controls, and the complete retained INF64 per-file manifest. This tally closes those scopes only; it does not count whole handoffs as complete or establish exhaustion of the [non-inference backlog](../handoffs/active/non-inference-backlog.md).
+
+The [source table](../scripts/vidya/adapters/README.md) and [belief program](../handoffs/active/vidya-belief-substrate-program.md) register K11 repeat-summary and PIP02 selected-library controls before future native capture. Both use the existing CI carrier/projector/shared grade. Original FALSE/NULL and the first W6 context mismatch remain durable evidence, without retrospective tuple repair. Pin-report path aliases count as copies rather than distinct originals; archive topology limits remain explicit. Private worker completion logs follow MAIN source/evidence acceptance and publication, while MAIN owns canonical handoffs, indices and full wrap-ups.
+
+Source references: [NI08 tally and source gates](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md), [non-inference queue](../handoffs/active/non-inference-backlog.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [original pin-report custody](../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md).
+
+### Periodic source checkpoint preserves failed originals — 2026-10-07
+
+The non-inference continuation now records145 completed bounded scopes (85 existing task closures plus60 completed children); this is not whole-backlog exhaustion. A native NULL remains NULL even when its underlying tests passed, and a workflow failure before jobs/artifacts has no receipt to grade. Original S49 collection failure and K11 subtest-count incompatibility are retained separately from fresh source/recipe captures. MAIN applied ET13 source/VB enrollment before capture and found W6 carry's missing eager source identities before authorizing execution. Prospective fixes and prepared maps add no completion until source and original evidence are accepted. Sources: [current continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference router](../handoffs/active/non-inference-backlog.md), [daily progress](../progress/2026-10/2026-10-07.md), [prospective native wiring](../handoffs/active/vidya-belief-substrate-program.md).
+
+
+### NI08 source checkpoint and current integration review — 2026-10-07
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) has147 accepted bounded tasks:87 existing checkbox closures and60 completed scoped children. The [non-inference backlog](../handoffs/active/non-inference-backlog.md) remains live; this tally does not count whole handoffs or establish backlog exhaustion. S49's two actual source/conformance tasks are checked and publicly committed after MAIN source/original review; [the progress report](../progress/2026-10/2026-10-07.md) records the boundary.
+
+A successful older-source observation must be checked against current integration before publication. MAIN rejected an older document-parser patch that would have removed current input provenance and raw-byte controls, then reviewed a fresh source child preserving those protections for a new bound hosted observation. A W6 informational carry is prepared as deterministic JSON support text because certified frames continue to refuse raw floats; shared grading and authored producer metadata remain unchanged. Neither pending capture counts as completion.
+
+
+### Source checklist reconciliation and periodic checkpoint — 2026-10-07
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) has153 completed bounded scopes:92 existing checkbox flips and61 completed scoped children. Six closures since the09:40 full checkpoint comprise EVL38's previously accepted owning source checkbox, the UFH05 source child, and the two source/native pairs for SCG and PIP02. EVL38's earlier count covered its separate native companion; reconciliation adds the actual source task once. These are task scopes, not153 completed handoffs or whole-backlog exhaustion.
+
+The full review keeps runtime/inference parents and human-policy signature decisions open, updates thin next-action rows for completed source work, and retains original evidence/private recipes. W6's unchanged earlier FALSE observations and later setup failure remain distinct from new captures. ET13 retains its setup failure and native NULL collection failure; neither is source acceptance. Source enrichment uses the existing CI carrier/projector/shared grader and adds no ladder or retrospective tuple. [The running progress report](../progress/2026-10/2026-10-07.md) and [non-inference queue](../handoffs/active/non-inference-backlog.md) carry the remaining eligible work and source-preparation boundaries.
+
+No whole handoff became complete at this checkpoint; pruning, archival and compaction are reviewed without selecting changes. The generated six-domain index and wiki content-hash manifest are checked in the publication lane, separately from the peers' shared working clones.
+
+
+### Six bounded closures and Stage-2 catalog scope — 2026-10-07
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches159 bounded completed scopes:98 existing tasks and61 scoped children. Six closures since the10:25 checkpoint comprise the single W6 diagnostic-carry task, EVL24's source/native pair, INF54's already-present source wiring and ET13's source/native pair. They do not establish completion of their broader runtime parents or exhaustion of the23-card source audit. The [discovery score source task](../handoffs/active/delegation-context-preassembly.md) is prospectively enrolled and remains unchecked; other pending proposals gain no acceptance at this checkpoint.
+
+The peer's [Stage-2 memory/embedding intake report](../progress/2026-10/2026-10-07-intake-memory-embedding-stage2.md) catalogs14 retained primary sources, intake-1963#record through intake-1976#record, plus four secondary leads awaiting selection. Its memory, EmbeddingGemma2 and VibeMemBench assessments retain source/release/review limitations; no model execution, accepted quality score, semantic maintenance closure or Stage-3 adoption is established. The reviewed recommendation custody preserves distinct outcomes rather than combining them into a new approved action. This paragraph catalogs the existing report, not a new intake claim or decision.
+
+Source references: [bounded continuation](../docs/reference/ni08-non-inference-continuation.md), [current progress](../progress/2026-10/2026-10-07.md), [remaining queue](../handoffs/active/non-inference-backlog.md).
+
+
+### One source closure after the full11:19 boundary — 2026-10-07
+
+[NI08](../docs/reference/ni08-non-inference-continuation.md) reaches160 completed scopes,99 existing tasks and61 completed children, after exactly one SR-5 source/prose closure. The four TOC/pointer enrollment tasks and two new INF50 document-projection tasks remain unchecked. This does not exhaust the ongoing23-card actual-source audit or close runtime parents. Accepted source semantics, pending compiler projection and proposed native controls remain distinct; MAIN retains original failed receipts and publication failures without regrading them. [Current progress](../progress/2026-10/2026-10-07.md) and the [remaining backlog](../handoffs/active/non-inference-backlog.md) retain the boundaries.

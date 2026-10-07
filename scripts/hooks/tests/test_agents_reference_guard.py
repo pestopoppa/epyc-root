@@ -145,3 +145,33 @@ def test_resolves_references_in_edited_files_own_repo_with_mismatched_project_di
 
     assert result.returncode == 2
     assert "only-in-launch-repo.md" in result.stderr
+
+def test_resolves_lane_ahead_reference_in_edited_files_own_git_root(tmp_path: Path) -> None:
+    env_lane = tmp_path / "env-lane"
+    edit_lane = tmp_path / "edit-lane"
+    for lane in (env_lane, edit_lane):
+        lane.mkdir()
+        subprocess.run(["git", "init", "--quiet", str(lane)], check=True)
+    agent = edit_lane / "agents" / "lane.md"
+    agent.parent.mkdir()
+    (edit_lane / "docs").mkdir()
+    (edit_lane / "docs" / "ahead.md").write_text("# Lane ahead\n", encoding="utf-8")
+    agent.write_text("Read `docs/ahead.md`.\n", encoding="utf-8")
+    result = _run_guard(env_lane, agent)
+    assert result.returncode == 0, result.stderr
+
+
+def test_cannot_borrow_missing_reference_from_environment_git_lane(tmp_path: Path) -> None:
+    env_lane = tmp_path / "env-lane"
+    edit_lane = tmp_path / "edit-lane"
+    for lane in (env_lane, edit_lane):
+        lane.mkdir()
+        subprocess.run(["git", "init", "--quiet", str(lane)], check=True)
+    (env_lane / "docs").mkdir()
+    (env_lane / "docs" / "env-only.md").write_text("# Other lane\n", encoding="utf-8")
+    agent = edit_lane / "agents" / "lane.md"
+    agent.parent.mkdir()
+    agent.write_text("Read `docs/env-only.md`.\n", encoding="utf-8")
+    result = _run_guard(env_lane, agent)
+    assert result.returncode == 2
+    assert "docs/env-only.md" in result.stderr

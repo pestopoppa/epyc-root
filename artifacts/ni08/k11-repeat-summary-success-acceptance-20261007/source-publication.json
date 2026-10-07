@@ -1,0 +1,16 @@
+{
+  "commit": "da25b346fc6f5ce0c654d7705f043793ef829cfd",
+  "main_before": "f770a52514f3193db44268d61da86f1235122a20",
+  "source_pin": "82fcaab12d46867b9723cadb11b498e74df16a91",
+  "paths": [
+    "scripts/benchmark/k11_gemma4_determinism_runner.py",
+    "scripts/benchmark/test_k11_gemma4_determinism_runner.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "accepted_native_run": 37596204461,
+  "source_sha256": {
+    "scripts/benchmark/k11_gemma4_determinism_runner.py": "5da2e7e1797da2505571ccfbddb757fb7559c9b6b96d1b8a089e5d60921b29ef",
+    "scripts/benchmark/test_k11_gemma4_determinism_runner.py": "bd358db686d8380181d935d891c697ecbc8de594bbab8970c94b1e3050af67a2"
+  }
+}

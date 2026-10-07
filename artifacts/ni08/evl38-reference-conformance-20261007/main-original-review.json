@@ -1,0 +1,41 @@
+{
+  "review": "PASS",
+  "reviewed_at": "2026-10-07T04:45:48.256961+00:00",
+  "run": 37572099379,
+  "attempt": 1,
+  "job_identity": "github_job_112632789983",
+  "artifact": 11461725668,
+  "recipe_pin": "c6041a692af56e4585acf1d9ebd77f4ee5d6961b",
+  "source_pin": "6d5412fdf8824416405e0e1b9322c2f60db57103",
+  "pins": {
+    "root": "c6041a692af56e4585acf1d9ebd77f4ee5d6961b",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "enrollment_context": "83004c1137015a9fc8d0cf411e648432bc51a1c9",
+    "pytest_lock_source": "70096b763939a43409a1f1827ab633d62425a6c1"
+  },
+  "zip_sha256": "4af46a3dc4dc7fc383b5b07c2b63b652f386a617f616db3e625e27ebf4cb31f8",
+  "zip_bytes": 2576414,
+  "members": 109,
+  "git_inputs": 90,
+  "generated_inputs": 5,
+  "readset_count": 95,
+  "case_count": 1,
+  "native_value": true,
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "counts": {
+    "collected": 1,
+    "error": 0,
+    "executed": 1,
+    "failure": 0,
+    "passed": 1,
+    "skipped": 0
+  },
+  "receipt_self_sha256": "6703911d83b3e6ead8bf74d5e562607355b1d44487536e1a4714aea3b07d9f11",
+  "receipt_file_sha256": "4eba921d508a7af4f40033ce9154d2eaedb0b13f420a2f16417b01ad04735e23",
+  "originals_unchanged": true,
+  "MAIN_executed_grade": false,
+  "scope": "Unchanged reference validator over declared exact source/target universe only; no periodic full-gate GREEN or runtime readiness warrant."
+}

@@ -1,0 +1,13 @@
+{
+  "previous_head": "eb115cbe9903006943dc16f23395c7058bb58ad4",
+  "main_before": "eb115cbe9903006943dc16f23395c7058bb58ad4",
+  "source": "9cff6583c235ed394179fc2f66a8c4bd8a81405f",
+  "commit": "fd1869b1cc020c21402f85799eb28259212928f4",
+  "paths": [
+    "scripts/registry/stack_change_pipeline.py",
+    "tests/unit/test_stack_change_pipeline_real_promotion_gate.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

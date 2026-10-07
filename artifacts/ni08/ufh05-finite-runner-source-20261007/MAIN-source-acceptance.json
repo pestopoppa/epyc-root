@@ -1,0 +1,65 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T10:01:12.423294+00:00",
+  "review_binding_sha256": "695399066efe529660c60826d6419a6a72d019528946cb83023037ca3cc3afd0",
+  "canonical_publication": {
+    "source": "d9aebbe5505ed3f697f57254a8355cb32b713574",
+    "parent": "da25b346fc6f5ce0c654d7705f043793ef829cfd",
+    "publication_commit": "6e06fae72da0c2efbd6984f66ea97651d2c48fb9",
+    "remote": "https://github.com/pestopoppa/epyc-inference-research.git",
+    "files": [
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/README.md",
+        "mode": "100644",
+        "blob": "3e8932cb31364ebdb99b9d9d24ad3af9fc77ef32",
+        "sha256": "6667b42ad207f6821305e62e38528ea1f740b3b5e03f423a02cf23e90316e3ac",
+        "bytes": 1811
+      },
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/finite-runner-v2-final-source-review.json",
+        "mode": "100644",
+        "blob": "937b4805ceb73eec6cfb1e12a1716d4dd7141b48",
+        "sha256": "baa1f6200cb2cc03f42e53a4108323d79f91eef69be53c9faa1d50097ba020c2",
+        "bytes": 2062
+      },
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/finite-runner-v2-full-source-map.json",
+        "mode": "100644",
+        "blob": "6ab4ea12d30d241e5a718f740d94576aacc2881c",
+        "sha256": "6d8dc4b8784b44bcd7491b31239e4b114332d0d9f6caf27bd50e9f0ee2e8d61f",
+        "bytes": 19516
+      },
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/primary-3af-device-seams.patch",
+        "mode": "100644",
+        "blob": "27bacb57560572135c2b47424cb94554a2fb94a9",
+        "sha256": "b550c51ef972636df132c7875df6f80e45f2c8ddd3b5eb192a5e25401040467e",
+        "bytes": 2941
+      },
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/publication-preparation-map.json",
+        "mode": "100644",
+        "blob": "663ab29517fe114300f6558e3f86f7d582655fa4",
+        "sha256": "724b53fad471dec4b6397b4e8fc04ce99f8c5889cf3e09c5209a09d7d44169f0",
+        "bytes": 1008
+      },
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/shim-map.json",
+        "mode": "100644",
+        "blob": "0079e44e6f8be733d60200e3153891c4ab4ac14d",
+        "sha256": "17a6c3efb882ac1affa8e73df25b2986b2248d30f91496a35a11af055ac2565a",
+        "bytes": 663
+      },
+      {
+        "path": "scripts/research/ufh05_finite_runner_source/xllm_native_prefill_smoke.py",
+        "mode": "100644",
+        "blob": "3298fa65c9576e1d9bfb89e6ae4eb676b87e3b56",
+        "sha256": "f65d32a9f36342d4d5a20f804cd8a69cd1bd437e468c1ee591bc2504e31d4f6d",
+        "bytes": 34114
+      }
+    ],
+    "scope": "Source artifact only; no runtime, native grade, feasibility, models or patch application."
+  },
+  "actor_SHA256": "f65d32a9f36342d4d5a20f804cd8a69cd1bd437e468c1ee591bc2504e31d4f6d",
+  "scope": "Source-only artifact, no model/native execution or feasibility observation; primary patch unapplied; runtime/VB parents remain open"
+}

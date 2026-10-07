@@ -1,0 +1,23 @@
+{
+  "reviewed_at": "2026-10-07T07:55:55.440773+00:00",
+  "source_integrity_review": "PASS",
+  "manifest_sha256": "e370c70cd7a75f279c39aacd21b7bb71e0ac358db27ea65886f3562e1096b518",
+  "pins": {
+    "root": "1b2c0c0aa959e162d492ba367ce15b36074033eb",
+    "research": "f770a52514f3193db44268d61da86f1235122a20"
+  },
+  "candidate_count": 19,
+  "paired_tests": 19,
+  "adjacent_data": 2,
+  "guards": 3,
+  "unique_verified_source_blobs": 64,
+  "reference_rows_verified": 145,
+  "root_reference_rows": 50,
+  "research_reference_rows": 95,
+  "root_json_files_scanned": 38,
+  "disposition": {
+    "retain": 19,
+    "remove": 0
+  },
+  "scope": "Pinned source-only conservative retain manifest; exact imported edges/path/CLI/module guards and ROOT capture references verified without importing/executing project code. No runtime reachability, removal authority or unbounded absence inference. Existing campaign/HOLD boundaries preserved."
+}

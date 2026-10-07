@@ -397,9 +397,9 @@ lease cases are deterministic; only Inference can declare compatibility or grant
 
 ### Phase 4 — make heavy wrap atomic and receipt-driven
 
-- [ ] Update `agents/commands/wrap-up.md` for request ID, immutable receipt cut, one designated
+- [x] Update `agents/commands/wrap-up.md` for request ID, immutable receipt cut, one designated
       writer, operation-token lease, ordered mutations, Coordinator promotion handoff, and completion
-      receipt.
+      receipt. ✅ 2026-10-07 — MAIN source-only review; conditional typed transaction contract now explicit. Protected Phase-5 ratification and actual Auditor canary remain open; no runtime activation.
 - [x] Fix the deterministic `test_full_wrap_transaction_end_to_end` failure (filed 2026-09-08
       wrap-up). The heavy-wrap e2e fails at its progress-shard assertion (`progress/2026-08/
       2026-08-23-auditor.md` missing after the run) on a PRISTINE HEAD checkout — proven twice

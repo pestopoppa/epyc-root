@@ -1,0 +1,18 @@
+{
+  "schema": "epyc.main.final-prebinding.v1",
+  "recipe_pin": "1c65dd2bc72ae35378b7d2811225ff330238ae04",
+  "previous_recipe_pin": "109942318864a664778752dce3f8202dc0db18e5",
+  "review": "PASS",
+  "independent_review_sha256": "6463512a81b12abfcdbb3b9cacd66276686665916a2c63a9e1b33fadc8c12210",
+  "tracked_inputs": 3801,
+  "whole_cases": 4,
+  "packages": 48,
+  "all_wheel_hashes": 710,
+  "reviewed_exact_delta": [
+    "scripts/ci/scg_test_logdir_capture.py",
+    "scripts/ci/scg_test_logdir_source_readset.json",
+    "scripts/ci/scg_test_logdir_test_requirements.txt"
+  ],
+  "original_NULL_retained": true,
+  "capture_authorized": "one GitHub-hosted run of exact pinned workflow; no shared-host project execution"
+}

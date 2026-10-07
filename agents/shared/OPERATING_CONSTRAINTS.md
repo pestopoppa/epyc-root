@@ -192,7 +192,7 @@ investigation; Appendix)
   list>` ignores a narrower claim taken around it — the claim is advisory to callers who read it,
   not an OS-enforced affinity change — so a narrowed lock produces no actual narrowing unless the
   launcher's own affinity argv is updated to match.
-- Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
+- Full policy: `agents/shared/MEASUREMENT_POLICY.md` → [repository-root measurement constitution](../../MEASUREMENT.md).
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
   and may grant a resource lease for an inference-gated batch. A task assignment and a resource
@@ -460,7 +460,7 @@ follow-up system the entire central coordination tier was **~11% of compute** an
 workers beat a single worker on *both* wall-clock and token cost at matched completion. So the
 diagnosis order is: first measure the share of subagents whose output was never used, and only then
 consider the number of subagents. Narrowing width to control cost is treating the cheap term.
-(sources: `intake-1304`, `intake-1305`; our own instance is `fleet-fanout-measurement.md` FM-5.)
+(sources: `intake-1304`, `intake-1305`; our own instance is [the active fleet-fanout measurement handoff](../../handoffs/active/fleet-fanout-measurement.md), FM-5.)
 
 (origins: 2026-08-12, 1,070 open backlog items while five mains worked serially;
 INC-20260728-idle-mains for the coordinator-side half. Appendix.)

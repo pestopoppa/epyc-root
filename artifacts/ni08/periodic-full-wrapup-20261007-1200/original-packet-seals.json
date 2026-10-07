@@ -1,0 +1,23 @@
+{
+  "full-delta-git-binding.json": "1adc09668e5eb03dd9e7d042feef452f810c4c4378305d750debe929e6a07a24",
+  "review-proof-preparation.json": "71042633a203783b34abd08987e07e4f4a458b65d1053de50486c602a1b2171f",
+  "proposed-wiki-progress.patch": "7169fa73d46f7bffa756318c41f4dd7e14d3204264825e967d390a5c9651e3c9",
+  "source-delta.json": "eda9071afb27fd0b148fba7c572b15fcf0182f3f147119817e5a9f3ad3c92698",
+  "KEEP": "e22859ff78039e4d8e11d4192369d523c5e1d980c0eb6e3de495bdaaa6e2c52c",
+  "full-git-source-population.json": "5f53db5570b7c64062eae008da62eae29cf5f8cd08da161f5a4f4268143911bb",
+  "handoff-progress-delta.patch": "f2f3e28160dc0bdad2d399144361df0256057126be8a61f607f58b0e7724d9d9",
+  "declared-own-scratch-KEEP-map.json": "83b520cbf169a9f4ec3011179592a6eaa6afb5f44a2b4509bd4408deb68ed8f4",
+  "prospective-source-manifest-inputs.json": "b9998c236d6d1a7b272138c52bc8b342390624c2e724bb9c5dad682edee80f68",
+  "all-domain-row-qualitative-inspection.json": "bf039cc17534d4d9836ce14fbd8aabac0fdbf8fe9c64c37b43fa9723a8263374",
+  "drafts/wiki/tool-implementation.md": "f06ca8a5d9abc522df2467084c63ce8eaf714ed0de1426978899b838e6e45933",
+  "drafts/wiki/speculative-decoding.md": "20f85db1fe178e7461a52751596163ce953be7903bdff56fb952234003f63f3a",
+  "drafts/wiki/knowledge-management.md": "c9e815213b6d90fde31cb330c956af4a336a69c093a14c178bf6e9a236340836",
+  "drafts/progress/2026-10/2026-10-07.md": "2933d6050853de0496fdc89bcf13d6fdc2980f92e3d4a33ea5fe3d098b7dcf67",
+  "readset/docs/reference/ni08-non-inference-continuation.md": "8289ce2db06b9942cb22a461e18b1ddf8b7a63b21c4cbe53a0ad5dc081d2156f",
+  "readset/progress/2026-10/2026-10-07.md": "db274355f034f6311145f2baffdfa3e6d44b256bca15fa96ed0b8d101d6d2097",
+  "readset/handoffs/active/non-inference-backlog.md": "cad071714dfd143eeff8233edd6653f7025a906dc1da37d2fbe72ce4d9acbd12",
+  "readset/handoffs/active/speculative-decoding-mtp-refresh.md": "9df1a36e7eb376467962c7a9451ee4a00830cec5a73ae97bbf93a3751109564a",
+  "readset/handoffs/active/tool-output-compression.md": "2836a06fb1279d0d8c535e5f1a062d24f3dcf2377e894c225f3a385704552614",
+  "readset/handoffs/active/rocm-verify-profile-backend.md": "e595a4612ba18404618d04a1fafbad0e2fcea51162b0bdcf6ecadbaa0710be9a",
+  "readset/handoffs/active/vidya-belief-substrate-program.md": "1885173b5e89f21dedd84bf6181a7532d4476ac2911b2ea8f6f03cca3da93013"
+}

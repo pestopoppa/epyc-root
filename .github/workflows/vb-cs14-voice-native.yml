@@ -1,7 +1,7 @@
 name: VB CS-14 voice stream native fixture conformance
 on:
   push:
-    branches: [codex/cs14-voice-native-conformance-20261007]
+    branches: [codex/cs14-import-closure-repair-20261007]
 permissions:
   contents: read
 jobs:
@@ -11,7 +11,7 @@ jobs:
     env:
       RECIPE_PIN: ${{ github.sha }}
       SOURCE_PIN: caa6b5ecf7a9355929f01459aa32cd0a2350519d
-      ROOT_CONTEXT_PIN: f018782258f65118019a555f6832125f25646f11
+      ROOT_CONTEXT_PIN: 458657a9d8d146a208c93cd6a1204cdda35ee76f
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       APP_PIN: 94a6e8d41ec7d3f7a122f66bad53aa673d401d8a
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'

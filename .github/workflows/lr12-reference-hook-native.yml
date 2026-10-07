@@ -1,0 +1,127 @@
+name: LR12 reference hook five-case native observation
+
+on:
+  push:
+    branches: [codex/ni08-lr12-reference-root-20261007]
+
+permissions:
+  contents: read
+
+jobs:
+  references:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize artifact envelope
+        run: |
+          mkdir -p "$RUNNER_TEMP/lr12-reference-hook/result"
+          printf '%s\n' '{"state":"setup_pending","exit_code":null}' > "$RUNNER_TEMP/lr12-reference-hook/result/status.json"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout approved ROOT reader and complete synthetic tests
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: f9fd9958b47d1db10806aeaea8154f4e2dc3d24b
+          path: root-source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout immutable native carrier and grader
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout pinned prospective enrollment context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 99b3763078abd859026c8051e1c480b89a15ee72
+          path: enrollment-context
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout exact pytest lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock-source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Ensure actual hook command tools are installed
+        run: |
+          sudo apt-get update > "$RUNNER_TEMP/lr12-reference-hook/result/tool-install.log" 2>&1
+          sudo apt-get install -y bash git python3 ripgrep jq coreutils sed >> "$RUNNER_TEMP/lr12-reference-hook/result/tool-install.log" 2>&1
+      - name: Prepare only the absent hosted synthetic runtime-link target
+        run: |
+          set -euo pipefail
+          target=/mnt/raid0/llm/bus-runtime/tokens
+          for parent in /mnt /mnt/raid0 /mnt/raid0/llm /mnt/raid0/llm/bus-runtime; do
+            if [ -L "$parent" ] || { [ -e "$parent" ] && [ ! -d "$parent" ]; }; then
+              echo "Unsafe existing synthetic runtime parent: $parent" >&2
+              exit 1
+            fi
+          done
+          if [ -e "$target" ] || [ -L "$target" ]; then
+            echo "Synthetic runtime target must be absent on this fresh hosted runner" >&2
+            exit 1
+          fi
+          test "$(readlink root-source/coordination/session-bus/tokens)" = "$target"
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0755 "$target"
+          test -d "$target"
+          test ! -L "$target"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact binary wheels
+        id: install
+        run: |
+          set +e
+          python -m venv "$RUNNER_TEMP/lr12-reference-hook/venv" > "$RUNNER_TEMP/lr12-reference-hook/result/install.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/lr12-reference-hook/venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: --no-cache-dir -r root/scripts/ci/lr12_reference_hook_requirements.txt >> "$RUNNER_TEMP/lr12-reference-hook/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/lr12-reference-hook/venv/bin/python" -m pip check >> "$RUNNER_TEMP/lr12-reference-hook/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/lr12-reference-hook/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/lr12-reference-hook/result/pip-freeze.txt"
+            rc=$?
+          fi
+          printf '{"state":"install_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/lr12-reference-hook/result/status.json"
+          exit "$rc"
+      - name: Run the bound five actual hook subprocess cases through native carrier and shared grade
+        id: capture
+        if: steps.install.outcome == 'success'
+        run: |
+          set +e
+          cd root
+          RUNNER_TEMP="$RUNNER_TEMP" "$RUNNER_TEMP/lr12-reference-hook/venv/bin/python" scripts/ci/lr12_reference_hook_capture.py "$GITHUB_WORKSPACE/root-source" "$GITHUB_WORKSPACE/carrier" "$GITHUB_WORKSPACE/lock-source" "$GITHUB_WORKSPACE/enrollment-context"
+          rc=$?
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/lr12-reference-hook/result/status.json"
+          exit "$rc"
+      - name: Preserve original command, JUnit, receipt, source metadata and grade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lr12-reference-hook-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lr12-reference-hook/result/
+          if-no-files-found: error
+          retention-days: 90

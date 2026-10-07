@@ -1,0 +1,16 @@
+{
+  "state": "PREVALIDATED_ORDINARY_PACKAGE_ONLY",
+  "script_sha256": "3ae78d3bc632b4af5141b0f4ed5640130cf6bcf455ed16e326c3f27677575edd",
+  "patch_sha256": "e604ea87390029a4ea3d9f155d9d00dcb2dc4deae7c4d951e6b9e73687ec686b",
+  "protected_preimages": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": "8290442dafcd0ad85d59947b625014d8392765d0",
+    "agents/shared/SESSION_LIFECYCLE.md": "6cc2c3f52c6323cabedf755f7b54ccc8e0c1f5e8"
+  },
+  "bash_syntax_exit": 0,
+  "review_only_exit": 0,
+  "receipt_checker_exit": 0,
+  "protected_paths_changed": false,
+  "ratification_receipts_written": false,
+  "signature": "awaiting_operator_terminal",
+  "risk": "LOW ordinary package; protected amendment requires human-only typed terminal signature; no cleanup/runtime grant"
+}

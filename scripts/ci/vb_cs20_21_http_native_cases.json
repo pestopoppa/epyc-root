@@ -1,0 +1,199 @@
+{
+  "cases": [
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_whisper_client_posts_wav_to_frozen_json_contract",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_whisper_client_posts_wav_to_frozen_json_contract"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_whisper_rejects_non_wav_and_untyped_or_oversized_response",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_whisper_rejects_non_wav_and_untyped_or_oversized_response"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_whisper_bounds_streamed_json_bytes_before_decoding",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_whisper_bounds_streamed_json_bytes_before_decoding"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_whisper_health_requires_frozen_ready_status_payload",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_whisper_health_requires_frozen_ready_status_payload"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_wav_validator_rejects_marker_only_and_truncated_chunk",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_wav_validator_rejects_marker_only_and_truncated_chunk"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_client_streams_only_bounded_pcm_with_explicit_format",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_client_streams_only_bounded_pcm_with_explicit_format"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_rejects_wav_and_json_error_bodies_in_pcm_mode",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_rejects_wav_and_json_error_bodies_in_pcm_mode"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_cancel_before_stream_consumption_suppresses_request",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_cancel_before_stream_consumption_suppresses_request"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_close_before_first_iteration_releases_reservation_for_next_turn",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_close_before_first_iteration_releases_reservation_for_next_turn"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_refuses_language_field_not_supported_by_pinned_api",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_refuses_language_field_not_supported_by_pinned_api"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_health_requires_pinned_ok_payload",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_health_requires_pinned_ok_payload"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_cancellation_during_pcm_stream_closes_and_discards_chunk",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_cancellation_during_pcm_stream_closes_and_discards_chunk"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_qwen_partial_stream_close_releases_owner_for_next_stream",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_qwen_partial_stream_close_releases_owner_for_next_stream"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_event_jsonl_records_order_and_sizes_without_payload_text_or_audio",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_event_jsonl_records_order_and_sizes_without_payload_text_or_audio"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_wav_pcm_harness_records_terminal_synthetic_voice_turn",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_wav_pcm_harness_records_terminal_synthetic_voice_turn"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_wav_pcm_harness_refuses_invalid_input_and_missing_terminal_event",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_wav_pcm_harness_refuses_invalid_input_and_missing_terminal_event"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_maps_identity_sequence_and_terminal_events",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_maps_identity_sequence_and_terminal_events"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_rejects_sequence_gap_and_missing_terminal",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_rejects_sequence_gap_and_missing_terminal"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_rejects_content_type_suffix_lookalike",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_rejects_content_type_suffix_lookalike"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_bounds_chunked_response_bytes",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_bounds_chunked_response_bytes"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_close_disconnects_http_stream",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_close_disconnects_http_stream"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_cancel_closes_request_and_stops_events",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_cancel_closes_request_and_stops_events"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_voice_route_sse_client_health_and_unsupported_injection_are_explicit",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_voice_route_sse_client_health_and_unsupported_injection_are_explicit"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_wav_file_harness_runs_controller_to_bounded_pcm_wave_and_jsonl",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_wav_file_harness_runs_controller_to_bounded_pcm_wave_and_jsonl"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_wav_file_harness_closes_controller_iterator_on_refusal_and_event_limit",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_wav_file_harness_closes_controller_iterator_on_refusal_and_event_limit"
+    },
+    {
+      "classname": "tests.unit.test_voice_http_clients",
+      "name": "test_wav_harness_cli_integrates_controller_cascade_and_mocked_http_clients",
+      "nodeid": "tests/unit/test_voice_http_clients.py::test_wav_harness_cli_integrates_controller_cascade_and_mocked_http_clients"
+    }
+  ],
+  "count": 26,
+  "provenance": {
+    "module_level_code_executed": false,
+    "test_bodies_executed": false,
+    "test_modules_imported": false
+  },
+  "schema": "epyc.vb.cs20_21_http.selected_cases.v1",
+  "source_commit": "1958d759ca1d1b0cb3fa58a9f8754971c2882887",
+  "source_files": {
+    "scripts/voice/run_wav_harness.py": {
+      "git_blob": "80c95d8e4e50bce500ff871b666f9e520b4e5879",
+      "git_mode": "100644",
+      "sha256": "7a7984f2ef4ffe02f20bb280f799c42e456e6e8c9a5b74b7ef1e56b39a4d94d1"
+    },
+    "src/__init__.py": {
+      "git_blob": "ff893046a8e7d2598657b950e9e41449f358d25f",
+      "git_mode": "100644",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    "src/voice/__init__.py": {
+      "git_blob": "0a13da2691f3c29fa2e1cf156253550bd25564b9",
+      "git_mode": "100644",
+      "sha256": "16c841aff5dfdf1a9b311e26bde859dae6effad6b7a4473e23a99a3ae55be6cb"
+    },
+    "src/voice/cascade.py": {
+      "git_blob": "5d13dd035cd8cfb1ceedcb58baeb2876e9bed436",
+      "git_mode": "100644",
+      "sha256": "f65d05ae14187a00eb9cf39e98e40c3d312d902800b147c02deda3c528e66063"
+    },
+    "src/voice/contracts.py": {
+      "git_blob": "aa956c4ff1020df2c8c7689a20009b0de42c1ae5",
+      "git_mode": "100644",
+      "sha256": "52b90d6e6ffb1600da13522bcea352c6823005a947c230f5f2b426d4d7f53b1e"
+    },
+    "src/voice/controller.py": {
+      "git_blob": "82a859b58e04231a9bf26e7cb5aed6a02103bbcc",
+      "git_mode": "100644",
+      "sha256": "edf7853e5a75dfe0fbfaae24a8d50965aa01d723cd03f4f81b3c73450a034f68"
+    },
+    "src/voice/http_clients.py": {
+      "git_blob": "7d52df08528e3722427cc7b69dc4b68cab031f45",
+      "git_mode": "100644",
+      "sha256": "fd2f4486b05917e867ac3610a94707664994c3b6b9c635b849241e0c35d8efb1"
+    },
+    "tests/__init__.py": {
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "git_mode": "100644",
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    "tests/unit/__init__.py": {
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "git_mode": "100755",
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
+    },
+    "tests/unit/test_voice_http_clients.py": {
+      "git_blob": "52acd15395cc1f23b35fcbd0a85fe0855a2111cf",
+      "git_mode": "100644",
+      "sha256": "f05d83e593049c56c1625b60c27f1c069ed04ed535d2f4dfa299177499811dcd"
+    },
+    "uv.lock": {
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "git_mode": "100644",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  }
+}

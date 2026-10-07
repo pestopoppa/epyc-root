@@ -150,7 +150,7 @@ research-intake pipeline (Stage 4) both run it.
 NEEDED — and a row that names a task someone ticked weeks ago is well-formed, passes every gate,
 and mis-dispatches the next session that reads it. This is the row-level face of the standing rule
 that a screener proves WELL-FORMED, never STILL-NEEDED
-([`OPERATING_CONSTRAINTS.md` → *Dispatching Backlog Work*](../../../agents/shared/OPERATING_CONSTRAINTS.md#dispatching-backlog-work--the-task-text-is-the-identity)).
+([`agents/shared/OPERATING_CONSTRAINTS.md` → *Dispatching Backlog Work*](../../../agents/shared/OPERATING_CONSTRAINTS.md#dispatching-backlog-work--the-task-text-is-the-identity)).
 
 ```bash
 python3 scripts/handoffs/stale_next_action.py      # reporter; exit 1 if any row names only ticked tasks

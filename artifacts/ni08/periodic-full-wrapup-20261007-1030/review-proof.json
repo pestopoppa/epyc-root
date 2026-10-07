@@ -1,0 +1,60 @@
+{
+  "boundary": "2026-10-07T10:26:27.584129+00:00",
+  "accepted_scoped_tasks": 153,
+  "existing_task_closures": 92,
+  "completed_scoped_children": 61,
+  "new_checked_lines_since_previous_full": 6,
+  "source_changes": 9,
+  "wiki_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "manifest": {
+    "total_new_after_touch": 0,
+    "source_drift": false,
+    "last_compile": "2026-10-07T10:25:05Z"
+  },
+  "index": {
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "readme_warning_output": "",
+  "wiki_lint": {
+    "errors": 0,
+    "warnings": 96,
+    "scope": "own publication lane; shared peer clone is a separate population"
+  },
+  "scratch": {
+    "exit": 1,
+    "declared_roots": 51,
+    "entries": 46,
+    "verdicts": {
+      "KEEP-MARKED": 11,
+      "KEEP-DIRTY": 9,
+      "KEEP-UNLANDED": 11,
+      "KEEP-REFERENCED": 2,
+      "KEEP-BUSY": 1,
+      "KEEP-PROTECTED": 4,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": []
+  },
+  "index_pruning": [],
+  "archived": [],
+  "compacted": [],
+  "runtime_changed": false,
+  "private_validation_sha256": {
+    "periodic-wrapup-1030-delta.json": "a6c70e443ac41d741be2a7d1566fab0c2ad597f98c8ee3852d2d01fa07db3c50",
+    "periodic-wrapup-1030-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-1030-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-1030-after-touch.json": "a39096a3840f538e378b6f7d5d3bff2dafd7dd67f62ee337fe5e0539b90d7e19",
+    "periodic-wrapup-1030-manifest-check.txt": "3a5ba2b15f1bd12da751fd8e982746518b13a1879d2d3d1e9343c455ef4d7485",
+    "periodic-wrapup-1030-index-check.txt": "c600217effd79b0310cb6e3c03917f8d6b964482737bf2b76664edf1dbfeb355",
+    "periodic-wrapup-1030-scratch-plan.json": "d9484079c9952d36791fb6b46a21a862fae11ec6faf6f79cd7607b02f1e382ef",
+    "periodic-wrapup-1030-scratch-summary.json": "fedcd440a42eaeff1a46b361e4b7c224df92e297fb83155735d0d94bd76c2969"
+  }
+}

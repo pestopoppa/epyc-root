@@ -1,0 +1,44 @@
+{
+  "reviewed_at": "2026-10-07T06:34:37.882125+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37580634048,
+  "attempt": 1,
+  "job_identity": "github_job_112659225382",
+  "artifact": 11464727277,
+  "pins": {
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "context": "e6afe15f966d175d20756d8cff3fcbcc1becf756",
+    "lock_source": "70096b763939a43409a1f1827ab633d62425a6c1",
+    "source": "8e09a5e003f61b7ce7d58088f2f34595118068b4",
+    "recipe": "85af95ba1ba6130153d3c4145202d77370152fc8"
+  },
+  "zip_sha256": "71cd172851c0549401463fc2be4161b1396d8375ace6cf0cb3e49d263da0bc3e",
+  "zip_bytes": 118139917,
+  "members": 4413,
+  "readset_count": 4326,
+  "git_inputs": 3306,
+  "generated_dynamic_input_count": 1020,
+  "fixed_generated_contexts": 12,
+  "raw_initializer_captures": 64,
+  "header_binding_records": 66267,
+  "build_tree_entries": 381,
+  "counts": {
+    "collected": 3,
+    "error": 0,
+    "executed": 3,
+    "failure": 0,
+    "passed": 3,
+    "skipped": 0
+  },
+  "native_value": true,
+  "receipt_file_sha256": "7526027ca88c369365031416cdd4882a9b136a3d82f7f85eef7745ed3cd0f084",
+  "receipt_self_sha256": "53129d7394e8af8bb61cde0c7ebbfa40fc0381b653261f576357738523e3391e",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "scope": "Actual hosted experimental CPU source initializer and unchanged rollback graph conformance only; no model, production/GPU regression, physical topology, performance or promotion warrant."
+}

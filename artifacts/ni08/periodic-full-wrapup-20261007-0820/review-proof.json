@@ -1,0 +1,65 @@
+{
+  "boundary": "2026-10-07T08:15Z",
+  "accepted_scoped_tasks": 143,
+  "existing_task_closures": 83,
+  "completed_scoped_children": 60,
+  "new_checked_lines_since_prior_full": 5,
+  "this_full_cut_added_checked_lines": 0,
+  "new_prospective_tasks_since_prior_full": 4,
+  "source_changes": 9,
+  "wiki_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "wiki_lint": {
+    "errors": 0,
+    "existing_warnings": 96
+  },
+  "manifest": {
+    "total_new_after_touch": 0,
+    "source_drift": false,
+    "last_compile": "2026-10-07T08:18:41Z"
+  },
+  "index": {
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "readme_warning_output": "",
+  "scratch": {
+    "exit": 1,
+    "declared_roots": 44,
+    "entries": 44,
+    "verdicts": {
+      "KEEP-MARKED": 11,
+      "KEEP-DIRTY": 10,
+      "KEEP-UNLANDED": 8,
+      "KEEP-REFERENCED": 3,
+      "KEEP-PROTECTED": 4,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": [],
+    "scope": "Exact own, named worker and human signature roots; readonly canonical no-fetch plan; all evidence/current proposals retained; no fleet-wide deletion."
+  },
+  "index_pruning": [],
+  "archived": [],
+  "compacted": [],
+  "first_screen_changes": [
+    "NI08 source-only pointers added to INF64 and K11 dated parents; history retained in place"
+  ],
+  "runtime_changed": false,
+  "review": "MAIN accepts published W6 fresh attempt2, EVL42 report originals and retained INF64 manifest; prospective K11/PIP02 source tasks remain open. Existing original TRUE/FALSE/NULL, unique seals versus archive copies and ZIP topology limits preserved. No whole-backlog exhaustion.",
+  "private_validation_sha256": {
+    "periodic-wrapup-0820-delta.json": "18808dca9bdc3490651ed85d4ffc792bfc4f5901804b1083f2246478bc3afa96",
+    "periodic-wrapup-0820-after-touch.json": "626acd006a0871a5e8baffb19c32c55332f4a79c56127c0deae0b13a562754f1",
+    "periodic-wrapup-0820-manifest-check.json": "43c126918403353f1048177d1b3877c5d94d83e55e5537921633b1f53b05bd6d",
+    "periodic-wrapup-0820-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-0820-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-0820-index-check.txt": "61d3f359a49ad4acc5f1380e84f449edab3152f44fc29c19958eb56687a8fd24",
+    "periodic-wrapup-0820-scratch-plan.json": "6cb7ebd4159055c52d1a50016d557ddcdbb92a6b699d16a3ce098c408f2629d9",
+    "periodic-wrapup-0820-scratch-summary.json": "341dba5442711c8afe7eabb092960111144831793a9131b5a837d9ef4c82bd4f"
+  }
+}

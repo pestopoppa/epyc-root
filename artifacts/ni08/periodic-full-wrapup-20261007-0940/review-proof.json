@@ -1,0 +1,54 @@
+{
+  "boundary": "2026-10-07T09:42:35.598842+00:00",
+  "accepted_scoped_tasks": 147,
+  "existing_task_closures": 87,
+  "completed_scoped_children": 60,
+  "new_checked_lines_since_previous_full": 2,
+  "source_changes": 5,
+  "wiki_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "manifest": {
+    "total_new_after_touch": 0,
+    "source_drift": false,
+    "last_compile": "2026-10-07T09:41:34Z"
+  },
+  "index": {
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "readme_warning_output": "",
+  "scratch": {
+    "exit": 1,
+    "declared_roots": 48,
+    "entries": 46,
+    "verdicts": {
+      "KEEP-MARKED": 11,
+      "KEEP-DIRTY": 11,
+      "KEEP-UNLANDED": 10,
+      "KEEP-REFERENCED": 2,
+      "KEEP-PROTECTED": 4,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": []
+  },
+  "index_pruning": [],
+  "archived": [],
+  "compacted": [],
+  "runtime_changed": false,
+  "wiki_lint_scope": "own publication lane, unchanged baseline warnings; shared working clone stale-entry findings are a separate population",
+  "private_validation_sha256": {
+    "periodic-wrapup-0940-delta.json": "985f5817395e0c81e7e3f258b1ecd05308b07cd68fb63ba804653215b1a9dd8a",
+    "periodic-wrapup-0940-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-0940-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-0940-after-touch.json": "233e4f14fbbe76ae8918350a13b2f9b70f9ec9fbfeaaf4865a38aca2038fc439",
+    "periodic-wrapup-0940-index-check.txt": "6ca7d2b330e50077294c20a054f6767271be53d4261ab4872aee42b23e76630f",
+    "periodic-wrapup-0940-scratch-plan.json": "7c13b23071c58ad213d93f71c71b0fddc5d86716a9bf7b6c39356ca66ef1c238",
+    "periodic-wrapup-0940-scratch-summary.json": "e2fd7e50c2993a2a4a35892e983f2f9920799f0706448aa470b2f3aaa09077aa"
+  }
+}

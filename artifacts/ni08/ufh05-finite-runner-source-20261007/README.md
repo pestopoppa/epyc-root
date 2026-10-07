@@ -1,0 +1,7 @@
+# UFH05 finite runner source artifact
+
+Private Research candidate `d9aebbe5505ed3f697f57254a8355cb32b713574` contains the standalone reviewed actor, exact two-file primary 3af patch, full upstream source identities, actor-consumed shim map and usage scope. `source-publication-map.json` binds all seven Git blobs and bytes. This artifact is source-only preparation; no model imports, loads, builds, native runs or grading occurred.
+
+RC-XLLM-PREFILL-1 is a recipe identity. Future output remains an ungraded operational record. The experimental feasibility parent remains open pending a separately reviewed exact artifact/core/context binding and authorized owner execution. MAIN owns canonical enrollment, task, index and wiki edits.
+
+MAIN accepted and normal-published these seven byte-identical source artifacts on Research main6e06fae72da0c2efbd6984f66ea97651d2c48fb9 after exact Git/mode/byte/hash and full actor AST identity review. [Current publication and bounded acceptance](MAIN-source-acceptance.json) supersede the private preparation state above. The original preparation map/provenance remain unchanged; no patch was applied to an upstream or production tree, and no native/model execution occurred. [Published actor package](https://github.com/pestopoppa/epyc-inference-research/tree/6e06fae72da0c2efbd6984f66ea97651d2c48fb9/scripts/research/ufh05_finite_runner_source) contains no weights and claims no feasibility. The operative shared grading and human measurement protocols are unchanged.

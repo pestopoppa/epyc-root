@@ -2663,3 +2663,10 @@ Sources: [speculative-decoding-mtp-refresh handoff](../handoffs/active/speculati
 ### Registry source and override attestation — 2026-10-07
 
 [Published source and original97/97](../artifacts/ni08/registry-banner-override-source-20261007/README.md) accept truthful canonical/noncanonical compiler banners and expired/wrong-PID undeclared override refusal. A wider edit-master documentation sweep remains independent; synthetic controls grant no live environment, capacity or serving warrant.
+
+
+### Ratified one-drafter source prose — 2026-10-07
+
+The [INF50 checkpoint](../artifacts/ni08/inf50-retired-policy-source-acceptance-20261007/README.md) publishes Researchc49729505b6b85bcc2ef68255168014b4ae6a84d: one retired-field historical prose scalar, with operative YAML semantics and ratification receipt bytes unchanged. The [speculative-decoding owner](../handoffs/active/speculative-decoding-mtp-refresh.md) now records the ratified one-drafter contract: model-role drafter eligibility and per-server selection govern; the earlier composed recipe is historical. Exactly SR-5 closes. NG5 and runtime parents remain open.
+
+The generated APP lean remains stale and unaccepted. New SR5-LEAN-DOC-PROJECTION and VB-INF50-LEAN-DOC-PROJECTION prospectively bind actual registry_compiler --dry-run full YAML delta and immutable source/cache identity as UNGRADED document/artifact dependencies through VB-NI07-DOC-DEPS. Any operative delta refuses publication. There is no fabricated JUnit/native TRUE gate, new grading ladder or compiler/runtime acceptance at this source checkpoint.

@@ -1,0 +1,91 @@
+name: NI08 ET13 and W6 bounded native conformance
+on:
+  push:
+    branches: [codex/ni08-et13-w6-ci-20261007]
+    paths:
+      - .github/workflows/ni08-et13-w6-native.yml
+      - scripts/ci/ni08_et13_w6_native_capture.py
+      - scripts/ci/ni08_et13_w6_native_cases.json
+      - scripts/ci/ni08_et13_w6_native_requirements.txt
+      - scripts/autopilot/**
+      - src/**
+      - tests/unit/test_eval_tower_instrument_repair.py
+      - tests/unit/test_eval_tower_decision_partitions.py
+      - tests/unit/test_eval_tower_concurrency_metrics.py
+      - tests/unit/test_bsv_observe.py
+      - orchestration/model_registry.yaml
+      - orchestration/prompts/**
+permissions:
+  contents: read
+jobs:
+  bounded-native-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHON_PIN: '3.13.15'
+      ROOT_CARRIER_PIN: 72a0d06a251667fe6dc1cdf05ab19313e03f9736
+      NI08_NATIVE_BRANCH: codex/ni08-et13-w6-ci-20261007
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      ORCHESTRATOR_MOCK_MODE: '1'
+      ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS: '1'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /absent/llama-cpp
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /absent/llama-mtmd-cli
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /absent/llama-server
+    steps:
+      - name: Initialize result and setup status
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni08-et13-w6/result" "$RUNNER_TEMP/ni08-et13-w6/tmp"
+          printf '{"state":"setup_pending","fixture_execution_conformant":null,"native_outcome_kind":"not_captured","shared_grade_state":"not_started","promotion_or_release_acceptance":null}\n' > "$RUNNER_TEMP/ni08-et13-w6/result/status.json"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: app
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+          architecture: x64
+      - name: Enforce hosted execution identity
+        run: |
+          test "$GITHUB_REF" = "refs/heads/$NI08_NATIVE_BRANCH"
+          test "$GITHUB_EVENT_NAME" = push
+          test "$(uname -s)" = Linux
+          test "$(uname -m)" = x86_64
+          mkdir -p "$RUNNER_TEMP/ni08-et13-w6/isolated-llm" "$RUNNER_TEMP/ni08-et13-w6/home"
+          python -m venv "$RUNNER_TEMP/ni08-et13-w6/venv"
+          "$RUNNER_TEMP/ni08-et13-w6/venv/bin/python" -c 'import platform,sys; assert platform.python_version()=="3.13.15"; assert sys.prefix != sys.base_prefix' 
+      - name: Install exact APP lock wheel set
+        run: |
+          set -o pipefail
+          env -i PATH="/usr/bin:/bin" HOME="$RUNNER_TEMP/ni08-et13-w6/home" PIP_CONFIG_FILE=/dev/null PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_INPUT=1 "$RUNNER_TEMP/ni08-et13-w6/venv/bin/python" -m pip install --only-binary=:all: --no-deps --require-hashes -r app/scripts/ci/ni08_et13_w6_native_requirements.txt 2>&1 | tee "$RUNNER_TEMP/ni08-et13-w6/result/pip-install.log"
+          env -i PATH="/usr/bin:/bin" HOME="$RUNNER_TEMP/ni08-et13-w6/home" "$RUNNER_TEMP/ni08-et13-w6/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/ni08-et13-w6/result/pip-freeze.txt"
+      - name: Capture four modules in an explicit environment
+        run: |
+          env -i PATH="$RUNNER_TEMP/ni08-et13-w6/venv/bin:/usr/bin:/bin" HOME="$RUNNER_TEMP/ni08-et13-w6/home" TMPDIR="$RUNNER_TEMP/ni08-et13-w6/tmp" \
+            GITHUB_WORKSPACE="$GITHUB_WORKSPACE" RUNNER_TEMP="$RUNNER_TEMP" GITHUB_SHA="$GITHUB_SHA" GITHUB_REF="$GITHUB_REF" \
+            GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" GITHUB_RUN_ID="$GITHUB_RUN_ID" GITHUB_RUN_ATTEMPT="$GITHUB_RUN_ATTEMPT" GITHUB_JOB="$GITHUB_JOB" \
+            ROOT_CARRIER_PIN="$ROOT_CARRIER_PIN" EPYC_ORCH_ROOT="$GITHUB_WORKSPACE/app" VIDYA_ORCH_WRITER_ROOT="$GITHUB_WORKSPACE/app" \
+            ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=/absent/llama-cpp ORCHESTRATOR_PATHS_LLAMA_MTMD=/absent/llama-mtmd-cli \
+            ORCHESTRATOR_PATHS_LLAMA_SERVER=/absent/llama-server ORCHESTRATOR_PATHS_LLM_ROOT="$RUNNER_TEMP/ni08-et13-w6/isolated-llm" \
+            PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 PYTHONUNBUFFERED=1 PYTEST_ADDOPTS= PYTEST_PLUGINS= \
+            ORCHESTRATOR_MOCK_MODE=1 ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS=1 \
+            "$RUNNER_TEMP/ni08-et13-w6/venv/bin/python" app/scripts/ci/ni08_et13_w6_native_capture.py
+      - name: Preserve native status and all result files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni08-et13-w6-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni08-et13-w6/result/
+          if-no-files-found: error

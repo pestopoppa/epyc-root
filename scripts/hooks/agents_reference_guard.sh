@@ -24,6 +24,12 @@ if [[ ! -f "$FILE_PATH" && "$HAS_WRITE_CONTENT" != true ]]; then
   exit 0
 fi
 
+# An absolute edit may target a lane ahead of CLAUDE_PROJECT_DIR. Resolve
+# repository-relative references against the edited file's own Git root.
+if edited_root=$(git -C "$(dirname "$FILE_PATH")" rev-parse --show-toplevel 2>/dev/null); then
+  PROJECT_DIR=$edited_root
+fi
+
 # Validate the POST-edit content, not the pre-edit disk state (audit D13,
 # 2026-07-30): reconstruct what the file will contain after this Write/Edit,
 # then scan that. Pre-state scanning both missed newly-introduced bad refs and

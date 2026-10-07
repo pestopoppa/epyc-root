@@ -1,0 +1,67 @@
+{
+  "boundary": "2026-10-07T11:20:36.779740+00:00",
+  "baseline_full_public_commit": "b5d19bb500edfa1628cae00975b721cccaa5fb7e",
+  "current_task_public_commit": "8fbf9a980aaa56edcd64cc8fd7a77316a9b3d0a5",
+  "accepted_scoped_tasks": 159,
+  "existing_task_closures": 98,
+  "completed_scoped_children": 61,
+  "new_checked_lines_since_previous_full": 6,
+  "source_changes": 10,
+  "wiki_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/quantization.md",
+    "wiki/knowledge-management.md"
+  ],
+  "manifest": {
+    "total_new_after_touch": 0,
+    "source_drift": false,
+    "last_compile": "2026-10-07T11:20:36Z"
+  },
+  "index": {
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "readme_warning_output": "",
+  "wiki_lint": {
+    "errors": 0,
+    "warnings": 96,
+    "scope": "own publication lane; peer shared clone separatepopulation"
+  },
+  "scratch": {
+    "exit": 1,
+    "supplied_roots": 57,
+    "coalesced_entries": 46,
+    "verdicts": {
+      "KEEP-MARKED": 11,
+      "KEEP-DIRTY": 10,
+      "KEEP-UNLANDED": 11,
+      "KEEP-REFERENCED": 2,
+      "KEEP-PROTECTED": 4,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": []
+  },
+  "index_pruning": [],
+  "archived": [],
+  "compacted": [],
+  "runtime_changed": false,
+  "procedural_deviations_preserved": [
+    "ET first absent-ref force option",
+    "ET accepted-source publication missingcanonicalserializationleases"
+  ],
+  "canonical_FULL_checkpoint_serialized": true,
+  "MAIN_corrected_private_draft_intake_ID_against_original_report": true,
+  "private_validation_sha256": {
+    "periodic-wrapup-1110-delta.json": "8b987d81a51493084467babb16dbf3d9f034585df8ae1a31babdf2a06d1bf7fb",
+    "periodic-wrapup-1110-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-1110-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-1110-after-touch.json": "189c1dee975da50e81b8bdd7819671903919c3eaec7835be6bbe9871628642f2",
+    "periodic-wrapup-1110-manifest-check.json": "de63c4379e46301453ee9bb2d2d593d0f7793b037b35adfd5b7afedace9c4b6e",
+    "periodic-wrapup-1110-index-check.txt": "8ce2af80a86421f60d2ba69945a8f46adbaa84a5a256c3c10a48d8b07c18fd6c",
+    "periodic-wrapup-1110-scratch-plan.json": "826be0112e909c0cf6f10cd175f1fb8ed6741ab535af791327ea0bc9eef5657b"
+  }
+}

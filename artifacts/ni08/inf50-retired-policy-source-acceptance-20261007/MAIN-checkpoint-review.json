@@ -1,0 +1,57 @@
+{
+  "schema": "epyc.main.source_acceptance.v1",
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T11:54:27.399646+00:00",
+  "public_Research_main": "c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "sole_yaml_scalar_change": ".speculative_decoding_policy.retired_fields.ngram_candidate_spec_type",
+  "operative_semantics_unchanged": true,
+  "receipt_bytes_unchanged": true,
+  "source_only": true,
+  "closed_existing": [
+    "SR-5"
+  ],
+  "unchecked_new": [
+    "SR5-LEAN-DOC-PROJECTION",
+    "VB-INF50-LEAN-DOC-PROJECTION"
+  ],
+  "NI08": {
+    "total": 160,
+    "existing": 99,
+    "scoped_children": 61
+  },
+  "generated_lean_stale_unaccepted": true,
+  "native_cli_execution": false,
+  "draft_patch_sha256": "dc75407c747554827408d30b929207400171a7a30a880b67642db9b123273351",
+  "original_reports_retained": true,
+  "NG5_unchanged_line_sha256": "db454110f99b009975342d071d7da4e71a177e568e61fcf0e8da21aff9d07fd0",
+  "main_applied_documents": [
+    {
+      "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "sha256": "9df1a36e7eb376467962c7a9451ee4a00830cec5a73ae97bbf93a3751109564a"
+    },
+    {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "sha256": "1885173b5e89f21dedd84bf6181a7532d4476ac2911b2ea8f6f03cca3da93013"
+    },
+    {
+      "path": "scripts/vidya/adapters/README.md",
+      "sha256": "022c665b72b738fe73714540f81138c309cc883491a7aaae6345f627fd0cb6b5"
+    },
+    {
+      "path": "handoffs/active/inference-research-index.md",
+      "sha256": "3dbed4b187e2ffcf6421db5c97d327ec1d8405b4e7ce608347d79fc0778d82c2"
+    },
+    {
+      "path": "docs/reference/ni08-non-inference-continuation.md",
+      "sha256": "8289ce2db06b9942cb22a461e18b1ddf8b7a63b21c4cbe53a0ad5dc081d2156f"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07.md",
+      "sha256": "db274355f034f6311145f2baffdfa3e6d44b256bca15fa96ed0b8d101d6d2097"
+    },
+    {
+      "path": "handoffs/active/non-inference-backlog.md",
+      "sha256": "cad071714dfd143eeff8233edd6653f7025a906dc1da37d2fbe72ce4d9acbd12"
+    }
+  ]
+}

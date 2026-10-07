@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-ROOT_CONTEXT_PIN = "f018782258f65118019a555f6832125f25646f11"
+ROOT_CONTEXT_PIN = "458657a9d8d146a208c93cd6a1204cdda35ee76f"
 SOURCE_PIN = "caa6b5ecf7a9355929f01459aa32cd0a2350519d"
 APP_PIN = "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
 PYTHON_PIN = "3.13.15"
@@ -260,7 +260,7 @@ def main() -> int:
         package_versions = verify_lock(lock, requirements)
         selected = expected_cases(cases_file)
         source_map = json.loads(read_text(cases_file))["source_files"]
-        if len(source_map) != 444:
+        if len(source_map) != 452:
             raise RuntimeError("static source manifest has unexpected file count")
         source_paths = []
         manifest_rows = []
@@ -280,7 +280,8 @@ def main() -> int:
                                   "path": relative, "git_blob": blob(context, relative),
                                   "sha256": digest(path)})
         carrier_names = (
-            "scripts/ci/native_conformance.py", "scripts/vidya/adapters/ci_conformance.py",
+            "scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py",
+            "scripts/vidya/adapters/ci_conformance.py",
             "scripts/vidya/claim_tuple.py", "scripts/vidya/lattice.py",
             "scripts/vidya/frames.py", "scripts/vidya/canonical.py",
         )

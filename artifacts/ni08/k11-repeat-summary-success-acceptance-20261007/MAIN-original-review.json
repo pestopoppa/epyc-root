@@ -1,0 +1,40 @@
+{
+  "review": "PASS",
+  "implementation_accepted": true,
+  "reviewed_at_utc": "2026-10-07T08:56:47.675019+00:00",
+  "run": 37596204461,
+  "attempt": 1,
+  "recipe_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+  "source_pin": "82fcaab12d46867b9723cadb11b498e74df16a91",
+  "artifact_id": 11470723629,
+  "zip_sha256": "4246c32a536186f20721562cf268cf595af8ed0757275f660bca1bd2ce09d038",
+  "zip_bytes": 5376814,
+  "original_members": 44,
+  "readset_count": 31,
+  "frozen_git_inputs": 18,
+  "original_generated_contexts": 4,
+  "original_native_binary_files": 9,
+  "cases": 30,
+  "native_value": true,
+  "receipt_sha256": "f1b917c32a594adc7e7c3155fd1795a1ef4b3bcd9e1c8b6f59bce9a32d2d5bdf",
+  "receipt_self_sha256": "02991f696ed4b3d81bf9343aa159667ed6b2b5a3e8376a3a3c106e078ca95b0a",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "original_typed_inventory_counts": {
+    "directory": 5,
+    "regular": 42
+  },
+  "zip_missing_original_empty_directories": [
+    "home/",
+    "tmp/"
+  ],
+  "originals_unchanged": true,
+  "MAIN_executed_grade": false,
+  "MAIN_executed_project_code": false,
+  "scope": "Source reporting conformance through actual run_execute fake-server/persisted TRUE/FALSE/NULL controls and original owned-PID cleanup only; no live Gemma determinism, inference, sampler or kernel warrant.",
+  "job_identity": "github_job_112709350371",
+  "original_MAIN_review_sha256": "25a2aecc0f938dd7e540282d96833dc83ca62962fa83c64c20ff32f718407c4c",
+  "public_identity_representation": "Exact public GitHub job ID encoded with github_job_ prefix for secret-scan context; original private report bytes remain unchanged."
+}

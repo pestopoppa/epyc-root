@@ -33,6 +33,44 @@ regen, Step 7's promotion merge). The two operator-cadence rows are *deferred, n
 them for the next operator-invoked `/wrap-up`, and report in your output anything you saw that they
 would have handled.
 
+### Typed heavy-wrap transaction (RTG-51; only from an accepted request)
+
+This transaction is separate from the per-task routine above. It adds no timer, hook, scheduled
+invocation, or self-issued wrap request. A heavy wrap starts only after Coordinator validates and
+issues one typed `wrapup-request`; an Auditor proposal that a wrap is due is not itself authority.
+Until the protected Phase-5 policy amendment is signed and merged, this section does not grant a
+Coordinator request permission to run steps that the table above reserves for operator-invoked
+`/wrap-up` (including destructive pruning or the wiki compilation sweep).
+
+Before mutation, bind the request ID, reason, synchronization mode, integrated `origin/main` SHA,
+and the exact accepted receipt IDs or cutoff timestamp. Reject a missing/malformed request, an
+unreachable integration SHA, or an unaccepted receipt. A receipt after the cut is explicitly deferred
+to the next request. A repeated request ID returns its prior terminal receipt and never repeats a
+commit or message. Coordinator chooses exactly one designated writer after integrating every
+eligible checkpoint in the cut; workers retain ownership of their completion state and files.
+
+The designated writer acquires one operation-token lease for the shared transaction, then performs
+these mutations in order:
+
+1. Sync from the integrated `origin/main` SHA named in the request.
+2. Reconcile every included accepted receipt and record every exclusion with its reason.
+3. File Auditor-owned follow-ups without rewriting worker-owned completion state.
+4. Compact/prune eligible handoffs and update each owning domain index; regenerate timeline/index
+   state and run structural and ownership checks.
+5. Perform documentation and freshness work. If the authorized transaction includes the wiki
+   sweep, compile it as the last documentation-content mutation; no later step may edit its sources.
+6. Commit only reviewed paths, push the designated Auditor lane, and hand the packet to Coordinator
+   for promotion. Verify the promoted `main` SHA before recording success.
+7. Emit one `wrapup-complete` receipt naming the request ID, included receipt IDs, explicit
+   exclusions, source and promoted SHAs, generated-artifact hashes, validation results, wiki
+   manifest/watermark when applicable, and lease operation ID. Release the operation lease on every
+   handled exit path; a process crash leaves the lease held for the existing named-residue recovery.
+   An incomplete or failed transaction must not emit an accepted completion receipt.
+
+If an asynchronous wrap fails, keep the request queued and leave workers free to continue. If a
+synchronized pre-reboot wrap fails, keep the reboot barrier closed. Do not claim success from a local
+commit, a push attempt, or a receipt whose promoted-SHA and roster-coverage checks failed.
+
 ## Where this wrap-up runs — read before Step 1
 
 **In your own lane worktree, on your own lane branch.** Every roster main owns

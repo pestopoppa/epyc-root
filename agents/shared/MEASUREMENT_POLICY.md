@@ -1,6 +1,6 @@
 # Measurement Policy (agent digest)
 
-Canonical authority: `/workspace/MEASUREMENT.md` (protocol registry, claim grammar, retroactivity policy).
+Canonical authority: [the repository-root measurement constitution](../../MEASUREMENT.md) (protocol registry, claim grammar, retroactivity policy).
 Era registry: `epyc-orchestrator/orchestration/instrument_eras.yaml` (append-only).
 This digest exists so a session can act correctly without reading the full constitution; when in doubt, the constitution wins.
 
@@ -81,7 +81,7 @@ supplied the counterexample to each.
 - **Caveat placement must not be inversely correlated with caveat severity.** A self-limiting
   statement belongs in the artifact's **primary** document, not only in a generated view of it.
   Worked example: the sharpest limitations of that artifact lived in generated HTML inside a large
-  folder while the headline sat in the README, and the producers' own `limitations.md` was written,
+  folder while the headline sat in the README, and the producers' own limitations document was written,
   fed to the doc generator, and withheld from publication.
 
 ## Instrument class, floor unit, and bounded nulls (ratified 2026-09-08)

@@ -1,0 +1,41 @@
+{
+  "review": "PASS",
+  "implementation_accepted": true,
+  "reviewed_at_utc": "2026-10-07T09:23:43.319827+00:00",
+  "run": 37597364740,
+  "attempt": 1,
+  "job_identity": "github_job_112713157626",
+  "recipe_pin": "1992d9b07fcdb906366fda7c9bf9c9950e31ead6",
+  "source_pin": "0b0f35ac4bd4e4520ab95c6c073bdcdcd0458ba6",
+  "artifact_id": 11470839676,
+  "zip_sha256": "b060c39cb5fbe8a24b5cf51dc089b823152df667ad6127bda11a1566d76e0b7e",
+  "zip_bytes": 1482460,
+  "original_members": 111,
+  "readset_count": 65,
+  "frozen_git_inputs": 63,
+  "map_self_inputs": 1,
+  "original_generated_contexts": 1,
+  "cases": 11,
+  "native_value": true,
+  "receipt_sha256": "a2ea62cca1d6402c3bbfa7aaa63bf6b00c64495a516bd4df565b0dd957e4dea9",
+  "receipt_self_sha256": "542cbe19827a29a2b36d623bac0cd6e922564cd2bc26c792b1321b54877824cf",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "original_typed_inventory_counts": {
+    "directory": 39,
+    "file": 90,
+    "symlink": 12
+  },
+  "zip_missing_original_empty_directories": [
+    "capture/pytest-tmp/test_shared_probe_reports_none0",
+    "capture/pytest-tmp/test_vl_resolver_keeps_configu0",
+    "capture/tmp"
+  ],
+  "zip_follows_intentional_links": true,
+  "originals_unchanged": true,
+  "MAIN_executed_grade": false,
+  "MAIN_executed_project_code": false,
+  "scope": "Bounded executable/library helper and distinct caller synthetic source conformance; original hosted owned timeout-child cleanup. No actual serving binary/model/residency/performance/deployment warrant."
+}

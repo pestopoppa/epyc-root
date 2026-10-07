@@ -18,7 +18,7 @@ When governance scope changes for any `CLAUDE.md` file:
 
 1. Update `docs/reference/agent-config/CLAUDE_MD_MATRIX.md`
 2. Update `docs/reference/agent-config/claude_md_matrix.json`
-3. Keep root `CLAUDE.md` explicitly accounted for. If child-repo policy scope changes, verify the child repo directly. **llama.cpp has NO project agent file**: `repos/epyc-llama/CLAUDE.md`/`AGENTS.md` are upstream ggml-org stubs, and the tree is the frozen production kernel — never write agent files into it; llama.cpp governance lives in root `CLAUDE.md` (§ Experimental Kernel Workflow) and a project overlay is baked in only at the next version boundary (v9 promotion).
+3. Keep root `CLAUDE.md` explicitly accounted for. If child-repo policy scope changes, verify the child repo directly. The frozen production llama.cpp tree is not a project-policy editing target. Project llama.cpp guidance lives in the staged [tree overlay](../../docs/reference/agent-config/llama-tree-overlay/CLAUDE.md), which is baked into a candidate only at the next version boundary; do not add files to the frozen tree.
 
 ## Skill Surface Sync
 

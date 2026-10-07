@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **113 completed scoped tasks: 62 existing checkbox flips and 51 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **159 completed scoped tasks: 98 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -292,3 +292,133 @@ Completed since the previous published checkpoint: EVL30 source-clock task, UTM-
 Full wrap-up is an operator-invoked checkpoint, not a session stop or exhaustion claim. MAIN owns canonical docs, indices, wiki synthesis, checks and publication; workers continue private implementation/audits. Separate exact source changes, synthetic proof and real model/runtime acceptance. Pending operator packages retain their prior decisions and do not block independent work.
 
 The full checkpoint also corrected a stale mtime warning on healthy content-hash scans: a diagnostic-only single-caller change, with default and explicit --since scans checked. NI08 now113 (62existing+51children). No watermark algorithm changed.
+
+
+## CS14 original manifest correction — 2026-10-07
+
+[MAIN static correction](../../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the voice/controller native verifier because eight existing import inputs were absent from the original map. Original276/276, its declared463-input custody and shared Judged/Located observation remain unchanged; full import closure requires a prospective corrected capture. Source implementation items remain complete. NI08 now112 scoped completions (62existing+50children), reduced by one reopened verifier; no whole-backlog exhaustion is claimed.
+
+
+## Reference portability source — 2026-10-07
+
+[MAIN accepted source and original1/1](../../artifacts/ni08/evl38-reference-conformance-20261007/README.md) close the pre-enrolled reference verifier:90Git+5generated inputs,109authenticated original members, seal and unchanged full source/result custody. Fifteen document corrections preserve validation policy and measurement authority. NI08 now113scoped completions (62existing+51children); CS14 corrected closure remains pending, and full backlog work continues.
+
+
+## Registry prose and stale Vidya source tasks — 2026-10-07
+
+[MAIN source-only review/publication](../../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md) closes SW-5, SC71 and SC74: actual six-doc authoring guidance and two already-implemented stale source rows. No new native tests or intake truth claim. NI08 now116scoped completions (65existing+51children). Prospectively enrolled RVP rollback source/CPU verifier remains open; actual parentGPU/regression/promotion/live event acceptance is separate. Full wrap-up cleanup removed14own obsolete clean/landed/idle worktrees through the gate, preserving all branch references, active lanes and KEEP original custody.
+
+
+## Voice original custody and typed payload/choice source — 2026-10-07
+
+MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) and [typed payload/choice original31/31](../../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md): each binds467Git+5generated inputs and all484 authenticated ZIP members, full unchanged result/source inventories, exact complete module identities and the existing shared grade. APPmain3fc9f947 publishes the actual reviewed six-file response/choice source; no runtime reload. Four child closures restore the CS14 verifier and complete CS16-SOURCE, CS18-SOURCE and their verifier; prior CS14 source is counted once. NI08 now120scoped completions (65existing+55children), not whole-backlog exhaustion. Free source/audit work continues.
+
+
+## Prospective ODL source — MAIN boundary, 2026-10-07
+
+[Source and original8/8](../../artifacts/ni08/sc42-odl-write-source-20261007/README.md) close SC42-SOURCE and the pre-enrolled native verifier after full source/API/34Git+4generated/50member original review. Research source normally published; ROOT writer-reader/ingest and exact capture recipe integrated here. Existing SC42 stays open until actual canonical A/B and first measured tuple; historical demo and originalFALSE remain unchanged. NI08 now122scoped completions (65existing+57children). Further non-inference source work and full task audit continue.
+
+
+## Conditional heavy-wrap command contract — 2026-10-07
+
+MAIN completed the RTG-51 Phase-4 command documentation: request identity, immutable receipt cut, one writer/lease, ordered mutations, Coordinator promotion, completion receipt and failure/reboot barriers. The contract explicitly retains operator-only pruning/wiki authority until protected Phase-5 ratification. Manual source/caller review is LOW risk; no runtime execution or new test result is claimed. One existing checkbox closes; NI08 now123 scoped completions (66existing+57children). Remaining Phase-5 migration reconciliation and actual Auditor canary stay open.
+
+
+## Edited-file reference hook — 2026-10-07
+
+Published LR12 edited-file Git-root hook and accepted original hosted5/5 controls after MAIN independent API/48-member/34-readset review. Existing native TRUE/shared Judged/Located and complete immutable source/result custody retained. Two existing checkbox flips bring NI08 to125 scoped completions (68existing+57children). Prior startup failure stays original; no live queue/bus, host hook execution or protected policy ratification is claimed.
+
+
+## Mocked authoring and static benchmark pin checker — 2026-10-07
+
+MAIN accepted [FW-1 original10/10](../../artifacts/ni08/fw1-success-acceptance-20261007/README.md) and [EVL42 original8/8](../../artifacts/ni08/evl42-success-acceptance-20261007/README.md), published exact APP/Research sources and retained every earlier failed original. Four existing checkbox flips bring NI08 to129 scoped completions (72existing+57children). Mocked workflow runs carry source-conformance identity, not real GUI measurement warrant; actual benchmark scan report wiring remains open and source snapshots do not attest loaded code. Remaining eligible source work and full backlog adjudication continue.
+
+
+## Prepared next source and operator boundaries — 2026-10-07
+
+Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN manual caller/metric-direction review and are prospectively enrolled for their own full hosted controls. These are preparations, not completions; NI08 remains129 scoped completions. W6 future journal metadata uses the existing journal family, with separate informational support carry. The [prevalidated LR-11/LR-13 package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md) is an operator terminal-signature decision; protected shared rules and receipts remain unchanged.
+
+
+## Physical SMT placement guard — 2026-10-07
+
+[Original81/81 and exact source](../../artifacts/ni08/ssbench-smt-success-acceptance-20261007/README.md) complete SSBENCH-SMT-SOURCE and its prospective native companion. Two existing flips bring NI08 to131 (74existing+57children). Synthetic topology/spawn controls grant no live placement or capacity claim; owning-session runtime activation remains separate. W6 source enrollment now explicitly distinguishes34 source functions from38 expanded native identities. Further source audits continue; the whole backlog remains unexhausted.
+
+
+## Experimental seeded rollback initializer — 2026-10-07
+
+[Actual original3/3 and64raw captures](../../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md) complete the fresh experimental rollback source child and its prospective native companion. Two existing flips bring NI08 to133 (76existing+57children). Production is unchanged; full-device regression, promotion and live seeded events remain parent requirements. New source work and final all-card audit continue.
+
+
+## Actual W4 promotion gate — 2026-10-07
+
+[Original2/2 outer,808 inner executions and exact published source](../../artifacts/ni08/w4-real-gate-success-acceptance-20261007/README.md) close W4-REAL-GATE-SOURCE and VB-W4-STACK-CHANGE-GATE, bringing NI08 to135 scoped completions (78existing+57children). Four actual synthetic worlds each pass the original202 gate identities, and invalid-world refusal is preserved. Six empty directories omitted by artifact ZIP are reported explicitly without reconstruction. Actual consumer migrations, production readiness and owner confirmation remain independent; all-card review and further non-inference source work continue.
+
+
+## Failed original custody — 2026-10-07
+
+[MAIN twelve-endpoint independent integrity review](../../artifacts/ni08/failed-original-custody-review-20261007/README.md) preserves10nativeFALSE,1nativeNULL and1setup/no-receipt outcome, without grader execution or implementation acceptance. One completed custody subtask brings the scoped total to136 (78existing+58children). This is original-record authentication only; no later success supersedes the failed records.
+
+
+## Injected voice HTTP/WAV source — 2026-10-07
+
+[Isolated3blob source and original26/26](../../artifacts/ni08/cs20-http-wav-success-acceptance-20261007/README.md) complete CS20-21-HTTP-WAV-SOURCE and its prospective VB companion:138 scoped NI08 completions (79existing+59children). Unrelated inherited GPU-window/MCP changes are excluded. CS20/21 real-service and speech measurements remain open. W6 first hosted capture is nativeTRUE38/38 but MAIN identified a wrong handoff path in its prior context map; the original is preserved without implementation acceptance, and a corrected binding precedes a fresh exact capture.
+
+
+## Fresh W6 source acceptance — 2026-10-07
+
+[Published two-file source and independently reviewed attempt2](../../artifacts/ni08/w6e-success-acceptance-20261007/README.md) complete W6e descriptive producer and its prospective conformance companion.38/38 original controls, corrected39Git/162wheel binding frozen before fresh capture, complete original44input/56member custody; first-attempt evidence unchanged without retroactive acceptance. NI08=140 (81existing+59children). Optional authored journal carry and all live/calibration/promotion gates remain separate.
+
+
+## Pin-report bounded source acceptance — 2026-10-07
+
+[Original29/29 and exact two-file source](../../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md) complete the bounded source child plus existing prospective conformance task. MAIN authenticates1682unchanged archive members/24readset and10unique nested native seals (8TRUE/1FALSE/1NULL);13receipt path copies are dereferenced aliases, with11symlinks/91emptydirectories archive limits preserved explicitly. Actual scan/pin-health parent remains open. NI08=142 (82existing+60children).
+
+
+## INF64 pinned disposition manifest — 2026-10-07
+
+[MAIN completed source-manifest review](../../artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md) authenticates19candidate/test units,2data,3guards,64unique blobs and145incomingrefs plus exact outgoing AST/path/CLI evidence. All19retain; no deletion qualified or campaign interference. One existingmanifest checkbox closes:NI08=143 (83existing+60children). Native source controls and future owner-reviewed disposal remain independent.
+
+## K11 requested-repeat reporting — MAIN acceptance 2026-10-07
+
+[Exact two-file Research publication and original30/30](../../artifacts/ni08/k11-repeat-summary-success-acceptance-20261007/README.md) close K11-REPEAT-SUMMARY-SOURCE and its pre-enrolled native companion. NI08 now has145 bounded scopes (85 existing tasks +60 completed scoped children). Incomplete/failed requested repeats cannot inherit success; absent task oracle remains unknown. Prior nativeNULL/subtest count mismatch is preserved; no original result is corrected retrospectively. Live Gemma determinism, model/runtime work and the broader parent remain open.
+
+## 2026-10-07 — S49 shared executable-discovery source accepted
+
+[Exact six-file APP publication and original11/11 acceptance](../../artifacts/ni08/s49-mtmd-probe-success-acceptance-20261007/README.md) close the actual triplicated-probe task and its prospective VB companion. NI08=147 bounded scopes (87 existing tasks+60 children); broader runtime verification remains open. Prior zero-job setup and NULL collection failure are preserved, with no retrospective grading.
+
+## EVL38 owning-source checklist reconciliation — 2026-10-07
+
+MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted/published fifteen-doc reference correction and original1/1 proof at ROOT04cc51bc4. The historical113 tally explicitly counted only its native companion; the owning source checkbox had remained unchecked. It now closes as one additional existing task: NI08=148 (88 existing+60 children). No observation is repeated or relabeled, and full candidate readiness remains separate.
+
+## UFH05 finite actor source package — 2026-10-07
+
+[MAIN exact seven-blob source-only publication](../../artifacts/ni08/ufh05-finite-runner-source-20261007/README.md) closes one bounded source child RC-XLLM-PREFILL-SOURCE. Research6e06fae72 preserves current source and publishes the approved actor/primary patch/shim/provenance only. No native execution, weights, device compatibility or feasibility is claimed. Actual runtime and VB-RI-OPS-WIRE parents remain open. NI08=149 (88 existing+61 scoped children); more non-inference source work remains.
+
+## Actual pytest logging bootstrap source — 2026-10-07
+
+[Exact APP three-file publication and original4/4](../../artifacts/ni08/scg-test-logdir-success-acceptance-20261007/README.md) close SCG-TEST-LOGDIR and its prospective native companion. Actual temporary log rows and before-teardown byte copies are retained; live/default sentinel remains unchanged. One opaque Git symlink is not miscounted as a native regular read; ZIP topology limitations are explicit. NI08=151 (90 existing+61 children). No runtime/API/inference or full current application-suite warrant.
+
+## PIP02 current-provenance selected-binary source — MAIN acceptance
+
+[MAIN current-source/original30/30 acceptance](../../artifacts/ni08/pip02-current-provenance-source-acceptance-20261007/README.md) closes PIP02-SELECTED-LIBRARY-SOURCE and its native companion. Fresh30/30 and exact Research5fd publication preserve current raw-byte/FIFO/provenance guards and UFH/K11 artifacts; older29/29 remains an older-source observation. NI08=153 (92 existing+61 children), with no linkage, residency, model, parser-quality or performance warrant.
+
+## W6 journal informational carry — MAIN acceptance
+
+[MAIN optional-carry source and original31/31](../../artifacts/ni08/w6e-journal-carry-success-acceptance-20261007/README.md) closes the one actual unchecked VB-RTG23-W6E-DIAGNOSTIC-CARRY task. No second parent checkbox exists for this scope; already accepted W6 producer tasks are not counted again. NI08=154 (93 existing+61 children). All31 original controls, three real-writer markers/four projected rows, source custody and strict carrier semantics are authenticated; prior FALSE/setup originals remain immutable.
+
+## EVL24 distinct logged-run evidence — MAIN acceptance
+
+[MAIN source/original16/16 acceptance](../../artifacts/ni08/evl24-distinct-run-source-acceptance-20261007/README.md) closes the actual EVL24-DISTINCT-RUN-SOURCE and prospective native companion. Original16/16 source/result custody and exact APP739 two-product publication are authenticated; duplicate verdicts can no longer satisfy multi-run thresholds. Existing stages/thresholds/override/latest-record/risk/gold/operator policy remain unchanged. NI08=156 (95 existing+61 children), with actual promotion readiness/W3/W4 and inference parents open.
+
+## INF54 already-present IQ source wiring — MAIN disposition
+
+[Four exact frozen Git blobs](../../artifacts/ni08/inf54-current-iq-source-adjudication-20261007/README.md) close the one stale STEP1 implementation checkbox. Actual current dispatch also supports IQ4_XS; its historical native-only instruction is superseded. No kernel mutation, build, binary/runtime or performance/quality/trellis claim. NI08=157 (96 existing+61 children); STEP2/3 and other quantization source/runtime work stay open.
+
+## ET13 exact source and original140/140 acceptance — 2026-10-07
+
+[MAIN source/original acceptance](../../artifacts/ni08/et13-honest-routing-source-acceptance-20261007/README.md) closes the actual routing source and prospective native companion after ordinary APP87ec two-file publication. Native TRUE140/140, exact frozen input/environment/grade/result custody and original failure/deviation distinctions are authenticated. NI08=159 (98 existing+61 children). Raw routes, denominators and policy unchanged; mixed E5/runtime/inference remain open.
+
+
+## INF50 retired-field historical prose — source-only checkpoint
+
+[Published source review and limits](../../artifacts/ni08/inf50-retired-policy-source-acceptance-20261007/README.md) close exactly the existing SR-5 prose task. This checkpoint advances the running total to160 (99 existing tasks+61 completed scoped children). The newly enrolled SR5-LEAN-DOC-PROJECTION and VB companion remain unchecked; stale generated APP lean, NG5 and runtime parents are not accepted. No host compiler/pipeline/model/inference execution or new grading rule.

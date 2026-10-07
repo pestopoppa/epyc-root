@@ -1,0 +1,120 @@
+name: PIP02 selected-library whole-module native controls
+on:
+  push:
+    branches: [codex/ni08-pip02-selected-library-native-20261007]
+permissions:
+  contents: read
+jobs:
+  selected-library-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ORCHESTRATOR_MOCK_MODE: '1'
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Initialize original setup status and absent binaries before imports
+        run: |
+          mkdir -p "$RUNNER_TEMP/pip02-library"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/pip02-library/status.json"
+          printf '%s\n' "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=$RUNNER_TEMP/pip02-library/absent-binaries/llama-server" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_PATHS_LLAMA_MTMD=$RUNNER_TEMP/pip02-library/absent-binaries/mtmd-cli" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_PATHS_LLAMA_SERVER=$RUNNER_TEMP/pip02-library/absent-binaries/llama-server-wrapper" >> "$GITHUB_ENV"
+          printf '%s\n' "EPYC_ORCHESTRATOR_ROOT=$GITHUB_WORKSPACE/app" >> "$GITHUB_ENV"
+          printf '%s\n' "OPENDATALOADER_BENCH_ROOT=$GITHUB_WORKSPACE/bench" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_PATHS_PROJECT_ROOT=$GITHUB_WORKSPACE/app" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_PATHS_REGISTRY_PATH=$GITHUB_WORKSPACE/source/orchestration/model_registry.yaml" >> "$GITHUB_ENV"
+          printf '%s\n' "ORCHESTRATOR_SERVICES_PDF_ROUTER_TEMP_DIR=$RUNNER_TEMP/pip02-library/pdf-router-temp" >> "$GITHUB_ENV"
+      - name: Checkout exact ROOT recipe and unchanged shared carrier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout reviewed Research source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 3ada26fc231f3f8138914ac3e39895817b022a4f
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact original APP config and PDFRouter callers
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: fd1869b1cc020c21402f85799eb28259212928f4
+          path: app
+          persist-credentials: false
+      - name: Checkout original primary OmniDocBench fixtures
+        uses: actions/checkout@v4
+        with:
+          repository: opendatalab/OmniDocBench
+          ref: 147cd5ac9472002f5751221d390bf00abdbc0d2f
+          path: bench
+          persist-credentials: false
+      - name: Checkout explicit original dependency lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock-source
+          persist-credentials: false
+      - name: Checkout exact prospective MAIN enrollment context
+        uses: actions/checkout@v4
+        with:
+          ref: a322a6eb0cb4c261894cb14ef7b13b85678c0990
+          path: context
+          persist-credentials: false
+      - name: Setup bounded original interpreter
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Provision only fresh hosted synthetic shared-lock parent
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, stat
+          root = pathlib.Path('/mnt/raid0/llm/ak-claims')
+          rows = {}
+          for path in [pathlib.Path('/mnt'), pathlib.Path('/mnt/raid0'), pathlib.Path('/mnt/raid0/llm'), root]:
+              if os.path.lexists(path):
+                  info = path.lstat()
+                  if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+                      raise SystemExit('non-directory/symlink hosted ancestor refused: '+str(path))
+                  rows[str(path)] = {'exists':True,'uid':info.st_uid,'gid':info.st_gid,'mode':stat.S_IMODE(info.st_mode)}
+              else:
+                  rows[str(path)] = {'exists':False}
+          if os.path.lexists(root):
+              raise SystemExit('preexisting hosted lock root refused')
+          output = pathlib.Path(os.environ['RUNNER_TEMP'])/'pip02-library'/'hosted-scaffold-original.json'
+          with output.open('x') as handle:
+              json.dump({'before':rows,'runner_uid':os.getuid(),'runner_gid':os.getgid(),'exact_missing_parent':str(root),'synthetic_hosted_only':True},handle,indent=2)
+          PY
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0755 /mnt/raid0/llm/ak-claims
+          test ! -e /mnt/raid0/llm/ak-claims/inference-call-window.lock
+          test ! -L /mnt/raid0/llm/ak-claims/inference-call-window.lock
+      - name: Install actual deterministic PDF tool on hosted runner
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y poppler-utils
+      - name: Install exact isolated ALL-wheel dependency closure
+        run: |
+          python -m venv "$RUNNER_TEMP/pip02-library-venv"
+          "$RUNNER_TEMP/pip02-library-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/pip02_selected_library_requirements.txt > "$RUNNER_TEMP/pip02-library/dependency-install.log" 2>&1
+      - name: Capture actual whole original ODL module and existing shared grade
+        run: |
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/pip02-library-venv/bin/python" recipe/scripts/ci/pip02_selected_library_capture.py
+      - name: Preserve all original setup and capture outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip02-selected-library-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pip02-library
+          include-hidden-files: true
+          retention-days: 90

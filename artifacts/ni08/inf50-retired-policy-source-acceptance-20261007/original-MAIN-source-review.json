@@ -1,0 +1,15 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T11:11:53.243404+00:00",
+  "candidate": "9128154d0136377b100de5cbbf9441f845f20bd9",
+  "parent": "2caf4f735ce4555739605ed5828ee0da07d32c31",
+  "exact_path": "orchestration/model_registry.yaml",
+  "sole_changed_yaml_scalar": ".speculative_decoding_policy.retired_fields.ngram_candidate_spec_type",
+  "operative_YAML_semantics_unchanged": true,
+  "receipt_bytes_unchanged": true,
+  "manual_blast_radius": "LOW documentation scalar only; no runtime selector, measurement rule or default change",
+  "source_sha256": "9d4439de589f0b4572ef2ff1b93c91b5ed661f9d06337512f15d5abf9da744c6",
+  "source_bytes": 726690,
+  "MAIN_project_import_or_compiler": false,
+  "publication_not_yet_approved": true
+}

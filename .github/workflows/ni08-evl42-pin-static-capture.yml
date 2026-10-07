@@ -1,0 +1,86 @@
+name: EVL-42 synthetic pin-static conformance
+on:
+  push:
+    branches: [codex/ni08-evl42-pin-static-capture-20261007]
+permissions:
+  contents: read
+jobs:
+  evl42-pin-static:
+    name: evl42-pin-static
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      ROOT_SOURCE_PIN: 99b3763078abd859026c8051e1c480b89a15ee72
+      RESEARCH_PIN: cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875
+      LOCK_SOURCE_PIN: 70096b763939a43409a1f1827ab633d62425a6c1
+      CASE_MANIFEST_SHA256: 34366649c2b06dfed3f928def165c5e5d74fa775437660fbbaff01f132aa82c8
+      REQUIREMENTS_SHA256: e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a
+      RESEARCH_TEST_SHA256: 52d841fec67b2ce6f4678c802b6accc4dcab76a0451507b4c58dd0b4d11d71c2
+      RESEARCH_CHECKER_SHA256: 2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666
+      NI08_RUNNER_CONTEXT: ubuntu-24.04
+      NI08_EXECUTION_CONTEXT: evl42-static-synthetic-tests-no-repository-scan
+      NI08_INSTALL_COMMAND: >-
+        python -m venv "$RUNNER_TEMP/evl42-pin-static-venv" &&
+        "$RUNNER_TEMP/evl42-pin-static-venv/bin/python" -m pip install
+        --disable-pip-version-check --require-hashes --no-deps --only-binary=:all: -r
+        recipe/scripts/ci/ni08_evl42_pin_static_requirements.txt
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize private capture custody
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evl42-pin-static"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/evl42-pin-static/status.json"
+      - name: Checkout exact recipe history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: recipe
+          persist-credentials: false
+      - name: Checkout unchanged native carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact Research source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_PIN }}
+          path: research
+          persist-credentials: false
+      - name: Checkout exact APP pytest wheel lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.LOCK_SOURCE_PIN }}
+          path: lock-source
+          persist-credentials: false
+      - name: Select pinned Python runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install isolated hash-locked wheels
+        run: |
+          set -euo pipefail
+          ${{ env.NI08_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/evl42-pin-static/dependency-install.log"
+      - name: Capture exact synthetic EVL-42 controls
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/evl42-pin-static-venv/bin/python" recipe/scripts/ci/ni08_evl42_pin_static_capture.py
+      - name: Preserve complete original capture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evl42-pin-static-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evl42-pin-static/
+          if-no-files-found: error

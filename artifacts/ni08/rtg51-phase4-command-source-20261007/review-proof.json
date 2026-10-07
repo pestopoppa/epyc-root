@@ -1,0 +1,11 @@
+{
+  "schema": "epyc.main.source_review.v1",
+  "review": "PASS",
+  "risk": "LOW documentation-only conditional contract",
+  "patch_sha256": "cb042e6351731949c7cf01889fa6c828d4606e73d9331fc90a269aaab26d0618",
+  "source_base": "d4009fc5b98f22a6b08740b3b1c182c826eeadb7",
+  "checked_existing_tasks": 1,
+  "project_execution": false,
+  "runtime_activation": false,
+  "protected_policy_amendment": false
+}

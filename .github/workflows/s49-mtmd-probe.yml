@@ -1,0 +1,77 @@
+name: S49 synthetic MTMD probe controls
+
+on:
+  push:
+    branches:
+      - codex/ni08-s49-root-native-recipe-20261007
+
+permissions:
+  contents: read
+
+jobs:
+  s49-mtmd-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ORCHESTRATOR_MOCK_MODE: '1'
+    steps:
+      - name: Initialize failure-safe result custody
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s49/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/s49/result/status.json"
+      - uses: actions/checkout@v4
+        with:
+          path: root
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 0b0f35ac4bd4e4520ab95c6c073bdcdcd0458ba6
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Verify source pins and create isolated environment
+        working-directory: root
+        env:
+          APP_PIN: 0b0f35ac4bd4e4520ab95c6c073bdcdcd0458ba6
+        run: |
+          set -euo pipefail
+          test "$(git -C "$GITHUB_WORKSPACE/root" rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C "$GITHUB_WORKSPACE/app" rev-parse HEAD)" = "$APP_PIN"
+          mkdir -p "$RUNNER_TEMP/s49/home" "$RUNNER_TEMP/s49/absent" "$RUNNER_TEMP/s49/result"
+          printf '{"state":"setup_complete","exit_code":null}\n' > "$RUNNER_TEMP/s49/result/status.json"
+          python -m venv "$RUNNER_TEMP/s49/venv"
+      - name: Capture selected synthetic controls and shared grade
+        working-directory: root
+        run: |
+          set -euo pipefail
+          set +e
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONPATH -u PYTHONHOME \
+            env -i \
+            PATH="$RUNNER_TEMP/s49/venv/bin:/usr/bin:/bin" \
+            HOME="$RUNNER_TEMP/s49/home" TMPDIR="$RUNNER_TEMP/s49/result" \
+            RUNNER_TEMP="$RUNNER_TEMP" APP_PIN=0b0f35ac4bd4e4520ab95c6c073bdcdcd0458ba6 \
+            GITHUB_RUN_ID="$GITHUB_RUN_ID" GITHUB_JOB="$GITHUB_JOB" GITHUB_RUN_ATTEMPT="$GITHUB_RUN_ATTEMPT" \
+            GITHUB_SHA="$GITHUB_SHA" EPYC_RUN_HOSTED_TIMEOUT_CONTROL=1 ORCHESTRATOR_MOCK_MODE=1 \
+            PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PIP_CONFIG_FILE=/dev/null \
+            PIP_DISABLE_PIP_VERSION_CHECK=1 LANG=C.UTF-8 PYTHONHASHSEED=0 PYTHONUNBUFFERED=1 \
+            "$RUNNER_TEMP/s49/venv/bin/python" scripts/ci/s49_mtmd_probe_capture.py \
+            "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/s49/result/capture"
+          capture_status=$?
+          set -e
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$capture_status" > "$RUNNER_TEMP/s49/result/status.json"
+          exit "$capture_status"
+      - name: Upload original receipt, JUnit, source and shared-grade custody
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: s49-mtmd-probe-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/s49/result/
+            ${{ runner.temp }}/s49/shared-grade-check.json
+            ${{ runner.temp }}/s49/capture-custody.json
+          if-no-files-found: error
+          retention-days: 30

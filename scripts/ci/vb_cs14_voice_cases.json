@@ -1894,6 +1894,10 @@
       "git_blob": "01f0ad40f55c641d474b61fd083ceaf3db6acbaa",
       "sha256": "9d161d2a712f70944b3ea98c0a3a3a828bda4a81b846c0a1238ecf16a8d9914f"
     },
+    "src/api/routes/voice.py": {
+      "git_blob": "dfaf0d92bdf6c0149dd8f127183ffd976c9f084f",
+      "sha256": "4645c7383550f3f7f84f3c3f95582da06a8cd27eda0d4bfaee19c8b86c44cc91"
+    },
     "src/api/services/__init__.py": {
       "git_blob": "6858d52b175d88c32450298876bf0127f4efc77f",
       "sha256": "69923fccd6acac4cadc1d39b8d582f628b6f159a8435807c8a3a36d37066bd95"
@@ -2594,6 +2598,10 @@
       "git_blob": "20349ec18e483d01ce5c8aa769dfc2a6c94fd8bc",
       "sha256": "e1d157548fd44e2a7c54ea7ad362129e5bfec9be153682e2a39b042e314cd2a1"
     },
+    "src/repl_environment/exploration_core.py": {
+      "git_blob": "84c895c4c35d8f2bd80edd2c48d6f23509449248",
+      "sha256": "4f203b7ab59ad6467ade8d5cd3540fb203ca9b047620749f36a780adbb0ad310"
+    },
     "src/repl_environment/external_access.py": {
       "git_blob": "0312d4ef84c42c21efcf1b869d7bfabf1dbb4148",
       "sha256": "92431c9daed8331fed29d7ceb79f0693f99b317621fbc5ca8f7f83e83a771fc3"
@@ -3126,9 +3134,33 @@
       "git_blob": "83ea1ca212ce833032f1c3d548b3c7d0fb17db2c",
       "sha256": "71b6efe24cc36d42c52fd9509282ac5e1f7072aaff0d805e680b00312f711062"
     },
+    "src/voice/__init__.py": {
+      "git_blob": "0a13da2691f3c29fa2e1cf156253550bd25564b9",
+      "sha256": "16c841aff5dfdf1a9b311e26bde859dae6effad6b7a4473e23a99a3ae55be6cb"
+    },
+    "src/voice/cascade.py": {
+      "git_blob": "c3aff42f3e7adad4e1392395ccfa65810c0a754f",
+      "sha256": "19084a62af2518fe498ec66cbd8f996dbcbf6383c6cbd6ecbcdf82282c5b7551"
+    },
+    "src/voice/contracts.py": {
+      "git_blob": "3be4fbf6d7946a50ee1ab4b7d93b840624938f19",
+      "sha256": "29dd9f07523d316cea376866d479a4279a40ff288da729a061e8ccd0b2080b8c"
+    },
+    "src/voice/controller.py": {
+      "git_blob": "ec9b5f59c6dd0bae159882d72fcc6c6305025389",
+      "sha256": "a235bb3e7b49aefccc9f2a86a148ca66cea436380b808463d0b942deed3134fe"
+    },
     "src/workload_model.py": {
       "git_blob": "cb4581714cc4a1631dea833865fc322f2181cc6f",
       "sha256": "6fff754ce59a70edf28159fa13e071d8b2ea38bef97968cca6508a54924a315f"
+    },
+    "tests/__init__.py": {
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    "tests/unit/__init__.py": {
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
     },
     "tests/unit/test_inference_mixin.py": {
       "git_blob": "31cb7dd43b4d8095c285c8f92d227dce9c377d08",

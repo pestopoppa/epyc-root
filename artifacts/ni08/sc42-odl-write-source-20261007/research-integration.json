@@ -1,0 +1,17 @@
+{
+  "previous_head": "01d36835e68d57c231a9b0591802e267531df530",
+  "main_before": "01d36835e68d57c231a9b0591802e267531df530",
+  "source": "659d154bea1daba3406a04a766fa09810fb0aeb6",
+  "commit": "f8fe63b1401013075c809daf06914846e556299f",
+  "paths": [
+    "scripts/benchmark/odl_bench/adapter.py",
+    "scripts/benchmark/odl_bench/paddleocr_vl.py",
+    "scripts/benchmark/odl_bench/run_configs.py",
+    "scripts/benchmark/odl_bench/tests/test_odl_bench.py",
+    "scripts/benchmark/odl_bench/unlimited_ocr.py",
+    "scripts/benchmark/odl_bench/vidya_provenance.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

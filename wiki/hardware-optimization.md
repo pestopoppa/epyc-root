@@ -6157,3 +6157,19 @@ The [RT-4 scope-out](../handoffs/active/moe-routing-tap-and-locality-measurement
 - [RT-4 scope-out](../handoffs/active/moe-routing-tap-and-locality-measurement.md).
 - [Primary paper, sections2–5 and limitations(v)](https://arxiv.org/html/2608.18261v1).
 - [NI08 source/documentary checkpoint](../docs/reference/ni08-non-inference-continuation.md).
+
+
+### Suite-seed source scope correction — 2026-10-07
+
+The frozen v10 source already has suite-seed support and seeds ordinary SSM scan inputs. The independently prepared experimental repair addresses only rollback-case integer initialization through the existing per-tensor RNG, retaining unseeded fallback. Its prospective CPU initializer/reference verifier is enrolled before capture; no build, native acceptance, production change or live seeded event is established by this source review.
+
+Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-profile-backend.md).
+
+
+### Physical placement and seeded rollback source boundaries — 2026-10-07
+
+[The physical-core launch guard](../artifacts/ni08/ssbench-smt-success-acceptance-20261007/README.md) excludes a bench claim's full symmetric SMT sibling closure, preserving quiet no-claim and force authority while refusing incomplete topology. Both complete direct/API synthetic modules passed81/81; APP source is published in maineb115cbe. This does not prove the host's topology, physical isolation, memory capacity or activated runtime.
+
+[The fresh experimental rollback child](../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md) consumes the existing per-tensor suite RNG for integer initialization. Actual hosted CPU programs passed3/3, retaining64 raw permutations across16seeds, same-seed replay/across-seed variation and unchanged reference-graph replay. Complete source/compiler/header/build/runtime inputs are preserved. Frozen production remains unchanged, and live seeded campaign events, full-device regression and production promotion remain independent parent gates.
+
+Source references: [stack pipeline finalization](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [RVP parent/source gates](../handoffs/active/rocm-verify-profile-backend.md), [prospective source consumers](../handoffs/active/vidya-belief-substrate-program.md).

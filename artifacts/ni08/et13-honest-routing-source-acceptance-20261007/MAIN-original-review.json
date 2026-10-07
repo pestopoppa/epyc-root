@@ -1,0 +1,53 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T11:09:00.841281+00:00",
+  "run": 37610141017,
+  "attempt": 1,
+  "job_identity": "github_job_112755153594",
+  "recipe_pin": "d72c2536bc089edae04753d4cbb6474281300d57",
+  "source_pin": "14a2c3a1469cd44a7f7a9017c7f3a44c361b1464",
+  "carrier_context_pin": "72a0d06a251667fe6dc1cdf05ab19313e03f9736",
+  "artifact_id": 11478295383,
+  "zip_sha256": "c5dcaabb7dc7c9cb6c8b4e9d7953542f354c7e5f7ce1bc92f0cbb1251a34fa5f",
+  "zip_bytes": 15451176,
+  "original_regular_member_copies": 3000,
+  "original_regular_member_bytes": 72061811,
+  "declared_Git_inputs": 2919,
+  "native_Git_input_copies": 2918,
+  "Git_bound_config_not_in_native_readset": [
+    "pyproject.toml"
+  ],
+  "additional_generated_inputs": 6,
+  "native_readset": 2924,
+  "cases": 140,
+  "native_value": true,
+  "receipt_file_sha256": "2a387c81397714a723248afafea2c12ca3ba7205abe4cda3d3a125c8e98f1667",
+  "receipt_self_sha256": "d3c85c4ad2bceb0255016b0a70f924862d2ed4de47b7a463d9c062981d0ebc20",
+  "original_shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "typed_original_result_counts": {
+    "directory": 27,
+    "regular": 2976,
+    "symlink": 16
+  },
+  "preexisting_result_entries_unchanged_through_grade": true,
+  "expected_new_grade_files": [
+    "pregrade-custody.json",
+    "shared-grade-custody.json"
+  ],
+  "status_finalization_after_typed_snapshot": {
+    "captured_running_status_sha256": "396e320eb2d8e6cc5fdc4bba462fd143d58251aabb3fde304e8569ac188d609f",
+    "final_status_sha256": "d5830c6e914d96de30a119734fb12ada9f51c907b40bffdec4583b74046297df",
+    "captured_hash_independently_reconstructed_from_exact_reviewed_driver_literal": true
+  },
+  "root_grader_readset_identical_before_after_grade": true,
+  "originals_unchanged": true,
+  "prior_absent_ref_force_option_deviation_custody_preserved": true,
+  "earlier_setup_NULL_FALSE_not_reclassified": true,
+  "MAIN_executed_project_or_grade": false,
+  "implementation_accepted_for_exact_source": true,
+  "canonical_two_product_preimages_require_review": true,
+  "scope": "Synthetic honest routing bucket diagnostic source conformance; no live routes, denominator or safety-gate change, model quality, performance, promotion or release warrant; frozen broad source envelope and opaque symlink metadata qualifications preserved; ZIP copies do not reconstruct aliases/empty directories"
+}

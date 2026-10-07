@@ -948,7 +948,7 @@ The vision/OCR path resolves `llama-mtmd-cli` in **three** places — `services/
 - [x] Probe `--version` instead of trusting `exists()`, with the binary's own dir on `LD_LIBRARY_PATH` so the probe mirrors the launch environment ✅ 2026-08-03
 - [x] Put `build/` and `build-hip/` (both `10107`, ratified v8) first in all THREE chains, and log a warning naming the binary and version on any fallback ✅ 2026-08-03
 - [ ] **Verify the fix after the OCR service's next restart.** `CLI_PATH` resolves at module import, so PID 3266570 is still running the old resolution. The fix is inert until whoever owns inference restarts it — no action needed *for* the restart, just confirm resolution afterwards
-- [ ] **Unify the triplicated probe.** `_probe_mtmd_cli` (lightonocr), `_mtmd_runs` (vl_describe) and the inline shell probe (`env.sh`) are the same logic in three places and will drift
+- [x] **Unify the triplicated probe.** ✅ 2026-10-07 — APP main7134d796 publishes the six reviewed shared Bash/Python helper/caller/test files; [MAIN source and original hosted11/11 acceptance](../../artifacts/ni08/s49-mtmd-probe-success-acceptance-20261007/README.md). Parsing, resolver order and overrides remain caller-specific; actual runtime verification remains the owning restart boundary.
 - [x] **`build-blis52` removed** ✅ 2026-08-03 — 143 MB. A THIRD copy of the same fallback chain was found in `scripts/lib/env.sh` and fixed first (orchestrator `2f57c2a2`); that was its last reference. All three chains verified resolving to `build/bin/llama-mtmd-cli` (10107) afterwards
 
 **Host fact worth not re-deriving:** these build trees run different ggml generations, so a binary must

@@ -1,5 +1,7 @@
 # Document Parser Table-Extraction Benchmark — PaddleOCR-VL-1.6 pipeline vs ODL
 
+**Scratch**: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-current-provenance-source-20261007`, `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-selected-library-native-root-20261007`, `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-current-original-run-37602237437`
+
 **Status**: active
 **Created**: 2026-07-20 (via research intake deep dive — intake-864/865 reassessment)
 **Priority**: P1 — unblocks the long-open "stronger parser comparison" question in [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) (task K35.18)
@@ -47,6 +49,11 @@ Operator direction 2026-07-20: **the Python orchestrator is desired for the docu
 ## Task list
 
 ### Phase A — environment (no inference)
+
+- [x] **PIP02-SELECTED-LIBRARY-SOURCE** — complete the prospectively enrolled `VB-PIP02-SELECTED-LIBRARY-CONFORMANCE` source gate: derive the launcher library directory from the selected resolved experimental executable and retain the complete original whole-module controls. No actual model/kernel/linkage, table quality or speed acceptance. ✅ 2026-10-07 — [MAIN current-source/original30/30 acceptance](../../artifacts/ni08/pip02-current-provenance-source-acceptance-20261007/README.md); exact current-provenance two-file publication5fd103e8.
+
+Accepted PIP02 selected-binary library source correction: **VB-PIP02-SELECTED-LIBRARY-CONFORMANCE** owns the bounded source/native gate. The published launcher derives LD_LIBRARY_PATH from the selected resolved binary parent. The fresh original whole module passed30/30, preserving current raw-byte/FIFO/provenance guards and real temporary symlink argv controls, with hosted-only deterministic PDF and flock controls. No local import/test/model/kernel execution and no parser-quality or linkage/residency acceptance are claimed. Existing table/three-stage/corpus tasks remain open.
+
 - [x] **Install ✅ 2026-07-20**: `paddlepaddle==3.2.2` + `paddleocr==3.7.0` (paddlex 3.7.2) into `/mnt/raid0/llm/venvs/paddleocr` (Python 3.12.13, uv). Venv total **1.4 GB**. **Gotcha recorded**: the resolver pulls `opencv-contrib-python`, which needs `libGL.so.1` — absent in this container, so `import paddleocr` fails with `ImportError: libGL.so.1`. Fixed by swapping to `opencv-contrib-python-headless==4.10.0.84` (uninstall the non-headless first); no system packages required. Re-run this swap after any dependency upgrade that reinstates the GUI build.
 - [x] **CLI verified ✅ 2026-07-20**: `paddleocr doc_parser -i ... --vl_rec_backend llama-cpp-server --vl_rec_server_url http://host:port/v1` is available and **`llama-cpp-server` is an explicitly supported backend** (full set: `native`, `vllm-server`, `sglang-server`, `fastdeploy-server`, `mlx-vlm-server`, `llama-cpp-server`). **Do not be misled by `paddleocr --help`** — it lists only `doc2md` and `api` because pipeline subparsers are registered without a `help=` kwarg and argparse omits those from the listing. The subcommand exists and works. Equivalent Python API is `paddleocr.PaddleOCRVL(...)` exposing `layout_detection_model_name`, `vl_rec_backend`, `vl_rec_server_url`, `use_layout_detection`, `merge_layout_blocks` — prefer this for `odl_bench` integration over shelling out.
 - [ ] Trigger PP-DocLayoutV3 weight resolution and record the cache path + size (a *separate* download from the GGUF, not yet performed).

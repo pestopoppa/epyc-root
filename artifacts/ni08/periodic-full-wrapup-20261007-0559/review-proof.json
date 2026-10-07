@@ -1,0 +1,53 @@
+{
+  "schema": "epyc.main.periodic_wrapup.v1",
+  "operator_requested": true,
+  "source_delta_count": 7,
+  "source_delta_paths": [
+    "handoffs/active/fuzzy-workflow-authoring-gui.md",
+    "handoffs/active/non-inference-backlog.md",
+    "handoffs/active/scoring-infra-standardization.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "handoffs/active/wrap-up-division-of-labor-policy.md",
+    "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+    "docs/reference/ni08-non-inference-continuation.md"
+  ],
+  "compiled_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "native_reviews": [
+    "artifacts/ni08/fw1-success-acceptance-20261007/MAIN-original-review.json",
+    "artifacts/ni08/evl42-success-acceptance-20261007/MAIN-original-review.json"
+  ],
+  "checkbox_closures": 4,
+  "scoped_completion_tally": 129,
+  "whole_backlog_exhausted": false,
+  "prune_candidates": [],
+  "archived_handoffs": [],
+  "compacted_handoffs": [],
+  "checks": {
+    "wiki_structural_lint": 0,
+    "README": 0,
+    "index_check": 0,
+    "whitespace": 0,
+    "post_touch_delta": 0
+  },
+  "wiki_lint_warnings": 96,
+  "README_warnings": [],
+  "host_project_execution": false,
+  "runtime_activation": false,
+  "source_class_or_grade_change": false,
+  "own_scratch_verdicts": {
+    "KEEP-MARKED": 6,
+    "KEEP-DIRTY": 9,
+    "KEEP-UNLANDED": 8,
+    "KEEP-REFERENCED": 2,
+    "KEEP-UNLANDED-CLONE": 3,
+    "KEEP-EVIDENCE": 1,
+    "KEEP-UNVERIFIABLE": 2,
+    "KEEP-PROTECTED": 1
+  },
+  "scratch_removed": [],
+  "fleet_view": "MISSING5 PROTECTED49 BUSY12 REFERENCED107 DIRTY81 UNLANDED155 UNVERIFIABLE19 RECENT74 REMOVABLE9; other-session removals remain with owners",
+  "scratch_retention": "All32 own entries are retained by the canonical gate; active integration lanes, exact source/recipe/native custody and KEEP review scratch remain load-bearing. No eligible own deletion and no peer removal."
+}

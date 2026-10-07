@@ -1,0 +1,32 @@
+[
+  {
+    "path": "scripts/ci/pin_report_fixture.py",
+    "reviewed_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+    "blob": "b9e19c827ca10d335d66c448d55a9f0b9dc3958b",
+    "integration": "Exact reviewed source blob, independently accepted original29 controls; normal ROOT canonical checkpoint next."
+  },
+  {
+    "path": "tests/ci/test_pin_report_fixture.py",
+    "reviewed_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+    "blob": "3afc36b3d1b07204586934ca2972ecac1d85092e",
+    "integration": "Exact reviewed source blob, independently accepted original29 controls; normal ROOT canonical checkpoint next."
+  },
+  {
+    "path": ".github/workflows/ni08-evl42-report-native.yml",
+    "reviewed_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+    "blob": "9d37495d197b707e1fc175fc418b4b0015905ada",
+    "integration": "Exact reviewed source blob, independently accepted original29 controls; normal ROOT canonical checkpoint next."
+  },
+  {
+    "path": "scripts/ci/ni08_evl42_report_capture.py",
+    "reviewed_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+    "blob": "bd674dee551f8818db510030db3e0e76ac9f8e15",
+    "integration": "Exact reviewed source blob, independently accepted original29 controls; normal ROOT canonical checkpoint next."
+  },
+  {
+    "path": "scripts/ci/ni08_evl42_report_requirements.txt",
+    "reviewed_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+    "blob": "7cef491638d6ac627cc35d6c38d94ea1306223bf",
+    "integration": "Exact reviewed source blob, independently accepted original29 controls; normal ROOT canonical checkpoint next."
+  }
+]

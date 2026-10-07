@@ -1,0 +1,12 @@
+{
+  "previous_head": "3fc9f947bd3240fdb65daa719f37625e3ac6c7df",
+  "main_before": "3fc9f947bd3240fdb65daa719f37625e3ac6c7df",
+  "source": "1533dd0b7c8c2a1c9ff1dde2ef36e0a690dc3819",
+  "commit": "6712eecf7925d8dbfe4042371f4a1decd5a9864d",
+  "paths": [
+    "tests/unit/test_fw1_mocked_cli_harness.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}
