@@ -1,0 +1,75 @@
+name: INF-41 S-20 server-only fallback source controls
+on:
+  push:
+    branches: [codex/ni08-inf41-s20-source-capture-20261007]
+permissions:
+  contents: read
+jobs:
+  s20-source-controls:
+    name: s20-source-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      APP_PIN: ee345dc972ef4e798841aad41a141f649482ed35
+      ROOT_SOURCE_PIN: 94e7d72a8448c3b77189b77dbb5cdd5d4ccfadbc
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      INF41_RUNNER_CONTEXT: ubuntu-24.04
+      INF41_EXECUTION_CONTEXT: pytest-chat-vision-server-only-fallback-source-controls-no-inference
+      INF41_INSTALL_COMMAND: >-
+        python -m venv "$RUNNER_TEMP/ni08-inf41-s20/venv" &&
+        "$RUNNER_TEMP/ni08-inf41-s20/venv/bin/python" -m pip install
+        --require-hashes --no-deps --only-binary=:all: -r
+        recipe/scripts/ci/ni08_inf41_s20_requirements.txt
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni08-inf41-s20/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ni08-inf41-s20/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout shared native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact APP source proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - name: Checkout exact ROOT task and source table
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_PIN }}
+          path: root-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install isolated hash-locked wheel-only dependencies
+        run: |
+          set -euo pipefail
+          ${{ env.INF41_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-inf41-s20/result/dependency-install.log"
+      - name: Capture the exact five server-only fallback cases
+        run: |
+          "$RUNNER_TEMP/ni08-inf41-s20/venv/bin/python" recipe/scripts/ci/ni08_inf41_s20_capture.py
+      - name: Preserve original JUnit, native receipt, source readset and unchanged shared grade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni08-inf41-s20-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni08-inf41-s20/result/
+          if-no-files-found: error

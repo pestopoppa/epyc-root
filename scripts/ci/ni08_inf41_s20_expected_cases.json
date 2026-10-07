@@ -1,0 +1,32 @@
+{
+  "app_commit": "ee345dc972ef4e798841aad41a141f649482ed35",
+  "cases": [
+    {
+      "classname": "tests.unit.test_chat_vision.TestHandleVisionRequest",
+      "name": "test_server_only_refuses_without_legacy_vision_request[server-False]"
+    },
+    {
+      "classname": "tests.unit.test_chat_vision.TestHandleVisionRequest",
+      "name": "test_server_only_refuses_without_legacy_vision_request[auto-True]"
+    },
+    {
+      "classname": "tests.unit.test_chat_vision.TestHandleVisionRequest",
+      "name": "test_server_only_refuses_without_legacy_vision_request[cli-True]"
+    },
+    {
+      "classname": "tests.unit.test_chat_vision.TestHandleVisionRequest",
+      "name": "test_server_only_refuses_without_legacy_vision_request[malformed-True]"
+    },
+    {
+      "classname": "tests.unit.test_chat_vision.TestHandleVisionRequest",
+      "name": "test_server_only_refuses_without_legacy_vision_request[None-True]"
+    }
+  ],
+  "count": 5,
+  "derivation": "AST: exact five literal parametrize tuples, no pytest collection performed",
+  "schema": "ni08-inf41-s20-case-manifest/v1",
+  "source_file": "src/api/routes/chat_vision.py",
+  "source_file_sha256": "4230bee86a02a11dad7b9be02a8e13ec8a55f553bc02dffa91dbf0f8130a4bde",
+  "test_file": "tests/unit/test_chat_vision.py",
+  "test_file_sha256": "5a877f05add279516fe313c25536a6a35032aff2e506a5a9b41315dd3f1dd6a2"
+}
