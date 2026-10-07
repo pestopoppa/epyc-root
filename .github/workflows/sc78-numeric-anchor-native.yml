@@ -1,0 +1,57 @@
+name: SC78 numeric anchor source controls
+on:
+  push:
+    branches: [codex/ni08-sc78-numeric-agreement-source-20261007]
+permissions:
+  contents: read
+jobs:
+  sc78-native-source-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      APP_PIN: cfcf3768716de888a971bf66489397f5b91241df
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize retained status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/sc78/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/sc78/result/status.json"
+      - name: Checkout exact ROOT source proposal
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          persist-credentials: false
+      - name: Checkout APP lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: cfcf3768716de888a971bf66489397f5b91241df
+          path: app
+          persist-credentials: false
+      - name: Set up accepted CPython patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated Python environment
+        run: python -m venv "$RUNNER_TEMP/sc78/venv"
+      - name: Capture prospective synthetic source controls
+        id: capture
+        run: |
+          set +e
+          "$RUNNER_TEMP/sc78/venv/bin/python" root/scripts/ci/sc78_native_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/sc78/result/capture" > "$RUNNER_TEMP/sc78/result/driver.log" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/sc78/result/driver.log"
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/sc78/result/status.json"
+          exit "$rc"
+      - name: Preserve status, original receipt, JUnit, install log, and context
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sc78-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sc78/result/
+          if-no-files-found: error
+          retention-days: 90

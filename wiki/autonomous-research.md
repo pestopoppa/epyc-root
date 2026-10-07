@@ -4134,3 +4134,7 @@ sources) and for the serving-gate verdicts the loop itself recorded.
 ## Task-rate display availability
 
 Planner and replay displays render absent or malformed task rate as `n/a`, preserving valid zero and positive measurements. The legacy helper/storage zero sentinel stays compatible with historical rows; objective/frontier math is unchanged. [W8 source and synthetic acceptance](../artifacts/ni08/rtg23-w8-display-source-20261007/README.md). This change supplies no live-rate or runtime deployment evidence.
+
+## Retained-source numerical mismatch controls
+
+Both literature projections pass claim text to the existing retained-RAW numeric helper; [actual synthetic response/store/projection controls and original23/23](../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) bind the source. One matching magnitude is sufficient under this mechanical rule, so semantic and full numerical truth remain separate. No actual source fetch or historical warrant is added.

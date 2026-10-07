@@ -65,6 +65,7 @@ def _t_level(
     entry: dict,
     anchor: dict | None = None,
     source_verification: tuple[bool, str] | None = None,
+    claim: str | None = None,
 ) -> str:
     """Traceability for a claim from this entry.
 
@@ -80,9 +81,10 @@ def _t_level(
 
     A source-verified anchor marked `located_by: machine` tops out at `MachineLocated` (spec §4.2
     amendment, 2026-08-10) however complete it is. Re-finding and hashing its quote proves the
-    source span, not that the span says what the claim says; the level above still requires a
-    person's semantic judgment. Capping here rather than at the policy layer means a machine
-    anchor cannot reach `Anchored` by being unusually well-formed.
+    source span, not that the span says what the claim says; a numeric mismatch is refused using
+    the existing source-span magnitude check, while broader semantic judgment still requires a
+    person. Capping here rather than at the policy layer means a machine anchor cannot reach
+    `Anchored` by being unusually well-formed.
     """
     if anchor:
         has_span = bool(anchor.get("quote") or anchor.get("locator"))
@@ -90,7 +92,7 @@ def _t_level(
             pass
         else:
             valid, _status = source_verification or verify_source_anchor(
-                anchor, entry_url=entry.get("url"))
+                anchor, entry_url=entry.get("url"), claim=claim)
             if not valid:
                 return "Located" if entry.get("url") or entry.get("arxiv_id") else "T0"
             if anchor.get("located_by") == "machine":
@@ -127,6 +129,7 @@ def grade_for_entry(
     entry: dict,
     anchor: dict | None = None,
     source_verification: tuple[bool, str] | None = None,
+    claim: str | None = None,
 ) -> tuple[Grade, bool]:
     """The (Q x T) grade a claim inherits, and whether it is opposition.
 
@@ -135,7 +138,7 @@ def grade_for_entry(
     — which is what `measurement_record` and `sealed_manifest` had become by 2026-08-10.
     """
     q, is_opposition = _q_level(entry)
-    return parse_grade({"Q": q, "T": _t_level(entry, anchor, source_verification)}), is_opposition
+    return parse_grade({"Q": q, "T": _t_level(entry, anchor, source_verification, claim)}), is_opposition
 
 
 def _claim_id(entry_id: str, index: int) -> str:
@@ -296,9 +299,9 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
             continue
         anchor = anchors.get(i)
         source_verification = (
-            verify_source_anchor(anchor, entry_url=entry.get("url")) if anchor else None
+            verify_source_anchor(anchor, entry_url=entry.get("url"), claim=text) if anchor else None
         )
-        grade, is_opposition = grade_for_entry(entry, anchor, source_verification)
+        grade, is_opposition = grade_for_entry(entry, anchor, source_verification, claim=text)
         # A per-claim verdict overrides the entry-level one. Without it, `dive-overturned` opposes
         # EVERY claim of the entry -- measured 2026-08-10 as 114 claims across 27 entries, most of
         # which no dive ever disputed. intake-896 is the case that motivated it: four claims, one
@@ -752,9 +755,9 @@ def ingest_intake_index(
                 continue
             anchor = anchors.get(i)
             source_verification = (
-                verify_source_anchor(anchor, entry_url=entry.get("url")) if anchor else None
+                verify_source_anchor(anchor, entry_url=entry.get("url"), claim=c) if anchor else None
             )
-            grade, is_opposition = grade_for_entry(entry, anchor, source_verification)
+            grade, is_opposition = grade_for_entry(entry, anchor, source_verification, claim=c)
             # The SAME helper the frame emitter uses, not a second reading of it. These two drifted
             # before — the report said 112 opposition while the adapter emitted 106, a summary
             # misstating the run it summarizes, which is this program's own subject matter showing

@@ -71,3 +71,7 @@ Session transcript/summary persistence, transport-neutral voice controller/casca
 ## MAIN source boundary — work-cap follow-on
 
 Source/caller review found a forged truncation marker can bypass nominal work-payload bounds. Immediate M11-WORK-CAP-SOURCE/VB-M11-WORK-CAP-CONFORMANCE/source-table enrollment precedes capture. MAIN returned the first local draft for complete marker-length and actual suffix negative controls. Wiring closure remains valid; no runtime/privacy acceptance. NI08 remains81.
+
+## Retained-RAW numeric-anchor child — MAIN acceptance
+
+[Exact source, original23/23, complete40-member API ZIP and unchanged native/shared-grade custody](../../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) close SC78/79-NUMERIC-ANCHOR-CHILD and its pre-enrolled conformance companion. **83 scoped completions (52 existing flips +31 additions)**. The existing one-shared-magnitude rule remains mechanical and incomplete for semantic/full numeric truth; parents SC78/79 stay open. Earlier fixture and grade-import failures remain immutable. Wider source work and actual task eligibility audit continue.

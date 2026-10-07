@@ -1,0 +1,36 @@
+{
+  "MAIN_executed_grade": false,
+  "artifact": 11455731484,
+  "attempt": 1,
+  "contexts": 4,
+  "counts": {
+    "collected": 23,
+    "error": 0,
+    "executed": 23,
+    "failure": 1,
+    "passed": 22,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "git_inputs": 24,
+  "implementation_accepted": false,
+  "job_identity": "github_job_112589394784",
+  "members": 39,
+  "native_value": false,
+  "originals_unchanged": true,
+  "pins": {
+    "app": "cfcf3768716de888a971bf66489397f5b91241df",
+    "root": "000fdce19b37ca0f07994dde6594092100b1f1b4"
+  },
+  "readset_count": 28,
+  "receipt_file_sha256": "6f048d96380d952a440eaf754ad1f4f3f33fd7adc261e5a90098a8795dbfc63d",
+  "receipt_self_sha256": "178b51263cec7dc772254be00903e813b94144b228aeed1e7475d705befb4280",
+  "reviewed_at": "2026-10-07T01:44:24.237589+00:00",
+  "run": 37558254237,
+  "scope": "MEDIUM existing retained source verifier and two intake projections reuse existing numeric mismatch refusal; no semantic or full numeric entailment, canonical ingestion or trust amendment.",
+  "shared_grade": null,
+  "source_integrity_review": "PASS",
+  "testcase_nodes": 23,
+  "zip_bytes": 1137172,
+  "zip_sha256": "83974c672cf988c7fa8c940c1cea3ea970543214cf442d410d75b38c75250129"
+}

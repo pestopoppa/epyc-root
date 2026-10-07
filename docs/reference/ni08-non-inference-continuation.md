@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **81 completed scoped tasks: 52 existing checkbox flips and 29 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **83 completed scoped tasks: 52 existing checkbox flips and 31 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -211,3 +211,7 @@ Session transcript/summary persistence, transport-neutral voice controller/casca
 ## Work-cap source gap surfaced immediately
 
 M-11a2b wiring remains complete; a separate forged-marker bound bypass was found in the shared sanitizer. M11-WORK-CAP-SOURCE and its prospective VB companion now own the correction and full source controls. Preparation adds zero completions: NI08 remains81. A private initial fix was returned for additional oversized-decimal-marker and genuine suffix controls before any capture.
+
+## Retained-RAW numeric-anchor child — MAIN acceptance
+
+[Exact source, original23/23, complete40-member API ZIP and unchanged native/shared-grade custody](../../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) close SC78/79-NUMERIC-ANCHOR-CHILD and its pre-enrolled conformance companion. **83 scoped completions (52 existing flips +31 additions)**. The existing one-shared-magnitude rule remains mechanical and incomplete for semantic/full numeric truth; parents SC78/79 stay open. Earlier fixture and grade-import failures remain immutable. Wider source work and actual task eligibility audit continue.

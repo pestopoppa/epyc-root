@@ -1,0 +1,326 @@
+{
+  "expected_generated_contexts": [
+    "source-context.json",
+    "dependency-install.log",
+    "environment.json",
+    "pip-freeze.txt"
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_response_bytes_are_retained_and_reopened_by_content_identity"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_claim_number_must_match_the_verified_quote"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_matching_claim_number_remains_source_verified"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_human_tier_requires_valid_retained_source_and_machine_tier_stays_capped"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_legacy_shape_and_unknown_metadata_never_raise_anchor_tier"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_frame_retains_the_exact_source_binding_metadata"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_tampered_or_symlinked_artifact_is_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_hardlinked_retained_file_is_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_fifo_at_content_path_is_refused_without_blocking"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_arxiv_verification_requires_three_explicit_exact_revision_urls"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_missing_original_wrong_quote_and_wrong_source_revision_are_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_traversal_and_unsafe_root_permissions_refuse"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_symlinked_artifact_root_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_store_is_missing_only_and_conflicting_existing_object_refuses"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_unversioned_arxiv_and_revision_redirect_mismatch_do_not_bind"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_unsupported_media_never_produces_a_retained_anchor"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_no_configured_root_returns_no_source_warrant"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[abstract-only]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[results-table-stripped]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[figure-number-only]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_retained_synthetic_response_can_propose_no_anchor[readme-without-license]"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_missing_synthetic_source_is_unknown_not_a_negative_claim"
+    },
+    {
+      "classname": "tests.vidya.test_research_intake_nonclaim_fixtures",
+      "name": "test_present_claim_is_positive_control_from_retained_response"
+    }
+  ],
+  "host_project_execution": false,
+  "manual_blast_radius": "MEDIUM existing retained source verifier and two intake projections reuse existing numeric mismatch refusal; no semantic or full numeric entailment, canonical ingestion or trust amendment.",
+  "recipe_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+  "review": "PASS",
+  "source_context_bytes": 660169,
+  "source_context_sha256": "c2ff32fe7399c61c1bd7c5a41de6f280c3306469169d2195df5409a17bf8acd4",
+  "tracked_files": [
+    {
+      "bytes": 2192,
+      "git_blob": "f8ec78ff77d5ae250da20dbc159bd0d6c328cc21",
+      "mode": "100644",
+      "path": ".github/workflows/sc78-numeric-anchor-native.yml",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "ba7ccfc97fd05b386a6662aea2da24213b3125e246e9b1161cb6b52ebfc904f3"
+    },
+    {
+      "bytes": 10608,
+      "git_blob": "b1999fa6598ee5854c18f6b5be0e9400fb41c049",
+      "mode": "100644",
+      "path": "scripts/ci/sc78_native_capture.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "8447c6aa72281c7ffe57340556116f5fb00306e828a98b4a42a72021bccad6ce"
+    },
+    {
+      "bytes": 3516,
+      "git_blob": "00cfd538dbe223d71868ce688c70975c60179450",
+      "mode": "100644",
+      "path": "scripts/ci/sc78_expected_cases.json",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "927105614a14efe8a7a3f580729c686bb30892e9a538d2c5b0d3dedcd1122b6f"
+    },
+    {
+      "bytes": 807,
+      "git_blob": "9af6509329cff790d8921171a3a5105afbe7744a",
+      "mode": "100644",
+      "path": "scripts/ci/sc78_hosted_requirements.txt",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "e912efa6a67e81641f6a736867ce2e0e3b10ca03d5ddeb5a864d71ffa6612576"
+    },
+    {
+      "bytes": 2658,
+      "git_blob": "344c861a00c6885f0a3b81f90712c3fc40cb4496",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_source_context.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 249537,
+      "git_blob": "ddbcea20f3a8fe1cfcec070ad4b2150fe30672e5",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "d06aebd773445cb2d7775960b26691f1d627c5ad19b8484c5b5eff6cc4004e32"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 40049,
+      "git_blob": "96f93afcce85b86cd03fe203dae4fe92552ed3a6",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/research_intake.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "9e85367636c9f527bdffb56f992f29e350706c1fef3df9998a7cf3847067706e"
+    },
+    {
+      "bytes": 18228,
+      "git_blob": "32b3910a763737b7e07dd9740797c680db3216b4",
+      "mode": "100644",
+      "path": "scripts/vidya/alias_candidates.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "736f6a8dd1c0b8d31f283b96ea2632f10bcc67739c4016ca4eb9810dda221a6d"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 12425,
+      "git_blob": "caeae42b0b2e05609dafa240bf9ab4a054ec183f",
+      "mode": "100644",
+      "path": "scripts/vidya/measurement_record.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 1878,
+      "git_blob": "0fc2e3313c453de84cdcbcd87c3fa4c1547edf78",
+      "mode": "100644",
+      "path": "scripts/vidya/intake_assertion_kinds.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "0615f1659fc60e9c46e33d3270f346ca39a399c7ec2b638b76436e255a63460f"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 16990,
+      "git_blob": "1b1641c7469f7b36fdbba39274c8e0ac78f2f971",
+      "mode": "100644",
+      "path": "scripts/vidya/machine_anchor.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "a2623ae5dcdb8c7a41ed73dc682eaba3f3770b92c8ed053139e1bfe68a0d2ae9"
+    },
+    {
+      "bytes": 14761,
+      "git_blob": "8f08aea8651d542eb16475cd9871779940e07ea8",
+      "mode": "100644",
+      "path": "scripts/vidya/raw_anchor_store.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "fc0661d60e68ed341754c3618661df80fad155f9890319819edbd59f557519ed"
+    },
+    {
+      "bytes": 833,
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "mode": "100644",
+      "path": "tests/__init__.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "bytes": 14090,
+      "git_blob": "aedd2ee4f1ed3c5a41c67d8ad9649844c5529e06",
+      "mode": "100644",
+      "path": "tests/vidya/test_raw_anchor_store.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "3a9d3a2b55919bd6e7dd09cb68b18c7c19b28f563cbdfe8b9a5487510e4e7b95"
+    },
+    {
+      "bytes": 6114,
+      "git_blob": "5f286eb0d8d20d1c757691133581cbc7351f3e54",
+      "mode": "100644",
+      "path": "tests/vidya/test_research_intake_nonclaim_fixtures.py",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "f6f78fae67002d9e5095d1b38844a29b323df12a9d27b46a25dd03375107b5b7"
+    },
+    {
+      "bytes": 334893,
+      "git_blob": "933ee71893eec921fb90e9244390bb6af70e2688",
+      "mode": "100644",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "repo": "root",
+      "repo_pin": "918d9f68c7c888b701df3c6f2a7f7e3c07806327",
+      "sha256": "5a679205ff166b86d84d5eeba9d2cf87a8187e82e99a9c9c75a7db5a63cb1edd"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ]
+}
