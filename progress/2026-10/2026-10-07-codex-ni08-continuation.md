@@ -120,3 +120,8 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## Session conversation-store and voice design — MAIN acceptance
 
 [Published source and original31/31](../../artifacts/ni08/cs15-conversation-store-source-20261007/README.md) close CS-13, bounded SQLite transcript/summary source and prospective native verifier. MAIN verified complete457-input/469-member original custody and normally merged APP03ee8ef0. Consumers, real voice/model/timing and semantic summary quality remain open. NI08 now100 scoped completions (58 existing flips+42 children); the whole backlog is not exhausted.
+
+
+## BEAM prospective ingest provenance — MAIN acceptance
+
+[Published source and original21/21](../../artifacts/ni08/utm-b3-beam-provenance-source-20261007/README.md) close the bounded source and prospective verifier. MAIN verified complete4,355-input original custody and merged Research01d36835. Counts/range/granularity remain prospective experimental identity, not retrieval-quality or a historical run warrant. NI08 now102 scoped completions (58 existing flips+44 children).

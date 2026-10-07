@@ -1197,3 +1197,8 @@ The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../
 ### Session transcript and incremental-summary source — 2026-10-07
 
 [Source and original31/31](../artifacts/ni08/cs15-conversation-store-source-20261007/README.md) accept additive session-keyed SQLite messages, retained history, fenced deletion and monotonic summary-frontier mechanics. The summary callback consumes prior state plus all unseen messages; overflow/failure never silently discards history. Model summary quality, live migration and voice consumers remain separate.
+
+
+### Prospective BEAM ingest identity — 2026-10-07
+
+[Source and original21/21](../artifacts/ni08/utm-b3-beam-provenance-source-20261007/README.md) bind all-role source order, indexed range and pair-chunk granularity prospectively. A silent role filter or chunking choice is now visible in future artifacts; real BEAM/model/retrieval-quality acceptance remains open.
