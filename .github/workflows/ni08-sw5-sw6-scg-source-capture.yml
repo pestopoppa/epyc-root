@@ -27,8 +27,8 @@ jobs:
       PYTHONUNBUFFERED: '1'
       ORCHESTRATOR_MOCK_MODE: '1'
       ORCHESTRATOR_LOG_DIR: /dev/null
-      ORCHESTRATOR_SERVING_CALLS_LOG: off
-      ORCHESTRATOR_COHERENCE_JUDGE_LOG: off
+      ORCHESTRATOR_SERVING_CALLS_LOG: 'off'
+      ORCHESTRATOR_COHERENCE_JUDGE_LOG: 'off'
     steps:
       - name: Initialize outcome artifact before setup
         run: |

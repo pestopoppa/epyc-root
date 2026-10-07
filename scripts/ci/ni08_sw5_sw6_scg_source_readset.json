@@ -12292,7 +12292,7 @@
     },
     {
       "path": ".github/workflows/ni08-sw5-sw6-scg-source-capture.yml",
-      "sha256": "69cfe68429f28ebcdd17ff2755437e1231892bbf968093720576907dbaa34da0"
+      "sha256": "e2111575c4e1873264b1fc9f9e596baad7577da8ca93746cd401068d858247e5"
     },
     {
       "path": ".github/workflows/ni08-vbs1-evaldisc-native.yml",
