@@ -1,0 +1,14 @@
+{
+  "previous_head": "6712eecf7925d8dbfe4042371f4a1decd5a9864d",
+  "main_before": "6712eecf7925d8dbfe4042371f4a1decd5a9864d",
+  "source": "5b12f986791f13b790902ac528575517e582b099",
+  "commit": "eb115cbe9903006943dc16f23395c7058bb58ad4",
+  "paths": [
+    "scripts/server/bench_core_claim.py",
+    "tests/unit/test_bench_core_claim.py",
+    "tests/unit/test_bench_core_claim_api_layer.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

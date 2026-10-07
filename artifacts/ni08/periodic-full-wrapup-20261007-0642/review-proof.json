@@ -1,0 +1,181 @@
+{
+  "schema": "epyc.ni08.periodic_full_wrapup.v1",
+  "operator_requested": true,
+  "accepted_native_reviews": {
+    "SMT": {
+      "cases": 81,
+      "outcome": true
+    },
+    "RVP": {
+      "cases": 3,
+      "outcome": true
+    }
+  },
+  "checkbox_closures": 4,
+  "NI08_accepted_scope": 133,
+  "whole_backlog_exhaustion_claimed": false,
+  "wiki_changed_sources": {
+    "schema_version": 1,
+    "kind": "project-wiki-source-manifest",
+    "last_compile": "2026-10-07T06:04:17Z",
+    "scan_time": "2026-10-07T06:44:04Z",
+    "mode": "incremental",
+    "sources": [
+      {
+        "path": "handoffs/active/autokernel-restart-and-strip.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:35:28Z",
+        "size": 23067,
+        "content_hash": "b5e65016ad7fdf2b37f051f0f2c762ecb265381518a6af6ae7a256ab3cd34bad",
+        "title": "AutoKernel \u2014 restart-loop fix, v28 launch, and the dead-weight strip"
+      },
+      {
+        "path": "handoffs/active/conversation-stack.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:20:56Z",
+        "size": 52217,
+        "content_hash": "44d61dcbad969ce231cfb66efd1d61bc0ce586da1de10273535f5e761c749f81",
+        "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback"
+      },
+      {
+        "path": "handoffs/active/non-inference-backlog.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:39:26Z",
+        "size": 129614,
+        "content_hash": "ea6d4e48805ac79b6406e03c189a7d3a210224fbecb98029b40c78825cb1ddcd",
+        "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)"
+      },
+      {
+        "path": "handoffs/active/objective-task-rate-goodput.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:20:56Z",
+        "size": 32606,
+        "content_hash": "8e5e08182bc3a4934d7fabe678fef58791462b040e419fa1e9ac4b56af50f51f",
+        "title": "Objective: task_rate Axis + Goodput Frontier Rebuild"
+      },
+      {
+        "path": "handoffs/active/rocm-verify-profile-backend.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:39:26Z",
+        "size": 159773,
+        "content_hash": "dced2ba8e30491bd9d5e6a7f84eca4862b57c3cf2050a73da9f5458124a81c56",
+        "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring"
+      },
+      {
+        "path": "handoffs/active/standardized-stack-update-pipeline-finalization.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:35:28Z",
+        "size": 24184,
+        "content_hash": "595d57206600d04b680ed225733cc4857df397f4eea16580a43930440db42612",
+        "title": "Standardized Stack Update Pipeline Finalization"
+      },
+      {
+        "path": "handoffs/active/vidya-belief-substrate-program.md",
+        "type": "handoff-active",
+        "modified": "2026-10-07T06:39:26Z",
+        "size": 354553,
+        "content_hash": "b18435c0b2e0f0aa3d37dc23892aaebb63235f328bffda5dc9084ae324e95cb1",
+        "title": "Vidya Belief-Substrate Program"
+      },
+      {
+        "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+        "type": "progress",
+        "modified": "2026-10-07T06:43:38Z",
+        "size": 32192,
+        "content_hash": "65158475f1599e2e766f26fb7ab5d9d49eae12fb59b563322e785b614bbcf841",
+        "title": "NI08 continued non-inference implementation \u2014 2026-10-07"
+      },
+      {
+        "path": "docs/reference/ni08-non-inference-continuation.md",
+        "type": "docs",
+        "modified": "2026-10-07T06:39:26Z",
+        "size": 48932,
+        "content_hash": "6984074226be8aa1932fe1a86dbb0e9447a3a9503c244712226efce6d80e3c74",
+        "title": "NI08 non-inference continuation \u2014 2026-10-06"
+      }
+    ],
+    "total_new": 9,
+    "by_type": {
+      "handoff-active": 7,
+      "progress": 1,
+      "docs": 1
+    },
+    "source_set_hash": "49ece9bf234be3fa3819ea99fd9b7d68d1660a8ac539d975cb892747207b3a00",
+    "writer_evidence_policy": {
+      "policy_version": 1,
+      "applies_to": "generated-wiki-article-writes",
+      "minimum_confidence": "verified",
+      "minimum_source_references": 3,
+      "requires_source_reference_section": true,
+      "requires_structural_lint": true,
+      "requires_human_or_measured_review": true
+    },
+    "baseline_manifest": "wiki/source_manifest.json",
+    "baseline_source_set_hash": "f15f97cae963c8040ac3b2e4466d637f3454bf6e3b7119d9c807a780312a3aac",
+    "current_source_set_hash": "ea474e9f70d6f7c090ac93c5a1a61b0dc5e38101eaec25953ac0f61dd974af0e",
+    "removed_sources": [],
+    "removed_count": 0,
+    "drift": {
+      "added_count": 0,
+      "changed_count": 9,
+      "removed_count": 0,
+      "has_drift": true
+    }
+  },
+  "compiled_pages": [
+    "wiki/hardware-optimization.md",
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md"
+  ],
+  "wiki_lint": {
+    "errors": 0,
+    "legacy_warnings": 96
+  },
+  "source_manifest": {
+    "current_source_set_hash": "ea474e9f70d6f7c090ac93c5a1a61b0dc5e38101eaec25953ac0f61dd974af0e",
+    "drift": {
+      "added": [],
+      "added_count": 0,
+      "changed": [],
+      "changed_count": 0,
+      "has_drift": false,
+      "removed": [],
+      "removed_count": 0
+    },
+    "kind": "project-wiki-source-manifest-drift",
+    "manifest_path": "wiki/source_manifest.json",
+    "ok": true,
+    "saved_source_set_hash": "ea474e9f70d6f7c090ac93c5a1a61b0dc5e38101eaec25953ac0f61dd974af0e",
+    "scan_time": "2026-10-07T06:46:10Z",
+    "schema_version": 1,
+    "writer_evidence_policy_errors": [],
+    "writer_evidence_policy_ok": true
+  },
+  "checks": {
+    "index_check_exit": 0,
+    "README_freshness_exit": 0,
+    "diff_check_exit": 0
+  },
+  "scratch": {
+    "exit": 1,
+    "entries": 35,
+    "verdicts": {
+      "KEEP-MARKED": 7,
+      "KEEP-DIRTY": 8,
+      "KEEP-UNLANDED": 8,
+      "KEEP-REFERENCED": 2,
+      "KEEP-BUSY": 1,
+      "KEEP-PROTECTED": 3,
+      "KEEP-UNLANDED-CLONE": 3,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2
+    },
+    "removed": [],
+    "scope": "Only own declared roots and named active worker/operator roots. Retained due canonical gate; no peer or prefix-wide removal."
+  },
+  "pruned_index_rows": [],
+  "archived_handoffs": [],
+  "compacted_handoffs": [],
+  "host_runtime_or_kernel_modified": false,
+  "new_grading_rule": false
+}

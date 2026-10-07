@@ -73,13 +73,13 @@ within seconds — clean, no crash.
 - [ ] **Let the campaign run to its disposition budget** (`max_iterations: 100`, ~35 min/iteration
   ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
   stall. No action needed unless it wakes.
-- [ ] **Strip the 19 verified-dead modules** (10,500 LOC + 19 test files ~4,870 LOC +
+- [ ] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC +
   `c5_rocm_oracle.json`). Deletion MUST regenerate `FOOTPRINT.md` in the same commit
   (`python -m …controller.test_campaign_footprint --refresh`) — it is asserted by
   `test_campaign_footprint` / `test_readme`. Do NOT touch the HOLD sets (arena/hip/loop/
   least-commitment producers wired into vidya adapters + dashboard; `campaign.py` importees;
   `scripts/benchmark/` runners).
-  Confirmed unreferenced by a two-pass AST audit across research, `/workspace`, and
+  Historical 2026-08-27 audit claimed unreferenced status across research, `/workspace`, and
   `epyc-orchestrator` — the earlier "40K LOC dead" figure was WRONG (the static grep missed
   `campaign.py`'s parenthesized import and the `scripts/benchmark/` runners; 51 of 82 candidates
   are live): `c5_rocm_oracle` · `controller/completed_campaign_adapter` ·
@@ -273,3 +273,9 @@ nobody invokes. The staleness watchdog was correct and simply unreachable on the
       fix — a champion-instrumented campaign passing preflight and spending screen budget — has
       never been observed. Relaunch against the finalized champion and watch to `sci >= 1`;
       **do not record AK-INST-1 as validated until a campaign banks a real screen.**
+
+## 2026-10-07 current-source deletion-premise correction
+
+MAIN independently reopens Research01d36835 and confirms three noncandidate loop imports of `evaluator/c3_epyc_tensor_capture.py`, the compiler's dynamic Apex entry, and the documented least-commitment producer family. ROOT also carries a cross-repo expected-inventory consumer. The historical19-dead assertion is superseded; paired tests being proposed for deletion do not prove their dependency dead. [Exact path/blob/importer matrix](../../artifacts/ni08/inf64-source-reachability-review-20261007/importer-path-entrypoint-matrix.md) identifies retained modules and the remaining dynamic/path/HOLD/entrypoint checks. No deletion, frozen-kernel edit, live campaign interference or native reachability proof occurred.
+
+- [ ] **INF64-REACHABILITY-MANIFEST — complete the per-file source reachability/disposition manifest before any deletion proposal.** Bind exact19 candidate paths, adjacent data and paired tests; resolve non-Python/dynamic entrypoints, string/CLI/config references, cross-repo capture inventories, FOOTPRINT/HOLD ownership and outgoing edges. Retain actual loop/compiler/least-commitment consumers; only prepare removal of individually proven-safe files together with their explicit dependent tests/data and regenerated footprint guards. Existing campaign owner applies any source change at its boundary.
