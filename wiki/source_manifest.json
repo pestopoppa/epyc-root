@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T14:52:36Z",
+  "last_compile": "2026-10-07T15:48:09Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T14:52:36Z",
+  "scan_time": "2026-10-07T15:48:09Z",
   "schema_version": 1,
-  "source_set_hash": "e4b42bf7abc6541f2adc0a58f0b2bb157e68c71a637f78e8d89d2e227a31f4aa",
+  "source_set_hash": "32020b15b65da734bbc0ebe96899f82dd84d6db2f959b8397a0bf565a1e3ecb9",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "05848b2f62b748084adf1b2d565480f86612c697410cf21d06bb82fd572112fc",
-      "modified": "2026-10-07T14:45:10Z",
+      "content_hash": "d4554f2b593d0960fa1bb19685cd63a26424e6f82c31bdd28fe268ee3536bfd4",
+      "modified": "2026-10-07T15:47:46Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 379202,
+      "size": 389914,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8378f19be81a24f4f00a565934da5056ca8e5fe6a0eb9d0fd90f0b8573a31d0d",
-      "modified": "2026-10-07T14:42:34Z",
+      "content_hash": "baa39be139693b035988f78c8984b5044b801e9353ed87f22185873e38cfed6a",
+      "modified": "2026-10-07T15:35:46Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 132879,
+      "size": 135384,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1263,10 +1263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3fcdf731836dd69f2e6b90eeb6b89fcbe165eb88daf529727148327c2c31e8d0",
-      "modified": "2026-10-07T13:22:36Z",
+      "content_hash": "9f2514cf97a5b75bdacf4d820afc579c91ac477c555849a6f014fb6fdadb9046",
+      "modified": "2026-10-07T15:35:46Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 76361,
+      "size": 76222,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c6bab2f262319c3bf4cfda724e42894374c4969b1696862bb18774eda58dddb5",
-      "modified": "2026-10-07T14:45:45Z",
+      "content_hash": "997ef25eb60eb4464bff0d59d3a031a9333bf544c9c296818e25deaa332a0403",
+      "modified": "2026-10-07T15:35:46Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 376615,
+      "size": 378223,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9343,10 +9343,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2e7674f8d6e99c63d6c0dc3a06388f47e40c49e7f94d285548fdb8fdd12cb358",
-      "modified": "2026-10-07T14:49:03Z",
+      "content_hash": "ee0ba65b36955e48324e3aebeca94bd569a83e2acd99f914cf86b4317f93ddef",
+      "modified": "2026-10-07T15:38:33Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 49397,
+      "size": 52269,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
       "type": "progress"
     },
@@ -9407,10 +9407,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c46037e948c8b88a47845c1c4453e60bdd7bc0949e937c75a9d7f7ffbed8c414",
-      "modified": "2026-10-07T14:45:10Z",
+      "content_hash": "4f0ef16a5bc3fb69e6a74769c5cfafe616246533e8ae43c6fc47c1fab179f383",
+      "modified": "2026-10-07T15:47:46Z",
       "path": "progress/2026-10/2026-10-07.md",
-      "size": 65378,
+      "size": 74083,
       "title": "2026-10-07",
       "type": "progress"
     },
@@ -10375,10 +10375,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "b5edeb44843d9312590f4061c56a31bc0c3f0a3b099fe0474c3b6fd483e932fc",
-      "modified": "2026-10-07T14:42:34Z",
+      "content_hash": "f87494fc2318bd588e83fda18e9bf336a1850ca028226d1b16ad9c706f357721",
+      "modified": "2026-10-07T15:24:39Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 63601,
+      "size": 65677,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
