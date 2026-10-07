@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **123 completed scoped tasks: 66 existing checkbox flips and 57 newly completed scoped subtasks; the corrected voice verifier is accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **125 completed scoped tasks: 68 existing checkbox flips and 57 newly completed scoped subtasks; the corrected voice verifier is accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -322,3 +322,8 @@ MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14
 ## Conditional heavy-wrap command contract — 2026-10-07
 
 MAIN completed the RTG-51 Phase-4 command documentation: request identity, immutable receipt cut, one writer/lease, ordered mutations, Coordinator promotion, completion receipt and failure/reboot barriers. The contract explicitly retains operator-only pruning/wiki authority until protected Phase-5 ratification. Manual source/caller review is LOW risk; no runtime execution or new test result is claimed. One existing checkbox closes; NI08 now123 scoped completions (66existing+57children). Remaining Phase-5 migration reconciliation and actual Auditor canary stay open.
+
+
+## Edited-file reference hook — 2026-10-07
+
+Published LR12 edited-file Git-root hook and accepted original hosted5/5 controls after MAIN independent API/48-member/34-readset review. Existing native TRUE/shared Judged/Located and complete immutable source/result custody retained. Two existing checkbox flips bring NI08 to125 scoped completions (68existing+57children). Prior startup failure stays original; no live queue/bus, host hook execution or protected policy ratification is claimed.

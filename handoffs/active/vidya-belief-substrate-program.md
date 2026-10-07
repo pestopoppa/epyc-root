@@ -2902,7 +2902,7 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 ## Prospective lane-hook and static pin-checker sources — 2026-10-07
 
-- [ ] **VB-LR12-REFERENCE-HOOK-CONFORMANCE — verify the edited-file Git-root reference hook with all five actual subprocess controls.** Bind exact hook/test/document/target bytes, runner bash/git/python3/rg/jq tools, unchanged native carrier and full source/result custody; retain three baseline tests and two real temporary Git lane tests, original JUnit/receipt and shared grade. Explicit runner-created synthetic queue existence fixture is a generated input, never a copy of the live queue. No host tests or broad cleanup.
+- [x] **VB-LR12-REFERENCE-HOOK-CONFORMANCE — verify the edited-file Git-root reference hook with all five actual subprocess controls.** Bind exact hook/test/document/target bytes, runner bash/git/python3/rg/jq tools, unchanged native carrier and full source/result custody; retain three baseline tests and two real temporary Git lane tests, original JUnit/receipt and shared grade. Explicit runner-created synthetic queue existence fixture is a generated input, never a copy of the live queue. No host tests or broad cleanup.
 - [ ] **VB-EVL42-PIN-STATIC-CONFORMANCE — capture the complete static benchmark pin-checker synthetic controls.** Bind exact Research checker/test source, actual AST/JUnit identities, locked test environment, unchanged native carrier and full source/result custody. Cover tracked temporary Git scan/CLI exits and unsafe or unstable paths; no actual benchmark execution, re-pin, or current production pin-health projection.
 - [ ] **SC-EVL42-PIN-REPORT-WIRING — bind future categorical pin-scan findings at write time and prepare their existing-ladder projection.** Preserve exact checker/scanned-source byte identities, Git HEAD/dirty context, scan membership and per-row current/stale/missing/unresolved reasons before the original scan is consumed. MAIN reviews the native record-to-ClaimTuple projection; no second ladder, retrospective warrant, numeric performance claim or automatic pin repair. Synthetic CI acceptance does not complete actual-scan wiring.
 
@@ -2911,3 +2911,5 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 
 - [x] **SC42-SOURCE — publish the prospective ODL writer and strict native-record ingest bridge before successor inference.** ✅ 2026-10-07 — [Actual source and original8/8](../../artifacts/ni08/sc42-odl-write-source-20261007/README.md) accepted by MAIN; existing shared measurement ladder and legacy-null behavior retained. SC42 parent stays open for actual canonical matched A/B and its first measured tuple.
+
+2026-10-07 MAIN: [LR12 source/native acceptance](../../artifacts/ni08/lr12-reference-hook-source-20261007/README.md) closes the enrolled five-case verifier after authenticated48-member/34readset original custody review; the hosted empty runtime fixture proves no live bus state.

@@ -3678,3 +3678,8 @@ The [belief-source program](../handoffs/active/vidya-belief-substrate-program.md
 The [memory/embedding intake checkpoint](../progress/2026-10/2026-10-07-intake-memory-embedding.md) retains five provisional Stage-1 records, awaiting deeper review and approved filing. Publisher mechanisms and benchmarks are reported source content, without independent EPYC reproduction or automatic adoption. Existing wiki/source hashes, per-writer records, cache/model identity separation and episodic recall provide concrete comparison points; candidate vector migration and experimental runtime compatibility remain separate work.
 
 [NI08](../docs/reference/ni08-non-inference-continuation.md) now records120 completed bounded scopes, including the corrected voice verifier and the typed response/choice source. This tally does not establish exhaustion of the [non-inference backlog](../handoffs/active/non-inference-backlog.md): actual unchecked task/source adjudication and eligible implementation continue. New verified producers are enrolled prospectively; no missing historical warrant is reconstructed.
+
+
+### Lane-root reference checks — 2026-10-07
+
+[LR12 source and five real subprocess controls](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md) resolve references against the edited file’s Git checkout. This prevents a lagging launch checkout from rejecting valid lane-local references. The isolated hosted queue was synthetic; production bus liveness and protected policy amendment authority remain separate.

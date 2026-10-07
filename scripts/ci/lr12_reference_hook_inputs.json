@@ -1,0 +1,199 @@
+{
+  "expected_cases": [
+    {
+      "classname": "scripts.hooks.tests.test_agents_reference_guard",
+      "name": "test_allows_the_compliant_coordinator_agent_role_file"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_agents_reference_guard",
+      "name": "test_resolves_bare_session_bus_protocol_and_token_references"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_agents_reference_guard",
+      "name": "test_still_blocks_missing_nested_session_bus_reference"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_agents_reference_guard",
+      "name": "test_resolves_lane_ahead_reference_in_edited_files_own_git_root"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_agents_reference_guard",
+      "name": "test_cannot_borrow_missing_reference_from_environment_git_lane"
+    }
+  ],
+  "inputs": {
+    "carrier": [
+      {
+        "blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+        "bytes": 19249,
+        "path": "scripts/ci/native_conformance.py",
+        "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+      },
+      {
+        "blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+        "bytes": 2260,
+        "path": "scripts/vidya/adapters/ci_conformance.py",
+        "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+      },
+      {
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "path": "scripts/vidya/adapters/__init__.py",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+        "bytes": 40447,
+        "path": "scripts/vidya/claim_tuple.py",
+        "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+      },
+      {
+        "blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+        "bytes": 5909,
+        "path": "scripts/vidya/canonical.py",
+        "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+      },
+      {
+        "blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+        "bytes": 10240,
+        "path": "scripts/vidya/frames.py",
+        "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+      },
+      {
+        "blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+        "bytes": 8539,
+        "path": "scripts/vidya/lattice.py",
+        "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+      }
+    ],
+    "context": [
+      {
+        "blob": "f60cdfb677aed6273523c5a5982fa16c4a5246e8",
+        "bytes": 257312,
+        "path": "scripts/vidya/adapters/README.md",
+        "sha256": "382b9562bf61de76dfcca52addc9d880ed3a2ea846eda77100ec9eae75d088bd"
+      },
+      {
+        "blob": "204fa5983f14e51ab9accdf0a6aceeebdd433d5f",
+        "bytes": 348404,
+        "path": "handoffs/active/vidya-belief-substrate-program.md",
+        "sha256": "7b2d8aa9a218215b04593f8ddd4e59b83126e2ae125216a36f57492d61efb965"
+      }
+    ],
+    "lock_source": [
+      {
+        "blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+        "bytes": 1099589,
+        "path": "uv.lock",
+        "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+      }
+    ],
+    "source": [
+      {
+        "blob": "5934f010eae2a4989df0d9c7c054cd0c57a425be",
+        "bytes": 21493,
+        "path": "CLAUDE.md",
+        "sha256": "a62115bee5770c2923281ae8c3407366e7772ae1876e5415d9e7ddfcd73b1e99"
+      },
+      {
+        "blob": "02e9ded4af1a16a4fd2663a5b1ba5b07d223a643",
+        "bytes": 4925,
+        "path": "agents/auditor-main.md",
+        "sha256": "f9c4809dec954ae22d6af695ee7b33d14ff30ec5d5ef7143194d67efd4ea7d9d"
+      },
+      {
+        "blob": "29b5f403fc262152860aeea4f516d713269b2267",
+        "bytes": 45657,
+        "path": "agents/commands/wrap-up.md",
+        "sha256": "82b8a07673e675132818daf7c2d791041dba176311b3a0fc8233d099628970e8"
+      },
+      {
+        "blob": "aade9f7a4abf2acdf494216f78f43eb9b6789135",
+        "bytes": 17484,
+        "path": "agents/coordinator-agent.md",
+        "sha256": "2b54e8903bdf63617d5191096bc661d109c1aeb8ff8211ee285c99fce9caf2ca"
+      },
+      {
+        "blob": "2d746a3b4e065b84cfa63e671eaee9633c3ce1b6",
+        "bytes": 2241,
+        "path": "agents/shared/INVARIANTS.md",
+        "sha256": "a08e3131f7f71f0e7710800fc9247e01b0bc1f25a6f10391565206a41dd97625"
+      },
+      {
+        "blob": "133eea2d49a5607e4a87cfcfdf1c16b795e5a183",
+        "bytes": 50274,
+        "path": "agents/shared/OPERATING_CONSTRAINTS.md",
+        "sha256": "8a72009bf05fa425598cf334ecdfec13e9c3b54b075fe41ba744894ee54c2d07"
+      },
+      {
+        "blob": "6cc2c3f52c6323cabedf755f7b54ccc8e0c1f5e8",
+        "bytes": 13142,
+        "path": "agents/shared/SESSION_LIFECYCLE.md",
+        "sha256": "b11f636e51045f058d1b4b1ce3189e75904332b51680441ad281619fafd79ad6"
+      },
+      {
+        "blob": "a7ae404d9c4c9dfbcff62eaf1e1fc5a2b6524715",
+        "bytes": 47316,
+        "path": "coordination/session-bus/BUS_PROTOCOL.md",
+        "sha256": "244f39750f14def66a343abcd3cc2ca78f2dfa343a59262aaac24c94af97bc52"
+      },
+      {
+        "blob": "eb3fe5a51f72e820dd12db387764893e09feab8d",
+        "bytes": 3648,
+        "path": "docs/guides/agent-workflows/coordinator-escalation.md",
+        "sha256": "2338d81cb91016aa1f4431389a79a197282c475510c30785555e78f7aa8bf657"
+      },
+      {
+        "blob": "36b519663cef50c15be44e4a45715d1d248e94ab",
+        "bytes": 47528,
+        "path": "docs/reference/agent-config/INCIDENT_LOG.md",
+        "sha256": "d94142594546a3a9abc1ddc5f2c7127948bb08fc6ef06a6ee555c684620ceebd"
+      },
+      {
+        "blob": "0373efb6218a43797c1a7aeb423cf2c5eb8f9e5e",
+        "bytes": 143398,
+        "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+        "sha256": "61e00b8f9a0bd1aae0a4319d98ba80e785ba4438854b4f7d9451419c8c59e74b"
+      },
+      {
+        "blob": "e4be4d2185d59f09063d2ff3c2aceba35b30edc9",
+        "bytes": 3153,
+        "path": "scripts/hooks/agents_reference_guard.sh",
+        "sha256": "7624ced578ba3d8a191a2d3951152dba126dbd7a860bca08b09261fb5fab6184"
+      },
+      {
+        "blob": "e0a96610f095e9d4676fdb16e569a86fa6c90bff",
+        "bytes": 3809,
+        "path": "scripts/hooks/tests/test_agents_reference_guard.py",
+        "sha256": "80901ffc0d5eae8ae225986c68d8338e10d7872a1522942e8d3490a7af6c2c8b"
+      }
+    ]
+  },
+  "schema": "epyc.lr12.reference_hook.inputs/v1",
+  "selected_modules": [
+    "scripts/hooks/tests/test_agents_reference_guard.py"
+  ],
+  "synthetic_runtime_inputs": [
+    {
+      "absolute_path": "/mnt/raid0/llm/bus-runtime/tokens/token-queue.md",
+      "content": "# Synthetic empty runtime-layout fixture\n\nExistence-only hook input; no actual session bus, liveness or operator queue evidence.\n",
+      "path": "coordination/session-bus/tokens/token-queue.md"
+    }
+  ],
+  "tracked_links": [
+    {
+      "blob": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+      "bytes": 9,
+      "path": "AGENTS.md",
+      "sha256": "6ebdb617a8104a7756d0cf36578ab01103dc9f07e4dc6feb751296b9c402faf7",
+      "target": "CLAUDE.md"
+    },
+    {
+      "blob": "5b2f5c0d6b56ade396523d9ebada35ed28da1f84",
+      "bytes": 33,
+      "path": "coordination/session-bus/tokens",
+      "sha256": "fd310ccaf8e9e46ce40f57cb679a87a81a0c8d4f0fb266b911a036e6231006c1",
+      "target": "/mnt/raid0/llm/bus-runtime/tokens"
+    }
+  ]
+}

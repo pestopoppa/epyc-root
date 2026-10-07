@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 123 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 125 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -364,7 +364,7 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       `/mnt/raid0/llm/tmp/disk-audit-20261007/delete_safe.sh`, free disk is now 175 GiB. This box is the
       remaining structural fix — a cleanup step at ticket/PR close for the `codex-ni*`/`ni0X` lane class,
       analogous to `LR-2`'s wrap-up-time sweep but triggered at close rather than at wrap-up.
-- [ ] **LR-12** — **`scripts/hooks/agents_reference_guard.sh` resolves markdown refs against the wrong
+- [x] **LR-12** — **`scripts/hooks/agents_reference_guard.sh` resolves markdown refs against the wrong
       root for lane-worktree edits.** It computes `PROJECT_DIR=${CLAUDE_PROJECT_DIR:-$(pwd)}`
       (`agents_reference_guard.sh:8`) and `CLAUDE_PROJECT_DIR` is a harness-level env var fixed to
       `/workspace` for the session, not reset by `cd`-ing into a lane worktree — so it resolves a bare
@@ -375,7 +375,7 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       `BLOCKED` every edit to the file regardless of content. Fix: resolve against the edited file's own
       repo root (`git -C <file_dir> rev-parse --show-toplevel`), not the harness's launch directory. Both
       blocked edits are text-ready and unapplied — see `progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md`
-      §8 and §9.4 for the exact patch text.
+      §8 and §9.4 for the exact patch text. ✅ 2026-10-07 — [MAIN source and original5/5 acceptance](../../artifacts/ni08/lr12-reference-hook-source-20261007/README.md); actual edited-file Git-root resolution and all five subprocess controls published. Protected policy amendments still require operator ratification.
 - [ ] **LR-13** — land three subagent-brief/wrap-up memory rules adopted 2026-10-07 into
       `agents/shared/SESSION_LIFECYCLE.md` (wrap-up cadence section) or
       `agents/shared/OPERATING_CONSTRAINTS.md` (subagent brief section), whichever already hosts the

@@ -1,0 +1,5 @@
+# Edited-file Git-root hook resolution
+
+The hook now resolves Markdown references from the edited file’s actual Git root, preserving fallback for paths outside Git. Source `f9fd9958b47d1db10806aeaea8154f4e2dc3d24b`; recipe `41cb9ddd969c32d0769e86b1b67bdbaba6d1be5f`. MAIN independently authenticated [original run37577067448](https://github.com/pestopoppa/epyc-root/actions/runs/37577067448): five complete real-subprocess controls pass, zero skips/failures/errors, original native TRUE and existing shared grade Judged/Located. Full27regularGit+7generated readsets and48ZIP members match, including unchanged original source/result inventories. Two tracked symlink identities are checked separately.
+
+The temporary hosted queue is an explicit empty existence fixture, never a copy of the live bus. Prior startup failure remains original evidence. No shared-host test, queue access, bus restart, hook-runtime deployment or inference is claimed. Original ZIP SHA-256 `7e002f05235c5188a4596103fec7444b188065d5f5a705952e46099a379ffc16`; native receipt file SHA-256 `1601faf2b09a33e9dbd8701ea2cb3654232541637ed1d9340177c28ffed0e6a4`.

@@ -194,3 +194,8 @@ MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14
 ## RTG-51 command documentation — MAIN reviewed boundary
 
 MAIN completed the RTG-51 Phase-4 command documentation: request identity, immutable receipt cut, one writer/lease, ordered mutations, Coordinator promotion, completion receipt and failure/reboot barriers. The contract explicitly retains operator-only pruning/wiki authority until protected Phase-5 ratification. Manual source/caller review is LOW risk; no runtime execution or new test result is claimed. One existing checkbox closes; NI08 now123 scoped completions (66existing+57children). Remaining Phase-5 migration reconciliation and actual Auditor canary stay open.
+
+
+## LR12 reference hook — MAIN accepted boundary
+
+Published LR12 edited-file Git-root hook and accepted original hosted5/5 controls after MAIN independent API/48-member/34-readset review. Existing native TRUE/shared Judged/Located and complete immutable source/result custody retained. Two existing checkbox flips bring NI08 to125 scoped completions (68existing+57children). Prior startup failure stays original; no live queue/bus, host hook execution or protected policy ratification is claimed.
