@@ -14,6 +14,7 @@ import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 PYTHON_PIN = "3.13.15"
+SOURCE_COMMIT = "6d5412fdf8824416405e0e1b9322c2f60db57103"
 CASES = ("scripts/ci/evl38_references_case.py::test_existing_governance_reference_validator_accepts_pinned_tree",)
 LOCK_SOURCE_COMMIT = "70096b763939a43409a1f1827ab633d62425a6c1"
 LOCK_SOURCE_BLOB = "ef2306018773ff9a1e80389970d92f66fcf8d5b7"
@@ -268,6 +269,11 @@ def main() -> int:
                "--rootdir", str(ROOT), "--import-mode=importlib", "-o", "addopts=", "-p", "no:cacheprovider",
                f"--junitxml={junit}", "scripts/ci/evl38_references_case.py"]
     source_paths, captured_paths, targets = validator_inputs()
+    subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", SOURCE_COMMIT, "HEAD"], check=True)
+    for path in [ROOT / "scripts/validate/validate_agents_references.py", *captured_paths]:
+        relative = path.relative_to(ROOT).as_posix()
+        if git("rev-parse", SOURCE_COMMIT + ":" + relative) != git("rev-parse", "HEAD:" + relative):
+            raise RuntimeError(f"validator source/target blob differs from reviewed child: {relative}")
     enrollment = {
         "source_table": "scripts/vidya/adapters/README.md",
         "task": "handoffs/active/vidya-belief-substrate-program.md",
@@ -278,7 +284,7 @@ def main() -> int:
             raise RuntimeError("reviewed EVL38 references enrollment is absent from the pinned context commit")
     source_context = result / "validator-input-map.json"
     source_context.write_text(json.dumps({"schema": "epyc.evl38.references.inputs/v1",
-        "validator": "scripts/validate/validate_agents_references.py",
+        "validator": "scripts/validate/validate_agents_references.py", "reviewed_source_commit": SOURCE_COMMIT,
         "scan_sources": [str(path) for path in source_paths], "resolved_targets": targets,
         "enrollment": enrollment}, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     carrier_path = carrier_root / "scripts/ci/native_conformance.py"
