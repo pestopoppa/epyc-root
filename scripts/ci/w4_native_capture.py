@@ -364,6 +364,7 @@ APP_READS = (
 )
 ROOT_READS = (
     WORKFLOW, DRIVER, "scripts/ci/w4_native_requirements.txt",
+    "scripts/ci/w4_synthetic_import_context.py",
     "scripts/ci/native_conformance.py", "scripts/ci/ni08_source_context.py",
     "scripts/vidya/adapters/README.md", "scripts/vidya/adapters/__init__.py",
     "scripts/vidya/adapters/ci_conformance.py", "scripts/vidya/claim_tuple.py",
@@ -632,6 +633,14 @@ def main() -> int:
     }, sort_keys=True) + "\n", encoding="utf-8")
     install_log, freeze_path, env_path = install_and_verify(app, result)
     environment = json.loads(regular_bytes(env_path))
+    os.environ["PYTHONPATH"] = str(app) + os.pathsep + str(ROOT / "scripts/ci")
+    os.environ["PYTEST_PLUGINS"] = "w4_synthetic_import_context"
+    os.environ["W4_APP_SOURCE"] = str(app)
+    os.environ["W4_SYNTHETIC_IMPORT_CONTEXT"] = "existing_fixture_1tib_import_only"
+    environment["pytest_context"] = {"autoload_disabled": os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"],
+        "inherited_options_plugins": "validated empty before reviewed explicit plugin binding",
+        "explicit_plugin": os.environ["PYTEST_PLUGINS"], "pythonpath": os.environ["PYTHONPATH"],
+        "synthetic_import_context": os.environ["W4_SYNTHETIC_IMPORT_CONTEXT"]}
     environment["absent_binary_config_overrides"] = absent_binary_paths
     physical_meminfo = result / "runner-physical-meminfo.txt"
     physical_meminfo.write_bytes(Path("/proc/meminfo").read_bytes())
@@ -665,6 +674,8 @@ def main() -> int:
         repositories={"root": ROOT, "app": app, "research": research}, read_paths=read_paths,
         selections=[selection],
     )
+    if os.environ.get("PYTEST_PLUGINS") != "w4_synthetic_import_context" or os.environ.get("PYTHONPATH") != str(app) + os.pathsep + str(ROOT / "scripts/ci"):
+        raise RuntimeError("reviewed explicit import plugin context changed during capture")
     if require_absent_binary_overrides(runner_temp) != absent_binary_paths:
         raise RuntimeError("absent-binary config overrides changed during inner gate execution")
     actual = record.get("summary")
