@@ -384,12 +384,33 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
+    w6_report = {
+        "status": "unavailable",
+        "reason": "fresh_unscored",
+        "core_quality": 2.0,
+        "fresh_quality": None,
+        "core_quality_denominator_n": 1,
+        "fresh_quality_denominator_n": 0,
+        "quality_denominator_policy": (
+            "scored_and_task_failed; task_failed_scores_zero; "
+            "infra_and_scoring_failures_excluded"
+        ),
+        "core_minus_fresh_quality": None,
+        "scale": "mean_question_accuracy_0_to_3",
+        "positive_means": "core quality exceeds fresh-audit quality",
+        "comparison_scope": (
+            "descriptive partition difference; core and fresh may have "
+            "different question and suite mixes; not a matched causal "
+            "overfitting estimate"
+        ),
+    }
     ExperimentJournal(journal_dir=d).record(JournalEntry(
         trial_id=1, timestamp="2026-08-12T10:00:00+00:00", species="s",
         action_type="numeric_trial", tier=1, quality=0.5, speed=1.0, cost=2.0,
         reliability=0.9, pareto_status="candidate",
         harness_metrics={"schema_version": 1},
-        eval_details={"details": {"quality_denominator": 30}}))
+        eval_details={"details": {"quality_denominator": 30,
+                                  "w6_generalization": w6_report}}))
 
     measured = list(apj.iter_measured_rows(tmp_path))
     assert len(measured) == 1, "the adapter could not read what the writer produced"
@@ -398,11 +419,17 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     assert rec["protocol_id"] == "autopilot/metric-v1+harness-v1"
     assert (rec["reps"], rec["reps_basis"]) == (30, "scored:quality_denominator")
     assert len(rec["attestation"]["sha256"]) == 64
+    assert rec["w6_generalization"] == w6_report
+    support = _support(shard, r)
+    assert support["assertion"]["w6_generalization"] == w6_report
 
     import measurement_record
     orig, measurement_record.REPO_ROOT = measurement_record.REPO_ROOT, tmp_path
     try:
         assert measurement_record.grade(rec)[:2] == ("Witnessed", "Attested")
+        assert support["assertion"]["grade"] == {
+            "Q": "Witnessed", "T": "Attested",
+        }
     finally:
         measurement_record.REPO_ROOT = orig
 
