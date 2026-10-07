@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **140 completed scoped tasks: 81 existing checkbox flips and 59 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **142 completed scoped tasks: 82 existing checkbox flips and 60 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -367,3 +367,8 @@ Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN m
 ## Fresh W6 source acceptance — 2026-10-07
 
 [Published two-file source and independently reviewed attempt2](../../artifacts/ni08/w6e-success-acceptance-20261007/README.md) complete W6e descriptive producer and its prospective conformance companion.38/38 original controls, corrected39Git/162wheel binding frozen before fresh capture, complete original44input/56member custody; first-attempt evidence unchanged without retroactive acceptance. NI08=140 (81existing+59children). Optional authored journal carry and all live/calibration/promotion gates remain separate.
+
+
+## Pin-report bounded source acceptance — 2026-10-07
+
+[Original29/29 and exact two-file source](../../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md) complete the bounded source child plus existing prospective conformance task. MAIN authenticates1682unchanged archive members/24readset and10unique nested native seals (8TRUE/1FALSE/1NULL);13receipt path copies are dereferenced aliases, with11symlinks/91emptydirectories archive limits preserved explicitly. Actual scan/pin-health parent remains open. NI08=142 (82existing+60children).

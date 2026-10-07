@@ -439,3 +439,8 @@ quarantine entries and its issue #124.
 2026-10-07 MAIN accepted the generalized tracked-AST checker at Research main f770a525 and [original8/8 safe-read/CLI controls](../../artifacts/ni08/evl42-success-acceptance-20261007/README.md). Actual future pin-scan write/read projection stays SC-EVL42-PIN-REPORT-WIRING; no current pin-health scan, expectation update or loaded-code attestation is claimed.
 
 Prospective `scripts/ci/pin_report_fixture.py` preparation owns exclusive report writing, strict original-attachment reopening and the existing fixture_execution_conformant projection. The existing [SC-EVL42-PIN-REPORT-WIRING parent](vidya-belief-substrate-program.md) stays open; its bounded VB-EVL42-PIN-REPORT-CONFORMANCE child verifies29 synthetic source controls before any actual scan can be consumed. Complete/stale reports and original FALSE/NULL remain distinct; no pin-health tuple or retrospective scan is authored.
+
+
+## Bounded pin-report source acceptance — 2026-10-07
+
+- [x] **SC-EVL42-PIN-REPORT-SOURCE — implement and verify strict categorical report attachment without claiming actual scan health.** ✅ 2026-10-07 — [MAIN published exact source and original29/29 controls](../../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md). Native TRUE/FALSE/NULL and complete stale/missing/unresolved report state remain separate from pin health. SC-EVL42-PIN-REPORT-WIRING actual producer/consumer scan boundary stays open; snapshots are non-atomic and loaded code remains unproven.

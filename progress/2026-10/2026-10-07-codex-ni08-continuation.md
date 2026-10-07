@@ -257,3 +257,8 @@ Full-wrap validation:179 indexed handoffs (132 ready/41 blocked/6 no-open), zero
 ## W6 fresh original and source publication boundary — 2026-10-07
 
 MAIN independently verifies attempt2 run37586779521/job112682464200/artifact11467407213, all56 unchanged ZIP members,44readset and38/38 cases under pre-capture corrected objective context. APPce48ed2c publishes only two reviewed source blobs; original first capture/map/outcome/grade untouched. W6e producer plus its VB companion are closed with explicit descriptive-only scope. NI08=140 (81existing+59children); optional future journal carry remains open. ROOT preceding full-wrap3a29d2298 is public and verified with seven-source wiki synthesis, zero drift,41retained scratch roots, zero errors/96existing warnings.
+
+
+## Pin-report original and exact source boundary — 2026-10-07
+
+MAIN independently accepts source112217two blobs/recipe96c7 after fresh APIs, original ZIP5442aaa2,1682members,24readset and29/29 native identities. All source/result hashes stable through original shared grade; no local grading.10unique nested receipts retain8TRUE/1FALSE/1NULL;13path copies are aliases, notdistinctexecutions. Original11symlink/91emptydirectory upload limits remain explicit without topology reconstruction. Actual pin-health scan/wiring remains open. One existingVB closure plus one completed bounded source child:NI08=142 (82existing+60children).

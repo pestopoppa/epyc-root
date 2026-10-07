@@ -1,0 +1,329 @@
+{
+  "schema": "epyc.main.native_prebinding.v1",
+  "review": "PASS",
+  "recipe_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+  "tracked_files": [
+    {
+      "repo": "context",
+      "repo_pin": "1b2c0c0aa959e162d492ba367ce15b36074033eb",
+      "path": "handoffs/active/scoring-infra-standardization.md",
+      "mode": "100644",
+      "git_blob": "d18d2df38bfdc09c021f40d93506cc4bf2b05510",
+      "bytes": 47188,
+      "sha256": "371eff63c0bb4d27fb53e09644e6ec5a62afec4ac7420e1ffba67ddd902b8e90"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "1b2c0c0aa959e162d492ba367ce15b36074033eb",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "mode": "100644",
+      "git_blob": "81f94f704b0197c69b9421f26b525a5a9e495a8e",
+      "bytes": 358215,
+      "sha256": "de092d4d80028bbc04ffdcf131268d849b31fbc59e19052c4da5a4a3ca2cdba0"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "1b2c0c0aa959e162d492ba367ce15b36074033eb",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "406cdecfa54182516f82f4921b2f63c3515ed163",
+      "bytes": 262910,
+      "sha256": "0d672fc68ce2a8980f46277959a4d54b868e48afb465c745e7357f642fc3c840"
+    },
+    {
+      "repo": "lock_source",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+      "path": ".github/workflows/ni08-evl42-report-native.yml",
+      "mode": "100644",
+      "git_blob": "9d37495d197b707e1fc175fc418b4b0015905ada",
+      "bytes": 2430,
+      "sha256": "5f743a28a27c2564249e2b098606b81a1526b4b4ea024dec0f0ca1966a8a0f52"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+      "path": "scripts/ci/ni08_evl42_report_capture.py",
+      "mode": "100644",
+      "git_blob": "bd674dee551f8818db510030db3e0e76ac9f8e15",
+      "bytes": 24179,
+      "sha256": "acfc141c5f63b3d3e2352c5769c718d8e5de6469e544a88d1e56f24b69568b55"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "96c7e6c70eb2f4c9434a14ca71457e1f58e77ba9",
+      "path": "scripts/ci/ni08_evl42_report_requirements.txt",
+      "mode": "100644",
+      "git_blob": "7cef491638d6ac627cc35d6c38d94ea1306223bf",
+      "bytes": 591,
+      "sha256": "e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "scripts/benchmark/check_pin_staleness.py",
+      "mode": "100644",
+      "git_blob": "c4c9fcd7e17171c2ed78a3a0eb85579ace8eaf38",
+      "bytes": 23801,
+      "sha256": "2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "git_blob": "5b26a20549d897c74484b4d7ae4022c88f5dd7c0",
+      "bytes": 1481,
+      "sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140"
+    },
+    {
+      "repo": "research",
+      "repo_pin": "cb801b9b7bb4ad3555ffc4be5a6d879cc6ae7875",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "efdf097df2a8355f952073fc25ac1c8a35fcc7d8",
+      "bytes": 520883,
+      "sha256": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/ci/pin_report_fixture.py",
+      "mode": "100644",
+      "git_blob": "b9e19c827ca10d335d66c448d55a9f0b9dc3958b",
+      "bytes": 13562,
+      "sha256": "ce91371a13cfd2288e43e91e4b8b895de362160bccc0f1bf43081645e920eb03"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "tests/ci/test_pin_report_fixture.py",
+      "mode": "100644",
+      "git_blob": "3afc36b3d1b07204586934ca2972ecac1d85092e",
+      "bytes": 14997,
+      "sha256": "6d507b95f954c565497961aae080e1982872f67afaa39475dca068e24b610d05"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "tests/__init__.py",
+      "mode": "100644",
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "bytes": 833,
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/vidya/lattice.py",
+      "mode": "100644",
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/vidya/frames.py",
+      "mode": "100644",
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "112217d1422a74b6b4a13dbc8354381a0bf058d1",
+      "path": "scripts/vidya/canonical.py",
+      "mode": "100644",
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[current]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[stale]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[missing]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_roundtrip_preserves_current_stale_and_unknown[unresolved]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[count]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[complete]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[git_stable]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[checker_match]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[boolean_count]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[scope]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[dirty_count]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[unread_source]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_report_metadata_drift_is_refused[path_normalization]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_original_report_hash_and_duplicate_json_fields_are_refused"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_report_writer_refuses_overwrite_and_symlink_parents"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_missing_scanned_checker_remains_incomplete_without_tuple_upgrade"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[file]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_failed_file_or_directory_fsync_removes_only_owned_report_for_retry[directory]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_native_attachment_projection_preserves_true_false_null[current_TRUE]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_native_attachment_projection_preserves_true_false_null[stale_TRUE]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_native_attachment_projection_preserves_true_false_null[missing_TRUE]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_native_attachment_projection_preserves_true_false_null[unresolved_TRUE]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_native_attachment_projection_preserves_true_false_null[current_FALSE]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_native_attachment_projection_preserves_true_false_null[current_NULL]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[absent]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[tampered]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_actual_original_attachment_refuses_absent_tampered_or_mixed_receipts[mixed]"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_partial_write_is_removed_without_deleting_unrelated_output"
+    },
+    {
+      "classname": "tests.ci.test_pin_report_fixture",
+      "name": "test_failure_cleanup_refuses_to_unlink_replaced_exclusive_name"
+    }
+  ],
+  "module_ast_identities": [
+    {
+      "repo": "source",
+      "path": "tests/ci/test_pin_report_fixture.py",
+      "source_sha256": "6d507b95f954c565497961aae080e1982872f67afaa39475dca068e24b610d05",
+      "module_ast_sha256": "50fa33618644c75a54e8d0d8ff425ded0d2c29ed4f52c07a034ff932bcce40d6"
+    }
+  ],
+  "expected_generated_contexts": [
+    "environment.json",
+    "pip-freeze.txt",
+    "tool-versions.json",
+    "dependency-install.log"
+  ],
+  "packages": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pytest": "9.0.3"
+  },
+  "wheel_hashes": 5,
+  "manual_blast_radius": "LOW: strict synthetic original-report attachment controls use unchanged native CI carrier/shared grade; actual pin-health report parent remains open, no runtime activation or production edits",
+  "host_project_execution": false
+}
