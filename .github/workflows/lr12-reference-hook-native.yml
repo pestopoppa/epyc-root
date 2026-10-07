@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-root
-          ref: 83004c1137015a9fc8d0cf411e648432bc51a1c9
+          ref: 99b3763078abd859026c8051e1c480b89a15ee72
           path: enrollment-context
           fetch-depth: 1
           persist-credentials: false

@@ -68,16 +68,16 @@
     ],
     "context": [
       {
-        "blob": "24c990f9f32021274d7e695f5cf6a266df051694",
-        "bytes": 255558,
+        "blob": "f60cdfb677aed6273523c5a5982fa16c4a5246e8",
+        "bytes": 257312,
         "path": "scripts/vidya/adapters/README.md",
-        "sha256": "579511b3eb41ab4167cda45441df866bc1feebda626b155e81eef3b2bf354c6e"
+        "sha256": "382b9562bf61de76dfcca52addc9d880ed3a2ea846eda77100ec9eae75d088bd"
       },
       {
-        "blob": "c93d189cdaf0db1bd92a38450081a8ad779a3444",
-        "bytes": 345273,
+        "blob": "204fa5983f14e51ab9accdf0a6aceeebdd433d5f",
+        "bytes": 348404,
         "path": "handoffs/active/vidya-belief-substrate-program.md",
-        "sha256": "8857c5d01fcf02a2cde77f4fc832fa7cfd1ca858b4116971f4d293edc06972f3"
+        "sha256": "7b2d8aa9a218215b04593f8ddd4e59b83126e2ae125216a36f57492d61efb965"
       }
     ],
     "lock_source": [
