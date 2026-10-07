@@ -244920,11 +244920,13 @@
   - Independent forum measurements with the official 10-expert NVFP4 quant on 2x Spark TP2 give median 53.7 tok/s (peak 63.7) - roughly 0.45x of the kit headline and equal to our CPU (intake-1948).
   ingested_date: '2026-10-06'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage 2 (2026-10-06) read the repo and re-checked headline numbers; no handoff edit permitted before Stage-3 approval; physics comparison recorded in INTAKE_STAGE2.md (out-of-repo scratch).
+  - Dynamic-depth bands recorded as CAFE-3 priors; headline numbers carried only with variant/K/aggregation labels
   reader_should_conclude: Cite the kit for its system design (EP across 2 boxes, K<=7 MTP, one-shot RoCE all-reduce) and for the hibrid48 ~120 tok/s 10-expert single-stream figure; never cite 93/177 tok/s or 1,008 tok/s as a Q38FN (10-expert) speed or as a bandwidth-limited rate.
   claim_anchors:
   - claim_index: 0
@@ -245700,11 +245702,12 @@
   - 'k3dani: K=2 PIECEWISE decode 1.9-4% slower; antoniocuegervas saw ~3% one-stream cost on PIECEWISE before FULL graph support.'
   ingested_date: '2026-10-06'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
   integration_disposition: monitor
   disposition_evidence:
-  - 'PR open and unmerged; our llama.cpp already rolls back GDN state in O(1) via rs_idx; trigger: PR merge with a K>=5 measurement showing >5% step gain, or our MTP depth K>4 probe showing state-write cost.'
+  - 'RecoverSSM monitor trigger recorded in the CAFE-3 amendment: upstream merge with K>=5 gain >5% or Q38P-1 shows K+1 state-write term >3% of step bytes'
   reader_should_conclude: 'Do not claim GDN rollback is a major decode cost: measured benefit is 1-5% at K=3-5 on GB10, bigger only in KV capacity and high concurrency; PR is unmerged. Our llama.cpp already uses snapshot-per-token (same as vLLM native), so the issue exists in form of write-back/memory, not in correctness; no K=7 measurement exists in the PR.'
   reported_results:
   - setup: GB10 TP1 MTP K=3 align, vLLM
@@ -245924,11 +245927,12 @@
   contradicting_evidence: null
   ingested_date: '2026-10-06'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - mi210-big-model-and-acceleration-roadmap.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'gfx90a/MI210 supported in ROCm 10.1 with no deprecation wording; no decode-efficiency lever for gfx90a; migration is a full rebuild plus host driver bump. Trigger: operator decision to scope a v11 / ROCm 10.x experimental-branch build.'
+  - Q38P-3 and Q38P-4 own the ROCm 10.1 value assessment and driver-compatibility test
   reader_should_conclude: 'MI210/gfx90a is still officially SUPPORTED in ROCm 10.0 and 10.1 with no deprecation wording found, so there is no forced migration; but 10.1 gives no decode-efficiency lever for gfx90a (nothing on MFMA, rocWMMA, hipBLASLt, HBM bandwidth), and adoption means a full rebuild (LLVM 24, clang_major 24, /opt/rocm/core-10.1 layout, amdrocm-* packages, amd-smi, newer amdgpu driver). Do NOT carry: that vLLM/SGLang run on MI210 under 10.1 (their gfx lists exclude gfx90a), that rocWMMA is unusable with HIP graphs (docs label only), or any 7.14-page OS caveat as a 10.1 fact. Q38FN physics question: nothing in these sources bears on it.'
   claim_anchors:
   - claim_index: 0
@@ -246245,11 +246249,12 @@
   contradicting_evidence: null
   ingested_date: '2026-10-06'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Architecture/bytes-per-step basis for the roofline (computed from config and safetensors headers, reproduces our measured 1.296 GB experts).
+  - Computed bytes-per-step basis (reproduces our 1.296 GB experts) is the Q38P-1 static part (a)
   reader_should_conclude: 'Per-token bytes for this model are 4.2 GB (our GGUF) to 13.3 GB (BF16); Spark tok/s above ~50 come from MTP acceptance (~4.2 tok/step) and 2-box aggregate bandwidth, not from fewer bytes. Do NOT carry: the 4B MTP figure, the independent-uniform expert-union as measured fact (it is a computed upper-ish bound), or vendor tok/s as independently verified.'
   reported_results:
   - 'hibrid48: 22 steps/s, 92 tok/s c=1 (86-97), 546 tok/s c=32 on 2 DGX Spark, vendor-reported'
@@ -247027,11 +247032,12 @@
   recommended_actions:
   - 'Use the per-step byte-model template (bytes per GPU per step / achieved BW x tokens per step) to compute our CPU Q38FN bound: active-weight bytes per step incl. 4 lm_head passes vs 446.8 GB/s measured read-sum, compare to ~50-53 tok/s. [operator-review candidate; proposed disposition: analysis-only, no compute]'
   - 'Quantify lm_head share on our CPU MTP path (draft-step lm_head re-reads) and whether a frequency-ranked reduced draft head is possible in llama.cpp MTP. [operator-review candidate; proposed disposition: worth_investigating]'
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Dual-Spark MTP-off 24.5 vs MTP3 52.1 and the reduced-draft-vocab A/B (+9.6% mean) are the cleanest accepted-tokens and head-bytes evidence; knowledge for the MTP draft-head lever.
+  - Draft-head and accepted-tokens evidence feeds Q38P-2; vocab slice declined by B10
 - id: intake-1951
   arxiv_id: null
   url: https://github.com/jschmied/qwen38-flash-next-gb10
@@ -247735,11 +247741,13 @@
   - 'Adopt the floor method: per-cycle byte ledger with measured distinct-expert union E(rows) (4->26.6, 8->47.3, 16->82.5 of 512 experts top-10) and divide by measured attainable BW; apply to our CPU Q38FN (446.8 GB/s read-sum) to bound MTP tok/s. [operator-review candidate; proposed disposition: adopt_patterns]'
   - 'Use their sub-linear expert-union exponent (~0.83) to estimate expert bytes for our K=2..5 verify batches on EPYC before building more spec-dec. [operator-review candidate; proposed disposition: worth_investigating]'
   - 'Note attainable/peak ratios: ~0.80-0.86 (220-234 of 273 GB/s) on GB10 versus our 446.8/537.6=0.83; same ratio class, so a 0.8 floor factor is a sound planning default. [operator-review candidate; proposed disposition: record_only]'
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Wave 4 full GB10 byte ledger: measured expert-union curve (0.69/0.63/0.60 of independent at 4/8/16 rows), attainable 220 GB/s probe provenance, measured/floor ratio flat 1.19-1.22 across K; prior for our own bytes/step measurement; no repo action before Stage 3.'
+  - Q38P-1 and the CAFE-3 amendment consume the byte ledger and measured expert-union curve (applied 2026-10-07)
 - id: intake-1952
   arxiv_id: null
   url: https://ai-muninn.com/en/blog/qwen38-flash-next-nvfp4-dgx-spark-vllm-recipe
@@ -248410,11 +248418,12 @@
   recommended_actions:
   - 'Compute our own Q38FN MTP draft-head bytes per draft step (head vocab x hidden x bytes) versus total active bytes per step, to estimate the upper bound of a reduced-vocab draft head on CPU (here 2.88 GiB of the step on a ~165 ms/step wall at x8). [operator-review candidate; proposed disposition: worth_investigating, analysis only]'
   - 'Adopt the step-time vs byte-floor ratio (1.37x at x1, 1.04x at x5) as the check for whether a serving config is bandwidth-bound before attributing tok/s to hardware. [operator-review candidate; proposed disposition: adopt_patterns]'
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Measured reduced-vocab MTP draft head gains (+13% mean, code x1 +21.5%) with the head read 3x per step; evidence the draft-head byte term is a real lever; knowledge pending operator decision on a llama.cpp probe.
+  - Q38P-2 keeps the head requant probe schedule-or-decline
 - id: intake-1957
   arxiv_id: null
   url: https://ai-muninn.com/en/blog/dgx-spark-bandwidth-ceiling-85-percent
@@ -248796,3 +248805,221 @@
   integration_disposition: knowledge_only
   disposition_evidence:
   - Newest single-Spark claims (63.6 prose / 96.9 code) contradicted by the same repo docs (52.0 / 63.7); speedup is speculative decode (serial 35.4 vs 56.0 drafted); no byte-floor model found.
+- id: intake-1960
+  arxiv_id: null
+  url: https://docs.vllm.ai/en/latest/getting_started/installation/gpu.html
+  source_type: blog
+  title: 'vLLM install docs, AMD ROCm section: supported GPUs include MI200s (gfx90a), ROCm >= 6.3'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  expanded_from: intake-1944
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - The ROCm section lists the supported GPU families as MI200s (gfx90a), MI300 (gfx942), MI350 (gfx950), several Radeon and Ryzen parts, and requires ROCm 6.3 or above; MI350 needs 7.0 or above.
+  - The page gives an MI210/MI250/MI300 multi-arch build line (`PYTORCH_ROCM_ARCH="gfx90a;gfx942"`) and ROCm 7.0 build instructions for MI200 and MI300 series; pre-built wheels exist for ROCm 7.0 and 7.2.1.
+  - Therefore upstream vLLM documents gfx90a as supported, while our ROCm 6.2 userspace does not meet the stated minimum; whether Qwen3.8-Flash-Next (qwen4_exp) runs on it is not stated (the 125B model does not fit 64 GiB anyway).
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: ROCm tab, GPU/ROCm requirements
+    quote: 'GPU: MI200s (gfx90a), MI300 (gfx942), MI350 (gfx950), Radeon RX 7900 series (gfx1100/1101), Radeon RX 9000 series (gfx1200/1201), Ryzen AI MAX / AI 300 Series (gfx1151/1150)'
+    quote_sha256: 32f89c3c7246429b535e0b9959eef1218bf100d68ec7f0f7b1fe002d7d404b0b
+    source_revision: docs.vllm.ai/en/latest/getting_started/installation/gpu.html retrieved 2026-10-06 (dev-preview docs), html sha256:8633a3adef6e
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: ROCm tab, intro
+    quote: vLLM supports AMD GPUs with ROCm 6.3 or above.
+    quote_sha256: 35e3bbf99648b4a10252ccb36a45c1adaf63c187f81e9c9557273664f4da84e5
+    source_revision: docs.vllm.ai/en/latest/getting_started/installation/gpu.html retrieved 2026-10-06 (dev-preview docs), html sha256:8633a3adef6e
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: build from source, multi-arch comment
+    quote: To build vLLM for multiple arch MI210/MI250/MI300, use this instead
+    quote_sha256: f8f213de44573a3c45e1a44e93f2a7f24c6170044594d6c22a92af794266eae6
+    source_revision: docs.vllm.ai/en/latest/getting_started/installation/gpu.html retrieved 2026-10-06 (dev-preview docs), html sha256:8633a3adef6e
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: ROCm 7.0 build section
+    quote: 'To build vllm on ROCm 7.0 for MI200 and MI300 series, you can use the default:'
+    quote_sha256: 066615cadffe966bb7fc316f9d54ef37404924e3e96f7108d081f349b7fbb75c
+    source_revision: docs.vllm.ai/en/latest/getting_started/installation/gpu.html retrieved 2026-10-06 (dev-preview docs), html sha256:8633a3adef6e
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: ROCm tab, intro
+    quote: Pre-built wheels are available for ROCm 7.0 and ROCm 7.2.1.
+    quote_sha256: 89b2321097b6c202e11c14d4b386cb1a788f9227610501a34b22c8739cff0d1a
+    source_revision: docs.vllm.ai/en/latest/getting_started/installation/gpu.html retrieved 2026-10-06 (dev-preview docs), html sha256:8633a3adef6e
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read at Stage 3 and re-found at Stage 4; page lines 498-506 read in context.
+  - claim_index: 1
+    effect: unaffected
+    note: Read in context (lines 920-925, 1198-1222).
+  - claim_index: 2
+    effect: unaffected
+    note: Derived by the integrator from the two stated minimum/support facts; the Qwen3.8 statement is an absence claim (searched this page only).
+  dive_corrections: '2026-10-07 Stage-4 ingest (read_depth PARTIAL): corrects the Stage-2 close-out premise that vLLM excludes gfx90a: that came only from AMD ROCm 10.1 framework-validation lists (intake-1944); the vLLM docs themselves list MI200s (gfx90a). Not read: the other tabs (CUDA, XPU, Apple), the Docker run and wheel-index sections beyond the MI200 lines.'
+  notes: 'Retrieved 2026-10-06 with curl; saved /mnt/raid0/llm/tmp/intake-q38fn-cluster/dive-s3/vllm_rocm_doc.html. This is the developer-preview docs, not a pinned release. Operator steering row 5 (Stage 3): sources citing MI210/gfx90a must be investigated.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries:
+    - intake-1944
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite for: upstream vLLM documents gfx90a (MI200s) as supported at ROCm >= 6.3. Do not carry: that vLLM runs Qwen3.8-Flash-Next on MI210, any throughput, or that the 10.1 matrix lists it (it does not).'
+  handoffs_updated:
+  - mi210-big-model-and-acceleration-roadmap.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Q38P-4 (vLLM-on-MI210 probe) is filed in mi210-big-model-and-acceleration-roadmap.md 2026-10-07
+- id: intake-1961
+  arxiv_id: null
+  url: https://docs.sglang.ai/platforms/amd_gpu.html
+  source_type: blog
+  title: 'SGLang AMD GPU page: MI300X-centred; MI250 named only for the Petit NVFP4 package'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  expanded_from: intake-1944
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - The only gfx90a-family text on the SGLang AMD GPU page is that petit_nvfp4 enables NVFP4 models on MI250/MI300X via Petit; the tuning guides it links are MI300X guides.
+  - No gfx90a, MI210, MI200 or CDNA2 text was found in the SGLang AMD page, its install page, or the repository README (searched 2026-10-06/07); so SGLang gfx90a support is not established either way.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: AMD GPU page, quantization section
+    quote: petit_nvfp4 enables NVFP4 models (e.g., Llama 3.3 70B FP4 ) on MI250/MI300X via Petit .
+    quote_sha256: 3f66159cc0ca3a91075a1daa5ab31ab993a37d0c5f8517cd27d47967d5bd6e72
+    source_revision: docs.sglang.ai/platforms/amd_gpu.html retrieved 2026-10-06, html sha256:29f4414275c5; docs.sglang.ai/get_started/install.html sha256:bbc68d347a9d; sgl-project/sglang README.md (main) retrieved 2026-10-07
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: AMD GPU page, tuning section
+    quote: When using AMD GPUs (such as MI300X), certain system-level optimizations help ensure stable performance.
+    quote_sha256: 80787f74603a5ef7fcc89bdf8ec54f8d1b4cca77eb0b2fe781f1bbd6764496e9
+    source_revision: docs.sglang.ai/platforms/amd_gpu.html retrieved 2026-10-06, html sha256:29f4414275c5; docs.sglang.ai/get_started/install.html sha256:bbc68d347a9d; sgl-project/sglang README.md (main) retrieved 2026-10-07
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim on the page; one mention only.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Absence claim: trees searched = the three documents named in source_revision; the SGLang release notes and community forks were not searched.'
+  dive_corrections: '2026-10-07 Stage-4 ingest (read_depth PARTIAL): settles plan item K4c as no-evidence: SGLang shows no gfx90a support text in the pages searched. Not read: SGLang release notes, Dockerfiles and community forks (unofficial gfx90a status is therefore unknown, not excluded).'
+  notes: Retrieved with curl; saved under dive-s3/. The page is the AMD platform doc; the install page was fetched as HTML (507 KB) and grepped, not read end to end.
+  cross_references:
+    chapters: []
+    handoffs:
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries:
+    - intake-1944
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite only as: no gfx90a support statement found in these three SGLang documents. Do not carry: that SGLang does not work on MI210 (unknown) or that it does (no evidence).'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Trigger: SGLang AMD docs or release notes list gfx90a/MI2xx; until then no task (Q38P-4 covers vLLM only)'
+- id: intake-1962
+  arxiv_id: null
+  url: https://github.com/ROCm/TheRock/blob/main/SUPPORTED_GPUS.md
+  source_type: blog
+  title: 'TheRock SUPPORTED_GPUS.md: gfx90a (CDNA2) Linux build-passing, sanity-tested, release-ready'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  expanded_from: intake-1944
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - On the retrieved page the Linux AMD Instinct table lists CDNA2 gfx90a with Build Passing, Sanity Tested and Release Ready all checked; the Windows table lists gfx90a build-passing only.
+  - The page defines Release Ready as supported and tested as part of the overall release process, and warns that a Build Passing check alone does not imply the runtime works on hardware.
+  - This differs from the root runbook sentence that TheRock lists gfx90a as Build Passing only (docs/runbooks/rocm-upgrade-checklist.md); the page has moved on since that sentence was written. Correction proposed, not applied.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: ROCm on Linux > AMD Instinct - Linux
+    quote: '| CDNA2        | gfx90a      | ✅            | ✅            | ✅            |'
+    quote_sha256: 6f0eaba21d806e90e01affbbbc9d82b179458ffc6bbec8467aecaf463896cf71
+    source_revision: github.com/ROCm/TheRock raw SUPPORTED_GPUS.md (main) retrieved 2026-10-06, sha256:fd0211338eaa
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: ROCm on Windows > AMD Instinct - Windows
+    quote: '| CDNA2        | gfx90a      | ✅            |               |               |'
+    quote_sha256: d42d1a735fdb6b199fd3bba775dcdfd6b611548841da3b613ad14a91de65e5ce
+    source_revision: github.com/ROCm/TheRock raw SUPPORTED_GPUS.md (main) retrieved 2026-10-06, sha256:fd0211338eaa
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: status legend
+    quote: '*Release-Ready* means "it is supported and tested as part of our overall release process".'
+    quote_sha256: 1ea8e9a1347a3a1ddbd1598661ac86e527b7c5116e74ef285818fdbe5cdf0998
+    source_revision: github.com/ROCm/TheRock raw SUPPORTED_GPUS.md (main) retrieved 2026-10-06, sha256:fd0211338eaa
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: status warning
+    quote: is produced and published. It does **not** imply the runtime is functional
+    quote_sha256: fef7d18c08eb6c0df53d892518748801a8d1167848dfaea38125bda2b0b98a04
+    source_revision: github.com/ROCm/TheRock raw SUPPORTED_GPUS.md (main) retrieved 2026-10-06, sha256:fd0211338eaa
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Table rows re-found verbatim.
+  - claim_index: 1
+    effect: unaffected
+    note: Legend and warning re-found verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Derived by the integrator comparing this page to the runbook text; the runbook line is not changed here.
+  dive_corrections: '2026-10-07 Stage-4 ingest (read_depth FULL: the whole page, 8.6 KB, read from disk). Corrects the runbook-recorded status of gfx90a on TheRock (Build Passing only -> Release Ready on Linux, on this retrieval); the runbook edit is a proposal for the operator-invoked wrap-up, not applied.'
+  notes: Retrieved 2026-10-06 (raw GitHub). The page is development-branch status, not a ROCm release statement; the 10.1.0 compatibility matrix (intake-1944) remains the release-support source.
+  cross_references:
+    chapters: []
+    handoffs:
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries:
+    - intake-1944
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Cite for: TheRock marks gfx90a Linux build-passing, sanity-tested and release-ready as of the 2026-10-06 retrieval. Do not carry: that this equals ROCm 10.1 release support, or any performance statement.'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Context for Q38P-3; no action beyond a proposed runbook correction

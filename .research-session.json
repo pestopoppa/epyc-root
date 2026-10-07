@@ -1,9 +1,9 @@
 {
  "session_id": "intake-q38fn-cluster-ec-20261006",
  "started_at": "2026-10-06T19:00:00Z",
- "last_checkpoint": "2026-10-06T22:30:00Z",
- "stage": "stage2-complete-closeout-gate-closed-declines-recorded",
- "phase": "stage2",
+ "last_checkpoint": "2026-10-07T04:00:00Z",
+ "stage": "stage4-complete",
+ "phase": "stage4",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-q38fn-cluster",
  "branch": "lane/ec-intake-q38fn-cluster",
  "topic": "myllmbox/qwen38-flash-next-cluster-recipe (SHA d2721ecbd16f4a10b968b2755fc374da3c539502) - 2x DGX Spark Q38FN physics comparison; plus ROCm 10.1 blog",
@@ -30,10 +30,13 @@
   "intake-1956",
   "intake-1957",
   "intake-1958",
-  "intake-1959"
+  "intake-1959",
+  "intake-1960",
+  "intake-1961",
+  "intake-1962"
  ],
  "entries_remaining": [],
- "next_intake_id": 1960,
+ "next_intake_id": 1963,
  "expansion_cap": 10,
  "expansion_count": 10,
  "expansion_entries": [
@@ -75,8 +78,8 @@
    "ts": "2026-10-06T19:00:00Z",
    "verbatim": "2x dgx spark should have an effective aggregate memory bandwidth in line with our CPU+ram hardware. As such, there either must be a physics reason for why we can't hit similar performance numbers, or we MUST got much much higher performance numbers",
    "disposition": "planned",
-   "plan_ref": null,
-   "reason": "Core question of the intake: physics comparison section in INTAKE_STAGE1.md / INTAKE_STAGE2.md; carried into Stage 3 as a decision input (plan_ref assigned at Stage 3)."
+   "plan_ref": "P1",
+   "reason": "Core question of the intake: physics comparison section in INTAKE_STAGE1.md / INTAKE_STAGE2.md; carried into Stage 3 as a decision input (plan_ref assigned at Stage 3). Plan: section 0, P1 (measurement), K1 (gated lever)."
   },
   {
    "seq": 3,
@@ -84,8 +87,44 @@
    "ts": "2026-10-06T19:00:00Z",
    "verbatim": "Add this to the same research intake also please: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.1-blog/README.html?term=10-6-rocmrelease&utm_campaign=thallosocial&utm_source=twitter&utm_medium=social&utm_content=1791306421",
    "disposition": "planned",
+   "plan_ref": "P2",
+   "reason": "Operator added the AMD ROCm 10.1 blog to the same intake: ingested as intake-1938 (tracking params stripped) with the MI210/gfx90a migration angle (REBUILD / AK-HYPOTHESIS / KNOWLEDGE / ALREADY-HAVE tags); carried into Stage 3. Plan: P2 (staged value assessment), K4."
+  },
+  {
+   "seq": 4,
+   "stage": 3,
+   "ts": "2026-10-07T00:00:00Z",
+   "verbatim": "I'd be happy to perform a reboot as part of v11 kernel promotion. *IF* there's value to ROCm 10.1, we should do it.",
+   "disposition": "planned",
+   "plan_ref": "P2",
+   "reason": "Replaces knowledge-plus-deferred with the staged value assessment P2 (Q38P-3); reboot only inside the v11 window; +5.0% go/no-go."
+  },
+  {
+   "seq": 5,
+   "stage": 3,
+   "ts": "2026-10-07T00:00:00Z",
+   "verbatim": "are these sources explicitly citing the MI210? If so, shouldnt they be investigated?",
+   "disposition": "planned",
+   "plan_ref": "K4",
+   "reason": "Per-source grep done; the vLLM, SGLang and TheRock pages cite gfx90a and are ingested at Stage 4 (K4) and probed (P3, Q38P-4); the rest stay declined with grep evidence."
+  },
+  {
+   "seq": 6,
+   "stage": 3,
+   "ts": "2026-10-07T00:00:00Z",
+   "verbatim": "Decline for now",
+   "disposition": "declined",
    "plan_ref": null,
-   "reason": "Operator added the AMD ROCm 10.1 blog to the same intake: ingested as intake-1938 (tracking params stripped) with the MI210/gfx90a migration angle (REBUILD / AK-HYPOTHESIS / KNOWLEDGE / ALREADY-HAVE tags); carried into Stage 3."
+   "reason": "Operator closed the 5-of-10 expert cut for now (RI-Q38P-7); reopen trigger recorded in the plan."
+  },
+  {
+   "seq": 7,
+   "stage": 3,
+   "ts": "2026-10-07T00:00:00Z",
+   "verbatim": "approved. Proceed to stage 4",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Operator approval of Stage-3 rev2 including the +5.0% go/no-go; recorded as context: approval of scope is not a waiver of the review gates, and Stage 4 applies exactly the approved plan."
   }
  ],
  "prior_sessions": [
@@ -5310,7 +5349,10 @@
    "intake-1956",
    "intake-1957",
    "intake-1958",
-   "intake-1959"
+   "intake-1959",
+   "intake-1960",
+   "intake-1961",
+   "intake-1962"
   ],
   "closeout_gate": "open: dive-surfaced list presented in INTAKE_STAGE2.md; Stage 3 needs operator approval",
   "anchors_total": 268,
@@ -5318,8 +5360,702 @@
   "policy": "steering_ledger seq 1"
  },
  "stage3": {
-  "status": "drafted",
+  "status": "approved",
   "plan_file": "/mnt/raid0/llm/tmp/intake-q38fn-cluster/STAGE3_PLAN.md",
-  "awaiting": "operator approval; no handoff/index writes"
+  "plan_sha256": "d742344aacce67211ec9f714176fd4c55d9be7759ec37be6638dd63f50c90dff",
+  "approval_verbatim": "approved. Proceed to stage 4",
+  "approved_rev": "rev2 (+5.0% go/no-go); applied as rev2.1 (relabel, host-driver fact, v2 payload)"
+ },
+ "actionable_ledger": [
+  {
+   "ledger_id": "RI-Q38P-1",
+   "source": "intake-1951#record",
+   "action": "Adopt a physics-normalised comparison convention for external Q38FN numbers (model variant, checkpoint experts, K, concurrency, median vs peak, bytes per step)",
+   "terminal_mapping": "K2"
+  },
+  {
+   "ledger_id": "RI-Q38P-2",
+   "source": "intake-1951#record",
+   "action": "Measure our actual Q38FN MTP step bytes, verify-window expert union, tokens per step and streaming GB/s",
+   "terminal_mapping": "P1 / Q38P-1"
+  },
+  {
+   "ledger_id": "RI-Q38P-3",
+   "source": "intake-1948#record",
+   "action": "Raise effective CPU streaming from about 140 toward 270 GB/s via the dispatch and barrier floor, gated on the measurement",
+   "terminal_mapping": "K1"
+  },
+  {
+   "ledger_id": "RI-Q38P-4",
+   "source": "intake-1955#record",
+   "action": "Reduced-vocabulary draft-head slice and frequency-ranked builder for the MTP head",
+   "terminal_mapping": "decline: our B10 measured no-go on the CPU (head 4-5 percent of the token, L3-resident, ceiling +3-4 percent, break-even acceptance, upstream +1.4 percent)"
+  },
+  {
+   "ledger_id": "RI-Q38P-5",
+   "source": "intake-1956#record",
+   "action": "Decide whether to schedule or decline B10's no-code IQ4_XS draft-head requant probe after the measurement",
+   "terminal_mapping": "P4 / Q38P-2"
+  },
+  {
+   "ledger_id": "RI-Q38P-6",
+   "source": "intake-1937#record",
+   "action": "Adaptive MTP depth with per-position acceptance bands, merged into the existing adaptive-width rows, plus a RecoverSSM monitor",
+   "terminal_mapping": "K3"
+  },
+  {
+   "ledger_id": "RI-Q38P-7",
+   "source": "intake-1939#record",
+   "action": "Evaluate the 5-of-10 routed-expert cut",
+   "terminal_mapping": "decline: operator ruled decline for now; reopen only if the measurement shows expert bytes dominate and the streaming lever is closed"
+  },
+  {
+   "ledger_id": "RI-Q38P-8",
+   "source": "intake-1944#record",
+   "action": "Assess whether ROCm 10.1 improves our MI210 llama.cpp HIP build, staged, with the reboot only inside the v11 promotion window and a predeclared +5.0 percent go/no-go",
+   "terminal_mapping": "P2 / Q38P-3"
+  },
+  {
+   "ledger_id": "RI-Q38P-9",
+   "source": "intake-1944#record",
+   "action": "Probe vLLM on the MI210 with bundled userspace, as engine comparator and as the in-kernel-driver compatibility test",
+   "terminal_mapping": "P3 / Q38P-4"
+  },
+  {
+   "ledger_id": "RI-Q38P-10",
+   "source": "intake-1944#record",
+   "action": "Ingest the vLLM, SGLang and TheRock pages that cite gfx90a and read SGLang for gfx90a support",
+   "terminal_mapping": "K4"
+  },
+  {
+   "ledger_id": "RI-Q38P-11",
+   "source": "intake-1946#record",
+   "action": "Retain interconnect, pipeline-parallel and vLLM-on-Spark findings as knowledge with named triggers",
+   "terminal_mapping": "K2"
+  },
+  {
+   "ledger_id": "RI-Q38P-12",
+   "source": "intake-1958#record",
+   "action": "Check Q38FN draft-vocab traffic coverage and hybrid-GDN prefix-cache chunk alignment",
+   "terminal_mapping": "decline: moot after the vocab-trim decline; prefix-cache alignment is a vLLM-specific finding with no llama.cpp analogue identified"
+  }
+ ],
+ "stage3_filing": {
+  "format_version": 2,
+  "entry_updates": [
+   {
+    "id": "intake-1951",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "cpu-decode-roofline-program.md",
+     "speculative-decoding-mtp-refresh.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Q38P-1 and the CAFE-3 amendment consume the byte ledger and measured expert-union curve (applied 2026-10-07)"
+    ]
+   },
+   {
+    "id": "intake-1945",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "cpu-decode-roofline-program.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Computed bytes-per-step basis (reproduces our 1.296 GB experts) is the Q38P-1 static part (a)"
+    ]
+   },
+   {
+    "id": "intake-1950",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "cpu-decode-roofline-program.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Draft-head and accepted-tokens evidence feeds Q38P-2; vocab slice declined by B10"
+    ]
+   },
+   {
+    "id": "intake-1956",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "cpu-decode-roofline-program.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Q38P-2 keeps the head requant probe schedule-or-decline"
+    ]
+   },
+   {
+    "id": "intake-1937",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "cpu-decode-roofline-program.md",
+     "speculative-decoding-mtp-refresh.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Dynamic-depth bands recorded as CAFE-3 priors; headline numbers carried only with variant/K/aggregation labels"
+    ]
+   },
+   {
+    "id": "intake-1944",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "mi210-big-model-and-acceleration-roadmap.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Q38P-3 and Q38P-4 own the ROCm 10.1 value assessment and driver-compatibility test"
+    ]
+   },
+   {
+    "id": "intake-1942",
+    "integration_disposition": "monitor",
+    "handoffs_updated": [
+     "speculative-decoding-mtp-refresh.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "RecoverSSM monitor trigger recorded in the CAFE-3 amendment: upstream merge with K>=5 gain >5% or Q38P-1 shows K+1 state-write term >3% of step bytes"
+    ]
+   }
+  ],
+  "opportunity_reviews": {
+   "P1": {
+    "project_objective": "Replace derived Q38FN step-bytes and headroom estimates with measured values before any lever is scheduled",
+    "implementation_ref": "handoffs/active/cpu-decode-roofline-program.md C1/C2/C4 instrument rules and B10 record (L3634-3690) @ origin/main 3d497622e; dive-1951w4/byte_ledger.md section 6",
+    "gap": "No measured expert union, tokens per step or per-op GB/s exists for our Q38FN MTP recipe; the 9.1-11.6 GB and 80-100 tok/s numbers are derived under an independence assumption the only measured union (0.60-0.69 of independent) contradicts",
+    "operational_change": "One measurement table for the served recipe",
+    "benefit_direction": "Correctness and accounting only: decides whether the streaming lever has headroom and what K and R to sweep",
+    "owner": "handoffs/active/cpu-decode-roofline-program.md",
+    "execution_conditions": "Parts (a) static: no window. Part (b) count measurement: CPU region lock, diagnostic build, never overlaps a timed arm. Part (c) timing: AK CPU window, warm, node-profile sibling build",
+    "closure_basis": "Immediate; stop rule closes the streaming lever if streaming is already >= 60% of read-sum"
+   },
+   "P2": {
+    "project_objective": "Decide whether ROCm 10.1 is worth a host driver/userspace change inside the v11 promotion",
+    "implementation_ref": "docs/runbooks/rocm-upgrade-checklist.md; wiki/hardware-optimization.md L519-556 and L5922; 10.1.0 release notes saved dive-1944/r101_release-notes.txt @ origin/main 3d497622e",
+    "gap": "The 10.1.0 notes cite no gfx90a performance gain; any upside is an unmeasured compiler-codegen hypothesis on register-bound MMQ kernels, and host driver compatibility with the in-kernel amdgpu is untested",
+    "operational_change": "Staged value assessment with a predeclared go/no-go",
+    "benefit_direction": "MI210 decode and prefill throughput must improve >= 5.0% paired with no new spills; otherwise stay on 6.2",
+    "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "execution_conditions": "Stage 0 no GPU no reboot; stage 1 GPU claim and a timing window for the ABA; stage 2 only inside the operator-scheduled v11 window with reboot",
+    "closure_basis": "Immediate stage 0; later stages gated by the stop rules in the task"
+   },
+   "P3": {
+    "project_objective": "Establish whether newer ROCm userspace and vLLM run on the MI210 under the in-kernel amdgpu driver",
+    "implementation_ref": "docs.vllm.ai ROCm install page L504, L923-924 (retrieved 2026-10-06, dive-s3/vllm_rocm_doc.txt) @ origin/main 3d497622e",
+    "gap": "vLLM documents gfx90a support at ROCm >= 6.3 but we have never run it; the 10.1 docs are silent on in-kernel driver support for Instinct",
+    "operational_change": "Container-based probe, correctness first",
+    "benefit_direction": "Cheapest evidence for Q38P-3 stage 1 and an engine comparator for the MI210 serving numbers",
+    "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "execution_conditions": "Needs a host container runtime (unverified) and an exclusive MI210 claim; correctness-only needs no timing window; timing only in an MI210 window",
+    "closure_basis": "Immediate; declined if the container does not load, which still answers the driver question"
+   },
+   "P4": {
+    "project_objective": "Decide whether the only surviving draft-head byte lever on our CPU is worth a run",
+    "implementation_ref": "handoffs/active/cpu-decode-roofline-program.md B10 record L3634-3690 @ origin/main 3d497622e",
+    "gap": "B10 listed a no-code IQ4_XS head requant as the cheapest remaining probe but left it unscheduled",
+    "operational_change": "A schedule-or-decline decision after P1",
+    "benefit_direction": "Draft-head bytes only; target verification keeps output lossless",
+    "owner": "handoffs/active/cpu-decode-roofline-program.md",
+    "execution_conditions": "Decision needs P1's head share; if scheduled it is a timed A/B in an AK CPU window",
+    "closure_basis": "Immediate decision; probe itself conditional on the 5% rule"
+   },
+   "K1": {
+    "project_objective": "Move CPU decode streaming toward 270 GB/s",
+    "implementation_ref": "handoffs/active/cpu-decode-roofline-program.md INF-70 axes, CAFE-5/CAFE-6; autokernel-all-devices-all-dimensions.md AKX-ALL-25 @ origin/main 3d497622e",
+    "gap": "Effective streaming is ~137-174 GB/s (derived) vs Spark kernels at 80-87% of peak",
+    "operational_change": "No new task: comparison column in P1 and an interim 60%-of-read-sum target recorded in P1",
+    "benefit_direction": "Throughput, matched-process A/B with identity 100% and per-op GB/s per row",
+    "owner": "handoffs/active/cpu-decode-roofline-program.md",
+    "execution_conditions": "Gated on P1; any lever follows CAFE-1 keep rule (>= +1.0% above window floor)",
+    "closure_basis": "Closed-with-basis: owned by existing INF-70/CAFE/AKX rows; trigger = P1 shows streaming < 60% of read-sum"
+   },
+   "K2": {
+    "project_objective": "Keep external-number comparison discipline and monitors without new tasks",
+    "implementation_ref": "handoffs/active/cpu-decode-roofline-program.md C1 wording; intake-1942/1946/1953/1954 records @ origin/main 3d497622e",
+    "gap": "External Q38FN numbers were repeatedly compared across model variants, K and aggregation",
+    "operational_change": "Knowledge retention; clause text proposed for the next wiki compile at the operator-invoked wrap-up",
+    "benefit_direction": "Prevents mis-comparison; no throughput claim",
+    "owner": "handoffs/active/cpu-decode-roofline-program.md",
+    "execution_conditions": "RecoverSSM monitor trigger: upstream merge with K>=5 gain > 5% or P1 shows the K+1 state-write term > 3% of step bytes; PP/vLLM-blog trigger: a multi-host pipeline-parallel decision",
+    "closure_basis": "Knowledge-only; no immediate operational step remains: our rollback is already O(1) via rs_idx and the others do not apply to a single host"
+   },
+   "K3": {
+    "project_objective": "Choose draft depth adaptively on the CPU MTP chain",
+    "implementation_ref": "handoffs/active/speculative-decoding-mtp-refresh.md CAFE-1/2/3 (L384-386) @ origin/main 3d497622e; intake-1937 recipe mtp_depth bands; intake-1951 byte ledger",
+    "gap": "CAFE rows lack Spark-measured priors for controller bands and an expert-union-based cost model",
+    "operational_change": "Note amendments under CAFE-3 only",
+    "benefit_direction": "Aggregate tok/s above best static K with identity 100%",
+    "owner": "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "execution_conditions": "Unchanged CAFE-1/2/3 gates; run P1(b) before CAFE-2 so the cost curve is not re-derived under independence",
+    "closure_basis": "Closed-with-basis: CAFE-1/2/3 already own the work and gates; no duplicate task"
+   },
+   "K4": {
+    "project_objective": "Make the gfx90a-citing vLLM, SGLang and TheRock pages citable and settle SGLang gfx90a support",
+    "implementation_ref": "dive-s3 saved pages (vLLM sha 8633a3adef6e, SGLang 29f4414275c5, TheRock fd0211338eaa) @ origin/main 3d497622e",
+    "gap": "The three pages were read at Stage 3 but are not index entries, so no handoff text may rely on them",
+    "operational_change": "Append three intake entries at Stage 4 with anchors; record the SGLang no-evidence result",
+    "benefit_direction": "Provenance only",
+    "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "execution_conditions": "Index writes at the approved Stage-4 boundary; no compute",
+    "closure_basis": "Closed-with-basis: executed in Stage 4 itself, no standing task"
+   }
+  },
+  "opportunity_scan": [
+   {
+    "scan_id": "S1",
+    "source_ref": "intake-1951#record (byte_ledger section 6)",
+    "implementation_ref": "handoffs/active/cpu-decode-roofline-program.md C1 @ origin/main 3d497622e",
+    "mechanism": "measured sub-linear verify-window expert union (0.69/0.63/0.60 of independent at 4/8/16 rows)",
+    "consumer": "INF-70 roofline ledger",
+    "application": "Measure our own union and step bytes",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "RI-Q38P-2",
+     "RI-Q38P-1"
+    ],
+    "basis": "Read the ledger and the current roofline rows; our 9.1-11.6 GB is derived under independence"
+   },
+   {
+    "scan_id": "S2",
+    "source_ref": "intake-1948#record",
+    "implementation_ref": "cpu-decode-roofline-program.md INF-70 axes",
+    "mechanism": "Spark kernels at 80-87% of peak vs our 31-39% derived",
+    "consumer": "INF-70/CAFE/AKX rows",
+    "application": "Streaming-efficiency lever",
+    "disposition": "covered",
+    "ledger_ids": [
+     "RI-Q38P-3"
+    ],
+    "basis": "Existing rows own it; gated on the measurement"
+   },
+   {
+    "scan_id": "S3",
+    "source_ref": "intake-1955#record",
+    "implementation_ref": "cpu-decode-roofline-program.md B10 L3634-3690",
+    "mechanism": "reduced-vocab draft head",
+    "consumer": "MTP draft head",
+    "application": "Vocab trim",
+    "disposition": "declined",
+    "ledger_ids": [
+     "RI-Q38P-4"
+    ],
+    "basis": "B10 NO-GO measured on our CPU"
+   },
+   {
+    "scan_id": "S4",
+    "source_ref": "intake-1956#record",
+    "implementation_ref": "cpu-decode-roofline-program.md B10",
+    "mechanism": "head requant as residual probe",
+    "consumer": "MTP GGUF head slot",
+    "application": "Schedule-or-decline requant probe",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "RI-Q38P-5"
+    ],
+    "basis": "B10 left it unscheduled; decision needs P1 head share"
+   },
+   {
+    "scan_id": "S5",
+    "source_ref": "intake-1937#record",
+    "implementation_ref": "speculative-decoding-mtp-refresh.md CAFE-1/2/3",
+    "mechanism": "dynamic MTP depth bands and RecoverSSM",
+    "consumer": "CPU MTP chain",
+    "application": "Adaptive depth priors",
+    "disposition": "covered",
+    "ledger_ids": [
+     "RI-Q38P-6"
+    ],
+    "basis": "CAFE rows own the work"
+   },
+   {
+    "scan_id": "S6",
+    "source_ref": "intake-1939#record",
+    "implementation_ref": "MEASUREMENT/ model lineup",
+    "mechanism": "5-of-512 expert cut",
+    "consumer": "Q38FN serving",
+    "application": "Expert cut",
+    "disposition": "declined",
+    "ledger_ids": [
+     "RI-Q38P-7"
+    ],
+    "basis": "Operator: decline for now"
+   },
+   {
+    "scan_id": "S7",
+    "source_ref": "intake-1944#record",
+    "implementation_ref": "docs/runbooks/rocm-upgrade-checklist.md; promotion_gates.yaml",
+    "mechanism": "ROCm 10.1 toolchain",
+    "consumer": "MI210 HIP build and v11 promotion",
+    "application": "Staged value assessment",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "RI-Q38P-8"
+    ],
+    "basis": "Read the notes and runbook; no cited gain, test is cheap"
+   },
+   {
+    "scan_id": "S8",
+    "source_ref": "intake-1944#record",
+    "implementation_ref": "dive-s3/vllm_rocm_doc.txt L504",
+    "mechanism": "vLLM gfx90a support at ROCm>=6.3",
+    "consumer": "MI210 serving",
+    "application": "Bundled-userspace probe",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "RI-Q38P-9"
+    ],
+    "basis": "Docs cite gfx90a; untested here"
+   },
+   {
+    "scan_id": "S9",
+    "source_ref": "intake-1944#record",
+    "implementation_ref": "dive-s3 pages",
+    "mechanism": "gfx90a-citing pages",
+    "consumer": "intake index",
+    "application": "Ingest and settle SGLang",
+    "disposition": "covered",
+    "ledger_ids": [
+     "RI-Q38P-10"
+    ],
+    "basis": "Executed at Stage 4"
+   },
+   {
+    "scan_id": "S10",
+    "source_ref": "intake-1946#record",
+    "implementation_ref": "intake-1953/1954 dive records",
+    "mechanism": "interconnect, PP, vLLM Spark blog",
+    "consumer": "single-host stack",
+    "application": "Knowledge",
+    "disposition": "context-only",
+    "ledger_ids": [
+     "RI-Q38P-11"
+    ],
+    "basis": "Not applicable to a single host; triggers named"
+   },
+   {
+    "scan_id": "S11",
+    "source_ref": "intake-1958#record",
+    "implementation_ref": "intake-1958 anchors",
+    "mechanism": "draft-vocab coverage; prefix-cache alignment",
+    "consumer": "vLLM-specific",
+    "application": "Checks",
+    "disposition": "declined",
+    "ledger_ids": [
+     "RI-Q38P-12"
+    ],
+    "basis": "Moot after the vocab-trim decline"
+   },
+   {
+    "scan_id": "S12",
+    "source_ref": "intake-1951#record",
+    "implementation_ref": "wiki/hardware-optimization.md compile",
+    "mechanism": "comparison convention",
+    "consumer": "wiki",
+    "application": "Convention",
+    "disposition": "covered",
+    "ledger_ids": [
+     "RI-Q38P-1"
+    ],
+    "basis": "Knowledge retention"
+   }
+  ],
+  "actionable_additions": [
+   {
+    "ledger_id": "RI-Q38P-1",
+    "source": "intake-1951#record",
+    "action": "Adopt a physics-normalised comparison convention for external Q38FN numbers (model variant, checkpoint experts, K, concurrency, median vs peak, bytes per step)",
+    "terminal_mapping": "K2"
+   },
+   {
+    "ledger_id": "RI-Q38P-2",
+    "source": "intake-1951#record",
+    "action": "Measure our actual Q38FN MTP step bytes, verify-window expert union, tokens per step and streaming GB/s",
+    "terminal_mapping": "P1 / Q38P-1"
+   },
+   {
+    "ledger_id": "RI-Q38P-3",
+    "source": "intake-1948#record",
+    "action": "Raise effective CPU streaming from about 140 toward 270 GB/s via the dispatch and barrier floor, gated on the measurement",
+    "terminal_mapping": "K1"
+   },
+   {
+    "ledger_id": "RI-Q38P-4",
+    "source": "intake-1955#record",
+    "action": "Reduced-vocabulary draft-head slice and frequency-ranked builder for the MTP head",
+    "terminal_mapping": "decline: our B10 measured no-go on the CPU (head 4-5 percent of the token, L3-resident, ceiling +3-4 percent, break-even acceptance, upstream +1.4 percent)"
+   },
+   {
+    "ledger_id": "RI-Q38P-5",
+    "source": "intake-1956#record",
+    "action": "Decide whether to schedule or decline B10's no-code IQ4_XS draft-head requant probe after the measurement",
+    "terminal_mapping": "P4 / Q38P-2"
+   },
+   {
+    "ledger_id": "RI-Q38P-6",
+    "source": "intake-1937#record",
+    "action": "Adaptive MTP depth with per-position acceptance bands, merged into the existing adaptive-width rows, plus a RecoverSSM monitor",
+    "terminal_mapping": "K3"
+   },
+   {
+    "ledger_id": "RI-Q38P-7",
+    "source": "intake-1939#record",
+    "action": "Evaluate the 5-of-10 routed-expert cut",
+    "terminal_mapping": "decline: operator ruled decline for now; reopen only if the measurement shows expert bytes dominate and the streaming lever is closed"
+   },
+   {
+    "ledger_id": "RI-Q38P-8",
+    "source": "intake-1944#record",
+    "action": "Assess whether ROCm 10.1 improves our MI210 llama.cpp HIP build, staged, with the reboot only inside the v11 promotion window and a predeclared +5.0 percent go/no-go",
+    "terminal_mapping": "P2 / Q38P-3"
+   },
+   {
+    "ledger_id": "RI-Q38P-9",
+    "source": "intake-1944#record",
+    "action": "Probe vLLM on the MI210 with bundled userspace, as engine comparator and as the in-kernel-driver compatibility test",
+    "terminal_mapping": "P3 / Q38P-4"
+   },
+   {
+    "ledger_id": "RI-Q38P-10",
+    "source": "intake-1944#record",
+    "action": "Ingest the vLLM, SGLang and TheRock pages that cite gfx90a and read SGLang for gfx90a support",
+    "terminal_mapping": "K4"
+   },
+   {
+    "ledger_id": "RI-Q38P-11",
+    "source": "intake-1946#record",
+    "action": "Retain interconnect, pipeline-parallel and vLLM-on-Spark findings as knowledge with named triggers",
+    "terminal_mapping": "K2"
+   },
+   {
+    "ledger_id": "RI-Q38P-12",
+    "source": "intake-1958#record",
+    "action": "Check Q38FN draft-vocab traffic coverage and hybrid-GDN prefix-cache chunk alignment",
+    "terminal_mapping": "decline: moot after the vocab-trim decline; prefix-cache alignment is a vLLM-specific finding with no llama.cpp analogue identified"
+   }
+  ],
+  "steering_reconciliation": [
+   {
+    "seq": 1,
+    "stage": 1,
+    "ts": "2026-10-06T19:00:00Z",
+    "verbatim": "In the meantime, dispatch a subagent to perform a research-intake of this (usual 'all recommended' 10 cap peer stage 2 wave, and a cap of four maximum stage 2 waves) repo where 2x dgx spark achieve insane performance numbers with q38fn",
+    "disposition": "context-only",
+    "plan_ref": null,
+    "reason": "Operator dive policy: Stage 2 on all recommended dives (<=10 per wave), at most 4 waves total including Stage 2; stop at Stage-2 close-out; Stage 3 needs operator approval."
+   },
+   {
+    "seq": 2,
+    "stage": 1,
+    "ts": "2026-10-06T19:00:00Z",
+    "verbatim": "2x dgx spark should have an effective aggregate memory bandwidth in line with our CPU+ram hardware. As such, there either must be a physics reason for why we can't hit similar performance numbers, or we MUST got much much higher performance numbers",
+    "disposition": "planned",
+    "plan_ref": "P1",
+    "reason": "Core question of the intake: physics comparison section in INTAKE_STAGE1.md / INTAKE_STAGE2.md; carried into Stage 3 as a decision input (plan_ref assigned at Stage 3). Plan: section 0, P1 (measurement), K1 (gated lever)."
+   },
+   {
+    "seq": 3,
+    "stage": 1,
+    "ts": "2026-10-06T19:00:00Z",
+    "verbatim": "Add this to the same research intake also please: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.1-blog/README.html?term=10-6-rocmrelease&utm_campaign=thallosocial&utm_source=twitter&utm_medium=social&utm_content=1791306421",
+    "disposition": "planned",
+    "plan_ref": "P2",
+    "reason": "Operator added the AMD ROCm 10.1 blog to the same intake: ingested as intake-1938 (tracking params stripped) with the MI210/gfx90a migration angle (REBUILD / AK-HYPOTHESIS / KNOWLEDGE / ALREADY-HAVE tags); carried into Stage 3. Plan: P2 (staged value assessment), K4."
+   },
+   {
+    "seq": 4,
+    "stage": 3,
+    "ts": "2026-10-07T00:00:00Z",
+    "verbatim": "I'd be happy to perform a reboot as part of v11 kernel promotion. *IF* there's value to ROCm 10.1, we should do it.",
+    "disposition": "planned",
+    "plan_ref": "P2",
+    "reason": "Replaces knowledge-plus-deferred with the staged value assessment P2 (Q38P-3); reboot only inside the v11 window; +5.0% go/no-go."
+   },
+   {
+    "seq": 5,
+    "stage": 3,
+    "ts": "2026-10-07T00:00:00Z",
+    "verbatim": "are these sources explicitly citing the MI210? If so, shouldnt they be investigated?",
+    "disposition": "planned",
+    "plan_ref": "K4",
+    "reason": "Per-source grep done; the vLLM, SGLang and TheRock pages cite gfx90a and are ingested at Stage 4 (K4) and probed (P3, Q38P-4); the rest stay declined with grep evidence."
+   },
+   {
+    "seq": 6,
+    "stage": 3,
+    "ts": "2026-10-07T00:00:00Z",
+    "verbatim": "Decline for now",
+    "disposition": "declined",
+    "plan_ref": null,
+    "reason": "Operator closed the 5-of-10 expert cut for now (RI-Q38P-7); reopen trigger recorded in the plan."
+   },
+   {
+    "seq": 7,
+    "stage": 3,
+    "ts": "2026-10-07T00:00:00Z",
+    "verbatim": "approved. Proceed to stage 4",
+    "disposition": "context-only",
+    "plan_ref": null,
+    "reason": "Operator approval of Stage-3 rev2 including the +5.0% go/no-go; recorded as context: approval of scope is not a waiver of the review gates, and Stage 4 applies exactly the approved plan."
+   }
+  ],
+  "outcome_reviews": {
+   "RI-Q38P-1": {
+    "required_outcome": "External Q38FN numbers are compared on model variant, experts, K, concurrency and median-vs-peak",
+    "review_status": "closed-with-basis",
+    "review_basis": "Knowledge retention is the right terminal: it changes how future intake reads numbers, needs no code or run; clause text is carried to the next wiki compile",
+    "task_refs": []
+   },
+   "RI-Q38P-2": {
+    "required_outcome": "A measured step-bytes, expert-union, tokens/step and GB/s table for the served recipe replaces the derived estimates",
+    "review_status": "preserved",
+    "review_basis": "Q38P-1 binds the measurement with parts (a)(b)(c) separated by timing need and carries the six controls and a reconciliation rule; reviewed against the byte ledger caveats",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/cpu-decode-roofline-program.md",
+      "task_id": "Q38P-1",
+      "task_text": "- [ ] **Q38P-1 \u2014 MEASURE our Q38FN MTP step: bytes, expert union, tokens/step and streaming GB/s (replaces the derived 9.1-11.6 GB and the 80-100 tok/s estimate).** For the served recipe (UD-IQ4_XS, `-t 48`, MTP d4; plain and MTP arms): (a) static bytes/step from the GGUF tensor table incl. the K+1 GDN state writes (no timing window); (b) distinct experts per layer vs verify rows R=1..6 and drafter rows from the router-id tap on a diagnostic/ID-tap build, plus tokens/step per prompt class on the held-out manifest (count measurement: CPU region lock, never overlaps a timed arm); (c) step ms and per-op-class achieved GB/s against C0 (446.8) from the node/PATHROW profiler in an AK CPU window, node-profile as a non-measured sibling build, knob proven compiled in (`strings`), residency proven (C1/C2/C4 apply). Controls: AK prompt manifests and GGUF/binary digests frozen; baseline = frozen v10 `ffc1bac82` champion recipe; per-call raw ids and per-step timings retained; held-out manifest; every call counted incl. logits=0 catch-up evals; accept only if the instrument reproduces the 4.16 GB plain table and ~53 tok/s within between-launch noise and node timings reconcile to step wall within 2%. Stop: if weight-path streaming is already >= 60% of read-sum (>=268 GB/s), close the streaming lever as no-headroom. (intake-1951#record) \u2014 Owner: workspace-ec (2026-10-07).",
+      "acceptance": "Table exists with static, count and timing parts, instrument sanity assertion passed"
+     }
+    ]
+   },
+   "RI-Q38P-3": {
+    "required_outcome": "Streaming efficiency is raised only if the measurement shows headroom",
+    "review_status": "closed-with-basis",
+    "review_basis": "Owned by existing INF-70/CAFE-5/CAFE-6/AKX-ALL-25 rows; the new input is the P1 measurement and an interim 60% target; opening a duplicate lever task would shadow them",
+    "task_refs": []
+   },
+   "RI-Q38P-4": {
+    "required_outcome": "Vocab-trim is not pursued on the CPU",
+    "review_status": "closed-with-basis",
+    "review_basis": "B10 measured it: head 4-5% of the token, L3-resident, +3.0-3.9% ceiling, id-prefix slice break-even on alpha, upstream +1.4%; Spark gains are GPU DRAM-resident effects (no MI210/gfx90a mention in those sources)",
+    "task_refs": []
+   },
+   "RI-Q38P-5": {
+    "required_outcome": "The surviving draft-head byte lever is explicitly scheduled or declined on measured head share",
+    "review_status": "preserved",
+    "review_basis": "Q38P-2 keeps the one B10 candidate probe alive with a predeclared 5% schedule rule and gates, and keeps the slice declined",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/cpu-decode-roofline-program.md",
+      "task_id": "Q38P-2",
+      "task_text": "- [ ] **Q38P-2 \u2014 After Q38P-1 lands, schedule or decline B10's no-code IQ4_XS draft-head requant probe.** Requantise the MTP head to IQ4_XS into `blk.48.nextn.shared_head_head` (521 -> 338 MB; B10 expected +1.4-1.8%). Schedule only if Q38P-1 measures the draft head at >= 5% of step time, otherwise decline and record it; gates if scheduled: greedy identity 100%, alpha change <= 0.01 absolute on the held-out manifest, aggregate >= +1.0% above the window floor over >= 5 interleaved pairs, complete denominator. The reduced-vocabulary slice stays declined (B10 NO-GO). (intake-1956#record) \u2014 Owner: workspace-ec (2026-10-07).",
+      "acceptance": "Decision recorded after Q38P-1; if scheduled, the four gates are applied"
+     }
+    ]
+   },
+   "RI-Q38P-6": {
+    "required_outcome": "Adaptive depth gains are tested only inside the existing CAFE gates",
+    "review_status": "closed-with-basis",
+    "review_basis": "CAFE-1/2/3 already specify sweep, cost curve and controller with identity and +1.0% gates; amendments add priors and ordering, so a new task would duplicate",
+    "task_refs": []
+   },
+   "RI-Q38P-7": {
+    "required_outcome": "The 5-of-10 expert cut is not pursued",
+    "review_status": "closed-with-basis",
+    "review_basis": "Operator ruled decline for now; reopen trigger recorded in the plan",
+    "task_refs": []
+   },
+   "RI-Q38P-8": {
+    "required_outcome": "ROCm 10.1 is adopted only if it passes a predeclared paired +5.0% gate with no spills, else 6.2 stays",
+    "review_status": "preserved",
+    "review_basis": "Q38P-3 states the host fact, the three stages, the stop at stage 0, and the go/no-go; reviewed against the runbook which expects a plain upgrade to regress",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "task_id": "Q38P-3",
+      "task_text": "- [ ] **Q38P-3 \u2014 ROCm 10.1 value assessment for the MI210 llama.cpp HIP build (staged; the reboot happens only inside the v11 promotion window).** Host fact (operator, 2026-10-07): amdgpu is the in-kernel upstream driver of host kernel 6.14.0-37 (no DKMS or amdgpu-install package); the 10.1.0 compatibility matrix lists only packaged drivers 30.10.2-31.60.0 and reserves inbox drivers for Ryzen APUs, so 10.1 userspace support on this driver is untested. Stage 0 (no GPU, no reboot; CPU lock for compiles): non-root side-by-side 10.1 tarball (family gfx90a) under /mnt/raid0/llm, compile-only gfx90a MMQ/MMVQ/MMA-FA/rocWMMA-FA from an experimental worktree, run the `docs/runbooks/rocm-upgrade-checklist.md` static audit (VGPR, spill, scratch, agpr_count; {offload-LTO default, `-fno-offload-lto`} x {default unroll, `--amdgpu-unroll-threshold-local=600`}) vs 6.2; NO-GO (stay on 6.2) unless a cell shows fewer spills or no worse VGPR on the hot kernels. Stage 1: settle whether 10.1 userspace works on the in-kernel driver (Q38P-4's container first, then the tarball userspace), then a side-by-side champion build and an MI210 same-window ABA with `HSA_NO_SCRATCH_RECLAIM` arms. Stage 2 (operator reboot, inside the v11 promotion window; may also need the packaged amdgpu driver, the operator's call): keep 10.1 only if paired serving-gate decode >= +5.0% (median of >= 5 interleaved launch pairs), prefill no worse than -2.0%, zero new hot-kernel spills, and the coherence and quality gates pass (promotion_gates.yaml); otherwise roll back to 6.2 and record the verdict. No production or frozen-tree change before the v11 window. (intake-1944#record) \u2014 Owner: workspace-ec (2026-10-07).",
+      "acceptance": "Static audit verdict, driver-compatibility result and (if reached) the v11-window A/B verdict recorded against the +5.0% rule"
+     }
+    ]
+   },
+   "RI-Q38P-9": {
+    "required_outcome": "Whether bundled-userspace vLLM runs on the MI210 and on the in-kernel driver is known",
+    "review_status": "preserved",
+    "review_basis": "Q38P-4 is correctness-first with exclusive claim and during-run VRAM sampling, and feeds Q38P-3 stage 1",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "task_id": "Q38P-4",
+      "task_text": "- [ ] **Q38P-4 \u2014 vLLM-on-MI210 probe with bundled userspace (engine comparator and in-kernel-driver compatibility test).** vLLM's install docs list MI200s (gfx90a) with ROCm >= 6.3 (docs.vllm.ai, retrieved 2026-10-06), which our ROCm 6.2 userspace does not meet. Run an upstream vLLM ROCm container (bundled userspace, no /opt/rocm change; the host needs a container runtime, unverified) on the live in-kernel amdgpu driver: a trivial HIP kernel, then a small model that fits (e.g. the 27B at a vLLM-supported quant), correctness-only first (greedy parity vs llama.cpp, exclusive GPU claim, VRAM sampled DURING the run, KFD process count); timing only afterwards in an MI210 window against the v10 27B Q8 DFlash2 record (80.87 tok/s at np1, ctx 65,536). Decline the engine comparison if the container does not load; the load result still answers Q38P-3 stage 1. (intake-1944#record) \u2014 Owner: workspace-ec (2026-10-07).",
+      "acceptance": "Load/correctness result recorded; timing only if correctness passes"
+     }
+    ]
+   },
+   "RI-Q38P-10": {
+    "required_outcome": "The three gfx90a-citing pages are citable index entries and SGLang gfx90a support is settled",
+    "review_status": "closed-with-basis",
+    "review_basis": "Done at the Stage-4 boundary by intake-index writes (no standing task); the SGLang install page and README show no gfx90a text, the AMD page cites MI250 only for a Petit package",
+    "task_refs": []
+   },
+   "RI-Q38P-11": {
+    "required_outcome": "Interconnect, PP and vLLM-blog findings are retained with named triggers",
+    "review_status": "closed-with-basis",
+    "review_basis": "None applies to a single host; triggers recorded in K2",
+    "task_refs": []
+   },
+   "RI-Q38P-12": {
+    "required_outcome": "Draft-vocab coverage and prefix-cache alignment checks are not pursued",
+    "review_status": "closed-with-basis",
+    "review_basis": "Moot after the vocab-trim decline; no llama.cpp analogue identified for the vLLM prefix-cache alignment finding",
+    "task_refs": []
+   }
+  },
+  "proposed_tasks": [
+   {
+    "owner": "handoffs/active/cpu-decode-roofline-program.md",
+    "task_text": "- [ ] **Q38P-1 \u2014 MEASURE our Q38FN MTP step: bytes, expert union, tokens/step and streaming GB/s (replaces the derived 9.1-11.6 GB and the 80-100 tok/s estimate).** For the served recipe (UD-IQ4_XS, `-t 48`, MTP d4; plain and MTP arms): (a) static bytes/step from the GGUF tensor table incl. the K+1 GDN state writes (no timing window); (b) distinct experts per layer vs verify rows R=1..6 and drafter rows from the router-id tap on a diagnostic/ID-tap build, plus tokens/step per prompt class on the held-out manifest (count measurement: CPU region lock, never overlaps a timed arm); (c) step ms and per-op-class achieved GB/s against C0 (446.8) from the node/PATHROW profiler in an AK CPU window, node-profile as a non-measured sibling build, knob proven compiled in (`strings`), residency proven (C1/C2/C4 apply). Controls: AK prompt manifests and GGUF/binary digests frozen; baseline = frozen v10 `ffc1bac82` champion recipe; per-call raw ids and per-step timings retained; held-out manifest; every call counted incl. logits=0 catch-up evals; accept only if the instrument reproduces the 4.16 GB plain table and ~53 tok/s within between-launch noise and node timings reconcile to step wall within 2%. Stop: if weight-path streaming is already >= 60% of read-sum (>=268 GB/s), close the streaming lever as no-headroom. (intake-1951#record) \u2014 Owner: workspace-ec (2026-10-07)."
+   },
+   {
+    "owner": "handoffs/active/cpu-decode-roofline-program.md",
+    "task_text": "- [ ] **Q38P-2 \u2014 After Q38P-1 lands, schedule or decline B10's no-code IQ4_XS draft-head requant probe.** Requantise the MTP head to IQ4_XS into `blk.48.nextn.shared_head_head` (521 -> 338 MB; B10 expected +1.4-1.8%). Schedule only if Q38P-1 measures the draft head at >= 5% of step time, otherwise decline and record it; gates if scheduled: greedy identity 100%, alpha change <= 0.01 absolute on the held-out manifest, aggregate >= +1.0% above the window floor over >= 5 interleaved pairs, complete denominator. The reduced-vocabulary slice stays declined (B10 NO-GO). (intake-1956#record) \u2014 Owner: workspace-ec (2026-10-07)."
+   },
+   {
+    "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "task_text": "- [ ] **Q38P-3 \u2014 ROCm 10.1 value assessment for the MI210 llama.cpp HIP build (staged; the reboot happens only inside the v11 promotion window).** Host fact (operator, 2026-10-07): amdgpu is the in-kernel upstream driver of host kernel 6.14.0-37 (no DKMS or amdgpu-install package); the 10.1.0 compatibility matrix lists only packaged drivers 30.10.2-31.60.0 and reserves inbox drivers for Ryzen APUs, so 10.1 userspace support on this driver is untested. Stage 0 (no GPU, no reboot; CPU lock for compiles): non-root side-by-side 10.1 tarball (family gfx90a) under /mnt/raid0/llm, compile-only gfx90a MMQ/MMVQ/MMA-FA/rocWMMA-FA from an experimental worktree, run the `docs/runbooks/rocm-upgrade-checklist.md` static audit (VGPR, spill, scratch, agpr_count; {offload-LTO default, `-fno-offload-lto`} x {default unroll, `--amdgpu-unroll-threshold-local=600`}) vs 6.2; NO-GO (stay on 6.2) unless a cell shows fewer spills or no worse VGPR on the hot kernels. Stage 1: settle whether 10.1 userspace works on the in-kernel driver (Q38P-4's container first, then the tarball userspace), then a side-by-side champion build and an MI210 same-window ABA with `HSA_NO_SCRATCH_RECLAIM` arms. Stage 2 (operator reboot, inside the v11 promotion window; may also need the packaged amdgpu driver, the operator's call): keep 10.1 only if paired serving-gate decode >= +5.0% (median of >= 5 interleaved launch pairs), prefill no worse than -2.0%, zero new hot-kernel spills, and the coherence and quality gates pass (promotion_gates.yaml); otherwise roll back to 6.2 and record the verdict. No production or frozen-tree change before the v11 window. (intake-1944#record) \u2014 Owner: workspace-ec (2026-10-07)."
+   },
+   {
+    "owner": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "task_text": "- [ ] **Q38P-4 \u2014 vLLM-on-MI210 probe with bundled userspace (engine comparator and in-kernel-driver compatibility test).** vLLM's install docs list MI200s (gfx90a) with ROCm >= 6.3 (docs.vllm.ai, retrieved 2026-10-06), which our ROCm 6.2 userspace does not meet. Run an upstream vLLM ROCm container (bundled userspace, no /opt/rocm change; the host needs a container runtime, unverified) on the live in-kernel amdgpu driver: a trivial HIP kernel, then a small model that fits (e.g. the 27B at a vLLM-supported quant), correctness-only first (greedy parity vs llama.cpp, exclusive GPU claim, VRAM sampled DURING the run, KFD process count); timing only afterwards in an MI210 window against the v10 27B Q8 DFlash2 record (80.87 tok/s at np1, ctx 65,536). Decline the engine comparison if the container does not load; the load result still answers Q38P-3 stage 1. (intake-1944#record) \u2014 Owner: workspace-ec (2026-10-07)."
+   }
+  ],
+  "plan_sha256": "d742344aacce67211ec9f714176fd4c55d9be7759ec37be6638dd63f50c90dff"
+ },
+ "stage4": {
+  "status": "complete",
+  "reconciled": true,
+  "applied": {
+   "tasks_new": [
+    "Q38P-1",
+    "Q38P-2",
+    "Q38P-3",
+    "Q38P-4"
+   ],
+   "checkbox_flips": 0,
+   "handoffs": [
+    "cpu-decode-roofline-program.md",
+    "mi210-big-model-and-acceleration-roadmap.md",
+    "speculative-decoding-mtp-refresh.md"
+   ],
+   "new_entries": [
+    "intake-1960",
+    "intake-1961",
+    "intake-1962"
+   ],
+   "entry_updates": [
+    "intake-1951",
+    "intake-1945",
+    "intake-1950",
+    "intake-1956",
+    "intake-1937",
+    "intake-1944",
+    "intake-1942"
+   ],
+   "index_rows": 0
+  }
  }
 }
