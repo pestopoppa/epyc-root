@@ -1,0 +1,77 @@
+name: M11 work-payload bounded source controls
+on:
+  push:
+    branches: [codex/ni08-workcap-bounded-capture-20261007]
+permissions:
+  contents: read
+jobs:
+  m11-work-cap-source-controls:
+    name: m11-work-cap-source-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      APP_PIN: 926d90c95ca452636d59b7edd343abd8bcae81d2
+      ROOT_SOURCE_PIN: 0da62ca1cb484f54f0e58dc514f10cd61b9ac001
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      M11_WORK_CAP_RUNNER_CONTEXT: ubuntu-24.04
+      M11_WORK_CAP_EXECUTION_CONTEXT: offline-work-payload-fixtures-temp-sqlite-faiss-fake-embeddings-no-model
+      M11_WORK_CAP_INSTALL_COMMAND: >-
+        python -m venv "$RUNNER_TEMP/m11-work-cap/venv" &&
+        "$RUNNER_TEMP/m11-work-cap/venv/bin/python" -m pip install
+        --require-hashes --no-deps --only-binary=:all: -r
+        recipe/scripts/ci/m11_work_cap_requirements.txt
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/m11-work-cap/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/m11-work-cap/result/status.json"
+      - name: Checkout exact recipe and enrolled task context
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: recipe
+          persist-credentials: false
+      - name: Checkout unchanged native carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact APP source proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install isolated hash-locked wheel-only dependencies
+        run: |
+          set -euo pipefail
+          ${{ env.M11_WORK_CAP_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/m11-work-cap/result/dependency-install.log"
+      - name: Capture all 41 memory-record and work-payload cases
+        env:
+          ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: ${{ runner.temp }}/m11-work-cap/absent/cpu
+          ORCHESTRATOR_PATHS_LLAMA_MTMD: ${{ runner.temp }}/m11-work-cap/absent/llama-mtmd-cli
+          ORCHESTRATOR_PATHS_LLAMA_SERVER: ${{ runner.temp }}/m11-work-cap/absent/llama-server
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE/app"
+          "$RUNNER_TEMP/m11-work-cap/venv/bin/python" recipe/scripts/ci/m11_work_cap_capture.py
+      - name: Preserve original JUnit, native receipt, source readset and shared grade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m11-work-cap-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/m11-work-cap/result/
+          if-no-files-found: error

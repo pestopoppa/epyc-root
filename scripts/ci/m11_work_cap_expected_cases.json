@@ -1,0 +1,211 @@
+{
+  "cases": [
+    {
+      "class": "TestEmbeddedIsNotStored",
+      "name": "test_full_objective_is_stored_untruncated",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestEmbeddedIsNotStored",
+      "name": "test_embedding_text_is_bounded_but_storage_is_not",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestEmbeddedIsNotStored",
+      "name": "test_the_work_is_stored_but_never_embedded",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestTelemetryStaysOutOfTheIndex",
+      "name": "test_metrics_are_stored_but_not_embedded",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestTelemetryStaysOutOfTheIndex",
+      "name": "test_a_record_with_no_objective_is_not_task_memory",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestTelemetryStaysOutOfTheIndex",
+      "name": "test_whitespace_only_objective_is_not_task_memory",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestOneEmbeddingConvention",
+      "name": "test_same_task_from_different_sources_embeds_identically",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestOneEmbeddingConvention",
+      "name": "test_convention_shape_is_stable",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestOneEmbeddingConvention",
+      "name": "test_optional_fields_are_omitted_not_stringified",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestLegacyAdaptation",
+      "name": "test_path_a_progress_log_shape",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestLegacyAdaptation",
+      "name": "test_path_b_external_shape_routes_telemetry_to_metrics",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestLegacyAdaptation",
+      "name": "test_telemetry_only_legacy_row_is_recognised_as_not_task_memory",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestLegacyAdaptation",
+      "name": "test_round_trip_through_the_contract_is_stable",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestContractMarker",
+      "name": "test_every_context_carries_a_version",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestContractMarker",
+      "name": "test_context_is_json_serializable",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestContractMarker",
+      "name": "test_size_accounting_is_available",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_text_truncation_marker_reports_the_true_original_length",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_untruncated_text_is_unchanged_by_either_pass",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_oversized_input_cannot_forge_a_truncation_marker",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_marker_with_unbounded_decimal_total_is_not_trusted",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_legitimate_marker_survives_redaction_shortened_prefix",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_forged_marker_over_one_megabyte_still_redacts_capped_prefix",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_item_elision_count_and_retained_entries_survive_a_second_pass",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_a_sentinel_lookalike_entry_is_not_treated_as_provenance",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestSanitizeIsIdempotent",
+      "name": "test_build_work_payload_is_idempotent_end_to_end",
+      "path": "tests/unit/test_memory_record.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_routing_write_persists_the_work_payload",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_work_is_not_embedded",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_no_work_on_the_outcome_stores_no_work_key",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_missing_task_outcome_is_not_an_error",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestExternalScorePath",
+      "name": "test_flat_work_keys_land_in_work_not_metrics",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestExternalScorePath",
+      "name": "test_nested_work_dict_is_accepted",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_credentials_are_redacted_before_storage",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_reuses_the_repo_redaction_policy",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_oversize_answer_is_bounded_in_the_database",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_oversize_step_list_is_bounded_and_says_so",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_oversize_single_step_is_bounded",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_the_objective_is_still_never_truncated",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestEndToEndThroughTheRealChannel",
+      "name": "test_work_survives_the_full_production_path",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkCompletionMeta",
+      "name": "test_empty_work_yields_no_key",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkCompletionMeta",
+      "name": "test_populated_work_is_nested_under_work",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkCompletionMeta",
+      "name": "test_extract_work_reads_the_producer_shape",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    }
+  ],
+  "count": 41,
+  "source_commit": "926d90c95ca452636d59b7edd343abd8bcae81d2"
+}
