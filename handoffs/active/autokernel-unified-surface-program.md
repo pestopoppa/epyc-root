@@ -3979,7 +3979,7 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     pytest has not started. No source landing/FF or production change is recorded.
 
   - 2026-10-07 07:10Z checkpoint: the earlier GPU local-phase SOURCE PASS is revoked. Independent
-    review of the 58-file consolidated snapshot returned SOURCE FAIL (`/mnt/raid0/llm/tmp/ak-codex-handover-20261007/consolidated-harness/ASTRA_CONSOLIDATED_SOURCE_REVIEW.md`,
+    review of the 58-file consolidated snapshot returned SOURCE FAIL (`/mnt/raid0/llm/tmp/ak-codex-handover-20261007/consolidated-harness/pre-lifecycle-fix-20261007T071353Z/ASTRA_CONSOLIDATED_SOURCE_REVIEW.md`,
     SHA-256 `b66fca407dfd85caf2fda745803629f4d96d2463d5d2ce8b6c70644337e1afc1`): `_hold` lacks
     post-native-entry poisoning/BaseException coverage, and the CPU build owner closes before the
     owned-child cleanup sweep verifies compiler descendants. The revoked approval binds the
@@ -3992,3 +3992,22 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     has independent source PASS, while its three-module gate remains queued (launcher 713156,
     waiter 713159); old acquire-only r2 ended RC 143 before pytest. CPU gates remain queued; no
     landing/FF, activation, or production change is recorded.
+
+
+  - 2026-10-07 07:41Z corrected consolidated source checkpoint: the final 59-file composition
+    received independent SOURCE PASS (review SHA-256
+    `b5ba11551ed5b34206becbba808028960824d36e574270e0f37834209a797989`; manifest
+    `7d3bb8aa2997bebff49ff3a8e872c5d59b993a5f2d1b0bf6f59d07882032b2cb`; source list
+    `5fb42586ccae3d993e4b3904d2e5b4e4472bcc9f19858000eafdd02a10aae654`). ROOT privately
+    committed those exact source bytes as `eedaf468c6b4b54ab3a1f3002506c5068645f103`;
+    committed-source receipt `ROOT_COMMITTED_SOURCE.json` SHA-256 is
+    `51f0d9cdb4e36957288b063bd7eb4abdf75b76ee288458e8b58580aa8b884ad6`. Corrections latch
+    post-native-entry failure and poison local-phase publication, keep all nine `run.py` compile
+    descendant sweeps inside the original GPU build owner, and preserve that owner cookie through
+    author compile/link/oracle subprocesses; cleanup/fence uncertainty retains refusal. Runtime
+    remains PENDING and activation unauthorized; no deployment or performance claim. The earlier
+    58-file SOURCE FAIL remains at the immutable pre-lifecycle path
+    `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/consolidated-harness/pre-lifecycle-fix-20261007T071353Z/ASTRA_CONSOLIDATED_SOURCE_REVIEW.md`
+    (SHA-256 `b66fca407dfd85caf2fda745803629f4d96d2463d5d2ce8b6c70644337e1afc1`); the canonical
+    review path now names the corrected PASS. Maintenance remains desired `paused` / observed
+    `pausing`, with natural worker completion and observe-only watcher v4 PID 718959.
