@@ -1,0 +1,21 @@
+{
+  "schema": "epyc.hs4_p6_exploration.expected_cases.v1",
+  "source_commit": "10075e6cb559d7e8ce3e1f1251b4a63bc78ec2c8",
+  "test_file": "tests/unit/test_exploration_core.py",
+  "test_file_sha256": "1d91b96ac1210dc049300464fd775933beea2fbc928486fcaa2f1df16cbc9a01",
+  "count": 11,
+  "derivation": "Static AST top-level test function names; no import, pytest collection, or execution.",
+  "cases": [
+    {"classname": "tests.unit.test_exploration_core", "name": "test_explicit_root_refuses_symlink_escape_and_file_size_overrun"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_bounded_exploration_refuses_fifo_without_reading"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_character_pages_keep_crlf_and_negative_offset_behavior"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_grep_reports_true_total_and_keeps_bounded_matches"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_legacy_options_preserve_long_lines_many_context_lines_and_splitlines"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_unbounded_character_page_keeps_legacy_crlf_offsets"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_regex_error_order_and_empty_pattern_options_are_explicit"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_repl_grep_adapter_keeps_configured_count_full_lines_and_context"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_peek_and_combined_adapters_keep_crlf_case_and_blank_context"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_existing_request_scope_and_knowledge_fence_admission_stays_before_adapter_reads"},
+    {"classname": "tests.unit.test_exploration_core", "name": "test_outline_and_line_range_are_read_only_bounded_views"}
+  ]
+}
