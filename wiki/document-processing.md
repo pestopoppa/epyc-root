@@ -459,3 +459,8 @@ neural-txt (AVB, intake-718) is a CPU-cheap **135M task-specialist LM paired wit
 - **Confidence: external — educational repo, no benchmarks.** All capability claims are observations (no decision-grade numbers); do not gate any pipeline change on neural-txt figures. Its reward-model reranking half (NeuralTxtReward / neuraltxt-reward-tiny) is folded into intake-719 / the AVB offline-reward digest, not duplicated here.
 
 Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) (Research Intake Update 2026-06-20), intake-718.
+
+
+### Prospective ODL native provenance — 2026-10-07
+
+[Published writer/reader source and original8/8](../artifacts/ni08/sc42-odl-write-source-20261007/README.md) bind GT/image/query/source/native outputs and completed window records at write time, retaining unsupported or absent identity as unknown. Synthetic controls exercise actual writer→reader paths; historical demos remain pre-hook and actual OCR quality/latency/matched-run acceptance is separate. SC42 parent remains open; no shared grading ladder changed.
