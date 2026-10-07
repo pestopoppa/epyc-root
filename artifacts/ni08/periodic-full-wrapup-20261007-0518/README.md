@@ -1,0 +1,5 @@
+# Periodic full wrap-up — 2026-10-07
+
+The operator explicitly requested periodic full routines while backlog work continues. MAIN reviewed the two native voice originals, updated four completed child checkboxes and two domain next actions, reconciled twelve actual source deltas across four wiki pages, and refreshed the shared source manifest under the operation-private wrap-up lease. README, index/schema/citation, structural wiki and whitespace gates passed; the wiki scan after touch had zero uncompiled sources. Existing wiki warnings are advisory, without a new error.
+
+NI08 now120 scoped completions (65existing+55children). This is not an exhausted-backlog claim. Neither inference nor runtime activation was performed. No prune candidates, archive moves or compactions were appropriate at this boundary; all live source/owner gates remain. Original native custody and active source/recipe clones are retained; no peer scratch was removed. Detailed checks and scope: [review proof](review-proof.json).

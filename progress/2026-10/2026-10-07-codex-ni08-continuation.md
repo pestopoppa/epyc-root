@@ -179,3 +179,8 @@ The full checkpoint additionally closes NI08-WIKI-WARNING, one diagnostic-only C
 ## Registry prose and stale Vidya source tasks — 2026-10-07
 
 [MAIN source-only review/publication](../../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md) closes SW-5, SC71 and SC74: actual six-doc authoring guidance and two already-implemented stale source rows. No new native tests or intake truth claim. NI08 now116scoped completions (65existing+51children). Prospectively enrolled RVP rollback source/CPU verifier remains open; actual parentGPU/regression/promotion/live event acceptance is separate. Full wrap-up cleanup removed14own obsolete clean/landed/idle worktrees through the gate, preserving all branch references, active lanes and KEEP original custody.
+
+
+## Voice original custody and typed payload/choice source — 2026-10-07
+
+MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) and [typed payload/choice original31/31](../../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md): each binds467Git+5generated inputs and all484 authenticated ZIP members, full unchanged result/source inventories, exact complete module identities and the existing shared grade. APPmain3fc9f947 publishes the actual reviewed six-file response/choice source; no runtime reload. Four child closures restore the CS14 verifier and complete CS16-SOURCE, CS18-SOURCE and their verifier; prior CS14 source is counted once. NI08 now120scoped completions (65existing+55children), not whole-backlog exhaustion. Free source/audit work continues.

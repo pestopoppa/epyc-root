@@ -6157,3 +6157,10 @@ The [RT-4 scope-out](../handoffs/active/moe-routing-tap-and-locality-measurement
 - [RT-4 scope-out](../handoffs/active/moe-routing-tap-and-locality-measurement.md).
 - [Primary paper, sections2–5 and limitations(v)](https://arxiv.org/html/2608.18261v1).
 - [NI08 source/documentary checkpoint](../docs/reference/ni08-non-inference-continuation.md).
+
+
+### Suite-seed source scope correction — 2026-10-07
+
+The frozen v10 source already has suite-seed support and seeds ordinary SSM scan inputs. The independently prepared experimental repair addresses only rollback-case integer initialization through the existing per-tensor RNG, retaining unseeded fallback. Its prospective CPU initializer/reference verifier is enrolled before capture; no build, native acceptance, production change or live seeded event is established by this source review.
+
+Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-profile-backend.md).

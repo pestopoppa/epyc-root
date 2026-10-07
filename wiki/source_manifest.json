@@ -4,15 +4,15 @@
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
-    "progress": 640,
+    "progress": 641,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T04:32:19Z",
+  "last_compile": "2026-10-07T05:15:28Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T04:32:19Z",
+  "scan_time": "2026-10-07T05:15:28Z",
   "schema_version": 1,
-  "source_set_hash": "ad2ef85c74cdeae8347ae0e15ead8b34c3c69f21738d4cbb37d36b895979096f",
+  "source_set_hash": "e3ff2c355ae54c318c0eca7980c2d91531f3c1966b2cc9ca843a90a4670001a1",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -287,10 +287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "184a7aed927239f76949e65875522f124b9f02f0485f4f3705e87372f134048f",
-      "modified": "2026-10-07T04:00:20Z",
+      "content_hash": "5a72292a680fdfc1cf76b5dbf7277f7b3198ff74b9714199f362e17a29d24114",
+      "modified": "2026-10-07T05:13:42Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 51374,
+      "size": 51714,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -927,8 +927,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bdef028fb3480df690a96203a20d1ad2067858b84ce8cd494db8baf548760ca2",
-      "modified": "2026-10-07T04:28:59Z",
+      "content_hash": "29800072ec1ec15bbc9da75c56fca2e8d9919edbc267d692c95d1a49d4692f32",
+      "modified": "2026-10-07T05:13:42Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 128805,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -1183,10 +1183,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6f58deae4bb3c5d82f1c5bdc709410ca56f5f8191926b835d85546b7fd206576",
-      "modified": "2026-10-07T02:09:42Z",
+      "content_hash": "dd90b69f25671be341bc41742f200726d75581c083d13ac7b6fe3ae94ee5d22d",
+      "modified": "2026-10-07T04:56:39Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 158562,
+      "size": 159368,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1263,10 +1263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6f060a73deee95084352805b45ec0a7d9dac024b249b456116fa4d7934cbd5d1",
-      "modified": "2026-10-07T04:29:59Z",
+      "content_hash": "7efa96114ec6074ab149ea75654289a8c5e466626a4bbf81927a519073755d4b",
+      "modified": "2026-10-07T04:56:39Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 74778,
+      "size": 74944,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7b2d8aa9a218215b04593f8ddd4e59b83126e2ae125216a36f57492d61efb965",
-      "modified": "2026-10-07T04:29:59Z",
+      "content_hash": "f89e7996df3d9b4304905d63090d38bc31b1bb6d8369480de6d81f68ec1f4f81",
+      "modified": "2026-10-07T05:13:56Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 348404,
+      "size": 350050,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9343,11 +9343,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "1e479437b1069fc9117835b5f0c707af0ceb5034e3ea6bd8edb8bbd377b4547e",
-      "modified": "2026-10-07T04:28:59Z",
+      "content_hash": "57579d0b1b3a7e203873b103183c0a8afc428752c0897a3c1ebf271b41ae99f2",
+      "modified": "2026-10-07T05:13:42Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 23829,
+      "size": 26493,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cd9a6442dac773c37e3a71d902a32965c94c1f2099b75b1eecdeea03feacd3be",
+      "modified": "2026-10-07T04:42:43Z",
+      "path": "progress/2026-10/2026-10-07-intake-memory-embedding.md",
+      "size": 10178,
+      "title": "Research intake \u2014 Agent Memory Repo and EmbeddingGemma 2 \u2014 2026-10-07",
       "type": "progress"
     },
     {
@@ -9679,10 +9687,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "fc063a3c567dc51aafa205bd7c221cb25b57e4972f1b89fd333f16c55c4936a9",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "77c336415b44b536a1532594026b676066811d0c7f5eade4972c5e54f9731bbc",
+      "modified": "2026-10-07T04:47:19Z",
       "path": "docs/guides/agent-workflows/agent-loop-design.md",
-      "size": 53131,
+      "size": 53229,
       "title": "Designing an autonomous agent loop",
       "type": "docs"
     },
@@ -9727,10 +9735,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "e45c057aac64c899435f85e3411b8cdb6c18b842b4b457fe57cec3ee9bdfed3d",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "9703c02a0ce1a457f053ca93d5ca13d2ec281074cf7746c2289bdc40b4285cc3",
+      "modified": "2026-10-07T04:47:19Z",
       "path": "docs/guides/agent-workflows/handoff-index-authoring.md",
-      "size": 11472,
+      "size": 11486,
       "title": "Handoff Index Authoring",
       "type": "docs"
     },
@@ -9759,10 +9767,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "1d05afcb616dde59ea63fb9a03fa2c8c7e2c4286aaaa402ac35c2f3a5c870ea5",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "1ade6cdd753bb3d83cf8a2d6f343d4e48b60ebc1e43622d9db213b4c7eebbc37",
+      "modified": "2026-10-07T04:47:19Z",
       "path": "docs/guides/agent-workflows/research-writer.md",
-      "size": 1954,
+      "size": 2060,
       "title": "Research Writer Workflow",
       "type": "docs"
     },
@@ -9871,10 +9879,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "73ce7dba2575727206caa220ee8606bf8613893039c33026bb911f82d3275ce9",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "87bb1a81b3ccaf93ded74e69c4e4a0321f5ee97d85bbb5fc36fe9b6b46f96357",
+      "modified": "2026-10-07T04:47:19Z",
       "path": "docs/reference/agent-config/CLAUDE_MD_MATRIX.md",
-      "size": 2783,
+      "size": 3297,
       "title": "CLAUDE.md Coverage Matrix",
       "type": "docs"
     },
@@ -10359,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "0b4b07077235f5e353504c6d37e26ca7f8197f15040f0db26cbf0e2bbfb9e2b3",
-      "modified": "2026-10-07T04:28:59Z",
+      "content_hash": "8329ad72aaf009136c8d0032bf6372d68f553cb0e2d4f15822b282d415879a0f",
+      "modified": "2026-10-07T05:13:42Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 42038,
+      "size": 44748,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
@@ -10775,7 +10783,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1345,
+  "total_new": 1346,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

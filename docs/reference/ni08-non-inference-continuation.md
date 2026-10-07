@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **116 completed scoped tasks: 65 existing checkbox flips and 51 newly completed scoped subtasks; the voice verifier remains reopened for incomplete import provenance, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **120 completed scoped tasks: 65 existing checkbox flips and 55 newly completed scoped subtasks; the corrected voice verifier is accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -307,3 +307,8 @@ The full checkpoint also corrected a stale mtime warning on healthy content-hash
 ## Registry prose and stale Vidya source tasks — 2026-10-07
 
 [MAIN source-only review/publication](../../artifacts/ni08/registry-docs-and-stale-vidya-source-20261007/README.md) closes SW-5, SC71 and SC74: actual six-doc authoring guidance and two already-implemented stale source rows. No new native tests or intake truth claim. NI08 now116scoped completions (65existing+51children). Prospectively enrolled RVP rollback source/CPU verifier remains open; actual parentGPU/regression/promotion/live event acceptance is separate. Full wrap-up cleanup removed14own obsolete clean/landed/idle worktrees through the gate, preserving all branch references, active lanes and KEEP original custody.
+
+
+## Voice original custody and typed payload/choice source — 2026-10-07
+
+MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) and [typed payload/choice original31/31](../../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md): each binds467Git+5generated inputs and all484 authenticated ZIP members, full unchanged result/source inventories, exact complete module identities and the existing shared grade. APPmain3fc9f947 publishes the actual reviewed six-file response/choice source; no runtime reload. Four child closures restore the CS14 verifier and complete CS16-SOURCE, CS18-SOURCE and their verifier; prior CS14 source is counted once. NI08 now120scoped completions (65existing+55children), not whole-backlog exhaustion. Free source/audit work continues.

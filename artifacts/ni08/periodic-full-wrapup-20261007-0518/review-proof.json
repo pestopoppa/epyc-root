@@ -1,0 +1,48 @@
+{
+  "schema": "epyc.main.periodic_wrapup.v1",
+  "operator_requested": true,
+  "source_delta_count": 12,
+  "source_delta_paths": [
+    "handoffs/active/conversation-stack.md",
+    "handoffs/active/non-inference-backlog.md",
+    "handoffs/active/rocm-verify-profile-backend.md",
+    "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+    "progress/2026-10/2026-10-07-intake-memory-embedding.md",
+    "docs/guides/agent-workflows/agent-loop-design.md",
+    "docs/guides/agent-workflows/handoff-index-authoring.md",
+    "docs/guides/agent-workflows/research-writer.md",
+    "docs/reference/agent-config/CLAUDE_MD_MATRIX.md",
+    "docs/reference/ni08-non-inference-continuation.md"
+  ],
+  "compiled_pages": [
+    "wiki/memory-augmented.md",
+    "wiki/tool-implementation.md",
+    "wiki/hardware-optimization.md",
+    "wiki/knowledge-management.md"
+  ],
+  "native_reviews": [
+    "artifacts/ni08/cs14-corrected-acceptance-20261007/main-original-review.json",
+    "artifacts/ni08/cs16-18-success-acceptance-20261007/main-original-review.json"
+  ],
+  "checkbox_closures": 4,
+  "scoped_completion_tally": 120,
+  "whole_backlog_exhausted": false,
+  "prune_candidates": [],
+  "archived_handoffs": [],
+  "compacted_handoffs": [],
+  "checks": {
+    "README": 0,
+    "wiki_structural_lint": 0,
+    "index_regenerate": 0,
+    "index_check": 0,
+    "whitespace": 0,
+    "post_touch_delta": 0
+  },
+  "wiki_lint_warnings": 96,
+  "host_project_execution": false,
+  "runtime_activation": false,
+  "source_class_or_grade_change": false,
+  "scratch_retention": "Original custody, exact pinned native recipe/source clones, active lanes and KEEP review scratch remain load-bearing. Fourteen own obsolete worktrees retired at previous complete boundary; no peer removal."
+}
