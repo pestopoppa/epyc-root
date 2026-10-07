@@ -49,13 +49,16 @@ LOCKED_PACKAGES = {"pytest": "9.0.3", "iniconfig": "2.3.0", "packaging": "26.0",
                    "python-dotenv": "1.2.2", "PyYAML": "6.0.3",
                    "RestrictedPython": "8.1", "colorama": "0.4.6"}
 EXPECTED_CONTEXT = {
-            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_ADDOPTS": "", "PYTEST_PLUGINS": "",
     "PYTHONHASHSEED": "0", "ORCHESTRATOR_MOCK_MODE": "1",
     "ORCHESTRATOR_LOG_DIR": "/dev/null", "ORCHESTRATOR_SERVING_CALLS_LOG": "off",
     "ORCHESTRATOR_COHERENCE_JUDGE_LOG": "off",
-    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "/fixture/kernel-bin",
-    "ORCHESTRATOR_PATHS_LLAMA_MTMD": "/fixture/llama-mtmd-cli",
-    "ORCHESTRATOR_PATHS_LLAMA_SERVER": "/fixture/llama-server",
+}
+ABSENT_BINARY_OVERRIDES = {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "llama-cpp-bin",
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": "llama-mtmd-cli",
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": "llama-server",
 }
 
 
@@ -92,6 +95,17 @@ def result_tree_snapshot(root: Path) -> dict[str, object]:
                 raise RuntimeError(f"result tree contains a non-regular file: {child}")
             files[child.relative_to(root).as_posix()] = sha256(child)
     return {"directories": sorted(directories), "files": files}
+
+
+def verify_absent_binary_overrides(runner_temp: Path) -> dict[str, str]:
+    expected = {}
+    for key, leaf in ABSENT_BINARY_OVERRIDES.items():
+        value = os.environ.get(key, "")
+        path = runner_temp / "sw5-sw6-scg" / "absent-binaries" / leaf
+        if value != str(path) or path.exists() or path.is_symlink():
+            raise RuntimeError(f"{key} must name its exact absent Runner.Temp fixture")
+        expected[key] = value
+    return expected
 
 
 def git(repo: Path, *args: str) -> str:
@@ -312,6 +326,7 @@ def main() -> int:
         for key, expected in EXPECTED_CONTEXT.items():
             if os.environ.get(key) != expected:
                 raise RuntimeError(f"{key} differs from reviewed isolated-runner context")
+        absent_binary_overrides = verify_absent_binary_overrides(runner_temp)
         verify_identity(carrier, ROOT_CARRIER_PIN, "native capture carrier")
         verify_identity(root_source, ROOT_SOURCE_PIN, "ROOT task source")
         verify_identity(app, APP_PIN, "APP source")
@@ -341,10 +356,21 @@ def main() -> int:
                 raise RuntimeError(f"ROOT task source digest differs: {row.get('path')}")
             root_task_inputs.append(source.resolve())
         root_context_inputs = []
-        for row in source_map.get("root_contexts", []):
+        expected_enrollments = source_map.get("expected_enrollment_ids", [])
+        if expected_enrollments != ["VB-SW-SCG-SOURCE-CONFORMANCE"]:
+            raise RuntimeError("source map does not bind the exact prospective verifier enrollment")
+        root_context_rows = source_map.get("root_contexts", [])
+        if {row.get("path") for row in root_context_rows} != {
+                "scripts/vidya/adapters/README.md",
+                "handoffs/active/vidya-belief-substrate-program.md"}:
+            raise RuntimeError("source map does not bind the exact enrollment table and task context")
+        for row in root_context_rows:
             source = root_source / row["path"]
             if source.is_symlink() or not source.is_file() or sha256(source) != row.get("sha256"):
                 raise RuntimeError(f"ROOT enrollment context digest differs: {row.get('path')}")
+            contents = source.read_text(encoding="utf-8")
+            if any(enrollment not in contents for enrollment in expected_enrollments):
+                raise RuntimeError(f"ROOT enrollment ID absent from context: {row.get('path')}")
             root_context_inputs.append(source.resolve())
 
         verify_complete_file_records(app, source_map.get("app_files", []), "APP")
@@ -394,12 +420,12 @@ def main() -> int:
             "dependency_install_log_sha256": sha256(installer_log_path),
             "install_command": "python -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/" + REQUIREMENTS,
             "environment": {key: os.environ.get(key) for key in (
-                "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTHONDONTWRITEBYTECODE", "PYTHONHASHSEED",
+                "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTEST_ADDOPTS", "PYTEST_PLUGINS",
+                "PYTHONDONTWRITEBYTECODE", "PYTHONHASHSEED",
                 "NI08_SW_SCG_EXECUTION_CONTEXT",
                 "ORCHESTRATOR_MOCK_MODE", "ORCHESTRATOR_LOG_DIR",
                 "ORCHESTRATOR_SERVING_CALLS_LOG", "ORCHESTRATOR_COHERENCE_JUDGE_LOG",
-                "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN", "ORCHESTRATOR_PATHS_LLAMA_MTMD",
-                "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                *ABSENT_BINARY_OVERRIDES,
             )},
             "limits": [
                 "synthetic pytest tmp_path fixtures only",
@@ -413,12 +439,15 @@ def main() -> int:
         capture_dir = result / "native"
         pytest_argv = [
             sys.executable, "-m", "pytest", "-c", "/dev/null", "--rootdir", str(app), "--noconftest",
-            "-p", "no:cacheprovider", "-p", "ni08_sw5_sw6_scg_case_guard", "-q", "-o", "addopts=",
+            "--import-mode=importlib", "-p", "no:cacheprovider",
+            "-p", "ni08_sw5_sw6_scg_case_guard", "-q", "-o", "addopts=",
             f"--junitxml={junit}", *SELECTIONS,
         ]
         env = os.environ.copy()
         env["PYTHONPATH"] = environment["pytest_pythonpath"]
         env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+        env["PYTEST_ADDOPTS"] = ""
+        env["PYTEST_PLUGINS"] = ""
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         env["NI08_SW_SCG_EXPECTED_CASES"] = str(source_map_path)
         read_paths = [
@@ -435,7 +464,8 @@ def main() -> int:
         status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
         carrier_api = load_native_carrier(carrier)
         inherited = {key: os.environ.get(key) for key in (
-            "PYTHONPATH", "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTHONDONTWRITEBYTECODE",
+            "PYTHONPATH", "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTEST_ADDOPTS", "PYTEST_PLUGINS",
+            "PYTHONDONTWRITEBYTECODE",
             "NI08_SW_SCG_EXPECTED_CASES")}
         try:
             os.environ.update({key: env[key] for key in inherited})
@@ -452,18 +482,37 @@ def main() -> int:
                 else:
                     os.environ[key] = value
         receipt_path = capture_dir / "receipt.json"
-        reopened, _receipt_sha = carrier_api.read_receipt(receipt_path)
+        reopened, receipt_seal = carrier_api.read_receipt(receipt_path)
+        receipt_file_sha_before_grade = sha256(receipt_path)
         if reopened.get("fixture_execution_conformant") is not True:
             raise RuntimeError("native carrier did not confirm successful fixture execution")
         case_facts = validate_original_junit(junit, reopened, source_map["expected_cases"])
+        input_after_capture = file_set_digest(list(dict.fromkeys(read_paths)))
         original_tree_before = result_tree_snapshot(result)
         shared_grade = grade_original_receipt(carrier, receipt_path)
-        reopened_after, _ = carrier_api.read_receipt(receipt_path)
+        reopened_after, receipt_seal_after_grade = carrier_api.read_receipt(receipt_path)
         original_tree_after = result_tree_snapshot(result)
-        input_after = file_set_digest(list(dict.fromkeys(read_paths)))
-        if (original_tree_before != original_tree_after or input_before != input_after
-                or reopened_after != reopened):
+        input_after_grade = file_set_digest(list(dict.fromkeys(read_paths)))
+        receipt_file_sha_after_grade = sha256(receipt_path)
+        verify_absent_binary_overrides(runner_temp)
+        if (original_tree_before != original_tree_after or input_before != input_after_capture
+                or input_before != input_after_grade or reopened_after != reopened
+                or receipt_seal_after_grade != receipt_seal
+                or receipt_file_sha_before_grade != receipt_file_sha_after_grade):
             raise RuntimeError("original result/source inputs changed during native shared-grade read")
+        shared_grade["source_custody"] = {
+            "schema": "epyc.ni08_sw5_sw6_scg.source_custody.v1",
+            "input_before": input_before,
+            "input_after_capture": input_after_capture,
+            "input_after_grade": input_after_grade,
+            "result_tree_before_grade": original_tree_before,
+            "result_tree_after_grade": original_tree_after,
+            "receipt_file_sha256": receipt_file_sha_before_grade,
+            "receipt_seal": receipt_seal,
+            "receipt_seal_after_grade": receipt_seal_after_grade,
+            "absent_binary_overrides": absent_binary_overrides,
+            "enrollment_ids": expected_enrollments,
+        }
         write_json(run_root / "shared-grade.json", shared_grade)
         status.update(state="passed", exit_code=0, native_receipt="native/receipt.json",
                       junit="junit.xml", source_readset="native/receipt.json#readset",

@@ -20,6 +20,8 @@ jobs:
       NI08_SW_SCG_RUNNER_CONTEXT: ubuntu-24.04
       NI08_SW_SCG_EXECUTION_CONTEXT: offline-synthetic-registry-and-environment-attestation
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
@@ -27,14 +29,22 @@ jobs:
       ORCHESTRATOR_LOG_DIR: /dev/null
       ORCHESTRATOR_SERVING_CALLS_LOG: off
       ORCHESTRATOR_COHERENCE_JUDGE_LOG: off
-      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /fixture/kernel-bin
-      ORCHESTRATOR_PATHS_LLAMA_MTMD: /fixture/llama-mtmd-cli
-      ORCHESTRATOR_PATHS_LLAMA_SERVER: /fixture/llama-server
     steps:
       - name: Initialize outcome artifact before setup
         run: |
           mkdir -p "$RUNNER_TEMP/sw5-sw6-scg/result"
-          printf '{"state":"setup_pending","job":"sw5-sw6-scg-synthetic-controls","exit_code":null}\n' > "$RUNNER_TEMP/sw5-sw6-scg/result/status.json"
+          printf '{"state":"setup_pending","job":"sw5-sw6-scg-synthetic-controls","exit_code":null}\n' > "$RUNNER_TEMP/sw5-sw6-scg/status.json"
+          mkdir -p "$RUNNER_TEMP/sw5-sw6-scg/absent-binaries"
+          for pair in \
+            'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN:llama-cpp-bin' \
+            'ORCHESTRATOR_PATHS_LLAMA_MTMD:llama-mtmd-cli' \
+            'ORCHESTRATOR_PATHS_LLAMA_SERVER:llama-server'; do
+            key=${pair%%:*}
+            leaf=${pair#*:}
+            path="$RUNNER_TEMP/sw5-sw6-scg/absent-binaries/$leaf"
+            test ! -e "$path" && test ! -L "$path"
+            printf '%s=%s\n' "$key" "$path" >> "$GITHUB_ENV"
+          done
       - name: Checkout exact recipe
         uses: actions/checkout@v4
         with:

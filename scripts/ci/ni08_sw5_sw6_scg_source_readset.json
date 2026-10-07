@@ -11985,6 +11985,9 @@
       "name": "test_gate_main_records_arm_provenance_and_refuses_the_wrong_env"
     }
   ],
+  "expected_enrollment_ids": [
+    "VB-SW-SCG-SOURCE-CONFORMANCE"
+  ],
   "not_included_or_asserted": [
     "No production registry compilation or stack launch",
     "No live /proc read, embedder reload, live process environment, request endpoint, model, inference, or benchmark",
@@ -12289,7 +12292,7 @@
     },
     {
       "path": ".github/workflows/ni08-sw5-sw6-scg-source-capture.yml",
-      "sha256": "058a0c589e16f4d3019cc6ae95e7ddadcc68e1d10e4616a2435e8a8a58fc5d81"
+      "sha256": "69cfe68429f28ebcdd17ff2755437e1231892bbf968093720576907dbaa34da0"
     },
     {
       "path": ".github/workflows/ni08-vbs1-evaldisc-native.yml",
@@ -13149,7 +13152,7 @@
     },
     {
       "path": "scripts/ci/ni08_sw5_sw6_scg_capture.py",
-      "sha256": "e02f48ef00141e497e04aad9866062e0d55777334d7ae6791e3807fa817ea519"
+      "sha256": "6e1efd524f94b62daa2b2c8a903503803ba9450c90e5bb61e77b624d9a13b9ee"
     },
     {
       "path": "scripts/ci/ni08_sw5_sw6_scg_case_guard.py",
@@ -15402,9 +15405,15 @@
   "root_carrier_repository": "pestopoppa/epyc-root",
   "root_contexts": [
     {
+      "git_blob": "c93d189cdaf0db1bd92a38450081a8ad779a3444",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "purpose": "prospective verifier task enrollment",
+      "sha256": "8857c5d01fcf02a2cde77f4fc832fa7cfd1ca858b4116971f4d293edc06972f3"
+    },
+    {
       "git_blob": "24c990f9f32021274d7e695f5cf6a266df051694",
       "path": "scripts/vidya/adapters/README.md",
-      "purpose": "prospective VB-SW-SCG-SOURCE-CONFORMANCE enrollment",
+      "purpose": "prospective source-table enrollment",
       "sha256": "579511b3eb41ab4167cda45441df866bc1feebda626b155e81eef3b2bf354c6e"
     }
   ],
