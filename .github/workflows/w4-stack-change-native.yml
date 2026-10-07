@@ -72,6 +72,8 @@ jobs:
           fi
       - name: Capture real gate, inner outputs, outer JUnit and shared-grade receipt
         id: capture
+        env:
+          ORCHESTRATOR_PATHS_CACHE_DIR: ${{ runner.temp }}/w4-stack-change/result/synthetic-cache
         run: |
           set +e
           "$RUNNER_TEMP/w4-stack-change/venv/bin/python" root/scripts/ci/w4_native_capture.py "$GITHUB_WORKSPACE/app" "$GITHUB_WORKSPACE/research"
