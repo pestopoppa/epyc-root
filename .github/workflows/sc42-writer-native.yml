@@ -1,0 +1,113 @@
+name: SC42 prospective ODL writer reader synthetic native observation
+
+on:
+  push:
+    branches: [codex/ni08-sc42-native-recipe-20261007]
+
+permissions:
+  contents: read
+
+jobs:
+  references:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize artifact envelope
+        run: |
+          mkdir -p "$RUNNER_TEMP/sc42-writer/result"
+          printf '%s\n' '{"state":"setup_pending","exit_code":null}' > "$RUNNER_TEMP/sc42-writer/result/status.json"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout approved ROOT reader and complete synthetic tests
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: c8f2de90abf6f79c0637cdc0b1de8f346921a44b
+          path: root-source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout approved Research writer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 659d154bea1daba3406a04a766fa09810fb0aeb6
+          path: research-source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout immutable native carrier and grader
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout pinned prospective enrollment context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 83004c1137015a9fc8d0cf411e648432bc51a1c9
+          path: enrollment-context
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout exact pytest lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock-source
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact binary wheels
+        id: install
+        run: |
+          set +e
+          python -m venv "$RUNNER_TEMP/sc42-writer/venv" > "$RUNNER_TEMP/sc42-writer/result/install.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/sc42-writer/venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: --no-cache-dir -r root/scripts/ci/sc42_writer_requirements.txt >> "$RUNNER_TEMP/sc42-writer/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/sc42-writer/venv/bin/python" -m pip check >> "$RUNNER_TEMP/sc42-writer/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/sc42-writer/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/sc42-writer/result/pip-freeze.txt"
+            rc=$?
+          fi
+          printf '{"state":"install_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/sc42-writer/result/status.json"
+          exit "$rc"
+      - name: Run the bound eight synthetic source cases through native carrier and shared grade
+        id: capture
+        if: steps.install.outcome == 'success'
+        run: |
+          set +e
+          cd root
+          RUNNER_TEMP="$RUNNER_TEMP" "$RUNNER_TEMP/sc42-writer/venv/bin/python" scripts/ci/sc42_writer_capture.py "$GITHUB_WORKSPACE/root-source" "$GITHUB_WORKSPACE/research-source" "$GITHUB_WORKSPACE/carrier" "$GITHUB_WORKSPACE/lock-source" "$GITHUB_WORKSPACE/enrollment-context"
+          rc=$?
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/sc42-writer/result/status.json"
+          exit "$rc"
+      - name: Preserve original command, JUnit, receipt, source metadata and grade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sc42-writer-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sc42-writer/result/
+          if-no-files-found: error
+          retention-days: 90
