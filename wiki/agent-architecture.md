@@ -5146,3 +5146,7 @@ The shared diagnostic invocation ring uses an explicit per-instance lock for app
 ## Production nudge-refusal test sensitivity
 
 Two hosted fixture controls exercise the actual cmd_nudge refusal/elapsed dry-run paths with config/probe injection. Removing only its interval predicate makes the recent-refusal control fail while the elapsed positive control passes. [Source and original custody](../artifacts/ni08/aud11-f08-source-20261007/README.md). The live adapter remains unchanged; this does not establish other coordination mechanism claims.
+
+## Shared explicit-root exploration source
+
+The shared read-only core supports bounded explicit-root callers while current REPL adapters preserve request and knowledge admission plus legacy character-page semantics. [Source and original11/11 controls](../artifacts/ni08/hs4-p6-exploration-source-20261007/README.md). Catalog-growth and actor consumer acceptance remain separate.

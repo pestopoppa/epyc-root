@@ -55,3 +55,7 @@ MAIN verified exact site Git blobs and both historical screenshot hashes, publis
 ## AUD11 F08 actual-command test source — MAIN acceptance
 
 [Original2/2, exact predicate-disable sensitivity, all55 API ZIP members and all12 copied source originals](../../artifacts/ni08/aud11-f08-source-20261007/README.md) close bounded AUD11-F08-SOURCE and its VB companion. **78 scoped completions (51 existing flips +27 additions)**. The actual recent-refusal test fails under the exact mutant; elapsed positive control survives. No protected runtime edit/live probe or parent mechanism completion. Prior TypeError and incomplete-hidden-copy captures remain unaccepted. Other source/audit work continues.
+
+## HS4 P6 shared exploration source — MAIN acceptance
+
+[Original11/11, all2,835 ZIP members, 2,822 inputs plus3 contexts and exact APP publication](../../artifacts/ni08/hs4-p6-exploration-source-20261007/README.md) close HS4-P6-SOURCE and its prospective VB companion. **80 scoped completions (51 existing flips +29 additions)**. Existing REPL admission fences and legacy behavior remain covered. Parent active-catalog/actor acceptance remains open; prior setup NULLs retained. Other source work and exact task eligibility audit continue.

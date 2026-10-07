@@ -1,0 +1,40 @@
+{
+  "MAIN_executed_grade": false,
+  "artifact": 11455532366,
+  "attempt": 1,
+  "contexts": 3,
+  "counts": {
+    "collected": 11,
+    "error": 0,
+    "executed": 11,
+    "failure": 0,
+    "passed": 11,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "git_inputs": 2822,
+  "implementation_accepted": true,
+  "job_identity": "github_job_112582462195",
+  "members": 2835,
+  "native_value": true,
+  "originals_unchanged": true,
+  "pins": {
+    "app": "10075e6cb559d7e8ce3e1f1251b4a63bc78ec2c8",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "cd21bc25c640a61c91a4b627f272eae1ba216064"
+  },
+  "readset_count": 2825,
+  "receipt_file_sha256": "46139e214ba2a2f8cb654879acf879af7d8a63159da5be42b4e01cb825bddfde",
+  "receipt_self_sha256": "be6a3e00fa5c60344694d64ce539843be81ac13f57b3b9608bcfe01d0e336bca",
+  "reviewed_at": "2026-10-07T01:36:51.145401+00:00",
+  "run": 37556063278,
+  "scope": "MEDIUM: shared pure exploration and compatible existing REPL adapters, current fences retained. No active catalog, endpoint/model/search/rebuild or runtime authority.",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "source_integrity_review": "PASS",
+  "testcase_nodes": 11,
+  "zip_bytes": 14298480,
+  "zip_sha256": "7d9b864d776de58bf5410ed6101c82b5fa331c8973211dc1f1d1e05374a6a150"
+}

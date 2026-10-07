@@ -1,0 +1,7 @@
+# HS4 P6 shared exploration source acceptance
+
+MAIN independently verified authenticated original run/job/artifact APIs, all2,835 original ZIP members, 2,822 Git-backed inputs plus3 generated contexts, all11 exact JUnit identities, native receipt seal and all5,655 unchanged original hashes across shared grading. [Original review](MAIN-original-review.json), [prospective source binding](MAIN-prebinding.json). Run37556063278 attempt1 is TRUE11/11 with zero failures/errors/skips; existing shared grade remains Judged/Located.
+
+Exact APP source10075e6cb559d7e8ce3e1f1251b4a63bc78ec2c8 is normally merged and published at e7e4ffc45164af5a4c66c438ecb1e98120efcf6a. The shared explicit-root read-only exploration core bounds new callers while the existing REPL adapters preserve request/read-root and knowledge fences, legacy character pages, CRLF offsets, regex error ordering, case and line/context limits. Source-only controls exercise real adapters and traversal/symlink/FIFO/size refusals.
+
+No active MCP catalog, actor consumer, embedding/model or search rebuild changes. Parent P6 still requires catalog-growth acceptance and owning actor changes. Earlier checkout/setup NULLs are preserved in [attempt1](attempt1-NULL-review.json) and [attempt2](attempt2-NULL-review.json); neither had native/JUnit/grade evidence. Full original source/readsets are retained privately; these public derivative reports do not independently reopen a native receipt.

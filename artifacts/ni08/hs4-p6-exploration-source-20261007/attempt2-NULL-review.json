@@ -1,0 +1,28 @@
+{
+  "artifact": 11454039170,
+  "attempt": 2,
+  "diagnostic": "CalledProcessError: Command '['git', '-C', '/home/runner/work/epyc-root/epyc-root/recipe', 'merge-base', '--is-ancestor', '928a740464d041ece312b0f23c0dee5f31e891e6', 'HEAD']' returned non-zero exit status 128.",
+  "implementation_accepted": false,
+  "job_identity": "github_job_112578334118",
+  "junit": null,
+  "members": [
+    {
+      "bytes": 10951,
+      "name": "dependency-install.log",
+      "sha256": "5147fc8fe10189033aef6a87b4d2a54cbbe01f543c58fa5ce2cd43c46673b697"
+    },
+    {
+      "bytes": 266,
+      "name": "status.json",
+      "sha256": "157cf2aecd1292e89d5d0fadc9a1456fac13905894f2bab64fd7c1f19798de85"
+    }
+  ],
+  "native_value": null,
+  "originals_unchanged": true,
+  "recipe_pin": "d79f355c45b405389b7b94886a3d33d2322e6a81",
+  "run": 37554374640,
+  "shared_grade": null,
+  "source_integrity_review": "PASS",
+  "zip_bytes": 2325,
+  "zip_sha256": "6acc98e5230281f0dc884b156dfe488c2649f781c1766cacd3e4be04885179ee"
+}

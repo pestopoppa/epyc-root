@@ -1,0 +1,23 @@
+{
+  "artifact": 11453398290,
+  "attempt": 1,
+  "diagnostic": "Source checkout failed before tests",
+  "implementation_accepted": false,
+  "job_identity": "github_job_112577076985",
+  "junit": null,
+  "members": [
+    {
+      "bytes": 43,
+      "name": "status.json",
+      "sha256": "bb8c81497961054ed276777043c9b5595ae0eaa3beebba444a10273308a57e43"
+    }
+  ],
+  "native_value": null,
+  "originals_unchanged": true,
+  "recipe_pin": "d79f355c45b405389b7b94886a3d33d2322e6a81",
+  "run": 37554374640,
+  "shared_grade": null,
+  "source_integrity_review": "PASS",
+  "zip_bytes": 181,
+  "zip_sha256": "19bbed0effcbb9df9d866b03de30649923909b292a5fa9f2bf32ae10205a36fe"
+}
