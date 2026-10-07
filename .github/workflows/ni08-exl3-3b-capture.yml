@@ -70,7 +70,7 @@ jobs:
           ${{ env.EXL3_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-exl3-3b/result/dependency-install.log"
       - name: Prepare isolated test temporary root
         run: sudo install -d -o "$USER" -g "$USER" /mnt/raid0/llm/tmp
-      - name: Capture complete 15-case synthetic suite
+      - name: Capture complete 39-case synthetic suite
         run: |
           set -euo pipefail
           export PYTHONPATH="$GITHUB_WORKSPACE/research"

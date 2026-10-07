@@ -17,7 +17,7 @@ import tomllib
 import xml.etree.ElementTree as ET
 
 ROOT_SOURCE_PIN = "94e7d72a8448c3b77189b77dbb5cdd5d4ccfadbc"
-RESEARCH_PIN = "edcae4ac1d6e6b222c38dd1942c7acc54ba13a9c"
+RESEARCH_PIN = "94821e731d65569ab6afd9e89bfecb5ecc812fbd"
 APP_PIN = "a4132e57c96edb78088dedcfb7eb315497ef28db"
 CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 PYTHON_PIN = "3.13.15"
@@ -42,7 +42,7 @@ INSTALL_COMMAND = (
 TEST_FILE = "scripts/kernel_rnd/exl3_gfx90a/test_claimed_run.py"
 RESEARCH_SOURCES = {
     "scripts/kernel_rnd/exl3_gfx90a/claimed_run.py": "833d9d8dde2bd2868ff67d8a90c595f2ca91bc2a931ba7d1aebffef405a58f7e",
-    TEST_FILE: "96e9d178ad3140cefdbda5aacf56a460e67c262da5a821ae5f0603a56012f4d5",
+    TEST_FILE: "cb2ad9aef83c4d46c0aff412c1d6de4166de681308f6ea25b9f7db715a0a3047",
 }
 PACKAGES = {
     "iniconfig": "2.3.0", "packaging": "26.0", "pluggy": "1.6.0",
@@ -181,12 +181,13 @@ def verify_lock(app: Path, requirements: Path) -> dict[str, str]:
 def ast_cases(path: Path) -> list[dict[str, str]]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=TEST_FILE)
     cases = []
+    module = ".".join(PurePosixPath(TEST_FILE).with_suffix("").parts)
     for node in tree.body:
         if not isinstance(node, ast.ClassDef):
             continue
         for member in node.body:
             if isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef)) and member.name.startswith("test_"):
-                cases.append({"classname": f"test_claimed_run.{node.name}", "name": member.name})
+                cases.append({"classname": f"{module}.{node.name}", "name": member.name})
     return cases
 
 
@@ -257,8 +258,8 @@ def main() -> int:
         if (expected_document.get("source_commit") != RESEARCH_PIN
                 or expected_document.get("test_file") != TEST_FILE
                 or expected_document.get("test_file_sha256") != RESEARCH_SOURCES[TEST_FILE]
-                or expected_document.get("count") != 15
-                or len(case_rows) != 15
+                or expected_document.get("count") != 39
+                or len(case_rows) != 39
                 or Counter((r["classname"], r["name"]) for r in case_rows)
                 != Counter((r.get("classname"), r.get("name")) for r in expected_cases or [])):
             raise RuntimeError("exact full-module AST case identities differ from the frozen manifest")
@@ -304,8 +305,9 @@ def main() -> int:
             "sha256": manifest_digest(producer_inputs_before),
             "inputs": producer_inputs_before,
         }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-        selections = [f"{TEST_FILE}::{case['classname'].split('.', 1)[1]}::{case['name']}"
-                      for case in case_rows]
+        # Run the complete pinned module: some JUnit class/method identities contain
+        # pytest-specific nodeid syntax and must not be reconstructed as selectors.
+        selections = [TEST_FILE]
         producer = [sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
                     "--cwd", str(research), "--junit", str(junit), "--output", str(native),
                     "--repo", f"recipe={recipe}", "--repo", f"carrier={carrier}",
@@ -316,7 +318,7 @@ def main() -> int:
         command = [sys.executable, "-m", "pytest", "-c", "/dev/null", "--rootdir", str(research),
                    "--noconftest", "-o", "addopts=", "-p", "no:cacheprovider", "-q",
                    *selections, f"--junitxml={junit}"]
-        status.update(state="running", repositories=pins, expected_case_count=15)
+        status.update(state="running", repositories=pins, expected_case_count=39)
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         execution_env = dict(os.environ, PYTHONPATH=str(research))
         exit_code = subprocess.call([*producer, "--", *command], cwd=research, env=execution_env)
@@ -337,9 +339,9 @@ def main() -> int:
         junit_root = ET.parse(junit).getroot()
         junit_cases = [(row.get("classname", ""), row.get("name", ""))
                        for row in junit_root.iter("testcase")]
-        junit_ok = Counter(junit_cases) == expected_set and len(junit_cases) == 15
-        native_ok = (native_set == expected_set and len(native_cases) == 15
-                     and native_counts.get("collected") == 15 and native_counts.get("executed") == 15
+        junit_ok = Counter(junit_cases) == expected_set and len(junit_cases) == 39
+        native_ok = (native_set == expected_set and len(native_cases) == 39
+                     and native_counts.get("collected") == 39 and native_counts.get("executed") == 39
                      and native_counts.get("skipped") == 0 and native_counts.get("failure") == 0
                      and native_counts.get("error") == 0 and receipt.get("fixture_execution_conformant") is True)
 
@@ -377,7 +379,7 @@ def main() -> int:
             json.dumps(grade_record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         passed = (exit_code == 0 and junit_ok and native_ok and grade_ok)
         status.update(state="passed" if passed else "failed", exit_code=0 if passed else (exit_code or 1),
-                      junit_counts={"collected": len(junit_cases), "expected": 15,
+                      junit_counts={"collected": len(junit_cases), "expected": 39,
                                     "exact_case_set": junit_ok},
                       native_counts=native_counts, fixture_execution_conformant=receipt.get("fixture_execution_conformant"),
                       shared_grade={"Q": quality, "T": trust, "accepted": grade_ok})
