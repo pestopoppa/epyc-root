@@ -15,6 +15,11 @@ jobs:
     env:
       ORCHESTRATOR_MOCK_MODE: '1'
     steps:
+      - name: Initialize failure-safe result custody
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s49/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/s49/result/status.json"
       - uses: actions/checkout@v4
         with:
           path: root
