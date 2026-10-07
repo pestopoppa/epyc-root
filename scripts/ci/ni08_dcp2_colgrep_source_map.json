@@ -21227,9 +21227,9 @@
         "path": ".github/workflows/ni08-dcp2-colgrep-score-capture.yml"
       },
       {
-        "candidate_bytes": 37376,
-        "candidate_git_blob": "dfde32b9f0e90307b887e6024a96d8e2f7e42579",
-        "candidate_sha256": "15bbebcb2cc20f65686e794131787b83e0848fd89029305086bc661d8661e316",
+        "candidate_bytes": 37382,
+        "candidate_git_blob": "9c8de28a02bed2a25e1670c69640dc3d4a95cf32",
+        "candidate_sha256": "3052392a54a82402cb5d54c707a097c2a659fe0a59721987f000c6536657c63b",
         "kind": "regular",
         "mode": "100644",
         "path": "scripts/ci/ni08_dcp2_colgrep_capture.py"
@@ -21251,9 +21251,9 @@
         "path": "scripts/ci/ni08_dcp2_colgrep_requirements.txt"
       },
       {
-        "candidate_bytes": 3914,
-        "candidate_git_blob": "e6af09c7d9aa3f766590a3b2a2f392e8c32157ba",
-        "candidate_sha256": "83079b9ca17001f4556875191e8f4740267381e7bbd5250df0998b9aac9316a9",
+        "candidate_bytes": 4121,
+        "candidate_git_blob": "2195ecc469fb28eb5c5379767dce09f8183bf6f9",
+        "candidate_sha256": "de2d17cd7d7edea22fa28da039966c54d6b59513a9053c028e60821791835e76",
         "kind": "regular",
         "mode": "100644",
         "path": "README-DCP2-private-review.md"
@@ -25497,7 +25497,7 @@
     },
     "qualification": "map self bytes are named regular reads but excluded from its recursive recipe content envelope; exact recipe commit tree/GITHUB_SHA and native readset bind them. No self-referential SHA claim.",
     "recipe_source_config_envelope": {
-      "base_git_pin": "d46ff9999fff3e42a1b04074d35dbf0bbe631f93",
+      "base_git_pin": "b082bc7a447d1c054a6648594be200834fa2a9a7",
       "file_count": 901,
       "files": [
         {
@@ -28541,11 +28541,11 @@
           "path": "scripts/ci/ni08_c5_seed_map_capture.py"
         },
         {
-          "candidate_bytes": 37376,
-          "candidate_git_blob": "dfde32b9f0e90307b887e6024a96d8e2f7e42579",
+          "candidate_bytes": 37382,
+          "candidate_git_blob": "9c8de28a02bed2a25e1670c69640dc3d4a95cf32",
           "candidate_only": false,
-          "candidate_sha256": "15bbebcb2cc20f65686e794131787b83e0848fd89029305086bc661d8661e316",
-          "git_blob": "dfde32b9f0e90307b887e6024a96d8e2f7e42579",
+          "candidate_sha256": "3052392a54a82402cb5d54c707a097c2a659fe0a59721987f000c6536657c63b",
+          "git_blob": "9c8de28a02bed2a25e1670c69640dc3d4a95cf32",
           "kind": "regular",
           "mode": "100644",
           "path": "scripts/ci/ni08_dcp2_colgrep_capture.py"
@@ -34552,6 +34552,13 @@
     "capture_or_publication_authorized": false,
     "change": "Move unchanged REPL_COLGREP_BIN runner.temp expression from job-level env to the capture step env; no source/test/dependency/context/carrier changes. Step env permits runner context per official GitHub contexts reference.",
     "corrected_expression_path": "jobs.dcp2-colgrep-score-controls.steps[capture].env.REPL_COLGREP_BIN",
+    "driver_branch_literal_static_correction": {
+      "classification": "separate latent exact-trigger mismatch; not the cause of original pre-job GitHub rejection",
+      "commit": "b082bc7a4",
+      "new": "codex/ni08-dcp2-colgrep-score-recipe-20261007",
+      "old": "codex/ni08-dcp2-colgrep-recipe-20261007",
+      "path": "scripts/ci/ni08_dcp2_colgrep_capture.py"
+    },
     "expression": "${{ runner.temp }}/ni08-dcp2-colgrep-score/absent/colgrep",
     "new_attempt_authorized": false,
     "official_allowance": "GitHub contexts table allows runner in jobs.<job_id>.steps.env and excludes it from jobs.<job_id>.env",
