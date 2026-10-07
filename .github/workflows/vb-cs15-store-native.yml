@@ -27,6 +27,9 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/vb-cs15-store/result" "$RUNNER_TEMP/isolated-tmp" "$RUNNER_TEMP/isolated-llm"
           printf 'ORCHESTRATOR_PATHS_LLM_ROOT=%s\n' "$RUNNER_TEMP/isolated-llm" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$RUNNER_TEMP/vb-cs15-store/absent/cpu" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$RUNNER_TEMP/vb-cs15-store/absent/llama-mtmd-cli" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$RUNNER_TEMP/vb-cs15-store/absent/llama-server" >> "$GITHUB_ENV"
           printf 'TMPDIR=%s\n' "$RUNNER_TEMP/isolated-tmp" >> "$GITHUB_ENV"
           printf '{"state":"setup_pending","job":"cs15-store-native-conformance","exit_code":null}\n' > "$RUNNER_TEMP/vb-cs15-store/result/status.json"
           cp "$RUNNER_TEMP/vb-cs15-store/result/status.json" "$RUNNER_TEMP/vb-cs15-store/result/pre-status.json"

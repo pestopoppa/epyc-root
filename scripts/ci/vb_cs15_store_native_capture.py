@@ -45,6 +45,16 @@ EXPECTED_ENV = {
 }
 
 
+def expected_isolated_path_env(runner_temp: str) -> dict[str, str]:
+    """Bind absent serving binaries to this capture's isolated runner temp."""
+    root = Path(runner_temp) / "vb-cs15-store" / "absent"
+    return {
+        "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": str(root / "cpu"),
+        "ORCHESTRATOR_PATHS_LLAMA_MTMD": str(root / "llama-mtmd-cli"),
+        "ORCHESTRATOR_PATHS_LLAMA_SERVER": str(root / "llama-server"),
+    }
+
+
 def digest(path: Path) -> str:
     h = hashlib.sha256()
     flags = (os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
@@ -200,7 +210,10 @@ def verify_junit(path: Path, native: dict, expected: set[tuple[str, str]]) -> di
     root = ET.parse(path).getroot()
     cases = [(item.attrib.get("classname", ""), item.attrib.get("name", ""))
              for item in root.iter("testcase")]
-    counts = native["summary"]["counts"]
+    summary = native.get("summary")
+    if not isinstance(summary, dict) or not isinstance(summary.get("counts"), dict):
+        raise RuntimeError("native receipt has no case summary; fixture result remains ungraded")
+    counts = summary["counts"]
     if (set(cases) != expected or len(cases) != 31 or len(set(cases)) != 31
             or counts.get("collected") != 31 or counts.get("executed") != 31
             or counts.get("skipped") != 0 or counts.get("failure") != 0
@@ -222,6 +235,10 @@ def main() -> int:
         for key, value in EXPECTED_ENV.items():
             if os.environ.get(key) != value:
                 raise RuntimeError(f"{key} differs from reviewed recipe")
+        isolated_path_env = expected_isolated_path_env(os.environ["RUNNER_TEMP"])
+        for key, value in isolated_path_env.items():
+            if os.environ.get(key) != value:
+                raise RuntimeError(f"{key} differs from isolated runner bootstrap")
         if "ORCHESTRATOR_STACK_NUMA_MODE" in os.environ:
             raise RuntimeError("runner supplied an unreviewed stack NUMA mode")
         recipe, source, carrier, app, context = (workspace / name for name in
@@ -284,8 +301,10 @@ def main() -> int:
             "venv_prefix": sys.prefix,
             "base_prefix": sys.base_prefix,
             "installed_versions": package_versions,
-            "expected_environment": EXPECTED_ENV,
-            "observed_environment": {key: os.environ.get(key) for key in EXPECTED_ENV},
+            "expected_environment": {**EXPECTED_ENV, **isolated_path_env},
+            "observed_environment": {
+                key: os.environ.get(key) for key in (*EXPECTED_ENV, *isolated_path_env)
+            },
             "pytest_argv": ["python -m pytest", "-c /dev/null", "--noconftest",
                             "--rootdir=<source>", "--import-mode=importlib",
                             "-p no:cacheprovider", "-o addopts=", "selected 31 exact cases"],
@@ -326,6 +345,23 @@ def main() -> int:
         readset_after_capture = {str(path): digest(path) for path in dict.fromkeys(read_paths)}
         receipt_path = native_dir / "receipt.json"
         native, receipt_sha = api.read_receipt(receipt_path)
+        if native.get("fixture_execution_conformant") is not True:
+            # Failed collection/execution still retains authenticated original
+            # JUnit and receipt custody, but has no measured case tuple to grade.
+            result_after = snapshot_tree(result, omit=result_omit)
+            readset_after = {str(path): digest(path) for path in dict.fromkeys(read_paths)}
+            reopened, reopened_sha = api.read_receipt(receipt_path)
+            if (result_before_grade != result_after or readset_before != readset_after_capture
+                    or readset_after_capture != readset_after
+                    or reopened != native or reopened_sha != receipt_sha):
+                raise RuntimeError("failed native capture custody changed during review")
+            status.update(
+                state="capture_failed", exit_code=1, native_receipt="native/receipt.json",
+                junit="original-junit.xml", fixture_execution_conformant=None,
+                grade=None,
+                error="native fixture execution did not conform; original retained ungraded",
+            )
+            return 1
         cases = verify_junit(junit, native, selected)
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
