@@ -81,27 +81,61 @@ def tracked_file(repo: Path, relative: str) -> Path:
 
 
 def hash_regular(path: Path) -> str:
-    if path.is_symlink() or not path.is_file():
-        raise RuntimeError(f"evidence is missing, nonregular, or symlinked: {path}")
-    if not stat.S_ISREG(path.lstat().st_mode):
-        raise RuntimeError(f"evidence is not regular: {path}")
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise RuntimeError(f"evidence cannot be opened safely: {path}: {exc}") from exc
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode):
+            raise RuntimeError(f"evidence is not a regular file: {path}")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            data = stream.read()
+        after = os.fstat(fd)
+        identity = lambda row: (row.st_dev, row.st_ino, row.st_size, row.st_mtime_ns,
+                                row.st_ctime_ns)
+        if identity(before) != identity(after) or len(data) != after.st_size:
+            raise RuntimeError(f"evidence changed while hashing: {path}")
+        return hashlib.sha256(data).hexdigest()
+    finally:
+        os.close(fd)
 
 
 def inventory(root: Path) -> dict[str, str]:
-    """Hash every regular file in the fresh result tree; reject links and special files."""
-    found: dict[str, str] = {}
-    if not root.exists():
-        return found
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink():
-            raise RuntimeError(f"result tree contains symlink: {path}")
-        if path.is_dir():
-            continue
-        if not path.is_file() or not stat.S_ISREG(path.lstat().st_mode):
-            raise RuntimeError(f"result tree contains a nonregular entry: {path}")
-        found[path.relative_to(root).as_posix()] = hash_regular(path)
+    """Bind every result-tree entry, including directories; reject links/special files."""
+    if root.is_symlink() or not stat.S_ISDIR(root.lstat().st_mode):
+        raise RuntimeError(f"result root is missing, not a directory, or symlinked: {root}")
+    found: dict[str, str] = {".": "directory"}
+
+    def walk(directory: Path) -> None:
+        for entry in sorted(os.scandir(directory), key=lambda item: item.name):
+            path = Path(entry.path)
+            mode = entry.stat(follow_symlinks=False).st_mode
+            relative = path.relative_to(root).as_posix()
+            if stat.S_ISLNK(mode):
+                raise RuntimeError(f"result tree contains symlink: {path}")
+            if stat.S_ISDIR(mode):
+                found[relative + "/"] = "directory"
+                walk(path)
+            elif stat.S_ISREG(mode):
+                found[relative] = hash_regular(path)
+            else:
+                raise RuntimeError(f"result tree contains a special file: {path}")
+
+    walk(root)
     return found
+
+
+def file_manifest(paths: list[Path]) -> dict[str, str]:
+    """Hash every declared producer input through a no-follow regular-file descriptor."""
+    unique = {str(path.absolute()): path for path in paths}
+    return {name: hash_regular(unique[name]) for name in sorted(unique)}
+
+
+def manifest_digest(manifest: dict[str, str]) -> str:
+    data = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(data).hexdigest()
 
 
 def requirements_map(text: str) -> tuple[dict[str, str], dict[str, set[str]]]:
@@ -260,6 +294,16 @@ def main() -> int:
         read_paths = [workflow, runner, manifest_path, requirements, task_path, table_path,
                       *source_files.values(), tracked_file(app, "uv.lock"), install_log,
                       freeze, environment, *carrier_inputs]
+        producer_inputs_before = file_manifest(read_paths)
+        input_readset_path = result / "producer-input-readset.json"
+        if input_readset_path.exists() or input_readset_path.is_symlink():
+            raise RuntimeError("refusing to overwrite producer input readset")
+        input_readset_path.write_text(json.dumps({
+            "kind": "pre-execution-source-input-hashes",
+            "count": len(producer_inputs_before),
+            "sha256": manifest_digest(producer_inputs_before),
+            "inputs": producer_inputs_before,
+        }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         selections = [f"{TEST_FILE}::{case['classname'].split('.', 1)[1]}::{case['name']}"
                       for case in case_rows]
         producer = [sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
@@ -276,6 +320,9 @@ def main() -> int:
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         execution_env = dict(os.environ, PYTHONPATH=str(research))
         exit_code = subprocess.call([*producer, "--", *command], cwd=research, env=execution_env)
+        producer_inputs_after = file_manifest(read_paths)
+        if producer_inputs_after != producer_inputs_before:
+            raise RuntimeError("producer inputs changed during native capture")
         receipt_path = native / "receipt.json"
         if not receipt_path.is_file() or not junit.is_file():
             status.update(state="capture_failed", exit_code=exit_code or 1,
@@ -309,6 +356,9 @@ def main() -> int:
             raise RuntimeError("original native receipt projection is not exactly one row")
         claim = project_ci_conformance(rows[0])
         quality, trust, reasons = grade(claim)
+        producer_inputs_after_grade = file_manifest(read_paths)
+        if producer_inputs_after_grade != producer_inputs_before:
+            raise RuntimeError("producer inputs changed during shared-grade analysis")
         after = inventory(result)
         if after != before:
             raise RuntimeError("shared-grade projection changed result-tree membership or bytes")
@@ -319,6 +369,9 @@ def main() -> int:
             "grade": {"Q": quality, "T": trust, "reasons": reasons},
             "new_grade_authored": False, "original_hashes_before": before,
             "original_hashes_after": after,
+            "producer_input_count": len(producer_inputs_before),
+            "producer_input_sha256_before": manifest_digest(producer_inputs_before),
+            "producer_input_sha256_after": manifest_digest(producer_inputs_after_grade),
         }
         (result / "shared-grade.json").write_text(
             json.dumps(grade_record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
