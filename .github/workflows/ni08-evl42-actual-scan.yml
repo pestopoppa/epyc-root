@@ -1,0 +1,59 @@
+name: NI08 EVL42 actual Research pin scan attachment
+on:
+  push:
+    branches: [codex/ni08-evl42-actual-scan-20261007]
+permissions:
+  contents: read
+jobs:
+  actual-pin-scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: recipe
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          path: research
+          ref: 5c945406cd49f424694de9be4b8716b88e9aa6f9
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          path: lock-source
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Fresh private output and locked pytest environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/evl42-actual-scan"
+          test ! -L "$RUNNER_TEMP/evl42-actual-scan"
+          mkdir -m 0700 "$RUNNER_TEMP/evl42-actual-scan"
+          printf '{"state":"installing"}\n' > "$RUNNER_TEMP/evl42-actual-scan/status.json"
+          python -m venv "$RUNNER_TEMP/evl42-actual-scan/venv"
+          "$RUNNER_TEMP/evl42-actual-scan/venv/bin/python" -m pip install --disable-pip-version-check --require-hashes --no-deps --only-binary=:all: -r recipe/scripts/ci/ni08_evl42_report_requirements.txt 2>&1 | tee "$RUNNER_TEMP/evl42-actual-scan/dependency-install.log"
+          "$RUNNER_TEMP/evl42-actual-scan/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/evl42-actual-scan/pip-freeze.txt"
+      - name: Capture unchanged actual Research checker once
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/evl42-actual-scan/venv/bin/python" recipe/scripts/ci/ni08_evl42_actual_scan_capture.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evl42-actual-scan-originals
+          path: ${{ runner.temp }}/evl42-actual-scan
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
