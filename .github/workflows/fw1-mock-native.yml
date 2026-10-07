@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-orchestrator
-          ref: 38d4ab72fe95ef7c1064d6574b3552a182023850
+          ref: 1533dd0b7c8c2a1c9ff1dde2ef36e0a690dc3819
           path: root-source
           fetch-depth: 1
           persist-credentials: false

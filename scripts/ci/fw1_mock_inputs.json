@@ -428,10 +428,10 @@
         "sha256": "5798831c6e07d47ac9d08bff347e1d9adee4fd16a22c0d3814bb6d94047b9095"
       },
       {
-        "blob": "ccf93567858454fee67c8898ee35ff699a9b00d0",
-        "bytes": 19666,
+        "blob": "df2361a0e12624e4b4d9471ba4e7b0781614a5e3",
+        "bytes": 20009,
         "path": "tests/unit/test_fw1_mocked_cli_harness.py",
-        "sha256": "d900a79a6ee73480a355b80cb327708470ea87ec738d39be59e87696506d5d20"
+        "sha256": "ad57ba18c0ed802becd11c545366e1cfc3f0383d9a33e1ab82eb6e829df18f92"
       },
       {
         "blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
