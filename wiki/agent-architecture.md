@@ -5130,3 +5130,7 @@ The recovered historical C5 policy is now carried byte-exactly in Research and v
 ### Bounded adversarial contract controls — 2026-10-06
 
 [DTAP source fixtures and original6/6](../artifacts/ni08/tuadv-contract-source-20261006/README.md) verify bounded repeated-invalid termination and undeclared privileged/skill-call refusal beside a benign control. Native unknown attack verdicts remain unknown. External/global skill-persistence and live robustness acceptance remain separate parent work.
+
+### Retained RAW source verification — 2026-10-07
+
+[SC76/SC77 source acceptance and original51/51](../artifacts/ni08/raw-anchor-source-20261007/README.md) connect prospective source retention to one quote verifier and the existing literature ladder. Private content-addressed bytes, revision and extractor identity are rechecked before traceability rises; legacy unavailable originals remain unknown. Machine source matching supplies no semantic judgment and no historical evidence is reconstructed.

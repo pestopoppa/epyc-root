@@ -158,14 +158,10 @@ def test_generation_is_deterministic():
     assert a["candidates"] == b["candidates"]
 
 
-# ------------------------------------------------- T2 MachineLocated (spec §4.2, 2026-08-10)
+# ------------------------------------- SC76/SC77 raw-source verification and grade ceiling
 
-def test_machine_anchor_cannot_reach_anchored():
-    """A machine anchor caps at MachineLocated however complete it is.
-
-    Revision and quote hash make it checkable, not read. Capping in the adapter rather than at the
-    policy layer means a well-formed machine anchor cannot be promoted by looking thorough.
-    """
+def test_unbound_anchors_cannot_gain_tier_from_record_shape():
+    """Legacy hashes and revision strings do not substitute for the retained source."""
     from adapters.research_intake import _t_level  # noqa: PLC0415
 
     entry = {"url": "https://arxiv.org/abs/2604.08224"}
@@ -176,8 +172,8 @@ def test_machine_anchor_cannot_reach_anchored():
         "located_by": "machine",
     }
     human = {"quote": "some span", "quote_sha256": "ab" * 32, "source_revision": "v2"}
-    assert _t_level(entry, machine) == "MachineLocated"
-    assert _t_level(entry, human) == "Attested"
+    assert _t_level(entry, machine) == "Located"
+    assert _t_level(entry, human) == "Located"
 
 
 def test_machine_anchor_without_a_quote_hash_is_only_located():

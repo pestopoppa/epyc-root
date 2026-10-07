@@ -1,0 +1,473 @@
+{
+  "review": "PASS",
+  "recipe_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+  "tracked_files": [
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": ".github/workflows/vb-raw-anchor-native.yml",
+      "mode": "100644",
+      "git_blob": "fd94839d43f7dec0587eee42224ff315a1f14182",
+      "bytes": 2359,
+      "sha256": "339c2df1f136c921105b96698557a6952f2419540532ec8fd8f7174e66754219"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/ci/run_vb_raw_anchor_capture.py",
+      "mode": "100644",
+      "git_blob": "91107b749071de352be4c6fee84262fa788b6121",
+      "bytes": 11443,
+      "sha256": "0defdd7fd0407f9b5a184c4b4cd06514f98ebbf55e65dea61a80c8469981518c"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/ci/vb_raw_anchor_expected_cases.json",
+      "mode": "100644",
+      "git_blob": "000c71f847d69c58a3ce7a5aeb2123da2eb0adbf",
+      "bytes": 5711,
+      "sha256": "e2dabff7570828e6db0240eb1c07a2c0cbb7cb8ea27915ab232955150216ebd4"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/ci/vb_raw_anchor_requirements.txt",
+      "mode": "100644",
+      "git_blob": "692609b1b90fdd3d03edbff7ee8da326a3816059",
+      "bytes": 801,
+      "sha256": "36dcf747e4c0dc9e52d04ce38790f5949264a9b9ac8abb9bef1d6579a9a97e57"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/ci/ni08_source_context.py",
+      "mode": "100644",
+      "git_blob": "344c861a00c6885f0a3b81f90712c3fc40cb4496",
+      "bytes": 2658,
+      "sha256": "d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "e5c633571051f9955f66a49a7afe7143d103da13",
+      "bytes": 244823,
+      "sha256": "b2ca24a53690daeda3b24732842517cd43c4e6b316f41ae745164a6751421ba6"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/adapters/research_intake.py",
+      "mode": "100644",
+      "git_blob": "8e970b6ef71cc3f2e8f886820d1354ef827f62ed",
+      "bytes": 39849,
+      "sha256": "b8768d5adaf56bd4fff7031f3ed6e1c885853c8f30a4ab043f6268658798dae6"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/alias_candidates.py",
+      "mode": "100644",
+      "git_blob": "32b3910a763737b7e07dd9740797c680db3216b4",
+      "bytes": 18228,
+      "sha256": "736f6a8dd1c0b8d31f283b96ea2632f10bcc67739c4016ca4eb9810dda221a6d"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/canonical.py",
+      "mode": "100644",
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/fold.py",
+      "mode": "100644",
+      "git_blob": "01938146e0d94642759ce77c3abfb34f6c748e31",
+      "bytes": 44566,
+      "sha256": "f22dfc750d55c6fbc01cc0b56847f5684417221af5b392e7da7a8d46b2ec2cab"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/frames.py",
+      "mode": "100644",
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/impact.py",
+      "mode": "100644",
+      "git_blob": "920def4950edb909f1b41ea938f122376daee837",
+      "bytes": 16732,
+      "sha256": "d457eece659fffb9015e4ab359f55285bb0410f571c9924fa1cbb664945ed800"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/intake_assertion_kinds.py",
+      "mode": "100644",
+      "git_blob": "0fc2e3313c453de84cdcbcd87c3fa4c1547edf78",
+      "bytes": 1878,
+      "sha256": "0615f1659fc60e9c46e33d3270f346ca39a399c7ec2b638b76436e255a63460f"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/lattice.py",
+      "mode": "100644",
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/machine_anchor.py",
+      "mode": "100644",
+      "git_blob": "5c6e66b976efccc7244ba595f7d13367cb0a0dad",
+      "bytes": 16528,
+      "sha256": "11008bfe0428085ff798702561a07c8444c9e4abc53c42a4393d05eee926f40a"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "scripts/vidya/raw_anchor_store.py",
+      "mode": "100644",
+      "git_blob": "8f08aea8651d542eb16475cd9871779940e07ea8",
+      "bytes": 14761,
+      "sha256": "fc0661d60e68ed341754c3618661df80fad155f9890319819edbd59f557519ed"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "tests/__init__.py",
+      "mode": "100644",
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "bytes": 833,
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "tests/conftest.py",
+      "mode": "100644",
+      "git_blob": "7c8d00f842e6f53bd495ed80263720255da50e03",
+      "bytes": 999,
+      "sha256": "e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "tests/vidya/test_impact_coverage_anchor_level.py",
+      "mode": "100644",
+      "git_blob": "fe9c80c1e92bf57bd166dd3e53c95d7c6d1683bb",
+      "bytes": 4838,
+      "sha256": "8681189929d5388d226deaa94c94dd4c51657f8b85181d32cf724de2cd591c00"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "tests/vidya/test_raw_anchor_store.py",
+      "mode": "100644",
+      "git_blob": "bbef96262e49b600705f488bceb6228247dbe751",
+      "bytes": 12533,
+      "sha256": "8d085b9fa47efca95bb4a07114af2bfe7f5f269b3febb17b627e090014632418"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "tests/vidya/test_vidya_alias.py",
+      "mode": "100644",
+      "git_blob": "f0fa226b50b516dddad2ab2b436fba4d48a83e9e",
+      "bytes": 8203,
+      "sha256": "8f6b0749d02a6e6d7930d3469073379bceaa4b023c058af949d9a1f509e14cbd"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "tests/vidya/test_vidya_machine_anchor.py",
+      "mode": "100644",
+      "git_blob": "f639dd37cae7dc5bf212c8c6274f26c4863c95a8",
+      "bytes": 6596,
+      "sha256": "9cf3ce7a2529b66bd3e18d60acb089a4aefc85f2797ea8e6fca125c87c2c7553"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "mode": "100644",
+      "git_blob": "e622bb44de74f619b6e3f8f58bdbc863f5499c95",
+      "bytes": 326943,
+      "sha256": "ef6ee21caf36cb31f11638bd85d02ef8e9473877601424fcedc94fc0393a55ba"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_the_ordinals_are_what_this_test_thinks_they_are"
+    },
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_all_anchored_is_claim_complete"
+    },
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_attested_counts_as_anchored_or_better"
+    },
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_all_machine_located_is_NOT_claim_complete"
+    },
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_a_single_machine_located_path_downgrades_the_whole_belief"
+    },
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_machine_located_still_reaches_PARTIAL_not_UNMAPPED"
+    },
+    {
+      "classname": "tests.vidya.test_impact_coverage_anchor_level",
+      "name": "test_the_bar_is_read_from_the_named_level_not_a_literal"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_response_bytes_are_retained_and_reopened_by_content_identity"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_human_tier_requires_valid_retained_source_and_machine_tier_stays_capped"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_legacy_shape_and_unknown_metadata_never_raise_anchor_tier"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_frame_retains_the_exact_source_binding_metadata"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_tampered_or_symlinked_artifact_is_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_hardlinked_retained_file_is_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_fifo_at_content_path_is_refused_without_blocking"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_arxiv_verification_requires_three_explicit_exact_revision_urls"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_missing_original_wrong_quote_and_wrong_source_revision_are_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_traversal_and_unsafe_root_permissions_refuse"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_symlinked_artifact_root_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_store_is_missing_only_and_conflicting_existing_object_refuses"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_unversioned_arxiv_and_revision_redirect_mismatch_do_not_bind"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_unsupported_media_never_produces_a_retained_anchor"
+    },
+    {
+      "classname": "tests.vidya.test_raw_anchor_store",
+      "name": "test_no_configured_root_returns_no_source_warrant"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_normalize_drops_stopwords_and_case"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_near_duplicate_across_entries_is_proposed"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_same_entry_pairs_are_never_proposed"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_unrelated_claims_are_not_proposed"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_same_source_is_flagged_not_hidden"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_locator_map_folds_arxiv_url_and_id_and_version"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_worksheet_rows_start_pending_and_emit_nothing"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_approved_rows_close_transitively"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_approval_without_a_reviewer_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_unknown_decision_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_generation_is_deterministic"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_unbound_anchors_cannot_gain_tier_from_record_shape"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_machine_anchor_without_a_quote_hash_is_only_located"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_alias_group_is_non_independent_when_any_row_is_related"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_alias",
+      "name": "test_alias_group_is_independent_when_no_row_is_related"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_claim_present_in_the_document_is_anchored"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_the_quote_hash_is_over_the_normalized_span"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_negative_control_a_claim_not_in_the_document_anchors_nothing"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_generic_claim_is_refused_even_if_words_appear"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_an_ambiguous_best_match_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_an_already_anchored_claim_is_left_alone"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_an_entry_with_no_url_is_skipped"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_stopwords_do_not_count_as_distinctive"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_numeric_claim_needs_its_number_in_the_span"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_span_whose_numbers_contradict_the_claim_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_matching_number_still_anchors"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_year_is_not_a_magnitude"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_non_numeric_claim_is_unaffected_by_the_guard"
+    },
+    {
+      "classname": "tests.vidya.test_vidya_machine_anchor",
+      "name": "test_a_non_string_claim_does_not_shift_the_indices_after_it"
+    }
+  ],
+  "expected_generated_contexts": [
+    "source-context.json",
+    "dependency-install.log",
+    "environment.json"
+  ],
+  "source_context_sha256": "fe19266eac0f52f7114af000b5fbec28286726e7c4bfe9a7960e982c8981902d",
+  "source_context_bytes": 655351,
+  "manual_blast_radius": "MEDIUM prospective RAW custody and single literature source verifier; existing human/machine ladder unchanged, no actual fetch/canonical ledger write/retrospective warrant.",
+  "host_project_execution": false
+}

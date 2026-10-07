@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import yaml  # noqa: E402
 
 from intake_assertion_kinds import validate_assertion_kinds as _validated_assertion_kinds  # noqa: E402
+from machine_anchor import verify_source_anchor  # noqa: E402
 from claim_tuple import register_ladder  # noqa: E402
 from frames import make_frame  # noqa: E402
 from lattice import Grade, Q_LEVELS, parse_grade  # noqa: E402
@@ -60,7 +61,11 @@ def _anchors_by_claim(entry: dict) -> dict[int, dict]:
     return out
 
 
-def _t_level(entry: dict, anchor: dict | None = None) -> str:
+def _t_level(
+    entry: dict,
+    anchor: dict | None = None,
+    source_verification: tuple[bool, str] | None = None,
+) -> str:
     """Traceability for a claim from this entry.
 
     Without a per-claim anchor the ceiling is `T1 Located`: an index entry names a document, not a
@@ -68,25 +73,30 @@ def _t_level(entry: dict, anchor: dict | None = None) -> str:
     `locator_note` explains *why* the material cannot be retrieved, which is honest but is still
     not a locator.
 
-    With a `claim_anchors` entry (P2b) the claim reaches `Anchored`, and `Attested` when the
-    anchor also pins the source revision it was read at AND carries a hash of the quoted span --
-    the pair is what makes the anchor checkable later rather than merely specific.
+    With a `claim_anchors` entry (P2b), the source-bound raw artifact must be available and
+    re-verifiable before the quoted span raises traceability above document-level `Located`.
+    A missing or invalid original is reported as unknown and cannot gain warrant from its own
+    quote/hash/source-revision fields.
 
-    An anchor marked `located_by: machine` tops out at `MachineLocated` (spec §4.2 amendment,
-    2026-08-10) however complete it is. Revision and quote hash make a machine anchor *checkable*;
-    they do not make it *read*, and the level above records a person's judgment that the passage
-    says what the claim says. Capping here rather than at the policy layer means a machine anchor
-    cannot reach `Anchored` by being unusually well-formed.
+    A source-verified anchor marked `located_by: machine` tops out at `MachineLocated` (spec §4.2
+    amendment, 2026-08-10) however complete it is. Re-finding and hashing its quote proves the
+    source span, not that the span says what the claim says; the level above still requires a
+    person's semantic judgment. Capping here rather than at the policy layer means a machine
+    anchor cannot reach `Anchored` by being unusually well-formed.
     """
     if anchor:
         has_span = bool(anchor.get("quote") or anchor.get("locator"))
         if not has_span:
             pass
-        elif anchor.get("located_by") == "machine":
-            return "MachineLocated" if anchor.get("quote_sha256") else "Located"
-        elif anchor.get("quote_sha256") and anchor.get("source_revision"):
-            return "Attested"
         else:
+            valid, _status = source_verification or verify_source_anchor(
+                anchor, entry_url=entry.get("url"))
+            if not valid:
+                return "Located" if entry.get("url") or entry.get("arxiv_id") else "T0"
+            if anchor.get("located_by") == "machine":
+                return "MachineLocated"
+            if anchor.get("quote_sha256") and anchor.get("source_revision"):
+                return "Attested"
             return "Anchored"
     if entry.get("url") or entry.get("arxiv_id"):
         return "Located"
@@ -113,7 +123,11 @@ def _q_level(entry: dict) -> tuple[str, bool]:
 
 
 @register_ladder("literature", "scripts/vidya/adapters/research_intake.py")
-def grade_for_entry(entry: dict, anchor: dict | None = None) -> tuple[Grade, bool]:
+def grade_for_entry(
+    entry: dict,
+    anchor: dict | None = None,
+    source_verification: tuple[bool, str] | None = None,
+) -> tuple[Grade, bool]:
     """The (Q x T) grade a claim inherits, and whether it is opposition.
 
     THE ladder for the `literature` source class, declared as such so the conformance test can
@@ -121,7 +135,7 @@ def grade_for_entry(entry: dict, anchor: dict | None = None) -> tuple[Grade, boo
     — which is what `measurement_record` and `sealed_manifest` had become by 2026-08-10.
     """
     q, is_opposition = _q_level(entry)
-    return parse_grade({"Q": q, "T": _t_level(entry, anchor)}), is_opposition
+    return parse_grade({"Q": q, "T": _t_level(entry, anchor, source_verification)}), is_opposition
 
 
 def _claim_id(entry_id: str, index: int) -> str:
@@ -281,7 +295,10 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
             # A record status is displayed and addressable, but asserts no source finding.
             continue
         anchor = anchors.get(i)
-        grade, is_opposition = grade_for_entry(entry, anchor)
+        source_verification = (
+            verify_source_anchor(anchor, entry_url=entry.get("url")) if anchor else None
+        )
+        grade, is_opposition = grade_for_entry(entry, anchor, source_verification)
         # A per-claim verdict overrides the entry-level one. Without it, `dive-overturned` opposes
         # EVERY claim of the entry -- measured 2026-08-10 as 114 claims across 27 entries, most of
         # which no dive ever disputed. intake-896 is the case that motivated it: four claims, one
@@ -304,6 +321,11 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
                 "quote_sha256": anchor.get("quote_sha256"),
                 "source_revision": anchor.get("source_revision"),
                 "verified_by": anchor.get("verified_by"),
+                "source_verification": (
+                    "verified" if source_verification and source_verification[0] else "unknown"
+                ),
+                **({"source_artifact": dict(anchor["source_artifact"])}
+                   if isinstance(anchor.get("source_artifact"), dict) else {}),
             }
         else:
             # An absent anchor is recorded explicitly. Inferring it from a low grade would make the
@@ -728,7 +750,11 @@ def ingest_intake_index(
             n_claims += 1
             if assertion_kinds.get(i, {}).get("kind") == "record_status":
                 continue
-            grade, is_opposition = grade_for_entry(entry, anchors.get(i))
+            anchor = anchors.get(i)
+            source_verification = (
+                verify_source_anchor(anchor, entry_url=entry.get("url")) if anchor else None
+            )
+            grade, is_opposition = grade_for_entry(entry, anchor, source_verification)
             # The SAME helper the frame emitter uses, not a second reading of it. These two drifted
             # before — the report said 112 opposition while the adapter emitted 106, a summary
             # misstating the run it summarizes, which is this program's own subject matter showing
@@ -771,8 +797,9 @@ def ingest_intake_index(
         "ceiling_note": (
             "Claims without a `claim_anchors` record top out at T1 Located: an index entry names a "
             "document, not a span within it, so no amount of diving raises the T axis on its own. "
-            "Claims WITH an anchor reach T2 Anchored, or T3 Attested when the anchor also pins the "
-            "source revision and a hash of the quoted span. This is the measured price of "
-            "recording the anchor at dive time versus reconstructing it later."
+            "Claims WITH an anchor exceed document-level traceability only when its retained original "
+            "source bytes and normalized quote hash re-verify; a machine match remains capped at "
+            "T2 MachineLocated and a human semantic assertion remains separate. Missing originals "
+            "are unknown, never reconstructed or backfilled."
         ),
     }

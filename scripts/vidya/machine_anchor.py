@@ -26,11 +26,19 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from canonical import normalized_quote  # noqa: E402
+from raw_anchor_store import (  # noqa: E402
+    ArtifactUnavailable,
+    read_raw_bytes,
+    store_raw_bytes,
+    validate_artifact_metadata,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 INDEX = REPO_ROOT / "research" / "intake_index.yaml"
@@ -43,6 +51,8 @@ MIN_MARGIN = 1.30              # best span must beat the runner-up by this facto
 # first real run anchored a WER figure to a sentence that only NAMED the metric, and a
 # token-reduction claim to a sentence whose numbers contradicted it.
 MAX_SPAN_CHARS = 600
+EXTRACTOR_ID = "vidya/machine_anchor-html-text/v1"
+SUPPORTED_MEDIA_TYPES = frozenset({"text/html", "application/xhtml+xml", "text/plain"})
 
 _STOP = frozenset("""
 a an the and or but of to in on for with by from as at is are was were be been being it its this
@@ -58,30 +68,143 @@ def terms(text: str) -> set[str]:
     return {t for t in _TOKEN.findall(text.lower()) if t not in _STOP and len(t) > 2}
 
 
-def fetch_text(url: str, *, timeout: int = 45) -> str | None:
-    """Fetch a source as plain-ish text. arXiv goes through the HTML rendering."""
-    m = re.search(r"arxiv\.org/(?:abs|pdf)/([0-9v.]+)", url, re.I)
-    candidates = []
-    if m:
-        bare = re.sub(r"v\d+$", "", m.group(1).removesuffix(".pdf"))
-        candidates = [f"https://arxiv.org/abs/{bare}"]
-    else:
-        candidates = [url]
-    for u in candidates:
+def _extract_text(raw: bytes, media_type: str) -> str:
+    """Decode one supported response using the versioned anchor extractor."""
+    if media_type not in SUPPORTED_MEDIA_TYPES:
+        raise ArtifactUnavailable(f"unsupported source media type: {media_type}")
+    source = raw.decode("utf-8", errors="strict")
+    if media_type in {"text/html", "application/xhtml+xml"}:
+        source = re.sub(r"(?is)<(script|style).*?</\1>", " ", source)
+        source = re.sub(r"(?s)<[^>]+>", " ", source)
+        source = (source.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+                        .replace("&quot;", '"').replace("&#39;", "'").replace("&nbsp;", " "))
+    return re.sub(r"\s+", " ", source).strip()
+
+
+def _extractor_sha256() -> str:
+    import inspect
+    identity = "\0".join((
+        EXTRACTOR_ID,
+        inspect.getsource(_extract_text),
+        "\n".join(sorted(SUPPORTED_MEDIA_TYPES)),
+    ))
+    return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+
+
+def _arxiv_locator(url: str) -> tuple[bool, str | None]:
+    """Return exact arXiv host/path identity without matching query or host substrings."""
+    try:
+        parsed = urlsplit(url)
+    except ValueError:
+        return False, None
+    if parsed.hostname not in {"arxiv.org", "www.arxiv.org"}:
+        return False, None
+    match = re.fullmatch(r"/(?:abs|pdf|html)/([A-Za-z0-9.-]+(?:/[A-Za-z0-9.-]+)?)(?:\.pdf)?", parsed.path, re.I)
+    if not match:
+        return True, None
+    identifier = re.sub(r"\.pdf$", "", match.group(1), flags=re.I)
+    return True, identifier if re.search(r"v\d+$", identifier, re.I) else None
+
+
+def _versioned_arxiv_id(url: str) -> str | None:
+    return _arxiv_locator(url)[1]
+
+
+def fetch_document(url: str, *, timeout: int = 45) -> tuple[str | None, dict | None]:
+    """Fetch once, hash and extract the same bytes, and retain them when configured.
+
+    `None` artifact metadata means the text may be useful for discovery but cannot
+    support a source-verification warrant.
+    """
+    is_arxiv, entry_version = _arxiv_locator(url)
+    if is_arxiv and entry_version is None:
+        # An unversioned alias may resolve to a different revision between reads.
+        return None, None
+    fetch_url = (f"https://arxiv.org/html/{entry_version}" if entry_version else url)
+    try:
+        req = urllib.request.Request(fetch_url, headers={"User-Agent": "epyc-vidya-anchor/1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            raw = response.read(20 * 1024 * 1024 + 1)
+            if len(raw) > 20 * 1024 * 1024:
+                return None, None
+            effective_url = response.geturl()
+            if not response.headers.get("Content-Type"):
+                return None, None
+            media_type = str(response.headers.get_content_type()).lower()
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None, None
+    try:
+        text = _extract_text(raw, media_type)
+    except (ArtifactUnavailable, UnicodeError):
+        return None, None
+    if len(text) <= 400:
+        return None, None
+
+    artifact = None
+    if media_type in SUPPORTED_MEDIA_TYPES:
+        effective_version = _versioned_arxiv_id(effective_url)
+        if is_arxiv and effective_version != entry_version:
+            return text, None
+        raw_digest = hashlib.sha256(raw).hexdigest()
         try:
-            req = urllib.request.Request(u, headers={"User-Agent": "epyc-vidya-anchor/1.0"})
-            with urllib.request.urlopen(req, timeout=timeout) as r:
-                raw = r.read().decode("utf-8", errors="replace")
-        except (urllib.error.URLError, TimeoutError, OSError):
-            continue
-        text = re.sub(r"(?is)<(script|style).*?</\1>", " ", raw)
-        text = re.sub(r"(?s)<[^>]+>", " ", text)
-        text = (text.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-                    .replace("&quot;", '"').replace("&#39;", "'").replace("&nbsp;", " "))
-        text = re.sub(r"\s+", " ", text).strip()
-        if len(text) > 400:
-            return text
-    return None
+            artifact = store_raw_bytes(
+                raw,
+                {
+                    "entry_url": url,
+                    "requested_url": fetch_url,
+                    "effective_url": effective_url,
+                    "retrieved_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                    "media_type": media_type,
+                    "extractor_id": EXTRACTOR_ID,
+                    "extractor_sha256": _extractor_sha256(),
+                },
+            )
+        except ArtifactUnavailable:
+            artifact = None
+        if artifact and artifact["raw_sha256"] != raw_digest:
+            return text, None
+    return text, artifact
+
+
+def fetch_text(url: str, *, timeout: int = 45) -> str | None:
+    """Compatibility wrapper; source verification requires `fetch_document` metadata."""
+    text, _artifact = fetch_document(url, timeout=timeout)
+    return text
+
+
+def verify_source_anchor(anchor: dict, *, entry_url: str | None = None) -> tuple[bool, str]:
+    """Re-find a quote from its retained original bytes; never trust shape alone."""
+    artifact = anchor.get("source_artifact") if isinstance(anchor, dict) else None
+    if not isinstance(artifact, dict):
+        return False, "unknown: original artifact metadata absent"
+    try:
+        validate_artifact_metadata(artifact)
+        if entry_url is not None and artifact.get("entry_url") != entry_url:
+            raise ArtifactUnavailable("entry URL does not match retained source metadata")
+        arxiv_locators = [
+            _arxiv_locator(artifact.get(key, ""))
+            for key in ("entry_url", "requested_url", "effective_url")
+        ]
+        if any(is_arxiv for is_arxiv, _identifier in arxiv_locators) and (
+            not all(is_arxiv for is_arxiv, _identifier in arxiv_locators)
+            or any(identifier is None for _is_arxiv, identifier in arxiv_locators)
+            or len({identifier for _is_arxiv, identifier in arxiv_locators}) != 1
+        ):
+            raise ArtifactUnavailable("arXiv source revision is not consistently version-pinned")
+        if artifact.get("extractor_id") != EXTRACTOR_ID or artifact.get("extractor_sha256") != _extractor_sha256():
+            raise ArtifactUnavailable("extractor identity does not match this verifier")
+        if anchor.get("source_revision") != artifact.get("effective_url"):
+            raise ArtifactUnavailable("anchor source revision disagrees with effective URL")
+        raw = read_raw_bytes(artifact)
+        document = _extract_text(raw, artifact["media_type"])
+        quote = anchor.get("quote")
+        if not isinstance(quote, str) or not quote or quote not in document:
+            raise ArtifactUnavailable("quoted span is absent from the extracted original")
+        if hashlib.sha256(normalized_quote(quote).encode("utf-8")).hexdigest() != anchor.get("quote_sha256"):
+            raise ArtifactUnavailable("normalized quote digest does not match")
+    except (ArtifactUnavailable, OSError, UnicodeError, TypeError, ValueError) as exc:
+        return False, f"unknown: {exc}"
+    return True, "verified"
 
 
 # Bare years are dates, not magnitudes, and matching on "2024" would anchor half the corpus to a
@@ -157,7 +280,12 @@ def best_span(claim: str, document: str) -> dict | None:
     }
 
 
-def anchor_entry(entry: dict, *, document: str | None = None) -> list[dict]:
+def anchor_entry(
+    entry: dict,
+    *,
+    document: str | None = None,
+    source_artifact: dict | None = None,
+) -> list[dict]:
     """Machine anchors for one entry's claims. Never anchors a claim that already has one."""
     url = entry.get("url")
     if not isinstance(url, str) or not url.strip():
@@ -191,6 +319,10 @@ def anchor_entry(entry: dict, *, document: str | None = None) -> list[dict]:
             "located_by": "machine",
             "match_coverage": str(hit["coverage"]),
             "verified_by": "vidya/machine_anchor",
+            **({
+                "source_artifact": source_artifact,
+                "source_revision": source_artifact.get("effective_url"),
+            } if source_artifact else {}),
         })
     return out
 
@@ -226,13 +358,13 @@ def main() -> int:
     proposed, attempted, no_doc = {}, 0, 0
     for e in todo:
         attempted += 1
-        doc = fetch_text(e["url"])
+        doc, source_artifact = fetch_document(e["url"])
         if not doc:
             no_doc += 1
             print(f"  {e['id']}: source not retrievable")
             time.sleep(args.delay)
             continue
-        anchors = anchor_entry(e, document=doc)
+        anchors = anchor_entry(e, document=doc, source_artifact=source_artifact)
         if anchors:
             proposed[e["id"]] = anchors
         print(f"  {e['id']}: {len(anchors)} of {len(e.get('key_claims') or [])} claims anchored")

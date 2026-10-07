@@ -1049,7 +1049,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
 
 ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914)
 
-- [ ] **SC76 (S3-VID-02) — claim_anchors are re-verified, not self-consistent.** The only hasher runs at
+- [x] **SC76 (S3-VID-02) — claim_anchors are re-verified, not self-consistent.** The only hasher runs at
       write time (machine_anchor.py) and the validator has zero claim_anchors checks. Add a
       re-verification call: re-find the quote in the RAW fetched artifact whose sha256 is recorded (not
       a summary, not a paraphrase), and recompute quote_sha256 over canonical.normalized_quote
@@ -1057,7 +1057,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       Reference implementation: /mnt/raid0/llm/tmp/stage2b/s2b-valid-anchors.py (re-found every quote in
       intake-1373/1374/1377). This is the ONE re-verifier that SC77, SC79 and SC80 build on.
       (intake-1367#record; intake-1373#record; intake-1386#record)
-- [ ] **SC77 (S3-VID-03) — research_intake adapter tier comes from a verified hash, not record shape.**
+- [x] **SC77 (S3-VID-03) — research_intake adapter tier comes from a verified hash, not record shape.**
       research_intake.py returns Attested whenever quote_sha256 and source_revision are both present,
       and the machine-anchor cap applies only to located_by: machine, so a human-labelled anchor with a
       fabricated quote reaches Attested. Tie the tier to SC76's verification result. intake-1367#record.
@@ -2808,7 +2808,7 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 - [ ] **VB-AP62-CONFORMANCE — Bind the exact reviewed invocation-ring locking and full current request-scope/route-guard module before hosted synthetic capture. Verify append/clear serialization with real locks, paused readers and writer-specific acquisition signals; preserve source/readset/case identities and originals through existing carrier/shared grade. No serving reload, request-quality claim or host project execution.**
 - [x] **VB-RTG02-CONFORMANCE — Bind the exact programmatic input-echo probe, existing deterministic scorer and explicit unsafe-method refusal controls before hosted capture. Synthetic rows only; unchanged scorer/metric semantics, exact source/import closure, expanded cases and original readset/JUnit/carrier output. No actual pool rebuild, model/code-execution/math/LLM scorer calls, replay or new ladder.**
-- [ ] **VB-RAW-ANCHOR-CONFORMANCE — Bind the reviewed prospective retained-RAW store, versioned source resolution and shared literature proof verifier before hosted synthetic capture. Exact bytes/private identity/revision/extractor controls, missing/changed/FIFO/hardlink refusal, original source/readset/case/carrier output; no live fetch, historical anchor reconstruction, canonical intake/ledger write or new semantic grading rule.**
+- [x] **VB-RAW-ANCHOR-CONFORMANCE — Bind the reviewed prospective retained-RAW store, versioned source resolution and shared literature proof verifier before hosted synthetic capture. Exact bytes/private identity/revision/extractor controls, missing/changed/FIFO/hardlink refusal, original source/readset/case/carrier output; no live fetch, historical anchor reconstruction, canonical intake/ledger write or new semantic grading rule.**
 - [x] **VB-TUADV-CONFORMANCE — Bind the exact DTAP synthetic invalid-capability/repeated-payload fixture controls and unchanged runner/catalog/judge/trace closure before hosted capture. Preserve typed failure chains, positive benign/attack verdict and immutable originals through existing carrier/shared grade. No live endpoint, attack search, new scoring or global skill-store claim.**
 
 
@@ -2830,3 +2830,5 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 - [ ] **VB-AUD11-F08-CONFORMANCE — bind exact actual-command interval-refusal fixtures and mutation source before off-host capture.** Existing shared native CI carrier only, original unmodified-source controls plus explicitly recorded AST mutation/refusal sensitivity. Test-only source, no real nudge/bus/process, protected source change, operator inference or new grade.
 - [ ] **VB-RTG23-W8-CONFORMANCE — bind planner-display missing-versus-zero source controls before capture.** Preserve legacy stored/helper zero/math; actual missing/malformed display n/a, valid zero and positive unchanged. Exact source/cases/context and existing native carrier/shared grade only; no live frontier, rate improvement or objective amendment.
+
+2026-10-07 MAIN accepts SC76/SC77 and VB-RAW-ANCHOR-CONFORMANCE after exact source review and original51/51 hosted synthetic controls; [evidence/scope](../../artifacts/ni08/raw-anchor-source-20261007/README.md). Retained RAW verification replaces shape-only proof prerequisites through one checker; missing originals stay unknown, machine cap/shared ladder unchanged. SC78/SC79 remain separately open; no actual fetch or historical intake/ledger write.

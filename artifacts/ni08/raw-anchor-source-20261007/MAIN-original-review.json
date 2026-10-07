@@ -1,0 +1,39 @@
+{
+  "reviewed_at": "2026-10-07T00:07:06.030158+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37549655560,
+  "attempt": 1,
+  "artifact": 11451699334,
+  "pins": {
+    "root": "8726e5108a0fd776cca97fff5d532e3522c8a44c",
+    "app": "cfcf3768716de888a971bf66489397f5b91241df"
+  },
+  "zip_sha256": "88f1ddd9399e9c040a1c7364764fe79b84e68ec5a31e50bd6f3c554672bbdd6b",
+  "zip_bytes": 1155397,
+  "members": 42,
+  "readset_count": 31,
+  "git_inputs": 28,
+  "contexts": 3,
+  "counts": {
+    "collected": 51,
+    "error": 0,
+    "executed": 51,
+    "failure": 0,
+    "passed": 51,
+    "skipped": 0
+  },
+  "testcase_nodes": 51,
+  "native_value": true,
+  "receipt_file_sha256": "9bf960a667e6f99a2b9270ceaadf8248f76bdb57e432ecb66910d587ed67b12d",
+  "receipt_self_sha256": "4dcc7b3a7d5818e2f96063f9af15dad8e5bf2f6a5a75de7d3105b0b8d0094ca1",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "MEDIUM prospective RAW custody and single literature source verifier; existing human/machine ladder unchanged, no actual fetch/canonical ledger write/retrospective warrant.",
+  "job_identity": "github_job_112561842754"
+}
