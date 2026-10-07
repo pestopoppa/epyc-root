@@ -27731,8 +27731,8 @@
       },
       {
         "path": "scripts/ci/ni08_ufh12_spill_source_map.json",
-        "sha256": "75f2a65a2026e3ff3533ad8ad69c20369ce6cd74921e67ec81789522d486ca79",
-        "status": "regular exact native read; source map self hash excluded to avoid recursion"
+        "sha256": null,
+        "status": "regular exact native read; recursive SHA intentionally omitted, bound by exact final recipe commit/GITHUB_SHA and before/after snapshots"
       },
       {
         "path": "scripts/ci/ni08_ufh12_executed_function_source_graph.json",
