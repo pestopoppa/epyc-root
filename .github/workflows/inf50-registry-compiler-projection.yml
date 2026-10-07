@@ -29,11 +29,26 @@ jobs:
           lfs: false
           submodules: false
           persist-credentials: false
+      - id: root_context_checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: fff1aee9e3d0c7b4317e0bb68f375802bf356b6a
+          path: root-context
+          fetch-depth: 1
+          lfs: false
+          submodules: false
+          persist-credentials: false
+          sparse-checkout: |
+            handoffs/active/speculative-decoding-mtp-refresh.md
+            handoffs/active/vidya-belief-substrate-program.md
+            scripts/vidya/adapters/README.md
+          sparse-checkout-cone-mode: false
       - id: app_checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: pestopoppa/epyc-orchestrator
-          ref: 87ecbf18bc3d3793271d0eaf183e19900ad9726a
+          ref: f0df7ca2f801481d2024ad86c3ed37d60155430e
           path: app
           fetch-depth: 1
           lfs: false
@@ -55,7 +70,7 @@ jobs:
           python-version: '3.13.15'
           architecture: x64
       - id: run_projection
-        name: Capture native dry-run and full semantic/source custody
+        name: Capture native dry-run, generated writer output, and full semantic/source custody
         env:
           EXPECTED_ROOT_SHA: ${{ github.sha }}
           GITHUB_RUN_ID: ${{ github.run_id }}
@@ -64,12 +79,13 @@ jobs:
           PYTHONNOUSERSITE: '1'
         run: >-
           python3 root/scripts/ci/inf50_registry_projection.py capture
-          --root root --app app --research research
+          --root root --context root-context --app app --research research
           --custody "$RUNNER_TEMP/inf50-custody"
       - name: Record workflow step outcomes
         if: always()
         env:
           ROOT_CHECKOUT: ${{ steps.root_checkout.outcome }}
+          ROOT_CONTEXT_CHECKOUT: ${{ steps.root_context_checkout.outcome }}
           APP_CHECKOUT: ${{ steps.app_checkout.outcome }}
           RESEARCH_CHECKOUT: ${{ steps.research_checkout.outcome }}
           SETUP_PYTHON: ${{ steps.setup_python.outcome }}
@@ -77,8 +93,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          printf '{"record_kind":"attempt_inventory","root_checkout":"%s","app_checkout":"%s","research_checkout":"%s","setup_python":"%s","run_projection":"%s","native_receipt":null,"junit":null,"claim":null}\n' \
-            "$ROOT_CHECKOUT" "$APP_CHECKOUT" "$RESEARCH_CHECKOUT" "$SETUP_PYTHON" "$RUN_PROJECTION" \
+          printf '{"record_kind":"attempt_inventory","root_checkout":"%s","root_context_checkout":"%s","app_checkout":"%s","research_checkout":"%s","setup_python":"%s","run_projection":"%s","native_receipt":null,"junit":null,"claim":null}\n' \
+            "$ROOT_CHECKOUT" "$ROOT_CONTEXT_CHECKOUT" "$APP_CHECKOUT" "$RESEARCH_CHECKOUT" "$SETUP_PYTHON" "$RUN_PROJECTION" \
             > "$RUNNER_TEMP/inf50-custody/meta/attempt-outcomes.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Capture an ungraded, read-only registry projection diagnostic on a hosted runner.
+"""Capture an ungraded registry projection and generated view in isolated custody.
 
 The top-level runner uses only the Python standard library. PyYAML is imported
 only in the compare subcommand, inside a disposable venv installed from all
 wheel hashes locked for the required package. This file imports no project code.
+Native output is directed to a prechecked fresh custody path; pinned source
+checkouts and their existing cache state remain unchanged.
 """
 from __future__ import annotations
 
@@ -14,14 +16,16 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import platform
+import re
 import stat
 import subprocess
 import sys
 import tomllib
 import traceback
 
-APP_SHA = "87ecbf18bc3d3793271d0eaf183e19900ad9726a"
+APP_SHA = "f0df7ca2f801481d2024ad86c3ed37d60155430e"
 RESEARCH_SHA = "c49729505b6b85bcc2ef68255168014b4ae6a84d"
+ROOT_CONTEXT_SHA = "fff1aee9e3d0c7b4317e0bb68f375802bf356b6a"
 EXPECTED_WHEEL_SHA = "0f29edc409a6392443abf94b9cf89ce99889a1dd5376d94316ae5145dfedd5d6"
 ROLES = (
     "architect_critic", "architect_general", "coder_escalation", "embedder",
@@ -34,6 +38,7 @@ ROLES = (
 EXPECTED_DIFF = "speculative_decoding_policy.retired_fields.ngram_candidate_spec_type"
 REMOTE_URLS = {
     "root": "https://github.com/pestopoppa/epyc-root.git",
+    "root_context": "https://github.com/pestopoppa/epyc-root.git",
     "app": "https://github.com/pestopoppa/epyc-orchestrator.git",
     "research": "https://github.com/pestopoppa/epyc-inference-research.git",
 }
@@ -44,6 +49,11 @@ SOURCE_PATHS = {
         ("scripts/vidya/adapters/README.md", "source-table enrollment"),
         (".github/workflows/inf50-registry-compiler-projection.yml", "recipe"),
         ("scripts/ci/inf50_registry_projection.py", "runner"),
+    ),
+    "root_context": (
+        ("handoffs/active/speculative-decoding-mtp-refresh.md", "owning SR5 task marker"),
+        ("handoffs/active/vidya-belief-substrate-program.md", "VB-INF50 enrollment marker"),
+        ("scripts/vidya/adapters/README.md", "source table enrollment marker"),
     ),
     "app": (
         ("src/__init__.py", "executed import closure"),
@@ -162,7 +172,7 @@ def source_inventory(repos: dict[str, Path], expected_root: str, custody: Path, 
     entries = []
     repo_ids = {}
     clean = {}
-    for key in ("root", "app", "research"):
+    for key in ("root", "root_context", "app", "research"):
         repo = repos[key].resolve(strict=True)
         argv = ["git", "rev-parse", "HEAD"]
         head = run(argv, cwd=repo)
@@ -170,7 +180,8 @@ def source_inventory(repos: dict[str, Path], expected_root: str, custody: Path, 
         if head.returncode:
             raise RuntimeError(f"could not read {key} HEAD: {head.stderr.decode(errors='replace')}")
         commit = head.stdout.decode().strip()
-        expected = expected_root if key == "root" else APP_SHA if key == "app" else RESEARCH_SHA
+        expected = (expected_root if key == "root" else ROOT_CONTEXT_SHA if key == "root_context"
+                    else APP_SHA if key == "app" else RESEARCH_SHA)
         if commit != expected:
             raise ValueError(f"{key} commit mismatch: {commit} != {expected}")
         argv = ["git", "remote", "get-url", "origin"]
@@ -188,7 +199,7 @@ def source_inventory(repos: dict[str, Path], expected_root: str, custody: Path, 
             raise ValueError(f"{key} checkout is not clean: {status_text}")
         repo_ids[key] = {"commit": commit, "origin": remote_value, "clean": True}
     index = 0
-    for key in ("root", "app", "research"):
+    for key in ("root", "root_context", "app", "research"):
         repo = repos[key].resolve(strict=True)
         for relative, role in SOURCE_PATHS[key]:
             argv = ["git", "ls-tree", "HEAD", "--", relative]
@@ -346,13 +357,20 @@ def compare_mode(args) -> int:
         elif old != new:
             diffs.append(prefix)
     walk(baseline, candidate)
+    equivalent = None
+    if args.equivalent_to:
+        equivalent = yaml.safe_load(Path(args.equivalent_to).read_text(encoding="utf-8"))
+        if not isinstance(equivalent, dict):
+            raise ValueError("equivalence candidate must be a YAML mapping")
     report = {"record_kind": "semantic_projection_diagnostic", "expected_path": EXPECTED_DIFF,
               "actual_diff_paths": sorted(diffs), "candidate_value_matches_research_master": actual == expected,
               "candidate_value": actual, "expected_value": expected,
               "ungraded": True, "native_receipt": None, "junit": None, "claim": None}
+    if equivalent is not None:
+        report["candidate_semantic_equals_reference"] = candidate == equivalent
     Path(args.report).write_bytes(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2).encode() + b"\n")
     sys.stdout.buffer.write(canonical(report) + b"\n")
-    return 0 if diffs == [EXPECTED_DIFF] and actual == expected else 1
+    return 0 if diffs == [EXPECTED_DIFF] and actual == expected and (equivalent is None or candidate == equivalent) else 1
 
 
 def set_state(meta: Path, state: dict):
@@ -370,8 +388,10 @@ def fail(custody: Path, state: dict, phase: str, exc: BaseException) -> None:
 
 
 def capture(args) -> int:
-    root, app, research = (Path(args.root).resolve(strict=True), Path(args.app).resolve(strict=True),
-                           Path(args.research).resolve(strict=True))
+    root, context, app, research = (Path(args.root).resolve(strict=True),
+                                    Path(args.context).resolve(strict=True),
+                                    Path(args.app).resolve(strict=True),
+                                    Path(args.research).resolve(strict=True))
     custody = Path(args.custody).resolve(strict=True)
     result, meta = custody / "result", custody / "meta"
     if not result.is_dir() or not meta.is_dir():
@@ -381,16 +401,18 @@ def capture(args) -> int:
              "junit": None, "claim_tuple": None,
              "phases": {"environment": "not_started", "source_before": "not_started",
                         "dependency_setup": "not_started", "compiler": "not_started",
+                        "native_writer": "not_started",
                         "semantic_compare": "not_started", "source_after": "not_started",
                         "result_tree": "not_started"}}
     set_state(meta, state)
     put_json(meta / "result-tree-before.json", tree_inventory(result))
-    repos = {"root": root, "app": app, "research": research}
+    repos = {"root": root, "root_context": context, "app": app, "research": research}
     before_sources = None
     before_cache = None
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONNOUSERSITE"] = "1"
+    env.pop("ORCHESTRATOR_REGISTRY_NO_COMPILE", None)
     try:
         state["runner"] = {"run_id": os.environ.get("GITHUB_RUN_ID", ""),
                            "job": os.environ.get("GITHUB_JOB", ""),
@@ -475,6 +497,84 @@ def capture(args) -> int:
         state["phases"]["semantic_compare"] = "exit_" + str(compare.returncode)
         set_state(meta, state)
 
+        native_dir = result / "native-output"
+        output_path = native_dir / "model_registry.yaml"
+        generated_cache = native_dir / ".lean_cache_key"
+        if native_dir.exists() or native_dir.is_symlink():
+            raise FileExistsError(f"native output custody path already exists: {native_dir}")
+        before_native = {"directory": opaque_state(native_dir),
+                         "output": opaque_state(output_path),
+                         "cache_key": opaque_state(generated_cache)}
+        if before_native != {"directory": {"state": "absent"},
+                             "output": {"state": "absent"},
+                             "cache_key": {"state": "absent"}}:
+            raise ValueError("native output directory, generated file, and cache-key must all be absent")
+        put_json(result / "native-output-before.json", before_native)
+        native_dir.mkdir(mode=0o700)
+        native_argv = [str(vpy), "-m", "src.registry.registry_compiler",
+                       "--master", str(research / "orchestration" / "model_registry.yaml"),
+                       "--topology", str(app / "orchestration" / "stack_topology.yaml"),
+                       "--roles", *ROLES,
+                       "--output", str(output_path),
+                       "--cache-key", str(generated_cache), "--force"]
+        native = run(native_argv, cwd=app, env={**env, "PYTHONPATH": str(app)}, timeout=600)
+        write_command(custody, "native-writer", native_argv, app, native,
+                      {"output_path": str(output_path), "cache_key_path": str(generated_cache),
+                       "output_and_cache_key_prechecked_absent": True})
+        state["phases"]["native_writer"] = "exit_" + str(native.returncode)
+        set_state(meta, state)
+        native_record = {"exit_code": native.returncode,
+                         "timed_out": bool(getattr(native, "timed_out", False)),
+                         "timeout_seconds": getattr(native, "timeout_seconds", None),
+                         "output_path": str(output_path), "cache_key_path": str(generated_cache),
+                         "before": before_native, "ungraded": True,
+                         "native_receipt": None, "native_conformance_receipt": None,
+                         "junit": None, "claim": None, "claim_tuple": None}
+        banner_valid = False
+        output_state = opaque_state(output_path)
+        generated_cache_state = opaque_state(generated_cache)
+        if native.returncode == 0 and output_state.get("state") == "regular" and generated_cache_state.get("state") == "regular":
+            output_bytes, output_mode = safe_regular(output_path)
+            cache_bytes, cache_mode = safe_regular(generated_cache)
+            cache_value = cache_bytes.decode("ascii").strip()
+            banner = output_bytes.split(b"\n\n", 1)[0].decode("utf-8", "strict")
+            master_text = str(research / "orchestration" / "model_registry.yaml")
+            topology_text = str(app / "orchestration" / "stack_topology.yaml")
+            roles_text = ", ".join(sorted(ROLES))
+            banner_valid = all((
+                "# AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW." in banner,
+                f"# noncanonical master input at {Path(master_text).resolve()}" in banner,
+                "# canonical source of truth: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml" in banner,
+                f"# with drafter selection from {topology_text}" in banner,
+                "# by src/registry/registry_compiler.py." in banner,
+                re.search(r"# Compiled at: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00", banner) is not None,
+                re.fullmatch(r"[0-9a-f]{64}", cache_value) is not None,
+                f"# Cache key:   {cache_value[:16]}..." in banner,
+                f"# Active roles: {roles_text}" in banner,
+            ))
+            native_record.update({
+                "output": {"state": "regular", "mode": output_mode, "bytes": len(output_bytes), "sha256": sha(output_bytes)},
+                "cache_key": {"state": "regular", "mode": cache_mode, "bytes": len(cache_bytes), "sha256": sha(cache_bytes)},
+                "banner_contract_pass": banner_valid,
+                "raw_generated_file_retained": True,
+            })
+        else:
+            native_record.update({"output": output_state, "cache_key": generated_cache_state,
+                                  "banner_contract_pass": False, "raw_generated_file_retained": False})
+        put_json(result / "native-output-record.json", native_record)
+        native_compare_argv = [str(vpy), str(Path(__file__).resolve()), "compare",
+                               "--candidate", str(output_path),
+                               "--baseline", str(app / "orchestration" / "model_registry.yaml"),
+                               "--master", str(research / "orchestration" / "model_registry.yaml"),
+                               "--equivalent-to", str(result / "compiler.stdout.yaml"),
+                               "--report", str(result / "native-semantic-diff.json")]
+        native_compare = run(native_compare_argv, cwd=app, env=env, timeout=120)
+        write_command(custody, "native-semantic-compare", native_compare_argv, app, native_compare)
+        native_record["semantic_compare_exit"] = native_compare.returncode
+        native_record["semantic_compare_stdout_sha256"] = sha(native_compare.stdout or b"")
+        native_record["semantic_compare_stderr_sha256"] = sha(native_compare.stderr or b"")
+        put_json(result / "native-output-record.json", native_record)
+
         after_sources = source_inventory(repos, expected_root, custody, "after")
         put_json(result / "source-map-after.json", after_sources)
         after_cache = opaque_state(app / "orchestration" / ".lean_cache_key")
@@ -487,14 +587,20 @@ def capture(args) -> int:
             compiler.returncode == 0 and compare.returncode == 0 and source_same and cache_same
         ) else "fail"
         put_json(result / "projection-predicate.json", predicate)
+        native_record["source_unchanged"] = source_same
+        native_record["existing_app_cache_key_unchanged"] = cache_same
+        native_record["result"] = "pass" if (
+            native.returncode == 0 and native_compare.returncode == 0 and banner_valid and source_same and cache_same
+        ) else "fail"
+        put_json(result / "native-output-record.json", native_record)
         state["phases"]["source_after"] = "unchanged" if source_same else "changed"
-        state["diagnostic_result"] = predicate["result"]
+        state["diagnostic_result"] = "pass" if predicate["result"] == "pass" and native_record["result"] == "pass" else "fail"
         state["ended_utc"] = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")
         set_state(meta, state)
         put_json(meta / "result-tree-after.json", tree_inventory(result))
         state["phases"]["result_tree"] = "captured"
         set_state(meta, state)
-        return 0 if predicate["result"] == "pass" else 1
+        return 0 if state["diagnostic_result"] == "pass" else 1
     except Exception as exc:
         fail(custody, state, "capture", exc)
         try:
@@ -517,6 +623,7 @@ def main() -> int:
     sub = parser.add_subparsers(dest="mode", required=True)
     capture_parser = sub.add_parser("capture")
     capture_parser.add_argument("--root", required=True)
+    capture_parser.add_argument("--context", required=True)
     capture_parser.add_argument("--app", required=True)
     capture_parser.add_argument("--research", required=True)
     capture_parser.add_argument("--custody", required=True)
@@ -524,6 +631,7 @@ def main() -> int:
     compare_parser.add_argument("--candidate", required=True)
     compare_parser.add_argument("--baseline", required=True)
     compare_parser.add_argument("--master", required=True)
+    compare_parser.add_argument("--equivalent-to")
     compare_parser.add_argument("--report", required=True)
     args = parser.parse_args()
     if args.mode == "compare":
