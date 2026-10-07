@@ -5199,3 +5199,8 @@ The [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) re
 - [Integration coverage](../handoffs/active/integration-test-coverage.md) — focused slices and standing-rule scope.
 - [Registry source/attestation](../artifacts/ni08/registry-banner-override-source-20261007/README.md) — exact97-case evidence and narrower accepted tasks.
 - [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current boundaries and free-work queue.
+
+
+### Reference portability — 2026-10-07
+
+[Source and original native reference conformance](../artifacts/ni08/evl38-reference-conformance-20261007/README.md) verify the15document correction and complete95input original custody. Local references use actual tracked root sources; foreign references pin verified published Git blobs. One unchanged reference-validator wrapper passed, without granting whole-candidate readiness or changing the validator/measurement constitution. Confidence: verified for the pinned source/reference controls only.

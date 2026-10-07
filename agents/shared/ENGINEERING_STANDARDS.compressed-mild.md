@@ -82,7 +82,7 @@ with open(checkpoint, "a") as ckpt:
 
 Canonical registry format spec (scoring-field `{pct, raw}` map, registry scope, entry
 requirements) lives with the registry:
-`repos/epyc-inference-research/docs/reference/models/REGISTRY_STANDARDS.md`.
+[epyc-inference-research REGISTRY_STANDARDS.md](https://github.com/pestopoppa/epyc-inference-research/blob/01d36835e68d57c231a9b0591802e267531df530/docs/reference/models/REGISTRY_STANDARDS.md).
 
 ## Debugging Discipline (Observe Before Diagnosing)
 

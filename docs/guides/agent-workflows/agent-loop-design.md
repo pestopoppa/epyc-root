@@ -525,8 +525,9 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
 - **Fable seeds hypotheses; the loop decides.** After a per-kernel profile (for example rocprof), a Fable
   subagent at high effort reviews the results and outlines 10-15 high-impact hypotheses. AutoKernel's planner
   and critic then develop, gate and measure them. Fable is not the official planner, and its seeds carry no
-  keep authority. EXL3-LB1's seeds (`/mnt/raid0/llm/tmp/lb1-profile-20261003/hypotheses-fable.md`, INF-80)
-  produced seed #1, which put UD-Q4_K_M ahead of Q8_0 at production shapes, pending confirmation.
+  keep authority. EXL3-LB1's temporary seed artifact from 2026-10-03 (INF-80) reported seed #1 putting
+  UD-Q4_K_M ahead of Q8_0 at production shapes, pending confirmation. The scratch artifact was not retained
+  in this repository and is historical context, not a current input or reproducible source.
 - **A keep that regresses another target is not vetoed by that regression** (operator, 2026-10-04: "at the
   worst case here we could also always consider having model-specific kernels"). When a shared kernel change
   speeds one model and slows another, as DS41 keeps did to Qwen3.8-Flash-Next prefill, prefer model-specific

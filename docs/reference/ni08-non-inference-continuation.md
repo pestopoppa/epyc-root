@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **112 completed scoped tasks: 62 existing checkbox flips and 50 newly completed scoped subtasks; one prior verifier was reopened for incomplete import provenance, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **113 completed scoped tasks: 62 existing checkbox flips and 51 newly completed scoped subtasks; the voice verifier remains reopened for incomplete import provenance, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -297,3 +297,8 @@ The full checkpoint also corrected a stale mtime warning on healthy content-hash
 ## CS14 original manifest correction — 2026-10-07
 
 [MAIN static correction](../../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the voice/controller native verifier because eight existing import inputs were absent from the original map. Original276/276, its declared463-input custody and shared Judged/Located observation remain unchanged; full import closure requires a prospective corrected capture. Source implementation items remain complete. NI08 now112 scoped completions (62existing+50children), reduced by one reopened verifier; no whole-backlog exhaustion is claimed.
+
+
+## Reference portability source — 2026-10-07
+
+[MAIN accepted source and original1/1](../../artifacts/ni08/evl38-reference-conformance-20261007/README.md) close the pre-enrolled reference verifier:90Git+5generated inputs,109authenticated original members, seal and unchanged full source/result custody. Fifteen document corrections preserve validation policy and measurement authority. NI08 now113scoped completions (62existing+51children); CS14 corrected closure remains pending, and full backlog work continues.

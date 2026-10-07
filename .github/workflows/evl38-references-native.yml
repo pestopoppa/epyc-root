@@ -1,0 +1,97 @@
+name: EVL38 governance reference validator native observation
+
+on:
+  push:
+    branches: [codex/ni08-evl38-reference-portability-20261007]
+
+permissions:
+  contents: read
+
+jobs:
+  references:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize artifact envelope
+        run: |
+          mkdir -p "$RUNNER_TEMP/evl38-references/result"
+          printf '%s\n' '{"state":"setup_pending","exit_code":null}' > "$RUNNER_TEMP/evl38-references/result/status.json"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout immutable native carrier and grader
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout pinned prospective enrollment context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 83004c1137015a9fc8d0cf411e648432bc51a1c9
+          path: enrollment-context
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout exact pytest lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock-source
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact binary wheels
+        id: install
+        run: |
+          set +e
+          python -m venv "$RUNNER_TEMP/evl38-references/venv" > "$RUNNER_TEMP/evl38-references/result/install.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/evl38-references/venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: --no-cache-dir -r root/scripts/ci/evl38_references_requirements.txt >> "$RUNNER_TEMP/evl38-references/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/evl38-references/venv/bin/python" -m pip check >> "$RUNNER_TEMP/evl38-references/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/evl38-references/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/evl38-references/result/pip-freeze.txt"
+            rc=$?
+          fi
+          printf '{"state":"install_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/evl38-references/result/status.json"
+          exit "$rc"
+      - name: Run the bound existing validator case through native carrier and shared grade
+        id: capture
+        if: steps.install.outcome == 'success'
+        run: |
+          set +e
+          cd root
+          RUNNER_TEMP="$RUNNER_TEMP" "$RUNNER_TEMP/evl38-references/venv/bin/python" scripts/ci/evl38_references_capture.py "$GITHUB_WORKSPACE/carrier" "$GITHUB_WORKSPACE/lock-source" "$GITHUB_WORKSPACE/enrollment-context"
+          rc=$?
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/evl38-references/result/status.json"
+          exit "$rc"
+      - name: Preserve original command, JUnit, receipt, source metadata and grade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evl38-references-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evl38-references/result/
+          if-no-files-found: error
+          retention-days: 90

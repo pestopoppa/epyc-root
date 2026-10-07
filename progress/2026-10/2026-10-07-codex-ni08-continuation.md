@@ -169,3 +169,8 @@ The full checkpoint additionally closes NI08-WIKI-WARNING, one diagnostic-only C
 ## CS14 original manifest correction — 2026-10-07
 
 [MAIN static correction](../../artifacts/ni08/cs14-import-manifest-correction-20261007/README.md) reopens the voice/controller native verifier because eight existing import inputs were absent from the original map. Original276/276, its declared463-input custody and shared Judged/Located observation remain unchanged; full import closure requires a prospective corrected capture. Source implementation items remain complete. NI08 now112 scoped completions (62existing+50children), reduced by one reopened verifier; no whole-backlog exhaustion is claimed.
+
+
+## Reference portability source — 2026-10-07
+
+[MAIN accepted source and original1/1](../../artifacts/ni08/evl38-reference-conformance-20261007/README.md) close the pre-enrolled reference verifier:90Git+5generated inputs,109authenticated original members, seal and unchanged full source/result custody. Fifteen document corrections preserve validation policy and measurement authority. NI08 now113scoped completions (62existing+51children); CS14 corrected closure remains pending, and full backlog work continues.
