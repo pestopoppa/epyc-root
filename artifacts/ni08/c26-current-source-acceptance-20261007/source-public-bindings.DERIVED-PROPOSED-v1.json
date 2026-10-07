@@ -1,0 +1,77 @@
+{
+  "main_acceptances": {
+    "historical_native_failure": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/C26-aad7-MAIN-original-failure-acceptance.json",
+      "sha256": "6a5626aeeecfed3b220dc39383d8631f32476ac21b79a72f9653a69b52b1b3b7"
+    },
+    "native_success": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/C26-5933-MAIN-original-success-acceptance.json",
+      "sha256": "f7b481e81c160f0f775e68587e336ef09eb70a75750aa45dce2b59b7fdbd1461"
+    },
+    "research_promotion": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/C26-e136-MAIN-product-publication-acceptance.json",
+      "sha256": "785e54bece414aa0d490f5f6a5989331c0608af16dfafb60b5e1d0c1ec3739ea"
+    }
+  },
+  "native_original": {
+    "archive_sha256": "7573795d32444db1b16da28c1512dbc311146785ac0d96e509ed4b2c1e2b2b48",
+    "artifact_id": 11510956326,
+    "attempt": 1,
+    "event": "push",
+    "existing_grade": "Judged/Located",
+    "junit": {
+      "error": 0,
+      "fail": 0,
+      "pass": 46,
+      "skip": 0
+    },
+    "native_receipt": "TRUE",
+    "native_receipt_sha256": "8339595cce4ab4296c6aa0562875f036a9cc93cafe90f6feba636e215506a7ca",
+    "new_grade_authored": false,
+    "recipe_branch": "codex/ni08-c26-current-native-recipe-v4-20261007",
+    "recipe_commit": "5933d75d2d935edc2f3d542fd3240863548be8ab",
+    "regular_byte_hash_checks": 6407,
+    "root_origin": "https://github.com/pestopoppa/epyc-root.git",
+    "run_id": 37685510597,
+    "source_inventories_identical": 7,
+    "source_readset_entries_verified": 1588,
+    "typed_trees_verified": 5
+  },
+  "record_type": "derived_source_publication_and_native_binding_summary",
+  "research": {
+    "change_summary": "+227/-22",
+    "existing_feature_ref": "refs/heads/codex/ni08-c26-two-quiet-windows-fixture-private-20261007",
+    "feature_ref_postimage": "e136226d00421742645bf2f157737a8cedf348f1",
+    "files": {
+      "scripts/kernel_rnd/autokernel/loop/run.py": {
+        "blob": "d6871e0dde2d6aedc29e00765cde653a34dc4959",
+        "bytes": 478619,
+        "sha256": "c65a1b4af3ece712d6b6849c3685e63ac7ad20d0e79ac7cfba6f1ed1b63846af"
+      },
+      "scripts/kernel_rnd/autokernel/loop/serving.py": {
+        "blob": "81b0d964e249e98830301511c108f9c666e401f7",
+        "bytes": 133657,
+        "sha256": "ebfca036117b384b8a5d842bc2d43ab8cfed04ece4ae6d52fd5c2e2e6a53f709"
+      },
+      "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py": {
+        "blob": "d178b7eb44774a6af1633852b1004dab0663ef02",
+        "bytes": 9873,
+        "sha256": "3848a706993c7c948e49720e841c3bf36f88bab1ef03e10d947e18d8ea32482c"
+      },
+      "scripts/kernel_rnd/autokernel/loop/test_serving.py": {
+        "blob": "0db6c3a06fb348779551f2131d6caf385f97343c",
+        "bytes": 25195,
+        "sha256": "53d9cc95793d7ae459b847e04553037d0531ea3b8d833f8485e9a9ab438161f9"
+      }
+    },
+    "origin": "https://github.com/pestopoppa/epyc-inference-research.git",
+    "parent": "9ed56acf1f8cf1b4cfeb1c57c640e1c090103543",
+    "postimage": "e136226d00421742645bf2f157737a8cedf348f1",
+    "preimage": "397233f504552dc71d9e2b848cf1b5463e89cedf",
+    "promoted_ref": "refs/heads/main",
+    "tree": "a1744ca46d7a1da0c6b7954212c35f3a9cb1f665"
+  },
+  "review_scope": "C26 source conformance only; not live runtime or product measurement",
+  "root_recipe_scope": "The recipe remained a ROOT feature-branch commit. This publication promoted only the Research source commit and did not promote ROOT main or trigger a new native event.",
+  "source": "independently reviewed MAIN acceptance records and read-only Git checks"
+}

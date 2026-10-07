@@ -1,0 +1,280 @@
+{
+  "entries": [
+    {
+      "bytes": 3615,
+      "label": "main-k",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/VB-five-receipts-MAIN-append-v6-K.json",
+      "sha256": "a3fd612580043e101e942f54eec95bf548bc33bb2ef3366a554726cc8ac3129a"
+    },
+    {
+      "bytes": 19131,
+      "label": "proposal-v6",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/proposal-v6.json",
+      "sha256": "e62f38b0b259035f6a082dcf15b876a0fe21573d0ee88f52dfc45b14a82fd55c"
+    },
+    {
+      "bytes": 3615,
+      "label": "recorded-main-k",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/main-k.original.json",
+      "sha256": "a3fd612580043e101e942f54eec95bf548bc33bb2ef3366a554726cc8ac3129a"
+    },
+    {
+      "bytes": 19131,
+      "label": "recorded-proposal",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/proposal.original.json",
+      "sha256": "e62f38b0b259035f6a082dcf15b876a0fe21573d0ee88f52dfc45b14a82fd55c"
+    },
+    {
+      "bytes": 47879,
+      "label": "helper-v6",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/private_ci_receipt_ingest_once_v6.py",
+      "sha256": "64759d120896d42fa20008c93ce4f025011a029378b7cae6e0e8b1c950dce77c"
+    },
+    {
+      "bytes": 934,
+      "label": "invocation",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/invocation.json",
+      "sha256": "ec44d8dc8946575332984b97707964ead4943afb271e56f5b387f3f619572b8a"
+    },
+    {
+      "bytes": 2968,
+      "label": "result",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/result.json",
+      "sha256": "254679368d00921b42c49d3dc6dddabc17a77e1b4a7cbca269a12db03e202b37"
+    },
+    {
+      "bytes": 3986,
+      "label": "events",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/events.jsonl",
+      "sha256": "9f85da9fa09404bedef4930feb60dd0e639793174506128d9d0d8b46f562780e"
+    },
+    {
+      "bytes": 1199,
+      "label": "dispatcher-preflight",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/dispatcher-preflight.json",
+      "sha256": "8a23af0da51705bf985c1477f908b375464e892c9b6d4809ce10b2f1da5e8528"
+    },
+    {
+      "bytes": 1200,
+      "label": "dispatcher-append-report",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/dispatcher-append-report.json",
+      "sha256": "717539e51f733b0d755f732265a68d5ec723c4de7ecce8cda6edfb977f031100"
+    },
+    {
+      "bytes": 276,
+      "label": "fold-preappend",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/fold-preappend.json",
+      "sha256": "3b30149f614635d5d2ef1d7b169a5b28f716f2b14411a7615f24bd9d373ff798"
+    },
+    {
+      "bytes": 100433,
+      "label": "expected-frames",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/expected-frames.json",
+      "sha256": "9df97c8114f04b7f4c84c3d55f20dcad59e68daba42520f9ababd5635a05cd4d"
+    },
+    {
+      "bytes": 100720,
+      "label": "expected-suffix",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/MAIN-approved-five-receipts-append-v6-20261007/expected-suffix.bin",
+      "sha256": "e36d997c3371558e59b41436b2479e575ff63b4a6655a1cd7d102a4ef2b44314"
+    },
+    {
+      "bytes": 2968,
+      "label": "outer-stdout",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/outer-v6-one-shot/stdout.bin",
+      "sha256": "254679368d00921b42c49d3dc6dddabc17a77e1b4a7cbca269a12db03e202b37"
+    },
+    {
+      "bytes": 0,
+      "label": "outer-stderr",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/outer-v6-one-shot/stderr.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2,
+      "label": "outer-rc",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/outer-v6-one-shot/rc",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "bytes": 633,
+      "label": "v4-result",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/MAIN-approved-five-receipts-append-v4-20261007/result.json",
+      "sha256": "fe178925e8304cc29f62e2df1953096b6d81ec2bed578ba09b2605388b1bd56b"
+    },
+    {
+      "bytes": 676,
+      "label": "v4-events",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/MAIN-approved-five-receipts-append-v4-20261007/events.jsonl",
+      "sha256": "ac5a5e31038e7c5f11852c82f1a15c6c6c7e8113c5caacf8eba997f334fbf3b8"
+    },
+    {
+      "bytes": 633,
+      "label": "v4-stdout",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/MAIN-approved-five-receipts-append-v4-20261007/stdout.bin",
+      "sha256": "fe178925e8304cc29f62e2df1953096b6d81ec2bed578ba09b2605388b1bd56b"
+    },
+    {
+      "bytes": 58,
+      "label": "v4-stderr",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/MAIN-approved-five-receipts-append-v4-20261007/stderr.bin",
+      "sha256": "1c54264d16be2a0fbe66ca24e49be3b0eaa1971d6d037563df3cb4835247128f"
+    },
+    {
+      "bytes": 633,
+      "label": "v4-outer-stdout",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/outer-v4-one-shot/stdout.raw",
+      "sha256": "fe178925e8304cc29f62e2df1953096b6d81ec2bed578ba09b2605388b1bd56b"
+    },
+    {
+      "bytes": 58,
+      "label": "v4-outer-stderr",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/outer-v4-one-shot/stderr.raw",
+      "sha256": "1c54264d16be2a0fbe66ca24e49be3b0eaa1971d6d037563df3cb4835247128f"
+    },
+    {
+      "bytes": 2,
+      "label": "v4-outer-rc",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/outer-v4-one-shot/exit.raw",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "bytes": 3591,
+      "label": "v4-main-k",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/MAIN-approved-five-receipts-append-v4-20261007/main-k.original.json",
+      "sha256": "a3cdbd2d860b97c7f06d193eea61de8898451c78a68f50fc469b22ad67f1ccfb"
+    },
+    {
+      "bytes": 1446,
+      "label": "v5-result",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/MAIN-approved-five-receipts-append-v5-20261007/result.json",
+      "sha256": "12a1176cdf6df5570a893b184eb7d11a1a96909120572b68326430b29318a5e9"
+    },
+    {
+      "bytes": 2914,
+      "label": "v5-events",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/MAIN-approved-five-receipts-append-v5-20261007/events.jsonl",
+      "sha256": "1eedfb08e107cd6b33bb883f1459df27afa47bf99eb0ff62f32352d3437d7e39"
+    },
+    {
+      "bytes": 1446,
+      "label": "v5-stdout",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/MAIN-approved-five-receipts-append-v5-20261007/stdout.bin",
+      "sha256": "12a1176cdf6df5570a893b184eb7d11a1a96909120572b68326430b29318a5e9"
+    },
+    {
+      "bytes": 87,
+      "label": "v5-stderr",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/MAIN-approved-five-receipts-append-v5-20261007/stderr.bin",
+      "sha256": "3798581d8a7231b8b47bc05aee10f7fd637a66d701ff11ff4d10ad220577733f"
+    },
+    {
+      "bytes": 1446,
+      "label": "v5-outer-stdout",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/outer-v5-one-shot/stdout.bin",
+      "sha256": "12a1176cdf6df5570a893b184eb7d11a1a96909120572b68326430b29318a5e9"
+    },
+    {
+      "bytes": 87,
+      "label": "v5-outer-stderr",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/outer-v5-one-shot/stderr.bin",
+      "sha256": "3798581d8a7231b8b47bc05aee10f7fd637a66d701ff11ff4d10ad220577733f"
+    },
+    {
+      "bytes": 2,
+      "label": "v5-outer-rc",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/outer-v5-one-shot/rc",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "bytes": 3615,
+      "label": "v5-main-k",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/MAIN-approved-five-receipts-append-v5-20261007/main-k.original.json",
+      "sha256": "f7fbd739dd6a1767f6b466e36fb171666302c07877b477377ba15adda21696cc"
+    },
+    {
+      "bytes": 47843,
+      "label": "helper-v4-original",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/private_ci_receipt_ingest_once_v4.original.py",
+      "sha256": "a063a29e9ff7d352eb009544a4798f11daf53af3e0113b177bc9f67e61dd43de"
+    },
+    {
+      "bytes": 47849,
+      "label": "helper-v5-prestatus-fix-original",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/private_ci_receipt_ingest_once_v5-status-mismatch.original.py",
+      "sha256": "04cead1c673cc07eecec7846f2922bc02bad65a73b365b86f885df1434733989"
+    },
+    {
+      "bytes": 47861,
+      "label": "helper-v5",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v5/private_ci_receipt_ingest_once_v5.py",
+      "sha256": "e57b3a2a1d9a35891e8cc15f2ea7cafa62535c6a2aef1cb90fbee1e88ae267e1"
+    },
+    {
+      "bytes": 1488,
+      "label": "helper-v6-diff",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/helper-v5-to-v6.diff",
+      "sha256": "495d71288b6cd918574e8ba743073e490a2eac972f96150e0b019ca2b85f1158"
+    },
+    {
+      "bytes": 2517,
+      "label": "helper-review-manifest-v3",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/review-manifest-v3.json",
+      "sha256": "2103e49defc50aef789dba2797e959ba1799defd2bdf735047d55a306241438a"
+    },
+    {
+      "bytes": 2260,
+      "label": "main-acceptance",
+      "mode_octal": "0600",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/VB-five-receipts-V6-MAIN-original-append-acceptance.json",
+      "sha256": "091b155a6c41663809382358fda990923894876da96e27f5790545cd8580bdd7"
+    }
+  ],
+  "entry_count": 38,
+  "original_proposal_manifest_sha256": "e520d0ef456ace5d9c2853067f2bf34be08ce7e0465e9afd1ece610379c70cc4",
+  "private_only_unapplied": false,
+  "public_checkpoint": "MAIN_REVIEWED_ACCEPTED_CUSTODY",
+  "readme_bytes": 2194,
+  "readme_sha256": "5671484258cf65b38431f31f3f39211cf7bf5c69e6a9265134d5435b84424595",
+  "records_bytes": 651347,
+  "records_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/belief-kernel-ingest-proposal/receipt-identity-fix-v6/public-custody-proposal/records.json",
+  "records_sha256": "72bf4a52fc593708cb21997aa0548d37c8d80f4adb6399fe315ee8d25759b4de",
+  "schema": "ni08.evl42.accepted-ledger-projection-custody-manifest.v1"
+}
