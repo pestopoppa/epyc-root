@@ -1,0 +1,250 @@
+{
+  "status": "measured_static_review_pass",
+  "checked_at": "2026-10-07T04:02:07.017070+00:00",
+  "checks": "Actual validate_draft_structure for all17 integrated articles and validate_manifest_for_writer on unchanged policy; exact114 reviewed source hashes verified; root reviewed late source diffs.",
+  "pages": [
+    {
+      "path": "wiki/agent-architecture.md",
+      "sha256": "a9da424211dca16d4bee3285c67994fb9bb3c97d30ffadd0d69122c8a02fced9",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/autopilot-continuous-optimization.md",
+        "../handoffs/active/multi-file-coding-completion-capability.md",
+        "../docs/reference/repl-terminal-timeout-state.md",
+        "../docs/reference/agent-run-failure-triage.md",
+        "../handoffs/active/fuzzy-workflow-authoring-gui.md",
+        "../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/autonomous-research.md",
+      "sha256": "44088e8637eee736d462169a4bc8407c01fad63b5e49e8ee82f60607b2deca9f",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/autokernel-all-devices-all-dimensions.md",
+        "../handoffs/active/deepseek-v41-flash-evaluation.md",
+        "../progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md",
+        "../handoffs/active/master-handoff-index.md",
+        "../handoffs/active/autokernel-unified-surface-program.md",
+        "../docs/design/harness-improvement-loop-design-20261006.md",
+        "../handoffs/active/harness-improvement-loop.md",
+        "../docs/reference/ni08-admission-and-skill-granularity.md",
+        "../handoffs/active/autopilot-continuous-optimization.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/benchmark-methodology.md",
+      "sha256": "5356db7f3c751852a307f1b1464190d87d461c260f32826a313ecec9d06ee249",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/bulk-inference-campaign.md",
+        "../docs/reference/eval-question-sidecar-persistence-status.md",
+        "../docs/reference/eval-outer-reconnect-cost.md",
+        "../docs/reference/bsv-standalone-input-integrity-contract.md",
+        "../docs/reference/calibration-input-byte-bindings.md",
+        "../docs/reference/confidence-expectation-preparation.md",
+        "../handoffs/active/canonical-judge-suite-revamp.md#main-reviewed-jev-refinement--2026-10-06-cj-13",
+        "../handoffs/active/eval-tower-verification.md",
+        "../docs/reference/rtg23-handoff-identity-and-cache-source-20261007.md",
+        "../handoffs/active/reviewer-calibration-accounting.md",
+        "../docs/guides/agent-workflows/benchmark-analyst.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/context-management.md",
+      "sha256": "a189c21f616688fefac8f445c964a249d2c54ce11b3ac8da330291171ab5ca55",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/delegation-context-preassembly.md",
+        "../handoffs/active/context-folding-progressive.md",
+        "../docs/reference/harnessfactory-source-comparison-20261006.md",
+        "../handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+        "../handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+        "../docs/reference/ni08-non-inference-continuation.md",
+        "../progress/2026-10/2026-10-07-workspace-ec.md",
+        "../docs/reference/dcp-render-content-identity-contract.md",
+        "../docs/reference/dcp-hit-span-policy-preparation.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/hardware-optimization.md",
+      "sha256": "92cc4eb55a52688f02c86a6d6ffdbde9c97e5e01b5875a039b4b0165dc5b7b07",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/agentic-rocm-kernel-authoring.md",
+        "../handoffs/active/rocm-verify-profile-backend.md",
+        "../handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+        "../handoffs/completed/mi210-speed-campaign-summary.md",
+        "../handoffs/active/gpu-acceleration-path.md",
+        "../handoffs/active/cpu-decode-roofline-program.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/inference-serving.md",
+      "sha256": "04bab2689260054a419f08043863fec609aba4bea609e95b62ca9a9784a109d1",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/reference/serving-call-reader-contract.md",
+        "../docs/reference/standalone-numa-guard.md",
+        "../handoffs/active/autokernel-rebuild-program.md",
+        "../handoffs/active/model-stack-single-source-update-pipeline.md",
+        "../handoffs/active/standardized-stack-update-pipeline-finalization.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/knowledge-management.md",
+      "sha256": "8f9074e1e839f15e4171566387dc622b879a2c1f8e955fbba3d4391a9728079f",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+        "../handoffs/active/repo-readiness-scorer.md",
+        "../handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md",
+        "../handoffs/active/vidya-belief-substrate-program.md#newly-unlocked-retained-source-numeric-controls",
+        "../artifacts/ni08/analysis-report-source-20261006/README.md",
+        "../docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md",
+        "../docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md",
+        "../artifacts/ni08/raw-anchor-source-20261007/README.md",
+        "../docs/reference/hermetic-research-producer-ci-contract.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/local-inference.md",
+      "sha256": "12fc32469c5ea653bd4f2e0f82149c379bfe995bea56b746843ff958e5573239",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md",
+        "../docs/runbooks/rocm-upgrade-checklist.md",
+        "../handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+        "../handoffs/completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/memory-augmented.md",
+      "sha256": "4e2295376fad83190efe92c0c6788c31e3b56944b9d6396343cf9ddfa7ec14a9",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/reference/signed-checkpoint-payload-transport.md",
+        "../handoffs/active/repl-session-memory-maturity.md",
+        "../docs/reference/utm-synthetic-conformance-contract.md",
+        "../handoffs/active/unified-trace-memory-service.md",
+        "../handoffs/active/episodic-memory-integrity.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/moe-optimization.md",
+      "sha256": "9d6728e4ba13a31611bb696b0e9c43b384d0d34983232ec612aef09e7ab4043d",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+        "../handoffs/active/moe-routing-tap-and-locality-measurement.md",
+        "../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/multimodal.md",
+      "sha256": "f9abd85685bb33744a9f1afc5bd94a3700ec069d7a401124b2c3c683d4bdcd0e",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/reference/conversation-shadow-preparation.md",
+        "../handoffs/active/conversation-stack.md",
+        "../handoffs/active/multimodal-pipeline.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/quantization.md",
+      "sha256": "169c2a253328a710d3bea307728b775373d90ca26c61d0d15244af6e8e674044",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/autokernel-all-devices-all-dimensions.md",
+        "../progress/2026-10/2026-10-06-ak-ds41-main.md",
+        "../handoffs/active/deepseek-v41-flash-evaluation.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/routing-intelligence.md",
+      "sha256": "d0c644a1c7eadf9beaed1384649d657c9200a33d08d21da92f04d805dd6319c5",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/design/hg9-detect-repair-topology.md",
+        "../handoffs/active/typed-decision-plane.md",
+        "../docs/reference/typed-candidate-description-preparation.md",
+        "../handoffs/active/routing-intelligence.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/safety.md",
+      "sha256": "37b0208ca021d313863cd78b265501eba9977ecbcbeab8a74b0c2f4c6d75e824",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/design/tu-grader-isolation-boundary.md",
+        "../docs/reference/repl-terminal-timeout-state.md",
+        "../docs/reference/declared-scratch-root-keep.md",
+        "../docs/reference/host-supervision-activation-receipts.md",
+        "../docs/guides/agent-workflows/opencode-event-duty-handover.md",
+        "../handoffs/active/non-inference-backlog.md",
+        "../docs/reference/credential-fixture-hook-decision.md",
+        "../docs/reference/staged-ed25519-header-check.md",
+        "../handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+        "../handoffs/active/tool-use-eval-contract.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/search-retrieval.md",
+      "sha256": "5696ccc683e8cb79ba2954bad2e7a9ce2a2128694a59fab32594256ebdbb5274",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/reference/kb-force-build-identity-contract.md",
+        "../docs/reference/kb-vector-staged-publication-contract.md",
+        "../docs/reference/kb-catalog-dependency-contract.md",
+        "../docs/reference/lab-kb-context-catalog-dependency-contract.md",
+        "../docs/reference/k7-report-catalog-dependency-contract.md",
+        "../handoffs/active/internal-kb-rag.md",
+        "../handoffs/active/colbert-reranker-web-research.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/speculative-decoding.md",
+      "sha256": "9186a4e090ec0a7097d25f7a3bed1eda0142629831d3f1cfa8d105e7a6d5be1d",
+      "structure_errors": [],
+      "source_references": [
+        "../handoffs/active/speculative-decoding-mtp-refresh.md",
+        "../handoffs/active/cpu-decode-roofline-program.md",
+        "../handoffs/active/dflash2-block-drafter-experimental-build.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    },
+    {
+      "path": "wiki/tool-implementation.md",
+      "sha256": "b747648d0d9f206a1d1c96807eddab689e34f71e70a3c4911bd03febf30b8893",
+      "structure_errors": [],
+      "source_references": [
+        "../docs/reference/tool-rendering-source-map.md",
+        "../docs/reference/dtap-native-tool-contract.md",
+        "../docs/reference/dtap-native-failure-ledger-contract.md",
+        "../docs/reference/tool-repair-log-content-contract.md",
+        "../docs/design/hs4-p6-shared-exploration-source-contract-20261006.md",
+        "../handoffs/active/harness-selection-and-integration.md",
+        "../docs/design/hs-od-4-max-tokens-decision-prep-20261006.md"
+      ],
+      "semantic_review": "parent reviewed all delegated snippets; source hashes/coverage verified; scientific and deployment qualifiers retained"
+    }
+  ],
+  "page_count": 17,
+  "minimum_confidence": "verified native-source custody; article claims retain their individual source/synthetic/proposal limits",
+  "writer_execution": "Codex delegated gpt-6.1-sol at low effort; root integration, not an orchestrator model call"
+}

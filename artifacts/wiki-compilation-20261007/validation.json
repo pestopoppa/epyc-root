@@ -1,0 +1,36 @@
+{
+  "article_count": 17,
+  "canonical_readonly_ledger_sha256": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a",
+  "captured_at": "2026-10-07T04:08:22.602672+00:00",
+  "gate_exit_codes": {
+    "index_check": 0,
+    "index_regen": 0,
+    "manifest_check_after_touch": 0,
+    "manifest_touch": 0,
+    "native_cite_check": 0,
+    "readme_freshness": 0,
+    "source_delta": 0,
+    "wiki_lint": 0
+  },
+  "manifest_check_exit_code": 0,
+  "native_cite_summary": {
+    "blocking": 0,
+    "captured_at": "2026-10-07T04:03:39.122102+00:00",
+    "citations": 1210,
+    "documents": 32
+  },
+  "pending_input_count": 119,
+  "schema": "wiki-publication-validation-v1",
+  "source_count": 114,
+  "wiki_lint_summary": {
+    "captured_at": "2026-10-07T04:02:47.607366+00:00",
+    "errors": 0,
+    "warnings": 96
+  },
+  "writer_evidence_policy": {
+    "passed": true,
+    "post_touch_errors": [],
+    "pre_touch_errors": [],
+    "unchanged": true
+  }
+}
