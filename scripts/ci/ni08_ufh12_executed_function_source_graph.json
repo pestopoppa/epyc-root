@@ -1,0 +1,5570 @@
+{
+  "case_count": 15,
+  "case_seed_functions": [
+    "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file",
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_multiple_executions_create_separate_files",
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_contains_full_output",
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_created",
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_head_lines",
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_tail_lines",
+    "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_file_created",
+    "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_for_short_output",
+    "tests.unit.test_repl_spill_output.TestSpillOutputStructuredMode.test_structured_mode_spill",
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_stored",
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_failure_falls_back_to_static",
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_summary_used",
+    "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_exact_boundary_previous_summary_does_not_resend_whole_output",
+    "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_oversized_previous_worker_reply_stays_within_budget"
+  ],
+  "dynamic_boundaries": [
+    "REPLEnvironment.execute executes the original test-provided Python source strings; these values are represented in original case logic and are not statically expanded as Python call edges.",
+    "MagicMock worker callbacks, pytest fixture lifecycle and imported third-party behavior are external/dynamic boundaries."
+  ],
+  "method": "stdlib AST only; no imports, collection, evaluation or execution",
+  "nodes": [
+    {
+      "class": "SkillBank",
+      "id": "orchestration.repl_memory.skill_bank.SkillBank.update",
+      "kind": "APP_source_function",
+      "path": "orchestration/repl_memory/skill_bank.py",
+      "source_file_sha256": "6966c2dcfcd24363d346947ab2f49faef46e5e2ac5329dc5bf8d31e30d4e9652"
+    },
+    {
+      "class": null,
+      "id": "src.config._build_server_urls",
+      "kind": "APP_source_function",
+      "path": "src/config/__init__.py",
+      "source_file_sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17"
+    },
+    {
+      "class": null,
+      "id": "src.config._load_from_env",
+      "kind": "APP_source_function",
+      "path": "src/config/__init__.py",
+      "source_file_sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17"
+    },
+    {
+      "class": null,
+      "id": "src.config.get_config",
+      "kind": "APP_source_function",
+      "path": "src/config/__init__.py",
+      "source_file_sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._env_optional_float",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._env_str",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._load_registry_runtime_defaults",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._load_registry_timeouts",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._record_registry_diag",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._registry_runtime_value",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": null,
+      "id": "src.config.validation._registry_timeout",
+      "kind": "APP_source_function",
+      "path": "src/config/validation.py",
+      "source_file_sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "class": "LLMPrimitives",
+      "id": "src.llm_primitives.primitives.LLMPrimitives._apply_rag_context",
+      "kind": "APP_source_function",
+      "path": "src/llm_primitives/primitives.py",
+      "source_file_sha256": "e0ec5c4a2db37115133f5a1b17f7184ccf164c1951ac6942c183b08994a0ffbb"
+    },
+    {
+      "class": "LLMPrimitives",
+      "id": "src.llm_primitives.primitives.LLMPrimitives._llm_call_impl",
+      "kind": "APP_source_function",
+      "path": "src/llm_primitives/primitives.py",
+      "source_file_sha256": "e0ec5c4a2db37115133f5a1b17f7184ccf164c1951ac6942c183b08994a0ffbb"
+    },
+    {
+      "class": "LLMPrimitives",
+      "id": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip",
+      "kind": "APP_source_function",
+      "path": "src/llm_primitives/primitives.py",
+      "source_file_sha256": "e0ec5c4a2db37115133f5a1b17f7184ccf164c1951ac6942c183b08994a0ffbb"
+    },
+    {
+      "class": "LLMPrimitives",
+      "id": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "kind": "APP_source_function",
+      "path": "src/llm_primitives/primitives.py",
+      "source_file_sha256": "e0ec5c4a2db37115133f5a1b17f7184ccf164c1951ac6942c183b08994a0ffbb"
+    },
+    {
+      "class": "LLMPrimitives",
+      "id": "src.llm_primitives.primitives.LLMPrimitives._should_rag",
+      "kind": "APP_source_function",
+      "path": "src/llm_primitives/primitives.py",
+      "source_file_sha256": "e0ec5c4a2db37115133f5a1b17f7184ccf164c1951ac6942c183b08994a0ffbb"
+    },
+    {
+      "class": "LLMPrimitives",
+      "id": "src.llm_primitives.primitives.LLMPrimitives.llm_call",
+      "kind": "APP_source_function",
+      "path": "src/llm_primitives/primitives.py",
+      "source_file_sha256": "e0ec5c4a2db37115133f5a1b17f7184ccf164c1951ac6942c183b08994a0ffbb"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._check_budget",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._current_turn",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._get_or_default",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._page_bounds",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._record",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._section",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._split_path",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle._walk",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle.begin_turn",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle.get",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle.item",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle.json",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "ContextBundle",
+      "id": "src.repl_environment.context_bundle.ContextBundle.record_printed",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "Section",
+      "id": "src.repl_environment.context_bundle.Section.end",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.context_bundle._as_char_count",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.context_bundle._dump",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.context_bundle._is_char_count",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.context_bundle._nbytes",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.context_bundle.cap_printed_output",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/context_bundle.py",
+      "source_file_sha256": "368ba6e1a764f50936b176934abc7e5f75a5df3601df861035a0e522e9c77c93"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._bundle_begin_turn",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._finalize_active_chain_meta",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._get_read_only_tools",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._spill_output",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._timeout_result",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._tool_hint_if_relevant",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment._validate_code",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment.execute",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": "REPLEnvironment",
+      "id": "src.repl_environment.environment.REPLEnvironment.mark_timed_out",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/environment.py",
+      "source_file_sha256": "14aa8288354081cc0535304f7814f14f6fe41fe2af6c23a024ce942797ec35e0"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.parallel_dispatch._eval_ast_arg",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/parallel_dispatch.py",
+      "source_file_sha256": "5baba808f3ca89aa5cb226eff5e474861a40862620b56866bd7e034e5c619201"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.parallel_dispatch._extract_parallel_calls",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/parallel_dispatch.py",
+      "source_file_sha256": "5baba808f3ca89aa5cb226eff5e474861a40862620b56866bd7e034e5c619201"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.parallel_dispatch.execute_parallel_calls",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/parallel_dispatch.py",
+      "source_file_sha256": "5baba808f3ca89aa5cb226eff5e474861a40862620b56866bd7e034e5c619201"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.parallel_dispatch.extract_tool_calls",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/parallel_dispatch.py",
+      "source_file_sha256": "5baba808f3ca89aa5cb226eff5e474861a40862620b56866bd7e034e5c619201"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.redaction.redact_credentials",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/redaction.py",
+      "source_file_sha256": "6da3c3f3c40395fad0fa0c017ce037c365865c1e83623ef3219ceeb546f179e9"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.redaction.redact_if_enabled",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/redaction.py",
+      "source_file_sha256": "6da3c3f3c40395fad0fa0c017ce037c365865c1e83623ef3219ceeb546f179e9"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.safe_pickle._assert_array_safe",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/safe_pickle.py",
+      "source_file_sha256": "d943d472403fa5bff1bf8b694374d863868cca2160485d78ab10b87ee54a00f9"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.safe_pickle._resolve_hmac_key",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/safe_pickle.py",
+      "source_file_sha256": "d943d472403fa5bff1bf8b694374d863868cca2160485d78ab10b87ee54a00f9"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.safe_pickle._sign",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/safe_pickle.py",
+      "source_file_sha256": "d943d472403fa5bff1bf8b694374d863868cca2160485d78ab10b87ee54a00f9"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.safe_pickle.dumps",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/safe_pickle.py",
+      "source_file_sha256": "d943d472403fa5bff1bf8b694374d863868cca2160485d78ab10b87ee54a00f9"
+    },
+    {
+      "class": null,
+      "id": "src.repl_environment.unicode_sanitizer.sanitize_code_unicode",
+      "kind": "APP_source_function",
+      "path": "src/repl_environment/unicode_sanitizer.py",
+      "source_file_sha256": "44b3c91211f5dfbd58dc6c4d911979c0b13d4bb4d468af9292d0907008d28e64"
+    },
+    {
+      "class": "TestSpillFooterCallsReadSpillFile",
+      "id": "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputLargeOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_multiple_executions_create_separate_files",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputLargeOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_contains_full_output",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputLargeOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_created",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputLargeOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_head_lines",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputLargeOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_tail_lines",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputSmallOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_file_created",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputSmallOutput",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_for_short_output",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputStructuredMode",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputStructuredMode.test_structured_mode_spill",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputWithWorkerSummary",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputWithWorkerSummary",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_stored",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputWithWorkerSummary",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_failure_falls_back_to_static",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillOutputWithWorkerSummary",
+      "id": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_summary_used",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillWorkerContextBudget",
+      "id": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_exact_boundary_previous_summary_does_not_resend_whole_output",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": "TestSpillWorkerContextBudget",
+      "id": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_oversized_previous_worker_reply_stays_within_budget",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    },
+    {
+      "class": null,
+      "id": "tests.unit.test_repl_spill_output._make_repl",
+      "kind": "test",
+      "path": "tests/unit/test_repl_spill_output.py",
+      "source_file_sha256": "3eebcecfefda635dfc250e0d6597db295d3ef17e2c53aef1152cc47fdf7ed97a"
+    }
+  ],
+  "qualification": "This is a conservative static source graph for reachable direct calls resolved uniquely by AST and narrow local receiver/factory inference. It does not assert branch execution or runtime reachability; exact full source/config Git envelopes and native readset bind all possible code bytes.",
+  "resolved_static_call_edges": [
+    {
+      "call": "json.dumps",
+      "from": "orchestration.repl_memory.skill_bank.SkillBank.update",
+      "line": 415,
+      "to": "src.repl_environment.safe_pickle.dumps"
+    },
+    {
+      "call": "json.dumps",
+      "from": "orchestration.repl_memory.skill_bank.SkillBank.update",
+      "line": 417,
+      "to": "src.repl_environment.safe_pickle.dumps"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._build_server_urls",
+      "line": 716,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 461,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 466,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 467,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_registry_runtime_value",
+      "from": "src.config._load_from_env",
+      "line": 469,
+      "to": "src.config.validation._registry_runtime_value"
+    },
+    {
+      "call": "_registry_runtime_value",
+      "from": "src.config._load_from_env",
+      "line": 473,
+      "to": "src.config.validation._registry_runtime_value"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 485,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 487,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_build_server_urls",
+      "from": "src.config._load_from_env",
+      "line": 507,
+      "to": "src.config._build_server_urls"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 512,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 516,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 520,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 524,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 528,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 532,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 536,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 540,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 544,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 548,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 552,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 556,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 560,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 564,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 568,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_registry_timeout",
+      "from": "src.config._load_from_env",
+      "line": 572,
+      "to": "src.config.validation._registry_timeout"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 601,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 602,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 624,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_env_optional_float",
+      "from": "src.config._load_from_env",
+      "line": 629,
+      "to": "src.config.validation._env_optional_float"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 634,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_env_str",
+      "from": "src.config._load_from_env",
+      "line": 636,
+      "to": "src.config.validation._env_str"
+    },
+    {
+      "call": "_load_from_env",
+      "from": "src.config.get_config",
+      "line": 938,
+      "to": "src.config._load_from_env"
+    },
+    {
+      "call": "os.environ.get",
+      "from": "src.config.validation._env_optional_float",
+      "line": 16,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "os.environ.get",
+      "from": "src.config.validation._env_str",
+      "line": 27,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_runtime_defaults",
+      "line": 160,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "os.environ.get",
+      "from": "src.config.validation._load_registry_runtime_defaults",
+      "line": 168,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_runtime_defaults",
+      "line": 175,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "payload.get",
+      "from": "src.config.validation._load_registry_runtime_defaults",
+      "line": 190,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_runtime_defaults",
+      "line": 194,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_runtime_defaults",
+      "line": 207,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 68,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "_load_registry_runtime_defaults",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 76,
+      "to": "src.config.validation._load_registry_runtime_defaults"
+    },
+    {
+      "call": "runtime_defaults.get",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 77,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_REGISTRY_DIAGNOSTICS.get",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 78,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "raw_timeouts.get",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 81,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "raw_timeouts.get",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 88,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 94,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 104,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "_record_registry_diag",
+      "from": "src.config.validation._load_registry_timeouts",
+      "line": 117,
+      "to": "src.config.validation._record_registry_diag"
+    },
+    {
+      "call": "_load_registry_runtime_defaults",
+      "from": "src.config.validation._registry_runtime_value",
+      "line": 223,
+      "to": "src.config.validation._load_registry_runtime_defaults"
+    },
+    {
+      "call": "_load_registry_timeouts",
+      "from": "src.config.validation._registry_timeout",
+      "line": 142,
+      "to": "src.config.validation._load_registry_timeouts"
+    },
+    {
+      "call": "self._should_rag",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._llm_call_impl",
+      "line": 915,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._should_rag"
+    },
+    {
+      "call": "self._apply_rag_context",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._llm_call_impl",
+      "line": 916,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._apply_rag_context"
+    },
+    {
+      "call": "self._resolve_depth_override_role",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._llm_call_impl",
+      "line": 952,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role"
+    },
+    {
+      "call": "self._budget_diagnostics.get",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip",
+      "line": 565,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._record_depth_override_skip",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 579,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip"
+    },
+    {
+      "call": "self._depth_role_overrides.get",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 583,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._depth_role_overrides.get",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 583,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._record_depth_override_skip",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 585,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip"
+    },
+    {
+      "call": "self._record_depth_override_skip",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 589,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip"
+    },
+    {
+      "call": "self._record_depth_override_skip",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 594,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip"
+    },
+    {
+      "call": "self._record_depth_override_skip",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 600,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip"
+    },
+    {
+      "call": "self._budget_diagnostics.get",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role",
+      "line": 603,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "corpus_cfg.get",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._should_rag",
+      "line": 1024,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "corpus_cfg.get",
+      "from": "src.llm_primitives.primitives.LLMPrimitives._should_rag",
+      "line": 1025,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._llm_call_impl",
+      "from": "src.llm_primitives.primitives.LLMPrimitives.llm_call",
+      "line": 744,
+      "to": "src.llm_primitives.primitives.LLMPrimitives._llm_call_impl"
+    },
+    {
+      "call": "self._split_path",
+      "from": "src.repl_environment.context_bundle.ContextBundle._get_or_default",
+      "line": 491,
+      "to": "src.repl_environment.context_bundle.ContextBundle._split_path"
+    },
+    {
+      "call": "self._section",
+      "from": "src.repl_environment.context_bundle.ContextBundle._get_or_default",
+      "line": 492,
+      "to": "src.repl_environment.context_bundle.ContextBundle._section"
+    },
+    {
+      "call": "self._walk",
+      "from": "src.repl_environment.context_bundle.ContextBundle._get_or_default",
+      "line": 494,
+      "to": "src.repl_environment.context_bundle.ContextBundle._walk"
+    },
+    {
+      "call": "self.json",
+      "from": "src.repl_environment.context_bundle.ContextBundle._get_or_default",
+      "line": 498,
+      "to": "src.repl_environment.context_bundle.ContextBundle.json"
+    },
+    {
+      "call": "self.item",
+      "from": "src.repl_environment.context_bundle.ContextBundle._get_or_default",
+      "line": 499,
+      "to": "src.repl_environment.context_bundle.ContextBundle.item"
+    },
+    {
+      "call": "_as_char_count",
+      "from": "src.repl_environment.context_bundle.ContextBundle._page_bounds",
+      "line": 912,
+      "to": "src.repl_environment.context_bundle._as_char_count"
+    },
+    {
+      "call": "_as_char_count",
+      "from": "src.repl_environment.context_bundle.ContextBundle._page_bounds",
+      "line": 919,
+      "to": "src.repl_environment.context_bundle._as_char_count"
+    },
+    {
+      "call": "self._check_budget",
+      "from": "src.repl_environment.context_bundle.ContextBundle._record",
+      "line": 949,
+      "to": "src.repl_environment.context_bundle.ContextBundle._check_budget"
+    },
+    {
+      "call": "self._current_turn",
+      "from": "src.repl_environment.context_bundle.ContextBundle._record",
+      "line": 963,
+      "to": "src.repl_environment.context_bundle.ContextBundle._current_turn"
+    },
+    {
+      "call": "self._by_name.get",
+      "from": "src.repl_environment.context_bundle.ContextBundle._section",
+      "line": 859,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "m.end",
+      "from": "src.repl_environment.context_bundle.ContextBundle._split_path",
+      "line": 876,
+      "to": "src.repl_environment.context_bundle.Section.end"
+    },
+    {
+      "call": "step.end",
+      "from": "src.repl_environment.context_bundle.ContextBundle._split_path",
+      "line": 888,
+      "to": "src.repl_environment.context_bundle.Section.end"
+    },
+    {
+      "call": "self._section",
+      "from": "src.repl_environment.context_bundle.ContextBundle._walk",
+      "line": 892,
+      "to": "src.repl_environment.context_bundle.ContextBundle._section"
+    },
+    {
+      "call": "_is_char_count",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 465,
+      "to": "src.repl_environment.context_bundle._is_char_count"
+    },
+    {
+      "call": "self._get_or_default",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 473,
+      "to": "src.repl_environment.context_bundle.ContextBundle._get_or_default"
+    },
+    {
+      "call": "self._split_path",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 474,
+      "to": "src.repl_environment.context_bundle.ContextBundle._split_path"
+    },
+    {
+      "call": "self._section",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 475,
+      "to": "src.repl_environment.context_bundle.ContextBundle._section"
+    },
+    {
+      "call": "self._walk",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 477,
+      "to": "src.repl_environment.context_bundle.ContextBundle._walk"
+    },
+    {
+      "call": "_dump",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 477,
+      "to": "src.repl_environment.context_bundle._dump"
+    },
+    {
+      "call": "self._page_bounds",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 478,
+      "to": "src.repl_environment.context_bundle.ContextBundle._page_bounds"
+    },
+    {
+      "call": "self._record",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 480,
+      "to": "src.repl_environment.context_bundle.ContextBundle._record"
+    },
+    {
+      "call": "_nbytes",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 480,
+      "to": "src.repl_environment.context_bundle._nbytes"
+    },
+    {
+      "call": "self._page_bounds",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 482,
+      "to": "src.repl_environment.context_bundle.ContextBundle._page_bounds"
+    },
+    {
+      "call": "self._record",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 484,
+      "to": "src.repl_environment.context_bundle.ContextBundle._record"
+    },
+    {
+      "call": "_nbytes",
+      "from": "src.repl_environment.context_bundle.ContextBundle.get",
+      "line": 484,
+      "to": "src.repl_environment.context_bundle._nbytes"
+    },
+    {
+      "call": "self._section",
+      "from": "src.repl_environment.context_bundle.ContextBundle.item",
+      "line": 514,
+      "to": "src.repl_environment.context_bundle.ContextBundle._section"
+    },
+    {
+      "call": "self.json",
+      "from": "src.repl_environment.context_bundle.ContextBundle.item",
+      "line": 516,
+      "to": "src.repl_environment.context_bundle.ContextBundle.json"
+    },
+    {
+      "call": "self._record",
+      "from": "src.repl_environment.context_bundle.ContextBundle.item",
+      "line": 517,
+      "to": "src.repl_environment.context_bundle.ContextBundle._record"
+    },
+    {
+      "call": "self._split_path",
+      "from": "src.repl_environment.context_bundle.ContextBundle.json",
+      "line": 503,
+      "to": "src.repl_environment.context_bundle.ContextBundle._split_path"
+    },
+    {
+      "call": "self._section",
+      "from": "src.repl_environment.context_bundle.ContextBundle.json",
+      "line": 504,
+      "to": "src.repl_environment.context_bundle.ContextBundle._section"
+    },
+    {
+      "call": "self._walk",
+      "from": "src.repl_environment.context_bundle.ContextBundle.json",
+      "line": 507,
+      "to": "src.repl_environment.context_bundle.ContextBundle._walk"
+    },
+    {
+      "call": "self._record",
+      "from": "src.repl_environment.context_bundle.ContextBundle.json",
+      "line": 509,
+      "to": "src.repl_environment.context_bundle.ContextBundle._record"
+    },
+    {
+      "call": "_dump",
+      "from": "src.repl_environment.context_bundle.ContextBundle.json",
+      "line": 509,
+      "to": "src.repl_environment.context_bundle._dump"
+    },
+    {
+      "call": "_nbytes",
+      "from": "src.repl_environment.context_bundle.ContextBundle.json",
+      "line": 509,
+      "to": "src.repl_environment.context_bundle._nbytes"
+    },
+    {
+      "call": "self._current_turn",
+      "from": "src.repl_environment.context_bundle.ContextBundle.record_printed",
+      "line": 690,
+      "to": "src.repl_environment.context_bundle.ContextBundle._current_turn"
+    },
+    {
+      "call": "_is_char_count",
+      "from": "src.repl_environment.context_bundle._as_char_count",
+      "line": 110,
+      "to": "src.repl_environment.context_bundle._is_char_count"
+    },
+    {
+      "call": "json.dumps",
+      "from": "src.repl_environment.context_bundle._dump",
+      "line": 151,
+      "to": "src.repl_environment.safe_pickle.dumps"
+    },
+    {
+      "call": "_nbytes",
+      "from": "src.repl_environment.context_bundle.cap_printed_output",
+      "line": 135,
+      "to": "src.repl_environment.context_bundle._nbytes"
+    },
+    {
+      "call": "_nbytes",
+      "from": "src.repl_environment.context_bundle.cap_printed_output",
+      "line": 140,
+      "to": "src.repl_environment.context_bundle._nbytes"
+    },
+    {
+      "call": "self._context_bundle.begin_turn",
+      "from": "src.repl_environment.environment.REPLEnvironment._bundle_begin_turn",
+      "line": 728,
+      "to": "src.repl_environment.context_bundle.ContextBundle.begin_turn"
+    },
+    {
+      "call": "cap_printed_output",
+      "from": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output",
+      "line": 738,
+      "to": "src.repl_environment.context_bundle.cap_printed_output"
+    },
+    {
+      "call": "self._context_bundle.record_printed",
+      "from": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output",
+      "line": 741,
+      "to": "src.repl_environment.context_bundle.ContextBundle.record_printed"
+    },
+    {
+      "call": "dependents.get",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1321,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1337,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1344,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "execute_parallel_calls",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1387,
+      "to": "src.repl_environment.parallel_dispatch.execute_parallel_calls"
+    },
+    {
+      "call": "results.get",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1390,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._active_tool_chain_meta.get",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1416,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._spill_output",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain",
+      "line": 1432,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    },
+    {
+      "call": "self._timeout_result",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 902,
+      "to": "src.repl_environment.environment.REPLEnvironment._timeout_result"
+    },
+    {
+      "call": "sanitize_code_unicode",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 904,
+      "to": "src.repl_environment.unicode_sanitizer.sanitize_code_unicode"
+    },
+    {
+      "call": "self._validate_code",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 908,
+      "to": "src.repl_environment.environment.REPLEnvironment._validate_code"
+    },
+    {
+      "call": "self._globals.get",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 939,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "extract_tool_calls",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 997,
+      "to": "src.repl_environment.parallel_dispatch.extract_tool_calls"
+    },
+    {
+      "call": "self._get_read_only_tools",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1015,
+      "to": "src.repl_environment.environment.REPLEnvironment._get_read_only_tools"
+    },
+    {
+      "call": "chainable_tools.update",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1025,
+      "to": "orchestration.repl_memory.skill_bank.SkillBank.update"
+    },
+    {
+      "call": "self._finalize_active_chain_meta",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1070,
+      "to": "src.repl_environment.environment.REPLEnvironment._finalize_active_chain_meta"
+    },
+    {
+      "call": "_extract_parallel_calls",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1083,
+      "to": "src.repl_environment.parallel_dispatch._extract_parallel_calls"
+    },
+    {
+      "call": "execute_parallel_calls",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1105,
+      "to": "src.repl_environment.parallel_dispatch.execute_parallel_calls"
+    },
+    {
+      "call": "results.get",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1116,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "self._spill_output",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1119,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    },
+    {
+      "call": "self._finalize_active_chain_meta",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1122,
+      "to": "src.repl_environment.environment.REPLEnvironment._finalize_active_chain_meta"
+    },
+    {
+      "call": "self._execute_dependency_aware_chain",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1129,
+      "to": "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain"
+    },
+    {
+      "call": "self._finalize_active_chain_meta",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1136,
+      "to": "src.repl_environment.environment.REPLEnvironment._finalize_active_chain_meta"
+    },
+    {
+      "call": "redact_if_enabled",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1175,
+      "to": "src.repl_environment.redaction.redact_if_enabled"
+    },
+    {
+      "call": "self._spill_output",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1184,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    },
+    {
+      "call": "self._tool_hint_if_relevant",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1205,
+      "to": "src.repl_environment.environment.REPLEnvironment._tool_hint_if_relevant"
+    },
+    {
+      "call": "self.mark_timed_out",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1215,
+      "to": "src.repl_environment.environment.REPLEnvironment.mark_timed_out"
+    },
+    {
+      "call": "self._timeout_result",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1216,
+      "to": "src.repl_environment.environment.REPLEnvironment._timeout_result"
+    },
+    {
+      "call": "self._tool_hint_if_relevant",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1217,
+      "to": "src.repl_environment.environment.REPLEnvironment._tool_hint_if_relevant"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1219,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "self._finalize_active_chain_meta",
+      "from": "src.repl_environment.environment.REPLEnvironment._execute_structured",
+      "line": 1226,
+      "to": "src.repl_environment.environment.REPLEnvironment._finalize_active_chain_meta"
+    },
+    {
+      "call": "tools.update",
+      "from": "src.repl_environment.environment.REPLEnvironment._get_read_only_tools",
+      "line": 612,
+      "to": "orchestration.repl_memory.skill_bank.SkillBank.update"
+    },
+    {
+      "call": "self.llm_primitives.llm_call",
+      "from": "src.repl_environment.environment.REPLEnvironment._spill_output",
+      "line": 818,
+      "to": "src.llm_primitives.primitives.LLMPrimitives.llm_call"
+    },
+    {
+      "call": "self._timeout_result",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1451,
+      "to": "src.repl_environment.environment.REPLEnvironment._timeout_result"
+    },
+    {
+      "call": "self._bundle_begin_turn",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1455,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_begin_turn"
+    },
+    {
+      "call": "self._execute_structured",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1459,
+      "to": "src.repl_environment.environment.REPLEnvironment._execute_structured"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1461,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1464,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "sanitize_code_unicode",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1468,
+      "to": "src.repl_environment.unicode_sanitizer.sanitize_code_unicode"
+    },
+    {
+      "call": "self._validate_code",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1472,
+      "to": "src.repl_environment.environment.REPLEnvironment._validate_code"
+    },
+    {
+      "call": "redact_if_enabled",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1517,
+      "to": "src.repl_environment.redaction.redact_if_enabled"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1520,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "self._spill_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1523,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1532,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "self._tool_hint_if_relevant",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1541,
+      "to": "src.repl_environment.environment.REPLEnvironment._tool_hint_if_relevant"
+    },
+    {
+      "call": "self.mark_timed_out",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1551,
+      "to": "src.repl_environment.environment.REPLEnvironment.mark_timed_out"
+    },
+    {
+      "call": "self._timeout_result",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1552,
+      "to": "src.repl_environment.environment.REPLEnvironment._timeout_result"
+    },
+    {
+      "call": "self._tool_hint_if_relevant",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1553,
+      "to": "src.repl_environment.environment.REPLEnvironment._tool_hint_if_relevant"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1558,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "self._bundle_cap_output",
+      "from": "src.repl_environment.environment.REPLEnvironment.execute",
+      "line": 1560,
+      "to": "src.repl_environment.environment.REPLEnvironment._bundle_cap_output"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._eval_ast_arg",
+      "line": 104,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._eval_ast_arg",
+      "line": 114,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._eval_ast_arg",
+      "line": 126,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._eval_ast_arg",
+      "line": 127,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._eval_ast_arg",
+      "line": 135,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._extract_parallel_calls",
+      "line": 211,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "_eval_ast_arg",
+      "from": "src.repl_environment.parallel_dispatch._extract_parallel_calls",
+      "line": 223,
+      "to": "src.repl_environment.parallel_dispatch._eval_ast_arg"
+    },
+    {
+      "call": "redact_credentials",
+      "from": "src.repl_environment.redaction.redact_if_enabled",
+      "line": 188,
+      "to": "src.repl_environment.redaction.redact_credentials"
+    },
+    {
+      "call": "_assert_array_safe",
+      "from": "src.repl_environment.safe_pickle._assert_array_safe",
+      "line": 225,
+      "to": "src.repl_environment.safe_pickle._assert_array_safe"
+    },
+    {
+      "call": "_assert_array_safe",
+      "from": "src.repl_environment.safe_pickle._assert_array_safe",
+      "line": 226,
+      "to": "src.repl_environment.safe_pickle._assert_array_safe"
+    },
+    {
+      "call": "_assert_array_safe",
+      "from": "src.repl_environment.safe_pickle._assert_array_safe",
+      "line": 229,
+      "to": "src.repl_environment.safe_pickle._assert_array_safe"
+    },
+    {
+      "call": "os.environ.get",
+      "from": "src.repl_environment.safe_pickle._resolve_hmac_key",
+      "line": 286,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "get_config",
+      "from": "src.repl_environment.safe_pickle._resolve_hmac_key",
+      "line": 292,
+      "to": "src.config.get_config"
+    },
+    {
+      "call": "_resolve_hmac_key",
+      "from": "src.repl_environment.safe_pickle._sign",
+      "line": 342,
+      "to": "src.repl_environment.safe_pickle._resolve_hmac_key"
+    },
+    {
+      "call": "pickle.dumps",
+      "from": "src.repl_environment.safe_pickle.dumps",
+      "line": 366,
+      "to": "src.repl_environment.safe_pickle.dumps"
+    },
+    {
+      "call": "_assert_array_safe",
+      "from": "src.repl_environment.safe_pickle.dumps",
+      "line": 378,
+      "to": "src.repl_environment.safe_pickle._assert_array_safe"
+    },
+    {
+      "call": "_assert_array_safe",
+      "from": "src.repl_environment.safe_pickle.dumps",
+      "line": 379,
+      "to": "src.repl_environment.safe_pickle._assert_array_safe"
+    },
+    {
+      "call": "_sign",
+      "from": "src.repl_environment.safe_pickle.dumps",
+      "line": 387,
+      "to": "src.repl_environment.safe_pickle._sign"
+    },
+    {
+      "call": "_UNICODE_REPLACEMENTS.get",
+      "from": "src.repl_environment.unicode_sanitizer.sanitize_code_unicode",
+      "line": 96,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file",
+      "line": 199,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file",
+      "line": 200,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file",
+      "line": 208,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file",
+      "line": 213,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_multiple_executions_create_separate_files",
+      "line": 89,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_multiple_executions_create_separate_files",
+      "line": 91,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_multiple_executions_create_separate_files",
+      "line": 92,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_contains_full_output",
+      "line": 56,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_contains_full_output",
+      "line": 58,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_created",
+      "line": 44,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_created",
+      "line": 46,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_head_lines",
+      "line": 71,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_head_lines",
+      "line": 73,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_tail_lines",
+      "line": 80,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_tail_lines",
+      "line": 82,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_file_created",
+      "line": 34,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_file_created",
+      "line": 35,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_for_short_output",
+      "line": 28,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_for_short_output",
+      "line": 29,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputStructuredMode.test_structured_mode_spill",
+      "line": 185,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+      "line": 128,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+      "line": 131,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+      "line": 135,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "second_call_kwargs.kwargs.get",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+      "line": 137,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "second_call_kwargs.kwargs.get",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous",
+      "line": 140,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_stored",
+      "line": 149,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_stored",
+      "line": 152,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_failure_falls_back_to_static",
+      "line": 161,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_failure_falls_back_to_static",
+      "line": 163,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_summary_used",
+      "line": 108,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl.execute",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_summary_used",
+      "line": 110,
+      "to": "src.repl_environment.environment.REPLEnvironment.execute"
+    },
+    {
+      "call": "call_kwargs.kwargs.get",
+      "from": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_summary_used",
+      "line": 116,
+      "to": "src.repl_environment.context_bundle.ContextBundle.get"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_exact_boundary_previous_summary_does_not_resend_whole_output",
+      "line": 224,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl._spill_output",
+      "from": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_exact_boundary_previous_summary_does_not_resend_whole_output",
+      "line": 228,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    },
+    {
+      "call": "_make_repl",
+      "from": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_oversized_previous_worker_reply_stays_within_budget",
+      "line": 238,
+      "to": "tests.unit.test_repl_spill_output._make_repl"
+    },
+    {
+      "call": "repl._spill_output",
+      "from": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_oversized_previous_worker_reply_stays_within_budget",
+      "line": 239,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    },
+    {
+      "call": "repl._spill_output",
+      "from": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_oversized_previous_worker_reply_stays_within_budget",
+      "line": 242,
+      "to": "src.repl_environment.environment.REPLEnvironment._spill_output"
+    }
+  ],
+  "schema": "ni08.static-executed-function-source-graph.v1",
+  "scope": "UFH12",
+  "source_pin": "63399d6f1a7ec5caea6ef31ee898c14e977e85c2",
+  "test_module": "tests/unit/test_repl_spill_output.py",
+  "unresolved_or_dynamic_call_sites": {
+    "orchestration.repl_memory.skill_bank.SkillBank.update": [
+      {
+        "call": "fields.items",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 411
+      },
+      {
+        "call": "ValueError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 413
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 414
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 416
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 418
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 419
+      },
+      {
+        "call": "datetime.now",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 425
+      },
+      {
+        "call": "datetime.now().isoformat",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 425
+      },
+      {
+        "call": "', '.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 426
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 427
+      },
+      {
+        "call": "updates.values",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 427
+      },
+      {
+        "call": "self._conn.execute",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 429
+      },
+      {
+        "call": "self._conn.commit",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 432
+      }
+    ],
+    "src.config._build_server_urls": [
+      {
+        "call": "ServerURLsConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 712
+      },
+      {
+        "call": "dataclasses.fields",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 714
+      },
+      {
+        "call": "f.name.upper",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 715
+      },
+      {
+        "call": "dataclasses.replace",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 719
+      }
+    ],
+    "src.config._load_from_env": [
+      {
+        "call": "OrchestratorConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 454
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 455
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 456
+      },
+      {
+        "call": "LLMConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 457
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 458
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 459
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 460
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 461
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 463
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 464
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 465
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 469
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 471
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 473
+      },
+      {
+        "call": "EscalationConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 476
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 477
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 478
+      },
+      {
+        "call": "REPLConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 480
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 481
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 482
+      },
+      {
+        "call": "ServerConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 484
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 486
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 487
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 489
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 490
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 491
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 492
+      },
+      {
+        "call": "MonitorConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 494
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 495
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 496
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 497
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 498
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 499
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 500
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 501
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 502
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 503
+      },
+      {
+        "call": "TimeoutsConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 508
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 510
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 512
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 514
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 516
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 518
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 520
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 522
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 524
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 526
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 528
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 530
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 532
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 534
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 536
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 538
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 540
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 542
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 544
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 546
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 548
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 550
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 552
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 554
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 556
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 558
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 560
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 562
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 564
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 566
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 568
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 570
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 572
+      },
+      {
+        "call": "ChatPipelineConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 575
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 576
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 579
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 580
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 581
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 582
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 583
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 584
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 585
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 586
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 587
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 588
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 591
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 594
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 597
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 600
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 603
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 604
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 607
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 609
+      },
+      {
+        "call": "MemRLRetrievalConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 612
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 613
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 614
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 615
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 616
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 617
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 618
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 620
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 622
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 623
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 625
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 626
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 632
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 633
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 635
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 639
+      },
+      {
+        "call": "_env_bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 642
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 645
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 648
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 651
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 652
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 653
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 654
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 655
+      },
+      {
+        "call": "ThinkHarderConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 657
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 658
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 659
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 660
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 661
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 662
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 663
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 664
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 665
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 666
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 667
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 668
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 669
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 670
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 671
+      },
+      {
+        "call": "SessionPersistenceConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 673
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 674
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 677
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 680
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 681
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 684
+      },
+      {
+        "call": "SessionLifecycleConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 688
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 689
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 690
+      },
+      {
+        "call": "HealthTrackerConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 692
+      },
+      {
+        "call": "_env_int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 693
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 696
+      },
+      {
+        "call": "_env_float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 697
+      }
+    ],
+    "src.config.get_config": [
+      {
+        "call": "lru_cache",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 722
+      },
+      {
+        "call": "OrchestratorSettings",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 733
+      },
+      {
+        "call": "OrchestratorConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 734
+      },
+      {
+        "call": "LLMConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 737
+      },
+      {
+        "call": "EscalationConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 749
+      },
+      {
+        "call": "REPLConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 753
+      },
+      {
+        "call": "ServerConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 757
+      },
+      {
+        "call": "MonitorConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 765
+      },
+      {
+        "call": "FeaturesConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 776
+      },
+      {
+        "call": "ServerURLsConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 807
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 808
+      },
+      {
+        "call": "dataclasses.fields",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 809
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 810
+      },
+      {
+        "call": "TimeoutsConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 812
+      },
+      {
+        "call": "ChatPipelineConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 839
+      },
+      {
+        "call": "MemRLRetrievalConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 870
+      },
+      {
+        "call": "ThinkHarderConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 898
+      },
+      {
+        "call": "SessionPersistenceConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 914
+      },
+      {
+        "call": "SessionLifecycleConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 921
+      },
+      {
+        "call": "HealthTrackerConfigData",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 925
+      },
+      {
+        "call": "PathsConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 931
+      },
+      {
+        "call": "VisionConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 932
+      },
+      {
+        "call": "DelegationConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 933
+      },
+      {
+        "call": "ServicesConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 934
+      },
+      {
+        "call": "WorkerPoolPathsConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 935
+      }
+    ],
+    "src.config.validation._env_optional_float": [
+      {
+        "call": "float",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 20
+      }
+    ],
+    "src.config.validation._load_registry_runtime_defaults": [
+      {
+        "call": "Path",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 167
+      },
+      {
+        "call": "registry_path.exists",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 173
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 180
+      },
+      {
+        "call": "registry_path.open",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 188
+      },
+      {
+        "call": "yaml.safe_load",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 189
+      },
+      {
+        "call": "dict",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 192
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 192
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 200
+      },
+      {
+        "call": "logger.warning",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 205
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 211
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 212
+      }
+    ],
+    "src.config.validation._load_registry_timeouts": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 77
+      },
+      {
+        "call": "cat_data.items",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 89
+      },
+      {
+        "call": "runtime_diag.get",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 93
+      },
+      {
+        "call": "runtime_diag.get",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 93
+      },
+      {
+        "call": "runtime_diag.get",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 98
+      },
+      {
+        "call": "runtime_diag.get",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 99
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 100
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 110
+      },
+      {
+        "call": "logger.warning",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 115
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 121
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 122
+      }
+    ],
+    "src.config.validation._record_registry_diag": [
+      {
+        "call": "time.time",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 44
+      }
+    ],
+    "src.config.validation._registry_runtime_value": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 225
+      }
+    ],
+    "src.llm_primitives.primitives.LLMPrimitives._apply_rag_context": [
+      {
+        "call": "CorpusRetriever.get_instance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1041
+      },
+      {
+        "call": "extract_code_query",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1042
+      },
+      {
+        "call": "retriever.retrieve_for_rag",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1043
+      },
+      {
+        "call": "retriever.format_for_rag",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1050
+      }
+    ],
+    "src.llm_primitives.primitives.LLMPrimitives._llm_call_impl": [
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 889
+      },
+      {
+        "call": "self.registry.get_role_defaults",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 895
+      },
+      {
+        "call": "self.registry.get_role_defaults",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 900
+      },
+      {
+        "call": "self._apply_persona_prefix",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 908
+      },
+      {
+        "call": "CallLogEntry",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 923
+      },
+      {
+        "call": "time.time",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 924
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 940
+      },
+      {
+        "call": "max",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 942
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 945
+      },
+      {
+        "call": "on_chunk",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 946
+      },
+      {
+        "call": "self._mock_call",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 950
+      },
+      {
+        "call": "self._real_call",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 966
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 974
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 981
+      },
+      {
+        "call": "self.call_log.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 982
+      },
+      {
+        "call": "self._estimate_completion_tokens",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 985
+      },
+      {
+        "call": "self._estimate_prompt_tokens",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 997
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1007
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1008
+      },
+      {
+        "call": "self.call_log.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1009
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1010
+      },
+      {
+        "call": "AdmissionDeniedText",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1011
+      }
+    ],
+    "src.llm_primitives.primitives.LLMPrimitives._record_depth_override_skip": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 566
+      },
+      {
+        "call": "reasons.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 567
+      }
+    ],
+    "src.llm_primitives.primitives.LLMPrimitives._resolve_depth_override_role": [
+      {
+        "call": "max",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 575
+      },
+      {
+        "call": "override_role.startswith",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 588
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 604
+      },
+      {
+        "call": "roles.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 607
+      }
+    ],
+    "src.llm_primitives.primitives.LLMPrimitives._should_rag": [
+      {
+        "call": "CorpusRetriever.get_instance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1018
+      },
+      {
+        "call": "self.registry.get_corpus_config",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1023
+      }
+    ],
+    "src.llm_primitives.primitives.LLMPrimitives.llm_call": [
+      {
+        "call": "RecursionError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 720
+      },
+      {
+        "call": "max",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 726
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._check_budget": [
+      {
+        "call": "ContextPullBudgetExceeded",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 930
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._current_turn": [
+      {
+        "call": "self._turns.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 844
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._page_bounds": [
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 914
+      },
+      {
+        "call": "max",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 914
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 915
+      },
+      {
+        "call": "min",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 915
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 917
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 919
+      },
+      {
+        "call": "max",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 919
+      },
+      {
+        "call": "min",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 919
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._record": [
+      {
+        "call": "per['spans'].append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 959
+      },
+      {
+        "call": "per['spans'].append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 962
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 965
+      },
+      {
+        "call": "rec['pulls'].append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 969
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._section": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 859
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 861
+      },
+      {
+        "call": "', '.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 862
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._split_path": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 867
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 869
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 870
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 870
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 871
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 872
+      },
+      {
+        "call": "re.match",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 873
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 875
+      },
+      {
+        "call": "m.group",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 876
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 879
+      },
+      {
+        "call": "_PATH_STEP.match",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 880
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 882
+      },
+      {
+        "call": "step.groups",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 883
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 885
+      },
+      {
+        "call": "steps.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 885
+      },
+      {
+        "call": "steps.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 887
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle._walk": [
+      {
+        "call": "TypeError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 895
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 900
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 901
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 902
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 903
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 905
+      },
+      {
+        "call": "''.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 907
+      },
+      {
+        "call": "KeyError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 907
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle.begin_turn": [
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 662
+      },
+      {
+        "call": "self._turns.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 663
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 675
+      },
+      {
+        "call": "self._turns.pop",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 676
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle.get": [
+      {
+        "call": "TypeError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 467
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 480
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 484
+      }
+    ],
+    "src.repl_environment.context_bundle.ContextBundle.json": [
+      {
+        "call": "TypeError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 506
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 509
+      },
+      {
+        "call": "copy.deepcopy",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 510
+      }
+    ],
+    "src.repl_environment.context_bundle.Section.end": [
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 196
+      }
+    ],
+    "src.repl_environment.context_bundle._as_char_count": [
+      {
+        "call": "TypeError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 111
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 116
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 116
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 116
+      },
+      {
+        "call": "value.strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 116
+      }
+    ],
+    "src.repl_environment.context_bundle._is_char_count": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 93
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 95
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 97
+      },
+      {
+        "call": "value.is_integer",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 98
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 99
+      },
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 101
+      },
+      {
+        "call": "value.strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 101
+      }
+    ],
+    "src.repl_environment.context_bundle._nbytes": [
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 125
+      },
+      {
+        "call": "text.encode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 125
+      }
+    ],
+    "src.repl_environment.context_bundle.cap_printed_output": [
+      {
+        "call": "int",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 136
+      },
+      {
+        "call": "raw.encode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 139
+      },
+      {
+        "call": "raw.encode('utf-8', errors='surrogatepass')[:cap].decode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 139
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._bundle_cap_output": [
+      {
+        "call": "_log.warning",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 743
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._execute_dependency_aware_chain": [
+      {
+        "call": "ast.parse",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1248
+      },
+      {
+        "call": "enumerate",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1254
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1257
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1258
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1258
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1260
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1260
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1264
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1265
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1265
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1275
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1276
+      },
+      {
+        "call": "ast.walk",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1277
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1278
+      },
+      {
+        "call": "name_refs.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1279
+      },
+      {
+        "call": "steps.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1288
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1302
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1306
+      },
+      {
+        "call": "defaultdict",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1307
+      },
+      {
+        "call": "dependents[dep].append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1310
+      },
+      {
+        "call": "deque",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1312
+      },
+      {
+        "call": "indegree.items",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1312
+      },
+      {
+        "call": "sorted",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1312
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1316
+      },
+      {
+        "call": "deque",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1317
+      },
+      {
+        "call": "waves.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1318
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1319
+      },
+      {
+        "call": "ready.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1324
+      },
+      {
+        "call": "deque",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1325
+      },
+      {
+        "call": "sorted",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1325
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1327
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1338
+      },
+      {
+        "call": "args.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1340
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1345
+      },
+      {
+        "call": "obs_parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1354
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1357
+      },
+      {
+        "call": "sorted",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1358
+      },
+      {
+        "call": "_eval_call_args",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1363
+      },
+      {
+        "call": "bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1368
+      },
+      {
+        "call": "parallel_calls.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1370
+      },
+      {
+        "call": "_ParallelCall",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1373
+      },
+      {
+        "call": "serial_steps.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1383
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1391
+      },
+      {
+        "call": "val.startswith",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1391
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1392
+      },
+      {
+        "call": "val.removeprefix",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1395
+      },
+      {
+        "call": "val.removeprefix('[ERROR:').rstrip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1395
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1396
+      },
+      {
+        "call": "_record_result",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1398
+      },
+      {
+        "call": "self._globals[s['func_name']]",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1402
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1404
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1407
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1408
+      },
+      {
+        "call": "_record_result",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1410
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1412
+      },
+      {
+        "call": "self._active_tool_chain_meta.setdefault",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1414
+      },
+      {
+        "call": "self._active_tool_chain_meta.setdefault('wave_timeline', []).append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1414
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1416
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1417
+      },
+      {
+        "call": "round",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1419
+      },
+      {
+        "call": "bool",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1421
+      },
+      {
+        "call": "any",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1423
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1431
+      },
+      {
+        "call": "'\\n---\\n'.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1432
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1433
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1436
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._execute_structured": [
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 910
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 913
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 914
+      },
+      {
+        "call": "re.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 922
+      },
+      {
+        "call": "re.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 923
+      },
+      {
+        "call": "re.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 924
+      },
+      {
+        "call": "re.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 926
+      },
+      {
+        "call": "final_match.groups",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 929
+      },
+      {
+        "call": "next",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 929
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 930
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 934
+      },
+      {
+        "call": "final_var_match.group",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 938
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 939
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 940
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 944
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1000
+      },
+      {
+        "call": "uuid.uuid4",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1001
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1010
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1016
+      },
+      {
+        "call": "all",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1017
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1019
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1020
+      },
+      {
+        "call": "self.tool_registry.get_chainable_tools",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1022
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1022
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1024
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1027
+      },
+      {
+        "call": "non_chainable.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1030
+      },
+      {
+        "call": "non_chainable.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1036
+      },
+      {
+        "call": "ast.parse",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1042
+      },
+      {
+        "call": "ast.walk",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1046
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1047
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1049
+      },
+      {
+        "call": "non_chainable.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1054
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1058
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1059
+      },
+      {
+        "call": "non_chainable.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1061
+      },
+      {
+        "call": "non_chainable.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1065
+      },
+      {
+        "call": "sorted",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1067
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1071
+      },
+      {
+        "call": "', '.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1076
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1079
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1086
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1093
+      },
+      {
+        "call": "results.items",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1109
+      },
+      {
+        "call": "var_name.startswith",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1110
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1118
+      },
+      {
+        "call": "'\\n---\\n'.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1120
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1123
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1126
+      },
+      {
+        "call": "io.StringIO",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1144
+      },
+      {
+        "call": "io.StringIO",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1145
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1150
+      },
+      {
+        "call": "REPLTimeout",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1154
+      },
+      {
+        "call": "signal.signal",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1158
+      },
+      {
+        "call": "signal.alarm",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1159
+      },
+      {
+        "call": "redirect_stderr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1165
+      },
+      {
+        "call": "redirect_stdout",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1165
+      },
+      {
+        "call": "exec",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1166
+      },
+      {
+        "call": "stdout_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1168
+      },
+      {
+        "call": "stderr_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1169
+      },
+      {
+        "call": "stderr_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1170
+      },
+      {
+        "call": "output.strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1179
+      },
+      {
+        "call": "self._maybe_append_suggestions",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1188
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1190
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1193
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1197
+      },
+      {
+        "call": "stdout_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1198
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1201
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1206
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1210
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1214
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1218
+      },
+      {
+        "call": "stdout_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1219
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1221
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1222
+      },
+      {
+        "call": "signal.alarm",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1228
+      },
+      {
+        "call": "signal.signal",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1229
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._finalize_active_chain_meta": [
+      {
+        "call": "dict",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 679
+      },
+      {
+        "call": "self._chain_execution_log.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 679
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._get_read_only_tools": [
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 609
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 610
+      },
+      {
+        "call": "self.tool_registry.get_read_only_tools",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 612
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._spill_output": [
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 762
+      },
+      {
+        "call": "Path",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 768
+      },
+      {
+        "call": "spill_dir.mkdir",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 769
+      },
+      {
+        "call": "spill_path.write_text",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 771
+      },
+      {
+        "call": "output.splitlines",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 773
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 774
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 775
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 799
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 799
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 802
+      },
+      {
+        "call": "'\\n'.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 831
+      },
+      {
+        "call": "'\\n'.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 832
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 835
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 836
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 837
+      },
+      {
+        "call": "'\\n'.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 838
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._timeout_result": [
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 335
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 339
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._tool_hint_if_relevant": [
+      {
+        "call": "_re.compile",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 852
+      },
+      {
+        "call": "_re.compile",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 853
+      },
+      {
+        "call": "_re.compile",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 854
+      },
+      {
+        "call": "_re.compile",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 855
+      },
+      {
+        "call": "any",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 858
+      },
+      {
+        "call": "p.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 858
+      },
+      {
+        "call": "self._list_tools",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 871
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 873
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 873
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 873
+      },
+      {
+        "call": "', '.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 874
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 874
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 878
+      },
+      {
+        "call": "parts.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 879
+      },
+      {
+        "call": "'\\n'.join",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 880
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment._validate_code": [
+      {
+        "call": "ast.parse",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 628
+      },
+      {
+        "call": "ASTSecurityVisitor",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 634
+      },
+      {
+        "call": "visitor.visit",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 635
+      },
+      {
+        "call": "REPLSecurityError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 668
+      }
+    ],
+    "src.repl_environment.environment.REPLEnvironment.execute": [
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1451
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1454
+      },
+      {
+        "call": "self._record_code_log",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1474
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1475
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1478
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1479
+      },
+      {
+        "call": "self._record_code_log",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1484
+      },
+      {
+        "call": "REPLTimeout",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1488
+      },
+      {
+        "call": "io.StringIO",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1491
+      },
+      {
+        "call": "io.StringIO",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1492
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1498
+      },
+      {
+        "call": "signal.signal",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1500
+      },
+      {
+        "call": "signal.alarm",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1501
+      },
+      {
+        "call": "redirect_stderr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1507
+      },
+      {
+        "call": "redirect_stdout",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1507
+      },
+      {
+        "call": "exec",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1508
+      },
+      {
+        "call": "stdout_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1510
+      },
+      {
+        "call": "stderr_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1511
+      },
+      {
+        "call": "stderr_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1512
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1525
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1528
+      },
+      {
+        "call": "stdout_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1532
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1533
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1537
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1542
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1546
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1550
+      },
+      {
+        "call": "ExecutionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1554
+      },
+      {
+        "call": "stdout_capture.getvalue",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1558
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1560
+      },
+      {
+        "call": "time.perf_counter",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1561
+      },
+      {
+        "call": "signal.alarm",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1567
+      },
+      {
+        "call": "signal.signal",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 1568
+      }
+    ],
+    "src.repl_environment.parallel_dispatch._eval_ast_arg": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 91
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 95
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 101
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 105
+      },
+      {
+        "call": "items.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 107
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 111
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 115
+      },
+      {
+        "call": "items.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 117
+      },
+      {
+        "call": "tuple",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 118
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 121
+      },
+      {
+        "call": "zip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 123
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 134
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 134
+      }
+    ],
+    "src.repl_environment.parallel_dispatch._extract_parallel_calls": [
+      {
+        "call": "ast.parse",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 162
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 167
+      },
+      {
+        "call": "enumerate",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 169
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 171
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 172
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 175
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 177
+      },
+      {
+        "call": "assigned_vars.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 181
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 184
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 184
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 192
+      },
+      {
+        "call": "callable",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 202
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 209
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 212
+      },
+      {
+        "call": "args.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 214
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 221
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 224
+      },
+      {
+        "call": "_ParallelCall",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 228
+      },
+      {
+        "call": "calls.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 228
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 236
+      }
+    ],
+    "src.repl_environment.parallel_dispatch.execute_parallel_calls": [
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 254
+      },
+      {
+        "call": "min",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 254
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 258
+      },
+      {
+        "call": "func",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 263
+      },
+      {
+        "call": "logger.warning",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 265
+      },
+      {
+        "call": "ThreadPoolExecutor",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 270
+      },
+      {
+        "call": "enumerate",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 272
+      },
+      {
+        "call": "executor.submit",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 275
+      },
+      {
+        "call": "futures.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 275
+      },
+      {
+        "call": "run_in_context",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 275
+      },
+      {
+        "call": "f.result",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 279
+      },
+      {
+        "call": "enumerate",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 282
+      }
+    ],
+    "src.repl_environment.parallel_dispatch.extract_tool_calls": [
+      {
+        "call": "ast.parse",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 56
+      },
+      {
+        "call": "ast.walk",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 61
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 62
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 64
+      },
+      {
+        "call": "sites.append",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 69
+      },
+      {
+        "call": "_ToolCallSite",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 70
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 72
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 73
+      },
+      {
+        "call": "sites.sort",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 77
+      }
+    ],
+    "src.repl_environment.redaction.redact_credentials": [
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 149
+      },
+      {
+        "call": "RedactionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 150
+      },
+      {
+        "call": "frozenset",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 150
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 150
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 152
+      },
+      {
+        "call": "RedactionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 154
+      },
+      {
+        "call": "frozenset",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 154
+      },
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 157
+      },
+      {
+        "call": "pattern.subn",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 161
+      },
+      {
+        "call": "categories.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 165
+      },
+      {
+        "call": "RedactionResult",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 167
+      },
+      {
+        "call": "frozenset",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 170
+      }
+    ],
+    "src.repl_environment.redaction.redact_if_enabled": [
+      {
+        "call": "_get_features",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 182
+      },
+      {
+        "call": "logger.warning",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 190
+      },
+      {
+        "call": "sorted",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 193
+      }
+    ],
+    "src.repl_environment.safe_pickle._assert_array_safe": [
+      {
+        "call": "set",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 206
+      },
+      {
+        "call": "id",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 207
+      },
+      {
+        "call": "_seen.add",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 209
+      },
+      {
+        "call": "id",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 209
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 211
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 212
+      },
+      {
+        "call": "hasattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 212
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 213
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 214
+      },
+      {
+        "call": "UnsafePickleError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 215
+      },
+      {
+        "call": "getattr",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 216
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 217
+      },
+      {
+        "call": "UnsafePickleError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 218
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 223
+      },
+      {
+        "call": "value.items",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 224
+      },
+      {
+        "call": "isinstance",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 227
+      }
+    ],
+    "src.repl_environment.safe_pickle._resolve_hmac_key": [
+      {
+        "call": "env_key.encode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 288
+      },
+      {
+        "call": "Path",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 292
+      },
+      {
+        "call": "key_path.read_text",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 300
+      },
+      {
+        "call": "key_path.read_text(encoding='ascii').strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 300
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 303
+      },
+      {
+        "call": "bytes.fromhex",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 306
+      },
+      {
+        "call": "_read",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 310
+      },
+      {
+        "call": "key_dir.mkdir",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 314
+      },
+      {
+        "call": "secrets.token_bytes",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 315
+      },
+      {
+        "call": "key_path.with_suffix",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 320
+      },
+      {
+        "call": "os.getpid",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 320
+      },
+      {
+        "call": "os.open",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 321
+      },
+      {
+        "call": "key.hex",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 323
+      },
+      {
+        "call": "key.hex().encode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 323
+      },
+      {
+        "call": "os.write",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 323
+      },
+      {
+        "call": "os.fsync",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 324
+      },
+      {
+        "call": "os.close",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 326
+      },
+      {
+        "call": "os.replace",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 328
+      },
+      {
+        "call": "logger.info",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 329
+      },
+      {
+        "call": "tmp_path.unlink",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 332
+      }
+    ],
+    "src.repl_environment.safe_pickle._sign": [
+      {
+        "call": "hmac.new",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 342
+      },
+      {
+        "call": "hmac.new(_resolve_hmac_key(), blob, hashlib.sha256).hexdigest",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 342
+      }
+    ],
+    "src.repl_environment.safe_pickle.dumps": [
+      {
+        "call": "UnsafePickleError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 368
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 368
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 370
+      },
+      {
+        "call": "UnsafePickleError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 371
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 372
+      },
+      {
+        "call": "_AllowlistUnpickler",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 379
+      },
+      {
+        "call": "_AllowlistUnpickler(io.BytesIO(blob)).load",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 379
+      },
+      {
+        "call": "io.BytesIO",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 379
+      },
+      {
+        "call": "UnsafePickleError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 383
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 383
+      },
+      {
+        "call": "base64.b64encode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 386
+      },
+      {
+        "call": "base64.b64encode(blob).decode",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 386
+      },
+      {
+        "call": "type",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 388
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 389
+      }
+    ],
+    "src.repl_environment.unicode_sanitizer.sanitize_code_unicode": [
+      {
+        "call": "code.isascii",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 92
+      },
+      {
+        "call": "_UNICODE_PATTERN.sub",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 95
+      },
+      {
+        "call": "m.group",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 96
+      },
+      {
+        "call": "m.group",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 96
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile.test_footer_calls_are_valid_and_read_spill_file": [
+      {
+        "call": "re.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 202
+      },
+      {
+        "call": "re.search",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 203
+      },
+      {
+        "call": "peek_call.group",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 208
+      },
+      {
+        "call": "out.output.strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 210
+      },
+      {
+        "call": "grep_call.group",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 212
+      },
+      {
+        "call": "grep_call.group(0).replace",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 212
+      },
+      {
+        "call": "out.output.strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 215
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 217
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_multiple_executions_create_separate_files": [
+      {
+        "call": "Path",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 94
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 95
+      },
+      {
+        "call": "spill_dir.glob",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 95
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 96
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 98
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_contains_full_output": [
+      {
+        "call": "Path",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 60
+      },
+      {
+        "call": "list",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 61
+      },
+      {
+        "call": "spill_dir.glob",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 61
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 62
+      },
+      {
+        "call": "spill_files[0].read_text",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 64
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 68
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_spill_file_created": [
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 53
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_head_lines": [
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 77
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput.test_summary_contains_tail_lines": [
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 86
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_file_created": [
+      {
+        "call": "Path",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 36
+      },
+      {
+        "call": "p.exists",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 37
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput.test_no_spill_for_short_output": [
+      {
+        "call": "result.output.strip",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 30
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputStructuredMode.test_structured_mode_spill": [
+      {
+        "call": "uuid.uuid4",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 177
+      },
+      {
+        "call": "REPLConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 178
+      },
+      {
+        "call": "REPLEnvironment",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 183
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 190
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_passes_previous": [
+      {
+        "call": "MagicMock",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 122
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 142
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_rolling_summary_stored": [
+      {
+        "call": "MagicMock",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 146
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 155
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_failure_falls_back_to_static": [
+      {
+        "call": "MagicMock",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 158
+      },
+      {
+        "call": "RuntimeError",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 159
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 170
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary.test_worker_summary_used": [
+      {
+        "call": "MagicMock",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 105
+      },
+      {
+        "call": "mock_llm.llm_call.assert_called_once",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 113
+      },
+      {
+        "call": "shutil.rmtree",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 118
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_exact_boundary_previous_summary_does_not_resend_whole_output": [
+      {
+        "call": "MagicMock",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 222
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 224
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 225
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 230
+      },
+      {
+        "call": "context.endswith",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 231
+      },
+      {
+        "call": "(tmp_path / repl._session_id).glob",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 233
+      },
+      {
+        "call": "next",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 233
+      },
+      {
+        "call": "next((tmp_path / repl._session_id).glob('turn_*.txt')).read_text",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 233
+      }
+    ],
+    "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget.test_oversized_previous_worker_reply_stays_within_budget": [
+      {
+        "call": "MagicMock",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 236
+      },
+      {
+        "call": "str",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 238
+      },
+      {
+        "call": "len",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 244
+      },
+      {
+        "call": "context.startswith",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 245
+      },
+      {
+        "call": "context.endswith",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 247
+      },
+      {
+        "call": "(tmp_path / repl._session_id).glob",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 248
+      },
+      {
+        "call": "sorted",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 248
+      },
+      {
+        "call": "spills[0].read_text",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 249
+      },
+      {
+        "call": "spills[1].read_text",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 250
+      }
+    ],
+    "tests.unit.test_repl_spill_output._make_repl": [
+      {
+        "call": "uuid.uuid4",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 15
+      },
+      {
+        "call": "REPLConfig",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 16
+      },
+      {
+        "call": "REPLEnvironment",
+        "classification": "unresolved_static_or_dynamic_dispatch",
+        "line": 17
+      }
+    ]
+  }
+}

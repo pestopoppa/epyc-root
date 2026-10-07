@@ -1,0 +1,163 @@
+name: NI08 UFH12 spill summary context budget controls
+on:
+  push:
+    branches: [codex/ni08-ufh12-spill-budget-recipe-20261007]
+permissions:
+  contents: read
+jobs:
+  ufh12-spill-summary-controls:
+    name: ufh12-spill-summary-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      APP_PIN: 63399d6f1a7ec5caea6ef31ee898c14e977e85c2
+      UFH12_SPILL_ROOT: /mnt/raid0/llm/tmp
+      ROOT_CONTEXT_PIN: 8b540512ed8017fc0ed80ea8f5d3a0381fc08ead
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      UFH12_RUNNER_CONTEXT: ubuntu-24.04
+      UFH12_EXECUTION_CONTEXT: spill-summary-budget-injected-mock-worker-no-model
+      UFH12_INSTALL_COMMAND: >-
+        python -m venv "$RUNNER_TEMP/ni08-ufh12-spill-summary/venv" &&
+        "$RUNNER_TEMP/ni08-ufh12-spill-summary/venv/bin/python" -m pip install
+        --no-deps --only-binary=:all: --require-hashes -r
+        recipe/scripts/ci/ni08_ufh12_spill_requirements.txt
+      ORCHESTRATOR_MOCK_MODE: '1'
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Initialize artifact status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni08-ufh12-spill-summary/result"
+          printf '{"state":"setup_pending","exit_code":null,"fixture_execution_conformant":null,"native_receipt_state":"no_receipt","capture_started":false}\n' > "$RUNNER_TEMP/ni08-ufh12-spill-summary/result/status.json"
+      - name: Checkout exact ROOT recipe and enrolled context
+        id: root_checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: recipe
+          persist-credentials: false
+      - name: Checkout existing native CI carrier
+        id: carrier_checkout
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact APP source candidate with ancestry evidence
+        id: app_checkout
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          fetch-depth: 0
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        id: setup_python
+        with:
+          python-version: '3.13.15'
+      - name: Install only complete locked wheel closure
+        id: install_deps
+        run: |
+          set -euo pipefail
+          ${{ env.UFH12_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-ufh12-spill-summary/result/dependency-install.log"
+      - name: Retain exact isolated environment
+        id: freeze
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/ni08-ufh12-spill-summary/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/ni08-ufh12-spill-summary/result/pip-freeze.txt"
+      - name: Create owned empty original-test spill root on GitHub runner only
+        id: spill_root_setup
+        run: |
+          python3 - "$UFH12_SPILL_ROOT" "$RUNNER_TEMP/ni08-ufh12-spill-summary/result/spill-root-setup.json" <<'PYROOT'
+          import json, os, stat, sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); record=Path(sys.argv[2])
+          if str(root)!='/mnt/raid0/llm/tmp': raise SystemExit('spill root differs from reviewed absolute path')
+          if root.exists() or root.is_symlink(): raise SystemExit('spill root already exists; refusing to reuse non-owned fixture data')
+          old_umask=os.umask(0o077)
+          try: root.mkdir(mode=0o700,parents=True,exist_ok=False)
+          finally: os.umask(old_umask)
+          st=root.lstat()
+          if not stat.S_ISDIR(st.st_mode) or stat.S_ISLNK(st.st_mode): raise SystemExit('spill root is not a real directory')
+          os.chmod(root,0o700,follow_symlinks=False)
+          st=root.lstat()
+          if st.st_uid!=os.getuid() or stat.S_IMODE(st.st_mode)!=0o700: raise SystemExit('spill root owner or mode differs')
+          if any(os.scandir(root)): raise SystemExit('new spill root is not empty')
+          chain=[]
+          for path in (Path('/mnt'),Path('/mnt/raid0'),Path('/mnt/raid0/llm'),root):
+              row=path.lstat()
+              if stat.S_ISLNK(row.st_mode) or not stat.S_ISDIR(row.st_mode): raise SystemExit('spill root ancestor is not a real directory')
+              chain.append({'path':str(path),'device':row.st_dev,'inode':row.st_ino,'uid':row.st_uid,'mode':stat.S_IMODE(row.st_mode)})
+          payload={'state':'created_owned_empty','path':str(root),'created_by':'GitHub-hosted workflow step spill_root_setup','preexisting_path_refused':True,'uid':st.st_uid,'gid':st.st_gid,'mode':stat.S_IMODE(st.st_mode),'device':st.st_dev,'inode':st.st_ino,'empty_at_creation':True,'ancestor_identity':chain}
+          with record.open('x') as handle: json.dump(payload,handle,sort_keys=True,indent=2);handle.write('\n');handle.flush();os.fsync(handle.fileno())
+          PYROOT
+      - name: Capture original whole-module source controls
+        id: capture
+        env:
+          SPILL_ROOT_SETUP_OUTCOME: ${{ steps.spill_root_setup.outcome }}
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/app"
+          "$RUNNER_TEMP/ni08-ufh12-spill-summary/venv/bin/python" recipe/scripts/ci/ni08_ufh12_spill_capture.py
+      - name: Preserve setup failure custody when capture never started
+        if: always()
+        env:
+          ROOT_CHECKOUT_OUTCOME: ${{ steps.root_checkout.outcome }}
+          CARRIER_CHECKOUT_OUTCOME: ${{ steps.carrier_checkout.outcome }}
+          APP_CHECKOUT_OUTCOME: ${{ steps.app_checkout.outcome }}
+          PYTHON_SETUP_OUTCOME: ${{ steps.setup_python.outcome }}
+          SPILL_ROOT_SETUP_OUTCOME: ${{ steps.spill_root_setup.outcome }}
+          DEPENDENCY_INSTALL_OUTCOME: ${{ steps.install_deps.outcome }}
+          ENV_FREEZE_OUTCOME: ${{ steps.freeze.outcome }}
+          CAPTURE_STEP_OUTCOME: ${{ steps.capture.outcome }}
+        run: |
+          python3 - "$RUNNER_TEMP/ni08-ufh12-spill-summary/result" <<'PYSETUP'
+          import hashlib, json, os, stat, sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); status_path=root/'status.json'; record=root/'error-custody.json'
+          if not status_path.is_file() or record.exists() or record.is_symlink(): raise SystemExit(0)
+          status=json.loads(status_path.read_text())
+          if status.get('capture_started') is True: raise SystemExit(0)
+          outcomes={k:os.environ.get(k) for k in ('ROOT_CHECKOUT_OUTCOME','CARRIER_CHECKOUT_OUTCOME','APP_CHECKOUT_OUTCOME','PYTHON_SETUP_OUTCOME','DEPENDENCY_INSTALL_OUTCOME','ENV_FREEZE_OUTCOME','SPILL_ROOT_SETUP_OUTCOME','CAPTURE_STEP_OUTCOME')}
+          tree={'.':{'kind':'directory'}}
+          def walk(directory):
+              for entry in sorted(os.scandir(directory),key=lambda item:item.name):
+                  path=Path(entry.path); mode=entry.stat(follow_symlinks=False).st_mode; rel=path.relative_to(root).as_posix()
+                  if rel=='status.json': continue
+                  if stat.S_ISLNK(mode):
+                      target=os.readlink(path).encode('utf-8','surrogateescape'); tree[rel]={'kind':'symlink_opaque','target_bytes':len(target),'target_sha256':hashlib.sha256(target).hexdigest()}
+                  elif stat.S_ISDIR(mode): tree[rel+'/']={'kind':'directory'}; walk(path)
+                  elif stat.S_ISREG(mode):
+                      fd=os.open(path,os.O_RDONLY|getattr(os,'O_NOFOLLOW',0)); h=hashlib.sha256(); total=0
+                      try:
+                          before=os.fstat(fd)
+                          if not stat.S_ISREG(before.st_mode) or before.st_nlink!=1: raise RuntimeError('nonregular setup artifact')
+                          while True:
+                              chunk=os.read(fd,1048576)
+                              if not chunk: break
+                              h.update(chunk); total+=len(chunk)
+                          after=os.fstat(fd)
+                          if total!=after.st_size or (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)!=(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns): raise RuntimeError('setup artifact changed during hashing')
+                      finally: os.close(fd)
+                      tree[rel]={'kind':'regular','bytes':total,'sha256':h.hexdigest()}
+                  else: raise RuntimeError('special setup artifact')
+          walk(root)
+          payload={'phase':'workflow_setup_before_native_capture','capture_started':False,'native_receipt_state':'no_receipt','native_metric_value':None,'workflow_step_outcomes':outcomes,'typed_result_tree_before_error_record':tree,'typed_result_tree_sha256':hashlib.sha256(json.dumps(tree,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'status_excluded':True,'error_record_self_excluded':True,'proposition_invented':False}
+          with record.open('x') as handle: json.dump(payload,handle,sort_keys=True,indent=2); handle.write('\n'); handle.flush(); os.fsync(handle.fileno())
+          status.update(state='setup_failed',failure_stage='workflow_setup',capture_started=False,native_receipt_state='no_receipt',workflow_step_outcomes=outcomes,error_custody_state='written before final status; status and self excluded from typed tree')
+          status_path.write_text(json.dumps(status,sort_keys=True)+'\n')
+          PYSETUP
+      - name: Preserve original JUnit, command, typed receipt, logs and custody
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni08-ufh12-spill-summary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni08-ufh12-spill-summary/result/
+          if-no-files-found: error

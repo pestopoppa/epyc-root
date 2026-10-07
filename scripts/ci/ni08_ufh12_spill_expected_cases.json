@@ -1,0 +1,84 @@
+{
+  "app_pin": "63399d6f1a7ec5caea6ef31ee898c14e977e85c2",
+  "case_count": 15,
+  "case_identities": [
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_no_spill_for_short_output"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputSmallOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_no_spill_file_created"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_spill_file_created"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_spill_file_contains_full_output"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_summary_contains_head_lines"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_summary_contains_tail_lines"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputLargeOutput",
+      "identity_source": "static AST class/function names",
+      "name": "test_multiple_executions_create_separate_files"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary",
+      "identity_source": "static AST class/function names",
+      "name": "test_worker_summary_used"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary",
+      "identity_source": "static AST class/function names",
+      "name": "test_rolling_summary_passes_previous"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary",
+      "identity_source": "static AST class/function names",
+      "name": "test_rolling_summary_stored"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputWithWorkerSummary",
+      "identity_source": "static AST class/function names",
+      "name": "test_worker_failure_falls_back_to_static"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillOutputStructuredMode",
+      "identity_source": "static AST class/function names",
+      "name": "test_structured_mode_spill"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillFooterCallsReadSpillFile",
+      "identity_source": "static AST class/function names",
+      "name": "test_footer_calls_are_valid_and_read_spill_file"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget",
+      "identity_source": "static AST class/function names",
+      "name": "test_exact_boundary_previous_summary_does_not_resend_whole_output"
+    },
+    {
+      "classname": "tests.unit.test_repl_spill_output.TestSpillWorkerContextBudget",
+      "identity_source": "static AST class/function names",
+      "name": "test_oversized_previous_worker_reply_stays_within_budget"
+    }
+  ],
+  "identity_source": "static AST; pytest not collected/executed",
+  "schema": "ni08.ufh12_spill_expected_cases.v1",
+  "selection": "tests/unit/test_repl_spill_output.py"
+}
