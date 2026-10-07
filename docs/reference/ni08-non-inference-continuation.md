@@ -207,3 +207,7 @@ SMT launch-guard and server-only vision fallback bounded source/VB scopes are en
 ## Source work unlocked by current-tooling review
 
 Session transcript/summary persistence, transport-neutral voice controller/cascade, request-scoped token/cancel/SSE plumbing, and inactive read-only trace MCP registration are now explicit executable source scopes with prospective verification companions. Parent service/model/timing acceptance is retained separately. Existing domain next actions route to this work; preparation adds zero completions and NI08 remains81. Actual stack-swap promotion-gate execution and Tulving read-surface adapter are also under source review.
+
+## Work-cap source gap surfaced immediately
+
+M-11a2b wiring remains complete; a separate forged-marker bound bypass was found in the shared sanitizer. M11-WORK-CAP-SOURCE and its prospective VB companion now own the correction and full source controls. Preparation adds zero completions: NI08 remains81. A private initial fix was returned for additional oversized-decimal-marker and genuine suffix controls before any capture.

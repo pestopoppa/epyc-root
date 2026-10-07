@@ -67,3 +67,7 @@ MAIN verified exact site Git blobs and both historical screenshot hashes, publis
 ## Source work unlocked by current-tooling review
 
 Session transcript/summary persistence, transport-neutral voice controller/cascade, request-scoped token/cancel/SSE plumbing, and inactive read-only trace MCP registration are now explicit executable source scopes with prospective verification companions. Parent service/model/timing acceptance is retained separately. Existing domain next actions route to this work; preparation adds zero completions and NI08 remains81. Actual stack-swap promotion-gate execution and Tulving read-surface adapter are also under source review.
+
+## MAIN source boundary — work-cap follow-on
+
+Source/caller review found a forged truncation marker can bypass nominal work-payload bounds. Immediate M11-WORK-CAP-SOURCE/VB-M11-WORK-CAP-CONFORMANCE/source-table enrollment precedes capture. MAIN returned the first local draft for complete marker-length and actual suffix negative controls. Wiring closure remains valid; no runtime/privacy acceptance. NI08 remains81.
