@@ -28,7 +28,8 @@ PACKAGES = {
     "numpy": "2.4.4", "orjson": "3.11.8", "ormsgpack": "1.12.2",
     "packaging": "26.0", "pluggy": "1.6.0", "pydantic": "2.13.0",
     "pydantic-core": "2.46.0", "pydantic-graph": "1.80.0", "pygments": "2.20.0",
-    "pytest": "9.0.3", "pyyaml": "6.0.3", "referencing": "0.37.0",
+    "pytest": "9.0.3", "pyyaml": "6.0.3", "python-multipart": "0.0.26",
+    "referencing": "0.37.0",
     "requests": "2.33.1", "requests-toolbelt": "1.0.0", "rpds-py": "0.30.0",
     "scipy": "1.17.1", "starlette": "1.0.0", "tenacity": "9.1.4",
     "typing-extensions": "4.15.0", "typing-inspection": "0.4.2",
@@ -130,7 +131,7 @@ def main() -> int:
         normalized_requirements = {name.lower().replace("_", "-"): version
                                    for name, version in requirement_versions.items()}
         if normalized_requirements != PACKAGES:
-            raise RuntimeError("requirements package/version set differs from the 48-package APP closure")
+            raise RuntimeError("requirements package/version set differs from the 49-package APP closure")
         declared_wheels = {}
         current_package = None
         for line in requirements_text.splitlines():
@@ -192,7 +193,7 @@ def main() -> int:
             "requirements_sha256": hashlib.sha256(requirements_path.read_bytes()).hexdigest(),
             "dependency_install_log_sha256": hashlib.sha256(install_log.read_bytes()).hexdigest(),
             "declared_dependencies": PACKAGES,
-            "dependency_basis": "48-package Linux/Python 3.13.15 closure from the pinned APP uv.lock; module-scope transitive closure includes the eager src.api.routes package tree (388 local APP modules, including telemetry), plus exercised lazy imports for FAISS, YAML priors, and pytest. All wheels are hash-locked, installed with --no-deps --only-binary=:all:, and the native readset binds requirements, uv.lock, pip-freeze, and dependency-install.log. No model-serving or ONNX runtime package is installed.",
+            "dependency_basis": "49-package Linux/Python 3.13.15 closure from the pinned APP uv.lock; module-scope transitive closure includes the eager src.api.routes package tree (388 local APP modules, including telemetry), plus exercised lazy imports for FAISS, YAML priors, and pytest. All wheels are hash-locked, installed with --no-deps --only-binary=:all:, and the native readset binds requirements, uv.lock, pip-freeze, and dependency-install.log. No model-serving or ONNX runtime package is installed.",
             "runtime_data_inputs": list(APP_CONFIG_EXTRAS),
             "root_task_source": {"path": ROOT_TASK, "sha256": ROOT_TASK_SHA256},
             "root_vb_source_table": {"path": ROOT_VB_TABLE, "sha256": ROOT_VB_TABLE_SHA256},
