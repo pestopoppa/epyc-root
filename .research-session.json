@@ -1,7 +1,7 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-07T10:46:14.311142+00:00",
+  "last_checkpoint": "2026-10-07T10:50:25.267145+00:00",
   "stage": "stage2-awaiting-source-selection",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-memory-embedding-20261007",
@@ -828,9 +828,12 @@
         "bytes": 14961
       },
       {
-        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/memory-derived-ledger.json",
-        "sha256": "e4c7e0dfbf8869ce0157eb460aa351cd0607ce32ee75c06791cff200f6e95267",
-        "bytes": 10746
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/accepted-stage2-actionable-ledger.json",
+        "sha256": "9843426a41d2a714d471cc6fe88d02b41c6724caf8fc8d775d226ce93b7a48ff",
+        "bytes": 43881,
+        "prior_draft_path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/memory-derived-ledger.json",
+        "prior_draft_sha256": "e4c7e0dfbf8869ce0157eb460aa351cd0607ce32ee75c06791cff200f6e95267",
+        "review_note": "Root-final immutable actionable snapshot replaces mutable preparatory container; accepted row identities/outcomes unchanged."
       },
       {
         "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/second-reader/review-wave1-remaining.json",
@@ -900,11 +903,31 @@
         },
         "report_cite_check": {
           "exit_code": 0,
-          "captured_at": "2026-10-07T10:45:08.666636+00:00"
+          "captured_at": "2026-10-07T10:50:25.266455+00:00"
         },
         "whitespace": {
           "exit_code": 0,
-          "captured_at": "2026-10-07T10:45:08.818927+00:00"
+          "captured_at": "2026-10-07T10:46:14.464778+00:00"
+        },
+        "private_index_whitespace": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:46:15.294254+00:00"
+        },
+        "lane_push": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:46:21.735400+00:00"
+        },
+        "main_push": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:46:26.577423+00:00"
+        },
+        "remote_lane_containment": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:46:26.986982+00:00"
+        },
+        "remote_promotion_containment": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:46:26.988597+00:00"
         }
       },
       "native_projection": "isolated shadow ledger; existing literature adapter",
@@ -916,7 +939,8 @@
       "shape_fix_1969": "restore appended character suffix to prose",
       "duplicate_scratch_evidence_not_copied_to_index": true,
       "accepted_payload_sha256": "bf3acfdfef19d4083e44424a68ce8cec114a576e0904d2a099a2ab19a5b4ebe2",
-      "final_second_reader": "All64anchors and corrected semantic/schema checks pass; rootnormalizedprose shape resolved."
+      "final_second_reader": "All64anchors and corrected semantic/schema checks pass; rootnormalizedprose shape resolved.",
+      "actionable_ledger_snapshot_sha256": "9843426a41d2a714d471cc6fe88d02b41c6724caf8fc8d775d226ce93b7a48ff"
     }
   }
 }
