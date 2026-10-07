@@ -17,7 +17,7 @@ import tomllib
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-APP_PIN = "3e34eaeca079c440f31b2f26710fd09790544cc9"
+APP_PIN = "5b12f986791f13b790902ac528575517e582b099"
 ROOT_READS = (
     ".github/workflows/ssbench-smt-native.yml",
     "scripts/ci/ssbench_native_capture.py",
