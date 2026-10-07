@@ -1,0 +1,308 @@
+{
+  "approved_K": {
+    "approved_patch_sha256": "3f183534aabf2528cf6acfbd591fe945686e6ec732861692b7bb5abe089a8ff7",
+    "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c-pointer-original-MAIN-acceptance.json",
+    "sha256": "8b6d8e6e775a22d9d84b69f331f4555d5ac5729e3f37d2ba5e7b64dc43589515"
+  },
+  "branch": "codex/ni08-inf48-c-pointer-literal-20261007",
+  "commit": "aefa9a8347ec65f297c24e44021aad895e40b636",
+  "custody": {
+    "GitHub_API_branch_after": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/gh-branch-after.json",
+      "sha256": "a065fedda800ce993b9bf564c60583dcf90e5a08efd03206c76a7244f1e71a04"
+    },
+    "GitHub_API_main_after": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/gh-main-after.json",
+      "sha256": "797ddc8c3216e30b067a65fb17ece0e20b354ee3ac6d90a8fe9a393136b9a953"
+    },
+    "directory": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007",
+    "raw_receipts": {
+      "receipts/acquire-failure-reproduction/push-acquire.exit": {
+        "bytes": 2,
+        "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+      },
+      "receipts/acquire-failure-reproduction/push-acquire.stderr": {
+        "bytes": 202,
+        "sha256": "94fb937d54121abafe33468f3cde30eae41112e6478a3153b051297562366b30"
+      },
+      "receipts/acquire-failure-reproduction/push-acquire.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/acquire-failure-reproduction/push.token.empty": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/acquire-failure-reproduction/wrap-acquire.exit": {
+        "bytes": 2,
+        "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+      },
+      "receipts/acquire-failure-reproduction/wrap-acquire.stderr": {
+        "bytes": 204,
+        "sha256": "9c480469e8adce688340ae0979f0112936b2b11e6ce8a26422912dca5ae51214"
+      },
+      "receipts/acquire-failure-reproduction/wrap-acquire.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/acquire-failure-reproduction/wrapup.token.empty": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/cached-diff-check.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/cached-diff-check.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/commit-summary.txt": {
+        "bytes": 526,
+        "sha256": "05e2cfaa0c77e0bcc60414c9cfcd7b268bfa94a94d477e4d75730e05bc8844ac"
+      },
+      "receipts/commit.sha": {
+        "bytes": 41,
+        "sha256": "be865e5306d84a02555dab77f00fe1f787ccdab10b2e8b33135cb808c5b7a76e"
+      },
+      "receipts/commit.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/commit.stdout": {
+        "bytes": 149,
+        "sha256": "7d5190c1b4af2a1153aa232dd0ba54c1111769cbdcb19bf71c2a2fffb513149f"
+      },
+      "receipts/fetch-main.stderr": {
+        "bytes": 109,
+        "sha256": "efe30355a678ab3189ca2b567d7c65618c12132ad5449a9fcf899979920d1fd3"
+      },
+      "receipts/fetch-main.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/gh-branch-after.json": {
+        "bytes": 4060,
+        "sha256": "a065fedda800ce993b9bf564c60583dcf90e5a08efd03206c76a7244f1e71a04"
+      },
+      "receipts/gh-branch-after.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/gh-main-after.json": {
+        "bytes": 3904,
+        "sha256": "797ddc8c3216e30b067a65fb17ece0e20b354ee3ac6d90a8fe9a393136b9a953"
+      },
+      "receipts/gh-main-after.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/gh-main-before.json": {
+        "bytes": 3898,
+        "sha256": "30406de6f736ca199aafa994210757a9a5f8f9a71c37905ce2f75b9e58b05db0"
+      },
+      "receipts/gh-main-before.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/gh-main-prepush.json": {
+        "bytes": 3898,
+        "sha256": "30406de6f736ca199aafa994210757a9a5f8f9a71c37905ce2f75b9e58b05db0"
+      },
+      "receipts/gh-main-prepush.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/git-lfs-path.txt": {
+        "bytes": 17,
+        "sha256": "138f3c0666a9f40ae196a60a368b47d9ad1cbc4bfcecd08a6d8c802ac17f6c12"
+      },
+      "receipts/ls-remote-after.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/ls-remote-after.stdout": {
+        "bytes": 153,
+        "sha256": "ffb748dbd412bee4ad93212b7ea954a1623d3f1114e6195c53e1819e060c10d9"
+      },
+      "receipts/ls-remote-main-before.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/ls-remote-main-before.stdout": {
+        "bytes": 57,
+        "sha256": "cac4e6b9e6d9b777b72f371ec73323f0098667a5a2e05001b423e234ed5535d1"
+      },
+      "receipts/ls-remote-prepush.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/ls-remote-prepush.stdout": {
+        "bytes": 57,
+        "sha256": "cac4e6b9e6d9b777b72f371ec73323f0098667a5a2e05001b423e234ed5535d1"
+      },
+      "receipts/published-staged.patch": {
+        "bytes": 5027,
+        "sha256": "3f183534aabf2528cf6acfbd591fe945686e6ec732861692b7bb5abe089a8ff7"
+      },
+      "receipts/published-staged.patch.sha256": {
+        "bytes": 151,
+        "sha256": "725b6a78d5a9fcc491369c9d50587e51d39520b7464887101e3542d2e265badc"
+      },
+      "receipts/push-branch.stderr": {
+        "bytes": 395,
+        "sha256": "6263ec5974174b07c6149ac2b5d4e1f2a33b0f8ffd0541e6eeb8594a703bbf48"
+      },
+      "receipts/push-branch.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/push-lock-status.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/push-lock-status.stdout": {
+        "bytes": 106,
+        "sha256": "2f8e0306c2e59698c515eaa3934a1e3322f90240ad89851ab29cd964efe05b5d"
+      },
+      "receipts/push-main.stderr": {
+        "bytes": 99,
+        "sha256": "0830e84c51052b9baa2c127aa200bb9ee196e75a0105cfce5b5d177df06baed8"
+      },
+      "receipts/push-main.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/push-status-current.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/push-status-current.stdout": {
+        "bytes": 106,
+        "sha256": "2f8e0306c2e59698c515eaa3934a1e3322f90240ad89851ab29cd964efe05b5d"
+      },
+      "receipts/push-status-held.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/push-status-held.stdout": {
+        "bytes": 106,
+        "sha256": "2f8e0306c2e59698c515eaa3934a1e3322f90240ad89851ab29cd964efe05b5d"
+      },
+      "receipts/staged-paths.txt": {
+        "bytes": 125,
+        "sha256": "cff9532a026e1e38835d19675d50b3af972484a3501e022989d09f0ac46c33c8"
+      },
+      "receipts/switch-branch.stderr": {
+        "bytes": 71,
+        "sha256": "05c57605279bff08eaee2d762013b92dc682ad6a68af5ba9e47fe538ffa43db5"
+      },
+      "receipts/switch-branch.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/wrap-acquire.stderr": {
+        "bytes": 160,
+        "sha256": "1e11563740fcca7277ee92220d69bd6dca04be9da81d2de46c3d200416fd1704"
+      },
+      "receipts/wrap-acquire.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/wrap-lock-status.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/wrap-lock-status.stdout": {
+        "bytes": 110,
+        "sha256": "c2dab4f2fc0abe8ee08b89f5a070e591824faba17d3f8747f8c36ab7174b9fb4"
+      },
+      "receipts/wrap-status-current.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/wrap-status-current.stdout": {
+        "bytes": 110,
+        "sha256": "c2dab4f2fc0abe8ee08b89f5a070e591824faba17d3f8747f8c36ab7174b9fb4"
+      },
+      "receipts/wrap-status-held.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receipts/wrap-status-held.stdout": {
+        "bytes": 110,
+        "sha256": "c2dab4f2fc0abe8ee08b89f5a070e591824faba17d3f8747f8c36ab7174b9fb4"
+      }
+    },
+    "worktree_clean": true
+  },
+  "files": [
+    {
+      "bytes": 11931,
+      "git_blob": "7c04d039781d90c3a5edaf2402b6bfa4ce3a814e",
+      "path": "scripts/kernel_rnd/autokernel/execution/reward_hack_scan.py",
+      "sha256": "6b71777a9b60e048f7e581362b461b397d93ca9d54e0abdb210a4e86cd300dbc"
+    },
+    {
+      "bytes": 11402,
+      "git_blob": "041077feb355d933dd08c0ce18461c021b5ef6ab",
+      "path": "scripts/kernel_rnd/autokernel/execution/test_reward_hack_scan.py",
+      "sha256": "ca01051f2e5f8565e417574e965cc42397665e91a792402b40c72f6e66b85a87"
+    }
+  ],
+  "parent": "c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "publication": {
+    "GitHub_API_and_ls_remote_agree": true,
+    "branch_push": "successful from raw push stdout/stderr receipts",
+    "force": false,
+    "main_push": "successful normal fast-forward c49729505b6b85bcc2ef68255168014b4ae6a84d -> aefa9a8347ec65f297c24e44021aad895e40b636",
+    "no_project_import_or_tests": true
+  },
+  "qualification": "The approved exact two-file source change is public on branch and main. Main advanced by a normal fast-forward. The required canonical leases were not held and the lane pre-push hook did not enforce serialization. Publication is not represented as serialized. No source history rewrite or repush occurred.",
+  "remote": "https://github.com/pestopoppa/epyc-inference-research.git",
+  "schema": "private.inf48_publication_result.v3",
+  "serialization_deviation": {
+    "current_locks": "FREE (no retroactive acquisition/release claim)",
+    "effective_hooks": {
+      "pre_commit": {
+        "normal_git_commit_invoked": true,
+        "path": "/mnt/raid0/llm/epyc-inference-research/.git/hooks/pre-commit",
+        "separate_hook_transcript": "not retained",
+        "sha256": "2385af56caa1b87cf3910144a6dc20193cead6ab1f8a2b1a2763d39c809c8a1e"
+      },
+      "pre_push": {
+        "contains": "Git LFS pre-push; no serialized-push guard",
+        "no_verify_or_hook_bypass": true,
+        "normal_git_push_invoked": true,
+        "path": "/mnt/raid0/llm/epyc-inference-research/.git/hooks/pre-push",
+        "sha256": "a52d0510d0f8c75e27852156ec6f7791f0d8ed65fc58fcc368dd1de0a60a1d74"
+      },
+      "publishing_lane_core_hooksPath": "unset; default common Git hooks used"
+    },
+    "initial_attempt_receipts": "The original wrapup acquisition stdout/stderr files were retained at receipts/wrap-acquire.stdout and receipts/wrap-acquire.stderr; stdout is empty and stderr reports token-file-invalid for the original /mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/wrapup.token. The shell used set -e, so it exited at this failure and never invoked push-lock acquisition. No original push-acquire stdout/stderr exists. Immediately following status snapshots for both lock names reported FREE before publication. The original empty token files were later removed. Separate explicitly labeled failure reproductions are retained under receipts/acquire-failure-reproduction and are not represented as the first attempt.",
+    "original_wrap_acquire_receipts": {
+      "stderr": {
+        "path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/wrap-acquire.stderr",
+        "sha256": "1e11563740fcca7277ee92220d69bd6dca04be9da81d2de46c3d200416fd1704"
+      },
+      "stdout": {
+        "path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/wrap-acquire.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "prepublication_lock_status_receipts": {
+      "push-status-held.stdout": {
+        "sha256": "2f8e0306c2e59698c515eaa3934a1e3322f90240ad89851ab29cd964efe05b5d",
+        "text": "push lock: FREE  (/mnt/raid0/llm/epyc-inference-research/coordination/push-locks/push-2431-96371209.json)"
+      },
+      "wrap-status-held.stdout": {
+        "sha256": "c2dab4f2fc0abe8ee08b89f5a070e591824faba17d3f8747f8c36ab7174b9fb4",
+        "text": "wrapup lock: FREE  (/mnt/raid0/llm/epyc-inference-research/coordination/push-locks/wrapup-2431-96371209.json)"
+      }
+    },
+    "push_and_wrapup_leases_held_at_publication": false,
+    "root_cause": "I precreated both operation token files empty. The `serialized_push.py --acquire` attempt refused these invalid tokens. I failed to inspect the nonzero acquisition result before proceeding with commit/push."
+  },
+  "verified_branch_sha": "aefa9a8347ec65f297c24e44021aad895e40b636",
+  "verified_main_sha": "aefa9a8347ec65f297c24e44021aad895e40b636"
+}

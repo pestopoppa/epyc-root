@@ -1,0 +1,29 @@
+{
+  "schema": "epyc.main.native.original-review.v1",
+  "utc": "2026-10-07T12:55:28.491965+00:00",
+  "review": "PASS",
+  "run": 37621623399,
+  "attempt": 1,
+  "source": "b2b44fedba3db5ce4c240d9aee0573b753103c53",
+  "recipe": "83bce0a976c9b32a87096ab7c9cd6c4981a7f596",
+  "original_native_conformance": true,
+  "whole_cases": 9,
+  "git_rows": 20,
+  "native_reads": 30,
+  "reviewed_helper_sha256": "1dae9efcf2ba31112c952d0774bff59e0b018fe684d378a02a1ecc64ed9ddd08",
+  "main_reopen_sha256": "c5744ef27a94c4a5c9fb234b7382612a39a19352bb1e2130954ca5ed93fc3dd1",
+  "main_checks": 1013,
+  "exact_two_product_files_verified": true,
+  "product_patch_sha256": "3f183534aabf2528cf6acfbd591fe945686e6ec732861692b7bb5abe089a8ff7",
+  "product_plan_sha256": "44544cad39d5ec40234e27d81e622eea9a7163bcce9a3a2ff617faa1ad15c43b",
+  "manual_blast_radius": "Reward-hack lexical scan and existing report reader plus whole unittest class; narrow added-line source conformance. No production kernel modification, existing environmental/proc/timing detector input unchanged.",
+  "original_false_retained": 37617279801,
+  "new_grade_authored": false,
+  "host_project_execution": false,
+  "authorization": "Normal canonical-linked Research exact two-file product publication on current public main only; fresh disjoint FF preimages checked; no reload/native recapture. MAIN owns ROOT source/VB closures after public verification.",
+  "limits": [
+    "Masks contiguous added hunk literals/comments; does not prove arbitrary C/C++ parser or missing-context pointer memo absence.",
+    "Typed snapshots remain original qualified self/status/empty-dir records; all immutable records independently byte-backed.",
+    "No GPU-twin, parent C6-26, benchmark, inference, quality or promotion acceptance."
+  ]
+}
