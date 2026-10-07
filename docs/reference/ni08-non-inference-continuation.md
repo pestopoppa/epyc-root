@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **135 completed scoped tasks: 78 existing checkbox flips and 57 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **136 completed scoped tasks: 78 existing checkbox flips and 58 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -352,3 +352,8 @@ Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN m
 ## Actual W4 promotion gate — 2026-10-07
 
 [Original2/2 outer,808 inner executions and exact published source](../../artifacts/ni08/w4-real-gate-success-acceptance-20261007/README.md) close W4-REAL-GATE-SOURCE and VB-W4-STACK-CHANGE-GATE, bringing NI08 to135 scoped completions (78existing+57children). Four actual synthetic worlds each pass the original202 gate identities, and invalid-world refusal is preserved. Six empty directories omitted by artifact ZIP are reported explicitly without reconstruction. Actual consumer migrations, production readiness and owner confirmation remain independent; all-card review and further non-inference source work continue.
+
+
+## Failed original custody — 2026-10-07
+
+[MAIN twelve-endpoint independent integrity review](../../artifacts/ni08/failed-original-custody-review-20261007/README.md) preserves10nativeFALSE,1nativeNULL and1setup/no-receipt outcome, without grader execution or implementation acceptance. One completed custody subtask brings the scoped total to136 (78existing+58children). This is original-record authentication only; no later success supersedes the failed records.

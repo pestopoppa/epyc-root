@@ -1,0 +1,953 @@
+{
+  "schema": "epyc.main.failed_original_custody_review.v1",
+  "reviewed_at": "2026-10-07T07:03:19.458129+00:00",
+  "scope": "Original immutable native endpoints only; no later mutable maps/historical pointers, no regrading or acceptance",
+  "manifest_sha256": "2bfc8b53884c659b0845b73df8e7895c3533625adda684d012751b218f3b5762",
+  "records": [
+    {
+      "run": 37571161701,
+      "recipe_pin": "ca25230b85a6aef15df401ff190164e2490d0e0a",
+      "artifact": 11460309678,
+      "zip_sha256": "3e0b07383cb015e41d31baa54ccd97a712f6e6a83af394104b3b9c20fa6dec79",
+      "zip_bytes": 1806345,
+      "members": 125,
+      "job_identities": [
+        "github_job_112629881418"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "752754e1aacfd0a95fc1c3de8afa7413eabedc190068bab902e74072c49268ba",
+      "receipt_self_sha256": "b50b6e8eda588aaa7cdcdc2e5a68801ba235167e95da19d2075bd6774a6b4505",
+      "readset_count": 115,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "failure"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 2,
+          "passed": 0,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37573678577,
+      "recipe_pin": "827c7e7d916a0b2569fc8ade7366dfc65fd2e011",
+      "artifact": 11462060107,
+      "zip_sha256": "5706edd2a6b148b604ab2bb09f735c610ce51c9dc049b4b467328ccf7ef155b4",
+      "zip_bytes": 2609085,
+      "members": 135,
+      "job_identities": [
+        "github_job_112637710331"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "d3d4e2fad1c93f16dc873bcc7cf15a4e56bf630f55f49b22351e488bf18729e1",
+      "receipt_self_sha256": "5b176d28ec521dbe53bdcdd7f10f23106a95b75ad6d6cd74306b649c02ef07b8",
+      "readset_count": 124,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "failure"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 2,
+          "passed": 0,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37575113953,
+      "recipe_pin": "20eb321ccd95e06a61285bb0766f59f680d1955d",
+      "artifact": 11462207048,
+      "zip_sha256": "b0adb2e2b86394c2f4b70c2ded8d47d4d5e3c7c63daaab85216bb247372cc005",
+      "zip_bytes": 2612776,
+      "members": 137,
+      "job_identities": [
+        "github_job_112642151936"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "5ead1433ff3a4e0d8915acd482f752f904cc64929a1d241a60daee6e2dcf8654",
+      "receipt_self_sha256": "66f7f7d1f285cfe403c0f594a0ed27789d4012a29529033493f7c5f27afe3ff8",
+      "readset_count": 124,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "failure"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 2,
+          "passed": 0,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37575895828,
+      "recipe_pin": "d77b7312500dccd159dc9aae48ed4007a2daefb8",
+      "artifact": 11462876513,
+      "zip_sha256": "e8fdc2286951fe17fc969dceea81ee13c26a27b60f246d8506da76f76863f14e",
+      "zip_bytes": 2618916,
+      "members": 143,
+      "job_identities": [
+        "github_job_112644598678"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "31d692f0ea22061923c11f72da15402f7b9e8b34ceb6c22e7117a359c8636be2",
+      "receipt_self_sha256": "c8431addd2e1cd10cdca59c97e8ff8298a3ea36308c69b2209de9ce49e366ea8",
+      "readset_count": 125,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 1,
+          "passed": 1,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37577270119,
+      "recipe_pin": "23626720739d1b5107acea93dc53cac25b9c9fff",
+      "artifact": 11463450729,
+      "zip_sha256": "8fc1f357ad54532281957222db162f259bde6321e94b40000f998ae38a3d7aa6",
+      "zip_bytes": 3700318,
+      "members": 343,
+      "job_identities": [
+        "github_job_112648857981"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "c9ba4e06930a6bee0a60d12da492e6d618fa40094f96c4e8bd2046a79f303dca",
+      "receipt_self_sha256": "9b82b46afa7dd13da3ec6f2740d4881a7be65d2a3a5b2b6bab71040fc1a35ffb",
+      "readset_count": 325,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 1,
+          "passed": 1,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37577824164,
+      "recipe_pin": "4760f6f9dd71ff9e530ffcaa056f17378ec2ce26",
+      "artifact": 11463705807,
+      "zip_sha256": "6edf9e8bdfee0ace03148e417e2afd92ac629faac9394e063255963b791385d7",
+      "zip_bytes": 3700898,
+      "members": 344,
+      "job_identities": [
+        "github_job_112650565140"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "a09adce4e49303eee392885624683ec18a6f820e4d209547cb48b41caed34662",
+      "receipt_self_sha256": "4ffe1fe1468844850905ae2c90ef184a26356d3a03486a37b2a7d750e6a7adf6",
+      "readset_count": 325,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 1,
+          "passed": 1,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37577092312,
+      "recipe_pin": "60b2e8a4b5531a37bf545345dcddb0ea0b7ea49d",
+      "artifact": 11462907901,
+      "zip_sha256": "342a1d8fb8626be3d2d66376409b6bb5ae4d60fd11087c8ba701e8823a6e23b8",
+      "zip_bytes": 1201305,
+      "members": 85,
+      "job_identities": [
+        "github_job_112648303529"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "63a7a637b3516502397e60beb442b9c4f8b8a8b2319b2fb3e0e3e98d81bd13ac",
+      "receipt_self_sha256": "cc10e840a060fb987f25f67854d26ba43ddbce75f0410c9069abb089fba6b542",
+      "readset_count": 73,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_mocked_gui_cli_routes_by_typed_value_not_confidence[lower-confidence]",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_mocked_gui_cli_routes_by_typed_value_not_confidence[higher-confidence]",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_parse_retry_and_failure_budget_are_independent",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_exhausted_typed_budget_uses_declared_unknown_fallback",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_q_done_routes_to_worker_or_validation[incomplete]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_q_done_routes_to_worker_or_validation[complete]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_format_failure_retries_but_never_escalates",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_exhausted_retry_escalation_and_approval_end_routes",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_worker_output_validation_rejection_has_declared_end_and_mock_call",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_fw1_mocked_cli_harness",
+            "name": "test_missing_capture_hook_refuses_before_any_typed_call",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 10,
+          "error": 0,
+          "executed": 10,
+          "failure": 2,
+          "passed": 8,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": true,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37575558969,
+      "recipe_pin": "1bb08cc9673e143f211acccdc264887a390b3aea",
+      "artifact": 11462910966,
+      "zip_sha256": "883913a7755bb2b692472b8b91fd46163a0a06a1a8e49fcbf9b7046e06dd93bf",
+      "zip_bytes": 655917,
+      "members": 31,
+      "job_identities": [
+        "github_job_112643544674"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "9667223a747bd2050d6874d3de2a9e592c3a93d59eaff2cc5e8c83e11e01923a",
+      "receipt_self_sha256": "e7a977ee5288b9e5b9427ef1612e391ae829c841b97551051b84b4137b3cb3b1",
+      "readset_count": 21,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_literal_pin_reports_current_then_stale_content",
+            "status": "passed"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_keyword_file_identity_arguments_are_checked",
+            "status": "passed"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_missing_pin_target_is_distinct_from_mismatch",
+            "status": "passed"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_dynamic_missing_argument_and_unpaired_pin_remain_unresolved",
+            "status": "passed"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_symlink_parent_outside_and_fifo_are_refused_without_following",
+            "status": "passed"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_replacement_during_read_is_reported_unresolved",
+            "status": "passed"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_inspect_tree_and_cli_exit_contract_on_tracked_synthetic_checkout",
+            "status": "failure"
+          },
+          {
+            "classname": "scripts.benchmark.tests.test_pin_staleness",
+            "name": "test_json_binds_checker_and_scanned_source_to_git_snapshot",
+            "status": "failure"
+          }
+        ],
+        "counts": {
+          "collected": 8,
+          "error": 0,
+          "executed": 8,
+          "failure": 2,
+          "passed": 6,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": true,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37577177643,
+      "recipe_pin": "eeb9ec28b51bb7149a3c80a82bece34aadde58ac",
+      "artifact": 11463038984,
+      "zip_sha256": "ad030743f7d859799b06841f623a89283bf6944e1c506efa7d88e7a01829ab18",
+      "zip_bytes": 181,
+      "members": 1,
+      "job_identities": [
+        "github_job_112648564896"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": null,
+      "native_receipt_present": false,
+      "scope": "Original setup failure; no native proposition, no tuple and no implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37577564322,
+      "recipe_pin": "8e837540ebf9648525e4a01fdb22cf8a80e4003e",
+      "artifact": 11462673839,
+      "zip_sha256": "12aca4b4830521417dcd56d65f4efc9bf8f224c3724cd0ede183ca1f52300ac6",
+      "zip_bytes": 7048197,
+      "members": 1142,
+      "job_identities": [
+        "github_job_112649774150"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": null,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "f3a2d34d914a5b2490966ccc6e407685c682d9d84be793894b15f57ed363be59",
+      "receipt_self_sha256": "545904921d681574e06d6718906c45da37a9b15be0b4070ff1624a7d6fc37208",
+      "readset_count": 1132,
+      "original_summary": null,
+      "diagnostic": "unnamed JUnit case",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37578164683,
+      "recipe_pin": "970c195459b85213baf7e2dc3a873d8e7856ff84",
+      "artifact": 11463516977,
+      "zip_sha256": "45244302a8a1c32bbf0603c19d20a5d3f49696822d72ee44fa1c2967eeddc774",
+      "zip_bytes": 7081378,
+      "members": 1146,
+      "job_identities": [
+        "github_job_112651615343"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "70dfeb024a062901fd6f3090bee37ee4d539a18d043f64d6284739767f1d0d7f",
+      "receipt_self_sha256": "cbb3e2ac35f7ee9022e541ef38fff91440ef4be98678e3616537255498d1b028",
+      "readset_count": 1135,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_single_range",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_multiple_ranges",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_single_cpu",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[empty]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[letters]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[trailing-comma]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[missing-end]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[descending]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[bad-member]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[multiple-separators]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[leading-space]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_parse_cpu_list_refuses_malformed[trailing-space]",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_format_cpu_list_folds_ranges",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_format_cpu_list_single_cpu",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_format_cpu_list_full_range",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_placement_overlaps_detects_intersection",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_placement_overlaps_refuses_malformed_placement",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_sibling_map_reads_symmetric_groups_from_injected_sysfs",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_sibling_map_rejects_missing_or_asymmetric_sysfs",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_sibling_map_rejects_malformed_sysfs",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_rejects_incomplete_candidate_topology",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_is_bench_process_matches_driver_names",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_is_bench_process_excludes_supervisors_naming_a_bench",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_detection_uses_executable_or_script_not_author_prompt",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_detect_running_cpu_bench_skips_probe_and_supervisors",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_no_bench_is_empty",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_unions_main_and_threads",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_unions_across_drivers",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_malformed_thread_list_is_unobservable",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_descending_range_is_unobservable",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_missing_status_is_unobservable",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_vanished_pid_is_unobservable",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_read_bench_claim_thread_churn_is_unobservable",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_empty_claim_proceeds_with_explicit_placement",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_empty_claim_proceeds_with_default_affinity",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_bench_claiming_0_95_refuses_placement_48_95",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_bench_claiming_0_95_refuses_smt_sibling_placement_96_191",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_bench_claiming_0_95_refuses_whole_host_placement",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_overlapping_placement_bypasses_with_force",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_unobservable_claim_refuses_explicit_placement",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_unobservable_claim_refuses_default_affinity",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_unobservable_claim_bypasses_with_force",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_malformed_declared_placement_refuses",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_malformed_declared_placement_bypasses_with_force",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_refuses_when_claim_covers_all_physical_cores",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_pins_off_partial_claim",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_refuses_when_bench_claims_every_host_core",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_refuses_when_host_set_unknown",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_pins_even_with_force",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_default_affinity_no_fallback_bypasses_with_force",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_enforce_placement_refusal_prints_incident_context_and_raises",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_enforce_placement_unobservable_prints_and_raises",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_enforce_placement_pins_default_affinity_off_physical_claim",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_enforce_placement_refuses_when_bench_claims_all_physical_cores",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_enforce_placement_refuses_when_host_set_unreadable",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_enforce_placement_proceeds_when_no_bench",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_host_core_set_reads_sys_online",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_host_core_set_unreadable_is_none",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_guarded_numa_prefix_passes_through_when_bench_free",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_guarded_numa_prefix_pins_default_affinity",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_guarded_numa_prefix_refusal_propagates",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_guarded_numa_prefix_forwards_force_to_enforce_placement",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_placement_from_prefix_shapes",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_main_returns_2_on_bench_placement_refusal",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_cmd_reload_forwards_allow_during_bench_as_bench_force",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim",
+            "name": "test_cmd_reload_defaults_bench_force_to_false",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_fake_proc_seam_yields_claimed_cores",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_no_bench_spawn_is_byte_identical",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_no_bench_spawn_unchanged_without_numactl",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_bench_claiming_partial_physical_range_pins_worker_smt_safe",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_bench_claiming_all_physical_cores_refuses_worker_spawn",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_bench_claiming_middle_range_pins_to_complement",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_bench_claiming_every_core_refuses_spawn",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_unobservable_claim_refuses_spawn",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_allow_during_bench_env_bypasses_refusal_and_logs_loudly",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_allow_knob_set_without_bench_stays_silent",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_llamacppbackend_cmd_pinned_off_bench_claim",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_llamacppbackend_cmd_quiet_path_byte_identical",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_llamacppbackend_cmd_refuses_unobservable_claim",
+            "status": "passed"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_lightonocr_spawn_pinned_off_bench_claim",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_bench_core_claim_api_layer",
+            "name": "test_lightonocr_spawn_quiet_path_unchanged",
+            "status": "failure"
+          }
+        ],
+        "counts": {
+          "collected": 81,
+          "error": 0,
+          "executed": 81,
+          "failure": 3,
+          "passed": 78,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    },
+    {
+      "run": 37579638942,
+      "recipe_pin": "7c3eeeca39d6414c3e136d529adb857b40329458",
+      "artifact": 11464515860,
+      "zip_sha256": "12e43096f76d76edb057f34b029c80833b7cc6d175bcce16b024d9086117754f",
+      "zip_bytes": 3714178,
+      "members": 345,
+      "job_identities": [
+        "github_job_112656120358"
+      ],
+      "accepted_implementation": false,
+      "MAIN_executed_grader": false,
+      "native_value": false,
+      "native_receipt_present": true,
+      "receipt_file_sha256": "eb1c2635e004f2e49fa4a2f994fa9d14deb1515db590e3143881c162d65a1247",
+      "receipt_self_sha256": "bd56cac6fc7f86556d73f7854345bff005916f3382518eea973c8eca98fdb0b3",
+      "readset_count": 326,
+      "original_summary": {
+        "cases": [
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_accepts_each_approved_swapped_temporary_world",
+            "status": "failure"
+          },
+          {
+            "classname": "tests.unit.test_stack_change_pipeline_real_promotion_gate",
+            "name": "test_real_promotion_gate_does_not_run_after_a_bad_temporary_world",
+            "status": "passed"
+          }
+        ],
+        "counts": {
+          "collected": 2,
+          "error": 0,
+          "executed": 2,
+          "failure": 1,
+          "passed": 1,
+          "skipped": 0
+        }
+      },
+      "diagnostic": "",
+      "original_grade_record_present": false,
+      "scope": "Original failed/NULL outcome authenticated without grader execution or implementation acceptance",
+      "originals_unchanged": true
+    }
+  ]
+}
