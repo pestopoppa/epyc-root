@@ -115,3 +115,8 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## Tulving retrieved-arm source — MAIN acceptance
 
 [Existing published source and original23/23](../../artifacts/ni08/utm-b4-tulving-source-20261007/README.md) close UTM-B4 and its prospective native verifier, including all four trace-only controls with zero skips. MAIN verified complete4,356-input and original result custody; no real dataset/model/embedding or retrieval-quality warrant. NI08 now97 scoped completions (57 existing flips+40 children).
+
+
+## Session conversation-store and voice design — MAIN acceptance
+
+[Published source and original31/31](../../artifacts/ni08/cs15-conversation-store-source-20261007/README.md) close CS-13, bounded SQLite transcript/summary source and prospective native verifier. MAIN verified complete457-input/469-member original custody and normally merged APP03ee8ef0. Consumers, real voice/model/timing and semantic summary quality remain open. NI08 now100 scoped completions (58 existing flips+42 children); the whole backlog is not exhausted.

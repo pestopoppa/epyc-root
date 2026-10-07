@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **97 completed scoped tasks: 57 existing checkbox flips and 40 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **100 completed scoped tasks: 58 existing checkbox flips and 42 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -253,3 +253,8 @@ MAIN completed the existing [GPU acceleration recording task](../../handoffs/act
 ## Tulving retrieved-arm source — MAIN acceptance
 
 [Existing published source and original23/23](../../artifacts/ni08/utm-b4-tulving-source-20261007/README.md) close UTM-B4 and its prospective native verifier, including all four trace-only controls with zero skips. MAIN verified complete4,356-input and original result custody; no real dataset/model/embedding or retrieval-quality warrant. NI08 now97 scoped completions (57 existing flips+40 children).
+
+
+## Session conversation-store and voice design — MAIN acceptance
+
+[Published source and original31/31](../../artifacts/ni08/cs15-conversation-store-source-20261007/README.md) close CS-13, bounded SQLite transcript/summary source and prospective native verifier. MAIN verified complete457-input/469-member original custody and normally merged APP03ee8ef0. Consumers, real voice/model/timing and semantic summary quality remain open. NI08 now100 scoped completions (58 existing flips+42 children); the whole backlog is not exhausted.

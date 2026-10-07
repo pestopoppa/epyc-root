@@ -1,0 +1,18 @@
+{
+  "previous_head": "31185ca59628aaa43d39ed08b5f88ffaa2af0181",
+  "main_before": "31185ca59628aaa43d39ed08b5f88ffaa2af0181",
+  "source": "6e8ef922f0a7214efc5443807142f193a7711870",
+  "commit": "03ee8ef0cb7d1bb3b8c7d92016ef9d2bb10317af",
+  "paths": [
+    "docs/design/voice-turn-contract.md",
+    "src/session/__init__.py",
+    "src/session/models.py",
+    "src/session/protocol.py",
+    "src/session/sqlite_store.py",
+    "tests/unit/test_session_conversation_messages.py",
+    "tests/unit/test_session_protocol.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

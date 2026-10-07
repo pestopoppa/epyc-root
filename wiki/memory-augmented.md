@@ -1192,3 +1192,8 @@ The sanitizer now bounds the prefix and decimal metadata before trusting a trunc
 ### Tulving trace backend source conformance — 2026-10-07
 
 The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../artifacts/ni08/utm-b4-tulving-source-20261007/README.md) are source-accepted, including the four formerly skip-prone trace controls. Actual dataset/model/embedding and retrieval-quality comparison remain separate.
+
+
+### Session transcript and incremental-summary source — 2026-10-07
+
+[Source and original31/31](../artifacts/ni08/cs15-conversation-store-source-20261007/README.md) accept additive session-keyed SQLite messages, retained history, fenced deletion and monotonic summary-frontier mechanics. The summary callback consumes prior state plus all unseen messages; overflow/failure never silently discards history. Model summary quality, live migration and voice consumers remain separate.
