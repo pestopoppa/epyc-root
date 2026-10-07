@@ -58,20 +58,20 @@
       "sha256": "7af07910af7950c30e785ef4e52c431b97d5cfbc3c8ea98bfa3907eb37eeed1e"
     },
     {
-      "bytes": 958,
-      "git_blob": "dc7136cff84413407a3db0eed90553ea1fda0720",
+      "bytes": 992,
+      "git_blob": "1be2eaca28faabf63e3d12fff0d2268df682c9c3",
       "git_mode": "100644",
       "path": "scripts/ci/s49_mtmd_probe_packages.json",
       "repo": "root",
-      "sha256": "5f83a7332bb13c69d31588084bfe1b6f0eb5aaa3d77ac5e94ff4d449c1dce67e"
+      "sha256": "b6ad4c438af103a925329e9a96c390d4ba2318e37d42bbc185b4aba05c8ecb53"
     },
     {
-      "bytes": 35540,
-      "git_blob": "0b80b70f5efcc835d40e858ac2d053fc25134c6e",
+      "bytes": 35651,
+      "git_blob": "b6cceec5a63acebe9d5b0cfc8abfcfa96ab2044c",
       "git_mode": "100644",
       "path": "scripts/ci/s49_mtmd_probe_requirements.txt",
       "repo": "root",
-      "sha256": "27ec21037d059d91130c5c9bd20b3f428c0a70bc36c77c215e295d846d759bcb"
+      "sha256": "3001110782f70c8c4a0170985d061a69b2fb08040b30534eee2344980c55a779"
     },
     {
       "bytes": 261786,
