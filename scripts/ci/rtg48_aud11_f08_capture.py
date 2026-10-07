@@ -24,7 +24,8 @@ PYTHON_PIN = "3.13.15"
 WORKFLOW = ".github/workflows/rtg48-aud11-f08-native.yml"
 DRIVER = "scripts/ci/rtg48_aud11_f08_capture.py"
 CASES = "scripts/ci/rtg48_aud11_f08_cases.json"
-REQUIREMENTS = "scripts/ci/vb_thesis2_native_requirements.txt"
+REQUIREMENTS = "scripts/ci/rtg48_aud11_f08_requirements.txt"
+SHARED_REQUIREMENTS_CONTEXT = "scripts/ci/vb_thesis2_native_requirements.txt"
 TASK = "handoffs/active/coordinator-role-failure-modes-and-refactor.md"
 TEST_MODULE = "tests/coordination/test_mech_column_audit.py"
 TEST_NAMES = (
@@ -49,7 +50,8 @@ SOURCE_BLOBS = {
     "scripts/handoffs/index_state.py": "14a1a98daa988ab10d65ef07731daaade2664959",
     "scripts/coordination/tmux_adapter.py": "4ba92286cec07442e12092a44b509efa97e294de",
     "scripts/coordination/session_bus.py": "60502a803c424c2fa3e833a8afba76360743ff86",
-    REQUIREMENTS: "66b049f0d7c2b207b35f22ab383a8d91da25f4c0",
+    SHARED_REQUIREMENTS_CONTEXT: "66b049f0d7c2b207b35f22ab383a8d91da25f4c0",
+    REQUIREMENTS: "8a42d0c560575cb31f67fa0c9d8d9487596333c1",
 }
 APP_LOCK_BLOBS = {
     "pyproject.toml": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
@@ -396,10 +398,10 @@ def main() -> int:
         if git(source, "merge-base", BASE_PIN, "HEAD") != BASE_PIN:
             raise RuntimeError("source/recipe commit does not descend from the reviewed ROOT pin")
         history = git(source, "rev-list", "--parents", f"{BASE_PIN}..HEAD").splitlines()
-        if len(history) != 3 or any(len(row.split()) != 2 for row in history):
-            raise RuntimeError("recipe must be exactly three normal commits beyond the reviewed ROOT pin")
+        if len(history) != 4 or any(len(row.split()) != 2 for row in history):
+            raise RuntimeError("recipe must be exactly four normal commits beyond the reviewed ROOT pin")
         changed = set(git(source, "diff", "--name-only", f"{BASE_PIN}..HEAD").splitlines())
-        expected_changed = {WORKFLOW, DRIVER, CASES, TEST_MODULE}
+        expected_changed = {WORKFLOW, DRIVER, CASES, TEST_MODULE, REQUIREMENTS}
         if changed != expected_changed:
             raise RuntimeError(f"recipe branch has unexpected source changes: {sorted(changed)}")
         require_clean(source, root_pin, "ROOT source/recipe")
@@ -496,7 +498,7 @@ def main() -> int:
             WORKFLOW, DRIVER, CASES, TASK, TEST_MODULE, "tests/__init__.py",
             "scripts/coordination/backlog_row_check.py", "scripts/handoffs/index_state.py",
             "scripts/coordination/tmux_adapter.py", "scripts/coordination/session_bus.py",
-            REQUIREMENTS)]
+            SHARED_REQUIREMENTS_CONTEXT, REQUIREMENTS)]
         read_paths.extend(tracked(app_lock, name) for name in APP_LOCK_BLOBS)
         read_paths.extend(tracked(carrier, name) for name in CARRIER_BLOBS)
         read_paths.extend((case_path, requirement_path, lock, source_manifest, environment,

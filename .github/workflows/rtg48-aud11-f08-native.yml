@@ -6,6 +6,7 @@ on:
       - .github/workflows/rtg48-aud11-f08-native.yml
       - scripts/ci/rtg48_aud11_f08_capture.py
       - scripts/ci/rtg48_aud11_f08_cases.json
+      - scripts/ci/rtg48_aud11_f08_requirements.txt
       - tests/coordination/test_mech_column_audit.py
 permissions:
   contents: read
@@ -35,7 +36,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           path: source
-          fetch-depth: 4
+          fetch-depth: 5
           persist-credentials: false
       - name: Checkout reviewed native carrier and shared grader
         uses: actions/checkout@v4
