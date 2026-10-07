@@ -1,5 +1,15 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
+## 2026-10-07 16:27 UTC — r7 full outcome and r8 repair preparation
+
+The original r7 run `consolidated-20261007T154727Z-r7` finished with **1 failed, 5,243 passed, 11 skipped, 2 xfailed and 287 subtests passed** in 1,181.90 seconds. Original full, native claim and driver waits were all `1`; no `.validated` receipt exists. Cleanup was verified under the original held native owner with two empty scans, no errors or survivors. Research source130 at `f72e598bfdf875191f98fab98b01a7b208c933eb`, native provider22, runner and the materialized ROOT reader120 remained stable.
+
+All30 r6 missing-reader-fixture failures passed in r7, including exact matched cases in the 495-test focused gate. The remaining experimental-GPU roster fixture expected both enrolled targets within four children, but path-dependent seed identities selected CPU first and its synthetic three-second learned cost kept it cheaper than the untested GPU target. The isolated r8 fixture repair controls its synthetic scheduler costs while retaining both-target, restart and affinity assertions; source review `04aaa` is accepted, targeted execution is queued, and no r8 full PASS is claimed. The reader guard's three native controls passed under original wait0 with ROOT acceptance `e440`; this is a scoped control result.
+
+The ordinary finite maintenance window resumed its original owners at16:22:48 with actual wait0. Renewal refused before any signal, so no renewed OPEN boundary or transfer authority is claimed. The clean r8 candidate preserves source and original evidence while waiting for the reviewed targeted fixture outcome and a new full gate. ROOT publication also remains serialized: a16:24 FREE observation did not authorize publication after a new NI08 modehold at16:25:31; the genuine owner release request was delivered at epoch110, and no lock was forced or borrowed.
+
+Evidence: `capacity-retry/R7_FULL_FAILURES.json`, `capacity-retry/R7_ALL30_ORIGINAL_FAILURE_CLASSIFICATION.json`, the original runtime receipts under `consolidated-harness/runtime-results/consolidated-20261007T154727Z-r7`, and ROOT's applied source/control/boundary records. Old r6/r7 failures remain immutable; scoped controls do not replace a fresh full-suite zero.
+
 ## R6 original failure retained; corrected reader and r7 focused/telemetry checkpoint
 
 The original r6 full run ended with **30 failed, 5,214 passed, 11 skipped, two xfailed and 287 passing subtests**. Original full/native/driver waits were 1; cleanup was verified and source unchanged. All thirty failures had one cause: the private ROOT reader lacked committed `tests/vidya/test_autokernel_unified_arm.py`. The failed r6 receipts remain at `consolidated-harness/runtime-results/consolidated-20261007T151050Z-r6/` and are not relabelled.
