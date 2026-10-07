@@ -189,10 +189,17 @@ def verify_lock(app: Path, requirements: Path) -> dict[str, str]:
 
 def ast_cases(path: Path) -> list[dict[str, str]]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=TEST_FILE)
-    return [{"classname": Path(TEST_FILE).stem, "name": node.name}
+    module = ".".join(PurePosixPath(TEST_FILE).with_suffix("").parts)
+    return [{"classname": module, "name": node.name}
             for node in tree.body
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
             and node.name.startswith("test_")]
+
+
+def ast_test_method_count(path: Path) -> int:
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=TEST_FILE)
+    return sum(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+               and node.name.startswith("test_") for node in tree.body)
 
 
 def main() -> int:
@@ -260,6 +267,7 @@ def main() -> int:
                 raise RuntimeError(f"source differs from reviewed hash: {name}")
         versions = verify_lock(app, requirements)
         cases = ast_cases(research_files[TEST_FILE])
+        test_method_count = ast_test_method_count(research_files[TEST_FILE])
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         rows = manifest.get("cases") or []
         expected = Counter((item["classname"], item["name"]) for item in cases)
@@ -267,9 +275,13 @@ def main() -> int:
         if (manifest.get("research_commit") != RESEARCH_PIN
                 or manifest.get("test_file") != TEST_FILE
                 or manifest.get("test_file_sha256") != RESEARCH_SOURCES[TEST_FILE]
+                or manifest.get("test_method_count") != 23
+                or manifest.get("expanded_case_count") != 23
                 or manifest.get("count") != 23
                 or len(cases) != 23 or manifested != expected or len(rows) != 23):
             raise RuntimeError("full-module AST cases differ from frozen exact manifest")
+        if test_method_count != 23:
+            raise RuntimeError("full-module AST method count differs from the enrolled source")
 
         install_log = result / "dependency-install.log"
         if install_log.is_symlink() or not install_log.is_file():
@@ -283,6 +295,7 @@ def main() -> int:
             "install_command": INSTALL_COMMAND, "requirements_sha256": hashlib.sha256(requirements.read_bytes()).hexdigest(),
             "app_uv_lock_sha256": APP_LOCK_SHA256, "dependency_versions": versions,
             "expected_case_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            "ast_test_method_count": test_method_count, "expanded_junit_case_count": len(cases),
             "expected_cases": cases, "root_task": {"path": TASK, "sha256": TASK_SHA256},
             "cme4_task": {"path": CME_TASK, "sha256": CME_TASK_SHA256},
             "source_table": {"path": TABLE, "sha256": TABLE_SHA256},
@@ -317,7 +330,7 @@ def main() -> int:
                     "--repo", f"research={research}", "--repo", f"app={app}"]
         for path in dict.fromkeys(item.resolve() for item in read_paths):
             producer.extend(("--read-path", str(path)))
-        selections = [f"{TEST_FILE}::{item['name']}" for item in cases]
+        selections = [TEST_FILE]
         producer.extend(("--select", TEST_FILE))
         command = [sys.executable, "-m", "pytest", "-c", "/dev/null", "--rootdir", str(research),
                    "--noconftest", "-o", "addopts=", "-p", "no:cacheprovider", "-q",
