@@ -1,0 +1,157 @@
+{
+  "source_commit": "b223b53aeee78f243618f45da8a6bffe9e55effd",
+  "parent": "c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "source_checkout": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c106-source-candidate-20261007",
+  "cases": [
+    "test_fire_threshold_is_multiple_times_floor",
+    "test_below_threshold_accumulates",
+    "test_at_or_above_threshold_fires",
+    "test_uncalibrated_floor_never_fires",
+    "test_classify_promote_only_on_decisive_positive",
+    "test_resolve_promote_advances_champion_to_tip",
+    "test_default_divergence_is_hold_with_planner_evidence",
+    "test_unsupported_rollback_refuses_before_resolving_or_mutating_bundle",
+    "test_promote_carries_no_planner_evidence",
+    "test_bundle_add_keep_tracks_tip_and_compounded",
+    "test_bundle_persists_exact_comparison_reference",
+    "test_bundle_v2_without_comparison_reference_remains_readable",
+    "test_negative_excursion_requires_finite_effect_beyond_floor",
+    "test_bundle_survives_a_restart",
+    "test_bundle_load_rejects_state_the_tree_no_longer_contains",
+    "test_anchor_ahead_of_bundle_keeps_the_cor_and_advances_only_the_tip"
+  ],
+  "whole_selected_module_ast_sha256": "1aa69a4654a662f06c725fb540975cea54fc2a80b9c0cfbe0f1d0d51365b62cf",
+  "static_import_graph": [
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/test_accumulate.py",
+      "sha256": "c23c4e6c0a57ac8102e54de0ce321f3a0646b9a7579ff4a2606256514fe26f91",
+      "blob": "a5f83fc99c3b95f4962ef72613d274ff2781aec2",
+      "imports": [
+        "autokernel",
+        "autokernel.journal",
+        "autokernel.loop",
+        "autokernel.loop.accumulate",
+        "pytest"
+      ],
+      "whole_ast_sha256": "1aa69a4654a662f06c725fb540975cea54fc2a80b9c0cfbe0f1d0d51365b62cf"
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/__init__.py",
+      "sha256": "a004ca9cd70d052369046a8c5bc6981316a4c9c4182724035e3a6a007994a992",
+      "blob": "8bb52c76c2993736293bed4bfee000e16829f5ea",
+      "imports": [],
+      "whole_ast_sha256": "471cde76641a88636c5b16a4aa48a2b68bc57467b57d6e7ebe67eccbbd79555b"
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/__init__.py",
+      "sha256": "b94859500275b1c19c6ec12cb357f2dd0f44ccd118fc95dc6ecfbb358ae37543",
+      "blob": "2fc3952024ba0a1bdad122928089c7fe2b503552",
+      "imports": [],
+      "whole_ast_sha256": "bf1b8c10fb282be8dc2a45e43f33ffe231b4c0f8cff6b548a8f5d4004b15a288"
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/accumulate.py",
+      "sha256": "8899dfe3fa6067a1c2b8e6194d3325f97076c14cc08c46c1bdef09cd97218d14",
+      "blob": "849d1a1545215b02f23085a57b00fa6a1cddd2dd",
+      "imports": [
+        "__future__",
+        "autokernel",
+        "autokernel.journal",
+        "autokernel.loop",
+        "autokernel.loop.status",
+        "contextlib",
+        "dataclasses",
+        "enum",
+        "fcntl",
+        "json",
+        "math",
+        "os",
+        "pathlib",
+        "stat"
+      ],
+      "whole_ast_sha256": "f21ca709171ed096fe36ec9ec47c9836b954ee4e10f2b417249f83571622ab95"
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/loop/status.py",
+      "sha256": "fe86f7578b1daebe115c72a9e4bef43b583fff9742ff7c4a8bd8f27cb08fc4a2",
+      "blob": "9b93bcb48a74ce2c0815e06cf3e07ae6dabf17d3",
+      "imports": [
+        "__future__",
+        "datetime",
+        "json",
+        "os",
+        "pathlib",
+        "tempfile",
+        "typing"
+      ],
+      "whole_ast_sha256": "4529339ae83d2285143d1d3f7d906307a75594d2962c5c0792cedb6bedd914fd"
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/journal.py",
+      "sha256": "c73cc8d7e4f6ec9e4a36de1396a72daa412d4d79cc026940bd785aa49fe83a2a",
+      "blob": "495eee035ff9f2d704643c9c34bc662ccef8c6a2",
+      "imports": [
+        "__future__",
+        "autokernel",
+        "autokernel.schemas",
+        "contextlib",
+        "dataclasses",
+        "datetime",
+        "fcntl",
+        "hashlib",
+        "json",
+        "math",
+        "os",
+        "re",
+        "schemas",
+        "secrets",
+        "stat",
+        "threading",
+        "typing"
+      ],
+      "whole_ast_sha256": "9e18cbc8d2171d165df90bfcf29da20c504931c4a6b12546a94e4b3ea618ea67"
+    },
+    {
+      "path": "scripts/kernel_rnd/autokernel/schemas.py",
+      "sha256": "4dd07e2492a534029654b4bad5a2fb1062d66ddf5582bbd3bda8b7f17ea88644",
+      "blob": "8353c5f9495bbd712e6d75f5750d9ece16691b10",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "datetime",
+        "fnmatch",
+        "hashlib",
+        "json",
+        "math",
+        "posixpath",
+        "re",
+        "typing"
+      ],
+      "whole_ast_sha256": "5b2e6cf07047a097b8fcd21a6c512045449d72732f967165d230de8ddbda2f2a"
+    }
+  ],
+  "nonlocal_imports": [
+    "__future__",
+    "contextlib",
+    "dataclasses",
+    "datetime",
+    "enum",
+    "fcntl",
+    "fnmatch",
+    "hashlib",
+    "json",
+    "math",
+    "os",
+    "pathlib",
+    "posixpath",
+    "pytest",
+    "re",
+    "schemas",
+    "secrets",
+    "stat",
+    "tempfile",
+    "threading",
+    "typing"
+  ],
+  "limitations": "Conservative AST imports include deferred branches; unresolved/dynamic import/config/data/native dependencies require manual caller review before hosted recipe approval. No project import, tests or execution performed. No rollback/reset/build/process or policy threshold/cadence/grade changes."
+}

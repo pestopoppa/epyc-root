@@ -1,0 +1,37 @@
+{
+  "case_count": 25,
+  "dependency_versions": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pytest": "9.0.3"
+  },
+  "environment": {
+    "CI": "true",
+    "DCP2_EXECUTION_CONTEXT": "finite-score-injected-search-no-colgrep-or-model",
+    "DCP2_RUNNER_CONTEXT": "ubuntu-24.04",
+    "ORCHESTRATOR_MOCK_MODE": "1",
+    "PYTEST_ADDOPTS": "",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0",
+    "PYTHONPATH": "/home/runner/work/epyc-root/epyc-root/app",
+    "REPL_COLGREP_BIN": "/home/runner/work/_temp/ni08-dcp2-colgrep-score/absent/colgrep"
+  },
+  "execution_context": "finite-score-injected-search-no-colgrep-or-model",
+  "install_command": "python -m venv \"$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv\" && \"$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python\" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/ni08_dcp2_colgrep_requirements.txt",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.13.15 (main, Aug  6 2026, 02:15:18) [GCC 13.3.0]",
+  "repositories": {
+    "app": "b21e45af6fea25340bddf15e28b633ccc99b0604",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "ae4058b013412b01c6c11c7bf0231a1076f4d013"
+  },
+  "requirements_sha256": "a4f9d845ac6fe11ce96913068b1e018c471fcd49fc480773873556c7801ca357",
+  "runner_context": "ubuntu-24.04",
+  "scope": "Whole exact synthetic source module; parser and direct-hit routes receive injected fixtures. No ColGREP executable, live search, model, embedding, API endpoint, index, corpus, performance or inference.",
+  "selected_test": "tests/unit/test_context_discovery.py",
+  "source_map_sha256": "579a68f84ad1c6be40189440d59324c5607c37ced079c431c49b0656dce06982"
+}

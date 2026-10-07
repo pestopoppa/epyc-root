@@ -1,0 +1,117 @@
+{
+  "schema": "epyc.main.source.publication-review.v1",
+  "utc": "2026-10-07T12:52:43.919477+00:00",
+  "accepted": true,
+  "source": "b21e45af6fea25340bddf15e28b633ccc99b0604",
+  "public_app": "f0df7ca2f801481d2024ad86c3ed37d60155430e",
+  "public_parent": "87ecbf18bc3d3793271d0eaf183e19900ad9726a",
+  "original_run": 37618585481,
+  "native_controls": 25,
+  "main_reopened_raw_git_bytes_and_public_api": true,
+  "expected_two_paths": [
+    "src/context_discovery.py",
+    "tests/unit/test_context_discovery.py"
+  ],
+  "publication_report_sha256": "8680b5b669de48d27da31fc2a265fda0122053fe9c245ea45ad682c7b575ffea",
+  "host_project_execution": false,
+  "new_grade_authored": false,
+  "checkbox_flips": 2,
+  "ni08_total": 162,
+  "existing_checkbox_flips": 101,
+  "completed_scoped_children": 61,
+  "original_subset": [
+    {
+      "path": "MAIN-original-acceptance.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/dcp2-original-MAIN-acceptance-review.json",
+      "bytes": 1994,
+      "sha256": "98b045420bbe6dca0f864c127b972d86e99d5c714e886affc9878b49cb6273ee",
+      "encoding": "RFC4648 base64; decode before verifying original SHA/bytes",
+      "encoded_sha256": "ff6eccc9cdfad062eac323fafb478db8ef544657ad1abd9fcb730c6df278ae12"
+    },
+    {
+      "path": "MAIN-prebinding.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/dcp2-corrected-final-MAIN-prebinding.json",
+      "bytes": 1821493,
+      "sha256": "e93e1ee219d865695910af46190a317241421f5bb003e25f0457aac8515b9c9d"
+    },
+    {
+      "path": "publication-v2.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-closure-draft-20261007/APP-publication-result-v2.json",
+      "bytes": 3274,
+      "sha256": "8680b5b669de48d27da31fc2a265fda0122053fe9c245ea45ad682c7b575ffea"
+    },
+    {
+      "path": "original-run-api.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/run-latest.json",
+      "bytes": 12454,
+      "sha256": "f13267631fe726b78dfc9954ffa6d23268e1b6702c0cbac431bb27b41f0c0955",
+      "encoding": "RFC4648 base64; decode before verifying original SHA/bytes",
+      "encoded_sha256": "300309a61172bdb7cf33c90483a12e174d91b20adaec09bdd61d4a23dbc25854"
+    },
+    {
+      "path": "original-jobs-api.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/jobs-latest.json",
+      "bytes": 3876,
+      "sha256": "a982c11adec0ea596318e8e1aaaeaa0994d97aacb516aa8b0074278abbced763",
+      "encoding": "RFC4648 base64; decode before verifying original SHA/bytes",
+      "encoded_sha256": "392303c1d8ecb26a4d4f2cd86a350b99efe6da98cdd0d3adee35aaf9d7e0aed0"
+    },
+    {
+      "path": "original-artifact-api.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/artifact-metadata.json",
+      "bytes": 748,
+      "sha256": "f02599349f32dfbfbd1f560ad69f4977d615f5d15cbd359f725c6596c9b25721"
+    },
+    {
+      "path": "original-junit.xml",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/artifact-extracted/original-junit.xml",
+      "bytes": 3740,
+      "sha256": "77e9b516113ed827d1d1076e3046d7f88f8020a7fb276d894914cb5d4b29b27d"
+    },
+    {
+      "path": "original-status.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/artifact-extracted/status.json",
+      "bytes": 1103,
+      "sha256": "fa5f1c9929869209302edb7c81531a4fdfba4fbf69ec3265a3105e7efe446eb8"
+    },
+    {
+      "path": "original-native-receipt.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/artifact-extracted/native/receipt.json",
+      "bytes": 897871,
+      "sha256": "8c80002c349aba52782b3ae52cd241162e722e7e11aa61e3faaa663cf3d01ac4"
+    },
+    {
+      "path": "original-native-request.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/artifact-extracted/native/execution-request.json",
+      "bytes": 888793,
+      "sha256": "e4fd7e14546b5054040d5d5f8751f3c5807d127cd8ee6309d292b723deceb212"
+    },
+    {
+      "path": "original-environment.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007/artifact-extracted/runner-environment.json",
+      "bytes": 1847,
+      "sha256": "b87e9e7297ac898c85a2d0ed82e0ac9f781e63037ed6363b1bd3d96cd3b6c0f4"
+    },
+    {
+      "path": "published-branch-api.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-publication.SOLclXae/v2-github-branch.raw.json",
+      "bytes": 3997,
+      "sha256": "4eaf97a4690b656a63057adca6c8747e280202dbb086c661396f0b370846151d"
+    },
+    {
+      "path": "published-main-api.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-publication.SOLclXae/v2-github-main-commit.raw.json",
+      "bytes": 9489,
+      "sha256": "5303e1f4c6c0a6593f09d5d41ccb54d5ca5453b4c2125cd04827702a23ee6860"
+    }
+  ],
+  "retained_private_originals": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-corrected-original-20261007",
+  "limitations": [
+    "Public subset does not contain all original read payloads/ZIP/typed snapshots; full custody reopens require retained named private originals.",
+    "Normal hook/lease/push output retained only in interactive transcript; publication v2 accurately states this limitation.",
+    "Superseded draft with changed AST/controls never published; v1 stripped-byte hash report preserved and excluded.",
+    "Pre-job refusal 37616745804 had no jobs or native proposition; originals unchanged.",
+    "No live search, embedding, inference, quality, performance, full application suite, enablement or promotion warrant.",
+    "Three raw original JSON files are published as lossless base64 because normal secret scanning falsely matched GitHub numeric IDs; decode then verify original hashes. Original bytes remain unchanged privately."
+  ]
+}
