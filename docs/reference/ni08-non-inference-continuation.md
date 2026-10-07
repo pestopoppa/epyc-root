@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **92 completed scoped tasks: 55 existing checkbox flips and 37 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **93 completed scoped tasks: 56 existing checkbox flips and 37 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -239,3 +239,7 @@ MAIN independently authenticated and reconstructed run37563431358 originals: fiv
 ## Memory work-payload cap source accepted
 
 [Source and original41/41](../../artifacts/ni08/m11-work-cap-source-20261007/README.md) close M11-WORK-CAP-SOURCE/VB-M11-WORK-CAP-CONFORMANCE. MAIN rebound all2,838 captured inputs and complete original custody, then merged APP31185ca5. Forged-marker and scanner-limit bypass controls preserve legitimate idempotence; existing fail-open redaction remains unchanged. **NI08:92 scoped completions (55 existing flips +37 scoped children)**. Full backlog audit/source work continues.
+
+## Hipify literature record accepted
+
+MAIN completed the existing [GPU acceleration recording task](../../handoffs/active/gpu-acceleration-path.md) with the [qualified source record](../../research/sources/intake-20261007/hawkeye-hipify-comparison.md), primary-index review, cached-PDF identity and explicit extraction limitations. No incentive analysis, universal ranking, causal or local performance/readiness claim. **NI08:93 completed scopes (56 existing flips+37 children)**; the task-level whole-backlog audit remains incomplete.

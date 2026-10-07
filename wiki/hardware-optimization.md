@@ -6104,3 +6104,7 @@ Sources: [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.
 - ROCm 10.1 still supports gfx90a; the host amdgpu driver is in-kernel (6.14), not DKMS; vLLM lists gfx90a at ROCm 6.3+. The 5-expert cut (D1) was declined.
 
 Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md).
+
+## 2026-10-07 source note — Hipify and HAWKEYE on MI350
+
+MAIN recorded the [qualified primary-source comparison](../research/sources/intake-20261007/hawkeye-hipify-comparison.md) as directional evidence for a controlled authoring comparison. Aggregate ratios do not establish per-workload superiority, a cause or transfer to gfx90a. The corresponding recording task is complete in the [GPU acceleration handoff](../handoffs/active/gpu-acceleration-path.md).

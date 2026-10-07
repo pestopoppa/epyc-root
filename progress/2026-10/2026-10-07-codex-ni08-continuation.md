@@ -101,3 +101,7 @@ MAIN reviewed the full APP `38d4ab72` mock example and enrolled its existing-nat
 ## Memory payload cap — MAIN acceptance
 
 [Actual source and original41/41](../../artifacts/ni08/m11-work-cap-source-20261007/README.md) close the bounded cap fix and native-verifier companion. NativeTRUE/Judged-Located, full2,835 Git+3 generated readset and complete ZIP/source/result custody independently verified; source merged/pushed APP31185ca5. No runtime or privacy warrant. **92 scoped completions:55 existing flips+37 scoped children**. FW1 mock verifier enrollment at this boundary adds no completion.
+
+## Hawkeye/Hipify source-record completion
+
+MAIN completed the existing literature-recording task with a [durable source record](../../research/sources/intake-20261007/hawkeye-hipify-comparison.md), qualified handoff and wiki note. Unsupported incentive and universal-ranking language is removed; primary-index review and malformed cached-PDF limitations are explicit. This closes one existing task only; no local measurement, intake amendment, grade or kernel change. **NI08:93 scoped completions (56 existing flips+37 scoped children)**. Full backlog audit and free source work continue.
