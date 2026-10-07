@@ -20,6 +20,9 @@ ROOT_SOURCE_PIN = "99b3763078abd859026c8051e1c480b89a15ee72"
 TASK_SHA256 = "990590b2b0a6cf806d6ac4af458dc909376f288d89dabfe40b9c18a21a5d3660"
 TABLE_SHA256 = "382b9562bf61de76dfcca52addc9d880ed3a2ea846eda77100ec9eae75d088bd"
 RESEARCH_PIN = "374cd7fa8599cd8198a48c0d2bd6dae54e7af946"
+LOCK_SOURCE_PIN = "70096b763939a43409a1f1827ab633d62425a6c1"
+LOCK_SOURCE_BLOB = "ef2306018773ff9a1e80389970d92f66fcf8d5b7"
+LOCK_SOURCE_SHA256 = "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
 CASE_MANIFEST_SHA256 = "34366649c2b06dfed3f928def165c5e5d74fa775437660fbbaff01f132aa82c8"
 REQUIREMENTS_SHA256 = "e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a"
 RESEARCH_TEST_SHA256 = "5341325f343e91195f1b44fe574be6778e1b573ee71dd07f3deecd5818f42ae7"
@@ -167,30 +170,54 @@ def verify_test_ast(source: bytes, selections: tuple[str, ...]) -> None:
         raise RuntimeError("manifest differs from complete AST test-function inventory")
 
 
-def verify_requirements(data: bytes) -> None:
-    text = data.decode("utf-8")
+def verify_requirements(data: bytes, lock_data: bytes) -> None:
+    """Require the exact minimal closure and every wheel in the pinned APP lock."""
+    import re
     versions: dict[str, str] = {}
     hashes: dict[str, set[str]] = {}
-    current = None
-    import re
-    for line in text.splitlines():
-        match = re.match(r"^([A-Za-z0-9_.-]+)==([^\s]+)", line.strip())
-        if match:
-            current = match.group(1)
-            versions[current.lower()] = match.group(2)
-            hashes[current.lower()] = set()
-        if current:
-            hashes[current.lower()].update(re.findall(r"--hash=sha256:([0-9a-f]{64})", line))
-    if versions != {name.lower(): version for name, version in LOCKED_PACKAGES.items()}:
+    pending = ""
+    for raw in data.decode("utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        continued = line.endswith("\\")
+        pending += " " + (line[:-1].rstrip() if continued else line)
+        if continued:
+            continue
+        match = re.fullmatch(r"\s*([A-Za-z0-9_.-]+)==([^\s]+)\s+((?:--hash=sha256:[0-9a-f]{64}\s*)+)", pending)
+        if not match:
+            raise RuntimeError("malformed exact hash-locked requirement")
+        name, version, wheel_tokens = match.groups()
+        name = name.lower()
+        if name in versions:
+            raise RuntimeError("duplicate locked requirement")
+        versions[name] = version
+        hashes[name] = set(re.findall(r"--hash=sha256:([0-9a-f]{64})", wheel_tokens))
+        pending = ""
+    if pending:
+        raise RuntimeError("dangling requirements continuation")
+    expected_versions = {name.lower(): version for name, version in LOCKED_PACKAGES.items()}
+    if versions != expected_versions:
         raise RuntimeError("dependency pins differ from reviewed minimal pytest closure")
-    if any(not values for values in hashes.values()):
-        raise RuntimeError("every installed package must have wheel SHA-256 coverage")
+    packages = {row["name"].lower(): row for row in tomllib.loads(lock_data.decode("utf-8"))["package"]}
+    for name, version in expected_versions.items():
+        package = packages.get(name)
+        if not package or package.get("version") != version:
+            raise RuntimeError(f"package/version absent from explicit lock source: {name}")
+        expected_hashes = set()
+        for wheel in package.get("wheels", []):
+            value = wheel.get("hash", "")
+            if not re.fullmatch(r"sha256:[0-9a-f]{64}", value):
+                raise RuntimeError("pinned lock wheel lacks exact SHA-256")
+            expected_hashes.add(value.removeprefix("sha256:"))
+        if not expected_hashes or hashes[name] != expected_hashes:
+            raise RuntimeError(f"requirements differ from ALL pinned lock wheels: {name}")
 
 
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
-    recipe, carrier, research = (workspace / name for name in ("recipe", "carrier", "research"))
+    recipe, carrier, research, lock_source = (workspace / name for name in ("recipe", "carrier", "research", "lock-source"))
     run_root = runner_temp / RESULT_NAME
     result = run_root / "result"
     status_path = run_root / "status.json"
@@ -220,8 +247,8 @@ def main() -> int:
             raise RuntimeError("capture Python is not the reviewed isolated venv")
 
         expected_pins = {"recipe": os.environ["GITHUB_SHA"], "carrier": ROOT_CARRIER_PIN,
-                         "research": RESEARCH_PIN}
-        repositories = {"recipe": recipe, "carrier": carrier, "research": research}
+                         "research": RESEARCH_PIN, "lock_source": LOCK_SOURCE_PIN}
+        repositories = {"recipe": recipe, "carrier": carrier, "research": research, "lock_source": lock_source}
         pins = {name: require_clean(repo, name) for name, repo in repositories.items()}
         if pins != expected_pins:
             raise RuntimeError(f"checkout pins differ from reviewed source map: {pins}")
@@ -231,6 +258,8 @@ def main() -> int:
             raise RuntimeError("workflow ROOT source checkpoint differs")
         if os.environ.get("RESEARCH_PIN") != RESEARCH_PIN:
             raise RuntimeError("workflow Research pin differs")
+        if os.environ.get("LOCK_SOURCE_PIN") != LOCK_SOURCE_PIN:
+            raise RuntimeError("workflow lock source pin differs")
         for key, expected in (
             ("CASE_MANIFEST_SHA256", CASE_MANIFEST_SHA256),
             ("REQUIREMENTS_SHA256", REQUIREMENTS_SHA256),
@@ -261,7 +290,12 @@ def main() -> int:
         test_bytes = test_path.read_bytes()
         verify_test_ast(test_bytes, selections)
         requirement_bytes = requirements_path.read_bytes()
-        verify_requirements(requirement_bytes)
+        lock_path = tracked_file(lock_source, "uv.lock")
+        lock_bytes = lock_path.read_bytes()
+        if (git(lock_source, "rev-parse", "HEAD:uv.lock") != LOCK_SOURCE_BLOB
+                or hashlib.sha256(lock_bytes).hexdigest() != LOCK_SOURCE_SHA256):
+            raise RuntimeError("explicit APP lock source bytes/blob differ")
+        verify_requirements(requirement_bytes, lock_bytes)
         if hashlib.sha256(requirement_bytes).hexdigest() != REQUIREMENTS_SHA256:
             raise RuntimeError("requirements file differs from reviewed hash")
         if hashlib.sha256(test_bytes).hexdigest() != RESEARCH_TEST_SHA256:
@@ -294,7 +328,7 @@ def main() -> int:
 
         carrier_paths = [tracked_file(carrier, relative) for relative in CARRIER_FILES]
         read_paths = [workflow, runner, manifest_path, requirements_path, task_path, table_path,
-                      test_path, checker_path, *research_config, *carrier_paths,
+                      test_path, checker_path, *research_config, *carrier_paths, lock_path,
                       freeze, environment, install_log]
         read_paths = list(dict.fromkeys(path.resolve() for path in read_paths))
         if len(read_paths) != len(set(read_paths)):
