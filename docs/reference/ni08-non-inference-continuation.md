@@ -417,3 +417,8 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## ET13 exact source and original140/140 acceptance — 2026-10-07
 
 [MAIN source/original acceptance](../../artifacts/ni08/et13-honest-routing-source-acceptance-20261007/README.md) closes the actual routing source and prospective native companion after ordinary APP87ec two-file publication. Native TRUE140/140, exact frozen input/environment/grade/result custody and original failure/deviation distinctions are authenticated. NI08=159 (98 existing+61 children). Raw routes, denominators and policy unchanged; mixed E5/runtime/inference remain open.
+
+
+## INF50 retired-field historical prose — source-only checkpoint
+
+[Published source review and limits](../../artifacts/ni08/inf50-retired-policy-source-acceptance-20261007/README.md) close exactly the existing SR-5 prose task. This checkpoint advances the running total to160 (99 existing tasks+61 completed scoped children). The newly enrolled SR5-LEAN-DOC-PROJECTION and VB companion remain unchecked; stale generated APP lean, NG5 and runtime parents are not accepted. No host compiler/pipeline/model/inference execution or new grading rule.

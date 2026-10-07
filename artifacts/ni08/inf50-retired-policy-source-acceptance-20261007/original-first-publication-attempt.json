@@ -1,0 +1,43 @@
+{
+  "candidate_commit": "9128154d0136377b100de5cbbf9441f845f20bd9",
+  "parent": "2caf4f735ce4555739605ed5828ee0da07d32c31",
+  "repository": "https://github.com/pestopoppa/epyc-inference-research.git",
+  "scope": [{"path":"orchestration/model_registry.yaml","mode":"100644","blob":"0a54cff58ebef80ccefe9616cc6c303dfeec8d7f","sha256":"9d4439de589f0b4572ef2ff1b93c91b5ed661f9d06337512f15d5abf9da744c6"}],
+  "operation_directory": "op-DjpW4G8KmJ",
+  "serialized_locks": {
+    "repository_lock_key": "2431-96371209",
+    "holder": "codex-ni-main",
+    "wrapup": {"acquired":true,"released":true,"acquire_log":"wrapup-acquire.log","release_log":"wrapup-release.log"},
+    "push": {"acquired":true,"released":true,"acquire_log":"push-acquire.log","release_log":"push-release.log"},
+    "release_order": ["push","wrapup"],
+    "token_contents_recorded": false
+  },
+  "hook": {
+    "canonical_pre_push": "/workspace/repos/epyc-inference-research/.git/hooks/pre-push",
+    "private_candidate_hook_path":"research-public.git/hooks/pre-push",
+    "installed_only_after_confirming_path_empty":true,
+    "sha256":"a52d0510d0f8c75e27852156ec6f7791f0d8ed65fc58fcc368dd1de0a60a1d74",
+    "contents":"Git LFS pre-push hook; exact bytes copied from canonical Research clone"
+  },
+  "attempt": {
+    "branch_push":"ordinary git push; failed in pre-push hook before branch update",
+    "captured_push_output":"ref \"HEAD\":: missing object: 7a35a5c2c39d02964030d14554c6faceb28c396e\nerror: failed to push some refs to 'https://github.com/pestopoppa/epyc-inference-research.git'",
+    "main_push_attempted":false,
+    "retry_attempted":false
+  },
+  "post_attempt_refs": {
+    "main":"2caf4f735ce4555739605ed5828ee0da07d32c31",
+    "codex/inf50-retired-field-prose-20261007":"absent"
+  },
+  "diagnosis": {
+    "private_bare_is_shallow":true,
+    "private_bare_promisor":true,
+    "partial_clone_filter":"blob:none",
+    "shallow_boundaries":3,
+    "reported_git_object_present_in_private_store":true,
+    "reported_git_object_type":"blob",
+    "reported_git_object_size_bytes":607,
+    "reported_git_object_content":"Markdown evidence-copy index; not model payload",
+    "no_retry_or_object_fetch":true
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "operation":"INF50 retired-field historical prose publication",
+  "repository":"https://github.com/pestopoppa/epyc-inference-research.git",
+  "canonical_publication_commit":"c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "parent":"2caf4f735ce4555739605ed5828ee0da07d32c31",
+  "branch":"codex/inf50-retired-field-prose-publish-20261007",
+  "public_refs_after":{
+    "refs/heads/main":"c49729505b6b85bcc2ef68255168014b4ae6a84d",
+    "refs/heads/codex/inf50-retired-field-prose-publish-20261007":"c49729505b6b85bcc2ef68255168014b4ae6a84d"
+  },
+  "api_commit_verification":{
+    "parents":["2caf4f735ce4555739605ed5828ee0da07d32c31"],
+    "files":[{"path":"orchestration/model_registry.yaml","status":"modified","additions":9,"deletions":3,"blob":"0a54cff58ebef80ccefe9616cc6c303dfeec8d7f"}]
+  },
+  "worktree":"/mnt/raid0/llm/worktrees/ni08-inf50-retired-field-publish-20261007",
+  "source_file":{"path":"orchestration/model_registry.yaml","mode":"100644","blob":"0a54cff58ebef80ccefe9616cc6c303dfeec8d7f","sha256":"9d4439de589f0b4572ef2ff1b93c91b5ed661f9d06337512f15d5abf9da744c6"},
+  "scope_verification":"Static YAML parse comparison passed: only speculative_decoding_policy.retired_fields.ngram_candidate_spec_type differs from parent; operative values unchanged.",
+  "serialized_locks":{
+    "canonical_repo":"/workspace/repos/epyc-inference-research",
+    "lock_key":"2431-96371209",
+    "holder":"codex-ni-main",
+    "operation_directory":"canonical-op-99KXnEYhoC",
+    "acquired_order":["wrapup","push"],
+    "released_order":["push","wrapup"],
+    "acquire_release_logs":["wrapup-acquire.log","push-acquire.log","push-release.log","wrapup-release.log"],
+    "token_contents_recorded":false
+  },
+  "hooks":{
+    "core.hooksPath":"unset; default common .git/hooks",
+    "pre_commit_sha256":"2385af56caa1b87cf3910144a6dc20193cead6ab1f8a2b1a2763d39c809c8a1e",
+    "pre_push_sha256":"a52d0510d0f8c75e27852156ec6f7791f0d8ed65fc58fcc368dd1de0a60a1d74",
+    "force_or_hooks_bypass":"none"
+  },
+  "checks":{"fresh_pre_push_main":"2caf4f735ce4555739605ed5828ee0da07d32c31","own_branch_absent_before_push":true,"main_fast_forward_only":true,"worktree_clean_after_push":true,"local_compiler_or_pipeline_run":false,"explicit_model_download_command_issued":false},
+  "prior_failed_attempt":"Unchanged report at inf50-ngram/publication-attempt-20261007.json; private clone's failed LFS-hook push was not retried."
+}
