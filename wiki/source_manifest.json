@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T09:41:34Z",
+  "last_compile": "2026-10-07T10:25:05Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T09:41:34Z",
+  "scan_time": "2026-10-07T10:25:05Z",
   "schema_version": 1,
-  "source_set_hash": "8cdfd18d6c18223383a65df2ea13412016981fb5983681e5ae53f5dfab44055a",
+  "source_set_hash": "9df01dc5fee7516db5ed3355cfea429b98e7cc2bddb2158d3c6999499f2b01f0",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -407,10 +407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4500fd41aa58a727675558b95c0c1d3aa15ed3ab9e82a54ddf92ba5b86224bd7",
-      "modified": "2026-10-07T08:14:08Z",
+      "content_hash": "f6c03316cb2aa8fd76d760bc641984b09063c797eb40a7ca85bd7da9283af8c0",
+      "modified": "2026-10-07T10:19:04Z",
       "path": "handoffs/active/document-parser-table-bench.md",
-      "size": 17289,
+      "size": 17784,
       "title": "Document Parser Table-Extraction Benchmark \u2014 PaddleOCR-VL-1.6 pipeline vs ODL",
       "type": "handoff-active"
     },
@@ -551,10 +551,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a8f1d0bb7229a4bd940a4b1e2149d8f35fb0cc10db1b63179acc68f3bd243630",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "0c56f59a96d0870d9ff738049f11c0c8af6d1e40efe077f95fec15fbd747ef01",
+      "modified": "2026-10-07T10:22:35Z",
       "path": "handoffs/active/frontier-f2-self-running-lab.md",
-      "size": 30664,
+      "size": 31604,
       "title": "Frontier F2 \u2014 The Self-Running Lab: Local Agents Take Over Lab Maintenance",
       "type": "handoff-active"
     },
@@ -927,8 +927,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a772a4587cdbc0d03a88f442a3d92e8fffb3c92abb0f7dcf6acbc8b26deb6a87",
-      "modified": "2026-10-07T09:37:38Z",
+      "content_hash": "1a4aa31f13b478516541042f7c620ba1706ead09ad222b9a85cddc45aaa7f0c9",
+      "modified": "2026-10-07T10:19:04Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 129991,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -1071,10 +1071,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "239d3bdda2241c885db98f051ac1e0835bef3e04ab2bab92590c26eecdf1fc01",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "b25e0b2d170b1f14d572b56cf0148ca07b99993609c6aea76dd1789dbdcfad79",
+      "modified": "2026-10-07T10:01:12Z",
       "path": "handoffs/active/reasoning-compression.md",
-      "size": 96430,
+      "size": 97093,
       "title": "Reasoning Compression for Inference Cost Reduction",
       "type": "handoff-active"
     },
@@ -1119,10 +1119,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ea7e936bf50ed724fd9026d268d38fcc10aef577949cf41cd75692dcd96a9acf",
-      "modified": "2026-10-07T03:50:52Z",
+      "content_hash": "698ff838f136938dd7bd1346fba0bf4bcedf0b64767f1a22c8ee3b785babfbf7",
+      "modified": "2026-10-07T09:46:05Z",
       "path": "handoffs/active/repo-readiness-scorer.md",
-      "size": 35425,
+      "size": 35886,
       "title": "Repo-Readiness Scorer (Agent-Readiness Model)",
       "type": "handoff-active"
     },
@@ -1271,10 +1271,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ca2bc9d680908a3729f1c1617f6018d4b66e048e22abf1391fc991e9dfdf93c4",
-      "modified": "2026-10-07T04:29:59Z",
+      "content_hash": "3935189b8a2b3f0183c97d0b3bda0e015511e58dfbf87c9a945fb6f681e01ff4",
+      "modified": "2026-10-07T10:09:32Z",
       "path": "handoffs/active/stack-change-governance-pipeline.md",
-      "size": 30796,
+      "size": 31586,
       "title": "Stack Change Governance Pipeline",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e8f95a247eb5aeffe7f4a8fe872cdb93d14c10e00f3489e49d1d5a3246cb1fc0",
-      "modified": "2026-10-07T09:37:38Z",
+      "content_hash": "4a69b19884f79e6322ddcd804876c2239744791e5b4b409be66a1a8bb469e62d",
+      "modified": "2026-10-07T10:22:35Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 361529,
+      "size": 363071,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9399,10 +9399,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c9e96df7970209f8110fac91afec31b401ae81921b707fb3e99ec972049ab84b",
-      "modified": "2026-10-07T09:41:11Z",
+      "content_hash": "6e99d8535ccce38146cd33a882794821850d8db168c142a05a2fd953b507f653",
+      "modified": "2026-10-07T10:24:49Z",
       "path": "progress/2026-10/2026-10-07.md",
-      "size": 10474,
+      "size": 14822,
       "title": "2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "f29a04a5aadbf0cdaec5950dde289ea775f32d9a3ccabeb4383e5db87232172e",
-      "modified": "2026-10-07T09:37:38Z",
+      "content_hash": "8d5df3f6f841e7b1cb46e18523b5faf36004af42c35531f704aea6672635dfcf",
+      "modified": "2026-10-07T10:19:04Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 53465,
+      "size": 55651,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
