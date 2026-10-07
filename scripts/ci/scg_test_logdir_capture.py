@@ -69,6 +69,7 @@ LOCKED_PACKAGES = {
     'pydantic-graph': '1.80.0',
     'pygments': '2.20.0',
     'pytest': '9.0.3',
+    'python-multipart': '0.0.26',
     'pyyaml': '6.0.3',
     'referencing': '0.37.0',
     'requests': '2.33.1',
