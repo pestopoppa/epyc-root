@@ -15020,7 +15020,7 @@
     {
       "git_mode": "100644",
       "path": ".github/workflows/scg-test-logdir-source-capture.yml",
-      "sha256": "61ca531755ec916deb572d78030accc044476f40aa435e4f87a9d02cb4bc0a56"
+      "sha256": "a6c2481538908e2aca2f029f223be51a81d580bd63a5cdc3319f0e78aebad324"
     },
     {
       "git_mode": "100644",
@@ -19033,7 +19033,7 @@
       "sha256": "e2f30f4a1b3c862519a0773b51c8599eb4a05f5c0d6c2cfb04dad13f5f9c497b"
     }
   ],
-  "recipe_manifest_sha256": "e1c3bff7bc5722f66b4bc559f4ef1289c2837b43240e8fe3911806be4d540de1",
+  "recipe_manifest_sha256": "bcd5f245be60ed91e17ba71c1ec0af6b6dbc565036596746be41b914421fe691",
   "recipe_map_self_exclusion": "scripts/ci/scg_test_logdir_source_readset.json",
   "recipe_revision": "bound by hosted workflow github.sha and native receipt repository identity",
   "recipe_source_scope": "Real tests/conftest.py; no copied conftest and no --noconftest. Static all-source maps for APP, ROOT carrier, ROOT recipe plus exact task/source tables.",

@@ -86,7 +86,8 @@ jobs:
           python -m venv "$RUNNER_TEMP/scg-test-logdir-venv"
           "$RUNNER_TEMP/scg-test-logdir-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/scg_test_logdir_test_requirements.txt 2>&1 | tee "$RUNNER_TEMP/scg-test-logdir/result/dependency-install.log"
       - name: Run real-conftest controls and capture native receipt
-        run: "$RUNNER_TEMP/scg-test-logdir-venv/bin/python" recipe/scripts/ci/scg_test_logdir_capture.py
+        run: >-
+          "$RUNNER_TEMP/scg-test-logdir-venv/bin/python" recipe/scripts/ci/scg_test_logdir_capture.py
       - name: Retain native receipt, original JUnit, readset, and status on every outcome
         if: always()
         uses: actions/upload-artifact@v4
