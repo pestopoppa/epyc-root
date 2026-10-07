@@ -145,3 +145,8 @@ MAIN reviewed APPbbf38c98 six-file proposal and complete callers/tests, MEDIUM a
 ## EVL30 stale relative-clock task
 
 MAIN accepted [published Git/AST source identity](../../artifacts/ni08/evl30-relative-clock-source-20261007/README.md), closed the existing stale checkbox and corrected EVL30 next action (the card still has a real red-baseline task). No host tests or whole-suite GREEN claim. NI08 now106.
+
+
+## Read-only trace MCP source — MAIN acceptance
+
+[Published source and original5/5](../../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md) close UTM-B1-SOURCE and its prospective native verifier. MAIN authenticated43 original members, matched26Git+5generated inputs, and preserved full source/result custody; APP53079bee normally merges source286 and disjoint peer work. Default MCP catalog and actual consumers remain open. NI08 now108 scoped completions (59existing+49children); whole-backlog exhaustion is not claimed.

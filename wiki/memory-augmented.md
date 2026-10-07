@@ -1234,3 +1234,8 @@ The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../
 ### Voice streaming/controller source — 2026-10-07
 
 [Source and original276/276](../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) accept request-scoped real chunks, async stream/cancel ownership, bounded injected controller/cascade and successful-turn persistence. HTTP speech clients, WAV harness and typed speech/preserve/retain decisions remain implementation work; real audio/model/timing acceptance is separate.
+
+
+### Read-only trace MCP registrar — 2026-10-07
+
+[Published source and original5/5](../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md) accept explicit ms.search/ms.expand registration through existing navigation and synthetic SQLite/FastMCP controls. The default catalog is unchanged; model-facing activation and real-data retrieval remain separate acceptance work.
