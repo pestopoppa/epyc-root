@@ -58,6 +58,8 @@ jobs:
           "$RUNNER_TEMP/rvp-rollback/venv/bin/python" -m pip install --disable-pip-version-check --require-hashes --only-binary=:all: -r recipe/scripts/ci/rvp_rollback_requirements.txt > "$RUNNER_TEMP/rvp-rollback/result/install.log" 2>&1
           "$RUNNER_TEMP/rvp-rollback/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/rvp-rollback/result/pip-freeze.txt"
       - name: Build and capture actual experimental CPU controls
+        env:
+          LD_LIBRARY_PATH: ""
         run: |
           set +e
           "$RUNNER_TEMP/rvp-rollback/venv/bin/python" recipe/scripts/ci/rvp_rollback_capture.py "$GITHUB_WORKSPACE/experimental-source" "$GITHUB_WORKSPACE/carrier" "$GITHUB_WORKSPACE/lock-source" "$GITHUB_WORKSPACE/enrollment-context"
