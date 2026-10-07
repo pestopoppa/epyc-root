@@ -1,0 +1,214 @@
+{
+  "expected_generated_contexts": [
+    "source-manifest.json",
+    "environment.json",
+    "pip-freeze.txt",
+    "pip-install.log",
+    "pre-status.json"
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.coordination.test_mech_column_audit",
+      "name": "test_f08_cmd_nudge_refuses_recent_own_nudge_at_production_gate"
+    },
+    {
+      "classname": "tests.coordination.test_mech_column_audit",
+      "name": "test_f08_cmd_nudge_dry_run_allows_elapsed_interval_positive_control"
+    }
+  ],
+  "extra_repository_pins": {
+    "recipe": "63db428924a9fca1404598b737f07599dfa44e84"
+  },
+  "host_project_execution": false,
+  "manual_blast_radius": "LOW: test-only actual cmd_nudge refusal/elapsed controls with config/probe injection; hosted AST mutation only disables one exact predicate in temporary copied source. No protected production-source edit, real bus/tmux/process/signaling or host project execution.",
+  "mutation_expected_statuses": {
+    "test_f08_cmd_nudge_dry_run_allows_elapsed_interval_positive_control": "passed",
+    "test_f08_cmd_nudge_refuses_recent_own_nudge_at_production_gate": "failure"
+  },
+  "recipe_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "tracked_file_count": 20,
+  "tracked_files": [
+    {
+      "bytes": 2634,
+      "git_blob": "25cd7365c5a51fc34ef9ec85db13223e94729646",
+      "mode": "100644",
+      "path": ".github/workflows/rtg48-aud11-f08-native.yml",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "d11de18368ce42e56983ae047caf84018aeee4fe4082d36d5dd4ce377f08b60f"
+    },
+    {
+      "bytes": 143113,
+      "git_blob": "e1da85c26e28709c33bfa1d61347e4335ae0ede7",
+      "mode": "100644",
+      "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "f9f3318c97a3dca66540297017b39ecdcde1f7c48b02c2223219493ee60d61fa"
+    },
+    {
+      "bytes": 32977,
+      "git_blob": "17b08440d6cda58635ead749384845fddd0f9a00",
+      "mode": "100644",
+      "path": "scripts/ci/rtg48_aud11_f08_capture.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "c1087f9f3551d927f41091a946f7ca919048532b16afe8321e73d77f48a28bdb"
+    },
+    {
+      "bytes": 1339,
+      "git_blob": "a6bc9a21960111c2d8180484d0b548bf1bd17531",
+      "mode": "100644",
+      "path": "scripts/ci/rtg48_aud11_f08_cases.json",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "426f4b2b8c7af358d619309698ab1f2e56a166c9b60f62e0b4ce880bd50bc04d"
+    },
+    {
+      "bytes": 680,
+      "git_blob": "8a42d0c560575cb31f67fa0c9d8d9487596333c1",
+      "mode": "100644",
+      "path": "scripts/ci/rtg48_aud11_f08_requirements.txt",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "4e93e27dd925612d619f56d6e96657673d948586d72bda7aa54b33b00136a87e"
+    },
+    {
+      "bytes": 1093,
+      "git_blob": "66b049f0d7c2b207b35f22ab383a8d91da25f4c0",
+      "mode": "100644",
+      "path": "scripts/ci/vb_thesis2_native_requirements.txt",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "5ee573567ebe7bef3ecea65293275fad35e1fdb6c12d086294c5574360907a94"
+    },
+    {
+      "bytes": 55333,
+      "git_blob": "d6de35bb46c0b8effa1cd79790eba49593be8d17",
+      "mode": "100755",
+      "path": "scripts/coordination/backlog_row_check.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "52394909ee1cbfd9cfd24072dd301b81feb2790ed1ff0e44ea7dbd027af0e4ee"
+    },
+    {
+      "bytes": 134092,
+      "git_blob": "60502a803c424c2fa3e833a8afba76360743ff86",
+      "mode": "100755",
+      "path": "scripts/coordination/session_bus.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "b782df0985e480f1a15bade167a4d7739db28112907b4fec6f01c82d2c8c4476"
+    },
+    {
+      "bytes": 183958,
+      "git_blob": "4ba92286cec07442e12092a44b509efa97e294de",
+      "mode": "100755",
+      "path": "scripts/coordination/tmux_adapter.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "1bf31c290e050673044fc1550e5effe0cd132e677f0973458e74257dda054125"
+    },
+    {
+      "bytes": 48075,
+      "git_blob": "14a1a98daa988ab10d65ef07731daaade2664959",
+      "mode": "100755",
+      "path": "scripts/handoffs/index_state.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "a44d9ece4e2ad6b6dcf0369f53cc7286c4714b5f5b9bdd16dc29748bfeb3aac6"
+    },
+    {
+      "bytes": 833,
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "mode": "100644",
+      "path": "tests/__init__.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "bytes": 31009,
+      "git_blob": "f61ff268d898482b7cbbecd388c65d4ee468a8dd",
+      "mode": "100644",
+      "path": "tests/coordination/test_mech_column_audit.py",
+      "repo": "source",
+      "repo_pin": "63db428924a9fca1404598b737f07599dfa44e84",
+      "sha256": "7f805b3831008ea85b164e3dd1805391288905d66d4b5b8507d7ebd82ac10d8b"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 6832,
+      "git_blob": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+      "mode": "100644",
+      "path": "pyproject.toml",
+      "repo": "app_lock",
+      "repo_pin": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app_lock",
+      "repo_pin": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ]
+}

@@ -51,3 +51,7 @@ MAIN verified exact site Git blobs and both historical screenshot hashes, publis
 ## AP62 invocation-ring source — MAIN acceptance
 
 [Original14/14, all463 API ZIP members, 449 inputs plus3 contexts and APP publication](../../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md) close AP-62 and its prospective VB companion. **76 scoped completions (51 existing flips +25 additions)**. Explicit append/snapshot/clear locking and request-local durable records preserve dispatch outside lock. Prior failures stay immutable; no live concurrency/deployment claim. Other source scopes and exact task-level eligibility audit continue.
+
+## AUD11 F08 actual-command test source — MAIN acceptance
+
+[Original2/2, exact predicate-disable sensitivity, all55 API ZIP members and all12 copied source originals](../../artifacts/ni08/aud11-f08-source-20261007/README.md) close bounded AUD11-F08-SOURCE and its VB companion. **78 scoped completions (51 existing flips +27 additions)**. The actual recent-refusal test fails under the exact mutant; elapsed positive control survives. No protected runtime edit/live probe or parent mechanism completion. Prior TypeError and incomplete-hidden-copy captures remain unaccepted. Other source/audit work continues.

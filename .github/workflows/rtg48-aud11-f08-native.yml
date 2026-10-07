@@ -1,0 +1,67 @@
+name: RTG-48 AUD-11 F-08 command-gate native controls
+on:
+  push:
+    branches: [codex/rtg48-aud11-native-capture2-20261007]
+    paths:
+      - .github/workflows/rtg48-aud11-f08-native.yml
+      - scripts/ci/rtg48_aud11_f08_capture.py
+      - scripts/ci/rtg48_aud11_f08_cases.json
+      - scripts/ci/rtg48_aud11_f08_requirements.txt
+      - tests/coordination/test_mech_column_audit.py
+permissions:
+  contents: read
+jobs:
+  rtg48-aud11-f08-native:
+    if: github.ref == 'refs/heads/codex/rtg48-aud11-native-capture2-20261007'
+    name: rtg48-aud11-f08-native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      APP_LOCK_PIN: 94a6e8d41ec7d3f7a122f66bad53aa673d401d8a
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+    steps:
+      - name: Initialize immutable pre-status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/rtg48-aud11/result"
+          printf '{"state":"setup_pending","job":"rtg48-aud11-f08-native","exit_code":null}\n' > "$RUNNER_TEMP/rtg48-aud11/result/status.json"
+          cp "$RUNNER_TEMP/rtg48-aud11/result/status.json" "$RUNNER_TEMP/rtg48-aud11/result/pre-status.json"
+      - name: Checkout exact source and recipe commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: source
+          fetch-depth: 8
+          persist-credentials: false
+      - name: Checkout reviewed native carrier and shared grader
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout pinned dependency lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_LOCK_PIN }}
+          path: app-lock
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Capture original controls, one AST deletion control, native receipt and grade
+        run: python source/scripts/ci/rtg48_aud11_f08_capture.py
+      - name: Preserve every outcome and original artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtg48-aud11-f08-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rtg48-aud11/result/
+          include-hidden-files: true
+          if-no-files-found: error

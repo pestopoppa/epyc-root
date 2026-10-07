@@ -1,0 +1,41 @@
+{
+  "reviewed_at": "2026-10-07T01:14:46.833215+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37555487542,
+  "attempt": 1,
+  "artifact": 11453624454,
+  "pins": {
+    "source": "850a20e8629d3a3e0f06142a83fa199a9eb478da",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "app_lock": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+    "recipe": "850a20e8629d3a3e0f06142a83fa199a9eb478da"
+  },
+  "zip_sha256": "9e20f5ccd1ffda7187967cd88d91e749e57c473bc63104c783bd24d58d1b13c6",
+  "zip_bytes": 814967,
+  "members": 49,
+  "readset_count": 25,
+  "git_inputs": 20,
+  "contexts": 5,
+  "counts": {
+    "collected": 2,
+    "error": 0,
+    "executed": 2,
+    "failure": 0,
+    "passed": 2,
+    "skipped": 0
+  },
+  "testcase_nodes": 2,
+  "native_value": true,
+  "receipt_file_sha256": "526d3eb63e1f23c5805ac12f253831e3a876a47eb7693d989f12de301e3a8140",
+  "receipt_self_sha256": "7a3e4909019b2f730fd0b533567b2165077bdf29eed16a2386696aa372e664a7",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "LOW: test-only actual cmd_nudge refusal/elapsed controls with config/probe injection; hosted AST mutation only disables one exact predicate in temporary copied source. No protected production-source edit, real bus/tmux/process/signaling or host project execution.",
+  "job_identity": "github_job_112580618161"
+}

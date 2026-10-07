@@ -5142,3 +5142,7 @@ The recovered historical C5 policy is now carried byte-exactly in Research and v
 ## Invocation-ring snapshots
 
 The shared diagnostic invocation ring uses an explicit per-instance lock for append, snapshot and clear; actual tool dispatch remains outside the lock. Request telemetry continues to use request-local tool calls rather than the shared ring. [AP-62 source and original14/14 conformance](../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md). No production concurrency or deployment result is claimed.
+
+## Production nudge-refusal test sensitivity
+
+Two hosted fixture controls exercise the actual cmd_nudge refusal/elapsed dry-run paths with config/probe injection. Removing only its interval predicate makes the recent-refusal control fail while the elapsed positive control passes. [Source and original custody](../artifacts/ni08/aud11-f08-source-20261007/README.md). The live adapter remains unchanged; this does not establish other coordination mechanism claims.

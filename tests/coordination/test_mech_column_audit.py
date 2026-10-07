@@ -29,6 +29,7 @@ clause deleted — the failure recurs. Both directions are asserted.
 
 from __future__ import annotations
 
+from argparse import Namespace
 import importlib.util
 import json
 import re
@@ -307,6 +308,60 @@ def test_f08_own_nudge_still_rate_limits(monkeypatch: pytest.MonkeyPatch, tmp_pa
     assert 35 <= p["seconds_since_last_nudge"] <= 60, \
         "must be OUR 45s nudge, not the bystander's 60s one"
     assert p["nudges_this_window_instance"] == 1
+
+
+def _cmd_nudge_with_probe_result(
+        tag: str, monkeypatch: pytest.MonkeyPatch, *, seconds_since_last_nudge: float | None):
+    """Call the real command gate with isolated configuration/probe boundaries.
+
+    No bus, tmux session, journal write, or send-key path is reachable: `probe` is
+    the explicit boundary and the positive control sets `dry_run=True`.
+    """
+    adapter = _load_adapter(f"f08_cmd_{tag}")
+    monkeypatch.setattr(adapter, "load_config", lambda: _C24_SPAWN_CONFIG)
+    monkeypatch.setattr(adapter, "probe", lambda *_args, **_kwargs: {
+        "seconds_since_last_nudge": seconds_since_last_nudge,
+        "blockers": [],
+        "nudge_ok": True,
+        "target": "tmux:agent:new-main",
+    })
+    args = Namespace(
+        agent="new-main", message="Please inspect the source note.",
+        quiet_s=0.0, heartbeat_max_age=900.0,
+        min_interval_s=600.0, dry_run=True,
+    )
+    return adapter, args
+
+
+def test_f08_cmd_nudge_refuses_recent_own_nudge_at_production_gate(
+        monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    """The real `cmd_nudge` interval branch must reject a recent own nudge.
+
+    This is mutation-sensitive to deleting the production conditional in
+    `cmd_nudge`: then the call reaches dry-run and returns success. The injected
+    `probe` isolates this command-level gate; the separate F-08 tests above retain
+    actual `probe()` coverage of per-agent ledger filtering using a temp bus and
+    stub tmux boundary.
+    """
+    adapter, args = _cmd_nudge_with_probe_result(
+        "recent", monkeypatch, seconds_since_last_nudge=45.0)
+    rc = adapter.cmd_nudge(args)
+    assert rc == adapter.EX_BLOCKED
+    output = capsys.readouterr()
+    assert "rate limit" in output.err
+    assert "would send" not in output.out
+
+
+def test_f08_cmd_nudge_dry_run_allows_elapsed_interval_positive_control(
+        monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    """The command-level control remains usable once the interval has elapsed."""
+    adapter, args = _cmd_nudge_with_probe_result(
+        "elapsed", monkeypatch, seconds_since_last_nudge=700.0)
+    rc = adapter.cmd_nudge(args)
+    assert rc == 0
+    output = capsys.readouterr()
+    assert "would send to tmux:agent:new-main" in output.out
+    assert "rate limit" not in output.err
 
 
 # ============================================================================

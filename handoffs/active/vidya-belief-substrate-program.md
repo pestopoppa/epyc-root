@@ -2828,7 +2828,7 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 2026-10-06 MAIN accepts VB-TUADV-CONFORMANCE after independently reviewed original6/6 and test-only source publication; [scope](../../artifacts/ni08/tuadv-contract-source-20261006/README.md). Parent global/external attack work remains open, shared grade unchanged.
 
-- [ ] **VB-AUD11-F08-CONFORMANCE — bind exact actual-command interval-refusal fixtures and mutation source before off-host capture.** Existing shared native CI carrier only, original unmodified-source controls plus explicitly recorded AST mutation/refusal sensitivity. Test-only source, no real nudge/bus/process, protected source change, operator inference or new grade.
+- [x] **VB-AUD11-F08-CONFORMANCE — bind exact actual-command interval-refusal fixtures and mutation source before off-host capture.** Existing shared native CI carrier only, original unmodified-source controls plus explicitly recorded AST mutation/refusal sensitivity. Test-only source, no real nudge/bus/process, protected source change, operator inference or new grade.
 - [x] **VB-RTG23-W8-CONFORMANCE — bind planner-display missing-versus-zero source controls before capture.** Preserve legacy stored/helper zero/math; actual missing/malformed display n/a, valid zero and positive unchanged. Exact source/cases/context and existing native carrier/shared grade only; no live frontier, rate improvement or objective amendment.
 
 2026-10-07 MAIN accepts SC76/SC77 and VB-RAW-ANCHOR-CONFORMANCE after exact source review and original51/51 hosted synthetic controls; [evidence/scope](../../artifacts/ni08/raw-anchor-source-20261007/README.md). Retained RAW verification replaces shape-only proof prerequisites through one checker; missing originals stay unknown, machine cap/shared ladder unchanged. SC78/SC79 remain separately open; no actual fetch or historical intake/ledger write.
@@ -2851,3 +2851,5 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 2026-10-07 MAIN accepts VB-AP60-CONFORMANCE after exact115/115, all original bindings/shared grade and source publication; [bounded source acceptance](../../artifacts/ni08/ap60-instance-settings-source-20261007/README.md). Runtime, historical population capture and distillation remain separate.
 
 2026-10-07 MAIN accepts VB-AP62-CONFORMANCE after original14/14, complete actual source/context custody and shared grade; [source publication](../../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md). No live concurrency or runtime claim.
+
+2026-10-07 MAIN accepts VB-AUD11-F08-CONFORMANCE after baseline2/2, ungraded predicate-disable witness and full55-member original custody; [acceptance](../../artifacts/ni08/aud11-f08-source-20261007/README.md). Existing shared grade unchanged, no live coordination authority.

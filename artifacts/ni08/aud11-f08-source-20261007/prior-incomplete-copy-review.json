@@ -1,0 +1,43 @@
+{
+  "reviewed_at": "2026-10-07T01:17:46.545040+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37556097225,
+  "attempt": 1,
+  "artifact": 11454945649,
+  "pins": {
+    "source": "4a706d3331d38fbec617ce016f1cdedd0d6c3fab",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "app_lock": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+    "recipe": "4a706d3331d38fbec617ce016f1cdedd0d6c3fab"
+  },
+  "zip_sha256": "0068d810c745848a9d5005533b3a50b39f0c2fd5ff6030614c7fcfeab619aeba",
+  "zip_bytes": 941395,
+  "members": 54,
+  "readset_count": 25,
+  "git_inputs": 20,
+  "contexts": 5,
+  "counts": {
+    "collected": 2,
+    "error": 0,
+    "executed": 2,
+    "failure": 0,
+    "passed": 2,
+    "skipped": 0
+  },
+  "testcase_nodes": 2,
+  "native_value": true,
+  "receipt_file_sha256": "1e3e9f1248356431d15034da513cc3f6031f3ba91ef21f0e46e5683253706b63",
+  "receipt_self_sha256": "11dcb401e267683cae6090c92f5d5e40887a2e83612fc691c33cf151dc916ef8",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "LOW: test-only actual cmd_nudge refusal/elapsed controls with config/probe injection; hosted AST mutation only disables one exact predicate in temporary copied source. No protected production-source edit, real bus/tmux/process/signaling or host project execution.",
+  "copy_custody_review": "INCOMPLETE: upload excludes copied .github/workflow hidden member named by original manifest",
+  "mutation_AST_review": "PASS: exact predicate replacement only, whole remaining AST unchanged",
+  "job_identity": "github_job_112582571413"
+}
