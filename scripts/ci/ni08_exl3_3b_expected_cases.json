@@ -1,0 +1,167 @@
+{
+  "cases": [
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_disabled_provider_has_explicit_authority_without_lease"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_is_not_an_automatic_holder_bypass"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_refuses_delegated_holder_without_owner_mode"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_refuses_missing_task_id"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_refuses_blank_task_id"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_refuses_owner_mode_with_lease"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_missing_owner_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_duplicate_owner_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_another_owner_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_retired_role_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_missing_gpu_lane_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_missing_gpu_resource_owner_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_unschedulable_owner_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_roster_wrong_policy_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_missing_policy_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegation_refuses_disabled_provider_without_name"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegation_refuses_enabled_provider_without_name"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegation_refuses_disabled_named_provider"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegation_refuses_unknown_provider"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_active_lease_passes"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_missing_lease_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_reserved_lease_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_wrong_holder_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_wrong_device_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_expired_lease_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_mode_refuses_owner_only_task_argument"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_unknown_kfd_census_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_foreign_kfd_pid_refuses"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_empty_kfd_census_is_accepted"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_cli_owner_preflight_never_starts_a_process_or_claim"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_cli_owner_and_delegated_modes_are_mutually_exclusive"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_unheld_claim_refuses_before_launch"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_unheld_claim_refuses_before_launch"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_foreign_kfd_refuses_before_launch"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_foreign_kfd_refuses_before_launch"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_delegated_missing_residency_stops_child"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.AuthorityTests",
+      "name": "test_owner_missing_residency_stops_child"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.KfdTeardownPollingTests",
+      "name": "test_reaped_pid_waits_for_kfd_bookkeeping_and_retains_samples"
+    },
+    {
+      "classname": "scripts.kernel_rnd.exl3_gfx90a.test_claimed_run.KfdTeardownPollingTests",
+      "name": "test_unknown_or_persistent_kfd_census_fails_only_at_deadline"
+    }
+  ],
+  "count": 39,
+  "derivation": "39 top-level unittest test methods across two classes; complete-module selection; pytest rootdir-relative JUnit classnames; static AST only, no collection or execution",
+  "expanded_case_count": 39,
+  "source_commit": "94821e731d65569ab6afd9e89bfecb5ecc812fbd",
+  "test_file": "scripts/kernel_rnd/exl3_gfx90a/test_claimed_run.py",
+  "test_file_sha256": "cb2ad9aef83c4d46c0aff412c1d6de4166de681308f6ea25b9f7db715a0a3047",
+  "test_method_count": 39
+}

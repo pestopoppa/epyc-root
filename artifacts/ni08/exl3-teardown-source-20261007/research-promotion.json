@@ -1,0 +1,13 @@
+{
+  "previous_head": "60443789",
+  "main_before": "58c86506b45ffd6cd5151863268aceae04533097",
+  "source": "94821e731d65569ab6afd9e89bfecb5ecc812fbd",
+  "commit": "e46b01b94e37b6c7134cb304b41863ef3677c32b",
+  "paths": [
+    "scripts/kernel_rnd/exl3_gfx90a/claimed_run.py",
+    "scripts/kernel_rnd/exl3_gfx90a/test_claimed_run.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

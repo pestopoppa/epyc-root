@@ -1,0 +1,9 @@
+# EXL3 bounded KFD teardown polling — MAIN acceptance, 2026-10-07
+
+The exited child can remain briefly in the KFD census. The guard now retains polling samples and waits up to one second at 20ms intervals; persistent or unknown census still refuses. Only the captured child PID is examined. The ordinary test successor expands grouped unittest subtests into independent collected cases while preserving their assertions.
+
+Research source `94821e731d65569ab6afd9e89bfecb5ecc812fbd` is merged and pushed at `e46b01b94e37b6c7134cb304b41863ef3677c32b`. Recipe `81983aa9d962d2d335dacb3aca09963af29e544f`; unchanged native carrier `4c0c653baf1654c8c25c66433cf39c8faefd8e52`. MAIN's manual source/caller review found LOW blast radius: teardown census polling and synthetic controls; no process-management or kernel change.
+
+[Original run37566130157](https://github.com/pestopoppa/epyc-root/actions/runs/37566130157) passes all39 actual cases, zero failure/error/skip. Native TRUE, existing shared grade Judged/Located. MAIN independently authenticated artifact11458803388, ZIP SHA-256 `512c72c4d09fbd199fc837ab4775ef22869a505bf38eb826360f2c73c79fbc00`, 500,469bytes/29members; all15 captured Git inputs and three generated inputs match the prebound source subset. The wider static context contains2,244 Git blobs; it is not reported as2,244 captured native inputs. Full original receipt seal, exact cases and complete fresh result/source custody before/after shared grading match. Six lock-derived packages retain all52 wheel hashes.
+
+Originals remain under MAIN custody `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/exl3-success-MAIN-original-custody/`. Earlier zero/partial-count NULL captures remain unchanged and receive no passing credit. No shared-host project execution, GPU/HIP/device build or physical rerun occurred. EXL3-3B-SOURCE and VB-EXL3-3B-CONFORMANCE close; EXL3-3b physical acceptance stays open until its real synthetic device rerun.

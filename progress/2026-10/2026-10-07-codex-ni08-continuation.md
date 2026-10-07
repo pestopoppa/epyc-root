@@ -105,3 +105,8 @@ MAIN reviewed the full APP `38d4ab72` mock example and enrolled its existing-nat
 ## Hawkeye/Hipify source-record completion
 
 MAIN completed the existing literature-recording task with a [durable source record](../../research/sources/intake-20261007/hawkeye-hipify-comparison.md), qualified handoff and wiki note. Unsupported incentive and universal-ranking language is removed; primary-index review and malformed cached-PDF limitations are explicit. This closes one existing task only; no local measurement, intake amendment, grade or kernel change. **NI08:93 scoped completions (56 existing flips+37 scoped children)**. Full backlog audit and free source work continue.
+
+
+## EXL3 teardown polling — MAIN acceptance
+
+[Source and original39/39](../../artifacts/ni08/exl3-teardown-source-20261007/README.md) close the bounded source fix and pre-enrolled native verifier. Delayed-clear/persistent/unknown census controls preserve fail-closed teardown and retained samples. MAIN authenticated complete originals and merged Researche46b01b9; physical EXL3-3b remains open. NI08 now95 scoped completions (56 existing flips+39 children).

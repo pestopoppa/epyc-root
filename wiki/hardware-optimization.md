@@ -6108,3 +6108,8 @@ Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [
 ## 2026-10-07 source note — Hipify and HAWKEYE on MI350
 
 MAIN recorded the [qualified primary-source comparison](../research/sources/intake-20261007/hawkeye-hipify-comparison.md) as directional evidence for a controlled authoring comparison. Aggregate ratios do not establish per-workload superiority, a cause or transfer to gfx90a. The corresponding recording task is complete in the [GPU acceleration handoff](../handoffs/active/gpu-acceleration-path.md).
+
+
+### Bounded EXL3 teardown polling source — 2026-10-07
+
+The [polling source and original39/39](../artifacts/ni08/exl3-teardown-source-20261007/README.md) accept delayed bookkeeping clearance within a bounded interval and refuse persistent/unknown census. Source conformance is accepted; the real device rerun and EXL3-3b physical acceptance remain open.
