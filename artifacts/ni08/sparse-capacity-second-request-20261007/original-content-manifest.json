@@ -1,0 +1,47 @@
+{
+  "encoding": "Original complete inventory retained losslessly in original-content-inventory.json.b64; decoded SHA/size below. RFC4648 standard base64 with one final LF; transport notprivacy. Referenced privateoriginalfilenames are originalbytes inside that decoded inventory, not rewritten.",
+  "original_inventory": {
+    "path": "original-content-inventory.json.b64",
+    "decoded_bytes": 4343,
+    "decoded_sha256": "ca29c09c02d9c957335a380eb00adafeeae1f2e82a1b8b5b560dbd41971fae9d",
+    "encoded_sha256": "1aafa9b4820bb5b3add7b929823933ca735933a369a7be62f738c2adbebd13d4"
+  },
+  "selected_public_draft": [
+    {
+      "path": "NI08_CAPACITY_SPARSE_HELPER.v3.py.b64",
+      "decoded_sha256": "c01b4e5bfd36129222d10b4b8afefe4f730c22d94845ccaf047e4197affb4c45",
+      "decoded_bytes": 13833,
+      "encoded_sha256": "142d8688fe732cafcb109d6ab3853c83738f69f90aeae12b76021bfccd3208a6"
+    },
+    {
+      "path": "NI08_CAPACITY_SPARSE_PLAN.v3.json.b64",
+      "decoded_sha256": "da0228612d79fefae0ab2b6d44740714fdd621d6b61989d0d15f10beae0e508a",
+      "decoded_bytes": 296952,
+      "encoded_sha256": "ff7ad578a34288ba4a364a4b3df7a83da9bea50fceac072d59dbecd6bec97e8e"
+    },
+    {
+      "path": "NI08_CAPACITY_SPARSE_APPLY.v3.json.b64",
+      "decoded_sha256": "d94309405b36c1878ff3bfc7768381123bb56a3709b7bed8327ff714d915ada4",
+      "decoded_bytes": 6224,
+      "encoded_sha256": "74eba85e9e15273d3cc19634cffdb3ae01eaf326c395a404e0ee380d85047e6f"
+    },
+    {
+      "path": "APPLY-original-process.json.b64",
+      "decoded_sha256": "d72b709b2e300438911843fae70a53d7fdceb3834799b45ffaa4cc10c14d1e3f",
+      "decoded_bytes": 537,
+      "encoded_sha256": "f157c0287dfd98f5748b70060ec7e9d7f6b9400eb76814607b05e5e6c13f8b20"
+    },
+    {
+      "path": "SAMPLE-original-process.json.b64",
+      "decoded_sha256": "47bc597236542e85f5cfcb237cd74241bd9eec3601b59b9410165834251b121c",
+      "decoded_bytes": 784,
+      "encoded_sha256": "11a01fac792a43a85eb30901aa1e941b2f449c248ea416f91dc385ebfbccba81"
+    },
+    {
+      "path": "MAIN-independent-reopen.json.b64",
+      "decoded_sha256": "0c8ca9a01b27904c0de4e7b5558c8a980f29029ac0560e2bc1b638ef33c6ecf9",
+      "decoded_bytes": 2742,
+      "encoded_sha256": "318d5d80d2cd84fa40660cf5238887a73fbefe72a2207522e17f69a230ee9829"
+    }
+  ]
+}

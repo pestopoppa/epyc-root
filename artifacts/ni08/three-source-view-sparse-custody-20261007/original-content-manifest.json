@@ -1,0 +1,91 @@
+{
+  "encoding": "RFC4648 standard base64; lossless transport not redaction/confidentiality",
+  "selected_originals": [
+    {
+      "path": "helper-v4.py.b64",
+      "decoded_sha256": "15322729f4e233ffe4af5c3dada369c673ae55aa0c3fbb4b1673161c147cea2b",
+      "decoded_bytes": 24339,
+      "encoded_sha256": "17442be0a4e63121cbf30bfb749733ec3f35ecbe6ca5ec0faab93f42255d3822"
+    },
+    {
+      "path": "MAIN-approval-v4.json.b64",
+      "decoded_sha256": "869499a3332faf96edcda9a1879d5c5592a096853158ade73452ad83e21998b7",
+      "decoded_bytes": 5855,
+      "encoded_sha256": "efcf2e53997f28fcd7791ad05927ad2275ca2854934f62a127a00fd4d114b345"
+    },
+    {
+      "path": "MAIN-original-reopen.json.b64",
+      "decoded_sha256": "95a0a5615ded25b3d8f29bf4c54dccd1654164194eeaafd8830cc06e869e94de",
+      "decoded_bytes": 1955,
+      "encoded_sha256": "584442d21a57d765ff8a6c40109140f17df45612dd2c7aab907926616fd6e336"
+    },
+    {
+      "path": "original-outer-command.json.b64",
+      "decoded_sha256": "56849d6739468e550f0cdf5427c3d6fa96d0337cdc33c70fe7195b83c9a60d23",
+      "decoded_bytes": 1719,
+      "encoded_sha256": "71a20849fc0c4b99e312ac68c061b6d38f9c334d479901ddf36a6be8d440c850"
+    },
+    {
+      "path": "original-custody-draft.json.b64",
+      "decoded_sha256": "7143056cee77ad6f84a7cf2d7ebd39a3dce4ea0b3f8bfb67aa63c277b4b49dad",
+      "decoded_bytes": 15146,
+      "encoded_sha256": "96a608dd87087e5e444789ea277065dffceb1f314df1199a48d92797c2ca4757"
+    },
+    {
+      "path": "original-checkpoints.jsonl.b64",
+      "decoded_sha256": "57707eea73105ede27c99347d46dafcaf153340b7a0f292546ba858abd092a49",
+      "decoded_bytes": 495,
+      "encoded_sha256": "62a5c3b519ac550d5f231d355ad2f2b091e46c60aa8a229b45e9ca79bdb989fc"
+    },
+    {
+      "path": "original-worker-completion.json.b64",
+      "decoded_sha256": "f5b930f072f194b879aa4bbb393c0eea04e14891c8a1898ff392a5c1beec529a",
+      "decoded_bytes": 3634,
+      "encoded_sha256": "f02370d505366e404fda4b15ab519b910c2aa7c87111e077fd85feffe0567a78"
+    },
+    {
+      "path": "c26-source-v3-index.json.b64",
+      "decoded_sha256": "1af8ccabc483d346c2fe166a5be22093590c4498be98792e3fdf548ad4836f51",
+      "decoded_bytes": 276,
+      "encoded_sha256": "6f9a8b80d34efef2d40fc31035ca82ad997321b7be323c2223f39c7676c8a1b5"
+    },
+    {
+      "path": "c26-source-v3-worktree-config.json.b64",
+      "decoded_sha256": "9d03268cacf41893254ee14fb30d9aba8cb7db0fd0f4b206b6bb5ca85434a129",
+      "decoded_bytes": 271,
+      "encoded_sha256": "306729dd5d24ac05a4beea90c1ab3d90198eff7fb9632e073865b869f19013f6"
+    },
+    {
+      "path": "c26-source-isolation-followup-index.json.b64",
+      "decoded_sha256": "4e43c8d9f855d5bb5ae7c6beeb8816779629c6af939f6a8323eb08125d824cd9",
+      "decoded_bytes": 276,
+      "encoded_sha256": "2b0610c9cc6ecbd7ed4c294e73f7d1514e11da742500d8fda36d24433c002f81"
+    },
+    {
+      "path": "c26-source-isolation-followup-worktree-config.json.b64",
+      "decoded_sha256": "d0a426a89d748d3ad10d757089503e1ee4fae83d2e5e3ec2e68a91c20a57b7b1",
+      "decoded_bytes": 271,
+      "encoded_sha256": "945b6f6f828e69b43a17fefc3659c1bfba8cc4d182a1c2707a396bd97306aa4a"
+    },
+    {
+      "path": "ufh-corrected-root-index.json.b64",
+      "decoded_sha256": "57e7fc030481b394e20c7e032401013b9440bcb7d05f3a198f01b3e2783e4e0a",
+      "decoded_bytes": 276,
+      "encoded_sha256": "9098edbcc8e8652a34814982a4d97cfc977faa3506793db041308c033ad4f01c"
+    },
+    {
+      "path": "ufh-corrected-root-worktree-config.json.b64",
+      "decoded_sha256": "57cb42d1644719363912e5e8683704f9427f0367068924dee6109d85303935f3",
+      "decoded_bytes": 22,
+      "encoded_sha256": "cc1b97977281c4143a65338208504ae1cb682beacf192febac25e4a538762c00"
+    }
+  ],
+  "private_inventory": {
+    "path": "original-private-inventory.json.b64",
+    "decoded_sha256": "2c4619916d73990ff92cff530ecbb2b706c3f382bd22da469c2e976eb37776a2",
+    "decoded_bytes": 13453,
+    "encoded_sha256": "68250358224994aa5df5545c5f0f9f0a90b57c88525f69574cf6431ee76c12e2"
+  },
+  "original_command_count": 302,
+  "no_measured_capacity_claim": true
+}
