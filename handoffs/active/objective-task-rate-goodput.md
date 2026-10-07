@@ -244,7 +244,7 @@ instrument's composition load-bearing in a way it never was under tokens/second.
     per entry (canonical helpers, no reimplementation); speed-axis toggle (median request t/s
     ↔ task_rate q/h); dual-report banner; server-side divergence tripwire. Display-only;
     dominance unchanged; ships at the queued API reload.
-  - [x] **W3d — panel activation verified live** ✅ 2026-07-27: API-only reload via
+  - [x] **W3d-panel — panel activation verified live (2026-07-27)** ✅ 2026-07-27: API-only reload via
     `orchestrator_stack.py reload orchestrator` (performed while fixing the probe-env health
     flapping); `/dashboard/api/pareto` confirmed serving `task_rate_qph`, `goodput_qph`,
     `tokens_per_solved`, `offered_load` + divergence tripwire; 6/6 backend probes green
@@ -262,9 +262,7 @@ instrument's composition load-bearing in a way it never was under tokens/second.
   for this.
 - [x] **W4 — telemetry + doc truth** (~half day): `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are journaled; `scripts/autopilot/program.md` now states that EvalTower `speed` remains the current Pareto speed axis/host-throttle diagnostic, task-rate fields are shadow policy telemetry, and `tokens_per_solved_task` is the bloat diagnostic. The stale wall-occupancy `sum(tokens_generated[role] / throughput_tps[role])` proxy is explicitly marked as not computed/not live. `rg` found no other live system-card copy of that stale text.
 - [x] **W5 — policy decision** (2026-06-13, zero inference): keep `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` as shadow telemetry; leave live Pareto dominance on the current objective until preconditions below are met.
-- [ ] **W7 — rename one of the two boxes both called W3d**, the hold record and the 2026-07-27 panel-activation
-      record, so the id collision stops (`handoffs/active/objective-task-rate-goodput.md:73` and `:207`; `:188`
-      as of origin/main `35b05fde`) (found 2026-09-14, noninf sweep).
+- [x] **W7 — disambiguate the W3d hold record and W3d-panel activation record.** ✅ 2026-10-07 — MAIN renames only the checked 2026-07-27 panel title; the historical hold title and both bodies remain unchanged. [Current-source explanation](../../docs/reference/rtg23-handoff-identity-and-cache-source-20261007.md).
 - [ ] **W8 — annotate or replace the `0.0`-for-unavailable sentinel in `task_rate_qph_from{,_row}`**, kept
       deliberately because they feed archived `eval_details.goodput_qph` history but guaranteed to bite whoever
       next reads them as measurements (`src/autopilot_core/tier_specs.py`) (found 2026-09-14, noninf sweep).
@@ -323,3 +321,5 @@ Tick waypoints here + one-line progress entry; all rate numbers via the MEASUREM
 - 2026-06-13 W5 policy checkpoint: live dominance flip held. Shadow telemetry remains useful, but the NOW-class decision is closed as "do not flip yet"; W3 remains gated on N2/E4 and a quality-eligible replay.
 - 2026-06-14 replay read-path follow-up: `epyc-orchestrator` `d21bbee` makes `scripts/analysis/task_rate_goodput_replay.py` fold append-only supersession events before rendered report rows. Regression coverage in `tests/unit/test_task_rate_goodput_replay.py` verifies folded values replace raw superseded metrics; combined analytics validation passed (`15 passed`) with focused ruff and diff-check clean.
 - 2026-06-14 baseline-promotion evidence follow-up: `epyc-orchestrator` `47c75de` makes `task_rate_goodput_replay.py` report baseline promotion evidence scoped to effective folded replay rows. It does not affect legacy or task-rate archive reconstruction, and incomplete promotion events render safely. Validation: `python3 -m py_compile scripts/analysis/task_rate_goodput_replay.py tests/unit/test_task_rate_goodput_replay.py`; `uv run ruff check scripts/analysis/task_rate_goodput_replay.py tests/unit/test_task_rate_goodput_replay.py`; `git diff --check -- scripts/analysis/task_rate_goodput_replay.py tests/unit/test_task_rate_goodput_replay.py`; `uv run pytest -q tests/unit/test_task_rate_goodput_replay.py` -> 3 passed.
+
+2026-10-07 W10 source-premise review: current APP deliberately removes the persisted pareto_archive cache and reconstructs in-memory authority from journal rows. [Pinned source/test explanation](../../docs/reference/rtg23-handoff-identity-and-cache-source-20261007.md) establishes that contract; it does not sample the current host state or live frontier. W10 stays open only for the owning runtime session to reconcile its actual live state/journal identity, if that historical live observation still needs disposition.

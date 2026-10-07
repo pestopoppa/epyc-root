@@ -9,3 +9,7 @@ AP62 lock review caught source-distribution hashes incompatible with the binary-
 ## RAW-anchor source publication boundary
 
 MAIN independently reopened all42 success-original API ZIP members and28Git+3contexts/exact51cases/complete3313sourcecontext/receiptseal/unchangedsharedgrade. SC76/SC77/VB companion complete; NI08now64 (44 existingflips+20 additions). PriorFALSE50/51 retained separately; existing FT_SUPPORT fixture correction preserves allcaseIDs/source-binding assertions. Prospective controlled RAWstore and ONE normalizedquote sourcechecker are published; missing originals unknown, machinecap/sharedladder unchanged. No hostprojectexecution/fetch/intakewrite/ledgerbackfill. AP60 originalfailed115cases111pass4missinghostkernelstore fixture review complete: observedFALSEmaygradeJudgedLocated but supplies no implementation acceptance; test-only configuration isolation successor under review. AP62 missingFastAPI closure fix is underway; audit/source work continues.
+
+## RTG-23 task-identity boundary
+
+MAIN closes W7 after title-only W3d-panel disambiguation, preserving historical hold/body/artifacts. Independently verified allfive APPsource/test SHA identities supporting W10 cache-versus-journal distinction; no hostsample/testexecution or livefrontier claim. W10 staysopen foritsownerruntimeboundary. NI08now65(45existingflips+20additions); W8sourcefix/AUD11controls/P0/P6/AP60/AP62nativepreparation andfullcardauditcontinue.

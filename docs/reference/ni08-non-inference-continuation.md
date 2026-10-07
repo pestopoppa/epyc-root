@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **64 completed scoped tasks: 44 existing checkbox flips and 20 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **65 completed scoped tasks: 45 existing checkbox flips and 20 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -157,3 +157,7 @@ Full active/blocked inventory covers189 tracked Markdown files/179 canonical-ind
 ## Prospective RAW-anchor source verification — MAIN acceptance
 
 [Original51/51 and retained-source proof prerequisites](../../artifacts/ni08/raw-anchor-source-20261007/README.md) close SC76/SC77 and pre-enrolled VB companion: **64 scoped completions (44 existing flips +20 additions)**. First50/51 failure remains immutable. Machine cap and shared ladder stay unchanged; actual fetch, canonical intake/ledger write, historical backfill and semantic judgments remain outside this acceptance. Remaining-card eligibility audit/source implementation continue; whole-backlog exhaustion is unproved.
+
+## RTG-23 task identity cleanup — MAIN acceptance
+
+[W7 title disambiguation and W10 source explanation](rtg23-handoff-identity-and-cache-source-20261007.md) close W7: **65 scoped completions (45 existing flips +20 additions)**. W10 historical live-state reconciliation remains open to its runtime owner; empty persisted cache is deliberately distinct from journal-authoritative in-memory frontier. No tests/runtime sampling or historical measurement edits. Audit and source implementation continue.
