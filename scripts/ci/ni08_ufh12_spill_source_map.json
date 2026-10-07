@@ -27738,8 +27738,6 @@
         "status": "regular exact native read"
       },
       {
-        "candidate_bytes": 1460426,
-        "candidate_git_blob": "a3f6ac08ed4313f67d6ca2bfe0b6a749945e198e",
         "kind": "regular",
         "mode": "100644",
         "path": "scripts/ci/ni08_ufh12_spill_source_map.json",
