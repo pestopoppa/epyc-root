@@ -212,7 +212,7 @@ instrument's composition load-bearing in a way it never was under tokens/second.
       mix would make qph track real throughput more closely. Needs the production task-tier
       distribution, which was not established — the investigation was cut short. Cheapest to
       change while a frontier is already restarting.
-- [ ] **W6e — surface the generalization gap.** The W6 audit block already draws FRESH
+- [x] **W6e — surface the generalization gap.** ✅ 2026-10-07 — [MAIN published source and fresh original38/38](../../artifacts/ni08/w6e-success-acceptance-20261007/README.md); descriptive producer only, no causal/calibrated overfitting or live-trial warrant. The W6 audit block already draws FRESH
       questions per trial (`_audit_seed(trial_id, core_id)`) but is `shadow_only=1`. Report
       core-vs-fresh score as an explicit overfitting signal, so epoch rotation is
       instrumented rather than assumed to be sufficient.
@@ -329,3 +329,6 @@ Tick waypoints here + one-line progress entry; all rate numbers via the MEASUREM
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`; W8 original custody `/mnt/raid0/llm/tmp/ni08-thesis-audit-20261006/`.
 
 2026-10-07 MAIN source-reviewed W6e producer preparation at private APP `129a58c29d3ed1814caa1acfa29d14f604020886`. The existing partition means/counts feed optional descriptive diagnostics; positive gap means core quality exceeds fresh quality, counts include task_failed and exclude infra/scoring failures, and incomparable suite/question mixes are explicit. W6e and live trial gates remain unchecked until their actual scoped acceptance. VB-RTG23-W6E-SOURCE-CONFORMANCE and existing-journal informational VB-RTG23-W6E-DIAGNOSTIC-CARRY are filed before capture/consumption; shadow-only objective and historical trials are unchanged.
+
+
+W6e source accepted2026-10-07 after separate fresh attempt2; original attempt1 and wrong prebinding remain intact. Optional journal informational carry remains independently tracked under VB-RTG23-W6E-DIAGNOSTIC-CARRY; objectives, shared quality grade, shadow-only behavior and historical rows are unchanged.

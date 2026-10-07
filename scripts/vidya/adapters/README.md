@@ -615,3 +615,5 @@ Accepted2026-10-07: HS4-P6 source-conformance uses the existing native verifier/
 Existing native CI source-family custody checkpoint: [MAIN12 original failed endpoints](../../../artifacts/ni08/failed-original-custody-review-20261007/README.md) are authenticated without projection/regrading. Their10FALSE/1NULL/1setup outcomes remain unchanged; original integrity supplies no implementation or pin-health warrant.
 
 VB-CS20-21-HTTP-CONFORMANCE accepted [original26/26 source controls](../../../artifacts/ni08/cs20-http-wav-success-acceptance-20261007/README.md); isolated3blob source is published. Existing native CI carrier/shared grade remain unchanged; no actual voice measurement or runtime warrant.
+
+VB-RTG23-W6E-SOURCE-CONFORMANCE accepted [fresh attempt2 original38/38](../../../artifacts/ni08/w6e-success-acceptance-20261007/README.md) with pre-capture corrected context binding. Existing CI source family/grade and descriptive W6 semantics remain unchanged; future journal carry is separate and no old tuple is reconstructed.

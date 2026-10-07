@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **138 completed scoped tasks: 79 existing checkbox flips and 59 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **140 completed scoped tasks: 81 existing checkbox flips and 59 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -362,3 +362,8 @@ Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN m
 ## Injected voice HTTP/WAV source — 2026-10-07
 
 [Isolated3blob source and original26/26](../../artifacts/ni08/cs20-http-wav-success-acceptance-20261007/README.md) complete CS20-21-HTTP-WAV-SOURCE and its prospective VB companion:138 scoped NI08 completions (79existing+59children). Unrelated inherited GPU-window/MCP changes are excluded. CS20/21 real-service and speech measurements remain open. W6 first hosted capture is nativeTRUE38/38 but MAIN identified a wrong handoff path in its prior context map; the original is preserved without implementation acceptance, and a corrected binding precedes a fresh exact capture.
+
+
+## Fresh W6 source acceptance — 2026-10-07
+
+[Published two-file source and independently reviewed attempt2](../../artifacts/ni08/w6e-success-acceptance-20261007/README.md) complete W6e descriptive producer and its prospective conformance companion.38/38 original controls, corrected39Git/162wheel binding frozen before fresh capture, complete original44input/56member custody; first-attempt evidence unchanged without retroactive acceptance. NI08=140 (81existing+59children). Optional authored journal carry and all live/calibration/promotion gates remain separate.

@@ -1,0 +1,324 @@
+{
+  "cases": [
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_programmatic_scorer_runs_with_empty_expected",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_programmatic_scorer_runs_with_empty_expected"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_empty_expected_still_blocks_plain_exact_match",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_empty_expected_still_blocks_plain_exact_match"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_empty_expected_text_scorer_is_not_scoreable",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_empty_expected_text_scorer_is_not_scoreable"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_code_execution_requires_executable_oracle",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_code_execution_requires_executable_oracle"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_sampling_replaces_unscoreable_items_from_same_suite",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_sampling_replaces_unscoreable_items_from_same_suite"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_sample_globally_backfills_when_suite_underfills",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_sample_globally_backfills_when_suite_underfills"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_question_records_chat_response_routed_to",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_question_records_chat_response_routed_to"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instruction_route_labels_map_to_runtime_roles",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_instruction_route_labels_map_to_runtime_roles"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instruction_token_accounting_uses_active_prompts_not_prompt_library",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_instruction_token_accounting_uses_active_prompts_not_prompt_library"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_t0_sentinel_suites_are_namespaced_without_mutating_source",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_t0_sentinel_suites_are_namespaced_without_mutating_source"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_uses_designed_core_when_enabled",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_uses_designed_core_when_enabled"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_requires_matching_instrument_era",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_designed_core_requires_matching_instrument_era"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_missing_designed_core_fails_closed",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_missing_designed_core_fails_closed"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_core_path_without_core_id_fails_closed",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_core_path_without_core_id_fails_closed"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_rejects_metadata_mismatch",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_designed_core_rejects_metadata_mismatch"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_rejects_unscoreable_rows",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_designed_core_rejects_unscoreable_rows"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_designed_core_can_reference_question_pool_ids",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_designed_core_can_reference_question_pool_ids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_legacy_sampling_records_core_id",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_legacy_sampling_records_core_id"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_dataset_content_sha256_includes_suite_and_scoring_oracle",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_dataset_content_sha256_includes_suite_and_scoring_oracle"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_instrument_stamp_warns_on_core_id_drift",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_instrument_stamp_warns_on_core_id_drift"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_durable_instrument_ledger_detects_execution_scheduler_drift",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_durable_instrument_ledger_detects_execution_scheduler_drift"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instrument_transition_message_names_policy_axis_not_stable_dataset",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_instrument_transition_message_names_policy_axis_not_stable_dataset"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_instrument_transition_message_keeps_dataset_drift_loud",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_instrument_transition_message_keeps_dataset_drift_loud"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[True-False-3.0]",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[True-False-3.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[False-True--3.0]",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[False-True--3.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[True-True-0.0]",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[True-True-0.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[False-False-0.0]",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_reports_core_minus_fresh_without_changing_objective[False-False-0.0]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_can_count_audit_in_decision_metrics",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_can_count_audit_in_decision_metrics"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_honors_cadence_and_reports_unavailable_reason[True-trial_not_on_audit_cadence]",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_honors_cadence_and_reports_unavailable_reason[True-trial_not_on_audit_cadence]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_honors_cadence_and_reports_unavailable_reason[False-w6_audit_disabled]",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_honors_cadence_and_reports_unavailable_reason[False-w6_audit_disabled]"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_does_not_promote_empty_fresh_partition_to_zero",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_does_not_promote_empty_fresh_partition_to_zero"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_does_not_promote_unscored_core_to_zero_gap",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_does_not_promote_unscored_core_to_zero_gap"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t1_w6_audit_block_requires_trial_id",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t1_w6_audit_block_requires_trial_id"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_non_promotion_excludes_legacy_t1_core_qids",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t2_non_promotion_excludes_legacy_t1_core_qids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_promotion_eval_uses_trial_seed_and_excludes_recent_qids",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t2_promotion_eval_uses_trial_seed_and_excludes_recent_qids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_promotion_eval_fails_closed_without_trial_id",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t2_promotion_eval_fails_closed_without_trial_id"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_nonpromotion_excludes_t1_core_and_caller_qids",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t2_nonpromotion_excludes_t1_core_and_caller_qids"
+    },
+    {
+      "classname": "tests.unit.test_eval_tower_instrument_repair",
+      "name": "test_eval_t2_nonpromotion_fails_closed_when_t1_core_exhausts_pool",
+      "nodeid": "tests/unit/test_eval_tower_instrument_repair.py::test_eval_t2_nonpromotion_fails_closed_when_t1_core_exhausts_pool"
+    }
+  ],
+  "count": 38,
+  "provenance": {
+    "module_level_code_executed": false,
+    "test_bodies_executed": false,
+    "test_modules_imported": false
+  },
+  "schema": "epyc.vb.rtg23_w6e.selected_cases.v1",
+  "source_commit": "129a58c29d3ed1814caa1acfa29d14f604020886",
+  "source_files": {
+    "scripts/autopilot/autopilot.py": {
+      "git_blob": "3351ed54052727174e503050e874ce1629b2d071",
+      "git_mode": "100755",
+      "sha256": "f07d13af377d3f9b5da4bce1628301b1314017add62ab1bdf28742509b5f3c24"
+    },
+    "scripts/autopilot/eval_tower.py": {
+      "git_blob": "a386a4db794f9946302223311eaa73b499a90cd2",
+      "git_mode": "100644",
+      "sha256": "fbb6d6decb8cf0b0739d836b9b7021e3af99d824239b47cca3a29d3f2029514f"
+    },
+    "scripts/autopilot/eval_tower_trace_feedback.py": {
+      "git_blob": "43352f747d86515060e350b5709ce1f0ebddf5d9",
+      "git_mode": "100644",
+      "sha256": "36e52e1766da1138a5c90aae0de1487aa710425e3efb7ad9b490a6b88de58f3a"
+    },
+    "scripts/autopilot/journal_shards.py": {
+      "git_blob": "2430372f2d6f1cdba0503a82816a941f5e01e800",
+      "git_mode": "100644",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    "scripts/autopilot/paired_stats.py": {
+      "git_blob": "faba05796e424014a3291d92432927c6fc28fed4",
+      "git_mode": "100755",
+      "sha256": "c81001fb4c01713247f4edfe1a99667a207d0e35aec501448fc4ce269fccff80"
+    },
+    "scripts/autopilot/rubric_scoring.py": {
+      "git_blob": "787ae30c24010f6a35ac7d8c4b901523a6f3eeb0",
+      "git_mode": "100644",
+      "sha256": "0f46d1f1cb29363ac10a8f04725d73744cf4b18f01ce64e67805550a2f53555e"
+    },
+    "scripts/autopilot/safety_gate.py": {
+      "git_blob": "24e4b6ce7a8077c85cd831ea1634c012d07be025",
+      "git_mode": "100644",
+      "sha256": "47e040738ddbd97ddac59ffadd5345b25ed55f996cef6452a3d69bad870b5520"
+    },
+    "src/autopilot_core/action_identity.py": {
+      "git_blob": "de768dfce1199a1011a30d1db8db78ec5820e605",
+      "git_mode": "100644",
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    "src/autopilot_core/authority_consent.py": {
+      "git_blob": "7a89e01affc8c86cfe0c79a08f8571c99cf44cb0",
+      "git_mode": "100644",
+      "sha256": "50541fbda093e0560005a60195d3e8f82f95151aadf3cbab968d1842d5073022"
+    },
+    "src/autopilot_core/instrument_era_guard.py": {
+      "git_blob": "c266865d225d9d455cc2a974e8359392de94773d",
+      "git_mode": "100644",
+      "sha256": "c21b3746c8cbd0261055078c306a5820bb1c52acc07a883382f2c4917e2c7174"
+    },
+    "src/autopilot_core/journal_reconstruction.py": {
+      "git_blob": "25e224dd700087aa4f8acc545c9505434df50bf7",
+      "git_mode": "100644",
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    "src/autopilot_core/learning_exclusions.py": {
+      "git_blob": "82adbc3dab68470570ec8fe0edf62d238ff8b093",
+      "git_mode": "100644",
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    "src/autopilot_core/measurement_guards.py": {
+      "git_blob": "d01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6",
+      "git_mode": "100644",
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4"
+    },
+    "src/autopilot_core/pareto_math.py": {
+      "git_blob": "91f3e59e0918c93004ad4a4f61fe1d384eb48d78",
+      "git_mode": "100644",
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    "src/autopilot_core/rlvr_tiers.py": {
+      "git_blob": "19d3813492f3b26807db22daad491fc1bf470e05",
+      "git_mode": "100644",
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26"
+    },
+    "src/autopilot_core/tier_specs.py": {
+      "git_blob": "ba47f3dd40b19521c4939a064493362c57ccc998",
+      "git_mode": "100644",
+      "sha256": "a601205f8e0311e675cf0146e3b6b28e038fc2d38b3256a5631a9489c1d1ca94"
+    },
+    "src/autopilot_core/verification_families.py": {
+      "git_blob": "2ee068efd08fcc123e3cea8e05ff1cd7ac6a0986",
+      "git_mode": "100644",
+      "sha256": "ade8b71905760b6595d9be4f746b791de5635e5cb3a9685f35041561883efc03"
+    },
+    "src/behavior_signature.py": {
+      "git_blob": "ed936ab97c7cd5dae204f87840885e9539734141",
+      "git_mode": "100644",
+      "sha256": "5666e929ef58785751ce094b0b38575f06361dc42dbd246e697d5b35cd8336ef"
+    },
+    "src/bradley_terry.py": {
+      "git_blob": "80e0b5cd85fcca73e8cb27e0e8e3e98025539b9b",
+      "git_mode": "100644",
+      "sha256": "2360d4372a7698d3d9e8c27b07bbe6595de26f36bd5e99545aa2b738b060696d"
+    },
+    "src/llm_primitives/stat_tests.py": {
+      "git_blob": "2b03a8720db93e188256e94516a5a67320e5c008",
+      "git_mode": "100644",
+      "sha256": "d0886ef1b32498475d804b9597347d2934b3dc0553224c0443a98654436af2dc"
+    },
+    "src/prompt_builders/code_utils.py": {
+      "git_blob": "d5f8bfedb5c3fcd6ef2eca0535ce174844f7a483",
+      "git_mode": "100644",
+      "sha256": "03c5b7c0e3dd93c436740572d3df220030e08c8fdc1c034410a9d477e2fbea41"
+    },
+    "src/structured_output/repair.py": {
+      "git_blob": "57e1b30a3f7756131a1fd9527656413adfc7c25d",
+      "git_mode": "100644",
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4"
+    },
+    "src/trace/harness_schema.py": {
+      "git_blob": "74a4c434ab19bab67d779f45cc7e32f197e7db1a",
+      "git_mode": "100644",
+      "sha256": "a0251128d9a091a86b54def2021b052908e3baaa72966ca747437043bbc5384d"
+    },
+    "tests/unit/test_eval_tower_instrument_repair.py": {
+      "git_blob": "cf2bcd7c30ae4498b3d80431d71238975c1e9a41",
+      "git_mode": "100644",
+      "sha256": "259a8adef0e37f7633da3fc3629735be7d2b63fe2419418d942015e3137be782"
+    }
+  }
+}
