@@ -63,3 +63,7 @@ MAIN verified exact site Git blobs and both historical screenshot hashes, publis
 ## M-11a2b wiring closure and prospective source enrollment
 
 [Existing actual write-path source and original real-channel case](../../artifacts/ni08/m11-work-capture-source-20261007/README.md) close one stale existing wiring task. **81 scoped completions (52 existing flips +29 additions)**. Historical0/58,655 is unchanged; no current population or skill-quality claim. W9 formatter verification, EXL3 teardown polling source/verification, and protected RTG52 assignment/target-selection source/verification are enrolled prospectively. Enrollment adds no completions; protected merge still requires exact D9 acknowledgement. Source work continues.
+
+## Source work unlocked by current-tooling review
+
+Session transcript/summary persistence, transport-neutral voice controller/cascade, request-scoped token/cancel/SSE plumbing, and inactive read-only trace MCP registration are now explicit executable source scopes with prospective verification companions. Parent service/model/timing acceptance is retained separately. Existing domain next actions route to this work; preparation adds zero completions and NI08 remains81. Actual stack-swap promotion-gate execution and Tulving read-surface adapter are also under source review.

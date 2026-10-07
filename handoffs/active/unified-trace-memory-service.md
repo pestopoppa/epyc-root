@@ -354,3 +354,7 @@ UTM must author and adjudicate its own human-labelled conflicting, stale, poison
 
 
 - [x] **UTM-V3-SYNTHETIC — characterize native structural/parser/readout contracts without semantic gold.** ✅ 2026-10-06 — [Contract and source acceptance](../../docs/reference/utm-synthetic-conformance-contract.md), original CI37444684189 TRUE2/2;8store categories/5parser batches/6attempts. Generated readout is captured at execution. Source/privacy/scope/freshness/poisoning/manipulation remain unassessed, dangling source IDs characterized rather than declared safe. Human semantic calibration, live judge and UTM-M9 remain open.
+
+## Read-only registration source companion — 2026-10-07
+
+- [ ] **UTM-B1-SOURCE — prepare the existing read-only trace navigation registrar and synthetic MCP/SQLite controls.** Exact `ms.search`/`ms.expand` tool names, declared session_id, fixed default read store and no model-selected paths, writes or embeddings. Keep the default orchestrator MCP catalog unchanged until catalog-growth acceptance; source registrar is explicit and uninvoked. Actual off-host FastMCP schema/defaults and synthetic SQLite navigation controls through VB-UTM-B1-CONFORMANCE. Parent model-facing registration and real consumers remain open.
