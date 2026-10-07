@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **162 completed scoped tasks: 101 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **164 completed scoped tasks: 103 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -426,3 +426,7 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## DCP2 finite score normalization — MAIN acceptance
 
 [Exact APP source and original25/25](../../artifacts/ni08/dcp2-finite-score-source-acceptance-20261007/README.md) close DCP2-FINITE-SCORE-SOURCE and its prospective native companion. Parser/direct-hit malformed and non-finite normalization preserves finite ranking and input objects; exact frozen products publish APPf0df. NI08=162 (101 existing tasks+61 completed scoped children). Pre-job refusal, superseded unpublished draft and excluded v1 hashing report remain unchanged. Original shared grade/status and full custody distinctions are preserved; no live corpus/inference/performance/enablement warrant.
+
+## C-pointer lexical source — MAIN acceptance
+
+[Exact Researchaefa/original9/9](../../artifacts/ni08/c-pointer-literal-source-acceptance-20261007/README.md) closes the named C-style pointer source and native companion. All20 Git/30 native reads, immutable typed phases, original self-seal/directJUnit and existing grade are independently verified. Earlier FALSE8/9 remains unaccepted. Publication occurred without required leases after a failed acquisition; exact two frozen files/ordinary public parent are verified and the deviation remains explicit. NI08=164 (103 existing tasks+61 scoped children). No parent C6-26, arbitrary parser/memoization absence or GPU/kernel acceptance.

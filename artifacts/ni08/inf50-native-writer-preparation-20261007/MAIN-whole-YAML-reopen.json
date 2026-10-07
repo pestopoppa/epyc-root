@@ -1,0 +1,36 @@
+{
+  "baseline": {
+    "bytes": 149161,
+    "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+    "source": "captured APP orchestration/model_registry.yaml"
+  },
+  "candidate": {
+    "bytes": 152750,
+    "generated_banner_present": false,
+    "sha256": "f2ac9ae8973b219e9ba0124190a7edd1e587e0ed0e1c0d6a1a617fc39c31d179",
+    "source": "captured compiler.stdout.yaml from native --dry-run"
+  },
+  "candidate_equals_master_at_path": true,
+  "claim": null,
+  "expected_path": "speculative_decoding_policy.retired_fields.ngram_candidate_spec_type",
+  "graded": false,
+  "independently_computed_diff_paths": [
+    "speculative_decoding_policy.retired_fields.ngram_candidate_spec_type"
+  ],
+  "junit": null,
+  "master": {
+    "bytes": 726690,
+    "sha256": "9d4439de589f0b4572ef2ff1b93c91b5ed661f9d06337512f15d5abf9da744c6",
+    "source": "captured Research orchestration/model_registry.yaml"
+  },
+  "method": "PyYAML safe_load on captured YAML bytes only; recursive whole-document typed semantic diff; no project imports",
+  "native_receipt": null,
+  "project_modules_imported": [],
+  "pyyaml_version": "6.0.3",
+  "scalar": {
+    "sha256": "bc00e75978c4d71c2d4710a70c8ac0db13774c653a409dae62336a8baa9ce6c1",
+    "type": "str",
+    "utf8_bytes": 746
+  },
+  "schema": "ni08.inf50.independent-yaml-recomputation.v1"
+}

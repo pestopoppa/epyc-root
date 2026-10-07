@@ -1,0 +1,159 @@
+{
+  "schema": "epyc.main.source.publication-review.v1",
+  "utc": "2026-10-07T13:17:14.036089+00:00",
+  "source": "b2b44fedba3db5ce4c240d9aee0573b753103c53",
+  "public_research": "aefa9a8347ec65f297c24e44021aad895e40b636",
+  "exact_ordinary_public_parent": "c49729505b6b85bcc2ef68255168014b4ae6a84d",
+  "main_verified_raw_Git_bytes_API_and_all_receipt_hashes": true,
+  "whole_native_controls": 9,
+  "main_strict_original_checks": 1013,
+  "original_native_true": 37621623399,
+  "original_false_preserved": 37617279801,
+  "existing_shared_grade": "Judged/Located",
+  "new_grade_authored": false,
+  "host_project_execution": false,
+  "serialization_deviation_acknowledged": true,
+  "no_retroactive_lease_claim": true,
+  "remedy": "No repush/history rewrite. Further delegated publications require MAIN review of checked acquire/absence-token/canonical-common helper before execution.",
+  "original_public_subset": [
+    {
+      "public_path": "MAIN-native-acceptance.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c-pointer-original-MAIN-acceptance.json",
+      "original_bytes": 1773,
+      "original_sha256": "8b6d8e6e775a22d9d84b69f331f4555d5ac5729e3f37d2ba5e7b64dc43589515",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "MAIN-original-reopen.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c-pointer-original-MAIN-reopen.json",
+      "original_bytes": 43460,
+      "original_sha256": "c5744ef27a94c4a5c9fb234b7382612a39a19352bb1e2130954ca5ed93fc3dd1",
+      "encoding": "base64"
+    },
+    {
+      "public_path": "MAIN-prebinding.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c-pointer-literal-MAIN-prebinding.json",
+      "original_bytes": 10805,
+      "original_sha256": "6c1b8fab1c0dba5039b15965da45314b4b25a7cca6de0ade2111900367023ad9",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "publication-v3.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/APP-publication-result-v3.json",
+      "original_bytes": 14115,
+      "original_sha256": "ffeb2ca3928b4379f0c017e69032a0a88ffe7a9df428360ed25ed8463678c14d",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-run-api.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/native-run-api.json",
+      "original_bytes": 12478,
+      "original_sha256": "b769e8158f159f35ce4e8f178ae807c58863f2fba49b94c875919af137cd8e5c",
+      "encoding": "base64"
+    },
+    {
+      "public_path": "original-jobs-api.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/native-jobs-api.json",
+      "original_bytes": 4246,
+      "original_sha256": "99b057d19ed5105f113b0ebc9a79401f989d91e1bd8352c6bc7f70da1d152e22",
+      "encoding": "base64"
+    },
+    {
+      "public_path": "original-artifacts-api.json.b64",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/native-artifacts-api.json",
+      "original_bytes": 768,
+      "original_sha256": "efb71914d7aa83cad3081767825d608c7a692d079383999c3e862c32f2d277b7",
+      "encoding": "base64"
+    },
+    {
+      "public_path": "original-native-receipt.json",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/original-extracted/result/native/receipt.json",
+      "original_bytes": 15073,
+      "original_sha256": "6a916cd4b3f76b6b0456cfb0d1955fd84aa56fb1c3e8fdf0f83d9f8bc591b020",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-native-request.json",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/original-extracted/result/native/execution-request.json",
+      "original_bytes": 9561,
+      "original_sha256": "34636b280d24c016deebf3d28f96dd06f72716facd6b66057bba7b85f30ba854",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-junit.xml",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/original-extracted/result/native/original-junit.xml",
+      "original_bytes": 1945,
+      "original_sha256": "02a08a8e9cca53dfddde7b4b73e70a550fcd1a692964eeb61db9cea640b33f5c",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-status.json",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007/original-extracted/status.json",
+      "original_bytes": 6911,
+      "original_sha256": "875dd8f8a373bd2f6401a4d07d12638f04e7a1eb06e9ebb5bd3b7a856ef70865",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "published-main-api.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/gh-main-after.json",
+      "original_bytes": 3904,
+      "original_sha256": "797ddc8c3216e30b067a65fb17ece0e20b354ee3ac6d90a8fe9a393136b9a953",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "published-branch-api.json",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/gh-branch-after.json",
+      "original_bytes": 4060,
+      "original_sha256": "a065fedda800ce993b9bf564c60583dcf90e5a08efd03206c76a7244f1e71a04",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-wrap-acquire.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/wrap-acquire.stderr",
+      "original_bytes": 160,
+      "original_sha256": "1e11563740fcca7277ee92220d69bd6dca04be9da81d2de46c3d200416fd1704",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-wrap-acquire.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/wrap-acquire.stdout",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "prepublication-wrap-status.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/wrap-status-held.stdout",
+      "original_bytes": 110,
+      "original_sha256": "c2dab4f2fc0abe8ee08b89f5a070e591824faba17d3f8747f8c36ab7174b9fb4",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "prepublication-push-status.stdout",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/push-status-held.stdout",
+      "original_bytes": 106,
+      "original_sha256": "2f8e0306c2e59698c515eaa3934a1e3322f90240ad89851ab29cd964efe05b5d",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-push-main.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/push-main.stderr",
+      "original_bytes": 99,
+      "original_sha256": "0830e84c51052b9baa2c127aa200bb9ee196e75a0105cfce5b5d177df06baed8",
+      "encoding": "raw"
+    },
+    {
+      "public_path": "original-push-branch.stderr",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni08-inf48-publish-20261007/receipts/push-branch.stderr",
+      "original_bytes": 395,
+      "original_sha256": "6263ec5974174b07c6149ac2b5d4e1f2a33b0f8ffd0541e6eeb8594a703bbf48",
+      "encoding": "raw"
+    }
+  ],
+  "full_private_originals": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-publication-original-20261007",
+  "checkbox_flips": 2,
+  "ni08_total": 164,
+  "existing_tasks": 103,
+  "completed_scoped_children": 61,
+  "scope": "Contiguous added-hunk C-style uintptr_t pointer-key matching, pointer-only comment/literal masking and original report accounting; no arbitrary parser/memoization absence, GPU/performance/quality or parent C6-26 warrant."
+}
