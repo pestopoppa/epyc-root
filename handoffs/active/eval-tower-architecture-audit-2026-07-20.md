@@ -375,3 +375,7 @@ Pick up when **no** eval-batch/calibration run is live — gate check: `pgrep -f
 - **E5** ~12 mechanical `[agent]` LOW fixes (this handoff).
 - **EV-RUNNER-BACKOFF** bounded backoff on connection-refused — [eval-tower-verification.md](eval-tower-verification.md) (stops burning eval budget during API reloads).
 - **safetygate provenance fields** `started_at`/`ended_at` + `--resume-incomplete-from` — [completed SafetyGate/RLVR provenance audit](../completed/safetygate-rlvr-provenance-audit-2026-07-22.md).
+
+## NI08 diagnostic routing source follow-up — 2026-10-07
+
+- [ ] **ET13-ROUTING-SOURCE — preserve honest diagnostic route buckets and validate the actual whole-module source controls.** Attribute exact frontdoor, worker and architect routes with architect precedence; retain unknown/empty/model-ID routes in an explicit unknown bucket and preserve original route bytes. MAIN reviewed the two-file candidate from APP ce48; bind all four whole selected modules/140 expanded cases and complete eager source/config/locked environment before hosted native capture. Existing CI carrier/projector/shared grade only; no result denominator, gate/default/objective, runtime/inference or release change. This bounded source task does not close the mixed E5 sweep. Native conformance is tracked by VB-ET13-ROUTING-CONFORMANCE.

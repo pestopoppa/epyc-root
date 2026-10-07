@@ -1,0 +1,22 @@
+{
+  "review": "PASS original NULL custody",
+  "implementation_accepted": false,
+  "run": 37594059944,
+  "attempt": 1,
+  "artifact_id": 11470106212,
+  "zip_sha256": "def522a9dc7892f48755865bf3b65f843139b767961e83f285db69044853c0d3",
+  "zip_bytes": 5367344,
+  "members": 43,
+  "native_value": null,
+  "native_exit_code": 0,
+  "junit_testcase_nodes": 30,
+  "junit_suite_tests": 32,
+  "grade_attempted": false,
+  "originals_unchanged": true,
+  "root_cause": "Pytest9 unittest subtest reporting increments suite count to32 while retaining30 testcase nodes; unchanged native carrier rejects mismatch. Original wrapper then dereferenced NULL summary. Separate reviewed test-wrapper and NULL-safe recipe children required.",
+  "MAIN_executed_grade": false,
+  "reviewed_at_utc": "2026-10-07T09:02:35.303198+00:00",
+  "job_identity": "github_job_112702240879",
+  "original_MAIN_review_sha256": "694350b4784696e27b82624fd06499e711b11194f1bce4535ed992a0bfbd9591",
+  "public_identity_representation": "Exact public GitHub job ID encoded with github_job_ prefix for secret-scan context; original private report bytes remain unchanged."
+}

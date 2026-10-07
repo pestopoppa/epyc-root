@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T08:18:41Z",
+  "last_compile": "2026-10-07T09:07:10Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T08:18:41Z",
+  "scan_time": "2026-10-07T09:07:10Z",
   "schema_version": 1,
-  "source_set_hash": "fe392e6c316dcb006a9c189ca8eab24d31cd6e9f48a00d75b92cdfc6eac24f40",
+  "source_set_hash": "26b27b3cc24d175ee72b15dd73d3c56c23dc6858cbdafbb6dac8b9fe00164a67",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -455,10 +455,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e77b24232e375613a03908f477132ae8795b39bdc6b5a2bbdc65a0120bc01702",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "b5d030d953666c7d66845819a661d28448e150c9cfcfd68b4d14794440e32bf6",
+      "modified": "2026-10-07T08:52:27Z",
       "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
-      "size": 82357,
+      "size": 83176,
       "title": "Eval Tower Architecture & Robustness Audit (2026-07-20)",
       "type": "handoff-active"
     },
@@ -591,10 +591,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "aceebf5a115d9c1b0e4ba66d15dc0610022c3e0bd09588961def824783fc2778",
-      "modified": "2026-10-07T08:18:41Z",
+      "content_hash": "f8def09c61e2086cc7c2a363097cd08e9bd1a970833d609004062c0d6fbd58d3",
+      "modified": "2026-10-07T09:04:33Z",
       "path": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
-      "size": 142426,
+      "size": 142613,
       "title": "Gemma-Challenge Kernel Techniques \u2192 v7-Experimental Candidates",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5b876078aa6413e75a2b2f255dd1460197b0c6f3165593256d4728ba6f0247bd",
-      "modified": "2026-10-07T07:57:27Z",
+      "content_hash": "8b4f9059f5c7800e3861a4077b985902b394121b3de4bd3f067c423fba29a95b",
+      "modified": "2026-10-07T09:04:33Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 129614,
+      "size": 129991,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "de546445f616ad885f0427faf1861a30cabf43303fff707a5c97805abc1942b9",
-      "modified": "2026-10-07T08:14:08Z",
+      "content_hash": "fecd43e52913efa2cca83c91a2388607ed81b03e23f3eed95417a3244e21c16f",
+      "modified": "2026-10-07T09:04:33Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 360226,
+      "size": 361221,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9399,10 +9399,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "67c4977932bb10033fbf3516be5256d97c185606fc36b78a3d7f8c18566231cf",
-      "modified": "2026-10-07T03:10:28Z",
+      "content_hash": "6f7165ae9c55bc8598b8a71722635a7924042371a10d50d28563b7d8a703eb8d",
+      "modified": "2026-10-07T09:04:33Z",
       "path": "progress/2026-10/2026-10-07.md",
-      "size": 7033,
+      "size": 8773,
       "title": "2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "404a314cb3f6c75abb2b44aeef84c5b342d1fa198803443d332132ee6de01a1d",
-      "modified": "2026-10-07T07:57:27Z",
+      "content_hash": "b11a49da3f4951f5f4502b64de3943a996d0d5eb49a7718f5e8f2e1363741459",
+      "modified": "2026-10-07T09:04:33Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 52358,
+      "size": 52991,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 143 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 145 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -715,3 +715,5 @@ MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8
 - [x] **NI08-WIKI-WARNING — limit the linked-worktree mtime warning to explicit --since scans.** ✅ 2026-10-07 — MAIN reviewed the single CLI caller and diagnostic-only fix. Default incremental selection remains content-hash based; watermark behavior is unchanged. Actual default and explicit-date governance scans are checked during this operator-requested full checkpoint.
 
 2026-10-07 LR-11/LR-13: MAIN prepared and review-only validated the [exact additive signing package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md), now OP-LR11-LR13 in the master queue. Both existing tasks remain unchecked until an operator terminal signature and independently reviewed publication; no agent policy amendment, receipt or close-time cleanup was performed. LR-12's hook defect is fixed and published; the remaining gate is the human-only policy signature, not that former hook defect.
+
+2026-10-07 checkpoint: K11 requested-repeat summary source and original30/30 accepted; exact Research publication and original failure limits are in the NI08 continuation. ET13 prospective routing source and native tasks are enrolled before capture. Source review, actual original-custody acceptance and live/runtime gates remain distinct; the whole backlog is not exhausted.

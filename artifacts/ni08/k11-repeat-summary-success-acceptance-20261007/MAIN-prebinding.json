@@ -1,0 +1,324 @@
+{
+  "schema": "epyc.main.native_prebinding.v1",
+  "review": "PASS",
+  "recipe_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+  "tracked_files": [
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/vidya/lattice.py",
+      "mode": "100644",
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/vidya/frames.py",
+      "mode": "100644",
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/vidya/canonical.py",
+      "mode": "100644",
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "82fcaab12d46867b9723cadb11b498e74df16a91",
+      "path": "scripts/benchmark/k11_gemma4_determinism_runner.py",
+      "mode": "100755",
+      "git_blob": "4c4466c91952288065269af377105fd2bdb68139",
+      "bytes": 42909,
+      "sha256": "5da2e7e1797da2505571ccfbddb757fb7559c9b6b96d1b8a089e5d60921b29ef"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "82fcaab12d46867b9723cadb11b498e74df16a91",
+      "path": "scripts/benchmark/test_k11_gemma4_determinism_runner.py",
+      "mode": "100644",
+      "git_blob": "c92bb0b75150eb49ee379212ca3ea62ab09b55a9",
+      "bytes": 27965,
+      "sha256": "bd358db686d8380181d935d891c697ecbc8de594bbab8970c94b1e3050af67a2"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "82fcaab12d46867b9723cadb11b498e74df16a91",
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "git_blob": "5b26a20549d897c74484b4d7ae4022c88f5dd7c0",
+      "bytes": 1481,
+      "sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "82fcaab12d46867b9723cadb11b498e74df16a91",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "efdf097df2a8355f952073fc25ac1c8a35fcc7d8",
+      "bytes": 520883,
+      "sha256": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d"
+    },
+    {
+      "repo": "lock-source",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "d71676281bfbbec7383a84292add3be214e8b9e9",
+      "path": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "mode": "100644",
+      "git_blob": "0a8239175f712227f335b436d80b607718c6381c",
+      "bytes": 141949,
+      "sha256": "fb76ec625e06de5e145185a076424aa53ba44942ba355f0216115a262f602510"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "d71676281bfbbec7383a84292add3be214e8b9e9",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "mode": "100644",
+      "git_blob": "001d78d16bc8c28f0d701658c8a731a15453dfae",
+      "bytes": 359421,
+      "sha256": "062c5b8d6171290fba8b66ad5e70b90c57298abd861cd7b5026b29f96b49d508"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "d71676281bfbbec7383a84292add3be214e8b9e9",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "483611286bb2979e70ff94c39de07776faefe995",
+      "bytes": 264513,
+      "sha256": "dc2f400c51bb4fd2f78a5da3da9c75f82b16e54b309a24945bcbbbfae8184ea1"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": ".github/workflows/k11-repeat-summary-native.yml",
+      "mode": "100644",
+      "git_blob": "46fbbac3c6bfa63273fefeb6eda5f037fa063a5f",
+      "bytes": 2828,
+      "sha256": "cfd01c2ed6e9c229dbdbc56e9ce4fa4744127c0aa4ef7abe41a4d92ff145b6c2"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/ci/k11_repeat_summary_capture.py",
+      "mode": "100644",
+      "git_blob": "480ad78ef6a8e9a0ea9daf991166ee6b5b9d7492",
+      "bytes": 24774,
+      "sha256": "e1b75195c7cafa21ed2123436c548ba43f812613166e5ad2cfb72c6cd62ff959"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "9a883f818711754d66e5706630a4b5ad374aa401",
+      "path": "scripts/ci/k11_repeat_summary_requirements.txt",
+      "mode": "100644",
+      "git_blob": "d991bc273fe0fd51d017a14a467a7bdcc26bb67e",
+      "bytes": 473,
+      "sha256": "cca0059f13a7989e5d93c82fb1f83bfb70a4d196ed96b4a88be313f3a194e07d"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_server_argv_pins_experimental_v7_build"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_server_argv_supports_no_spec_control"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_server_argv_can_disable_flash_attention"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_server_argv_supports_cpu_no_spec_control"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_server_argv_can_disable_draft_backend_sampling"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_server_argv_records_extra_server_env"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_server_env_requires_assignment"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_apply_request_sampler_mode_explicit_greedy"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_apply_request_sampler_mode_cpu_top_k"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_score_word_task"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_schema_task_builds_word_array_schema"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_score_schema_task"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_query_chat_parses_semantic_response"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_query_chat_sends_stop_strings"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_query_chat_sends_json_schema"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_query_chat_can_request_token_trace_metadata"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_query_chat_can_send_explicit_greedy_payload"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_token_trace_compacts_chat_logprobs"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_token_trace_prefers_returned_token_ids"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_build_token_divergence_summary_reports_first_divergent_token"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_run_execute_writes_token_traces_and_summary_without_server"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_summary_producer_refuses_pass_from_only_successful_requested_repeat"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_summary_producer_accepts_complete_two_repeat_task_success"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_summary_producer_preserves_absent_task_oracle_as_unknown"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_terminate_server_stops_process_group"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_dry_run_writes_plan_and_commands"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestK11Gemma4DeterminismRunner",
+      "name": "test_dry_run_records_token_trace_plan"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestCompleteTaskDenominator",
+      "name": "test_empty_or_negative_repeat_count_is_refused_before_server_launch"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestCompleteTaskDenominator",
+      "name": "test_failed_or_missing_repeat_cannot_inherit_successful_task_verdict"
+    },
+    {
+      "classname": "scripts.benchmark.test_k11_gemma4_determinism_runner.TestCompleteTaskDenominator",
+      "name": "test_complete_success_and_absent_task_oracle_remain_distinct"
+    }
+  ],
+  "module_ast_identities": [
+    {
+      "repo": "source",
+      "path": "scripts/benchmark/test_k11_gemma4_determinism_runner.py",
+      "source_sha256": "bd358db686d8380181d935d891c697ecbc8de594bbab8970c94b1e3050af67a2",
+      "module_ast_sha256": "8e84f7e245ce745dc0073c30b437bb4e9966feb3e75b2cf91c1bad0061020c65"
+    }
+  ],
+  "expected_generated_contexts": [
+    "environment.json",
+    "tool-versions.json",
+    "pip-freeze.txt",
+    "dependency-install.log"
+  ],
+  "packages": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pytest": "9.0.3"
+  },
+  "wheel_hashes": 5,
+  "manual_blast_radius": "LOW reporting/input source conformance synthetic fake-server producer and actual owned-PID cleanup; no live model/runtime/sampler warrant",
+  "host_project_execution": false,
+  "actual_input_literals_exact": true,
+  "all_three_prospective_contexts_bound": true,
+  "unchanged_carrier_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "full_recipe_review": "Original 4a/bdbc full recipe review plus complete ordinary 9a delta reviewed by MAIN. Test-only subTest wrapper removed; both original nonpositive assertions retained; native NULL preserved.",
+  "original_failed_prebinding_sha256": "1bef77cc8043f2190fc497a12411ef57e3344fdd9e01711a8543e1941ce2598d",
+  "original_failed_run": 37594059944,
+  "original_failed_artifact_sha256": "def522a9dc7892f48755865bf3b65f843139b767961e83f285db69044853c0d3",
+  "archive_topology_limit": "ZIP is byte custody, not reconstruction of original filesystem; use original typed inventory.",
+  "approved_at_utc": "2026-10-07T08:47:22.595052+00:00"
+}
