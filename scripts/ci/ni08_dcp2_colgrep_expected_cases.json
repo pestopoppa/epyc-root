@@ -1,0 +1,177 @@
+{
+  "app_pin": "b21e45af6fea25340bddf15e28b633ccc99b0604",
+  "case_count": 25,
+  "case_identities": [
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_parse_colgrep_json_variants"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_parse_colgrep_json_string_and_garbage"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_parse_colgrep_json_normalizes_non_finite_or_overflowing_scores[nan]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_parse_colgrep_json_normalizes_non_finite_or_overflowing_scores[positive_infinity]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_parse_colgrep_json_normalizes_non_finite_or_overflowing_scores[negative_infinity]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_parse_colgrep_json_normalizes_non_finite_or_overflowing_scores[large_integer_overflow]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_discover_normalizes_non_finite_direct_hits_without_mutating_inputs[nan]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_discover_normalizes_non_finite_direct_hits_without_mutating_inputs[positive_infinity]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_discover_normalizes_non_finite_direct_hits_without_mutating_inputs[negative_infinity]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_discover_normalizes_non_finite_direct_hits_without_mutating_inputs[large_integer_overflow]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_discover_groups_merges_ranks_and_excludes"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_discover_respects_max_files"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_python_codemap_signatures_only"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_python_codemap_syntax_error_returns_none"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_python_codemap_empty_module_returns_none"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_cost_candidates_computes_modes"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_cost_candidates_skips_unreadable"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_assemble_delegation_bundle_end_to_end"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_assemble_tight_budget_downgrades_or_excludes"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_render_rejects_changed_bound_body_before_mode_processing[full]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_render_rejects_changed_bound_body_before_mode_processing[slices]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_render_rejects_changed_bound_body_before_mode_processing[codemap_only]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "AST function name",
+      "name": "test_render_keeps_same_bound_and_unbound_entries_compatible"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_render_keeps_unreadable_bound_entries_as_skips[none]"
+    },
+    {
+      "classname": "tests.unit.test_context_discovery",
+      "identity_source": "explicit or literal AST ID",
+      "name": "test_render_keeps_unreadable_bound_entries_as_skips[exception]"
+    }
+  ],
+  "parameter_values_evaluated": false,
+  "parametrized_test_AST": [
+    {
+      "ids": [
+        "nan",
+        "positive_infinity",
+        "negative_infinity",
+        "large_integer_overflow"
+      ],
+      "test": "test_parse_colgrep_json_normalizes_non_finite_or_overflowing_scores",
+      "value_expression_ast": "[float('nan'), float('inf'), float('-inf'), 10 ** 1000]",
+      "values_evaluated": false
+    },
+    {
+      "ids": [
+        "nan",
+        "positive_infinity",
+        "negative_infinity",
+        "large_integer_overflow"
+      ],
+      "test": "test_discover_normalizes_non_finite_direct_hits_without_mutating_inputs",
+      "value_expression_ast": "[float('nan'), float('inf'), float('-inf'), 10 ** 1000]",
+      "values_evaluated": false
+    },
+    {
+      "ids": [
+        "full",
+        "slices",
+        "codemap_only"
+      ],
+      "test": "test_render_rejects_changed_bound_body_before_mode_processing",
+      "value_expression_ast": "[InclusionMode.FULL, InclusionMode.SLICES, InclusionMode.CODEMAP_ONLY]",
+      "values_evaluated": false
+    },
+    {
+      "ids": [
+        "none",
+        "exception"
+      ],
+      "test": "test_render_keeps_unreadable_bound_entries_as_skips",
+      "value_expression_ast": "['none', 'exception']",
+      "values_evaluated": false
+    }
+  ],
+  "schema": "ni08.dcp2_colgrep_expected_cases.v1",
+  "selection": "tests/unit/test_context_discovery.py"
+}

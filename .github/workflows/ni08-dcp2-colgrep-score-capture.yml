@@ -1,0 +1,79 @@
+name: NI08 DCP2 finite ColGREP score controls
+on:
+  push:
+    branches: [codex/ni08-dcp2-colgrep-score-recipe-20261007]
+permissions:
+  contents: read
+jobs:
+  dcp2-colgrep-score-controls:
+    name: dcp2-colgrep-score-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      APP_PIN: b21e45af6fea25340bddf15e28b633ccc99b0604
+      ROOT_CONTEXT_PIN: f71cc137fc3bc17325d6255884eaed7e9dee98c9
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      DCP2_RUNNER_CONTEXT: ubuntu-24.04
+      DCP2_EXECUTION_CONTEXT: finite-score-injected-search-no-colgrep-or-model
+      DCP2_INSTALL_COMMAND: >-
+        python -m venv "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv" &&
+        "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python" -m pip install
+        --no-deps --only-binary=:all: --require-hashes -r
+        recipe/scripts/ci/ni08_dcp2_colgrep_requirements.txt
+      REPL_COLGREP_BIN: ${{ runner.temp }}/ni08-dcp2-colgrep-score/absent/colgrep
+      ORCHESTRATOR_MOCK_MODE: '1'
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Initialize artifact status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni08-dcp2-colgrep-score/result"
+          printf '{"state":"setup_pending","exit_code":null,"native_conformance":null}\n' > "$RUNNER_TEMP/ni08-dcp2-colgrep-score/result/status.json"
+      - name: Checkout exact ROOT recipe and enrolled context
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: recipe
+          persist-credentials: false
+      - name: Checkout existing native CI carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact APP source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install only complete locked wheel closure
+        run: |
+          set -euo pipefail
+          ${{ env.DCP2_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-dcp2-colgrep-score/result/dependency-install.log"
+      - name: Retain exact isolated environment
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/ni08-dcp2-colgrep-score/result/pip-freeze.txt"
+      - name: Capture original whole-module source controls
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/app"
+          "$RUNNER_TEMP/ni08-dcp2-colgrep-score/venv/bin/python" recipe/scripts/ci/ni08_dcp2_colgrep_capture.py
+      - name: Preserve original JUnit, command, typed receipt, logs and custody
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni08-dcp2-colgrep-score-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni08-dcp2-colgrep-score/result/
+          if-no-files-found: error
