@@ -288,6 +288,7 @@ def main() -> int:
         raise RuntimeError("source/readset bytes changed during execution")
     native_before = native_tree_snapshot(result)
     junit_before = hashlib.sha256(regular_bytes(junit)).hexdigest()
+    sys.path.insert(0, str(ROOT))
     sys.path.insert(0, str(ROOT / "scripts/vidya"))
     from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
     from claim_tuple import grade
