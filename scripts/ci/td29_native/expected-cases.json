@@ -1,0 +1,2837 @@
+{
+  "app_pin": "130a394e38a5b0cf1b199e33c267070dc7087bd6",
+  "ast_derived_expected_junit_case_count": 122,
+  "ast_test_definition_count": 119,
+  "case_count_note": "119 AST definitions include one literal four-value parameterization, which statically expands to 122 proposed JUnit identities. Only original JUnit proves actual collected/executed identities.",
+  "case_identities": [
+    {
+      "body_ast_sha256": "fb2ebac3b805c343085992c22163cf0afd49787548620ac73596dc2dabe155ed",
+      "classname": "tests.unit.test_llama_server.TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_defaults",
+      "definition_ast_sha256": "885403e11586fd5fc944ca0c0a123e9284635b3ba4d4f72f9447f642f33a0048",
+      "name": "test_config_creation_with_defaults",
+      "parameters": {},
+      "previous_function_sha256": "05c9446db01559e15dd3cdb7a716b4a70aa3584fc49fe5b4a1ee3b1107237247",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "b516b3146a56ee2f7838eed0b45fcb3852c54ca7c81fe62b180b7e190470ffae",
+      "classname": "tests.unit.test_llama_server.TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_overrides",
+      "definition_ast_sha256": "e4c22f5d3c58f7f30fbce95296dcace7ca2abc6f8375b675d66495f1ed651f7d",
+      "name": "test_config_creation_with_overrides",
+      "parameters": {},
+      "previous_function_sha256": "c0dacb9895b86d81fd3216effec0b59afcfb1cec94787d3765caddcadf355915",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "a0a8709d734a326ae40568b9df3c21bbb9d65d5e480fdd01c8235d8e83f833d6",
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_calculation",
+      "definition_ast_sha256": "444bfab84ee24a91df6220620ff1d8c0b6eaf3abf74163781bd71cd3d6d1c005",
+      "name": "test_hit_rate_calculation",
+      "parameters": {},
+      "previous_function_sha256": "4693f1c2968e90a16bb7d3fec6cddc5aa5d52f3bce0ddf2bf0a97fb9ab486972",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d816001b7daf6b5b109b517ccc46348dbc766761dacdcc58bea4136c47bc97df",
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_zero_requests",
+      "definition_ast_sha256": "cfb045ba13d043c84a3487b989fdb55730da1dd437e94c783addae3256770f13",
+      "name": "test_hit_rate_zero_requests",
+      "parameters": {},
+      "previous_function_sha256": "f278306eebd7968b62e4e4b9c9c7470345e257f2b5eb71bbb53e8679e4a6d0c1",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "902bd2f6d1809cc4bbcf080c7d41f6d46e478b465afc7bece033a3357587af58",
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_rate",
+      "definition_ast_sha256": "07ead8c22f815e306b798a85f042d505adacf3b360649731dc92e19ffbb49f33",
+      "name": "test_token_savings_rate",
+      "parameters": {},
+      "previous_function_sha256": "7ae5312984a47a24cd7bcddcea10ecafc4279f793433450880fc73af87215ebe",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "8d0b056ab3bbe3b1a78c10e7046eace0bfe9c0b9015a674d81edee72de87bbdd",
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_zero_tokens",
+      "definition_ast_sha256": "52d312e56a6e2e19cdb94b3ab584ec18edb57795b39db8d1797d978d87b7bd83",
+      "name": "test_token_savings_zero_tokens",
+      "parameters": {},
+      "previous_function_sha256": "d3c4ca8a853427d520e241ce8b6e62eb8e309eae9fbebc7d396b044e16587b4b",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f57d1a852950f8984d873fd25d2df7958ad9dad46613f33abc9a6c8e5f63ef1c",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_config",
+      "definition_ast_sha256": "dc8bbd456078e8f08208eacb53a9ef0e4beaa4c32e3c14cb7cd693deff4a693b",
+      "name": "test_initialization_with_config",
+      "parameters": {},
+      "previous_function_sha256": "b5229136fd644a42076574d384343aadda5f10608e6acddbba903b02ab8869c8",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d1d89f5566e9e6db13685eafd34f31b8c3153bbf45905dff21cd8016d5ec514b",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_base_url",
+      "definition_ast_sha256": "4694eecfbe0ef75095ad4297021d655d04fe89d2eec2cfacdd14529bda28144d",
+      "name": "test_initialization_with_base_url",
+      "parameters": {},
+      "previous_function_sha256": "138a8be9e459d6117999e896c15fdf9308201d54b829337300933c4d5b4cb5fe",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "2daf11cae8497d56c7989e38b39ac189ad8c4ed1189e15690f5999ac75fbdc20",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_minimal",
+      "definition_ast_sha256": "d24da5c4e08b18e3529e778b102767aa41511133086a79d92f9c8bf0fd57e9ec",
+      "name": "test_build_payload_minimal",
+      "parameters": {},
+      "previous_function_sha256": "86f8eddd89b0906c46e4ac887ef864399177055ba8960e57f28c5adb6b02c944",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "40cadd971b05c6fc7f775b995f12c382becb77c94688b6a03aa81408c9548a6c",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_with_stop_sequences",
+      "definition_ast_sha256": "0207b7c8b05097972dc17758935e36faab35a35f1b1d8bbb06bf9e062b755111",
+      "name": "test_build_payload_with_stop_sequences",
+      "parameters": {},
+      "previous_function_sha256": "f56f67a58c1cabe57d0159ad89d5eb591ad7e091aa705c1cc4a1afca778dd8a2",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f1cce9576b0a0621899b5f3141a9b80471d84d8a88a33c91c21e0c276805b3fb",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_cache_prompt_override",
+      "definition_ast_sha256": "a9e7f78cb55713bd7e175ab599a0bb280b3d2946e3266f3e6bc146c00dc810f3",
+      "name": "test_build_payload_cache_prompt_override",
+      "parameters": {},
+      "previous_function_sha256": "5fbb017f7177483320f3b8aefac155cc7d0506e75a5be34c4a812cbc5b823b01",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "3b342c11c9c16c949984ceeb27d714fe098b564b2b557584a7bf8586e14d8ae7",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_role",
+      "definition_ast_sha256": "d5b87496252df207d080cc6d1255942c611419170ec53444cc310287fce146bc",
+      "name": "test_build_payload_temperature_from_role",
+      "parameters": {},
+      "previous_function_sha256": "68f4d900c83829fb23a161ef930aff5ea90f16e1fd9ea4443fb6d47de3cb165d",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "a471e3d80da04eb879c755ceb41d6f06865a8ecaaa2652b8b78c8b12a8c08fd7",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_generation_defaults",
+      "definition_ast_sha256": "0dfa5a559d244b30ee734b92b1db68515e2d8fefb51397bff88e69a0b168f15f",
+      "name": "test_build_payload_temperature_from_generation_defaults",
+      "parameters": {},
+      "previous_function_sha256": "0adf1a47ab9021491be773a727631683266035c71f2082d456a7623946e9326f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "74517129f0c790b2df30b875aeb9a48cbb88725c02252c653b4cd737dc99cdb8",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_explicit_temperature_overrides_registry",
+      "definition_ast_sha256": "1c56c7e95b0265a9106ea57770f892362c6357c91c17ffcf945cb24ce282b37e",
+      "name": "test_build_payload_explicit_temperature_overrides_registry",
+      "parameters": {},
+      "previous_function_sha256": "a9c21df14312bef6f5d30668c9261bd68e68bc1d518a034052da5cab35dd9700",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "1605570b505011d76dec3c0f92ea711d41111bacf436ae0e47a5bfa585311877",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "definition_ast_sha256": "a9de59c2e83505050943da63bf429cba87e88fd716121f2f903a4a68cd6e7a75",
+      "name": "test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "parameters": {},
+      "previous_function_sha256": "1a70ef9d927d7b967db0f01021a18f8b52a5df542907e2328b29211639102bc0",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "994c732a79ab25cc9f56bb506ca7ff48baa9b151d7e9a3e18bc314bb0b7b85e5",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "definition_ast_sha256": "f9272eacde8abdb55bdaa7dbde72556e4f413d38623c341f7f74376872ad7442",
+      "name": "test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "parameters": {},
+      "previous_function_sha256": "ed70cb965a8b7eb0e729dccddc0fd0114f80566876844ede726351ff09d0d70f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "58cf4315a4cc16fc559c39ee44e6e9371cbc6bc94d7a2d7536ee2a47b40ad3a8",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_omits_logit_probe_probs_when_disabled",
+      "definition_ast_sha256": "67de6c9c65e4afb939447c21566e83d06e10538a857d456fbdf57149580ce29c",
+      "name": "test_build_payload_omits_logit_probe_probs_when_disabled",
+      "parameters": {},
+      "previous_function_sha256": "3342cf3ca556bd09016bca669af464aecd17e4c1ae308fb34b271e0d242561d1",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "4a8f66719f0296919b53f0b12011e5166dff7898087e13e7d53ed99e7a82ce03",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_honors_explicit_n_probs",
+      "definition_ast_sha256": "548adfe00daac97922f1061b3ac8e645db4cfed5f76ead8b69047817bb3aa7fb",
+      "name": "test_build_payload_honors_explicit_n_probs",
+      "parameters": {},
+      "previous_function_sha256": "b7697f5f282d26306cac1c5e82ab6305c8f83d524252fe4beb17ad4550c31f87",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "0fd98bf6294a1440e0d94589a1f9eea488900c2ddc4c16b74b76f2b20a7944cc",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_forwards_post_sampling_probs",
+      "definition_ast_sha256": "c6e62f8c23b6bd6b857fce4841532fdb1ae2b4ee532f9e8e3789cb0ac7167fe9",
+      "name": "test_build_payload_forwards_post_sampling_probs",
+      "parameters": {},
+      "previous_function_sha256": "350e5ae70ad62b7ab2733df6ad10b9f2e4d89f76bf0512b967dfd3894af28722",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "a7a0815174289bd2112a49d29b40d301ecb44f704fd78db6dc1a58690d8f2312",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_success",
+      "definition_ast_sha256": "fe008bff43969acb6d18c7b18d64a621d6f48b5b2e88ce3beb8db42340a0a66a",
+      "name": "test_infer_success",
+      "parameters": {},
+      "previous_function_sha256": "09730a46a4a20ad38f31b677ef717f2ac3161d89088ac68eab3ab66a40dfe2bb",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "b10bbf5a90b750332240ac360036ffead33432f2da7be0e2efc5e9ee3fed9faf",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "definition_ast_sha256": "17fccb65dd13d490f93dd53b85d54edf544c7b32fe8c135f6087bec4423a80bb",
+      "name": "test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "parameters": {},
+      "previous_function_sha256": "917df41756e73d8f39d9ce2983cbaac7ed89214b2141ac936a521e82e2dfd518",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "202d93bc7c1b2a6b485d9349c6dab33bdb9b50dcdb098b04289a80cc3713c774",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_returns_completion_probabilities_when_present",
+      "definition_ast_sha256": "4779fbb76130305c44546bc4147d74b49611e3f99f920307d9b5ed1b25c34c00",
+      "name": "test_infer_returns_completion_probabilities_when_present",
+      "parameters": {},
+      "previous_function_sha256": "a0645f5662bed32609939623ec98a3d7528bab125eaae5847a8b8b5ad9fc7517",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d8a50e3f112c83ef27939496365058351cd55392f3a781368f8f954ba4b4041a",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "definition_ast_sha256": "28b185e322bc6626869894bd3f26b8d39db21ce326a1c059104489d8f984aed2",
+      "name": "test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "parameters": {},
+      "previous_function_sha256": "7de80f17a40c35ce3ca13d21dd312863b4e179c84eb29af859cbda9ed886cf36",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d886e685263babb5baef431bdf64769cba4ca7a970284a47596dd9ae9614225f",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_empty_long_generation_is_failure",
+      "definition_ast_sha256": "545afc25f0cc40e4c5cf5863146a1e5537ab18dcb8105d9a52195c97a5818183",
+      "name": "test_infer_empty_long_generation_is_failure",
+      "parameters": {},
+      "previous_function_sha256": "525cc1c08810055bbeffdefc4f1b2388625e2626c038901dc98097bcac636917",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "3eee26549ec6a885c055420434cc48f18d7527e5546ebba9c22f535f0da11920",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_timeout",
+      "definition_ast_sha256": "9b0f2f4856c1fcc66653ec04d306327ff272bb63dbcb96efc1b0bf846a728682",
+      "name": "test_infer_timeout",
+      "parameters": {},
+      "previous_function_sha256": "33467ac11e435224f334c625eadbc01742ba7754f7384b50ce01925c853111cc",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "6826981f8c9aa9715f77f410a5b4790989677944ccea4b07948e4d45930eecbe",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_error",
+      "definition_ast_sha256": "780ef22b53980540f2e20dcb340f14cb4bfd83dedcb3bbffc456b5e22c0d9f05",
+      "name": "test_infer_http_error",
+      "parameters": {},
+      "previous_function_sha256": "98ecd33d8006954fa4d145cce770f57264bf2775c76199361b9d6b1d0c359f48",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "e10aaf5c8e0e003730152cbc1a72b9335bcf32934d418dc05153f5a98db1a1e5",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_status_error_returns_structured_failure",
+      "definition_ast_sha256": "6494cc09d37bc67a94c7546c7015337818879901d8821af860893cbdfb0b36d8",
+      "name": "test_infer_http_status_error_returns_structured_failure",
+      "parameters": {},
+      "previous_function_sha256": "6ea948a5713fbe0daa26f28823f378b5c9714526394f65d573bb254003d84e18",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "04846d3034de616314ba870f86d8ae7910935cfef280cffaa60df14772b153b9",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "definition_ast_sha256": "c824d9bda169c81895202c39eca5040f228a853af2618771f336db067d6323c4",
+      "name": "test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "parameters": {},
+      "previous_function_sha256": "c1472bd522a2db83e1734e71d1cd6b2520234047e23a91e058565564cd265c57",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "ba7f9bbe3e8adede478151dc31a8308ce9cbc4da40e3142bdd58154c0ff23d7e",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_read_timeout_covers_full_budget",
+      "definition_ast_sha256": "acdcc0f281ab37e065b200877fc7722231dc82ca6d327aba90c7dfebdc03d37f",
+      "name": "test_infer_stream_text_read_timeout_covers_full_budget",
+      "parameters": {},
+      "previous_function_sha256": "cd88dfa68ef2fdd91721e9f1ece0aeb58201281f3734a9509afb676723e218f0",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "54c69a133864ccd004a9bb751fef653eb0a5343f2a4668fd4adb450206cb23a8",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_empty_long_generation_is_failure",
+      "definition_ast_sha256": "3b1d961995568d9edd2876c0b72b347fe86a4dab312f7b98f359a9bef85a560f",
+      "name": "test_infer_stream_text_empty_long_generation_is_failure",
+      "parameters": {},
+      "previous_function_sha256": "b1a37b5604fe4a2f937ba9feebcc25d851493a7834e2eaa16e48fa66e4684ea6",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "35e880141eb7cf1b3b05c6b76c89c9ceff822043b710dd32d547c41db60b0e85",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "definition_ast_sha256": "164dfd24363f02e74bec442e1eca3de1a814c58af4b89256ac064aea36618800",
+      "name": "test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "parameters": {},
+      "previous_function_sha256": "449bb077958c143820965e9d1aba0dd5d49433d306f44f6cc72c2a2ec9c5083d",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "26f9566d24c1e257fe30c2b85f1343db8b563682781592463829a29dade63da2",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_token_estimate_respects_request_cap",
+      "definition_ast_sha256": "78bcc40edb225ae0e731a8b150f803de84a5428bd3b8df81a360e7933ede7241",
+      "name": "test_chat_completions_stream_token_estimate_respects_request_cap",
+      "parameters": {},
+      "previous_function_sha256": "a5c6631aa6dc5211b4d09dc3176110d4e9fd137c20ece54d82f9523f4a1bf86f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "9258c54ed433552dff4986e951ee4cac25c6493b8263fb10797ec61689c6f245",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_success",
+      "definition_ast_sha256": "fed59cbc0be134c797fd8aae396e410670132a2a26c6c09980683b0de0d65c9d",
+      "name": "test_health_check_success",
+      "parameters": {},
+      "previous_function_sha256": "991a659fe55c910d8b25e9861840777bbea129a5a18b21ce0c1e47a692f24bc5",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f78465403fdce0b5fe4dc19140eeddedc17c7324bfedc93a533cc604e084d332",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_failure",
+      "definition_ast_sha256": "8b692df8fb4188de399fb219cbcddb4be0eb0db2712cc4a3bcd0eb980f391d64",
+      "name": "test_health_check_failure",
+      "parameters": {},
+      "previous_function_sha256": "4e7dac19cce69fcf7d92a0d0b758fa9716b96470a573e0359e7c13300aa019d3",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "2289517bb6c366316aa14faa89d4ffdbf0a06d6b78e2b64ccc7724ed9b4671b1",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_rate_limiting",
+      "definition_ast_sha256": "01a61d1703226ecd33842881f2c7bf6455453d57c46012001f8ecc2ea788d8f9",
+      "name": "test_health_check_rate_limiting",
+      "parameters": {},
+      "previous_function_sha256": "79d1f259c53630efd05c21539706a479c37cb21ab46c166cd3484b428d2a0622",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "e5f7b71645fcce545a903d76e7be2eb4d629d55079dc4cc46eba403a6c3fd842",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots",
+      "definition_ast_sha256": "e49ef6afa7eff963a2ee575a671c73261bf50df7662d7cf5a89a64a8be7555e3",
+      "name": "test_get_slots",
+      "parameters": {},
+      "previous_function_sha256": "b10486ddfd418b54f2ff1133398b2c05beed98adea06721b3ebcab4c6e8c0c63",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "245a1b45610ff56ab983c15511a5db2bccac2e3ebf45d39460f4515867a1d63f",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots_legacy_field_fallback",
+      "definition_ast_sha256": "c7a6c9b9752fe50ee9e09ede99deb3ede15055fbf0f13340646f8e67fa1a04ec",
+      "name": "test_get_slots_legacy_field_fallback",
+      "parameters": {},
+      "previous_function_sha256": "9e9e874d6c78854d010fccb29ee41aca643d50b547af3215d38b7822ba1e61e6",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "7faa75a421a9aee864c48a42c6ad9b0837188313222b9d39ddf05a9a44c5800f",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_success",
+      "definition_ast_sha256": "f24966c24ee2d67edf43419454da4f1f0aa13230574fa7a6b8034be05237bc54",
+      "name": "test_save_slot_success",
+      "parameters": {},
+      "previous_function_sha256": "504f3b91b13ece4f1f1e42fc024b7f92c03141f9face7d98c13d97a640751c24",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "5a15829ab7feba53d773b2ec8dbf20d87f7be5943cfc58d7bfd49a5b7af9883e",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_failure",
+      "definition_ast_sha256": "4472bb302d446faa7073eb901b4d014ce385eecc8ba190e8b2f97e23fe5e170a",
+      "name": "test_save_slot_failure",
+      "parameters": {},
+      "previous_function_sha256": "921d98ee416b677ef1603c029c1863c87611e92f31970705226811e5242e3afe",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "008deaf23740bca02024acab83bba843799145550fb35f47a681636ac078f114",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_load_raises_error_on_unhealthy_server",
+      "definition_ast_sha256": "d99674179384b820c5225f5868f24e406cf10cf3ef91f01a2757f87b5262f5ed",
+      "name": "test_load_raises_error_on_unhealthy_server",
+      "parameters": {},
+      "previous_function_sha256": "eed7cef4b569b23eeabda69dd7ce3bb99ed314807d7411587926780438895a6d",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "1ff5df0a6e5116f7dedd4d3e5da9b8ebe51e8d63567b2e97c274b83fdd521ec6",
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_unload_always_succeeds",
+      "definition_ast_sha256": "6be45e008601abdd00e57f08a89fa6e44623bc9b64fc63a1eab2997fdf1eb7ea",
+      "name": "test_unload_always_succeeds",
+      "parameters": {},
+      "previous_function_sha256": "2c1373390a56eb0496c790d2c77d067d40504275830573a2ee9186e5b8431565",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "7754e46845d8ed0c2fb9d874bb73969a25d032a0cbd6b665461b76b54fba595c",
+      "classname": "tests.unit.test_llama_server.TestEarlyStopTiming",
+      "definition": "TestEarlyStopTiming.test_early_stop_produces_timing",
+      "definition_ast_sha256": "01f54f2bc3cd906047ed61766217138299dbd10021a0d8da667080530a7c0d05",
+      "name": "test_early_stop_produces_timing",
+      "parameters": {},
+      "previous_function_sha256": "f33c67ecdf5b182a81e489e5bc64d09024561466782d8fbac8be098b32a4980f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "bd90c456d92f756e49f09af29252a039022196696587cbc68d6ab3f0bea28afd",
+      "classname": "tests.unit.test_llama_server.TestCompletionStreamPrefillTimings",
+      "definition": "TestCompletionStreamPrefillTimings.test_stream_carries_server_prefill_counts_including_zero_cache",
+      "definition_ast_sha256": "3483e75248bcf2e2dee1d6e874a39c941078858b52e543098aa9e651859fc887",
+      "name": "test_stream_carries_server_prefill_counts_including_zero_cache",
+      "parameters": {},
+      "previous_function_sha256": "fc5537d692fe93bf04b54a122a5395d11ce3e118a626b9ed14bb6e7c23fbcb25",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "7dec18df29a1c1413c1e67671ba052861b9e8c4641133e6076befcd284f76108",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_n_probs_translates_to_openai_logprobs_params",
+      "definition_ast_sha256": "a662d344807ba5aca094336f1016a2a2c71e7ab87896e89aacfe7bf3f774741b",
+      "name": "test_n_probs_translates_to_openai_logprobs_params",
+      "parameters": {},
+      "previous_function_sha256": "398e16f07e40701496b412e433cd01db0826954fa2cead65664f698c942f9af3",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "71e9f5b7032274d5946f66234a70d1e9cca06d8397e32286c64fa579563ea896",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_post_sampling_probs_translates_to_openai_chat_params",
+      "definition_ast_sha256": "b373d05d2b180ab9be9568185242c871a2c2fec4b7e98f9cb93879a43c53a9dd",
+      "name": "test_post_sampling_probs_translates_to_openai_chat_params",
+      "parameters": {},
+      "previous_function_sha256": "10c4651f84439baa062467459f8493832e8b7f204fe810536bd250fb1c3ad124",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f3ae2ad0cc519814b0a4783dc4dd93d6f9bb5e9721bfda136ff80e1133eb211f",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_no_n_probs_leaves_payload_and_result_clean",
+      "definition_ast_sha256": "444e99386bd3bedca0435a0c2bb6d73c8fe5c1b853ef678bda3aaa4d31d1a2d4",
+      "name": "test_no_n_probs_leaves_payload_and_result_clean",
+      "parameters": {},
+      "previous_function_sha256": "d142b09e8443ed7af219e0194238ba79f5f7120f63631b9a3884c4c9c176605e",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "de5b7851b24b7da1c7c496566aaf4b87d7e3a3689db80feb2f3b4f4dc3e24cee",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_non_streaming",
+      "definition_ast_sha256": "2508b04e75200a7a0c98652a745f918a50071d292d62acac06366144357c8b55",
+      "name": "test_json_schema_becomes_response_format_non_streaming",
+      "parameters": {},
+      "previous_function_sha256": "237dc506560817b5e1b8c18068d116e3ff0a880c6cc04adf3796b3a586d1f6f7",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "80752452b0212ac31c6fbd25e8c2cc2bd18c0ac7aed3ca8a0d9927d027d033fd",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_streaming",
+      "definition_ast_sha256": "919d185968ff29848a618b2cc7fa160526349fa78603997d01b48d3a13d7f374",
+      "name": "test_json_schema_becomes_response_format_streaming",
+      "parameters": {},
+      "previous_function_sha256": "597f4058c4aa683467775e0db76b9c087020a971130177eaa380b400b396cf68",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "39ab8c709d02e3c17c7d0a87c3578928322ca7fa62367773f668f5467dc1e14d",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "definition_ast_sha256": "4102d55f1d39942267755986260eb705722623fd6cb144117a2e8881dde0242e",
+      "name": "test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "parameters": {},
+      "previous_function_sha256": "0a1b0f56db568b32fdb0a7e500db53626fa43c7dc47421969ca67c528dc574db",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "4397244423a2d0abfc44c401ccef2cfcf453190f1b45fe961cbd24b83f033b94",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_non_streaming",
+      "definition_ast_sha256": "deaa8f857e450a57ca23f7220a86a8f8d4c8e959bc5d7bbe09df543b409fa35c",
+      "name": "test_grammar_forwarded_non_streaming",
+      "parameters": {},
+      "previous_function_sha256": "0f472fb5c5b6912129b32326813967c8bdedffe432f7c8263adc10ffbe995330",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "5d4618b0f0f117a119d092d33cc2002998a5f9616097c80f094a8a1d8236e5fd",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_streaming",
+      "definition_ast_sha256": "d8f857558b54e0b35d2e8c497df7fe70d8970cd9abdbb3f5fb4f1b186ea9d3dd",
+      "name": "test_grammar_forwarded_streaming",
+      "parameters": {},
+      "previous_function_sha256": "17f6aa2818f50055251082e030ac5721609bcd8f16ef916db10feb71ba3b48c4",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "2cedcc32c1dcd6dc507ccedd93553cc4814dab66f16d4f0b545a01264427cc9f",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_and_grammar_both_forwarded_independently",
+      "definition_ast_sha256": "c157c49c024f7bfcaa629fbf33a2d393fa208e0a39cb91e9e8faa4a750377cd2",
+      "name": "test_json_schema_and_grammar_both_forwarded_independently",
+      "parameters": {},
+      "previous_function_sha256": "36d99677c31079d585317513bda81080c10e3f81737d13f892fe425d257fe7a9",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "132cc9fd40068979fa55af25362003c3a6b1d50c5e437c9800fe615e99eac654",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "definition_ast_sha256": "9f2e0c38ba3fec8b25afca90d580784ed22742d4834b92d286d52d0231ed5f5d",
+      "name": "test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "parameters": {},
+      "previous_function_sha256": "43cbc42d45226daa352cba7a26f9a4dee50557f501b98460c389e1c5fad9a486",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "c057d3aac8c8d22dd3065c986021afff117e86e270dace3a70ff15a14c123386",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_json_schema_and_grammar_unchanged",
+      "definition_ast_sha256": "e3868aee907a0bff1de77ca50fecf16431638d8cdabfe397a536913def990163",
+      "name": "test_completion_lane_json_schema_and_grammar_unchanged",
+      "parameters": {},
+      "previous_function_sha256": "5c8e15b4683ef80f57984531d1cd0c48f89f3c5bfcce44eca83e64682101fa39",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "74040f2fd137ee9dac88baf24a033768e5524a412a28b8dc542174ca41748498",
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_no_schema_unchanged",
+      "definition_ast_sha256": "191d7c16bc3f515660f20fcc4eb1d495b51718bafc907c0df75611f0d6b06934",
+      "name": "test_completion_lane_no_schema_unchanged",
+      "parameters": {},
+      "previous_function_sha256": "477a90df67fb794824233b23a4964581b8cce90d35d44e67bd9d7a8fa8d354f2",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f878ac85ef1441a44d73de9867a6340c7aa5ceaca0d825cb26ec88035e5add25",
+      "classname": "tests.unit.test_inference_mixin",
+      "definition": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "definition_ast_sha256": "f5ab878af7ec7ca23eb5f8b28a3e6682047359e8ddf1972246e555edce53480b",
+      "name": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "parameters": {},
+      "previous_function_sha256": "7605f30e6c0a0d43b46606647b319cf6f3773b01423b83026f6b182c0d73d2c9",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "dc0e089347b51f6fa24d21ff76cbd83f16b99e0c7dd8b3d695d04c459c29eaa6",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "definition_ast_sha256": "ebe941fd986584071db9b4dcee3c53388238ea4cfa5cf434efaf2dba77f350cd",
+      "name": "test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "parameters": {},
+      "previous_function_sha256": "c43939d197bbf70fcc9573773fc1f7da88343badc0dd382edaa0060d6cb437d9",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "348e98b7931851d660aae51cc66d7155cf512f4b18fcdb2f297405827400f7b0",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_with_caching_backend",
+      "definition_ast_sha256": "f825540ac1a310dc9726c7a95fc018201a99e2f7e376f48a9be6e847443b0033",
+      "name": "test_real_call_with_caching_backend",
+      "parameters": {},
+      "previous_function_sha256": "04d12ab985a4b6796ee368cd4c98477c9a8f4a1ec936a9e58a778a63ae60f8dd",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "bd3368acba031dc7eeffef93b914d2fea742da18db479d42581d379bef2cfb8a",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_gate_denial_has_typed_non_race_provenance",
+      "definition_ast_sha256": "bc5aaa6c7e0c2b4249d7203788fa3714327d1ebf3780aa0931fc693e21e1221d",
+      "name": "test_gate_denial_has_typed_non_race_provenance",
+      "parameters": {},
+      "previous_function_sha256": "e0344783d3bd8ac877b9e3d03acdbf2bf20fdfdfc2c9c3d627ec52564b191fda",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e4a015ac858ff2f26a4e366b34b4092f477dccd2d1bb29c301baab86b3e6114b",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_fallback_to_model_server",
+      "definition_ast_sha256": "67aefd01ded79567c89c66474b71ecd4b6f90d9ba3407c647dca6c98c0f3382d",
+      "name": "test_real_call_fallback_to_model_server",
+      "parameters": {},
+      "previous_function_sha256": "8fb2de37588c965f07981cf8cb803f90aa8c69828a7356432e61d7d80dc664db",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "28944095defd867ccce6166950101b8b80f39e2e4f416616e5add1974f3e9d34",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "definition_ast_sha256": "948f766c85ef9a97637101545b85e270f38cebfa7dceb3b0aa3ac9474bf20f9c",
+      "name": "test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "parameters": {},
+      "previous_function_sha256": "f6a1fb6b1c8b10f6afa5d61930e3ce9155cc9e591fa44f94b8ca70101e70c338",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "23aefb6bb7d6e6b5dce35397c7f880b4dddbb5566afbdc942bffff7ec53fe26c",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "definition_ast_sha256": "9465a4bc668850074520393d227fd5472dded9cde8cf8aa7c3b0ab35b5823304",
+      "name": "test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "parameters": {},
+      "previous_function_sha256": "5aa4cadcf520e63573a67fe9b3a81306f83eb451604f3afb3c260e557845a7e2",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "697bfbbd3398e985218e0140fae360b2e28b31092e309e3f9b5e7307b98ee6e3",
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_no_backend_raises_error",
+      "definition_ast_sha256": "585f116709b2f1336b6a82fe7137a865b3281099a19dc82713428024f91bfe09",
+      "name": "test_real_call_no_backend_raises_error",
+      "parameters": {},
+      "previous_function_sha256": "553a82f7327e59d6f32d82b53154dbd99a99c3baa7f3cacf583c0237057eae4e",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "fe1797161962f0cb78995e52302d27b36b2b2802498e5fdb09e6b257f9679d31",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_primary_url_strips_full_marker",
+      "definition_ast_sha256": "d5002dc638e6e73e19b2bcc0e9dc292149635b1e9d80ea1d0fde0c825fb31e51",
+      "name": "test_primary_url_strips_full_marker",
+      "parameters": {},
+      "previous_function_sha256": "8bf2e20a9f82b86692df79664e993af892fec0de8005532f5c287a5ce15b3e44",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "4d7e535399e6e63dca320657dcf286d5251956e3282ac4dc1666ad0768eb6826",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_success",
+      "definition_ast_sha256": "dd846511681dfa334c271acf359fc2a75c4b263501bbef3372122b00ae7de179",
+      "name": "test_call_caching_backend_success",
+      "parameters": {},
+      "previous_function_sha256": "e8dab9d3e26cf844951268485ab6ab8b7969478962bb01d905f2378fad07ea82",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e9a0e0d7a89be7a9568981c20d9138750c8612f4407810c776a37a59631f828c",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_registry_role_config",
+      "definition_ast_sha256": "12d3847ab1c7871c2f5da820437a2510f328941fc9010c7e220cffa22265127a",
+      "name": "test_call_caching_backend_uses_registry_role_config",
+      "parameters": {},
+      "previous_function_sha256": "10108ee7cd3fb8a71718b206f1810661b5f11349471384ec7c95f9a400e06187",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "8b8bdcd71f2123a628d37c7e7b7daca556410b75e370b000e589dce117270f66",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_forwards_sampling_params",
+      "definition_ast_sha256": "7aa34106e8c03fad816bf4becdb2f36f0b253902cf8a301b59f5ba32f037fa3c",
+      "name": "test_call_caching_backend_forwards_sampling_params",
+      "parameters": {},
+      "previous_function_sha256": "c8729d32e1a65a255fb45f75e44eecf051876c347d6632043cb8bb9482f762bd",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "d085fcf205ed821a9a6fd92d06d8cedbdbebead014a7d8194dc941574c41dfdc",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_sampling_cache_key_only_includes_explicit_params",
+      "definition_ast_sha256": "511edcd497a4a6883e0b715df1631eb99dc53287cca0b5ee55ef1540e8bff570",
+      "name": "test_sampling_cache_key_only_includes_explicit_params",
+      "parameters": {},
+      "previous_function_sha256": "b694427d5ab9dc1b96348f82eb8276ba30aba9830cb9fe26588e3de2fa82a3a2",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "4a797d3513b742b74549c6900ee0d8128abe8f66a8b19baf7df639636f0b50b2",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "definition_ast_sha256": "5c429b1c55c7bca808907865d7e4d8c23c3d66079eccb7c4fc29bfdb9a77b81c",
+      "name": "test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "parameters": {},
+      "previous_function_sha256": "e218df318e2108ac004b4f8c2ff95f1b906c6d308b3b651ab76679509835dbf8",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "0c7cea6e46a6d3ed786b2b9a2e9971816750098b7c63b35400687dbfbf6c2b42",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "definition_ast_sha256": "cc08855bf70244d542ea196e264a4d2febe717113d438dc35053599093346b6e",
+      "name": "test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "parameters": {},
+      "previous_function_sha256": "6203a471c2e85c326092c76862c2a4f8fee296518868a9cfe4e922ee67fd2b66",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "8f7e45776d3f21cb7621b416fa1ca6cdbb776246ab21219ad04670a38b254e34",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_circuit_breaker_open",
+      "definition_ast_sha256": "c149e83ee387760cc83bd84fb36366cdf52278f038223b29cf37df1460456736",
+      "name": "test_call_caching_backend_circuit_breaker_open",
+      "parameters": {},
+      "previous_function_sha256": "305879a3619a6cb2b3124bd1874f8b9a5254c18c37ba86d112033a67c6786aae",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "af9edc0909ad9c683dc1409acf33ed2bf1969beabef27384c8337205d073ad7b",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_inference_failure",
+      "definition_ast_sha256": "d2644c7a05893e25e6d9d29e395f6462f70a368d82b638be42dca955076bdf83",
+      "name": "test_call_caching_backend_inference_failure",
+      "parameters": {},
+      "previous_function_sha256": "82162d232c46f7dbb9a1d5b08da0e1e46172074f6275d8a9748dd3399cae8fe7",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e2960d7dfebf05571fbd81c60beb80024dbddc40929fb042ed2df05545218774",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_with_stop_sequences",
+      "definition_ast_sha256": "6b3ea56b5674c5b2cccdbd3b539f015a7e687229ea1ae98d4b48d493158b4ff3",
+      "name": "test_call_caching_backend_with_stop_sequences",
+      "parameters": {},
+      "previous_function_sha256": "584ebda8dcae40dcbf3882d1716f14fe9f8bf5d1f47235c9b42bec71b3dc4212",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "21a45f3e46145acf2d2ab321a3ac482f10836f3eb493ec9726bba4b33a05ae12",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "definition_ast_sha256": "dc8169ba9bbbd394771fefea0913e38ac88ba2bb4d8651c415a9a1ff62ab37ef",
+      "name": "test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "parameters": {},
+      "previous_function_sha256": "1ced3642d8606969fb3ef4282bec851a44916a7b3188a548e992e8f150c2ecf6",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "78f2613095d58f4f45ea8dca3c8121ddb9130e86e91cb78a722027c1bfd5c0e7",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "definition_ast_sha256": "7e0b1b8f4c0dd3bf966d8ad821d62d9ec2dea772d0d7f56f7a564067b48cedb8",
+      "name": "test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "parameters": {},
+      "previous_function_sha256": "d2223f173272c9aae59fa215de2fbfa9d61486b3ee508f2a7848a53819922d83",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ef47bf340dfd1044b8a78113224668ea3b39b722bae797e30ae30d25898b39ac",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "definition_ast_sha256": "a6ec14e948492395727af916d3bae52cdcbd51c1465bac74e8797ca9e366a675",
+      "name": "test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "parameters": {},
+      "previous_function_sha256": "0e28fe79d614b8c764c7ecd8debe9064154fb72865f089189e226e006633cacc",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "9668bac7c65154002aa9386ea33ba957d6de48121731c44580dffba6db7dceb4",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "definition_ast_sha256": "5453ad69a3e798881364e0a55389595cc219ac18b885e3560b571be8a70f8d59",
+      "name": "test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "parameters": {},
+      "previous_function_sha256": "1a7840dea8c3fa2a440e371f084de4964e776861bcce65bc463d67acd14b4118",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "d5710e1daed42fb343a67653d6b089de1af1de53d731128d99def09038bb340b",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "definition_ast_sha256": "0bf3892c8b9a49497266a6d5b474e27a53c5a7470325e133dc81bf42322f1495",
+      "name": "test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "parameters": {},
+      "previous_function_sha256": "3ab316c9956fc441b64ba5945efbaf87ba957c5948efc58e76672943cff7c766",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "bc819d15dce28dbe0ee3c3e3f01f0217dc54e0140639df167e45fe48b8b4899f",
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "definition_ast_sha256": "dcec054242a5cea812f2382d94867d0f0ac66b725bcb57b9f70c110df68ba1eb",
+      "name": "test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "parameters": {},
+      "previous_function_sha256": "aa81197b0e1810667a61c48f41b83ad3a63af20ca47a8c0a554b475edbe4e5ba",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "9dfb85b7d574655395fc53ce26e9690fee166eb385910844b27d457f0ee819ce",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_parallel_execution",
+      "definition_ast_sha256": "716c457cf240f52370501daf929346251a24e67ea6fcfdaf21dff4b70443e2c3",
+      "name": "test_real_batch_parallel_execution",
+      "parameters": {},
+      "previous_function_sha256": "0f12fd75a8db28536aadaf834ecdc236de95e6620282c8958a5a53026ccd95b1",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "2d560ee02aefd8062ad687a767f94289962c44fb53a3c63cc4537d59dca520ea",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_handles_errors",
+      "definition_ast_sha256": "4398d308d84071c45568b77749d0b140d8d22d24df64e359a2684bd35d388125",
+      "name": "test_real_batch_handles_errors",
+      "parameters": {},
+      "previous_function_sha256": "0eec7cccf100c3f51a14a836de2ddf1dc26b77eb4b5a98e0bd41df4fce421755",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "b0308b6d7bacef9a4d0a20d1e8f291666518cbd9b9044b51edbf0d0e97b83e73",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_no_backend_raises_error",
+      "definition_ast_sha256": "22d3b4d0cc04db8e6373142a2785aa40db49513ecfc27b3fdad15915cd7db00a",
+      "name": "test_real_batch_no_backend_raises_error",
+      "parameters": {},
+      "previous_function_sha256": "489d1e97cfd07ad260c7425da4c8ce804dbe6acaa2152d6d99bb022ba24c1c26",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "4679b957957f7cf1ad6f7e0bf5dc50f1c5fb33b4221edb075e1f934dc7ebacf4",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_with_model_server",
+      "definition_ast_sha256": "7ef2a80baf40a17a5f80f99483b7f8900e09fea2849e1b5f5b12277a26ab8b31",
+      "name": "test_real_batch_with_model_server",
+      "parameters": {},
+      "previous_function_sha256": "a4a3d20827042cbcb374172fd3d9ee32a13e8a80eeab658e1a662ebd7d757755",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "14df737dbbfebcdb48614c87a3fa17484b48f0f12405b1f26037b1c8f9653bf1",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_json_schema_and_grammar",
+      "definition_ast_sha256": "1eadddf576b38ce47ef1c23c1f152348c9078966b2c198a034f426733d056841",
+      "name": "test_real_batch_forwards_json_schema_and_grammar",
+      "parameters": {},
+      "previous_function_sha256": "ef0ee507a2979de41454ff9b5e6b1d20b2e5c7fb1c5e0784797cedf868023f3a",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "d2071118fded7eeca7d19f1259d4ceb6b54e04fb31c98d990693e280e85d5610",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_schema_when_not_provided",
+      "definition_ast_sha256": "75f86450163357ae7ad7d92eaf8fbf53368b6793e707116b92015bb85f987849",
+      "name": "test_real_batch_omits_schema_when_not_provided",
+      "parameters": {},
+      "previous_function_sha256": "5246dd32a1c67e7e6a6795daf97bc2202f015fd0fad2a8bc0456491b284fba17",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "2be97c2f0208f135c9b22ab9a3bed17d29edbf6eb7975f6037fa46dc4f5b34bf",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_sequential_path_forwards_json_schema",
+      "definition_ast_sha256": "70e9089586a1df6018b8c89ebc98a33e44d090ef632bfbee48cca8c43b54d433",
+      "name": "test_real_batch_sequential_path_forwards_json_schema",
+      "parameters": {},
+      "previous_function_sha256": "31a86c48c8770caa74acee9049722ec44fa8a28d819f46e8413a08e646781a30",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "6939ec06fcb0e7991aabe172dd3f51a45cea21c55b7f0abdd1f2d1a362025b81",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_n_tokens",
+      "definition_ast_sha256": "8df1ad8f6fb5e89b34f81dcda74f5334ce1810ddeff513341119a538320b6ecc",
+      "name": "test_real_batch_forwards_n_tokens",
+      "parameters": {},
+      "previous_function_sha256": "f4b8ec3c6b96464e96681e9180aedcef2a094209c8101923d908a49e7562d3f9",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "12d3aa32eda83d4389ae38fb47f313c4704898ff4774d23b9b7ed96ff1705251",
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_n_tokens_when_not_provided",
+      "definition_ast_sha256": "45cb512740af4510454f3f7945dc1f098c51af400a3b523374da84c6252a592d",
+      "name": "test_real_batch_omits_n_tokens_when_not_provided",
+      "parameters": {},
+      "previous_function_sha256": "ecb0a068b9b55600b38260afc4e39a379a32133c355bfca995fa752763c421d4",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "958dbd0c5d9674df45b82067d6f1e222a9a71685cbd3b063f8fbbb2e3d61261f",
+      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_json_schema",
+      "definition_ast_sha256": "537f7ac0574405e3a22cd10f9f5548fd7727557f3825ff433d126b52abffb4a5",
+      "name": "test_fallback_batch_forwards_json_schema",
+      "parameters": {},
+      "previous_function_sha256": "013528620ffc006b6b0ba3bdc47cc4b6e50f700584b42c50a0299c9e1bf2393d",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "1494d731ac1a5816197f21f2b46e91f8dd4c790567482d80c7020acf52148b91",
+      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_omits_schema_when_not_provided",
+      "definition_ast_sha256": "c1832e7bff24f9f64d809e26635ce8fe2d457a6f379ac12313cff67d557a9c57",
+      "name": "test_fallback_batch_omits_schema_when_not_provided",
+      "parameters": {},
+      "previous_function_sha256": "c5f7d71c7448886090ddaded7641d770a187738afd73d44a05342dd8b95640e0",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "214eaedff8597513e72a06b6f234a317a4983cc06c8e58669c3c4a166c633e44",
+      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_n_tokens",
+      "definition_ast_sha256": "8dad7add8a75f1bc35af4e4e8734ee494f8d68a1b093c82a88e30e658a092cc5",
+      "name": "test_fallback_batch_forwards_n_tokens",
+      "parameters": {},
+      "previous_function_sha256": "a92a071056c04237453f222be74ec589cdc53c47ac3bcab95a71a76120623a21",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "16fcb1ecd5b234adb8a05a2a551f2c7cc38fda81a542113ed288c51eb25c52bf",
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_routes_correctly",
+      "definition_ast_sha256": "16168b4ee333eb98ba55de00cfc7f5449217622ebce713e501be8e841d75b076",
+      "name": "test_worker_pool_batch_routes_correctly",
+      "parameters": {},
+      "previous_function_sha256": "eead007df569a8619af1cab3058eb5c2ca0a601db5b7986cc3c97892819d2e1b",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ef86ca3acf3df48ce1b21c8c60b238cb06bd24d0584a130f783d7e88418e5937",
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_on_error",
+      "definition_ast_sha256": "7d2b281f79077654b246055306fe656e05ab98538ff78ce10bdbfa6baa9f6b97",
+      "name": "test_worker_pool_batch_fallback_on_error",
+      "parameters": {},
+      "previous_function_sha256": "4d17f21c86ab18ae5155b8c48c908637f54d910a73f1358cf7345003ec8ee789",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "a4a316fc4c62141a7978ec986c14f764e2855aa5cfc1e3bd662e54ecad2a7b23",
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_json_schema",
+      "definition_ast_sha256": "2d261c56784f4de32da49eb30ab335f898b540efb0bcdfe15f4097c7f7ce6cef",
+      "name": "test_worker_pool_batch_forwards_json_schema",
+      "parameters": {},
+      "previous_function_sha256": "8838e6034f60455ef9eff5aad59ba690211ef2cb9eeaa907b4b96af3dbc3e431",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ca5bc9466ead4f1534849c068909b1aaa6c2e39cc27f3770430213c376af8b7d",
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_json_schema",
+      "definition_ast_sha256": "833305ecdbc229a8b1a8efa49be9d63a40e1cddc683c20b8d9a2a306936e8c44",
+      "name": "test_worker_pool_batch_fallback_forwards_json_schema",
+      "parameters": {},
+      "previous_function_sha256": "b73d831cfbd317ab9fa67c420902db189b27ecee3a2e53b7eacf36822b1c8e40",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e9898b1616baa36d60b4971b1aaa63ac2bdb9b7d3ea3809d3e91e72493e17068",
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "definition_ast_sha256": "2d3a2abcb1b98bb76f39f103ed50aa90a1e80d1538934d1c51e779d142c0b912",
+      "name": "test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "parameters": {},
+      "previous_function_sha256": "9e7d8b83eb5fcf2aa485dca02925942c43d3a7556aa4784cdffe420a9caea624",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "53df4c7ac2ff0e9ad2ee271e3db7f3876053beaad23b30f9c1d6d205f4288aa5",
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_n_tokens",
+      "definition_ast_sha256": "bd893c0634dd222c97b80edf19abc2b5ad8ef469dd296767866a7b6fb882f634",
+      "name": "test_worker_pool_batch_fallback_forwards_n_tokens",
+      "parameters": {},
+      "previous_function_sha256": "bb79b549f98d5fd1cda512d0826d7be52d14acc9aaf6a695478f7e097a9a9877",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ecf881ca08337b679cbe9457283def2510a2e3d50dbab65ee1ada16abeb3b2d1",
+      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_json_schema_present",
+      "definition_ast_sha256": "bf489203a20c75df517348608e3586ff67019dafe615a1fc1cd4d8db1b883606",
+      "name": "test_json_schema_present",
+      "parameters": {},
+      "previous_function_sha256": "5a19aeb5266ccce7f914f156b449f418d017b6caa6fb669218307688f3678924",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "875a8d040798e34c3b480a2302a92fa67b1ad79658cedc1321ee88b20c0df906",
+      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_grammar_present",
+      "definition_ast_sha256": "7f23570ff083f06a1af8ca1855784b0ffff15e6e6146c58423eabe75c2ae9234",
+      "name": "test_grammar_present",
+      "parameters": {},
+      "previous_function_sha256": "6e3f6d7a5a8484f32df6548b5a6b7c5893b8ccff3fd81d1d3af6143e8c0ff4fa",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "29b53c10ca35a8838d08ebae1eaaa0c1f90ee35f2e91a1aab27b54a98b131d2a",
+      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_neither_present",
+      "definition_ast_sha256": "bc85fad7322f6e9c20b6297fa25d646d37f8f6e41bbeefbb99d439fc0509930d",
+      "name": "test_neither_present",
+      "parameters": {},
+      "previous_function_sha256": "f7e8fcfce7cd335f3eebcd09eb5a4fc0b0927a7de2eb20f31ef53369b98fba3d",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "eb43c7278f2515ecc812ed0f83c2689206e49f55f31bc207361c7c2e769c0cf0",
+      "classname": "tests.unit.test_inference_mixin.TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_schema_constrained_repetitive_stream_is_not_aborted",
+      "definition_ast_sha256": "3847fc990de15cab36f13de9f1631f96e4a2cfd491904372a59aa70465f223b7",
+      "name": "test_schema_constrained_repetitive_stream_is_not_aborted",
+      "parameters": {},
+      "previous_function_sha256": "1cb3611b43fe8dccc3aa560026f5a72808b38bee8b6c52765b37c8f2aa985e59",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "025cccda856105775d7aebff4d150fe4563d640f51f2726b1a63d63192795b22",
+      "classname": "tests.unit.test_inference_mixin.TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_unconstrained_repetitive_stream_is_still_aborted",
+      "definition_ast_sha256": "6f15a19feb3426c065a89617c9c020289c14855f2fe068b2bee2ea1beed6afd7",
+      "name": "test_unconstrained_repetitive_stream_is_still_aborted",
+      "parameters": {},
+      "previous_function_sha256": "65ac11f1c3f7ce919a8ed7680664c4d5aea41a5f24446572b4a362aec776cedb",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "19a5c77186c5873865f82c199f267d49758453e6ef2cbe7941cec8725ab46ee8",
+      "classname": "tests.unit.test_inference_mixin",
+      "definition": "test_native_enqueue_stamp_precedes_backend_admission",
+      "definition_ast_sha256": "f8d79c679edec71f5ccfcb8bdf4ffa2c952a3a751a8bdfa7f1388da419d5fc2e",
+      "name": "test_native_enqueue_stamp_precedes_backend_admission",
+      "parameters": {},
+      "previous_function_sha256": "94f52526717208dc0052eb540d201f273c7268c6f9c95418e1348481fdebc5a2",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "611182a7baacf81508ce28964d1b8827216440d4fc4c630fa8457884faebc452",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_every_call_is_logged_and_summed",
+      "definition_ast_sha256": "7c58fa46b906bf13c6f80d79409c5fb4595cc454251c90111429dd610f9d1d13",
+      "name": "test_every_call_is_logged_and_summed",
+      "parameters": {},
+      "previous_function_sha256": "4430f00af3f5a4d93387d2497c054d3ce5a1bdd6e2bb9ad7468ea192748a7b8c",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "2f2f125c95a81c723a813367672630c6936fe52b7ae98605618e4e88f99120c6",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_absent_telemetry_is_none_not_zero",
+      "definition_ast_sha256": "cbdb1a65beb4e13cde7729659564dd6dbadc207e01741fbe22b60aa7ca88ccd7",
+      "name": "test_absent_telemetry_is_none_not_zero",
+      "parameters": {},
+      "previous_function_sha256": "b13fed18beb4649146facbc54de500c2b493235e5aa978f60d22e9be8d3894e1",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "564829be3c47abc6f1231a607210c6f1c7e8e5d29d395fa2117703ff7258b026",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_prompt_n_needs_both_prompt_and_cache",
+      "definition_ast_sha256": "d399af04b6cbd04961c70c27685d21365942160b7a2abc1060ede16e216aade1",
+      "name": "test_prompt_n_needs_both_prompt_and_cache",
+      "parameters": {},
+      "previous_function_sha256": "84831722cebd31e167b0f6d1de7d2118557b14411fcb9ff636f1fab4d0d69790",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "661c83e12451305950bcfe4317cc680c31b2bb014cec8ebb850be2ff2b9744a9",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "definition_ast_sha256": "38d68ed48aff617afd02e903e5180d0a12019425910840391908617bb6dedf25",
+      "name": "test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "parameters": {},
+      "previous_function_sha256": "58fd5969eff705d92d6c079ecf68db7358cfe518e85e9c8164672085b7e3ffc5",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "fcfc8648e96a1cc2834eb7e068fa8693d9288a033535baedaa437f8677f252b6",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_malformed_direct_server_timings_remain_unknown",
+      "definition_ast_sha256": "1e294629e79b3d7c5b7f4fbe3b28d12836416943fb6dae2121f201b675755746",
+      "name": "test_malformed_direct_server_timings_remain_unknown",
+      "parameters": {},
+      "previous_function_sha256": "72b9b97486db912f74b15a68398a0d44b79c52a9eef6eab91c64604bfaba82e6",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "ffe78ac75351a3051c894cdd46e464e015f67256e1ec7590b244cf2c7281c0f1",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "definition_ast_sha256": "5d967a32d7573cf1bedc2c316aeb4a09d6aec14bd08eb29da00a4d8ec9e6097d",
+      "name": "test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "parameters": {},
+      "previous_function_sha256": "0e54a9e2851c7ded4386c0068463504594765c1bdbc1ed884104dc45650c0638",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "32f47dc19cd2f6e0e58967bc861aa393101ba16ce9debb19209982837dd4050c",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_oversized_raw_integer_does_not_break_call_recording",
+      "definition_ast_sha256": "d106df45fbf634e417e51bf78fa15bb31f7ee84f2f1591f3efeac75b131cb46a",
+      "name": "test_oversized_raw_integer_does_not_break_call_recording",
+      "parameters": {},
+      "previous_function_sha256": "753e6926125028168109a7a3b70facaeb37b0eaea0c5409307a13bae63fdd1e8",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "1779aab8d61177d9f4e5cc6457f7c3f1b9002f6265584192fb6985f76f2dc0f9",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_wrapper_is_removed_and_class_method_restored",
+      "definition_ast_sha256": "39374729702956ec364fd755741c1a3668796e0f2cc4ac4647f95a551649384c",
+      "name": "test_wrapper_is_removed_and_class_method_restored",
+      "parameters": {},
+      "previous_function_sha256": "131699c59d03dcadf9a85160d90107ed80a6bbd34beb78541ecd80b8242c0433",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "01358dc559764659161818049ed313a777de29cd1ebfa42bc15abf80bbb75422",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_preexisting_instance_attribute_is_restored",
+      "definition_ast_sha256": "517a83e768caa41e6112d7777fb89bc4d275a4c1451f57343bb3de4853de221c",
+      "name": "test_preexisting_instance_attribute_is_restored",
+      "parameters": {},
+      "previous_function_sha256": "38f9cbf503ec1a205d687f0dee13731bc31288998e396bce20d008e24f4eb65c",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "b9d3e9abc4964eb6f97890ed3de147843c431dcfb05c30aa22bd3ce06c83cd4f",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_raising_call_is_logged_and_propagates",
+      "definition_ast_sha256": "8589c0b05351555ef34f4f922aebf8fdbae865767e26f2835269c239cc7925e7",
+      "name": "test_raising_call_is_logged_and_propagates",
+      "parameters": {},
+      "previous_function_sha256": "89c63143b26a5a6178da3481ec7f9bcfd4db3193c83370d24c6f745ba2d69b93",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "0ef05157b25caa031a627b33f46f9f883df26e1ed8fcb279c0e48062c9891731",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_per_call_safe_getter_wins",
+      "definition_ast_sha256": "a6dd4b3c2ff0eeb0297fe9b6caa1e776c302eab9353d7d0a7802d10553fba3ae",
+      "name": "test_per_call_safe_getter_wins",
+      "parameters": {},
+      "previous_function_sha256": "cb6d700218ac9321701ecc3ed0b49a65d6139c556494bf5a33cb37a231c02840",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "4b09aa87c0822aca11fd95e14eb6d8390e7a17ab6d193a8620cbed9bc8549cdd",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_object_without_llm_call_yields_empty_log",
+      "definition_ast_sha256": "4a7d347931bddc24b13cb9b6dc80616b08bc0073f581906874c4ff89baa65051",
+      "name": "test_object_without_llm_call_yields_empty_log",
+      "parameters": {},
+      "previous_function_sha256": "8a890bca04de6c564242cac33a465a0861312b60121582199b91f047f9c255d3",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "58b7dd3a777aa205032157f3b9a0fec99006a17a7f64cd0e7f9258748470945d",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_parses_role_url_pairs",
+      "definition_ast_sha256": "1a25988f99f1cf462e283261d96596e93b4e7031ee7846315b52b55b056d4c83",
+      "name": "test_parses_role_url_pairs",
+      "parameters": {},
+      "previous_function_sha256": "080429ab0be9adc5e9f36bc8efec02d97e400a4c6aa22a67e4afe62c8f4fcbc0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "a66f86964fad45c32746fef5699a752797e1664be0ff37008d9d356e90c39e1e",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_empty_is_empty",
+      "definition_ast_sha256": "b8700f977068a7edf01d21573a69217779ee0f958a588611290216d2490b6e1c",
+      "name": "test_empty_is_empty",
+      "parameters": {},
+      "previous_function_sha256": "3c7624af0a73a7bc1cff85f1c49baa66554e71251c3a05c2a2892bc82478ee3a",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "20633971b743c0c2df967e7537096d3774e641ecc37fe56821ead77758f7d73d",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "definition_ast_sha256": "369cae920feaed1fab5f04986a1fc8bf5877ab488de875055bf126147ef263e9",
+      "name": "test_malformed_items_are_rejected[frontdoor]",
+      "parameters": {
+        "item": "frontdoor"
+      },
+      "previous_function_sha256": "d3e8386697e1578e3b37f699518e0c0f74083c2c1a09b9e7e41908ca86ac35a0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "20633971b743c0c2df967e7537096d3774e641ecc37fe56821ead77758f7d73d",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "definition_ast_sha256": "369cae920feaed1fab5f04986a1fc8bf5877ab488de875055bf126147ef263e9",
+      "name": "test_malformed_items_are_rejected[=http://x]",
+      "parameters": {
+        "item": "=http://x"
+      },
+      "previous_function_sha256": "d3e8386697e1578e3b37f699518e0c0f74083c2c1a09b9e7e41908ca86ac35a0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "20633971b743c0c2df967e7537096d3774e641ecc37fe56821ead77758f7d73d",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "definition_ast_sha256": "369cae920feaed1fab5f04986a1fc8bf5877ab488de875055bf126147ef263e9",
+      "name": "test_malformed_items_are_rejected[frontdoor=]",
+      "parameters": {
+        "item": "frontdoor="
+      },
+      "previous_function_sha256": "d3e8386697e1578e3b37f699518e0c0f74083c2c1a09b9e7e41908ca86ac35a0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "20633971b743c0c2df967e7537096d3774e641ecc37fe56821ead77758f7d73d",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "definition_ast_sha256": "369cae920feaed1fab5f04986a1fc8bf5877ab488de875055bf126147ef263e9",
+      "name": "test_malformed_items_are_rejected[frontdoor=127.0.0.1:8199]",
+      "parameters": {
+        "item": "frontdoor=127.0.0.1:8199"
+      },
+      "previous_function_sha256": "d3e8386697e1578e3b37f699518e0c0f74083c2c1a09b9e7e41908ca86ac35a0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "6c4a4daa803b6f55e170697c142bfa1fc3119c15e20d1e73865d2e6b81c7939b",
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_conflicting_duplicate_is_rejected",
+      "definition_ast_sha256": "84bf4ff4a20ada6c5790837cb53971a2fe189dbc1f41cd3cae4b091079bf637e",
+      "name": "test_conflicting_duplicate_is_rejected",
+      "parameters": {},
+      "previous_function_sha256": "d4d5ebdc0b40a226a8ae350ed8ad81ee21d2773582117c913dbe43063e393f89",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    }
+  ],
+  "dynamic_pytest_generation_hooks": [],
+  "in_module_and_conftest_fixtures": [
+    {
+      "autouse": false,
+      "body_ast_sha256": "c92c62d6ce94218930120a20e8abe6d8e30b2134513838675ffbdd843c329849",
+      "classname": "tests.unit.test_llama_server",
+      "definition_ast_sha256": "0898c50706a6524ae38202f16509589f53ec64ec0465c653958bb196c6788bc6",
+      "name": "role_config",
+      "scope": null,
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "6a445f716976804be74e5e2f60eafe7489942c05a2a14dda8d664a2819b16f66",
+      "classname": "tests.unit.test_llama_server",
+      "definition_ast_sha256": "df39f3181101121a646b6f9f8f5a9e95c5312c59611a9921e28b16d0d0ff23b3",
+      "name": "server_config",
+      "scope": null,
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "acea94b8fda9a070fb0bbdf227cd0036d3408ab1d82c818e0e2ac12bec3f1cae",
+      "classname": "tests.unit.test_inference_mixin",
+      "definition_ast_sha256": "722427efe1fc962b14e2a6ade1c8df973a24716c0d0f1968970e4b32aa15c0fa",
+      "name": "mock_backend",
+      "scope": null,
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "78e60d779975fbf86abc82d1e32a4eddb506f635b80af3a4d2abf3124fda2cf7",
+      "classname": "tests.unit.test_inference_mixin",
+      "definition_ast_sha256": "5bcf566c6cd6d9a908a8c8bf9d2a4ab1d5fb4fb1fec24341d1e3a3eb145c3b49",
+      "name": "mock_model_server",
+      "scope": null,
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "f15cfc3492ee099e5482f1c8df68c96d8edab8095f0e4b763558198675cf23d6",
+      "classname": "tests.unit.test_inference_mixin",
+      "definition_ast_sha256": "25a6bdbc0af5691ff4ed4d5102206e768a5187afe832e8aba43d63273fb8ff5b",
+      "name": "mock_health_tracker",
+      "scope": null,
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "ec1e4868203d4ceefd3a88f249dbedd096336fae184eca84e1ac3721bebaa73a",
+      "classname": "tests.unit.test_inference_mixin",
+      "definition_ast_sha256": "98198387c257698143de0d2493cea354ebdf548f83755d4278eed15e55962120",
+      "name": "writable_tmp_dir",
+      "scope": null,
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "bb1e20f6e5c91cf55d0bd6c880e39eecbf62b867769f836eefe944b2bcee8bb9",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "f4cb792f0f1544dddc166a3f3b53d36fe3fa5beb0235978195ae706fc4ad3100",
+      "name": "_restore_progress_log_override_after_suite",
+      "scope": "session",
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "24793e3ca6b062660f5b85e39b12c694799973261dd2efb0a77aa9f011851cef",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "c391c506fe106cf72bc2c16060bf39b7c98a92426c832cca7a980f0c742c0956",
+      "name": "_pin_runtime_feature_flags",
+      "scope": "session",
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "8aab6bb4cbe4c7c6b5efc239a03a9c4d5ea6faa0035ab279d7b974ac1829ee74",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "fc7829af5c51cad1e2b2db70a8d28f74242dd2d5c99f20ec0e63b73d99f7a2b2",
+      "name": "_disable_kb_rag_query_length_log",
+      "scope": "session",
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "61c8c0697191d298c366b5a3b15a5fd4ff4c50f35961f73696ff4300cebed746",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "26a2386ecb13e9e2b7d2385ad123bc5c16e594cdcc7576b117429e69818eb11f",
+      "name": "_disable_serving_calls_log",
+      "scope": "session",
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "b39cfd1d7a82c8f96ad261a2bc1f07fac19890b46a8992badb4fb2ba6982a277",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "88578b4e0451040659ebe02920e93fd1f85ce41787b979ae257b65bf1f58db4f",
+      "name": "_disable_live_gpu_window",
+      "scope": "session",
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "c894c1e500f6675041ea179c8df2c76c3431761d8ff7aa8212f497b7af348755",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "10caa40ab3318bbd2abb55a1db634fc904ee4344224640a123995b01fbf97639",
+      "name": "_disable_live_context_limit_reads",
+      "scope": "session",
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "43f9232a7f4355f424e295844f3baacb5c31dde5c024c26711bbf9a84016f412",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "30628484252f06703b2324ee9652b219d1376db93a6b21ea96590de271de357c",
+      "name": "_reset_context_limit_resolver",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "9113865dd0dd94d9a9aa24e51ba5380ab43eab4b02646c0d82cc3e1581c5bec7",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "a57fb77cacddeef666b4929cf921ce3878e3b1e954ddddce832fc11e0804d4cf",
+      "name": "_hermetic_long_prefill_lease",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "cde9a369731fbdffb4ab0c25437c0a180184830dc5691447f048ce1ea7a240ec",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "3db7189e15219707775c6d0b874848a66350afbbef9ff1e6c700507cfafa6f1c",
+      "name": "_reset_prefix_history",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "4e68f8a923de2c428f588ebe4bb0fb962619299c53615311b15e3b4f2eb502b5",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "fb1131c41b908cd783c4945778fb8fd7663e2f1f1c9068c1f3d58dc6c32209b5",
+      "name": "_reset_config_between_tests",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "0e68fd9aa4b3dd50f32d4e608d1c3d6ea624641ae31ec7029f04c9016ab714d4",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "1503dd0dac8fdd2d0b83368a5842e921a1938fa948fb458bc924b1b32266bfc5",
+      "name": "mock_registry",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "7d1445e631a9de1a50780975bfee8be33682175e76c4d61886f581db823091d0",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "089ba82c33436b4ad11586f9268eb00d264d67b0033e8b30dce5fe80dd798495",
+      "name": "mock_app_state",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "80560cc9e9820965918720ba2648257519469039aa2dc932c11e8369ca5e24b0",
+      "classname": "tests.conftest",
+      "definition_ast_sha256": "c957546b7948df28113c1ecf22b1e400a39865ed8b0172a27f8a4505123b8079",
+      "name": "mock_llm_primitives",
+      "scope": null,
+      "source_path": "tests/conftest.py"
+    },
+    {
+      "autouse": false,
+      "body_ast_sha256": "285c7b59374493cafb8aee53955c619ed74ff49de86bc67330da62ad57d731e1",
+      "classname": "tests.unit.conftest",
+      "definition_ast_sha256": "8fe316d8e64cab708146aaf679e45c354c5ab998d6b008acab34c0054addd398",
+      "name": "_hermetic_inference_tap_dir",
+      "scope": "session",
+      "source_path": "tests/unit/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "8cba4765186b35411b8f9bd7f10251c51d8034816738774fd124bee62d64ba0e",
+      "classname": "tests.unit.conftest",
+      "definition_ast_sha256": "1de4a757dc789f38716ed50798c7064a5683af17a72d3245c001d4cf93caf626",
+      "name": "_hermetic_inference_tap",
+      "scope": null,
+      "source_path": "tests/unit/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "7870b03ff0265f77ba0d6694837502810c6caf9b4b8ff345d8615309ede61e53",
+      "classname": "tests.unit.conftest",
+      "definition_ast_sha256": "d8a427fc48419b83327e6f1021bc4db64da718050f4b934f56131337972f334b",
+      "name": "_hermetic_kv_slot_io",
+      "scope": null,
+      "source_path": "tests/unit/conftest.py"
+    },
+    {
+      "autouse": true,
+      "body_ast_sha256": "dabbc854dd910e4e8f9c23ea227eb10e7ba6bd9c773a7659d17a9dbf2538e33c",
+      "classname": "tests.unit.conftest",
+      "definition_ast_sha256": "0f50417126325921b050df925cb015b57a84b97ad71eae425085eec3bdd16635",
+      "name": "_hermetic_inference_lock_and_contention_gate",
+      "scope": null,
+      "source_path": "tests/unit/conftest.py"
+    }
+  ],
+  "native_case_count_claim": null,
+  "original_119_ast_definitions": [
+    {
+      "body_ast_sha256": "fb2ebac3b805c343085992c22163cf0afd49787548620ac73596dc2dabe155ed",
+      "class": "TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_defaults",
+      "definition_ast_sha256": "885403e11586fd5fc944ca0c0a123e9284635b3ba4d4f72f9447f642f33a0048",
+      "function": "test_config_creation_with_defaults",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "05c9446db01559e15dd3cdb7a716b4a70aa3584fc49fe5b4a1ee3b1107237247",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "b516b3146a56ee2f7838eed0b45fcb3852c54ca7c81fe62b180b7e190470ffae",
+      "class": "TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_overrides",
+      "definition_ast_sha256": "e4c22f5d3c58f7f30fbce95296dcace7ca2abc6f8375b675d66495f1ed651f7d",
+      "function": "test_config_creation_with_overrides",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "c0dacb9895b86d81fd3216effec0b59afcfb1cec94787d3765caddcadf355915",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "a0a8709d734a326ae40568b9df3c21bbb9d65d5e480fdd01c8235d8e83f833d6",
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_calculation",
+      "definition_ast_sha256": "444bfab84ee24a91df6220620ff1d8c0b6eaf3abf74163781bd71cd3d6d1c005",
+      "function": "test_hit_rate_calculation",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "4693f1c2968e90a16bb7d3fec6cddc5aa5d52f3bce0ddf2bf0a97fb9ab486972",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d816001b7daf6b5b109b517ccc46348dbc766761dacdcc58bea4136c47bc97df",
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_zero_requests",
+      "definition_ast_sha256": "cfb045ba13d043c84a3487b989fdb55730da1dd437e94c783addae3256770f13",
+      "function": "test_hit_rate_zero_requests",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "f278306eebd7968b62e4e4b9c9c7470345e257f2b5eb71bbb53e8679e4a6d0c1",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "902bd2f6d1809cc4bbcf080c7d41f6d46e478b465afc7bece033a3357587af58",
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_rate",
+      "definition_ast_sha256": "07ead8c22f815e306b798a85f042d505adacf3b360649731dc92e19ffbb49f33",
+      "function": "test_token_savings_rate",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "7ae5312984a47a24cd7bcddcea10ecafc4279f793433450880fc73af87215ebe",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "8d0b056ab3bbe3b1a78c10e7046eace0bfe9c0b9015a674d81edee72de87bbdd",
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_zero_tokens",
+      "definition_ast_sha256": "52d312e56a6e2e19cdb94b3ab584ec18edb57795b39db8d1797d978d87b7bd83",
+      "function": "test_token_savings_zero_tokens",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "d3c4ca8a853427d520e241ce8b6e62eb8e309eae9fbebc7d396b044e16587b4b",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f57d1a852950f8984d873fd25d2df7958ad9dad46613f33abc9a6c8e5f63ef1c",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_config",
+      "definition_ast_sha256": "dc8bbd456078e8f08208eacb53a9ef0e4beaa4c32e3c14cb7cd693deff4a693b",
+      "function": "test_initialization_with_config",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "b5229136fd644a42076574d384343aadda5f10608e6acddbba903b02ab8869c8",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d1d89f5566e9e6db13685eafd34f31b8c3153bbf45905dff21cd8016d5ec514b",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_base_url",
+      "definition_ast_sha256": "4694eecfbe0ef75095ad4297021d655d04fe89d2eec2cfacdd14529bda28144d",
+      "function": "test_initialization_with_base_url",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "138a8be9e459d6117999e896c15fdf9308201d54b829337300933c4d5b4cb5fe",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "2daf11cae8497d56c7989e38b39ac189ad8c4ed1189e15690f5999ac75fbdc20",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_minimal",
+      "definition_ast_sha256": "d24da5c4e08b18e3529e778b102767aa41511133086a79d92f9c8bf0fd57e9ec",
+      "function": "test_build_payload_minimal",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "86f8eddd89b0906c46e4ac887ef864399177055ba8960e57f28c5adb6b02c944",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "40cadd971b05c6fc7f775b995f12c382becb77c94688b6a03aa81408c9548a6c",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_with_stop_sequences",
+      "definition_ast_sha256": "0207b7c8b05097972dc17758935e36faab35a35f1b1d8bbb06bf9e062b755111",
+      "function": "test_build_payload_with_stop_sequences",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "f56f67a58c1cabe57d0159ad89d5eb591ad7e091aa705c1cc4a1afca778dd8a2",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f1cce9576b0a0621899b5f3141a9b80471d84d8a88a33c91c21e0c276805b3fb",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_cache_prompt_override",
+      "definition_ast_sha256": "a9e7f78cb55713bd7e175ab599a0bb280b3d2946e3266f3e6bc146c00dc810f3",
+      "function": "test_build_payload_cache_prompt_override",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "5fbb017f7177483320f3b8aefac155cc7d0506e75a5be34c4a812cbc5b823b01",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "3b342c11c9c16c949984ceeb27d714fe098b564b2b557584a7bf8586e14d8ae7",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_role",
+      "definition_ast_sha256": "d5b87496252df207d080cc6d1255942c611419170ec53444cc310287fce146bc",
+      "function": "test_build_payload_temperature_from_role",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "68f4d900c83829fb23a161ef930aff5ea90f16e1fd9ea4443fb6d47de3cb165d",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "a471e3d80da04eb879c755ceb41d6f06865a8ecaaa2652b8b78c8b12a8c08fd7",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_generation_defaults",
+      "definition_ast_sha256": "0dfa5a559d244b30ee734b92b1db68515e2d8fefb51397bff88e69a0b168f15f",
+      "function": "test_build_payload_temperature_from_generation_defaults",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "0adf1a47ab9021491be773a727631683266035c71f2082d456a7623946e9326f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "74517129f0c790b2df30b875aeb9a48cbb88725c02252c653b4cd737dc99cdb8",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_explicit_temperature_overrides_registry",
+      "definition_ast_sha256": "1c56c7e95b0265a9106ea57770f892362c6357c91c17ffcf945cb24ce282b37e",
+      "function": "test_build_payload_explicit_temperature_overrides_registry",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "a9c21df14312bef6f5d30668c9261bd68e68bc1d518a034052da5cab35dd9700",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "1605570b505011d76dec3c0f92ea711d41111bacf436ae0e47a5bfa585311877",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "definition_ast_sha256": "a9de59c2e83505050943da63bf429cba87e88fd716121f2f903a4a68cd6e7a75",
+      "function": "test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "1a70ef9d927d7b967db0f01021a18f8b52a5df542907e2328b29211639102bc0",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "994c732a79ab25cc9f56bb506ca7ff48baa9b151d7e9a3e18bc314bb0b7b85e5",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "definition_ast_sha256": "f9272eacde8abdb55bdaa7dbde72556e4f413d38623c341f7f74376872ad7442",
+      "function": "test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "ed70cb965a8b7eb0e729dccddc0fd0114f80566876844ede726351ff09d0d70f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "58cf4315a4cc16fc559c39ee44e6e9371cbc6bc94d7a2d7536ee2a47b40ad3a8",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_omits_logit_probe_probs_when_disabled",
+      "definition_ast_sha256": "67de6c9c65e4afb939447c21566e83d06e10538a857d456fbdf57149580ce29c",
+      "function": "test_build_payload_omits_logit_probe_probs_when_disabled",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "3342cf3ca556bd09016bca669af464aecd17e4c1ae308fb34b271e0d242561d1",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "4a8f66719f0296919b53f0b12011e5166dff7898087e13e7d53ed99e7a82ce03",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_honors_explicit_n_probs",
+      "definition_ast_sha256": "548adfe00daac97922f1061b3ac8e645db4cfed5f76ead8b69047817bb3aa7fb",
+      "function": "test_build_payload_honors_explicit_n_probs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "b7697f5f282d26306cac1c5e82ab6305c8f83d524252fe4beb17ad4550c31f87",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "0fd98bf6294a1440e0d94589a1f9eea488900c2ddc4c16b74b76f2b20a7944cc",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_forwards_post_sampling_probs",
+      "definition_ast_sha256": "c6e62f8c23b6bd6b857fce4841532fdb1ae2b4ee532f9e8e3789cb0ac7167fe9",
+      "function": "test_build_payload_forwards_post_sampling_probs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "350e5ae70ad62b7ab2733df6ad10b9f2e4d89f76bf0512b967dfd3894af28722",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "a7a0815174289bd2112a49d29b40d301ecb44f704fd78db6dc1a58690d8f2312",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_success",
+      "definition_ast_sha256": "fe008bff43969acb6d18c7b18d64a621d6f48b5b2e88ce3beb8db42340a0a66a",
+      "function": "test_infer_success",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "09730a46a4a20ad38f31b677ef717f2ac3161d89088ac68eab3ab66a40dfe2bb",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "b10bbf5a90b750332240ac360036ffead33432f2da7be0e2efc5e9ee3fed9faf",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "definition_ast_sha256": "17fccb65dd13d490f93dd53b85d54edf544c7b32fe8c135f6087bec4423a80bb",
+      "function": "test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "917df41756e73d8f39d9ce2983cbaac7ed89214b2141ac936a521e82e2dfd518",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "202d93bc7c1b2a6b485d9349c6dab33bdb9b50dcdb098b04289a80cc3713c774",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_returns_completion_probabilities_when_present",
+      "definition_ast_sha256": "4779fbb76130305c44546bc4147d74b49611e3f99f920307d9b5ed1b25c34c00",
+      "function": "test_infer_returns_completion_probabilities_when_present",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "a0645f5662bed32609939623ec98a3d7528bab125eaae5847a8b8b5ad9fc7517",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d8a50e3f112c83ef27939496365058351cd55392f3a781368f8f954ba4b4041a",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "definition_ast_sha256": "28b185e322bc6626869894bd3f26b8d39db21ce326a1c059104489d8f984aed2",
+      "function": "test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "7de80f17a40c35ce3ca13d21dd312863b4e179c84eb29af859cbda9ed886cf36",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "d886e685263babb5baef431bdf64769cba4ca7a970284a47596dd9ae9614225f",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_empty_long_generation_is_failure",
+      "definition_ast_sha256": "545afc25f0cc40e4c5cf5863146a1e5537ab18dcb8105d9a52195c97a5818183",
+      "function": "test_infer_empty_long_generation_is_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "525cc1c08810055bbeffdefc4f1b2388625e2626c038901dc98097bcac636917",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "3eee26549ec6a885c055420434cc48f18d7527e5546ebba9c22f535f0da11920",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_timeout",
+      "definition_ast_sha256": "9b0f2f4856c1fcc66653ec04d306327ff272bb63dbcb96efc1b0bf846a728682",
+      "function": "test_infer_timeout",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "33467ac11e435224f334c625eadbc01742ba7754f7384b50ce01925c853111cc",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "6826981f8c9aa9715f77f410a5b4790989677944ccea4b07948e4d45930eecbe",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_error",
+      "definition_ast_sha256": "780ef22b53980540f2e20dcb340f14cb4bfd83dedcb3bbffc456b5e22c0d9f05",
+      "function": "test_infer_http_error",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "98ecd33d8006954fa4d145cce770f57264bf2775c76199361b9d6b1d0c359f48",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "e10aaf5c8e0e003730152cbc1a72b9335bcf32934d418dc05153f5a98db1a1e5",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_status_error_returns_structured_failure",
+      "definition_ast_sha256": "6494cc09d37bc67a94c7546c7015337818879901d8821af860893cbdfb0b36d8",
+      "function": "test_infer_http_status_error_returns_structured_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "6ea948a5713fbe0daa26f28823f378b5c9714526394f65d573bb254003d84e18",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "04846d3034de616314ba870f86d8ae7910935cfef280cffaa60df14772b153b9",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "definition_ast_sha256": "c824d9bda169c81895202c39eca5040f228a853af2618771f336db067d6323c4",
+      "function": "test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "c1472bd522a2db83e1734e71d1cd6b2520234047e23a91e058565564cd265c57",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "ba7f9bbe3e8adede478151dc31a8308ce9cbc4da40e3142bdd58154c0ff23d7e",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_read_timeout_covers_full_budget",
+      "definition_ast_sha256": "acdcc0f281ab37e065b200877fc7722231dc82ca6d327aba90c7dfebdc03d37f",
+      "function": "test_infer_stream_text_read_timeout_covers_full_budget",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "cd88dfa68ef2fdd91721e9f1ece0aeb58201281f3734a9509afb676723e218f0",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "54c69a133864ccd004a9bb751fef653eb0a5343f2a4668fd4adb450206cb23a8",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_empty_long_generation_is_failure",
+      "definition_ast_sha256": "3b1d961995568d9edd2876c0b72b347fe86a4dab312f7b98f359a9bef85a560f",
+      "function": "test_infer_stream_text_empty_long_generation_is_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "b1a37b5604fe4a2f937ba9feebcc25d851493a7834e2eaa16e48fa66e4684ea6",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "35e880141eb7cf1b3b05c6b76c89c9ceff822043b710dd32d547c41db60b0e85",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "definition_ast_sha256": "164dfd24363f02e74bec442e1eca3de1a814c58af4b89256ac064aea36618800",
+      "function": "test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "449bb077958c143820965e9d1aba0dd5d49433d306f44f6cc72c2a2ec9c5083d",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "26f9566d24c1e257fe30c2b85f1343db8b563682781592463829a29dade63da2",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_token_estimate_respects_request_cap",
+      "definition_ast_sha256": "78bcc40edb225ae0e731a8b150f803de84a5428bd3b8df81a360e7933ede7241",
+      "function": "test_chat_completions_stream_token_estimate_respects_request_cap",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "a5c6631aa6dc5211b4d09dc3176110d4e9fd137c20ece54d82f9523f4a1bf86f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "9258c54ed433552dff4986e951ee4cac25c6493b8263fb10797ec61689c6f245",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_success",
+      "definition_ast_sha256": "fed59cbc0be134c797fd8aae396e410670132a2a26c6c09980683b0de0d65c9d",
+      "function": "test_health_check_success",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "991a659fe55c910d8b25e9861840777bbea129a5a18b21ce0c1e47a692f24bc5",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f78465403fdce0b5fe4dc19140eeddedc17c7324bfedc93a533cc604e084d332",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_failure",
+      "definition_ast_sha256": "8b692df8fb4188de399fb219cbcddb4be0eb0db2712cc4a3bcd0eb980f391d64",
+      "function": "test_health_check_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "4e7dac19cce69fcf7d92a0d0b758fa9716b96470a573e0359e7c13300aa019d3",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "2289517bb6c366316aa14faa89d4ffdbf0a06d6b78e2b64ccc7724ed9b4671b1",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_rate_limiting",
+      "definition_ast_sha256": "01a61d1703226ecd33842881f2c7bf6455453d57c46012001f8ecc2ea788d8f9",
+      "function": "test_health_check_rate_limiting",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "79d1f259c53630efd05c21539706a479c37cb21ab46c166cd3484b428d2a0622",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "e5f7b71645fcce545a903d76e7be2eb4d629d55079dc4cc46eba403a6c3fd842",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots",
+      "definition_ast_sha256": "e49ef6afa7eff963a2ee575a671c73261bf50df7662d7cf5a89a64a8be7555e3",
+      "function": "test_get_slots",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "b10486ddfd418b54f2ff1133398b2c05beed98adea06721b3ebcab4c6e8c0c63",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "245a1b45610ff56ab983c15511a5db2bccac2e3ebf45d39460f4515867a1d63f",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots_legacy_field_fallback",
+      "definition_ast_sha256": "c7a6c9b9752fe50ee9e09ede99deb3ede15055fbf0f13340646f8e67fa1a04ec",
+      "function": "test_get_slots_legacy_field_fallback",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "9e9e874d6c78854d010fccb29ee41aca643d50b547af3215d38b7822ba1e61e6",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "7faa75a421a9aee864c48a42c6ad9b0837188313222b9d39ddf05a9a44c5800f",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_success",
+      "definition_ast_sha256": "f24966c24ee2d67edf43419454da4f1f0aa13230574fa7a6b8034be05237bc54",
+      "function": "test_save_slot_success",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "504f3b91b13ece4f1f1e42fc024b7f92c03141f9face7d98c13d97a640751c24",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "5a15829ab7feba53d773b2ec8dbf20d87f7be5943cfc58d7bfd49a5b7af9883e",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_failure",
+      "definition_ast_sha256": "4472bb302d446faa7073eb901b4d014ce385eecc8ba190e8b2f97e23fe5e170a",
+      "function": "test_save_slot_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "921d98ee416b677ef1603c029c1863c87611e92f31970705226811e5242e3afe",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "008deaf23740bca02024acab83bba843799145550fb35f47a681636ac078f114",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_load_raises_error_on_unhealthy_server",
+      "definition_ast_sha256": "d99674179384b820c5225f5868f24e406cf10cf3ef91f01a2757f87b5262f5ed",
+      "function": "test_load_raises_error_on_unhealthy_server",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "eed7cef4b569b23eeabda69dd7ce3bb99ed314807d7411587926780438895a6d",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "1ff5df0a6e5116f7dedd4d3e5da9b8ebe51e8d63567b2e97c274b83fdd521ec6",
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_unload_always_succeeds",
+      "definition_ast_sha256": "6be45e008601abdd00e57f08a89fa6e44623bc9b64fc63a1eab2997fdf1eb7ea",
+      "function": "test_unload_always_succeeds",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "2c1373390a56eb0496c790d2c77d067d40504275830573a2ee9186e5b8431565",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "7754e46845d8ed0c2fb9d874bb73969a25d032a0cbd6b665461b76b54fba595c",
+      "class": "TestEarlyStopTiming",
+      "definition": "TestEarlyStopTiming.test_early_stop_produces_timing",
+      "definition_ast_sha256": "01f54f2bc3cd906047ed61766217138299dbd10021a0d8da667080530a7c0d05",
+      "function": "test_early_stop_produces_timing",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "f33c67ecdf5b182a81e489e5bc64d09024561466782d8fbac8be098b32a4980f",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "bd90c456d92f756e49f09af29252a039022196696587cbc68d6ab3f0bea28afd",
+      "class": "TestCompletionStreamPrefillTimings",
+      "definition": "TestCompletionStreamPrefillTimings.test_stream_carries_server_prefill_counts_including_zero_cache",
+      "definition_ast_sha256": "3483e75248bcf2e2dee1d6e874a39c941078858b52e543098aa9e651859fc887",
+      "function": "test_stream_carries_server_prefill_counts_including_zero_cache",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "fc5537d692fe93bf04b54a122a5395d11ce3e118a626b9ed14bb6e7c23fbcb25",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "7dec18df29a1c1413c1e67671ba052861b9e8c4641133e6076befcd284f76108",
+      "class": "TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_n_probs_translates_to_openai_logprobs_params",
+      "definition_ast_sha256": "a662d344807ba5aca094336f1016a2a2c71e7ab87896e89aacfe7bf3f774741b",
+      "function": "test_n_probs_translates_to_openai_logprobs_params",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "398e16f07e40701496b412e433cd01db0826954fa2cead65664f698c942f9af3",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "71e9f5b7032274d5946f66234a70d1e9cca06d8397e32286c64fa579563ea896",
+      "class": "TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_post_sampling_probs_translates_to_openai_chat_params",
+      "definition_ast_sha256": "b373d05d2b180ab9be9568185242c871a2c2fec4b7e98f9cb93879a43c53a9dd",
+      "function": "test_post_sampling_probs_translates_to_openai_chat_params",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "10c4651f84439baa062467459f8493832e8b7f204fe810536bd250fb1c3ad124",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f3ae2ad0cc519814b0a4783dc4dd93d6f9bb5e9721bfda136ff80e1133eb211f",
+      "class": "TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_no_n_probs_leaves_payload_and_result_clean",
+      "definition_ast_sha256": "444e99386bd3bedca0435a0c2bb6d73c8fe5c1b853ef678bda3aaa4d31d1a2d4",
+      "function": "test_no_n_probs_leaves_payload_and_result_clean",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "d142b09e8443ed7af219e0194238ba79f5f7120f63631b9a3884c4c9c176605e",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "de5b7851b24b7da1c7c496566aaf4b87d7e3a3689db80feb2f3b4f4dc3e24cee",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_non_streaming",
+      "definition_ast_sha256": "2508b04e75200a7a0c98652a745f918a50071d292d62acac06366144357c8b55",
+      "function": "test_json_schema_becomes_response_format_non_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "237dc506560817b5e1b8c18068d116e3ff0a880c6cc04adf3796b3a586d1f6f7",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "80752452b0212ac31c6fbd25e8c2cc2bd18c0ac7aed3ca8a0d9927d027d033fd",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_streaming",
+      "definition_ast_sha256": "919d185968ff29848a618b2cc7fa160526349fa78603997d01b48d3a13d7f374",
+      "function": "test_json_schema_becomes_response_format_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "597f4058c4aa683467775e0db76b9c087020a971130177eaa380b400b396cf68",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "39ab8c709d02e3c17c7d0a87c3578928322ca7fa62367773f668f5467dc1e14d",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "definition_ast_sha256": "4102d55f1d39942267755986260eb705722623fd6cb144117a2e8881dde0242e",
+      "function": "test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "0a1b0f56db568b32fdb0a7e500db53626fa43c7dc47421969ca67c528dc574db",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "4397244423a2d0abfc44c401ccef2cfcf453190f1b45fe961cbd24b83f033b94",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_non_streaming",
+      "definition_ast_sha256": "deaa8f857e450a57ca23f7220a86a8f8d4c8e959bc5d7bbe09df543b409fa35c",
+      "function": "test_grammar_forwarded_non_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "0f472fb5c5b6912129b32326813967c8bdedffe432f7c8263adc10ffbe995330",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "5d4618b0f0f117a119d092d33cc2002998a5f9616097c80f094a8a1d8236e5fd",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_streaming",
+      "definition_ast_sha256": "d8f857558b54e0b35d2e8c497df7fe70d8970cd9abdbb3f5fb4f1b186ea9d3dd",
+      "function": "test_grammar_forwarded_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "17f6aa2818f50055251082e030ac5721609bcd8f16ef916db10feb71ba3b48c4",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "2cedcc32c1dcd6dc507ccedd93553cc4814dab66f16d4f0b545a01264427cc9f",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_and_grammar_both_forwarded_independently",
+      "definition_ast_sha256": "c157c49c024f7bfcaa629fbf33a2d393fa208e0a39cb91e9e8faa4a750377cd2",
+      "function": "test_json_schema_and_grammar_both_forwarded_independently",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "36d99677c31079d585317513bda81080c10e3f81737d13f892fe425d257fe7a9",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "132cc9fd40068979fa55af25362003c3a6b1d50c5e437c9800fe615e99eac654",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "definition_ast_sha256": "9f2e0c38ba3fec8b25afca90d580784ed22742d4834b92d286d52d0231ed5f5d",
+      "function": "test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "43cbc42d45226daa352cba7a26f9a4dee50557f501b98460c389e1c5fad9a486",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "c057d3aac8c8d22dd3065c986021afff117e86e270dace3a70ff15a14c123386",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_json_schema_and_grammar_unchanged",
+      "definition_ast_sha256": "e3868aee907a0bff1de77ca50fecf16431638d8cdabfe397a536913def990163",
+      "function": "test_completion_lane_json_schema_and_grammar_unchanged",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "5c8e15b4683ef80f57984531d1cd0c48f89f3c5bfcce44eca83e64682101fa39",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "74040f2fd137ee9dac88baf24a033768e5524a412a28b8dc542174ca41748498",
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_no_schema_unchanged",
+      "definition_ast_sha256": "191d7c16bc3f515660f20fcc4eb1d495b51718bafc907c0df75611f0d6b06934",
+      "function": "test_completion_lane_no_schema_unchanged",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "previous_function_sha256": "477a90df67fb794824233b23a4964581b8cce90d35d44e67bd9d7a8fa8d354f2",
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "body_ast_sha256": "f878ac85ef1441a44d73de9867a6340c7aa5ceaca0d825cb26ec88035e5add25",
+      "class": null,
+      "definition": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "definition_ast_sha256": "f5ab878af7ec7ca23eb5f8b28a3e6682047359e8ddf1972246e555edce53480b",
+      "function": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "7605f30e6c0a0d43b46606647b319cf6f3773b01423b83026f6b182c0d73d2c9",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "dc0e089347b51f6fa24d21ff76cbd83f16b99e0c7dd8b3d695d04c459c29eaa6",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "definition_ast_sha256": "ebe941fd986584071db9b4dcee3c53388238ea4cfa5cf434efaf2dba77f350cd",
+      "function": "test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "c43939d197bbf70fcc9573773fc1f7da88343badc0dd382edaa0060d6cb437d9",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "348e98b7931851d660aae51cc66d7155cf512f4b18fcdb2f297405827400f7b0",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_with_caching_backend",
+      "definition_ast_sha256": "f825540ac1a310dc9726c7a95fc018201a99e2f7e376f48a9be6e847443b0033",
+      "function": "test_real_call_with_caching_backend",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "04d12ab985a4b6796ee368cd4c98477c9a8f4a1ec936a9e58a778a63ae60f8dd",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "bd3368acba031dc7eeffef93b914d2fea742da18db479d42581d379bef2cfb8a",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_gate_denial_has_typed_non_race_provenance",
+      "definition_ast_sha256": "bc5aaa6c7e0c2b4249d7203788fa3714327d1ebf3780aa0931fc693e21e1221d",
+      "function": "test_gate_denial_has_typed_non_race_provenance",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "e0344783d3bd8ac877b9e3d03acdbf2bf20fdfdfc2c9c3d627ec52564b191fda",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e4a015ac858ff2f26a4e366b34b4092f477dccd2d1bb29c301baab86b3e6114b",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_fallback_to_model_server",
+      "definition_ast_sha256": "67aefd01ded79567c89c66474b71ecd4b6f90d9ba3407c647dca6c98c0f3382d",
+      "function": "test_real_call_fallback_to_model_server",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "8fb2de37588c965f07981cf8cb803f90aa8c69828a7356432e61d7d80dc664db",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "28944095defd867ccce6166950101b8b80f39e2e4f416616e5add1974f3e9d34",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "definition_ast_sha256": "948f766c85ef9a97637101545b85e270f38cebfa7dceb3b0aa3ac9474bf20f9c",
+      "function": "test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "f6a1fb6b1c8b10f6afa5d61930e3ce9155cc9e591fa44f94b8ca70101e70c338",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "23aefb6bb7d6e6b5dce35397c7f880b4dddbb5566afbdc942bffff7ec53fe26c",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "definition_ast_sha256": "9465a4bc668850074520393d227fd5472dded9cde8cf8aa7c3b0ab35b5823304",
+      "function": "test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "5aa4cadcf520e63573a67fe9b3a81306f83eb451604f3afb3c260e557845a7e2",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "697bfbbd3398e985218e0140fae360b2e28b31092e309e3f9b5e7307b98ee6e3",
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_no_backend_raises_error",
+      "definition_ast_sha256": "585f116709b2f1336b6a82fe7137a865b3281099a19dc82713428024f91bfe09",
+      "function": "test_real_call_no_backend_raises_error",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "553a82f7327e59d6f32d82b53154dbd99a99c3baa7f3cacf583c0237057eae4e",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "fe1797161962f0cb78995e52302d27b36b2b2802498e5fdb09e6b257f9679d31",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_primary_url_strips_full_marker",
+      "definition_ast_sha256": "d5002dc638e6e73e19b2bcc0e9dc292149635b1e9d80ea1d0fde0c825fb31e51",
+      "function": "test_primary_url_strips_full_marker",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "8bf2e20a9f82b86692df79664e993af892fec0de8005532f5c287a5ce15b3e44",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "4d7e535399e6e63dca320657dcf286d5251956e3282ac4dc1666ad0768eb6826",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_success",
+      "definition_ast_sha256": "dd846511681dfa334c271acf359fc2a75c4b263501bbef3372122b00ae7de179",
+      "function": "test_call_caching_backend_success",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "e8dab9d3e26cf844951268485ab6ab8b7969478962bb01d905f2378fad07ea82",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e9a0e0d7a89be7a9568981c20d9138750c8612f4407810c776a37a59631f828c",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_registry_role_config",
+      "definition_ast_sha256": "12d3847ab1c7871c2f5da820437a2510f328941fc9010c7e220cffa22265127a",
+      "function": "test_call_caching_backend_uses_registry_role_config",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "10108ee7cd3fb8a71718b206f1810661b5f11349471384ec7c95f9a400e06187",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "8b8bdcd71f2123a628d37c7e7b7daca556410b75e370b000e589dce117270f66",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_forwards_sampling_params",
+      "definition_ast_sha256": "7aa34106e8c03fad816bf4becdb2f36f0b253902cf8a301b59f5ba32f037fa3c",
+      "function": "test_call_caching_backend_forwards_sampling_params",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "c8729d32e1a65a255fb45f75e44eecf051876c347d6632043cb8bb9482f762bd",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "d085fcf205ed821a9a6fd92d06d8cedbdbebead014a7d8194dc941574c41dfdc",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_sampling_cache_key_only_includes_explicit_params",
+      "definition_ast_sha256": "511edcd497a4a6883e0b715df1631eb99dc53287cca0b5ee55ef1540e8bff570",
+      "function": "test_sampling_cache_key_only_includes_explicit_params",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "b694427d5ab9dc1b96348f82eb8276ba30aba9830cb9fe26588e3de2fa82a3a2",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "4a797d3513b742b74549c6900ee0d8128abe8f66a8b19baf7df639636f0b50b2",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "definition_ast_sha256": "5c429b1c55c7bca808907865d7e4d8c23c3d66079eccb7c4fc29bfdb9a77b81c",
+      "function": "test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "e218df318e2108ac004b4f8c2ff95f1b906c6d308b3b651ab76679509835dbf8",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "0c7cea6e46a6d3ed786b2b9a2e9971816750098b7c63b35400687dbfbf6c2b42",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "definition_ast_sha256": "cc08855bf70244d542ea196e264a4d2febe717113d438dc35053599093346b6e",
+      "function": "test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "6203a471c2e85c326092c76862c2a4f8fee296518868a9cfe4e922ee67fd2b66",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "8f7e45776d3f21cb7621b416fa1ca6cdbb776246ab21219ad04670a38b254e34",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_circuit_breaker_open",
+      "definition_ast_sha256": "c149e83ee387760cc83bd84fb36366cdf52278f038223b29cf37df1460456736",
+      "function": "test_call_caching_backend_circuit_breaker_open",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "305879a3619a6cb2b3124bd1874f8b9a5254c18c37ba86d112033a67c6786aae",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "af9edc0909ad9c683dc1409acf33ed2bf1969beabef27384c8337205d073ad7b",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_inference_failure",
+      "definition_ast_sha256": "d2644c7a05893e25e6d9d29e395f6462f70a368d82b638be42dca955076bdf83",
+      "function": "test_call_caching_backend_inference_failure",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "82162d232c46f7dbb9a1d5b08da0e1e46172074f6275d8a9748dd3399cae8fe7",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e2960d7dfebf05571fbd81c60beb80024dbddc40929fb042ed2df05545218774",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_with_stop_sequences",
+      "definition_ast_sha256": "6b3ea56b5674c5b2cccdbd3b539f015a7e687229ea1ae98d4b48d493158b4ff3",
+      "function": "test_call_caching_backend_with_stop_sequences",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "584ebda8dcae40dcbf3882d1716f14fe9f8bf5d1f47235c9b42bec71b3dc4212",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "21a45f3e46145acf2d2ab321a3ac482f10836f3eb493ec9726bba4b33a05ae12",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "definition_ast_sha256": "dc8169ba9bbbd394771fefea0913e38ac88ba2bb4d8651c415a9a1ff62ab37ef",
+      "function": "test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "1ced3642d8606969fb3ef4282bec851a44916a7b3188a548e992e8f150c2ecf6",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "78f2613095d58f4f45ea8dca3c8121ddb9130e86e91cb78a722027c1bfd5c0e7",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "definition_ast_sha256": "7e0b1b8f4c0dd3bf966d8ad821d62d9ec2dea772d0d7f56f7a564067b48cedb8",
+      "function": "test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "d2223f173272c9aae59fa215de2fbfa9d61486b3ee508f2a7848a53819922d83",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ef47bf340dfd1044b8a78113224668ea3b39b722bae797e30ae30d25898b39ac",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "definition_ast_sha256": "a6ec14e948492395727af916d3bae52cdcbd51c1465bac74e8797ca9e366a675",
+      "function": "test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "0e28fe79d614b8c764c7ecd8debe9064154fb72865f089189e226e006633cacc",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "9668bac7c65154002aa9386ea33ba957d6de48121731c44580dffba6db7dceb4",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "definition_ast_sha256": "5453ad69a3e798881364e0a55389595cc219ac18b885e3560b571be8a70f8d59",
+      "function": "test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "1a7840dea8c3fa2a440e371f084de4964e776861bcce65bc463d67acd14b4118",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "d5710e1daed42fb343a67653d6b089de1af1de53d731128d99def09038bb340b",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "definition_ast_sha256": "0bf3892c8b9a49497266a6d5b474e27a53c5a7470325e133dc81bf42322f1495",
+      "function": "test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "3ab316c9956fc441b64ba5945efbaf87ba957c5948efc58e76672943cff7c766",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "bc819d15dce28dbe0ee3c3e3f01f0217dc54e0140639df167e45fe48b8b4899f",
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "definition_ast_sha256": "dcec054242a5cea812f2382d94867d0f0ac66b725bcb57b9f70c110df68ba1eb",
+      "function": "test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "aa81197b0e1810667a61c48f41b83ad3a63af20ca47a8c0a554b475edbe4e5ba",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "9dfb85b7d574655395fc53ce26e9690fee166eb385910844b27d457f0ee819ce",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_parallel_execution",
+      "definition_ast_sha256": "716c457cf240f52370501daf929346251a24e67ea6fcfdaf21dff4b70443e2c3",
+      "function": "test_real_batch_parallel_execution",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "0f12fd75a8db28536aadaf834ecdc236de95e6620282c8958a5a53026ccd95b1",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "2d560ee02aefd8062ad687a767f94289962c44fb53a3c63cc4537d59dca520ea",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_handles_errors",
+      "definition_ast_sha256": "4398d308d84071c45568b77749d0b140d8d22d24df64e359a2684bd35d388125",
+      "function": "test_real_batch_handles_errors",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "0eec7cccf100c3f51a14a836de2ddf1dc26b77eb4b5a98e0bd41df4fce421755",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "b0308b6d7bacef9a4d0a20d1e8f291666518cbd9b9044b51edbf0d0e97b83e73",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_no_backend_raises_error",
+      "definition_ast_sha256": "22d3b4d0cc04db8e6373142a2785aa40db49513ecfc27b3fdad15915cd7db00a",
+      "function": "test_real_batch_no_backend_raises_error",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "489d1e97cfd07ad260c7425da4c8ce804dbe6acaa2152d6d99bb022ba24c1c26",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "4679b957957f7cf1ad6f7e0bf5dc50f1c5fb33b4221edb075e1f934dc7ebacf4",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_with_model_server",
+      "definition_ast_sha256": "7ef2a80baf40a17a5f80f99483b7f8900e09fea2849e1b5f5b12277a26ab8b31",
+      "function": "test_real_batch_with_model_server",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "a4a3d20827042cbcb374172fd3d9ee32a13e8a80eeab658e1a662ebd7d757755",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "14df737dbbfebcdb48614c87a3fa17484b48f0f12405b1f26037b1c8f9653bf1",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_json_schema_and_grammar",
+      "definition_ast_sha256": "1eadddf576b38ce47ef1c23c1f152348c9078966b2c198a034f426733d056841",
+      "function": "test_real_batch_forwards_json_schema_and_grammar",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "ef0ee507a2979de41454ff9b5e6b1d20b2e5c7fb1c5e0784797cedf868023f3a",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "d2071118fded7eeca7d19f1259d4ceb6b54e04fb31c98d990693e280e85d5610",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_schema_when_not_provided",
+      "definition_ast_sha256": "75f86450163357ae7ad7d92eaf8fbf53368b6793e707116b92015bb85f987849",
+      "function": "test_real_batch_omits_schema_when_not_provided",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "5246dd32a1c67e7e6a6795daf97bc2202f015fd0fad2a8bc0456491b284fba17",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "2be97c2f0208f135c9b22ab9a3bed17d29edbf6eb7975f6037fa46dc4f5b34bf",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_sequential_path_forwards_json_schema",
+      "definition_ast_sha256": "70e9089586a1df6018b8c89ebc98a33e44d090ef632bfbee48cca8c43b54d433",
+      "function": "test_real_batch_sequential_path_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "31a86c48c8770caa74acee9049722ec44fa8a28d819f46e8413a08e646781a30",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "6939ec06fcb0e7991aabe172dd3f51a45cea21c55b7f0abdd1f2d1a362025b81",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_n_tokens",
+      "definition_ast_sha256": "8df1ad8f6fb5e89b34f81dcda74f5334ce1810ddeff513341119a538320b6ecc",
+      "function": "test_real_batch_forwards_n_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "f4b8ec3c6b96464e96681e9180aedcef2a094209c8101923d908a49e7562d3f9",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "12d3aa32eda83d4389ae38fb47f313c4704898ff4774d23b9b7ed96ff1705251",
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_n_tokens_when_not_provided",
+      "definition_ast_sha256": "45cb512740af4510454f3f7945dc1f098c51af400a3b523374da84c6252a592d",
+      "function": "test_real_batch_omits_n_tokens_when_not_provided",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "ecb0a068b9b55600b38260afc4e39a379a32133c355bfca995fa752763c421d4",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "958dbd0c5d9674df45b82067d6f1e222a9a71685cbd3b063f8fbbb2e3d61261f",
+      "class": "TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_json_schema",
+      "definition_ast_sha256": "537f7ac0574405e3a22cd10f9f5548fd7727557f3825ff433d126b52abffb4a5",
+      "function": "test_fallback_batch_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "013528620ffc006b6b0ba3bdc47cc4b6e50f700584b42c50a0299c9e1bf2393d",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "1494d731ac1a5816197f21f2b46e91f8dd4c790567482d80c7020acf52148b91",
+      "class": "TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_omits_schema_when_not_provided",
+      "definition_ast_sha256": "c1832e7bff24f9f64d809e26635ce8fe2d457a6f379ac12313cff67d557a9c57",
+      "function": "test_fallback_batch_omits_schema_when_not_provided",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "c5f7d71c7448886090ddaded7641d770a187738afd73d44a05342dd8b95640e0",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "214eaedff8597513e72a06b6f234a317a4983cc06c8e58669c3c4a166c633e44",
+      "class": "TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_n_tokens",
+      "definition_ast_sha256": "8dad7add8a75f1bc35af4e4e8734ee494f8d68a1b093c82a88e30e658a092cc5",
+      "function": "test_fallback_batch_forwards_n_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "a92a071056c04237453f222be74ec589cdc53c47ac3bcab95a71a76120623a21",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "16fcb1ecd5b234adb8a05a2a551f2c7cc38fda81a542113ed288c51eb25c52bf",
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_routes_correctly",
+      "definition_ast_sha256": "16168b4ee333eb98ba55de00cfc7f5449217622ebce713e501be8e841d75b076",
+      "function": "test_worker_pool_batch_routes_correctly",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "eead007df569a8619af1cab3058eb5c2ca0a601db5b7986cc3c97892819d2e1b",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ef86ca3acf3df48ce1b21c8c60b238cb06bd24d0584a130f783d7e88418e5937",
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_on_error",
+      "definition_ast_sha256": "7d2b281f79077654b246055306fe656e05ab98538ff78ce10bdbfa6baa9f6b97",
+      "function": "test_worker_pool_batch_fallback_on_error",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "4d17f21c86ab18ae5155b8c48c908637f54d910a73f1358cf7345003ec8ee789",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "a4a316fc4c62141a7978ec986c14f764e2855aa5cfc1e3bd662e54ecad2a7b23",
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_json_schema",
+      "definition_ast_sha256": "2d261c56784f4de32da49eb30ab335f898b540efb0bcdfe15f4097c7f7ce6cef",
+      "function": "test_worker_pool_batch_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "8838e6034f60455ef9eff5aad59ba690211ef2cb9eeaa907b4b96af3dbc3e431",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ca5bc9466ead4f1534849c068909b1aaa6c2e39cc27f3770430213c376af8b7d",
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_json_schema",
+      "definition_ast_sha256": "833305ecdbc229a8b1a8efa49be9d63a40e1cddc683c20b8d9a2a306936e8c44",
+      "function": "test_worker_pool_batch_fallback_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "b73d831cfbd317ab9fa67c420902db189b27ecee3a2e53b7eacf36822b1c8e40",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "e9898b1616baa36d60b4971b1aaa63ac2bdb9b7d3ea3809d3e91e72493e17068",
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "definition_ast_sha256": "2d3a2abcb1b98bb76f39f103ed50aa90a1e80d1538934d1c51e779d142c0b912",
+      "function": "test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "9e7d8b83eb5fcf2aa485dca02925942c43d3a7556aa4784cdffe420a9caea624",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "53df4c7ac2ff0e9ad2ee271e3db7f3876053beaad23b30f9c1d6d205f4288aa5",
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_n_tokens",
+      "definition_ast_sha256": "bd893c0634dd222c97b80edf19abc2b5ad8ef469dd296767866a7b6fb882f634",
+      "function": "test_worker_pool_batch_fallback_forwards_n_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "bb79b549f98d5fd1cda512d0826d7be52d14acc9aaf6a695478f7e097a9a9877",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "ecf881ca08337b679cbe9457283def2510a2e3d50dbab65ee1ada16abeb3b2d1",
+      "class": "TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_json_schema_present",
+      "definition_ast_sha256": "bf489203a20c75df517348608e3586ff67019dafe615a1fc1cd4d8db1b883606",
+      "function": "test_json_schema_present",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "5a19aeb5266ccce7f914f156b449f418d017b6caa6fb669218307688f3678924",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "875a8d040798e34c3b480a2302a92fa67b1ad79658cedc1321ee88b20c0df906",
+      "class": "TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_grammar_present",
+      "definition_ast_sha256": "7f23570ff083f06a1af8ca1855784b0ffff15e6e6146c58423eabe75c2ae9234",
+      "function": "test_grammar_present",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "6e3f6d7a5a8484f32df6548b5a6b7c5893b8ccff3fd81d1d3af6143e8c0ff4fa",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "29b53c10ca35a8838d08ebae1eaaa0c1f90ee35f2e91a1aab27b54a98b131d2a",
+      "class": "TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_neither_present",
+      "definition_ast_sha256": "bc85fad7322f6e9c20b6297fa25d646d37f8f6e41bbeefbb99d439fc0509930d",
+      "function": "test_neither_present",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "f7e8fcfce7cd335f3eebcd09eb5a4fc0b0927a7de2eb20f31ef53369b98fba3d",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "eb43c7278f2515ecc812ed0f83c2689206e49f55f31bc207361c7c2e769c0cf0",
+      "class": "TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_schema_constrained_repetitive_stream_is_not_aborted",
+      "definition_ast_sha256": "3847fc990de15cab36f13de9f1631f96e4a2cfd491904372a59aa70465f223b7",
+      "function": "test_schema_constrained_repetitive_stream_is_not_aborted",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "1cb3611b43fe8dccc3aa560026f5a72808b38bee8b6c52765b37c8f2aa985e59",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "025cccda856105775d7aebff4d150fe4563d640f51f2726b1a63d63192795b22",
+      "class": "TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_unconstrained_repetitive_stream_is_still_aborted",
+      "definition_ast_sha256": "6f15a19feb3426c065a89617c9c020289c14855f2fe068b2bee2ea1beed6afd7",
+      "function": "test_unconstrained_repetitive_stream_is_still_aborted",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "65ac11f1c3f7ce919a8ed7680664c4d5aea41a5f24446572b4a362aec776cedb",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "19a5c77186c5873865f82c199f267d49758453e6ef2cbe7941cec8725ab46ee8",
+      "class": null,
+      "definition": "test_native_enqueue_stamp_precedes_backend_admission",
+      "definition_ast_sha256": "f8d79c679edec71f5ccfcb8bdf4ffa2c952a3a751a8bdfa7f1388da419d5fc2e",
+      "function": "test_native_enqueue_stamp_precedes_backend_admission",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "previous_function_sha256": "94f52526717208dc0052eb540d201f273c7268c6f9c95418e1348481fdebc5a2",
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "body_ast_sha256": "611182a7baacf81508ce28964d1b8827216440d4fc4c630fa8457884faebc452",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_every_call_is_logged_and_summed",
+      "definition_ast_sha256": "7c58fa46b906bf13c6f80d79409c5fb4595cc454251c90111429dd610f9d1d13",
+      "function": "test_every_call_is_logged_and_summed",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "4430f00af3f5a4d93387d2497c054d3ce5a1bdd6e2bb9ad7468ea192748a7b8c",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "2f2f125c95a81c723a813367672630c6936fe52b7ae98605618e4e88f99120c6",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_absent_telemetry_is_none_not_zero",
+      "definition_ast_sha256": "cbdb1a65beb4e13cde7729659564dd6dbadc207e01741fbe22b60aa7ca88ccd7",
+      "function": "test_absent_telemetry_is_none_not_zero",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "b13fed18beb4649146facbc54de500c2b493235e5aa978f60d22e9be8d3894e1",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "564829be3c47abc6f1231a607210c6f1c7e8e5d29d395fa2117703ff7258b026",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_prompt_n_needs_both_prompt_and_cache",
+      "definition_ast_sha256": "d399af04b6cbd04961c70c27685d21365942160b7a2abc1060ede16e216aade1",
+      "function": "test_prompt_n_needs_both_prompt_and_cache",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "84831722cebd31e167b0f6d1de7d2118557b14411fcb9ff636f1fab4d0d69790",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "661c83e12451305950bcfe4317cc680c31b2bb014cec8ebb850be2ff2b9744a9",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "definition_ast_sha256": "38d68ed48aff617afd02e903e5180d0a12019425910840391908617bb6dedf25",
+      "function": "test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "58fd5969eff705d92d6c079ecf68db7358cfe518e85e9c8164672085b7e3ffc5",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "fcfc8648e96a1cc2834eb7e068fa8693d9288a033535baedaa437f8677f252b6",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_malformed_direct_server_timings_remain_unknown",
+      "definition_ast_sha256": "1e294629e79b3d7c5b7f4fbe3b28d12836416943fb6dae2121f201b675755746",
+      "function": "test_malformed_direct_server_timings_remain_unknown",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "72b9b97486db912f74b15a68398a0d44b79c52a9eef6eab91c64604bfaba82e6",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "ffe78ac75351a3051c894cdd46e464e015f67256e1ec7590b244cf2c7281c0f1",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "definition_ast_sha256": "5d967a32d7573cf1bedc2c316aeb4a09d6aec14bd08eb29da00a4d8ec9e6097d",
+      "function": "test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "0e54a9e2851c7ded4386c0068463504594765c1bdbc1ed884104dc45650c0638",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "32f47dc19cd2f6e0e58967bc861aa393101ba16ce9debb19209982837dd4050c",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_oversized_raw_integer_does_not_break_call_recording",
+      "definition_ast_sha256": "d106df45fbf634e417e51bf78fa15bb31f7ee84f2f1591f3efeac75b131cb46a",
+      "function": "test_oversized_raw_integer_does_not_break_call_recording",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "753e6926125028168109a7a3b70facaeb37b0eaea0c5409307a13bae63fdd1e8",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "1779aab8d61177d9f4e5cc6457f7c3f1b9002f6265584192fb6985f76f2dc0f9",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_wrapper_is_removed_and_class_method_restored",
+      "definition_ast_sha256": "39374729702956ec364fd755741c1a3668796e0f2cc4ac4647f95a551649384c",
+      "function": "test_wrapper_is_removed_and_class_method_restored",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "131699c59d03dcadf9a85160d90107ed80a6bbd34beb78541ecd80b8242c0433",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "01358dc559764659161818049ed313a777de29cd1ebfa42bc15abf80bbb75422",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_preexisting_instance_attribute_is_restored",
+      "definition_ast_sha256": "517a83e768caa41e6112d7777fb89bc4d275a4c1451f57343bb3de4853de221c",
+      "function": "test_preexisting_instance_attribute_is_restored",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "38f9cbf503ec1a205d687f0dee13731bc31288998e396bce20d008e24f4eb65c",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "b9d3e9abc4964eb6f97890ed3de147843c431dcfb05c30aa22bd3ce06c83cd4f",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_raising_call_is_logged_and_propagates",
+      "definition_ast_sha256": "8589c0b05351555ef34f4f922aebf8fdbae865767e26f2835269c239cc7925e7",
+      "function": "test_raising_call_is_logged_and_propagates",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "89c63143b26a5a6178da3481ec7f9bcfd4db3193c83370d24c6f745ba2d69b93",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "0ef05157b25caa031a627b33f46f9f883df26e1ed8fcb279c0e48062c9891731",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_per_call_safe_getter_wins",
+      "definition_ast_sha256": "a6dd4b3c2ff0eeb0297fe9b6caa1e776c302eab9353d7d0a7802d10553fba3ae",
+      "function": "test_per_call_safe_getter_wins",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "cb6d700218ac9321701ecc3ed0b49a65d6139c556494bf5a33cb37a231c02840",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "4b09aa87c0822aca11fd95e14eb6d8390e7a17ab6d193a8620cbed9bc8549cdd",
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_object_without_llm_call_yields_empty_log",
+      "definition_ast_sha256": "4a7d347931bddc24b13cb9b6dc80616b08bc0073f581906874c4ff89baa65051",
+      "function": "test_object_without_llm_call_yields_empty_log",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "8a890bca04de6c564242cac33a465a0861312b60121582199b91f047f9c255d3",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "58b7dd3a777aa205032157f3b9a0fec99006a17a7f64cd0e7f9258748470945d",
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_parses_role_url_pairs",
+      "definition_ast_sha256": "1a25988f99f1cf462e283261d96596e93b4e7031ee7846315b52b55b056d4c83",
+      "function": "test_parses_role_url_pairs",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "080429ab0be9adc5e9f36bc8efec02d97e400a4c6aa22a67e4afe62c8f4fcbc0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "a66f86964fad45c32746fef5699a752797e1664be0ff37008d9d356e90c39e1e",
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_empty_is_empty",
+      "definition_ast_sha256": "b8700f977068a7edf01d21573a69217779ee0f958a588611290216d2490b6e1c",
+      "function": "test_empty_is_empty",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "3c7624af0a73a7bc1cff85f1c49baa66554e71251c3a05c2a2892bc82478ee3a",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "20633971b743c0c2df967e7537096d3774e641ecc37fe56821ead77758f7d73d",
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "definition_ast_sha256": "369cae920feaed1fab5f04986a1fc8bf5877ab488de875055bf126147ef263e9",
+      "function": "test_malformed_items_are_rejected",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [
+        {
+          "names": [
+            "item"
+          ],
+          "values": [
+            [
+              "frontdoor"
+            ],
+            [
+              "=http://x"
+            ],
+            [
+              "frontdoor="
+            ],
+            [
+              "frontdoor=127.0.0.1:8199"
+            ]
+          ]
+        }
+      ],
+      "previous_function_sha256": "d3e8386697e1578e3b37f699518e0c0f74083c2c1a09b9e7e41908ca86ac35a0",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "body_ast_sha256": "6c4a4daa803b6f55e170697c142bfa1fc3119c15e20d1e73865d2e6b81c7939b",
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_conflicting_duplicate_is_rejected",
+      "definition_ast_sha256": "84bf4ff4a20ada6c5790837cb53971a2fe189dbc1f41cd3cae4b091079bf637e",
+      "function": "test_conflicting_duplicate_is_rejected",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "previous_function_sha256": "d4d5ebdc0b40a226a8ae350ed8ad81ee21d2773582117c913dbe43063e393f89",
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    }
+  ],
+  "parameter_dimensions": {
+    "tests/unit/test_typed_decisions_call_recorder.py::TestServerUrlOverrides::test_malformed_items_are_rejected": [
+      {
+        "names": [
+          "item"
+        ],
+        "values": [
+          [
+            "frontdoor"
+          ],
+          [
+            "=http://x"
+          ],
+          [
+            "frontdoor="
+          ],
+          [
+            "frontdoor=127.0.0.1:8199"
+          ]
+        ]
+      }
+    ]
+  },
+  "pytest_id_rule": "pytest default IDs for literal strings are the exact strings; original JUnit verifier compares complete classname/name multiset.",
+  "required_legacy_nodeids": [
+    "tests/unit/test_llama_server.py::TestEarlyStopTiming::test_early_stop_produces_timing",
+    "tests/unit/test_typed_decisions_call_recorder.py::TestRecordLlmCalls::test_every_call_is_logged_and_summed",
+    "tests/unit/test_typed_decisions_call_recorder.py::TestRecordLlmCalls::test_absent_telemetry_is_none_not_zero"
+  ],
+  "schema": "private.td29.native.expected_cases.v1",
+  "status": "STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION",
+  "test_file_source_records": {
+    "tests/unit/test_inference_mixin.py": {
+      "ast_sha256": "54a6fecbdaa2cad3eac79b6ba49315ae7b34bdf227b20409afce830601926cc0",
+      "blob": "dffd7a3c75ee18e4df5fcce48c26dd7ecfdd780b",
+      "bytes": 55190,
+      "mode": "100755",
+      "sha256": "58ee4ca42099704170babeadc511eb9bc2330de0b711c013eed8d52248170a5c"
+    },
+    "tests/unit/test_llama_server.py": {
+      "ast_sha256": "8d1b509eeb282799f3055d5c589a913559cecb4764e7b46893b10cdbd98eaca6",
+      "blob": "3b560b52d4e15932a58d4096d7a97a06b81a5263",
+      "bytes": 49825,
+      "mode": "100755",
+      "sha256": "deebda35aa989d04add370eb0965e932247833ad1835942ecc21c9032bec78f2"
+    },
+    "tests/unit/test_typed_decisions_call_recorder.py": {
+      "ast_sha256": "5c12ce710b5e915af01b9a79dc7263d83a95a5741d8b0eec492fe8fa1d1814e8",
+      "blob": "8a335d11898e27b2660f0da03ea044db07536825",
+      "bytes": 8558,
+      "mode": "100644",
+      "sha256": "19dab77f5d10dc77bb038eb5d5ba7d544d334c035fc13bc4d15c79ea85536237"
+    }
+  },
+  "whole_module_selection": [
+    "tests/unit/test_llama_server.py",
+    "tests/unit/test_inference_mixin.py",
+    "tests/unit/test_typed_decisions_call_recorder.py"
+  ]
+}
