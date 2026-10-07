@@ -233,3 +233,9 @@ typing_inspection==0.4.2 \
     --hash=sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7
 python_dotenv==1.2.2 \
     --hash=sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a
+
+logfire-api==4.32.0 \
+    --hash=sha256:062526b31ca5e4bde5455bd5230bfb713df23189aedb370c8c47c6ed8ec02a37
+
+pydantic-graph==1.80.0 \
+    --hash=sha256:60315c2042597d0377689ad48e9439760ec75d4ccda78830d2890ce9c94c6d84

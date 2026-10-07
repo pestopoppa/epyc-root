@@ -35,6 +35,7 @@ LOCKED = {
     "pluggy": "1.6.0", "pygments": "2.20.0", "numpy": "2.4.4",
     "pyyaml": "6.0.3", "pydantic": "2.13.0", "pydantic-core": "2.46.0",
     "pydantic-settings": "2.13.1", "annotated-types": "0.7.0",
+    "pydantic-graph": "1.80.0", "logfire-api": "4.32.0",
     "typing-extensions": "4.15.0", "typing-inspection": "0.4.2",
     "python-dotenv": "1.2.2",
 }
