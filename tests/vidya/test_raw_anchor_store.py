@@ -77,7 +77,7 @@ def _anchor(
 
 
 def test_response_bytes_are_retained_and_reopened_by_content_identity(tmp_path, monkeypatch):
-    _entry, anchor, root = _anchor(tmp_path, monkeypatch, located_by="machine")
+    entry, anchor, root = _anchor(tmp_path, monkeypatch, located_by="machine")
     metadata = anchor["source_artifact"]
     retained = read_raw_bytes(metadata, root=root)
     assert hashlib.sha256(retained).hexdigest() == metadata["raw_sha256"]
