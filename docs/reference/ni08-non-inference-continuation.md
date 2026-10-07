@@ -332,3 +332,8 @@ Published LR12 edited-file Git-root hook and accepted original hosted5/5 control
 ## Mocked authoring and static benchmark pin checker — 2026-10-07
 
 MAIN accepted [FW-1 original10/10](../../artifacts/ni08/fw1-success-acceptance-20261007/README.md) and [EVL42 original8/8](../../artifacts/ni08/evl42-success-acceptance-20261007/README.md), published exact APP/Research sources and retained every earlier failed original. Four existing checkbox flips bring NI08 to129 scoped completions (72existing+57children). Mocked workflow runs carry source-conformance identity, not real GUI measurement warrant; actual benchmark scan report wiring remains open and source snapshots do not attest loaded code. Remaining eligible source work and full backlog adjudication continue.
+
+
+## Prepared next source and operator boundaries — 2026-10-07
+
+Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN manual caller/metric-direction review and are prospectively enrolled for their own full hosted controls. These are preparations, not completions; NI08 remains129 scoped completions. W6 future journal metadata uses the existing journal family, with separate informational support carry. The [prevalidated LR-11/LR-13 package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md) is an operator terminal-signature decision; protected shared rules and receipts remain unchanged.

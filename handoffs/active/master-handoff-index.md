@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-LR11-LR13 | Ratify bounded additive close-time inventory and subagent scratch/records rules, or retain current policy. [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md); recommendation A, typed human terminal signature required. | [non-inference-backlog.md](non-inference-backlog.md) LR-11 / LR-13 | 2026-10-07 |
 | OP-TOC-RD-1A | DECIDED 2026-10-06: operator chose 1B, retain both fixture scans; whole-file exclusions rejected and unapplied. [Recorded choice](../../docs/reference/credential-fixture-hook-decision.md) | [tool-output-compression.md](tool-output-compression.md) TOC-RD-1a | 2026-10-06 |
 | OP-80 | DECIDED 2026-10-07: WIRE check_cpu_fa_real_mask_identity into run.py now (FA blocked until C++ lands, accepted); owner: AK Codex session per handover brief. [AKX-ALL-11](autokernel-all-devices-all-dimensions.md) | AK lanes | 2026-10-07 |
 | OP-79 | Run on the HOST after the :8083 restore: install `scripts/server/gpu_window_watchdog.cron` (`* * * * *` + `@reboot sleep 90`) so the GPU-window executor ticks (G1 review F2). Verify that a tick writes `mi210.json.executor-status.json` | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) AKX-ALL-15a | 2026-10-04 |
@@ -113,7 +114,7 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 61 | 1049 | 34 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 484 | 15 | 2026-07-29 |
+| research-evaluation | 43 | 487 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 51 | 561 | 17 | 2026-07-29 |
 | user-facing-harness | 13 | 102 | 16 | 2026-07-29 |
