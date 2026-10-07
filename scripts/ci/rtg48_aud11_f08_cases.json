@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.rtg48_aud11_f08.selected_cases.v1",
+  "source_base_commit": "51d2ad01e5dafc6a47b28902e0600730844eff06",
+  "static_derivation": {
+    "module_level_code_executed": false,
+    "test_bodies_executed": false,
+    "test_module_imported": false
+  },
+  "cases": [
+    {
+      "classname": "tests.coordination.test_mech_column_audit",
+      "name": "test_f08_cmd_nudge_refuses_recent_own_nudge_at_production_gate",
+      "nodeid": "tests/coordination/test_mech_column_audit.py::test_f08_cmd_nudge_refuses_recent_own_nudge_at_production_gate",
+      "expected": "passed"
+    },
+    {
+      "classname": "tests.coordination.test_mech_column_audit",
+      "name": "test_f08_cmd_nudge_dry_run_allows_elapsed_interval_positive_control",
+      "nodeid": "tests/coordination/test_mech_column_audit.py::test_f08_cmd_nudge_dry_run_allows_elapsed_interval_positive_control",
+      "expected": "passed"
+    }
+  ],
+  "mutation_control": {
+    "target": "scripts/coordination/tmux_adapter.py::cmd_nudge",
+    "expression": "p[\"seconds_since_last_nudge\"] is not None and p[\"seconds_since_last_nudge\"] < args.min_interval_s",
+    "expected_mutated_cases": {
+      "test_f08_cmd_nudge_refuses_recent_own_nudge_at_production_gate": "failed",
+      "test_f08_cmd_nudge_dry_run_allows_elapsed_interval_positive_control": "passed"
+    }
+  }
+}
