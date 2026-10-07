@@ -12,11 +12,20 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 GUARD = REPO_ROOT / "scripts" / "hooks" / "agents_reference_guard.sh"
 
 
-def _run_guard(project_dir: Path, file_path: Path) -> subprocess.CompletedProcess[str]:
+def _run_guard(
+    project_dir: Path,
+    file_path: Path,
+    *,
+    tool_name: str = "Edit",
+    content: str | None = None,
+) -> subprocess.CompletedProcess[str]:
     """Invoke the hook exactly as its Edit/Write integration does."""
+    tool_input: dict[str, str] = {"file_path": str(file_path)}
+    if content is not None:
+        tool_input["content"] = content
     return subprocess.run(
         ["bash", str(GUARD)],
-        input=json.dumps({"tool_name": "Edit", "tool_input": {"file_path": str(file_path)}}),
+        input=json.dumps({"tool_name": tool_name, "tool_input": tool_input}),
         text=True,
         capture_output=True,
         cwd=REPO_ROOT,
@@ -63,3 +72,76 @@ def test_still_blocks_missing_nested_session_bus_reference(tmp_path: Path) -> No
     assert result.returncode == 2
     assert "BLOCKED: unresolved local markdown references" in result.stderr
     assert "tokens/missing.md" in result.stderr
+
+
+def _init_git_repo(path: Path) -> None:
+    path.mkdir(parents=True)
+    subprocess.run(["git", "init", "-q", str(path)], check=True)
+
+
+def test_checks_new_claude_md_write_with_mismatched_project_dir(tmp_path: Path) -> None:
+    """New governance writes resolve references from the edited file's repo."""
+    launch_repo = tmp_path / "launch-repo"
+    edited_repo = tmp_path / "edited-repo"
+    _init_git_repo(launch_repo)
+    _init_git_repo(edited_repo)
+    (launch_repo / "only-in-launch-repo.md").write_text("launch\n", encoding="utf-8")
+    (edited_repo / "repo-root-reference.md").write_text("edited repo\n", encoding="utf-8")
+    claude_file = edited_repo / "CLAUDE.md"  # Write target intentionally does not exist yet.
+
+    result = _run_guard(
+        launch_repo,
+        claude_file,
+        tool_name="Write",
+        content="Read `repo-root-reference.md`.\n",
+    )
+
+    assert result.returncode == 0, result.stderr
+
+    result = _run_guard(
+        launch_repo,
+        claude_file,
+        tool_name="Write",
+        content="Read `missing-governance.md`.\n",
+    )
+
+    assert result.returncode == 2
+    assert "missing-governance.md" in result.stderr
+
+    result = _run_guard(
+        launch_repo,
+        claude_file,
+        tool_name="Write",
+        content="Read `only-in-launch-repo.md`.\n",
+    )
+
+    assert result.returncode == 2
+    assert "only-in-launch-repo.md" in result.stderr
+
+
+def test_resolves_references_in_edited_files_own_repo_with_mismatched_project_dir(
+    tmp_path: Path,
+) -> None:
+    """The harness project root may differ from the edited file's worktree."""
+    launch_repo = tmp_path / "launch-repo"
+    edited_repo = tmp_path / "edited-repo"
+    _init_git_repo(launch_repo)
+    _init_git_repo(edited_repo)
+
+    (launch_repo / "only-in-launch-repo.md").write_text("launch\n", encoding="utf-8")
+    (edited_repo / "repo-root-reference.md").write_text("edited repo\n", encoding="utf-8")
+    agent_file = edited_repo / "agents" / "author.md"
+    agent_file.parent.mkdir()
+    agent_file.write_text("Read `repo-root-reference.md`.\n", encoding="utf-8")
+
+    result = _run_guard(launch_repo, agent_file)
+
+    assert result.returncode == 0, result.stderr
+
+    # A file present only in the fixed harness root must not make an unresolved
+    # reference in the edited worktree pass.
+    agent_file.write_text("Read `only-in-launch-repo.md`.\n", encoding="utf-8")
+    result = _run_guard(launch_repo, agent_file)
+
+    assert result.returncode == 2
+    assert "only-in-launch-repo.md" in result.stderr
