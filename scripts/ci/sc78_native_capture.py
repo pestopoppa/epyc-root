@@ -178,6 +178,10 @@ def main() -> int:
         raise RuntimeError("existing fixture verifier did not produce a conformant receipt")
     source_before = snapshots(read_paths)
     originals_before = result_tree_snapshot(result)
+    # The driver is launched by absolute path from the workflow checkout's
+    # parent directory, so Python does not automatically put ROOT on sys.path.
+    # Preserve the existing top-level `claim_tuple` import path as well.
+    sys.path.insert(0, str(ROOT))
     sys.path.insert(0, str(ROOT / "scripts/vidya"))
     from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
     from claim_tuple import grade
