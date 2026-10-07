@@ -110,3 +110,24 @@ Champion candidate 8e597b701 regression gates; FIFO lock default-on; AK GPU run 
 5. CAFE-1/2.
 6. ARCHIVE-FIRST disk items.
 7. Push or retire the local llama.cpp branches.
+
+## Final tasks (ec-final-1007)
+
+**Task 1 (tmp archive) — SKIPPED, ownership not established.** `/mnt/raid0/llm/tmp/ds41-specdec-recipe` (4.4G, Sep 23, "DS41 C2b ... PREPARE ONLY") has no mention in any progress note or handoff; the subject (DS41 DSpark recipe) matches `progress/2026-09/2026-09-23-main-dsv41.md`, so it is probably main-dsv41's. `/mnt/raid0/llm/tmp/copy-spec-eval-20261006` (1.8G, copy/ngram speculation survey) is referenced nowhere. Neither was touched; 0 GiB freed.
+
+**Task 2 (llama.cpp branches).** The `origin` remote is upstream ggml-org, which must never receive our branches. Existing experimental branches live on `fork` (pestopoppa/llama.cpp), so all six were pushed there. Verified with `git branch -r --contains`.
+
+| Branch (llama.cpp-experimental-...-20261006) | SHA |
+|---|---|
+| jetlong-proto | f06123436c1385cc43b3fd510b8c6593c093aac7 |
+| jetlong-hip | e6ea7942140050d2a5cb4ce84981d67fe0da8e77 |
+| specwidth | defa269af2398c297c2ffe550ca751d3d597697e |
+| champion-specwidth | 8e597b7016c79cccb68cb429ece9e5715a0d38fc |
+| kshift-probe | f9cb7cd3201c90e4376534820ef57e8cc18b8c9a |
+| yarn-mscale | 720a98e2acd498cf4f7436f7328a1384d353bcea |
+
+Retired (clean, `worktree remove` without --force; build dirs went with them): jetlong-proto (997M), specwidth (970M), kshift-probe (233M), yarn-mscale (970M), about 3.1 GiB. Kept: jetlong-hip and champion-specwidth worktrees. Branch refs are retained locally and on the fork.
+
+**Task 3 (prune) — all five KEPT.** browser-agent-surface: dormant stub whose first task is an operator decision. conversational-memory-eval-instrument: CME-3 unticked. cpu-shape-specialized-gemv-decode: receipts holder with live CPU18/CPU26 re-open triggers. design-backlog-triage-2026-07-23: operator-decision backlog, tiers A-D open. model-stack-change-standardization-audit: status READY FOR MAIN IMPLEMENTATION, remaining W5/hardcoded-surface cleanup. No index rows to delete (`/mnt/raid0/llm/tmp/ec-final-1007/INDEX_DELETES.md`).
+
+**Disk freed this task: about 3.1 GiB** (on top of the 15 GiB above).
