@@ -290,7 +290,8 @@ def main() -> int:
                                   "path": relative, "git_blob": blob(context, relative),
                                   "sha256": digest(path)})
         carrier_names = (
-            "scripts/ci/native_conformance.py", "scripts/vidya/adapters/ci_conformance.py",
+            "scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py",
+            "scripts/vidya/adapters/ci_conformance.py",
             "scripts/vidya/claim_tuple.py", "scripts/vidya/lattice.py",
             "scripts/vidya/frames.py", "scripts/vidya/canonical.py",
         )
