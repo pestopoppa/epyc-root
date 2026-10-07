@@ -1,0 +1,1428 @@
+{
+  "status": "root_semantic_review_accepted",
+  "initial_sources": 112,
+  "late_sources": 2,
+  "sources": [
+    {
+      "group": "inference",
+      "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "content_hash": "dd11064c9e8deb6bc37651820558d44241b97545f5d6633477a3fd39ca8518e5",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "d0c2365cf425283ff05cdffc2e7be803a713324f",
+      "finding": "Exact C5 seed/problem join and historical policy-loader carrier accepted; no new policy/SOL/GPU warrant.",
+      "pages": [
+        "hardware-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "content_hash": "ecdc8f028fe5ecfb5c97f68d9a262746c55eca3ba44cb2cc28fc148b97882e6c",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "6e2eec9393143edead196d3f13a02734caf60853",
+      "finding": "Coverage/history/layered numerics landed; global low-bit quality gate and long-context real-mask branch remain pending; older floor-request prose superseded by later coordinator resolution.",
+      "pages": [
+        "autonomous-research",
+        "quantization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/autokernel-rebuild-program.md",
+      "content_hash": "c39eaaa0f34c127ac641b47086cbe2764d5c9843ab049dbf1594334f40b18523",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "c14fb554767c02eb830f7df809e4554a738284fd",
+      "finding": "Remediation command corrected to topology-aware pipeline; source-only acceptance.",
+      "pages": [
+        "inference-serving"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "content_hash": "b73ac0a0dd9972ccc45a4bdfd8cb267aee482c26977635a363463fc9a444fc51",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "c32f6035365982bdccd2ac2e2d03bebdbc231dab",
+      "finding": "Historical 376 fail/75 error tally followed by helper repairs and focused172/5 rerun; whole suite incomplete, finer pause still open.",
+      "pages": [
+        "autonomous-research"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/bulk-inference-campaign.md",
+      "content_hash": "243c3dcab54d1f87b85e5ce6663e39b18e59bf6df1d2fcc9cb093eff3da4714b",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "49af91a00d5f79e08c8cd66f8ddaf79a973d5c01",
+      "finding": "Strict standalone EvalResult paired-report input custody accepted38/38 synthetic; semantics retained, no inference/deployment.",
+      "pages": [
+        "benchmark-methodology"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/conversation-stack.md",
+      "content_hash": "184a7aed927239f76949e65875522f124b9f02f0485f4f3705e87372f134048f",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "Provisional shadow accepted; thin voice SSE design and SQLite persistence source accepted31/31; integration/live acceptance and controller/stream source remain open.",
+      "pages": [
+        "multimodal"
+      ],
+      "non_substantive_rationale": null,
+      "prior_reviewed_hash": "257a1c97db4ae4c9c9ef6875cbe0c8ba18f19cef5442015dd27b1df793a5c18f",
+      "root_reconciliation": "Root reviewed exact 83004c113..3178d1c34 source delta; explicit voice payload and typed choice remain prospectively enrolled, no native/live acceptance."
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/cpu-decode-roofline-program.md",
+      "content_hash": "a98d8043483ee397a9e40400a2554601e7c65864c97e3cfc1222f6437f7af66a",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "1f2b5733f9a5c8a25257b5fa2fd272441e023c1f",
+      "finding": "Raw GDN gate/state-row port proposed CPU np1; Q38P measured expert-union prerequisite; Spark parity already compiled, streaming headroom remains derived pending native step measurement.",
+      "pages": [
+        "hardware-optimization",
+        "speculative-decoding"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "content_hash": "a52d484596b83ac43f7b54b93c6d61c051babc619defd54f36337d3939fe9edf",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "d7ba4b4b5f62437ac402a53f3eb4a16519efaa6d",
+      "finding": "Deterministic served-shape calibration, explicit DS41 anchor-relative exceptions, new configuration epochs, later critic switch; disk and request-consumption resolution.",
+      "pages": [
+        "autonomous-research",
+        "quantization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/exl3-cpu-mi210-implementation.md",
+      "content_hash": "2c96f3c756e8ac33294656734e1dc221f499a810e45a693c21bba677c49da399",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "1f2b5733f9a5c8a25257b5fa2fd272441e023c1f",
+      "finding": "Bounded teardown polling39/39 source accepted; physical EXL3 acceptance remains open. Existing October7 wiki source note already carries this.",
+      "pages": [
+        "hardware-optimization"
+      ],
+      "non_substantive_rationale": "Exact accepted source behavior and physical acceptance limit already present in wiki/hardware-optimization.md October7 bounded EXL3 note; do not duplicate."
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md",
+      "content_hash": "2deb61f07eafa85e9f656bd2079b733b19e2240d53ab6df9bf7b9b95ebdd18fe",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "9d99564ad517fb950f67f1ae87b289f35ecf7040",
+      "finding": "Prospective canonical-tree HIP instruction superseded by experimental/full-candidate/kernel-store workflow; historical v9 observations unchanged.",
+      "pages": [
+        "local-inference"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "content_hash": "03e31cc7783b2a2c7a110f7516bca77a16b25ee7527d95f6ddaf20cdb1d51b0f",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "357e3d7b55f54f2fbb81aee74ca04ea15cac69ce",
+      "finding": "Historical default-off K28 scaffold preserved as isolated commit; no build/promotion or reopening performance NO-GO.",
+      "pages": [
+        "hardware-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/gpu-acceleration-path.md",
+      "content_hash": "bcac38ba884c53011b0554382b9252f9cf030cc4271892a9a78f849892a3d969",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "25f95aa90c0fa052cf9aac8452facc3a7cdc1db6",
+      "finding": "HAWKEYE corrected directional comparison already compiled; newly reviewed transfer bandwidth records do not determine copy-thread/page/IOMMU mechanism.",
+      "pages": [
+        "hardware-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "content_hash": "b2a32c7a585cfa638fc2b4d88c504c2181ed94b63d9cbe7563c83a99ed1fc525",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "72b451a8d0c142a3ed50c9ec721a99fd41475519",
+      "finding": "Closed scope relocated; conditional expert-cache/skew gate already compiled; proposed staged ROCm10.1 driver/userspace/container compatibility and serving gate.",
+      "pages": [
+        "local-inference",
+        "moe-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
+      "content_hash": "4fd27798e625bdfb26a49df58fca22f75c91840a695a4efd456b693a3829e4de",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "6161179ff4f4ddca3f91c81493ffbeb6dfe1c6c1",
+      "finding": "W4 actual-six-suite temporary-world verifier source proposed; prior NI05 acceptance unchanged.",
+      "pages": [
+        "inference-serving"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/moe-routing-tap-and-locality-measurement.md",
+      "content_hash": "80b6aebc08fedfdd485cdb3594883fcaf2cd7ac897cd6a72a8ba0e54439fb83d",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "facb730c383c77ea943e71b2df07dbd54aae509b",
+      "finding": "RT5 per-layer skew measurement prerequisite filed, not measured; >=60% top10% on >=2workloads trigger.",
+      "pages": [
+        "moe-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/multimodal-pipeline.md",
+      "content_hash": "1778cd3c03b67d5ecb97a9e25df8f0343cea66250722e502171afa529ad220d0",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "4111574f5928bd6bfdbd584847cafceeb16ad9dd",
+      "finding": "Server-only vision policy source accepted five controls, legacy fallback omitted; S20 real timing/cold acceptance remains open.",
+      "pages": [
+        "multimodal"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/rocm-verify-profile-backend.md",
+      "content_hash": "6f58deae4bb3c5d82f1c5bdc709410ca56f5f8191926b835d85546b7fd206576",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "d0c2365cf425283ff05cdffc2e7be803a713324f",
+      "finding": "Frozen v10 suite-seed premise corrected; SSM integer-ID shuffle remains outside seeded stream, fresh experimental repair only.",
+      "pages": [
+        "hardware-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "content_hash": "01c36940ec968c371d506fabaff53a95dcb735049c9ccddff149187a5c6f9a1b",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "38b5b4ef07fc910dc9b3a9955a9906448596d836",
+      "finding": "Copy-spec width/control closure already compiled; adaptive width now depends on measured expert union and task/depth controls, external bands only priors.",
+      "pages": [
+        "speculative-decoding"
+      ],
+      "non_substantive_rationale": null,
+      "prior_reviewed_hash": "dad9f7677dbbcb3ece21b564260a9111caef1818b4db70e457debb2dfa1afbca",
+      "root_reconciliation": "Reviewed exact 956b6f328..83004c113 source delta; preserved native acceptance and pending controls."
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/active/standardized-stack-update-pipeline-finalization.md",
+      "content_hash": "4d67afacee5bcadbd5f19f6c5890b1e56ee829db388e821c81874f549b1fbf69",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "03ebdff5f72900c4f8c976e8e06d5af213b272e4",
+      "finding": "Physical symmetric SMT closure needed for shared launch guard; logical exclusion source gap, unimplemented proposal.",
+      "pages": [
+        "inference-serving"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md",
+      "content_hash": "b15e8c94808129f045f11a16af00518b75b0741f5739b964a7f3fa7db321dae5",
+      "baseline_resolution": "new",
+      "baseline_commit": null,
+      "finding": "New historical ledger relocates existing completed DR/GDN/skew evidence with original eras/quality and observation qualifiers; no new measurement.",
+      "pages": [
+        "local-inference"
+      ],
+      "non_substantive_rationale": "Native completed evidence moved verbatim from active source; pointer/status synthesis only, no fresh numerical findings."
+    },
+    {
+      "group": "inference",
+      "path": "handoffs/completed/mi210-speed-campaign-summary.md",
+      "content_hash": "4da0867767fc4be842143563e959dd40a892bcdc31f2c6060eea14f366adf165",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "f092a65e0dfd135c883c2874803a25f875136a28",
+      "finding": "KernelBench seeded-fuzzing headline/rationale explicitly withdrawn; correct all-task fast_p denominator and strict faster-than threshold.",
+      "pages": [
+        "hardware-optimization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "progress/2026-10/2026-10-06-ak-ds41-main.md",
+      "content_hash": "798561fb4728f34c11d20db15007383bc6bef3a585db540f724e6e7cb567bdd3",
+      "baseline_resolution": "new",
+      "baseline_commit": null,
+      "finding": "Low-bit review defects/fixes and unclosed global quality gate; roofline/history source repairs. Copy-spec result and conditional seeds already compiled.",
+      "pages": [
+        "autonomous-research",
+        "quantization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md",
+      "content_hash": "5d52a7b36002b7408c29f393a97b044eb4fc617a5d8a77ac2549574d978f690f",
+      "baseline_resolution": "new",
+      "baseline_commit": null,
+      "finding": "Calibration and new epochs, later disk175GiB/request consumption, critic change, test repair limit; pending longctx oracle branch and pause gap distinct.",
+      "pages": [
+        "autonomous-research",
+        "quantization"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "docs/reference/conversation-shadow-preparation.md",
+      "content_hash": "f0c5132c34a1e24dafac8e38d51640a54b9e1aed4725aa9a9a8474a70d295ba9",
+      "baseline_resolution": "new",
+      "baseline_commit": null,
+      "finding": "Provisional LOCAL/ORCH default-off JSON wrapper, unchanged incumbent, bound4, confidence logging only; schema/real routing quality not established.",
+      "pages": [
+        "multimodal"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "docs/reference/serving-call-reader-contract.md",
+      "content_hash": "db31c652d1fa9e18be7f8d6eebf12d231fe3384b8026118abc7fd6c8a3eb8a6d",
+      "baseline_resolution": "new",
+      "baseline_commit": null,
+      "finding": "Strict per-call projection, missing timings no tuple, parent_request_id judge link and separate backend attempts; shared grading/window-denominator boundaries.",
+      "pages": [
+        "inference-serving"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "docs/reference/standalone-numa-guard.md",
+      "content_hash": "ce44c3722a222c527200f5325b4bab4c0599292b248d3c1bc6e673715b8f8045",
+      "baseline_resolution": "new",
+      "baseline_commit": null,
+      "finding": "Closed NUMA declaration admission fails closed before validation;20 synthetic cases, no live capacity/deployment.",
+      "pages": [
+        "inference-serving"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "inference",
+      "path": "docs/runbooks/rocm-upgrade-checklist.md",
+      "content_hash": "9d269a3b770074d15e4ec2be2c5c553832754759d0000a1357cc9587d8b989bf",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "e43a7589acebf3734954499074358af441d1989a",
+      "finding": "Retrieved TheRock gfx90a Linux release-ready/sanity-tested correction; Windows build-only and build != runtime.",
+      "pages": [
+        "local-inference"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/agent-collab-rnd-harness.md",
+      "content_hash": "e163453635e7be986d0fa55e9e28fb85f4582ac30a0148fa40af2044d2c19885",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "ef1e3d6d2c8cd7b77b952a3721f0ee5c97eda281",
+      "finding": "Closed non-exclusive triage metadata; no classifier/rate adoption.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/amd-ai-lab-website-publication.md",
+      "content_hash": "1b043b9946a86daaf24e2ff00324333af403124eab0c6abd87753c35936db976",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "0b5eea0e432e2b84774db712c7241857bcd0d824",
+      "finding": "Contact/publication decision package only; no launch or new measured cells.",
+      "pages": [
+        "knowledge-management.md"
+      ],
+      "non_substantive_rationale": "No article addition: existing publication remains operator-held; narrow package custody does not change topical knowledge."
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/autopilot-continuous-optimization.md",
+      "content_hash": "ef76bdeebad652f1bbe32bfb5d537169ec9db530960e9d473e6906b03fdceeeb",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "ea191c2d485d344890a30cde72364a99fe434c42",
+      "finding": "Invocation locking, per-instance settings, compact failure signatures and default-off context diagnostics; parent runtime/adoption gates retained.",
+      "pages": [
+        "agent-architecture.md",
+        "autonomous-research.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/context-folding-progressive.md",
+      "content_hash": "ba1dc47e959b064c2b100e2004e32cd3015cdcb40c28864fd2a511ea6bb4c129",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "9c3b05dc64576aa94212be0d9a80fd03b990591b",
+      "finding": "BEAM judge caveat and completed structural HarnessFactory survey.",
+      "pages": [
+        "context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+      "content_hash": "61e00b8f9a0bd1aae0a4319d98ba80e785ba4438854b4f7d9451419c8c59e74b",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "e3880ef638c95e955e135abdc259dd7e56461cb5",
+      "finding": "Withdrawn recurrence column, scoped attribution rule, stable dual-ID aliases and bounded nudge mutant control.",
+      "pages": [
+        "knowledge-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/delegation-context-preassembly.md",
+      "content_hash": "77bd0392d853b230b1d70b1fb7ea122c6ad9c5f673b3d4412c503c44fe3c0b2f",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "5009582403cd277d9b50ac76eb537539ba0cb7b1",
+      "finding": "Exact render identity and hit-span source candidates; bounded fresh usage cohort lacks purpose/trajectory warrant.",
+      "pages": [
+        "context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
+      "content_hash": "7aa660c4e3a9b5ed273c990c50a3314ed359cac9c7eb393e44c145a1555ad6fe",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "209a2d8e415aa8865554ed2bad61ab6ddf3dde37",
+      "finding": "Authoring placement/prior art complete; contract/inert row only; mocked example preparation remains separate.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/harness-improvement-loop.md",
+      "content_hash": "c8d0b04dcbfcae6b22290afcebc0359848a4ba606c0e9220d8efb5e2bb5fd337",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "26a4ad1bf5d14c39d7d05aa8b396aa6350618f2a",
+      "finding": "HIL1\u20135 design complete; architecture pending; no runtime/tuning.",
+      "pages": [
+        "autonomous-research.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/harness-selection-and-integration.md",
+      "content_hash": "327f557295873c0110b3f1c0985b807be03d765ec9a889eb01992a4d4580f972",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "1ab0fd849f3e38aa699ed0964c883b72de620d3e",
+      "finding": "P0 owner split/card/release pin, stdin, explicit-root core source and unresolved request-token contract; active catalog gates remain.",
+      "pages": [
+        "tool-implementation.md",
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/loop-owned-fleet-implementation.md",
+      "content_hash": "42823e948235ab53067a627689f66347ac7a1863148ca35615433572e692c50e",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "a9eec3c9b75b52cada7309ae5b9c60cb95cbef00",
+      "finding": "Parser redirection defect already fixed; refusal text clarified; protected exact stdin/target source still D9-gated.",
+      "pages": [
+        "knowledge-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/multi-file-coding-completion-capability.md",
+      "content_hash": "4379f7676e9e46fcb69b6596d4666176274d795e9c4621b4a3cbad128ab2ed24",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "8917a8b239989a14cb2810e7c1c93c986858a951",
+      "finding": "Batch verifier labels derive from one command; syntax-only versus semantic acceptance, parent remeasurement open.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/non-inference-backlog.md",
+      "content_hash": "cf7e0632e88b8c50cd41d7349f4c434d97dec7c35566452df1f2f426ae2cafdd",
+      "baseline_resolution": "unmatched-in-last-80-path-commits",
+      "baseline_commit": null,
+      "finding": "Current bounded backlog confirms cron activation separately from prospective receipts/LR8 handover; bus supervisor DOWN.",
+      "pages": [
+        "safety.md"
+      ],
+      "non_substantive_rationale": "Baseline unresolved in last80 commits: bounded current start/status/completed-scope and LR sections reviewed, no inferred delta or whole-backlog conclusion.",
+      "prior_reviewed_hash": "6b9ee5a5949d647415ab5ae95c6cda5e0090b3e9fdbf4660bfa7aab404aafbd6",
+      "root_reconciliation": "Reviewed exact 956b6f328..83004c113 source delta; preserved native acceptance and pending controls."
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/opencode-shell-integration.md",
+      "content_hash": "3bc32a7f7df8b54e9a33dc840cf4d83f878dafbc9bf1816a7785d0ffc264781f",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "New Phase0 owner retains dated r3 identity, stdin source and remaining override carry.",
+      "pages": [
+        "agent-architecture.md",
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/promptforge-mutation-safety-contract.md",
+      "content_hash": "b9474ec3e4d41c8933f7377990496d95fed09b47284e69d3343efd76b6c90824",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "6f9d95e848857a56257c3966aa3d7b9167580656",
+      "finding": "Added triage vocabulary pointer to MHS5; no mutation safety result.",
+      "pages": [
+        "safety.md"
+      ],
+      "non_substantive_rationale": "Pointer-only change; triage findings represented by canonical reference."
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/repo-readiness-scorer.md",
+      "content_hash": "ea7e936bf50ed724fd9026d268d38fcc10aef577949cf41cd75692dcd96a9acf",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "0e7eb5b5f9e0ed12ac2efcfcd3d94e2659955ce1",
+      "finding": "Periodic gate accepted with RED reference outcome; portability proposal remains uncaptured/unintegrated.",
+      "pages": [
+        "knowledge-management.md"
+      ],
+      "non_substantive_rationale": null,
+      "prior_reviewed_hash": "59d098598d7305ec1cb2157469c96506fc1e3d59b4cb1719139a894985e97eec",
+      "root_reconciliation": "Reviewed exact 956b6f328..83004c113 source delta; preserved native acceptance and pending controls."
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/routing-intelligence.md",
+      "content_hash": "11042b8df45f4a06213e95ddfddc884ddb593af5fddc3ec78b8f25f6c2074933",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "9ca90c908b4d83df8e3078d73eec2ea236ffa428",
+      "finding": "RI14 is folded into TD11 single typed-routing owner; no second classifier.",
+      "pages": [
+        "routing-intelligence.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/tool-output-compression.md",
+      "content_hash": "486f7cbbe6dab7e46677030cb5f5d00bc6244b7d53cb8e95d63dca8a499e3f9f",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "bca13398929d451200f487ace2ec380ee2d415fd",
+      "finding": "Narrow perf-period selector, ED25519 staged recognition and rejected whole-file exemptions; historical fixture acceptance retained.",
+      "pages": [
+        "tool-implementation.md",
+        "safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/active/typed-decision-plane.md",
+      "content_hash": "5a4a2ccef4d4f7b04539571e75f0ac7dde06b41164bf82b3280e11bb6be803a4",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "ef1e3d6d2c8cd7b77b952a3721f0ee5c97eda281",
+      "finding": "Description source, calibration exact-byte binding, repetition-source correction and public replay limits retain live parent gates.",
+      "pages": [
+        "routing-intelligence.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md",
+      "content_hash": "cae3e37b4289b5d1111258d4a06aceb75636f6b8075e09d5b049fcda1d6eb705",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "0729357bbcd21d6fdf30a05234cd57e05e2ea053",
+      "finding": "Doctor investigation source separated from vendor post unsupported mechanism.",
+      "pages": [
+        "knowledge-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md",
+      "content_hash": "302d1bcfe1c1b71548869897465c68c170811710213f7a0f6d5377422bae2c1e",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "2053b75858a6a5fddeb7a7004878892e980cd86e",
+      "finding": "Withdrawn causal RoPE/RLM linkage and corrected baseline-versus-marginal latency interpretation.",
+      "pages": [
+        "context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md",
+      "content_hash": "b5b18660eed25b1ba589f8ebc2d1fad60dafafaca59eb80469b2b2d9b1cf1626",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "9096f2338a252b2847b913bc1110bc08e91bfc41",
+      "finding": "Agent-file significance/cost distinction and model-specific RLM qualification; historical completions preserved.",
+      "pages": [
+        "context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-06-codex-ni-main-continuation.md",
+      "content_hash": "054dd90d619aaf7447b89a02a34c4ac2d5babdfa3b6788f6919f80b33d53063a",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "NI07 accepted bounded sources and host activation; extensive prior outcomes immutable.",
+      "pages": [
+        "agent-architecture.md",
+        "tool-implementation.md",
+        "safety.md"
+      ],
+      "non_substantive_rationale": "Progress receipt chronology is corroboration; topical contracts synthesized from native docs without repeating tallies."
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-06-codex-ni08-continuation.md",
+      "content_hash": "cb55cf42111c9fa99653464741f156e5116143acfddb6e7bcb4f3999e1283fbc",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "NI08 source/design/operational boundaries, usage and admission comparison; historical failures preserved.",
+      "pages": [
+        "agent-architecture.md",
+        "autonomous-research.md"
+      ],
+      "non_substantive_rationale": "Progress repeats canonical contracts; use source sections rather than per-artifact dump."
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-06-ni06-noninference.md",
+      "content_hash": "16063c52e56cca68519f320b53402b0312d1ee01629f1180a454ec7f9e6415b5",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Graph freshness warning advisory and preserves hard-check status; CJ13/K3 fixture gates distinct from live quality.",
+      "pages": [
+        "knowledge-management.md"
+      ],
+      "non_substantive_rationale": "Already represented in wiki operational checkpoint; no duplicate section needed."
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-06-workspace-ec.md",
+      "content_hash": "143ad15e390d569e5be6a672b47a9d364417f6f518c41821d30b0fa1b9c4fe11",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "bb2e4be7b0d6d3012e9f3f79ff04ec19c0eec5c7",
+      "finding": "Evening kernel/campaign outcomes and experimental safety lessons; production unchanged.",
+      "pages": [
+        "context-management.md"
+      ],
+      "non_substantive_rationale": "Outside agent-tool assigned focus; routed to root integration for inference/context ownership, no new local measurement."
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+      "content_hash": "6b6858c0c5d8afdc35abf89b6a948db13859831e6e88edcf96d68eabbe53ce18",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Oct07 accepted invocation locking, shared exploration, work cap and retrieved-arm synthetic source; live parents remain. Late sync: published SQLite transcript/summary source and BEAM provenance accepted; real consumers/quality/timing remain separate.",
+      "pages": [
+        "agent-architecture.md",
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": "Progress corroborates canonical source boundaries and is not population/backlog exhaustion evidence.",
+      "prior_reviewed_hash": "46bb7f71d3bfe4cb0b200665d24b3d2facd4bb5a6efe52a2bce44755d09b7eec",
+      "root_reconciliation": "Root reviewed exact 83004c113..3178d1c34 source delta; explicit voice payload and typed choice remain prospectively enrolled, no native/live acceptance."
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-07.md",
+      "content_hash": "67c4977932bb10033fbf3516be5256d97c185606fc36b78a3d7f8c18566231cf",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "AutoKernel suite triage/fix clusters tested on candidate; no campaign performance inference.",
+      "pages": [
+        "autonomous-research.md"
+      ],
+      "non_substantive_rationale": "Cross-stream campaign implementation record: root should merge only if absent from autonomous-research owner synthesis."
+    },
+    {
+      "group": "agents",
+      "path": "docs/design/harness-improvement-loop-design-20261006.md",
+      "content_hash": "0d658af66a23ba2625e28de491cfd2151606dee1744906bdde8951f4a7003b2c",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Shared substrate design and prospective per-feature carrier; recommended sibling loop unselected.",
+      "pages": [
+        "autonomous-research.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/design/hg9-detect-repair-topology.md",
+      "content_hash": "27370a92d21960e3b59942f63fa3a3b500a7a714323791c2a1371265ef2b97f7",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Source-valid detector roles not proven small/live; bound objective finding gives recommendation only.",
+      "pages": [
+        "routing-intelligence.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/design/hs-od-4-max-tokens-decision-prep-20261006.md",
+      "content_hash": "281b0b04443bf436c3ddb6225ae3c223cf1a01c58c9e35ff769695d582d44850",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Default REPL max_tokens turn mapping; total-generation recommendation unresolved and tool-output length separate.",
+      "pages": [
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/design/hs4-harness-decision-package-20260916.md",
+      "content_hash": "4190548cde0bbbd9cdfd2294156bf483b9d9bebe1b96ecdb2a26ec3f3114a077",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "0c8e227e5551012528e544b60aeca99f6492667e",
+      "finding": "External budget/harness portfolio context postdates shell choice and supplies no OpenCode ranking.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": "Context filing only; existing shell decision stays unchanged; no new source numbers adopted."
+    },
+    {
+      "group": "agents",
+      "path": "docs/design/hs4-p6-shared-exploration-source-contract-20261006.md",
+      "content_hash": "55a60effecef7f4bd3c5023080975282133f0bd2512cb41e4482c823b9a6c164",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Standalone MCP cannot infer request root; extraction must retain fences, paging units, outline and catalog gate.",
+      "pages": [
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/design/tu-grader-isolation-boundary.md",
+      "content_hash": "a02b3e56a88392bb16a2326c07b57571f4ca5781f4b080233365e2fbee2e5676",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Grader/agent worker OS boundary specification; mocks/trace hashes not isolation; current hidden asserts visible to candidate.",
+      "pages": [
+        "safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/guides/agent-workflows/opencode-event-duty-handover.md",
+      "content_hash": "c0681a50e771cc4f0596d4f7d4a8a98d08df41cdef076f9c197be75e7b33ef03",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Inactive event duty, owner verified daemon stop, once-status lock and liveness-versus-duty semantics.",
+      "pages": [
+        "safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/agent-run-failure-triage.md",
+      "content_hash": "b2d90a99858073e31b5eca8542500a7f6b6bf85c24750f15c48d709c40386497",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Five closed triage labels with unknown-versus-empty semantics; separate runtime ErrorCategory.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/declared-scratch-root-keep.md",
+      "content_hash": "a42bd5306c97d4c60840d8f632d5a42282c732012c8d7bcc2aed36d435fe5c83",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "KEEP root/ancestor/overlap preservation and apply-phase recheck; no atomic or host-wide guarantee.",
+      "pages": [
+        "safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/dtap-native-failure-ledger-contract.md",
+      "content_hash": "f1e1e357a109337fdf0a64533ed90eba6989d692cd28ec657c83de1d6fc91ec5",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Sidecar retains original native outcomes and unknown semantics; successful-response usage incomplete for total attempts.",
+      "pages": [
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/dtap-native-tool-contract.md",
+      "content_hash": "fc11965f10491b889bcfe4b2e7251a851537ff428d73959b609616c9d4959562",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Opt-in immutable case schema catalogs/endpoint modes; fake parser validation no service effects.",
+      "pages": [
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md",
+      "content_hash": "b93c49a9309454e688d778cef3789fd727503ac4538fb19dfc70e771de5984fd",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Typed ports/failure paths/budgets and publish/privacy affordances; survey not executor or calibration.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/harness-candidates/harness-card.md",
+      "content_hash": "ae9a2fbf00db1580e98ce276076d1d225030896016529854454ed61ff7303939",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "7cbfc704cfa14488d000e306f981df3b0fea4cc9",
+      "finding": "Dated r3 realized-shell card; release pin separate from dev audit anchor, one acceptance not efficacy.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/harnessfactory-source-comparison-20261006.md",
+      "content_hash": "506588e96ecbc7b3828ce4f943cf0ad36be7d86ae0f7ef394dba49cc5d42480e",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Eleven HarnessFactory implementations share four seams, differ structurally; code/data/original-repo license separation.",
+      "pages": [
+        "context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/host-supervision-activation-receipts.md",
+      "content_hash": "9f1a0b3b08f96b5b0f709e4a40622b8bea08d35ca09d7f6e3310f09dcf9d270a",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Prospective immutable install/eligible heartbeat dependency records; not deployment/recovery or grading warrant.",
+      "pages": [
+        "safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/ni08-admission-and-skill-granularity.md",
+      "content_hash": "c9d2bb3d1e76af13c7bcb45b3a231289e0bf6ad1770579c3508302dcfc18bc12",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Preference pair/bank/reward stages differ from tier-local Pareto and suite-level efficacy; no gate change.",
+      "pages": [
+        "autonomous-research.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/ni08-non-inference-continuation.md",
+      "content_hash": "6fd752c45271ec03309cb7d0fb5f8e385b5a9153d61b7832f376cb2107a2cd8c",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Consolidated accepted source queue corroborates invocation/settings/exploration/work-cap boundaries. Late sync: published SQLite transcript/summary source and BEAM provenance accepted; real consumers/quality/timing remain separate.",
+      "pages": [
+        "agent-architecture.md",
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": "Canonical source contracts prioritized; avoid duplicating scoped completion counts.",
+      "prior_reviewed_hash": "ad05ae3ef47f3b4aef61e6f1bf06f72935bedfa56790d83a98e4939b39ae7cd0",
+      "root_reconciliation": "Reviewed exact 956b6f328..83004c113 source delta; preserved native acceptance and pending controls."
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/repl-terminal-timeout-state.md",
+      "content_hash": "703b10729c18749dc35889f45d89aa1a8c430493de3d2733701ba7605188c7ef",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Terminal timeout refuses reuse/persistence; worker can continue effects, live lease gate separate.",
+      "pages": [
+        "agent-architecture.md",
+        "safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/tool-rendering-source-map.md",
+      "content_hash": "97daae5e4f4ee6c9d94f75c4a168f66d70ce5844c4caf99edfa60b57a0ce3b60",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Dated static map of tool advertisement/backend/template routes; later native opt-in updates its DTAP description.",
+      "pages": [
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/tool-repair-log-content-contract.md",
+      "content_hash": "aecae43c85b7642141da454ea480ecf6e9140bf1c69768c93000e83e1e94a741",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Repair helper logs outcome/hash/byte count only; refusal echo/parser unchanged and no global privacy claim.",
+      "pages": [
+        "tool-implementation.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reference/typed-candidate-description-preparation.md",
+      "content_hash": "13aa626cbab50de366052c4dfff220d324a4e9aa1413a4e34fc90b07288c4254",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Optional descriptions align original label positions despite opaque keys; legacy bytes unchanged; no live caller/no-harm.",
+      "pages": [
+        "routing-intelligence.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "agents",
+      "path": "docs/reviews/ni08-ap62-native-capture-recipe-20261006.md",
+      "content_hash": "5583b79f256f3188ff40845c262bb65a12bf1bb20e4f3e5042767855efec83fb",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Synthetic invocation recipe binds exact14 cases and static import readset; absent-path sentinels no server/kernel activation.",
+      "pages": [
+        "agent-architecture.md"
+      ],
+      "non_substantive_rationale": "Recipe is corroborating capture preparation; accepted source contract is represented, not a live concurrency claim."
+    },
+    {
+      "group": "agents",
+      "path": "progress/2026-10/2026-10-07-workspace-ec.md",
+      "content_hash": "1c69e541ee6154d3e968b1fcc27153996302a91d30bbab28767eac15f6555773",
+      "baseline_resolution": "new-source",
+      "baseline_commit": null,
+      "finding": "Hybrid Jet-Long pre-fix above-native results invalidated; corrected experimental prefix reuse reported; GPU windows incomplete; final six fork pushes supersede unpushed checkpoint; standing-approval WIP not ready.",
+      "pages": [
+        "context-management.md",
+        "hardware-optimization.md",
+        "inference-serving.md"
+      ],
+      "non_substantive_rationale": "Numerical physics/performance findings routed to root topical integration, without adopting a new measurement here.",
+      "prior_reviewed_hash": "7bbd6c5f94882eb4ef4a6bfe93cb27b26f82d05db77ff1df520b075c1133f577",
+      "root_reconciliation": "Reviewed exact 956b6f328..83004c113 source delta; preserved native acceptance and pending controls."
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/canonical-judge-suite-revamp.md",
+      "content_hash": "2c3c412a89447e04848c5eab0c0bef2e118869435cfe8f59be842bb9fe8090d8",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "Constrained reader B criterion mapping accepted; fake harness excludes real backend; parent live calibration remains open.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/colbert-reranker-web-research.md",
+      "content_hash": "44a4168194c75982a6b72cddc5af3de2632bdcfd0321d750305d89eb6146ec93",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "Per-process singleton locking accepted; already represented in existing page; HOLD and live/cross-process gates remain.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/conversational-memory-eval-instrument.md",
+      "content_hash": "e67a1f8ac3196f9a5bd5c138465d38f2bd5619d59b0d2355ea317db23befad85",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "26142aca82dc76171268e8adee75727bf80b9e58",
+      "finding": "CME-3 upstream question-omission and scoped 100K one-item rubric census completed; caveats already inserted alongside current wiki quotes.",
+      "pages": [
+        "wiki/memory-augmented.md",
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/episodic-memory-integrity.md",
+      "content_hash": "4da47751713ca7e688de146bc16e36cb98aea968951b1f8f4f05c6d65b74b7f3",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "bca13398929d451200f487ace2ec380ee2d415fd",
+      "finding": "Current page already contains work capture, forged-marker bound and Tulving/source closures; M19 record contract is preparation without writer or gate.",
+      "pages": [
+        "wiki/memory-augmented.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/eval-tower-verification.md",
+      "content_hash": "c3018f34bc93a1691a66271a56099a865260f7bd66af67846239f807402e2b69",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "94bf232833dd4ec751b597c1fb52431a28a8f7f0",
+      "finding": "Sidecar/reconnect implemented; suite-aggregate efficacy cannot identify hidden task regressions; trajectory report source is diagnostic only.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/internal-kb-rag.md",
+      "content_hash": "f9ecd6643d2b0b16cb7e5d26ce59690fb75a966a6ce3029e3089bd9822004d2a",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "d0c2365cf425283ff05cdffc2e7be803a713324f",
+      "finding": "Correct historical hard-coded web caps premise using current declared-cap source review; broader checkpoint acceptance open.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/objective-task-rate-goodput.md",
+      "content_hash": "5612360aec6766a34039d6907525ab9b35bba8218fe732b884cd2f0ac0ec7f7a",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "357e3d7b55f54f2fbb81aee74ca04ea15cac69ce",
+      "finding": "W3d identity disambiguated; missing-versus-zero display closures do not rewrite objective math; journal authority invalidates absent-cache-loss inference.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/repl-session-memory-maturity.md",
+      "content_hash": "f807b6bf8c8fe965c59b7445e52982b7e8b68aedc24b2c45bb99a094a9c73be1",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "94bf232833dd4ec751b597c1fb52431a28a8f7f0",
+      "finding": "Signed state constructor transport and terminal timed-out environment source accepted; no worker cancellation claim.",
+      "pages": [
+        "wiki/memory-augmented.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/reviewer-calibration-accounting.md",
+      "content_hash": "f053299ecfa64fe3f17c3593d55060d1356f1295c01e6789852dbe637bb816df",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "Pure supplied-score expectation accepted with synthetic completeness assertion; T1 historical readout and live comparison remain separate.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+      "content_hash": "80e88063f436b9e0f0b4b98ec6686b254abcaa160d755983ae6f30303a20024b",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "HG9 accepted source-backed detection/repair topology; no selector activation or measured detector eligibility.",
+      "pages": [
+        "wiki/safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/tool-use-eval-contract.md",
+      "content_hash": "2ad3230f4c295cbf7e692507e7e67df531a9efb64e4bfde93a2ce482888db62a",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "Source-backed grader boundary and native contracts are preparation/conformance; actual OS denial and live service effects unproved.",
+      "pages": [
+        "wiki/safety.md",
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "content_hash": "e34e3e61e4fb47d367b35ab173a65af20b5c5bd52e25e9646e55be318afc06b0",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "291572ee96eebf4fd9741d8837e175ce82fb718a",
+      "finding": "UTM structural conformance/Tulving backend and BEAM all-role/range/chunk provenance original21 accepted; semantic quality unassessed; MCP registrar prospective.",
+      "pages": [
+        "wiki/memory-augmented.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "content_hash": "39760b4b1f08fe633fc3b00bc6ae6b7be691a99cf22df047bfb5ac8571d6c02c",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "d0c2365cf425283ff05cdffc2e7be803a713324f",
+      "finding": "RAW retention SC76/77, numeric child, SC80 and analysis writers/readers now accepted; no new ladder/backfill. Numerous prospective/native CI closures are source-conformance only, many already represented by existing pages. Late current closure: CS15 original31 and UTM-B3 original21 accepted; existing memory wiki additions retained.",
+      "pages": [
+        "wiki/knowledge-management.md",
+        "wiki/benchmark-methodology.md",
+        "wiki/memory-augmented.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section.",
+      "prior_reviewed_hash": "8857c5d01fcf02a2cde77f4fc832fa7cfd1ca858b4116971f4d293edc06972f3",
+      "root_reconciliation": "Root reviewed exact 83004c113..3178d1c34 source delta; explicit voice payload and typed choice remain prospectively enrolled, no native/live acceptance."
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/guides/agent-workflows/benchmark-analyst.md",
+      "content_hash": "2328be047cf80c441664fd4537c605417f65fa154cb4cab024eee997c62f5cf0",
+      "baseline_resolution": "exact_hash_reconstructed",
+      "baseline_commit": "d7ba4b4b5f62437ac402a53f3eb4a16519efaa6d",
+      "finding": "New window discipline reinforces correctness/timing separation already compiled Oct6; served-model-derived corpus, matched floor identity, exact argv smoke and source-derived provenance are operational extensions.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/bsv-standalone-input-integrity-contract.md",
+      "content_hash": "5bd92eabc0134ea2b6bfbe889b6024cd2683b6288c47b5cafac896caf2b27774",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Strict native boolean/qid/container/alias validation and existing disposition admissibility; synthetic only.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/calibration-input-byte-bindings.md",
+      "content_hash": "0838130bca97b1ba28304b18830202c6a9171958f67f0cec967439a137ebcfdc",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Same original bytes hashed/parsed; CLI custody vs caller assertion; identity does not validate labels/calibration.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/colbert-query-expansion-declaration-contract.md",
+      "content_hash": "e6237def5e7d1203fc691c9ceedaec0338af82bc1c09ff8b80769f03c1a72a33",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Fresh-load unsupported/malformed expansion refusal; already represented in existing page, no expansion capability.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/confidence-expectation-preparation.md",
+      "content_hash": "bd4609b0911007e4392c554c466a5bfb24b82427574136829521ef55529c2a1b",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Expectation refuses partial or malformed coverage; synthetic assertion cannot prove native raw-vector completeness/T1 parity.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/credential-fixture-hook-decision.md",
+      "content_hash": "fb196d9c0478c444b3a45a6781bc44654627020f219a56f93bcd33c88753be8f",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Operator 1B keeps both test files scanned; proposed global exclusions rejected; exact-content future route remains preparation.",
+      "pages": [
+        "wiki/safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/dcp-hit-span-policy-preparation.md",
+      "content_hash": "c8b1986bd77f86a65bea13804fe507e0c41a988451aa5767eadc630952c2b1fa",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Ranged ColGREP retains slices/full ceiling or explicit exclusion; no feature activation or AST classification.",
+      "pages": [
+        "wiki/context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/dcp-render-content-identity-contract.md",
+      "content_hash": "63ba51b4ecdb55e2dcaabef37f129fda5aa18ff973a085f9fbc25bdcb68a3aa0",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Reread content hash checked before rendering; stale body refuses; planning costs exclude headers.",
+      "pages": [
+        "wiki/context-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/eval-outer-reconnect-cost.md",
+      "content_hash": "f3938578e73c581ff56791de5c8162cacff43c0d2d69e294fe6289e623bbf619",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Outer cost reaches original rows, separately from inner retries; unchanged budgets and grading.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/eval-question-sidecar-persistence-status.md",
+      "content_hash": "c52fbbf2d2e22b848afc923faeec124702a633727bab84884f8558439cc23ec8",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "All writer calls must return for complete; marker cannot repair failed append; empty/legacy distinct.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/hermetic-research-producer-ci-contract.md",
+      "content_hash": "c88b6aa10f5ff38b825437840aad8e89df7a46faab8b0d00529219e2c97889c6",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Separate test-only research checkout repairs tracked-intake collision; targeted and generic results remain separate.",
+      "pages": [
+        "wiki/knowledge-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/k7-report-catalog-dependency-contract.md",
+      "content_hash": "1f9ca102fe65ee2b3fa52968e303556a2c7efb0a550a7324225643bcd8ae41f4",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Report-time strict dependency attachment is already represented; not an all-query snapshot.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/kb-catalog-dependency-contract.md",
+      "content_hash": "260ad0c4cd366bdee9b2d09578869dba4c7288531516b5adb627a7d78d249dca",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Five named final logical transactions; self-hash not authenticated; vectors/checkpoints/concurrent writers excluded.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/kb-force-build-identity-contract.md",
+      "content_hash": "a846382f2e6ac2de1bee7600c9b31ef6237d7ff5492192913d6e0d9da8e2777d",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Exact chunk identity reconciled with stable ID/FTS and shared vectors; not a DB/filesystem transaction.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/kb-vector-staged-publication-contract.md",
+      "content_hash": "b7ebe5e086509364f45d2b12c148887b678019c876dd0c2bcf5afb4982f5b6a5",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Individual sibling-temp publication protects old bytes before replace; later SQL failure/fsync/crash excluded.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/lab-kb-context-catalog-dependency-contract.md",
+      "content_hash": "5cf5278ff2a2d48b5dcc573266ea1688534cc570423a6c5d6b67c4bfed59a5f2",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Pre-query/pre-dispatch strict native identity; not frozen catalog over all queries.",
+      "pages": [
+        "wiki/search-retrieval.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/rtg23-handoff-identity-and-cache-source-20261007.md",
+      "content_hash": "f5578a7c902b38a46c62b347d423c35a4632d54ab8a94d0cb10d253568a1cd32",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Task title collision corrected and current journal-derived archive authority proven statically; no live frontier sample.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/signed-checkpoint-payload-transport.md",
+      "content_hash": "50bc06504d0b317d65186ede458e05b0af54a352abe7c1ed2334b6ce2fe0c1a0",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Both constructors transport existing signed globals; combined persister caps, unchanged restricted boundary.",
+      "pages": [
+        "wiki/memory-augmented.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/staged-ed25519-header-check.md",
+      "content_hash": "6da154f00f1d022d7a476f1afe0f88148926861a708d9af141a48e43ae71c42e",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "ED25519 staged-header detection accepted; parent pending-policy wording superseded by settled credential decision.",
+      "pages": [
+        "wiki/safety.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reference/utm-synthetic-conformance-contract.md",
+      "content_hash": "1ffe045e48e5d5dbfac012b67b9be76cd7b378905d9f82c123ac9fbde3e12b5c",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Separate store/parser denominators, semantic axes unassessed, gold null; no new ladder.",
+      "pages": [
+        "wiki/memory-augmented.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reviews/ni08-vb-raw-anchor-capture-recipe-20261006.md",
+      "content_hash": "6b79ec0fe566278cfdb7e003bf496aa29d2335848249b1567ddff2916a50584f",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Historical prospective recipe; current owner establishes accepted original51 controls, no live fetch/backfill.",
+      "pages": [
+        "wiki/knowledge-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md",
+      "content_hash": "cb6d6fe77d9ce6ada8b7f501939bfdb103bc27ded5bba87d4f4aee92eec5e1c0",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Recipe retains setup/failing predecessors; current owner establishes ROOT38/APP20 acceptance with retained snapshots.",
+      "pages": [
+        "wiki/knowledge-management.md"
+      ],
+      "non_substantive_rationale": null
+    },
+    {
+      "group": "knowledge",
+      "path": "docs/reviews/vb-rtg02-native-conformance-capture-recipe-20261006.md",
+      "content_hash": "536890869374bc1762ce9d0e163571d29162bf45ce297fce8031908a9385f76d",
+      "baseline_resolution": "new_source",
+      "baseline_commit": null,
+      "finding": "Historical recipe, current owner accepts23 synthetic input-echo controls; no actual pool/model/scorer run.",
+      "pages": [
+        "wiki/benchmark-methodology.md"
+      ],
+      "non_substantive_rationale": "Existing wiki already represents this accepted boundary; proposed cross-source clarification avoids duplicate run-by-run section."
+    },
+    {
+      "group": "root-late-review",
+      "path": "handoffs/active/stack-change-governance-pipeline.md",
+      "content_hash": "4b0b98bac3120f763e44d25065f282bece751abe6fb05cf85f951f88539cd8f1",
+      "baseline_resolution": "exact-match",
+      "baseline_commit": "956b6f32886684376536679375de5f94247c13ba",
+      "baseline_sha256": "d7b4e15555f11bbe6bc8ed22e2e8755aea72435361dac9118ee4caeaa6c16297",
+      "finding": "Expired/wrong-PID undeclared override diagnostics are source proposals enrolled prospectively; SCG-ENVOVR-EXPIRED remains unchecked and no live /proc/reload occurred.",
+      "pages": [
+        "tool-implementation"
+      ],
+      "non_substantive_rationale": null
+    }
+  ],
+  "source_count": 114,
+  "base_commit": "3178d1c34189ae9b7fa5b5fa6ea09198169b38fb",
+  "reviewed_at": "2026-10-07T04:02:07.005945+00:00",
+  "late_reconciled_paths": [
+    "handoffs/active/conversation-stack.md",
+    "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "handoffs/active/non-inference-backlog.md",
+    "handoffs/active/repo-readiness-scorer.md",
+    "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+    "docs/reference/ni08-non-inference-continuation.md",
+    "progress/2026-10/2026-10-07-workspace-ec.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "handoffs/active/stack-change-governance-pipeline.md"
+  ]
+}
