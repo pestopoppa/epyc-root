@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import sys
 import time
+from types import SimpleNamespace
 
 from scripts.vidya.adapters import odl_model_gated
 
@@ -67,7 +68,13 @@ def test_actual_odl_writer_record_projects_through_root_reader(tmp_path, monkeyp
     sent_images = []
     monkeypatch.setattr(app_unlimited.UnlimitedOcrProducer, "validate_inputs", lambda self: None)
     monkeypatch.setattr(app_unlimited, "_inference_call_window", lambda: FakeWindow())
-    monkeypatch.setattr(app_unlimited.subprocess, "Popen", lambda *args, **kwargs: FakeProc())
+    # Replace only this producer's module reference; the writer must retain
+    # the real subprocess module for Git source-identity capture.
+    producer_subprocess = SimpleNamespace(
+        Popen=lambda *args, **kwargs: FakeProc(),
+        DEVNULL=app_unlimited.subprocess.DEVNULL,
+    )
+    monkeypatch.setattr(app_unlimited, "subprocess", producer_subprocess)
     monkeypatch.setattr(app_unlimited, "wait_for_health", lambda *args, **kwargs: None)
     monkeypatch.setattr(app_unlimited, "terminate", lambda proc: {"dead": True})
 
