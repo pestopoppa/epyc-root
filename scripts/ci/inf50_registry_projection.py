@@ -14,7 +14,6 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import platform
-import shutil
 import stat
 import subprocess
 import sys
@@ -103,22 +102,35 @@ def put_json(path: Path, value) -> None:
 
 
 def safe_regular(path: Path) -> tuple[bytes, int]:
-    """Read one regular leaf without following symlinks or special files."""
-    path = Path(path)
-    for parent in path.parents[:-1]:
-        info = parent.lstat()
-        if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
-            raise ValueError(f"source parent is not a stable directory: {parent}")
-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    """Read a regular leaf through no-follow directory descriptors."""
+    path = Path(os.path.abspath(path))
+    if not path.parts or path.name in {"", ".", ".."}:
+        raise ValueError(f"source path has no ordinary leaf: {path}")
+    parent_fd = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
-        info = os.fstat(fd)
-        if not stat.S_ISREG(info.st_mode):
-            raise ValueError(f"source is not a regular file: {path}")
-        with os.fdopen(fd, "rb", closefd=False) as handle:
-            data = handle.read()
-        return data, stat.S_IMODE(info.st_mode)
+        for component in path.parts[1:-1]:
+            next_fd = os.open(component, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                              dir_fd=parent_fd)
+            os.close(parent_fd)
+            parent_fd = next_fd
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                     dir_fd=parent_fd)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode):
+                raise ValueError(f"source is not a regular file: {path}")
+            with os.fdopen(fd, "rb", closefd=False) as handle:
+                data = handle.read()
+            return data, stat.S_IMODE(info.st_mode)
+        finally:
+            os.close(fd)
     finally:
-        os.close(fd)
+        os.close(parent_fd)
+
+
+def normalized_origin(value: str) -> str:
+    value = value.rstrip("/")
+    return value[:-4] if value.endswith(".git") else value
 
 
 def run(argv, *, cwd: Path, env=None, timeout=None):
@@ -165,7 +177,7 @@ def source_inventory(repos: dict[str, Path], expected_root: str, custody: Path, 
         remote = run(argv, cwd=repo)
         write_command(custody, f"{phase}-git-{key}-remote", argv, repo, remote)
         remote_value = remote.stdout.decode().strip()
-        if remote.returncode or remote_value != REMOTE_URLS[key]:
+        if remote.returncode or normalized_origin(remote_value) != normalized_origin(REMOTE_URLS[key]):
             raise ValueError(f"{key} origin mismatch: {remote_value!r}")
         argv = ["git", "status", "--porcelain=v1", "--untracked-files=all"]
         status = run(argv, cwd=repo)

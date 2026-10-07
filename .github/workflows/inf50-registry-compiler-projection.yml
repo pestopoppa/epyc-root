@@ -76,7 +76,7 @@ jobs:
           set -euo pipefail
           printf '{"record_kind":"attempt_inventory","root_checkout":"%s","app_checkout":"%s","research_checkout":"%s","setup_python":"%s","run_projection":"%s","native_receipt":null,"junit":null,"claim":null}\n' \
             "$ROOT_CHECKOUT" "$APP_CHECKOUT" "$RESEARCH_CHECKOUT" "$SETUP_PYTHON" "$RUN_PROJECTION" \
-            > "$RUNNER_TEMP/inf50-custody/result/attempt-outcomes.json"
+            > "$RUNNER_TEMP/inf50-custody/meta/attempt-outcomes.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
