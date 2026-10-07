@@ -1656,3 +1656,10 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 - [x] **RVP-ROLLBACK-SEED-SOURCE — repair only rollback-case integer initialization on a fresh experimental child of frozen production.** Exact private candidate`8e09a5e003f61b7ce7d58088f2f34595118068b4` parent`ffc1bac82eeca6f9099e1ccd9ba49703c460a115` consumes the existing per-tensor suite RNG and preserves unseeded fallback/float initialization. MAIN LOW source review is complete; finish prospective actual native CPU initializer/reference controls before source publication. Full GPU/production regressions, promotion and accepted live seeded event remain parent requirements; no production-tree change.
 
 ✅ 2026-10-07 RVP-ROLLBACK-SEED-SOURCE: [MAIN actual original3/3 and experimental source publication](../../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md). Actual64 raw initializer captures/CPU-reference replay; no production/GPU regression, live event, performance or promotion warrant.
+
+
+### Prospective bounded C-pointer lexical correction — 2026-10-07
+
+- [ ] **RVP-C6-26-C-POINTER-SOURCE — close only the C-style uintptr_t pointer-key lexical gap.** MAIN reviews exact two-file Research9f415 source on current2caf, preserving existing C++ detectors/source IDs and comment/string exclusion. Bind all9 actual whole-module controls, all6 Research source/metadata inputs, explicit separate APP70096 locked pytest environment5packages/all5wheels and unchanged native CI carrier before hosted capture. This named lexical source correction does not establish arbitrary memoization absence, GPU timing/ranking, executable content-hash-memo corpus completeness, a kernel/protocol/grade change or parent RVP-C6-26 completion. Native companion: VB-RVP-C6-26-C-POINTER-CONFORMANCE.
+
+Exact candidate/recipe preparation remains under /mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/; GPU two-sided timing proposal is still unaccepted and no runtime/kernel work is authorized by this child.

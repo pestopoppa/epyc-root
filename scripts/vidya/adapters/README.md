@@ -635,3 +635,11 @@ VB-K11-REPEAT-SUMMARY-CONFORMANCE accepted [exact source and original30/30](../.
 VB-RTG23-W6E-DIAGNOSTIC-CARRY accepted original31/31 and exact two-file source0e44: authored raw block plus canonical JSON support, absent legacy rows and existing quality/objective/grade unchanged. Original TRUE/FALSE/setup custody remains separate; no live trial or generalization/promotion warrant. Existing autopilot journal source family only.
 
 ET13 honest diagnostic routing source14a2 and original140/140 are accepted through the existing CI-fixture-conformance carrier/projector/shared grade, exact source/recipe/context and29 packages/all264 wheels. Actual owning/VB tasks are closed; live routing/quality/promotion and mixed E5 remain open. Original setup/NULL/FALSE observations and first absent-ref force-option deviation custody remain immutable. [MAIN reviewed source/native proof](../../../artifacts/ni08/et13-honest-routing-source-acceptance-20261007/README.md).
+
+
+### Prospective named spill and C-pointer source controls — 2026-10-07
+
+| Process | Existing source class | Exact prospective capture | Owning task / carrier |
+|---|---|---|---|
+| Rolling spill-summary request budget | Existing CI fixture verifier | APP63399 two products and whole15 controls; mocked worker summaries/temporary spills, complete Git/config/readset and23packages/all328wheels with original typed source/result/error and NULL/no-receipt custody. Request-size conformance only; TOC-SP-3 quality/quote/inference remains separate. | TOC-SP-4; VB-NI08-UFH12-SPILL-SUMMARY-CONTEXT-BUDGET; existing native_conformance.py / ci_conformance.py / shared grade |
+| C-style pointer lexical detector | Existing CI fixture verifier | Research9f415 two products,6 actual source/metadata inputs and whole9 controls; explicit separate APP70096 lock5packages/all5wheels, current published owning/source contexts, unchanged carrier and original typed source/result/error/API/JUnit/ZIP custody. Named lexical corpus only; content-memo/GPU/kernel/protocol parents remain open. | RVP-C6-26-C-POINTER-SOURCE; VB-RVP-C6-26-C-POINTER-CONFORMANCE; existing native_conformance.py / ci_conformance.py / shared grade |

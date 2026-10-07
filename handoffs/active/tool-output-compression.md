@@ -556,3 +556,10 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 - [x] **TOC-RD-1a-NI-ED25519 — staged header recognition child.** ✅ 2026-10-06 — ROOT staged-blob scanner recognizes ED25519 while retaining RSA/OPENSSH; source/recipe promoted eb870f0fe697f02f887bedecaeaccaf24df2d531; native run 37474797195 TRUE9/9. This closes only the implementation child. Parent TOC-RD-1a is resolved by operator choice 1B: both fixture files remain scanned, with no whole-file exemption applied.
 
 [Resolved scanner decision and narrower preparation guidance](../../docs/reference/credential-fixture-hook-decision.md); the rejected exact patch remains unchanged historical evidence.
+
+
+### Prospective bounded spill-summary request correction — 2026-10-07
+
+- [ ] **TOC-SP-4 — bound the rolling spill-summary request context.** MAIN reviews exact two-file APP63399 source: cap the previous summary inside the existing4,000-character request budget including labels and at least one new-tail character, avoiding zero-tail slicing and oversized prior replies. Preserve short-summary behavior, prompt/worker role/defaults, fallback and full original spill-file bytes. Freeze all15 actual module controls, eager source/config and all locked wheels before hosted execution; new boundary/oversized cases use mocked workers and temporary files only. Request-size source conformance does not close TOC-SP-3 quote verification, summary correctness/evidence retention, inference or deployment. Native companion: VB-NI08-UFH12-SPILL-SUMMARY-CONTEXT-BUDGET.
+
+Source/native recipe custody remains retained under /mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/; MAIN applies checklists only after review of original source/read/result/error evidence.

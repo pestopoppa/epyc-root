@@ -21,7 +21,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
 | UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | Bind the published finite actor source to a reviewed native recipe; keep model execution with its owner | — |
-| UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | Trajectory-artifact prerequisite then TOC-SP-3; retain fixture scanning | — |
+| UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | Review TOC-SP-4 spill-summary context-budget source and prospective native controls | — |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-6 — choose A/B/C from the reviewed architecture package, then implement the selected source seams | UFH-01 |
 | UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | Complete FW-4 executor refuse-without-hook integration with VB-FW-1 before GUI-authored measurement runs | — |
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
