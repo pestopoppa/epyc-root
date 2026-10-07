@@ -533,6 +533,7 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   `(suite_seed, op, case_idx, tensor_idx)` and record `suite_seed` on the evaluation event
   (`autokernel-research-loop.md` §7.4). Without this, a T0 failure is an anecdote: the RNG is
   `std::random_device`-seeded per thread (`:54,:62`) and there is no flag to pin it. **Do this first.**
+  **2026-10-07 source correction:** the no-flag premise above is obsolete. Frozen v10 source `ffc1bac82eeca6f9099e1ccd9ba49703c460a115` exposes `--suite-seed`, implements the tuple-seed stream and contains seeded `AK_*` output fields. Research `de02a21d88e006dd542b7a1a56bf8090a27de1f3` validates the seed and writes `performance.search_discipline.suite_seed`. These source facts do not establish a captured native event. **C2-1 remains open:** `test_ssm_scan::initialize_tensors` still shuffles its integer `ids` with `random_device`/`default_random_engine`, bypassing that stream. Correct only on a fresh experimental branch; preserve the unseeded fallback and independently verify seed replay before any production promotion or live event claim. Frozen production stays untouched.
 - [x] **RVP-C2-2 — Property layer (the only axis independent of the sibling).** ✅ 2026-08-26 —
   the producer SHIPPED: the instrument branch `codex/autokernel-gqa7-correctness-instrument-20260818`
   @ `5bbcc5498` (08-18) emits **AK_PROP_V2** from `test-backend-ops` (the earlier V1 schema is

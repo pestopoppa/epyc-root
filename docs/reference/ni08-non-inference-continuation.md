@@ -215,3 +215,7 @@ M-11a2b wiring remains complete; a separate forged-marker bound bypass was found
 ## Retained-RAW numeric-anchor child — MAIN acceptance
 
 [Exact source, original23/23, complete40-member API ZIP and unchanged native/shared-grade custody](../../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) close SC78/79-NUMERIC-ANCHOR-CHILD and its pre-enrolled conformance companion. **83 scoped completions (52 existing flips +31 additions)**. The existing one-shared-magnitude rule remains mechanical and incomplete for semantic/full numeric truth; parents SC78/79 stay open. Earlier fixture and grade-import failures remain immutable. Wider source work and actual task eligibility audit continue.
+
+## Source-premise reconciliation and next verification
+
+MAIN corrected RVP-C2-1's obsolete no-suite-seed premise while retaining its real SSM_SCAN exception and uncaptured event gate; frozen production is unchanged. Future Gate-R canonical-build language is superseded by the fresh experimental candidate/current-baseline/device-state procedure, with all historical observations intact. Existing Tulving retrieved-arm trace source is already present; its full23 synthetic controls are prospectively enrolled through VB-UTM-B4-CONFORMANCE, including four trace-only cases that must execute. UTM-B3 prospective filter/count source is free to implement before its eventual real BEAM run. No additional completion is counted at this preparation boundary; NI08 remains83.
