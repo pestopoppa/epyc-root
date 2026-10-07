@@ -201,6 +201,28 @@ def artifact_files(root: Path) -> list[Path]:
     return files
 
 
+def snapshot_paths(paths: list[Path]) -> dict[str, dict[str, Any]]:
+    snapshot = {}
+    for path in dict.fromkeys(paths):
+        if path.is_symlink() or not path.is_file():
+            raise RuntimeError(f"declared input is not a stable regular file: {path}")
+        resolved = path.resolve(strict=True)
+        data = resolved.read_bytes()
+        snapshot[str(resolved)] = {"sha256": digest_bytes(data), "bytes": len(data)}
+    return snapshot
+
+
+def snapshot_tree(root: Path) -> dict[str, Any]:
+    files = artifact_files(root)
+    directories = sorted(str(path.relative_to(root)) for path in root.rglob("*")
+                         if path.is_dir())
+    return {
+        "directories": directories,
+        "files": {str(path.relative_to(root)): {
+            "sha256": digest(path), "bytes": path.stat().st_size} for path in files},
+    }
+
+
 def junit_rows(path: Path) -> list[dict[str, str]]:
     root = ET.parse(path).getroot()
     rows = []
@@ -255,20 +277,37 @@ def mutate_exact_gate(source_bytes: bytes) -> tuple[bytes, dict[str, Any]]:
 
 def run_mutation_control(source: Path, result: Path, python: Path,
                          manifest: dict, root_inputs: dict[str, dict[str, str]]) -> dict[str, Any]:
-    mutant_root = Path(os.environ["RUNNER_TEMP"]).resolve() / "rtg48-aud11" / "mutant-source"
+    evidence = result / "mutation-evidence"
+    if evidence.exists():
+        raise RuntimeError("mutation evidence path already exists")
+    evidence.mkdir()
+    mutant_root = evidence / "mutant-source"
     if mutant_root.exists():
         raise RuntimeError("mutation source path already exists")
     mutant_root.mkdir(parents=True)
+    copied_inputs = []
     for relative in MUTANT_COPY_PATHS:
         original = tracked(source, relative)
         target = mutant_root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(original, target)
+        copied_inputs.append({
+            "path": relative,
+            "source_git_blob": git(source, "rev-parse", f"HEAD:{relative}"),
+            "sha256": digest(target),
+            "bytes": target.stat().st_size,
+        })
+    write_json(evidence / "copied-inputs.json", {
+        "schema": "epyc.rtg48_aud11_f08.mutation_inputs.v1",
+        "source_commit": git(source, "rev-parse", "HEAD"), "files": copied_inputs,
+    })
     adapter_relative = "scripts/coordination/tmux_adapter.py"
     adapter_path = mutant_root / adapter_relative
     original_adapter = adapter_path.read_bytes()
     mutated, mutation = mutate_exact_gate(original_adapter)
     adapter_path.write_bytes(mutated)
+    (evidence / "original-tmux_adapter.py").write_bytes(original_adapter)
+    (evidence / "mutated-tmux_adapter.py").write_bytes(mutated)
     if digest_bytes(original_adapter) != root_inputs[adapter_relative]["sha256"]:
         raise RuntimeError("mutant input differs from pinned source readset")
     env = dict(os.environ)
@@ -299,11 +338,22 @@ def run_mutation_control(source: Path, result: Path, python: Path,
     passed = completed.returncode == 1 and len(rows) == 2 and observed == expected
     report = {
         "schema": "epyc.rtg48_aud11_f08.mutation_control.v1",
-        "purpose": "off-host synthetic control that deleting the production interval gate is detected",
+        "purpose": "off-host synthetic control that disabling the exact production interval predicate is detected",
         "production_source_pin": git(source, "rev-parse", "HEAD"),
         "original_adapter_sha256": digest_bytes(original_adapter),
         "mutated_adapter_sha256": digest_bytes(mutated),
         "mutation": mutation,
+        "evidence": {
+            "original_adapter_bytes": str((evidence / "original-tmux_adapter.py").relative_to(result)),
+            "mutated_adapter_bytes": str((evidence / "mutated-tmux_adapter.py").relative_to(result)),
+            "mutant_source_adapter": str(adapter_path.relative_to(result)),
+            "copied_input_manifest": {
+                "path": str((evidence / "copied-inputs.json").relative_to(result)),
+                "sha256": digest(evidence / "copied-inputs.json"),
+            },
+            "junit": {"path": str(junit.relative_to(result)), "sha256": digest(junit)},
+            "log": {"path": str(log.relative_to(result)), "sha256": digest(log)},
+        },
         "argv": argv,
         "exit_code": completed.returncode,
         "expected_junit": sorted([list(item) for item in expected]),
@@ -314,7 +364,7 @@ def run_mutation_control(source: Path, result: Path, python: Path,
     }
     write_json(result / "mutation-control.json", report)
     if not passed:
-        raise RuntimeError("AST deletion control did not fail only the recent-nudge refusal test")
+        raise RuntimeError("AST predicate-disable control did not fail only the recent-nudge refusal test")
     return report
 
 
@@ -336,8 +386,11 @@ def main() -> int:
         root_pin = os.environ.get("GITHUB_SHA", "")
         if not root_pin or git(source, "rev-parse", "HEAD") != root_pin:
             raise RuntimeError("source/recipe checkout does not equal the triggering GitHub commit")
-        if git(source, "rev-parse", "HEAD^") != BASE_PIN:
-            raise RuntimeError("source/recipe commit is not a direct child of the reviewed current ROOT pin")
+        if git(source, "merge-base", BASE_PIN, "HEAD") != BASE_PIN:
+            raise RuntimeError("source/recipe commit does not descend from the reviewed ROOT pin")
+        history = git(source, "rev-list", "--parents", f"{BASE_PIN}..HEAD").splitlines()
+        if len(history) != 2 or any(len(row.split()) != 2 for row in history):
+            raise RuntimeError("recipe must be exactly two normal commits beyond the reviewed ROOT pin")
         changed = set(git(source, "diff", "--name-only", f"{BASE_PIN}..HEAD").splitlines())
         expected_changed = {WORKFLOW, DRIVER, CASES, TEST_MODULE}
         if changed != expected_changed:
@@ -469,6 +522,8 @@ def main() -> int:
                               "skipped": 0, "collected": 2, "executed": 2}
         junit_ok = junit_rows(junit) == expected
         native_files_before = artifact_files(native)
+        generated_before = snapshot_tree(result)
+        readset_before = snapshot_paths(read_paths)
         originals_before = [*native_files_before, junit, source_manifest, environment, freeze_path,
                             install_log, pre_status]
         membership_before = sorted(str(p.relative_to(result)) for p in originals_before)
@@ -487,6 +542,8 @@ def main() -> int:
         except Exception as exc:
             grade_error = f"{type(exc).__name__}: {exc}"
         native_files_after = artifact_files(native)
+        generated_after = snapshot_tree(result)
+        readset_after = snapshot_paths(read_paths)
         originals_after = [*native_files_after, junit, source_manifest, environment, freeze_path,
                            install_log, pre_status]
         membership_after = sorted(str(p.relative_to(result)) for p in originals_after)
@@ -495,6 +552,8 @@ def main() -> int:
         membership_unchanged = membership_before == membership_after
         bytes_unchanged = hashes_before == hashes_after
         receipt_unchanged = receipt_before == receipt_after
+        generated_unchanged = generated_before == generated_after
+        readset_unchanged = readset_before == readset_after
         grade_tuple = grade_result[:2] if isinstance(grade_result, tuple) else None
         grade_ok = grade_tuple == ("Judged", "Located")
         analysis = {
@@ -514,13 +573,19 @@ def main() -> int:
             "original_sha256_after_grade": hashes_after,
             "original_bytes_unchanged": bytes_unchanged,
             "original_receipt_bytes_unchanged": receipt_unchanged,
+            "generated_tree_before_grade": generated_before,
+            "generated_tree_after_grade": generated_after,
+            "generated_tree_unchanged": generated_unchanged,
+            "actual_read_paths_before_grade": readset_before,
+            "actual_read_paths_after_grade": readset_after,
+            "actual_read_paths_unchanged": readset_unchanged,
         }
         write_json(result / "shared-grade-analysis.json", analysis)
         if not (native_result.returncode == 0
                 and receipt.get("fixture_execution_conformant") is True
                 and identity_ok and count_ok and junit_ok and len(rows) == 1 and grade_ok
                 and grade_error is None and membership_unchanged and bytes_unchanged
-                and receipt_unchanged):
+                and receipt_unchanged and generated_unchanged and readset_unchanged):
             status.update(state="native_or_grade_failed", exit_code=native_result.returncode,
                           shared_grade_qt=list(grade_tuple) if grade_tuple else None)
             return 1

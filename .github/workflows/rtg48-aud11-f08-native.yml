@@ -35,6 +35,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           path: source
+          fetch-depth: 3
           persist-credentials: false
       - name: Checkout reviewed native carrier and shared grader
         uses: actions/checkout@v4
