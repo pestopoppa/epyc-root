@@ -221,7 +221,7 @@ def main():
         producer=[sys.executable,str(repos['recipe']/'scripts/ci/native_conformance.py'),'--cwd',str(source),'--junit',str(result/'original-junit.xml'),'--output',str(result/'native')]
         for label,repo in repos.items(): producer.extend(['--repo',label+'='+str(repo)])
         for path in reads: producer.extend(['--read-path',str(path)])
-        for case in EXPECTED_CASES: producer.extend(['--select',str(test)+'::'+case['name']])
+        for case in EXPECTED_CASES: producer.extend(['--select',str(test)+'::'+case['classname'].rsplit('.',1)[-1]+'::'+case['name']])
         code=subprocess.call([*producer,'--',*argv],cwd=source,env=env)
         receipt_path=result/'native/receipt.json';receipt=json.loads(receipt_path.read_bytes());counts=receipt.get('summary',{}).get('counts',{});actual=receipt.get('summary',{}).get('cases',[])
         exact=len(actual)==len(EXPECTED_CASES) and Counter((c.get('classname'),c.get('name')) for c in actual)==Counter((c['classname'],c['name']) for c in EXPECTED_CASES)
