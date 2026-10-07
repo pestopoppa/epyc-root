@@ -11,6 +11,8 @@ jobs:
     env:
       APP_PIN: 3e34eaeca079c440f31b2f26710fd09790544cc9
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
@@ -43,9 +45,8 @@ jobs:
         id: capture
         run: |
           set +e
-          "$RUNNER_TEMP/ssbench/venv/bin/python" root/scripts/ci/ssbench_native_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/ssbench/result/capture" > "$RUNNER_TEMP/ssbench/result/driver.log" 2>&1
+          "$RUNNER_TEMP/ssbench/venv/bin/python" root/scripts/ci/ssbench_native_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/ssbench/result"
           rc=$?
-          cat "$RUNNER_TEMP/ssbench/result/driver.log"
           printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/ssbench/result/status.json"
           exit "$rc"
       - name: Preserve status, original receipt, JUnit, and input snapshots

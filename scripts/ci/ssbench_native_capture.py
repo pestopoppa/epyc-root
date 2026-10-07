@@ -13,6 +13,8 @@ import platform
 import stat
 import subprocess
 import sys
+import tomllib
+import re
 
 ROOT = Path(__file__).resolve().parents[2]
 APP_PIN = "3e34eaeca079c440f31b2f26710fd09790544cc9"
@@ -29,6 +31,8 @@ ROOT_READS = (
     "scripts/vidya/adapters/ci_conformance.py",
     "scripts/vidya/claim_tuple.py",
     "scripts/vidya/measurement_record.py",
+    "scripts/vidya/canonical.py", "scripts/vidya/frames.py", "scripts/vidya/lattice.py",
+    "handoffs/active/vidya-belief-substrate-program.md",
     "handoffs/active/standardized-stack-update-pipeline-finalization.md",
 )
 APP_READS = (
@@ -75,11 +79,15 @@ def native_tree_snapshot(directory: Path) -> dict[str, dict[str, object]]:
     result = {}
     for path in sorted(directory.rglob("*")):
         if path.is_symlink():
-            raise RuntimeError(f"symlink appeared in native artifact tree: {path}")
-        if path.is_file():
-            data = regular_bytes(path)
-            result[str(path.relative_to(directory))] = {
-                "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+            raise RuntimeError(f"symlink appeared in result artifact tree: {path}")
+        relative = path.relative_to(directory).as_posix()
+        if relative == "status.json":
+            continue
+        if path.is_dir():
+            result[relative + "/"] = {"kind": "directory"}
+            continue
+        data = regular_bytes(path)
+        result[relative] = {"kind": "regular_file", "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
     return result
 
 
@@ -104,22 +112,75 @@ def load_carrier():
 
 
 def app_dynamic_config_inputs(app: Path) -> list[Path]:
-    # Config/registry files are source inputs to eager imports. Read only regular tracked blobs
-    # declared by the exact APP commit; the carrier then binds their actual checkout bytes.
-    listing = subprocess.check_output(["git", "-C", str(app), "ls-tree", "-r", "--name-only", APP_PIN], text=True)
+    # Conservative complete source/config envelope closes eager and lazy import inputs.
+    listing = subprocess.check_output(["git", "-C", str(app), "ls-tree", "-r", APP_PIN], text=True)
     selected = []
-    for name in listing.splitlines():
+    for entry in listing.splitlines():
+        identity, name = entry.split("\t", 1)
+        mode, kind, _blob = identity.split()
         path = Path(name)
-        if name == "registry.yaml" or (path.parts and path.parts[0] == "config"
-                and path.suffix.lower() in {".yaml", ".yml", ".json", ".toml"}):
+        if mode not in {"100644", "100755"} or kind != "blob":
+            continue
+        if (name == "registry.yaml" or name == "pyproject.toml"
+                or (path.parts[0] in {"src", "scripts", "orchestration"} and path.suffix == ".py")
+                or (path.parts[0] in {"config", "prompts"} and path.suffix.lower() in {".yaml", ".yml", ".json", ".toml", ".md", ".txt"})):
             selected.append(app / name)
     return selected
+
+
+def verify_locked_wheels(app: Path) -> None:
+    PACKAGES = json.loads(regular_bytes(ROOT / "scripts/ci/ssbench_package_versions.json"))["versions"]
+    requirements = ROOT / "scripts/ci/ssbench_requirements.txt"
+    if subprocess.check_output(["git", "-C", str(app), "rev-parse", "HEAD:uv.lock"], text=True).strip() != "ef2306018773ff9a1e80389970d92f66fcf8d5b7":
+        raise RuntimeError("APP lock blob differs from the dependency source used for wheel selection")
+    lock = tomllib.loads(regular_bytes(app / "uv.lock").decode("utf-8"))
+    locked = {row["name"].lower().replace("_", "-"): row for row in lock["package"]}
+    declared: dict[str, dict[str, object]] = {}
+    current = None
+    for line in regular_bytes(requirements).decode("utf-8").splitlines():
+        row = line.strip()
+        if not row:
+            continue
+        if not line[:1].isspace():
+            if not row.endswith("\\"):
+                raise RuntimeError("exact requirement row lacks a continuation")
+            match = re.fullmatch(r"([A-Za-z0-9_.-]+)==([A-Za-z0-9_.+-]+)", row[:-1].rstrip())
+            if not match:
+                raise RuntimeError("invalid exact package row in hash-locked requirements")
+            current = match.group(1).lower().replace("_", "-")
+            declared[current] = {"version": match.group(2), "hashes": set()}
+        else:
+            match = re.fullmatch(r"--hash=sha256:([0-9a-f]{64})", row)
+            if not match or current is None:
+                raise RuntimeError("invalid or orphan wheel hash in requirements")
+            declared[current]["hashes"].add(match.group(1))
+    if set(declared) != {name.lower() for name in PACKAGES}:
+        raise RuntimeError("requirements package set differs from the tested import closure")
+    for name, version in PACKAGES.items():
+        key = name.lower().replace("_", "-")
+        package = locked.get(key)
+        if not package or package["version"] != version or declared[key]["version"] != version:
+            raise RuntimeError(f"locked package version differs: {name}=={version}")
+        compatible = {
+            wheel["hash"].removeprefix("sha256:") for wheel in package.get("wheels", [])
+            if (wheel["url"].lower().endswith("-py3-none-any.whl")
+                or ("cp313-cp313-manylinux" in wheel["url"].lower()
+                    and "x86_64" in wheel["url"].lower()))
+        }
+        if not compatible or declared[key]["hashes"] != compatible:
+            raise RuntimeError(f"requirements wheel hashes differ from APP lock: {name}")
 
 
 def main() -> int:
     if len(sys.argv) != 3:
         raise SystemExit("usage: ssbench_native_capture.py APP_ROOT RESULT_DIR")
     app, result = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()
+    if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD") != "1" or os.environ.get("PYTHONDONTWRITEBYTECODE") != "1":
+        raise RuntimeError("pytest autoload/bytecode controls differ")
+    if os.environ.get("PYTEST_ADDOPTS", "") or os.environ.get("PYTEST_PLUGINS", ""):
+        raise RuntimeError("inherited pytest options/plugins must be empty")
+    if not os.environ.get("GITHUB_SHA") or subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip() != os.environ["GITHUB_SHA"]:
+        raise RuntimeError("ROOT recipe differs from triggering commit")
     runner_temp_value = os.environ.get("RUNNER_TEMP")
     if not runner_temp_value:
         raise RuntimeError("RUNNER_TEMP is required for this bounded hosted capture")
@@ -133,11 +194,11 @@ def main() -> int:
     app_commit = subprocess.check_output(["git", "-C", str(app), "rev-parse", "HEAD"], text=True).strip()
     if app_commit != APP_PIN:
         raise RuntimeError("APP checkout differs from the reviewed test/source pin")
-    if not result.is_relative_to(runner_temp) or os.path.lexists(result):
-        raise RuntimeError("result directory must be fresh and contained beneath RUNNER_TEMP")
-    result.mkdir(parents=True, exist_ok=False)
+    if result != runner_temp / "ssbench" / "result" or not result.is_dir() or not (result / "status.json").is_file() or os.path.lexists(result / "native"):
+        raise RuntimeError("result envelope absent or native output not fresh")
     install_log = result / "dependency-install.log"
     requirement_file = ROOT / "scripts/ci/ssbench_requirements.txt"
+    verify_locked_wheels(app)
     installed = subprocess.run([sys.executable, "-m", "pip", "install", "--require-hashes",
                                 "--no-deps", "--only-binary=:all:", "-r", str(requirement_file)],
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -170,15 +231,15 @@ def main() -> int:
     if len(expected.get("cases", [])) != 81:
         raise RuntimeError("the frozen exact-case manifest is not the reviewed 81-case scope")
     command = [sys.executable, "-m", "pytest", "--noconftest", "-c", "/dev/null",
-               "--rootdir", str(app), "-o", "addopts=", "-p", "no:cacheprovider",
+               "--rootdir", str(app), "--import-mode=importlib", "-o", "addopts=", "-p", "no:cacheprovider",
                "-p", "pytest_asyncio.plugin", "-q", f"--junitxml={junit}",
                "tests/unit/test_bench_core_claim.py",
                "tests/unit/test_bench_core_claim_api_layer.py"]
     read_paths = [ROOT / item for item in ROOT_READS] + [app / item for item in APP_READS]
     read_paths += app_dynamic_config_inputs(app) + [app / "uv.lock", context,
                     result / "environment.json", install_log, result / "pip-freeze.txt"]
-    if len({p.resolve() for p in read_paths}) != len(read_paths):
-        raise RuntimeError("duplicate source-read paths in bounded capture")
+    read_paths = list(dict.fromkeys(path.resolve() for path in read_paths))
+    source_before_capture = snapshots(read_paths)
     carrier = load_carrier()
     record = carrier.capture_fixture_execution(
         argv=command, cwd=app, junit=junit, output=receipt_dir,
@@ -197,7 +258,9 @@ def main() -> int:
     if record.get("fixture_execution_conformant") is not True:
         raise RuntimeError("existing native verifier did not produce a conformant receipt")
     source_before = snapshots(read_paths)
-    native_before = native_tree_snapshot(receipt_dir)
+    if source_before != source_before_capture:
+        raise RuntimeError("source/readset bytes changed during execution")
+    native_before = native_tree_snapshot(result)
     junit_before = hashlib.sha256(regular_bytes(junit)).hexdigest()
     sys.path.insert(0, str(ROOT / "scripts/vidya"))
     from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
@@ -209,14 +272,14 @@ def main() -> int:
     if judgment[0:2] != ("Judged", "Located"):
         raise RuntimeError("shared ClaimTuple.grade did not return Judged/Located")
     source_after = snapshots(read_paths)
-    native_after = native_tree_snapshot(receipt_dir)
+    native_after = native_tree_snapshot(result)
     junit_after = hashlib.sha256(regular_bytes(junit)).hexdigest()
     if source_before != source_after or native_before != native_after or junit_before != junit_after:
         raise RuntimeError("source inputs or original capture custody changed during shared grade")
     check = {"receipt": str(receipt_dir / "receipt.json"), "case_count": 81,
              "grade": judgment[0], "location": judgment[1],
              "scope": "synthetic source-level SMT sibling/topology/placement controls",
-             "source_inputs_before": source_before, "source_inputs_after": source_after,
+             "source_inputs_before_capture": source_before_capture, "source_inputs_before": source_before, "source_inputs_after": source_after,
              "native_tree_before": native_before, "native_tree_after": native_after,
              "junit_sha256_before": junit_before, "junit_sha256_after": junit_after}
     write_once(result / "shared-grade-check.json",
