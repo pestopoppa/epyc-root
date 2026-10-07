@@ -60,6 +60,7 @@ def repository_context(label: str, path: str) -> dict:
         raise SystemExit(f"ignored source/config inputs exist in {label}: {ignored_sources[:20]}")
     raw = _git(path, "ls-tree", "-rz", "--full-tree", commit)
     files = []
+    symlinks = []
     for item in raw.split(b"\0"):
         if not item:
             continue
@@ -87,10 +88,21 @@ def repository_context(label: str, path: str) -> dict:
             raise SystemExit(f"cannot read physical source input in {label}: {relative}: {exc}") from exc
         if physical != content:
             raise SystemExit(f"physical source bytes differ from pinned Git blob in {label}: {relative}")
-        files.append({"path": relative, "git_blob": oid,
-                      "sha256": hashlib.sha256(content).hexdigest(), "bytes": len(content)})
+        record = {"path": relative, "git_blob": oid,
+                  "sha256": hashlib.sha256(content).hexdigest(), "bytes": len(content)}
+        if mode == "120000":
+            # Git stores a symlink's target as the blob bytes. Preserve that
+            # identity as generated context rather than following it through
+            # the regular-file artifact snapshotter.
+            record["git_mode"] = mode
+            record["link_target"] = os.fsdecode(content)
+            symlinks.append(record)
+        else:
+            files.append(record)
     files.sort(key=lambda row: row["path"])
-    return {"label": label, "commit": commit, "files": files}
+    symlinks.sort(key=lambda row: row["path"])
+    return {"label": label, "commit": commit, "files": files,
+            "symlinks": symlinks}
 
 
 def main() -> int:
@@ -104,7 +116,7 @@ def main() -> int:
         if not label or label in repos:
             raise SystemExit("repository labels must be nonempty and unique")
         repos[label] = repository_context(label, path)
-    result = {"schema": "epyc.evl38.source_context/v1", "repositories": repos}
+    result = {"schema": "epyc.evl38.source_context/v2", "repositories": repos}
     encoded = json.dumps(result, sort_keys=True, separators=(",", ":"),
                          ensure_ascii=False, allow_nan=False).encode("utf-8") + b"\n"
     with open(args.output, "xb") as handle:
