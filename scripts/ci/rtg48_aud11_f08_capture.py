@@ -400,8 +400,8 @@ def main() -> int:
         if git(source, "merge-base", BASE_PIN, "HEAD") != BASE_PIN:
             raise RuntimeError("source/recipe commit does not descend from the reviewed ROOT pin")
         history = git(source, "rev-list", "--parents", f"{BASE_PIN}..HEAD").splitlines()
-        if len(history) != 5 or any(len(row.split()) != 2 for row in history):
-            raise RuntimeError("recipe must be exactly five normal commits beyond the reviewed ROOT pin")
+        if len(history) != 7 or any(len(row.split()) != 2 for row in history):
+            raise RuntimeError("recipe must be exactly seven normal commits beyond the reviewed ROOT pin")
         changed = set(git(source, "diff", "--name-only", f"{BASE_PIN}..HEAD").splitlines())
         expected_changed = {WORKFLOW, DRIVER, CASES, TEST_MODULE, REQUIREMENTS}
         if changed != expected_changed:
