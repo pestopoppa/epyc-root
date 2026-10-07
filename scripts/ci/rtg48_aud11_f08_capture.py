@@ -274,8 +274,10 @@ def mutate_exact_gate(source_bytes: bytes) -> tuple[bytes, dict[str, Any]]:
                 and candidate.test.value is False]
     if len(disabled) != 1:
         raise RuntimeError("mutated AST does not retain the exact conditional with a False predicate")
-    if (ast.dump(disabled[0].body) != ast.dump(node.body)
-            or ast.dump(disabled[0].orelse) != ast.dump(node.orelse)):
+    if ([ast.dump(statement) for statement in disabled[0].body]
+            != [ast.dump(statement) for statement in node.body]
+            or [ast.dump(statement) for statement in disabled[0].orelse]
+            != [ast.dump(statement) for statement in node.orelse]):
         raise RuntimeError("mutation changed the interval conditional body or else branch")
     return mutated, {"function": "cmd_nudge", "line": node.lineno,
                      "predicate_ast_sha256": digest_bytes(ast.dump(expected).encode()),
@@ -398,8 +400,8 @@ def main() -> int:
         if git(source, "merge-base", BASE_PIN, "HEAD") != BASE_PIN:
             raise RuntimeError("source/recipe commit does not descend from the reviewed ROOT pin")
         history = git(source, "rev-list", "--parents", f"{BASE_PIN}..HEAD").splitlines()
-        if len(history) != 4 or any(len(row.split()) != 2 for row in history):
-            raise RuntimeError("recipe must be exactly four normal commits beyond the reviewed ROOT pin")
+        if len(history) != 5 or any(len(row.split()) != 2 for row in history):
+            raise RuntimeError("recipe must be exactly five normal commits beyond the reviewed ROOT pin")
         changed = set(git(source, "diff", "--name-only", f"{BASE_PIN}..HEAD").splitlines())
         expected_changed = {WORKFLOW, DRIVER, CASES, TEST_MODULE, REQUIREMENTS}
         if changed != expected_changed:
