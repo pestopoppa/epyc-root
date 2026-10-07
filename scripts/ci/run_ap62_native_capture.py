@@ -62,7 +62,7 @@ def _install(run_dir: Path) -> tuple[Path, Path, dict[str, str]]:
         "ORCHESTRATOR_PATHS_LLAMA_MTMD": str(run_dir / "absent-kernel-paths" / "llama-mtmd-cli"),
         "ORCHESTRATOR_PATHS_LLAMA_SERVER": str(run_dir / "absent-kernel-paths" / "llama-server"),
     }
-    if any(Path(value).exists() for value in api_path_overrides.values()):
+    if any(os.path.lexists(value) for value in api_path_overrides.values()):
         raise RuntimeError("API config placeholders unexpectedly resolve to filesystem paths")
     os.environ.update(api_path_overrides)
     environment = {"python": sys.version, "python_version": platform.python_version(),
@@ -186,7 +186,7 @@ def main() -> int:
         "ORCHESTRATOR_PATHS_LLAMA_SERVER",
     }:
         raise RuntimeError("environment receipt lacks the exact API config placeholder set")
-    placeholders_absent_after = all(not Path(value).exists() for value in api_paths.values())
+    placeholders_absent_after = all(not os.path.lexists(value) for value in api_paths.values())
     grades, grade_error = {}, ""
     if record.get("fixture_execution_conformant") is True and exact:
         try:
