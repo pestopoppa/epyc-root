@@ -407,7 +407,7 @@ def main() -> int:
                 "orchestrator_paths_llm_root": os.environ.get("ORCHESTRATOR_PATHS_LLM_ROOT"),
                 "stack_numa_mode_absent": "ORCHESTRATOR_STACK_NUMA_MODE" not in os.environ,
             },
-            "scope": "Synthetic session SQLite persistence/protocol and existing lease write-fencing controls only; no model or inference calls.",
+            "scope": "Planner evidence formatting and nullable replay-counter display controls only; no objective, score, live journal, model, inference, or benchmark claims.",
         })
         source_manifest = result / "source-manifest.json"
         write_json(source_manifest, {
