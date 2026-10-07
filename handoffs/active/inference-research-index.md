@@ -30,7 +30,7 @@
 | INF-72 | moe routing locality tap | [moe-routing-tap-and-locality-measurement.md](moe-routing-tap-and-locality-measurement.md) | Port llama-moe-trace onto an llama.cpp-experimental branch off v9; emit SRP/SCH/EOR | INF-34, INF-70 |
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | DS41-C128: critic now gpt-6-astra@high on both lanes; add a measurement-granularity pause to serial_run | INF-31, RTG-57 |
 | INF-78 | autokernel orchestrator actor backend | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) | OAB-29/30 wire-test gate + stub e2e; OAB-34 16384 output-cap hit rate per role; OAB-28 best-of fence (OAB-4/9b/12/15-19/33 parked 09-27) | INF-77, INF-66, EVL-37, RTG-56, UFH-01 |
-| INF-79 | conversation stack (speech) | [conversation-stack.md](conversation-stack.md) | CS-13 contract, CS15-STORE-SOURCE, controller/cascade source and CS14-STREAM-SOURCE; then separate live acceptance | — |
+| INF-79 | conversation stack (speech) | [conversation-stack.md](conversation-stack.md) | CS16 speech/display/preserve source, typed CS18 choice and CS20 WAV harness; then separate live acceptance | — |
 | INF-80 | exl3 cpu mi210 implementation | [exl3-cpu-mi210-implementation.md](exl3-cpu-mi210-implementation.md) | EXL3-6c5 emit measurement rows, then tick; EXL3-LB1b seed #1 confirm | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |

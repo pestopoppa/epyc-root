@@ -353,3 +353,6 @@ After each waypoint:
   in a deliberate doc-sync pass; GitNexus currently marks them CRITICAL/HIGH.
 - Add a progress entry with exact commands and whether AutoPilot was paused or
   running.
+
+
+2026-10-07 MAIN source boundary: reviewed APP0a40117c missing undeclared-override branch reports expired/wrong-PID deviations with restore hints, preserving the original diagnostic coverage path. VB-SW-SCG-SOURCE-CONFORMANCE prospectively binds full compiler/environment/diagnostic/embedder modules before hosted capture. SCG-ENVOVR-EXPIRED remains unchecked pending source integration and original compatibility proof; no live /proc read or reload occurred.

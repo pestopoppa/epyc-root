@@ -130,3 +130,8 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## Request-scoped streaming/controller source — MAIN acceptance
 
 [Published source and original276/276](../../artifacts/ni08/cs14-voice-stream-source-20261007/README.md) close the bounded stream/controller scopes and native verifier. MAIN verified complete463-input/475-member originals and normally merged APPadfe61e9; failed269/276 remains unchanged. Concrete transport/harness/formatting/typed retain-cancel source gaps are still free work; real model/audio/50ms/cancel-latency acceptance is separate. NI08 now105 scoped completions (58 existing flips+47 children); backlog work continues.
+
+
+## Prospective reference and registry/env source enrollment
+
+MAIN reviewed and prospectively enrolled the actual governance-reference validator and combined compiler/environment compatibility controls before hosted execution. The reference scope covers the nine reviewed corrections plus the actual complete scan/target readset; it does not substitute for the full candidate gate. APP0a40117c source remains private pending native proof and integration. Updated existing domain next actions; no new handoff/index row or completion count. NI08 remains105, broader source/audit work continues.
