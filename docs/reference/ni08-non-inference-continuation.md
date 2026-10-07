@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **125 completed scoped tasks: 68 existing checkbox flips and 57 newly completed scoped subtasks; the corrected voice verifier is accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **129 completed scoped tasks: 72 existing checkbox flips and 57 newly completed scoped subtasks; mocked workflow and pin-checker controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -327,3 +327,8 @@ MAIN completed the RTG-51 Phase-4 command documentation: request identity, immut
 ## Edited-file reference hook — 2026-10-07
 
 Published LR12 edited-file Git-root hook and accepted original hosted5/5 controls after MAIN independent API/48-member/34-readset review. Existing native TRUE/shared Judged/Located and complete immutable source/result custody retained. Two existing checkbox flips bring NI08 to125 scoped completions (68existing+57children). Prior startup failure stays original; no live queue/bus, host hook execution or protected policy ratification is claimed.
+
+
+## Mocked authoring and static benchmark pin checker — 2026-10-07
+
+MAIN accepted [FW-1 original10/10](../../artifacts/ni08/fw1-success-acceptance-20261007/README.md) and [EVL42 original8/8](../../artifacts/ni08/evl42-success-acceptance-20261007/README.md), published exact APP/Research sources and retained every earlier failed original. Four existing checkbox flips bring NI08 to129 scoped completions (72existing+57children). Mocked workflow runs carry source-conformance identity, not real GUI measurement warrant; actual benchmark scan report wiring remains open and source snapshots do not attest loaded code. Remaining eligible source work and full backlog adjudication continue.

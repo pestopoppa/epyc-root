@@ -3683,3 +3683,12 @@ The [memory/embedding intake checkpoint](../progress/2026-10/2026-10-07-intake-m
 ### Lane-root reference checks — 2026-10-07
 
 [LR12 source and five real subprocess controls](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md) resolve references against the edited file’s Git checkout. This prevents a lagging launch checkout from rejecting valid lane-local references. The isolated hosted queue was synthetic; production bus liveness and protected policy amendment authority remain separate.
+
+
+### Conditional heavy-wrap contract and source acceptance — 2026-10-07
+
+The [RTG-51 Phase-4 command contract](../artifacts/ni08/rtg51-phase4-command-source-20261007/README.md) binds accepted request identity, immutable receipt cut, one writer/lease, ordered changes, Coordinator promotion and a completion receipt. Failure/reboot barriers retain partial progress without granting completion. Protected Phase-5 ratification still controls any change to operator-only pruning/wiki authority; the contract grants no runtime activation.
+
+MAIN also accepted the [edited-file Git-root reference hook](../artifacts/ni08/lr12-reference-hook-source-20261007/README.md): five original real-subprocess controls verify lane-relative references against the edited file's own checkout. An empty hosted token queue is an existence fixture, not evidence about the live bus. New [mocked workflow and pin-checker source acceptance](../docs/reference/ni08-non-inference-continuation.md) brings the NI08 scoped tally to129 (72existing task flips +57completed children). The whole [backlog](../handoffs/active/non-inference-backlog.md) remains under source-level adjudication; failed captures and external owner/policy gates stay open.
+
+Source references: [heavy-wrap handoff](../handoffs/active/wrap-up-division-of-labor-policy.md), [belief-source program](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [non-inference backlog](../handoffs/active/non-inference-backlog.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).

@@ -1,0 +1,7 @@
+# FW1 source and original native acceptance — 2026-10-07
+
+MAIN manually reviewed exact source/callers and complete hosted recipe as LOW risk, then independently authenticated [original run](https://github.com/pestopoppa/epyc-root/actions/runs/37577590308). Original native TRUE: 10/10 complete controls, with no skips, failures or errors. Existing shared grade Judged/Located is retained; MAIN executes no grading rule.
+
+Actual GUI-mocked CLI graph controls cover typed decision routes, independent budgets, approval denial, worker/validation paths and declared terminals. APP source 1533dd0b7c8c2a1c9ff1dde2ef36e0a690dc3819 is published in main 6712eecf7925d8dbfe4042371f4a1decd5a9864d. The pure confidence control uses the existing categorical margin formula rather than the raw winning probability. Real GUI-authored measurement execution and VB-FW-1 remain open.
+
+[Original custody review](MAIN-original-review.json) verifies all 85 original ZIP members, 69 Git inputs and 4 generated inputs, typed stable source/result custody and unchanged originals. [Prebinding](MAIN-prebinding.json) preceded execution; [publication](source-publication.json) preserves exact accepted source bytes. ZIP SHA-256 `18189dace7dbcb4ff9a791b412b96368eea7f741c09b464b19178581f9484326`; original native receipt file SHA-256 `223c23255aad80d454a4ceb157c0f6da15ee34f33a6d044e2ab25a21d3e35cd6`. Earlier failed captures remain immutable in private custody. No host project execution, inference, deployment, production readiness or new source class/ladder is claimed.

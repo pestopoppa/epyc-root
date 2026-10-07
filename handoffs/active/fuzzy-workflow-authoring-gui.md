@@ -21,7 +21,7 @@ assumed to be the runtime.
 
 ## Tasks
 
-- [ ] **FW-1 — Requirement sketch + one worked example.** Take one recurring fuzzy subtask from PAW-5's
+- [x] **FW-1 — Requirement sketch + one worked example.** ✅ 2026-10-07 — [Mocked CLI original10/10 and source publication](../../artifacts/ni08/fw1-success-acceptance-20261007/README.md). Take one recurring fuzzy subtask from PAW-5's
   enumeration (candidate: eval-triage or tool-output routing; the latter links to TD-4 / TU-TD-1), express it
   as a two-layer graph (deterministic nodes: code; fuzzy nodes: typed questions / compiled programs), and
   record what the GUI must expose. **The sketch opens with a pseudocode loop block** per
@@ -42,8 +42,7 @@ assumed to be the runtime.
   block is in the sketch with all four requirements and the budgets named.
   **Delivered 2026-09-17 (sketch half, zero inference): § *FW-1 sketch* below** — worked example = worker-failure
   routing (PAW-5 "tool-output classification"), loop block, derived GUI vocabulary + 11 lint rules, three forced
-  decisions and two follow-ups. **Not yet done**: the mocked-GUI harness run (blocked on FW-4's write-side hook by
-  the FW-4 acceptance text, and on the operator's zero-inference constraint this session); FW-3 [prior-art survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md) is now citable; runtime acceptance remains open.
+  decisions and two follow-ups. The bounded GUI-mocked CLI example is now accepted through its prospectively enrolled native conformance carrier (VB-FW1-MOCK-CONFORMANCE); it makes no model calls. FW-3 [prior-art survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md) is citable. Actual GUI-authored measurement runs still require VB-FW-1; production executor acceptance remains open.
 - [x] **FW-2 — Record placement (no operator choice remains).** HS-4 §2 admits shell plugins only for
   configuration, so a harness plugin is excluded; the dashboard plane rule (`dashboard/README.md`, RTG-47,
   ratified 2026-08-10) puts every **page** on the hub `:8100` with a `dashboard/registry.json` entry, a
@@ -246,3 +245,5 @@ drawn distinctly, because that is the arrow AutoKernel was missing).
 ✅ 2026-10-06 MAIN accepted FW-2 [APP contract plus inert hub-row draft](../../artifacts/ni08/workflow-contract-design-20261006/README.md), APP `be8d46f61edcf5cb795d485b1a8171c562ee4971`, and FW-3 [official-documentation survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md). No actual registry/nav/page or executor added. FW-1 runtime and VB-FW-1 prospective producer remain open.
 
 2026-10-07 MAIN source-reviewed the bounded mocked GUI/CLI example at APP `38d4ab72fe95ef7c1064d6574b3552a182023850`: explicit worker/validation/terminal edges, typed-value routing and independent refusal/budget controls. VB-FW1-MOCK-CONFORMANCE is enrolled prospectively before hosted synthetic execution. This preparation closes no checkbox. The synthetic example does not require a model call; real GUI-authored measurement runs still require the separate FW-4/VB-FW-1 write-side contract.
+
+2026-10-07 MAIN accepted [original10/10 and exact APP source](../../artifacts/ni08/fw1-success-acceptance-20261007/README.md), completing FW-1's documented mocked example. No confidence-dependent edge, live model call or GUI-authored measurement is introduced. VB-FW-1 remains separate.

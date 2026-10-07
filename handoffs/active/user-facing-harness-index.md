@@ -23,7 +23,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | If validated: implement enforce mode (route easy→worker, hard→architect) | — |
 | UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | Trajectory-artifact prerequisite then TOC-SP-3; retain fixture scanning | — |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-6 — choose A/B/C from the reviewed architecture package, then implement the selected source seams | UFH-01 |
-| UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | FW-1 — sketch the two-layer workflow example as a pseudocode loop block, and record what the GUI must expose | — |
+| UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | Complete FW-4 executor refuse-without-hook integration with VB-FW-1 before GUI-authored measurement runs | — |
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
 | UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.2 offline recall eval (wire VB-UFH12-RETR first) | UFH-07, INF-78, EVL-37, UFH-01 |

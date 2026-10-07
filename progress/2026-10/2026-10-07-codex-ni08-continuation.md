@@ -199,3 +199,8 @@ MAIN completed the RTG-51 Phase-4 command documentation: request identity, immut
 ## LR12 reference hook — MAIN accepted boundary
 
 Published LR12 edited-file Git-root hook and accepted original hosted5/5 controls after MAIN independent API/48-member/34-readset review. Existing native TRUE/shared Judged/Located and complete immutable source/result custody retained. Two existing checkbox flips bring NI08 to125 scoped completions (68existing+57children). Prior startup failure stays original; no live queue/bus, host hook execution or protected policy ratification is claimed.
+
+
+## 05:59 UTC — accepted workflow mock and generalized pin checker
+
+FW-1 source 1533dd0b is published in APP main6712eecf; original37577590308 TRUE10/10 binds69Git+4generated inputs and85 authenticated ZIP members. EVL42 source cb801b9b is published in Research mainf770a525; original37577080153 TRUE8/8 binds18Git+3generated inputs and31 members. MAIN reviewed complete source/caller/recipe scope and immutable API originals, retaining existing shared Judged/Located grades and prior FALSE captures. Four existing task flips yield129 NI08 scoped completions (72existing+57children). Real GUI measurement wiring and future actual-scan report projection remain independently open. No host imports/tests, inference, runtime activation or new grading ladder. Periodic operator-requested full wrap-up follows this accepted boundary.

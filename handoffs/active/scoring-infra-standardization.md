@@ -1,5 +1,7 @@
 # Scoring Infrastructure Standardization + Tool-Use Eval Harness
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (MAIN review custody, KEEP); worktrees: `/mnt/raid0/llm/worktrees/ni08-evl42-root-recipe-20261007`, `/mnt/raid0/llm/worktrees/ni08-evl42-research-20261007` (pinned native custody); private proposals: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/` (active worker, KEEP).
+
 **Status (2026-07-24): STARTED — Phase 1a + 2a in progress (operator-approved "both, tracked").**
 **Owner:** GPU-bench session (this one) for 1a/2a; **1c and 2b are production-touching / large and gated.**
 
@@ -427,9 +429,11 @@ quarantine entries and its issue #124.
       laguna's `EXPECTED_RAW_EVALUATOR_SHA256` was **left on 79721927 on purpose** (a completed campaign), so
       the box above is unaffected. Detail: `progress/2026-09/2026-09-16-sub-v7-repin.md`.
 
-- [ ] **Generalize a pin-staleness checker across the benchmark tree.** One script walks every
+- [x] **Generalize a pin-staleness checker across the benchmark tree.** ✅ 2026-10-07 — [Source and original8/8 controls](../../artifacts/ni08/evl42-success-acceptance-20261007/README.md). One script walks every
       `EXPECTED_*_SHA256` / `file_identity()`-style declared pin under `scripts/benchmark/` and
       reports staleness as its OWN reportable condition (like `python3 -m harness attest`),
       instead of each call site discovering it as a `RuntimeError` at execution time. LOW
       priority — the row above is the one instance known to be actively blocking; this is the
       preventive generalization, not itself urgent.
+
+2026-10-07 MAIN accepted the generalized tracked-AST checker at Research main f770a525 and [original8/8 safe-read/CLI controls](../../artifacts/ni08/evl42-success-acceptance-20261007/README.md). Actual future pin-scan write/read projection stays SC-EVL42-PIN-REPORT-WIRING; no current pin-health scan, expectation update or loaded-code attestation is claimed.

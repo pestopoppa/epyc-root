@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T05:15:28Z",
+  "last_compile": "2026-10-07T06:04:17Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T05:15:28Z",
+  "scan_time": "2026-10-07T06:04:17Z",
   "schema_version": 1,
-  "source_set_hash": "e3ff2c355ae54c318c0eca7980c2d91531f3c1966b2cc9ca843a90a4670001a1",
+  "source_set_hash": "f15f97cae963c8040ac3b2e4466d637f3454bf6e3b7119d9c807a780312a3aac",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -583,10 +583,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7aa660c4e3a9b5ed273c990c50a3314ed359cac9c7eb393e44c145a1555ad6fe",
-      "modified": "2026-10-07T03:03:52Z",
+      "content_hash": "1fba00ec506f907b8224260746b816dc441e03609870035870d8136152754ebe",
+      "modified": "2026-10-07T05:59:06Z",
       "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
-      "size": 23366,
+      "size": 23847,
       "title": "Fuzzy Workflow Authoring GUI \u2014 deterministic flow, fuzzy steps, one canvas",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "29800072ec1ec15bbc9da75c56fca2e8d9919edbc267d692c95d1a49d4692f32",
-      "modified": "2026-10-07T05:13:42Z",
+      "content_hash": "7f79024c17452cc0f35fe4ac460dada07c43d31c4515cad84ce48e5a22bc251f",
+      "modified": "2026-10-07T05:59:06Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 128805,
+      "size": 129082,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1223,10 +1223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "990590b2b0a6cf806d6ac4af458dc909376f288d89dabfe40b9c18a21a5d3660",
-      "modified": "2026-10-06T18:36:03Z",
+      "content_hash": "56541ec5134bec43fe888fd3977c2ce20b40677436ab80c5d28ee524a28daa25",
+      "modified": "2026-10-07T06:02:53Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 45834,
+      "size": 46660,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f89e7996df3d9b4304905d63090d38bc31b1bb6d8369480de6d81f68ec1f4f81",
-      "modified": "2026-10-07T05:13:56Z",
+      "content_hash": "9ed387dcc3a1fcbd10b3e372e182cf1fc991b1c0bfe08eb1504c9130f17a18f9",
+      "modified": "2026-10-07T06:01:17Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 350050,
+      "size": 351516,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -1431,10 +1431,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d372aa9aadd5335ab4dff26d698288bb9baa8f5347d1cf0d17c17bd59e3dce89",
-      "modified": "2026-10-06T06:45:09Z",
+      "content_hash": "e71142b0af7248a26753a3ed539801eb6be910035e59a97f442c22713717384d",
+      "modified": "2026-10-07T05:35:43Z",
       "path": "handoffs/active/wrap-up-division-of-labor-policy.md",
-      "size": 36899,
+      "size": 37089,
       "title": "Wrap-up division of labor \u2014 actionable implementation plan",
       "type": "handoff-active"
     },
@@ -9343,10 +9343,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "57579d0b1b3a7e203873b103183c0a8afc428752c0897a3c1ebf271b41ae99f2",
-      "modified": "2026-10-07T05:13:42Z",
+      "content_hash": "1bae6bc6ac495ccb8de9018209b223c8eb59dc175e92c7114b55908d09b3fe1a",
+      "modified": "2026-10-07T05:59:28Z",
       "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
-      "size": 26493,
+      "size": 29079,
       "title": "NI08 continued non-inference implementation \u2014 2026-10-07",
       "type": "progress"
     },
@@ -10367,10 +10367,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "8329ad72aaf009136c8d0032bf6372d68f553cb0e2d4f15822b282d415879a0f",
-      "modified": "2026-10-07T05:13:42Z",
+      "content_hash": "1e4fb9f0c82d3874f23193452b9874e58137567bd5c9a40667fa8d7e2b6bdf9e",
+      "modified": "2026-10-07T05:59:06Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 44748,
+      "size": 47199,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
