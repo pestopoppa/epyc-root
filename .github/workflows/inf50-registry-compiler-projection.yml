@@ -101,5 +101,6 @@ jobs:
         with:
           name: inf50-registry-compiler-projection-ungraded
           path: ${{ runner.temp }}/inf50-custody/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
