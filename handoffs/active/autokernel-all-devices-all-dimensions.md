@@ -241,6 +241,13 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     - OP80 settled 2026-10-07: wire `check_cpu_fa_real_mask_identity` into `run.py`; fail-closed
       `oracle_unavailable` blocking until the C++ producer lands is accepted. Producer capture and
       reader wiring are prepared under VB-AK-REALMASK; no real-mask capture exists yet.
+    - 2026-10-07 build boundary: ROOT accepted `OP80_CPU_BUILD_ACCEPTED.json` (SHA-256
+      `08304fcd564d4316ba3f733c928f242b3571d6cba60c898c6789bf43793aa2dd`) for canonical CPU source
+      `8393305bcc68395ee531bd19ad911b980298efc9`, tracked-clean, with the original native build RC 0.
+      The accepted binaries match their proof hashes and report version `10345 (8393305bc)`; this
+      establishes CPU build/capture-knob/own-tree-linkage only. No HIP residency, model validation,
+      real-mask capture or promotion is established. Python OP80 candidate `896…` still has no
+      accepted runtime result.
 - [ ] **AKX-ALL-12: DS41 attention-graph route.** After AKX-ALL-4/5. A multi-file route with
   `identity_arch=deepseek41` admitting `src/models/deepseek41.cpp` `build_attention_v41` and the mask helpers
   (`build_top_k_mask`), and the host-side mask/plan rebuild (DS41-C9). The lever is the graph/mask/host path, not the
@@ -363,6 +370,8 @@ landing alone closes no box below whose done-test needs a live run; those carry 
 - [ ] **AKX-ALL-21: first CPU attention campaign round at depth.** After AKX-ALL-4/6/7/9/10/17. A Q38FN lane round
   where the planner sees the at-depth profile, authors a `cpu_fa_schedule` candidate, and the C1 surface plus the G5
   gate decide it. Done when one keep-or-refuse verdict at depth is recorded with all dimensions.
+  - 2026-10-07 harness checkpoint: private candidate `20870bf42e9dbd487cf50bf7e303122af323ee9f` (v3 physical-owner lifetime repair `824320ac`) has independent SOURCE PASS for the exact 62-file composition. The committed manifest is `consolidated-harness/roster-import-composition-final/COMMITTED_RUNTIME_MANIFEST.json` (SHA-256 `6e78bb27847980bff6b9cf490f8c3ce57425f5e662ed30b462f1c3368deb129b`); final source-review report SHA-256 is `90f2aeac4600876e73938f2f4e6723b40a493fea2c006fae34d9ef861ce99b5c`. The prior `eedaf468` source approval was revoked after survivor-lifetime review. The corrected runtime driver has its own SOURCE PASS and explicit runtime-only ROOT approval, and one q2 CPUs 50–57, 10,800-second build-claim job (`consolidated-20261007T084059Z-r1`) is queued for lifecycle control, 13 focused modules, then the complete loop suite. No worker/pytest entry exists yet; this is not runtime validation, integration, landing, activation, or a performance result.
+  - Environment-roster regression status: original import-root test run was 5 failed/3 passed; the next actual run was 3 failed/5 passed, exposing duplicate CPU-screen fixture kwargs and a wide generated-child mask. Test-only corrections are private research commit `4efeccb187ee5a44561f7d167048b83de66e5522`; the original `50c4a829` worktree is clean. One r2 test retry is queued under CPUs 48–49 build claim (launcher 2444478, region-lock 2444481); pytest has not started and no result is accepted. The r2 queue and complete-suite queue are separate claims and have no inferred ordering or pass state.
   - [ ] **AKX-ALL-23 — Q38FN's QSA top-k may not bound decode cost; structural lever if it doesn't.** (filed
     2026-10-05, ak-ds41-main) Q38FN (GGUF arch `qwen4exp`: 48 layers, full attention every 4th layer = 12 attn
     layers, 24 Q heads, 2 KV heads, head_dim 256) has QSA sparse attention with indexer `top_k=2048` (indexer 4
