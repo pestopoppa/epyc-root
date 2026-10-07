@@ -4044,3 +4044,7 @@ The original maintenance wrapper returned 0; its closure receipt verified same-o
 DS41's +16.157% `runtime-arm-omp-places-48-sib` result is an adopted local runtime recipe arm, not a source champion advance or production claim. Current accumulator candidate `3376147f8ae03a62ae595aee6cfbab5e4d5928b9` still records champion-of-record `b0ba1d42783585e15b0a0464715fd1fb6a808888`, `measurement_validity=stale_runtime_recipe_epoch`, and no serving gate. Revalidate prior comparisons under the selected OMP placement recipe before promotion. See the DS41 store `loop-status.json` and `experiments.md` linked in the 10:07Z progress entry.
 
 The environment-roster geometry correction is committed as `aae9c15fbd7155781e5101313a61f3de9bb05f73`; source is accepted and tests/runtime remain unrun. The consolidated timeout correction is assembled at `05badcaa9cb0dce6c710e43e7316e5ff883d5e13` across 62 files; independent review is pending, no full gate was launched, and the 11 isolated controls belong to the earlier proposed correction only.
+
+## Orchestrator FIFO-control candidate — 2026-10-07 10:10Z
+
+Candidate `56fabf52ba832315cf9b0896650e2267d3fa4773` passed the r2 native unit gate (84 passed) and `make gates` with Popen wait rc 0. The clean candidate worktree keeps `EPYC_LOCK_FIFO` opt-in and default OFF; ROOT audit is pending. Receipt: `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/fifo-controls/fifo-r2.receipt.json`. No default change, live restart, or deployment is recorded.
