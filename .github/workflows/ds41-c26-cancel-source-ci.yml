@@ -1,0 +1,128 @@
+# PRIVATE UNEXECUTED DRAFT. Context pin is the exact published owner/VB/source-table enrollment commit.
+name: DS41-C26 source cancellation controls
+on:
+  push:
+    branches:
+      - codex/ni08-c26-current-native-recipe-v2-20261007
+permissions:
+  contents: read
+jobs:
+  c26-cancel-source-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      SOURCE_PIN: a19fa7c34d02706e45c3cff8db6f00762b282d4d
+      LOCK_PIN: 70096b763939a43409a1f1827ab633d62425a6c1
+      CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      ROOT_CONTEXT_PIN: 2f7cce5ab0c4ff5891e1ed1d04d43dd175e80efc
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONNOUSERSITE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize fresh result custody before setup
+        run: |
+          set -euo pipefail
+          run="$RUNNER_TEMP/ds41-c26"
+          if [[ -e "$run" || -L "$run" ]]; then exit 1; fi
+          install -d -m 0700 "$run/result"
+          printf '{"state":"setup_pending","capture_started":false,"native_receipt_state":"no_receipt","fixture_execution_conformant":null}\n' > "$run/result/status.json"
+          chmod 0600 "$run/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: recipe
+      - name: Checkout exact MAIN-applied ROOT source owner and belief enrollment
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CONTEXT_PIN }}
+          persist-credentials: false
+          path: context
+      - name: Checkout exact C26 research source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.SOURCE_PIN }}
+          persist-credentials: false
+          path: source
+      - name: Checkout exact actual APP dependency lock
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.LOCK_PIN }}
+          persist-credentials: false
+          path: locksource
+      - name: Checkout the unchanged native CI carrier and shared projector
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.CARRIER_PIN }}
+          persist-credentials: false
+          path: carrier
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        id: setup_python
+        with:
+          python-version: '3.13.15'
+      - name: Install only actual APP-lock-derived wheels
+        id: install_deps
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/c26-venv"
+          "$RUNNER_TEMP/c26-venv/bin/python" -m pip install --disable-pip-version-check --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/ds41_c26_cancel_requirements.txt
+          "$RUNNER_TEMP/c26-venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/ds41-c26/result/pip-freeze-install.txt"
+      - name: Capture whole selected source suite, original carrier receipt, and existing shared grade
+        id: capture
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/c26-venv/bin/python" recipe/scripts/ci/ds41_c26_cancel_capture.py
+      - name: Preserve typed custody when setup fails before capture starts
+        if: always()
+        run: |
+          set -euo pipefail
+          python3 - "$RUNNER_TEMP/ds41-c26/result" <<'PYSETUP'
+          import hashlib, json, os, stat, sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); status_path=root/'status.json'; record=root/'workflow-setup-error-custody.json'
+          if root.is_symlink() or not root.is_dir() or status_path.is_symlink() or not status_path.is_file(): raise SystemExit(0)
+          status=json.loads(status_path.read_text())
+          if status.get('state')=='passed' or record.exists() or record.is_symlink(): raise SystemExit(0)
+          tree={'.':{'kind':'directory','mode':stat.S_IMODE(root.lstat().st_mode)}}
+          def walk(directory):
+              for entry in sorted(os.scandir(directory),key=lambda row:row.name):
+                  path=Path(entry.path); mode=entry.stat(follow_symlinks=False).st_mode; rel=path.relative_to(root).as_posix()
+                  if rel=='status.json': continue
+                  if stat.S_ISLNK(mode):
+                      target=os.readlink(path).encode('utf-8','surrogateescape'); tree[rel]={'kind':'symlink_opaque','mode':stat.S_IMODE(mode),'target_bytes':len(target),'target_sha256':hashlib.sha256(target).hexdigest()}
+                  elif stat.S_ISDIR(mode): tree[rel+'/']={'kind':'directory','mode':stat.S_IMODE(mode)}; walk(path)
+                  elif stat.S_ISREG(mode):
+                      fd=os.open(path,os.O_RDONLY|getattr(os,'O_NOFOLLOW',0)|getattr(os,'O_NONBLOCK',0)); h=hashlib.sha256(); total=0
+                      try:
+                          before=os.fstat(fd)
+                          if not stat.S_ISREG(before.st_mode) or before.st_nlink!=1: raise RuntimeError('nonregular setup artifact')
+                          while True:
+                              chunk=os.read(fd,1048576)
+                              if not chunk: break
+                              h.update(chunk); total+=len(chunk)
+                          after=os.fstat(fd); named=os.lstat(path)
+                          if total!=after.st_size or (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)!=(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns) or (after.st_dev,after.st_ino)!=(named.st_dev,named.st_ino): raise RuntimeError('setup artifact changed during hashing')
+                      finally: os.close(fd)
+                      tree[rel]={'kind':'regular','mode':stat.S_IMODE(mode),'bytes':total,'sha256':h.hexdigest()}
+                  else: raise RuntimeError('special setup artifact: '+rel)
+          walk(root)
+          payload={'phase':'workflow_or_capture_ended_before_final_custody','capture_started':status.get('capture_started') is True,'native_receipt_state':status.get('native_receipt_state','no_receipt'),'native_metric_value':None,'typed_result_tree_before_error_record':tree,'typed_result_tree_sha256':hashlib.sha256(json.dumps(tree,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'status_excluded':True,'error_record_self_excluded':True,'proposition_invented':False}
+          with record.open('x') as handle: json.dump(payload,handle,sort_keys=True,indent=2); handle.write('\n'); handle.flush(); os.fsync(handle.fileno())
+          status.update(state='workflow_or_capture_failed',error_custody_state='written before final status')
+          status_path.write_text(json.dumps(status,sort_keys=True)+'\n')
+          PYSETUP
+      - name: Preserve all original and hidden custody artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ds41-c26-cancel-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ds41-c26/result/
+          include-hidden-files: true
+          if-no-files-found: error
