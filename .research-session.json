@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-07T04:40:49.498447+00:00",
-  "stage": "stage1-awaiting-selection",
+  "last_checkpoint": "2026-10-07T10:46:14.311142+00:00",
+  "stage": "stage2-awaiting-source-selection",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-memory-embedding-20261007",
   "branch": "research/agent-memory-embeddinggemma2-20261007",
@@ -12,10 +12,19 @@
     "intake-1964",
     "intake-1965",
     "intake-1966",
-    "intake-1967"
+    "intake-1967",
+    "intake-1968",
+    "intake-1969",
+    "intake-1970",
+    "intake-1971",
+    "intake-1972",
+    "intake-1973",
+    "intake-1974",
+    "intake-1975",
+    "intake-1976"
   ],
   "entries_remaining": [],
-  "next_intake_id": 1968,
+  "next_intake_id": 1977,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -28,7 +37,23 @@
       "seq": 1,
       "timestamp": "2026-10-07T04:38:01.854524+00:00",
       "text": "Run research-intake routine on the following sources:\n\nhttps://cognition.com/agent-memory-repo\nhttps://huggingface.co/google/embeddinggemma-2\n\nI'm curious about whether anything useful can be distilled out of the first to enhance our project knowledge mgmt, and out of the second as an upgrade to the embedders we use in our orchestration stack",
-      "disposition": "pending-stage3"
+      "disposition": "context-only",
+      "stage": 1,
+      "verbatim": "Run research-intake routine on the following sources:\n\nhttps://cognition.com/agent-memory-repo\nhttps://huggingface.co/google/embeddinggemma-2\n\nI'm curious about whether anything useful can be distilled out of the first to enhance our project knowledge mgmt, and out of the second as an upgrade to the embedders we use in our orchestration stack",
+      "ts": "2026-10-07T04:38:01.854524+00:00",
+      "plan_ref": null,
+      "reason": "Retained operator direction; Stage-3 plan will bind the useful outcomes after source verification."
+    },
+    {
+      "seq": 2,
+      "timestamp": "2026-10-07T09:48:21.854424+00:00",
+      "text": "Accept deep dives into all recommended stage 2 sources up to a maximum of 10 per stage 2 wave. No more than 4 stage 2 waves",
+      "disposition": "context-only",
+      "stage": 2,
+      "verbatim": "Accept deep dives into all recommended stage 2 sources up to a maximum of 10 per stage 2 wave. No more than 4 stage 2 waves",
+      "ts": "2026-10-07T09:48:21.854424+00:00",
+      "plan_ref": null,
+      "reason": "Retained operator direction; Stage-3 plan will bind the useful outcomes after source verification."
     }
   ],
   "actionable_ledger": [
@@ -97,6 +122,422 @@
       "source": "intake-1967",
       "action": "[UNVERIFIED] If an approved deciding probe later runs, pin checkpoint/converter/runtime and retain finite-vector, shape, normalization and native retrieval/latency outputs for each variant in an isolated index.",
       "verification": "unverified"
+    },
+    {
+      "source_action_id": "source-ledger-1",
+      "likely_owner": "REPL/context retrieval owner",
+      "closure_grounded": "Close source-stage follow-up by retaining baseline provenance and requiring protocol-matched independent comparison before a quality conclusion.",
+      "stage2_followup_context_only": true,
+      "basis_note": "Derived from source findings and current consumer scan; no runtime action performed.",
+      "ledger_id": "D2-ID-01",
+      "source": "intake-1964",
+      "action": "Preserve EmbeddingGemma 2 model-card benchmark values only as publisher-reported, with metric direction and pinned checkpoint stated; use the pending REPL-EMB-2.2 protocol for any comparison and do not claim incumbent superiority."
+    },
+    {
+      "source_action_id": "source-ledger-1",
+      "likely_owner": "REPL/context retrieval owner and vision/retrieval owner",
+      "closure_grounded": "Close preflight by recording framework, checkpoint, tower selection and prompts; no broad cross-library equivalence or live suitability claim.",
+      "stage2_followup_context_only": true,
+      "basis_note": "Derived from source findings and current consumer scan; no runtime action performed.",
+      "ledger_id": "D2-ID-02",
+      "source": "intake-1966",
+      "action": "Use the guide’s same-checkpoint text-only/full model configuration equivalence only as a sentence-transformers-specific optional memory-saving hypothesis; keep separate candidate/index identity until a consumer-specific parity check is approved."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "handoffs/active/repl-embedding-retrieval.md (REPL-EMB-2.2; existing owner)",
+      "closure_grounded": "Record knowledge_only/monitor in Stage 3 with trigger: a reviewed REPL-EMB-2.2 arm selection; no active new task.",
+      "stage2_followup_context_only": true,
+      "basis_note": "Source card specifies asymmetric retrieval prompts and mean pooling. The handoff already has a bounded offline recall decision; no new standing service or index migration is justified by source evidence. Any actual local computation requires the required CPU-region claim and normal benchmark controls.",
+      "ledger_id": "D2-ID-03",
+      "source": "intake-1967",
+      "action": "If Stage 3 selects a model arm, use this exact model/revision as an isolated EmbeddingGemma2 candidate in the already-open REPL-EMB-2.2 offline recall comparison; retain the existing BGE/lexical baseline and opt-in flag. Explicitly feed SearchQuery and title/document prompts, mean pooling, output dimension and normalization policy; keep candidate vectors in a model-specific index."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "same REPL-EMB-2.2 owner",
+      "closure_grounded": "Stage 3 documents the discrepancy and keeps the model as monitor until the primary implementation settles effective context.",
+      "stage2_followup_context_only": true,
+      "basis_note": "Google model docs/config and GGUF metadata diverge; unrelated prior llama.cpp issue #21256 demonstrates explicitly that forcing rank pooling overrides a mean-pooling embedding model, but it is an older EmbeddingGemma setup and not a v2 defect.",
+      "ledger_id": "D2-ID-04",
+      "source": "intake-1967",
+      "action": "Resolve the 8,192-vs-262,144 context discrepancy and write the effective input cap into the frozen probe manifest; include prompt handling and `--pooling`/reranking flags as explicit configuration."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "handoffs/active/repl-embedding-retrieval.md (REPL-EMB-2.2)",
+      "closure_grounded": "Close source preflight when the candidate manifest has exact revisions, pooling/prefix/normalization, resolved context, and reference-parity gate. No conversion, build, inference, or parity claim is part of this dive.",
+      "stage2_followup_context_only": true,
+      "basis_note": "The model converter writes its native pooling metadata; server accepts model default but applies generic endpoint normalization and passes text as-is. A separate generic embedding architecture test skips Gemma Embedding 2 for inconsistent results.",
+      "ledger_id": "D2-ID-05",
+      "source": "intake-1969",
+      "action": "If Stage 3 selects this candidate, use the model-specific server settings in the existing REPL-EMB-2.2 comparison manifest: dedicated embedding mode, model-default or explicitly set mean pooling, explicit SearchQuery/document prompts, and recorded Euclidean normalization. Keep a model/revision-specific index."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "same REPL-EMB-2.2 owner",
+      "closure_grounded": "Close source preflight when the candidate manifest has exact revisions, pooling/prefix/normalization, resolved context, and reference-parity gate. No conversion, build, inference, or parity claim is part of this dive.",
+      "stage2_followup_context_only": true,
+      "basis_note": "The model-specific architecture test is excluded for inconsistent embedding results; PR and converter code establish implementation paths only.",
+      "ledger_id": "D2-ID-06",
+      "source": "intake-1969",
+      "action": "Before any quality claim, add a bounded reference-parity gate within the approved candidate comparison: same tokenized/prefixed queries and docs, finite 768d vectors, per-item norms, cosine agreement against the native reference, invalid counts, then held-out retrieval scoring."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "handoffs/active/repl-embedding-retrieval.md (REPL-EMB-2.2)",
+      "closure_grounded": "Close source preflight when the candidate manifest has exact revisions, pooling/prefix/normalization, resolved context, and reference-parity gate. No conversion, build, inference, or parity claim is part of this dive.",
+      "stage2_followup_context_only": true,
+      "basis_note": "Recipe pins artifact names/formats but leaves LLAMA_CPP external. The paired runtime PR is intake-1969. No repository task or immediate conversion work is implied by this source-only finding.",
+      "ledger_id": "D2-ID-07",
+      "source": "intake-1970",
+      "action": "If the candidate is selected for existing REPL-EMB-2.2, freeze the Google checkpoint revision, this recipe commit, and the separately supplied llama.cpp converter revision in the candidate manifest; retain BF16 as the reference and Q8_0 as the quantized arm, each with a distinct model/index identity."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "same REPL-EMB-2.2 owner",
+      "closure_grounded": "Close source preflight when the candidate manifest has exact revisions, pooling/prefix/normalization, resolved context, and reference-parity gate. No conversion, build, inference, or parity claim is part of this dive.",
+      "stage2_followup_context_only": true,
+      "basis_note": "Conversion outputs alone provide neither an embedding parity result nor a workload quality result.",
+      "ledger_id": "D2-ID-08",
+      "source": "intake-1970",
+      "action": "Before any adoption decision, compare the BF16 reference and Q8_0 arm to the native EmbeddingGemma 2 reference with explicitly matched task prefixes, mean pooling, normalization, and the resolved context limit; report vector parity separately from held-out retrieval quality."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "REPL/context retrieval owner with dependency-maintainer review",
+      "closure_grounded": "Preflight closes when a saved compatibility matrix documents official ST>=6.1.0 / Transformers v5.19.0 API/dependency match, current lock gap, exact model revision, model-ID/prefix/cache/index consequences, and inventory says whether code-intent queries plus blind code-span gold exist. If they do, close this source-stage task with the exact proposed protocol amendment packet routed for operator approval; if not, record no candidate addition while continuing frozen Phase-2.2. Any amendment/run remains pending approval/region lock. No performance claim closes from docs/PR data.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-09",
+      "source": "intake-1971",
+      "action": "PREPARE—read-only compatibility/API and pending Phase-2 corpus-fit preflight; then present, not execute, a dated amendment proposal adding exactly a pinned EmbeddingGemma2 text-only CodeRetrieval dense arm plus its lexical+candidate RRF comparison, with every frozen arm retained. Require native code-intent queries and blind code-span gold in the planned corpus first; preserve the frozen recall@5 M=.10 + paired-bootstrap CI kill rule, n>=120, and cheapest-within-X=.05 rule. Candidate is not in the current frozen arm list. No install, run, lock change, or model swap."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "Vision/retrieval owner",
+      "closure_grounded": "Close preflight with an explicit per-route input/output/pooling/index-contract comparison and evidence of a real consumer; any cross-modal common index requires an isolated probe and its own approval. Source availability alone cannot close fit.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-10",
+      "source": "intake-1971",
+      "action": "PROPOSE—preserve native MiniLM text-description and multimodal CLIP routes as separate source-ledger candidates; do not infer a new image/description consumer or replace either route from documentation alone."
+    },
+    {
+      "source_action_id": "A3",
+      "likely_owner": "Vision description-search consumer owner with REPL/retrieval owner for encoder contract",
+      "closure_grounded": "Close this preflight when the code consumer, current text query/description corpus and index schema are identified and a concrete side-by-side probe manifest/compatibility boundary is prepared; if no semantic description-search consumer exists, document that and stop this branch. Any actual inference or index writes require their own approved gate.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-11",
+      "source": "intake-1971",
+      "action": "PREPARE a distinct text-description route fit screen for the existing MiniLM-backed image-description search path. Compare how the native EmbeddingGemma2 text encoder would represent only the actual text descriptions and user text queries; pin prompt/task, title formatting, mean-pooling/normalization, revision, and a separate 768d index identity. Keep the 1024d TaskEmbedder/episodic/routing path and its stores untouched. No install, model load, migration, or quality claim."
+    },
+    {
+      "source_action_id": "A4",
+      "likely_owner": "Vision/CLIP consumer owner",
+      "closure_grounded": "Close the source-to-consumer preflight with either a concrete existing cross-modal operation plus compatible corpus/index rebuild boundary, or a grounded no-fit finding. No source-only conclusion establishes query quality. Full cross-modal reproduction remains a later gated probe, not a prerequisite to finish compatibility preparation.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-12",
+      "source": "intake-1971",
+      "action": "PREPARE a separate optional cross-modal fit probe for the existing CLIP image-vector use case: first name the actual user operation and whether text-to-image or image-to-text comparison matters; if a fitting consumer exists, define a new candidate EmbeddingGemma2 cross-modal index/metadata contract and paired query/doc inputs. Treat it as a shadow candidate, never mix with existing CLIP vectors or silently replace CLIP."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "REPL/context retrieval owner with dependency-maintainer review",
+      "closure_grounded": "Preflight closes when a saved compatibility matrix documents official ST>=6.1.0 / Transformers v5.19.0 API/dependency match, current lock gap, exact model revision, model-ID/prefix/cache/index consequences, and inventory says whether code-intent queries plus blind code-span gold exist. If they do, close this source-stage task with the exact proposed protocol amendment packet routed for operator approval; if not, record no candidate addition while continuing frozen Phase-2.2. Any amendment/run remains pending approval/region lock. No performance claim closes from docs/PR data.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-13",
+      "source": "intake-1972",
+      "action": "PREPARE—read-only compatibility/API and pending Phase-2 corpus-fit preflight; then present, not execute, a dated amendment proposal adding exactly a pinned EmbeddingGemma2 text-only CodeRetrieval dense arm plus its lexical+candidate RRF comparison, with every frozen arm retained. Require native code-intent queries and blind code-span gold in the planned corpus first; preserve the frozen recall@5 M=.10 + paired-bootstrap CI kill rule, n>=120, and cheapest-within-X=.05 rule. Candidate is not in the current frozen arm list. No install, run, lock change, or model swap."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "Vision/retrieval owner",
+      "closure_grounded": "Close preflight with an explicit per-route input/output/pooling/index-contract comparison and evidence of a real consumer; any cross-modal common index requires an isolated probe and its own approval. Source availability alone cannot close fit.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-14",
+      "source": "intake-1972",
+      "action": "PROPOSE—preserve native MiniLM text-description and multimodal CLIP routes as separate source-ledger candidates; do not infer a new image/description consumer or replace either route from documentation alone."
+    },
+    {
+      "source_action_id": "A3",
+      "likely_owner": "Vision description-search consumer owner with REPL/retrieval owner for encoder contract",
+      "closure_grounded": "Close this preflight when the code consumer, current text query/description corpus and index schema are identified and a concrete side-by-side probe manifest/compatibility boundary is prepared; if no semantic description-search consumer exists, document that and stop this branch. Any actual inference or index writes require their own approved gate.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-15",
+      "source": "intake-1972",
+      "action": "PREPARE a distinct text-description route fit screen for the existing MiniLM-backed image-description search path. Compare how the native EmbeddingGemma2 text encoder would represent only the actual text descriptions and user text queries; pin prompt/task, title formatting, mean-pooling/normalization, revision, and a separate 768d index identity. Keep the 1024d TaskEmbedder/episodic/routing path and its stores untouched. No install, model load, migration, or quality claim."
+    },
+    {
+      "source_action_id": "A4",
+      "likely_owner": "Vision/CLIP consumer owner",
+      "closure_grounded": "Close the source-to-consumer preflight with either a concrete existing cross-modal operation plus compatible corpus/index rebuild boundary, or a grounded no-fit finding. No source-only conclusion establishes query quality. Full cross-modal reproduction remains a later gated probe, not a prerequisite to finish compatibility preparation.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-16",
+      "source": "intake-1972",
+      "action": "PREPARE a separate optional cross-modal fit probe for the existing CLIP image-vector use case: first name the actual user operation and whether text-to-image or image-to-text comparison matters; if a fitting consumer exists, define a new candidate EmbeddingGemma2 cross-modal index/metadata contract and paired query/doc inputs. Treat it as a shadow candidate, never mix with existing CLIP vectors or silently replace CLIP."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "REPL/context retrieval owner with dependency-maintainer review",
+      "closure_grounded": "Preflight closes when a saved compatibility matrix documents official ST>=6.1.0 / Transformers v5.19.0 API/dependency match, current lock gap, exact model revision, model-ID/prefix/cache/index consequences, and inventory says whether code-intent queries plus blind code-span gold exist. If they do, close this source-stage task with the exact proposed protocol amendment packet routed for operator approval; if not, record no candidate addition while continuing frozen Phase-2.2. Any amendment/run remains pending approval/region lock. No performance claim closes from docs/PR data.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-17",
+      "source": "intake-1973",
+      "action": "PREPARE—read-only compatibility/API and pending Phase-2 corpus-fit preflight; then present, not execute, a dated amendment proposal adding exactly a pinned EmbeddingGemma2 text-only CodeRetrieval dense arm plus its lexical+candidate RRF comparison, with every frozen arm retained. Require native code-intent queries and blind code-span gold in the planned corpus first; preserve the frozen recall@5 M=.10 + paired-bootstrap CI kill rule, n>=120, and cheapest-within-X=.05 rule. Candidate is not in the current frozen arm list. No install, run, lock change, or model swap."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "Vision/retrieval owner",
+      "closure_grounded": "Close preflight with an explicit per-route input/output/pooling/index-contract comparison and evidence of a real consumer; any cross-modal common index requires an isolated probe and its own approval. Source availability alone cannot close fit.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-18",
+      "source": "intake-1973",
+      "action": "PROPOSE—preserve native MiniLM text-description and multimodal CLIP routes as separate source-ledger candidates; do not infer a new image/description consumer or replace either route from documentation alone."
+    },
+    {
+      "source_action_id": "A3",
+      "likely_owner": "Vision description-search consumer owner with REPL/retrieval owner for encoder contract",
+      "closure_grounded": "Close this preflight when the code consumer, current text query/description corpus and index schema are identified and a concrete side-by-side probe manifest/compatibility boundary is prepared; if no semantic description-search consumer exists, document that and stop this branch. Any actual inference or index writes require their own approved gate.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-19",
+      "source": "intake-1973",
+      "action": "PREPARE a distinct text-description route fit screen for the existing MiniLM-backed image-description search path. Compare how the native EmbeddingGemma2 text encoder would represent only the actual text descriptions and user text queries; pin prompt/task, title formatting, mean-pooling/normalization, revision, and a separate 768d index identity. Keep the 1024d TaskEmbedder/episodic/routing path and its stores untouched. No install, model load, migration, or quality claim."
+    },
+    {
+      "source_action_id": "A4",
+      "likely_owner": "Vision/CLIP consumer owner",
+      "closure_grounded": "Close the source-to-consumer preflight with either a concrete existing cross-modal operation plus compatible corpus/index rebuild boundary, or a grounded no-fit finding. No source-only conclusion establishes query quality. Full cross-modal reproduction remains a later gated probe, not a prerequisite to finish compatibility preparation.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-20",
+      "source": "intake-1973",
+      "action": "PREPARE a separate optional cross-modal fit probe for the existing CLIP image-vector use case: first name the actual user operation and whether text-to-image or image-to-text comparison matters; if a fitting consumer exists, define a new candidate EmbeddingGemma2 cross-modal index/metadata contract and paired query/doc inputs. Treat it as a shadow candidate, never mix with existing CLIP vectors or silently replace CLIP."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "REPL/context retrieval owner with dependency-maintainer review",
+      "closure_grounded": "Preflight closes when a saved compatibility matrix documents official ST>=6.1.0 / Transformers v5.19.0 API/dependency match, current lock gap, exact model revision, model-ID/prefix/cache/index consequences, and inventory says whether code-intent queries plus blind code-span gold exist. If they do, close this source-stage task with the exact proposed protocol amendment packet routed for operator approval; if not, record no candidate addition while continuing frozen Phase-2.2. Any amendment/run remains pending approval/region lock. No performance claim closes from docs/PR data.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-21",
+      "source": "intake-1974",
+      "action": "PREPARE—read-only compatibility/API and pending Phase-2 corpus-fit preflight; then present, not execute, a dated amendment proposal adding exactly a pinned EmbeddingGemma2 text-only CodeRetrieval dense arm plus its lexical+candidate RRF comparison, with every frozen arm retained. Require native code-intent queries and blind code-span gold in the planned corpus first; preserve the frozen recall@5 M=.10 + paired-bootstrap CI kill rule, n>=120, and cheapest-within-X=.05 rule. Candidate is not in the current frozen arm list. No install, run, lock change, or model swap."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "Vision/retrieval owner",
+      "closure_grounded": "Close preflight with an explicit per-route input/output/pooling/index-contract comparison and evidence of a real consumer; any cross-modal common index requires an isolated probe and its own approval. Source availability alone cannot close fit.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-22",
+      "source": "intake-1974",
+      "action": "PROPOSE—preserve native MiniLM text-description and multimodal CLIP routes as separate source-ledger candidates; do not infer a new image/description consumer or replace either route from documentation alone."
+    },
+    {
+      "source_action_id": "A3",
+      "likely_owner": "Vision description-search consumer owner with REPL/retrieval owner for encoder contract",
+      "closure_grounded": "Close this preflight when the code consumer, current text query/description corpus and index schema are identified and a concrete side-by-side probe manifest/compatibility boundary is prepared; if no semantic description-search consumer exists, document that and stop this branch. Any actual inference or index writes require their own approved gate.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-23",
+      "source": "intake-1974",
+      "action": "PREPARE a distinct text-description route fit screen for the existing MiniLM-backed image-description search path. Compare how the native EmbeddingGemma2 text encoder would represent only the actual text descriptions and user text queries; pin prompt/task, title formatting, mean-pooling/normalization, revision, and a separate 768d index identity. Keep the 1024d TaskEmbedder/episodic/routing path and its stores untouched. No install, model load, migration, or quality claim."
+    },
+    {
+      "source_action_id": "A4",
+      "likely_owner": "Vision/CLIP consumer owner",
+      "closure_grounded": "Close the source-to-consumer preflight with either a concrete existing cross-modal operation plus compatible corpus/index rebuild boundary, or a grounded no-fit finding. No source-only conclusion establishes query quality. Full cross-modal reproduction remains a later gated probe, not a prerequisite to finish compatibility preparation.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-24",
+      "source": "intake-1974",
+      "action": "PREPARE a separate optional cross-modal fit probe for the existing CLIP image-vector use case: first name the actual user operation and whether text-to-image or image-to-text comparison matters; if a fitting consumer exists, define a new candidate EmbeddingGemma2 cross-modal index/metadata contract and paired query/doc inputs. Treat it as a shadow candidate, never mix with existing CLIP vectors or silently replace CLIP."
+    },
+    {
+      "source_action_id": "A1",
+      "likely_owner": "REPL/context retrieval owner with dependency-maintainer review",
+      "closure_grounded": "Preflight closes when a saved compatibility matrix documents official ST>=6.1.0 / Transformers v5.19.0 API/dependency match, current lock gap, exact model revision, model-ID/prefix/cache/index consequences, and inventory says whether code-intent queries plus blind code-span gold exist. If they do, close this source-stage task with the exact proposed protocol amendment packet routed for operator approval; if not, record no candidate addition while continuing frozen Phase-2.2. Any amendment/run remains pending approval/region lock. No performance claim closes from docs/PR data.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-25",
+      "source": "intake-1975",
+      "action": "PREPARE—read-only compatibility/API and pending Phase-2 corpus-fit preflight; then present, not execute, a dated amendment proposal adding exactly a pinned EmbeddingGemma2 text-only CodeRetrieval dense arm plus its lexical+candidate RRF comparison, with every frozen arm retained. Require native code-intent queries and blind code-span gold in the planned corpus first; preserve the frozen recall@5 M=.10 + paired-bootstrap CI kill rule, n>=120, and cheapest-within-X=.05 rule. Candidate is not in the current frozen arm list. No install, run, lock change, or model swap."
+    },
+    {
+      "source_action_id": "A2",
+      "likely_owner": "Vision/retrieval owner",
+      "closure_grounded": "Close preflight with an explicit per-route input/output/pooling/index-contract comparison and evidence of a real consumer; any cross-modal common index requires an isolated probe and its own approval. Source availability alone cannot close fit.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-26",
+      "source": "intake-1975",
+      "action": "PROPOSE—preserve native MiniLM text-description and multimodal CLIP routes as separate source-ledger candidates; do not infer a new image/description consumer or replace either route from documentation alone."
+    },
+    {
+      "source_action_id": "A3",
+      "likely_owner": "Vision description-search consumer owner with REPL/retrieval owner for encoder contract",
+      "closure_grounded": "Close this preflight when the code consumer, current text query/description corpus and index schema are identified and a concrete side-by-side probe manifest/compatibility boundary is prepared; if no semantic description-search consumer exists, document that and stop this branch. Any actual inference or index writes require their own approved gate.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-27",
+      "source": "intake-1975",
+      "action": "PREPARE a distinct text-description route fit screen for the existing MiniLM-backed image-description search path. Compare how the native EmbeddingGemma2 text encoder would represent only the actual text descriptions and user text queries; pin prompt/task, title formatting, mean-pooling/normalization, revision, and a separate 768d index identity. Keep the 1024d TaskEmbedder/episodic/routing path and its stores untouched. No install, model load, migration, or quality claim."
+    },
+    {
+      "source_action_id": "A4",
+      "likely_owner": "Vision/CLIP consumer owner",
+      "closure_grounded": "Close the source-to-consumer preflight with either a concrete existing cross-modal operation plus compatible corpus/index rebuild boundary, or a grounded no-fit finding. No source-only conclusion establishes query quality. Full cross-modal reproduction remains a later gated probe, not a prerequisite to finish compatibility preparation.",
+      "stage2_followup_context_only": true,
+      "basis_note": "",
+      "ledger_id": "D2-ID-28",
+      "source": "intake-1975",
+      "action": "PREPARE a separate optional cross-modal fit probe for the existing CLIP image-vector use case: first name the actual user operation and whether text-to-image or image-to-text comparison matters; if a fitting consumer exists, define a new candidate EmbeddingGemma2 cross-modal index/metadata contract and paired query/doc inputs. Treat it as a shadow candidate, never mix with existing CLIP vectors or silently replace CLIP."
+    },
+    {
+      "row_id": "memory-1963-task-context",
+      "source_ids": [
+        "intake-1963",
+        "intake-1965"
+      ],
+      "claim_refs": [
+        "intake-1963#0",
+        "#1",
+        "#4",
+        "intake-1965#0"
+      ],
+      "immutable_snapshot": true,
+      "outcome": "PROPOSED_NARROW_DECIDING_PROBE",
+      "operational_outcome": "At existing DCP-6, determine whether one source-linked project task receives the correct reusable diagnostic artifact/query and provenance in delegated context, and whether that changes task-quality evidence versus reactive discovery. Reuse existing wiki query and DCP; no new memory store from these sources alone.",
+      "likely_owner": "epyc-orchestrator delegation-context-preassembly owner; root project-wiki owner for source selection",
+      "basis": "Wiki retrieval, source manifest, task context bundle and episodic task recall exist, but this read does not show wiki citations/diagnostic links automatically composed into delegated tasks. DCP-6 is the nearest deciding surface and recorded quality evidence is incomplete.",
+      "condition": "Stage-3 review only; no evaluation was run. Any future live evaluation requires its own authorization and measurement controls.",
+      "review_note": "Stage-3 proposal only; no gap or run approved.",
+      "ledger_id": "D2-1963-01",
+      "source": "intake-1963 + intake-1965",
+      "action": "At existing DCP-6, determine whether one source-linked project task receives the correct reusable diagnostic artifact/query and provenance in delegated context, and whether that changes task-quality evidence versus reactive discovery. Reuse existing wiki query and DCP; no new memory store from these sources alone."
+    },
+    {
+      "row_id": "memory-1963-maintenance",
+      "source_ids": [
+        "intake-1963"
+      ],
+      "claim_refs": [
+        "intake-1963#3"
+      ],
+      "immutable_snapshot": true,
+      "outcome": "SEMANTIC_MAINTENANCE_ASSESSMENT_UNRESOLVED_FOR_STAGE3_REVIEW",
+      "maintenance_assessment": "Current project-wiki content-hash/source-change detection and explicit review/compilation evidence source-change handling, not proof of semantic supersession, exception coverage, contradiction-resolution quality, or downstream surfacing. Hash checks alone do not establish semantic maintenance coverage.",
+      "automation_decision": "No unattended Dreaming-style worker. That rejection is separate from the maintenance assessment. Reopen only on a concrete source-linked consumer showing stale/contradictory content escaped current review.",
+      "operational_outcome": "No periodic consolidation task now. Reopen only if a concrete source-linked memory consumer shows stale or contradictory notes that current content-hash wiki refresh and review fail to surface.",
+      "owner": "root project-wiki maintenance or consuming handoff owner",
+      "basis": "Changed-source detection and writer review already cover the project corpus; Dreaming is a publisher assertion without independent quality evidence.",
+      "reopen_condition": "Require a demonstrated source-to-consumer mismatch; elapsed time alone is insufficient.",
+      "ledger_id": "D2-1963-02",
+      "source": "intake-1963",
+      "action": "No periodic consolidation task now. Reopen only if a concrete source-linked memory consumer shows stale or contradictory notes that current content-hash wiki refresh and review fail to surface.",
+      "automatic_worker": "No automatic periodic worker is adopted. Keep this distinct from the unresolved maintenance assessment. Preserve the exact author-proposed no-periodic-task/conditional-reopen action above as an unapproved proposal, not a Stage-3 closure.",
+      "stage3_review_required": true
+    },
+    {
+      "row_id": "memory-1963-per-owner-composition",
+      "source_ids": [
+        "intake-1963"
+      ],
+      "claim_refs": [
+        "intake-1963#2"
+      ],
+      "immutable_snapshot": true,
+      "outcome": "CONTEXT_ONLY; CONDITIONAL_TRIGGER; DISTINCT_FROM_SWARM_DISCOVERABILITY",
+      "operational_outcome": "No shared-repository swarm substrate now. Reopen when a named multi-owner task needs independently governed memory scopes in one session and bus ownership/artifact rules cannot represent it.",
+      "likely_owner": "session-bus-thin-dispatcher owner with root ownership review",
+      "basis": "Cognition describes separate owner repositories composed at session time. Current reviewed bus evidence supports per-writer task artifacts, not composition of separate per-owner stores; no concrete live task/access boundary was identified.",
+      "condition": "Name a concrete cross-owner task, access boundary, and unmet current contract.",
+      "ledger_id": "D2-1963-03",
+      "source": "intake-1963",
+      "action": "No shared-repository swarm substrate now. Reopen when a named multi-owner task needs independently governed memory scopes in one session and bus ownership/artifact rules cannot represent it."
+    },
+    {
+      "row_id": "memory-1963-swarm-discoverability",
+      "source_ids": [
+        "intake-1963"
+      ],
+      "claim_refs": [
+        "intake-1963#4"
+      ],
+      "immutable_snapshot": true,
+      "outcome": "CONTEXT_ONLY; EXISTING_SESSION_BUS_PARTIAL_COVERAGE; DISTINCT_FROM_PER_OWNER_COMPOSITION",
+      "operational_outcome": "Use existing session-bus findings/questions/artifact flow; no additional swarm workspace now. Reopen if a named task shows cross-agent finding/question discoverability fails under current bus ownership and append-only artifacts.",
+      "likely_owner": "session-bus-thin-dispatcher owner",
+      "basis": "Cognition swarm layout is illustrative, not measured. Existing bus represents assignment, outboxes, acknowledgments, findings/artifacts with writer ownership. This is discovery/cooperation, distinct from per-owner memory isolation.",
+      "condition": "Name the missing finding/question and the current consumer path that failed.",
+      "ledger_id": "D2-1963-04",
+      "source": "intake-1963",
+      "action": "Use existing session-bus findings/questions/artifact flow; no additional swarm workspace now. Reopen if a named task shows cross-agent finding/question discoverability fails under current bus ownership and append-only artifacts."
+    },
+    {
+      "row_id": "paper-1968-probe",
+      "source_ids": [
+        "intake-1968"
+      ],
+      "claim_refs": [
+        "intake-1968#00",
+        "intake-1968#01",
+        "intake-1968#02",
+        "intake-1968#03"
+      ],
+      "immutable_snapshot": true,
+      "outcome": "PROPOSED_NARROW_DECIDING_PROBE; STAGE3_REVIEW_PENDING",
+      "operational_outcome": "Consider only a narrow DCP-6 held-out task requiring correct use of a source-backed diagnostic artifact; retain the existing matched baseline and outcome/resource/quality controls. This is a proposal for Stage-3 review, not an approved task.",
+      "owner": "handoffs/active/delegation-context-preassembly.md DCP-6 (evaluation owner); orchestrator owner for harness/context telemetry",
+      "owner_basis": "DCP-6 already calls for quality-scored falsification vs reactive discovery; current code gates advisory DCP bundle and leaves reactive discovery on.",
+      "conditions": "Proposal only; no run performed. Any live inference remains subject to the handoff’s existing controls and measurement window.",
+      "source_limit": "VibeMemBench does not compare curated wiki/source-linked briefs or diagnostic links against DCP reactive context; it motivates outcome-based matched evaluation only.",
+      "scope": "111 oracle/reference-selected repository tasks; all five frozen-transfer target-bootstrap CIs cross zero. Of 12 existing system/solver pairings, 11 point estimates at/below matched memory-off, no CI above zero; glm-5/Mem0 below zero. The paper does not test EPYC source-linked briefs/diagnostics. No independent reproduction.",
+      "ledger_id": "D2-1968-01",
+      "source": "intake-1968",
+      "action": "Consider only a narrow DCP-6 held-out task requiring correct use of a source-backed diagnostic artifact; retain the existing matched baseline and outcome/resource/quality controls. This is a proposal for Stage-3 review, not an approved task."
+    },
+    {
+      "row_id": "paper-1968-release-gate",
+      "ledger_id": "D2-1968-02",
+      "source": "intake-1968 + intake-1976",
+      "action": "Keep benchmark release verification gated on an observable code/data/manifest release; intake-1976 records present companion status.",
+      "operational_outcome": "Keep benchmark release verification gated on an observable code/data/manifest release; intake-1976 records present companion status.",
+      "immutable_snapshot": true,
+      "claim_refs": [
+        "intake-1968#record",
+        "intake-1976#record"
+      ],
+      "outcome": "PROPOSED_RELEASE_VERIFICATION_GATE; STAGE3_REVIEW_PENDING"
+    },
+    {
+      "row_id": "paper-1976-release-monitor",
+      "source_ids": [
+        "intake-1976"
+      ],
+      "claim_refs": [
+        "intake-1976#00"
+      ],
+      "immutable_snapshot": true,
+      "outcome": "MONITOR_RELEASE",
+      "operational_outcome": "Monitor only for an observable release of implementation code plus manifest and raw result artifacts; no active task or checkbox before that trigger.",
+      "owner": "Research-intake Stage-3 plan owner; then benchmark/evaluation owner if the release trigger fires",
+      "owner_basis": "A release would enable auditability of source claims relevant to the existing DCP-6 methodology decision; current subtree supplies no material artifacts.",
+      "condition": "Monitor only for code, manifest, and raw results; no active task before observable release.",
+      "scope": "Current pinned main HEAD 188835d4f9948563a6b9c8ac50cd0f3ae4021ed6 has only a 100-byte README saying Coming in the linked VibeMemBench subtree. Companion release-status evidence, not independent reproduction; parent DAMO repo is not claimed empty.",
+      "ledger_id": "D2-1976-01",
+      "source": "intake-1976",
+      "action": "Monitor only for an observable release of implementation code plus manifest and raw result artifacts; no active task or checkbox before that trigger."
     }
   ],
   "state": {
@@ -172,8 +613,23 @@
       "depth": 1,
       "contradictions": "Publisher-only model comparison, explicit dtype/prompt/truncation caveats; memory local trial narrower than proposed autonomous loop. No independent version-2-vs-EPYC controlled result surfaced; bounded absence provisional. Older version-1 issues not version-2 evidence."
     },
-    "verification_scope": "Stage 1 only; publisher discovery and read-only current-consumer comparison. No source claim dive-verified, runtime trial or production change.",
-    "operator_selection": null,
+    "verification_scope": "14 reviewed primary sources in three waves (5/8/1); source-reading only, no independent reproduction or runtime changes. Four secondary leads await operator selection; Stage 3 has not begun.",
+    "operator_selection": [
+      "intake-1963",
+      "intake-1964",
+      "intake-1965",
+      "intake-1966",
+      "intake-1967",
+      "intake-1968",
+      "intake-1969",
+      "intake-1970",
+      "intake-1971",
+      "intake-1972",
+      "intake-1973",
+      "intake-1974",
+      "intake-1975",
+      "intake-1976"
+    ],
     "stage3_approval": null,
     "prior_completed_session": {
       "session_id": "intake-q38fn-cluster-ec-20261006",
@@ -199,6 +655,268 @@
       "entries_validated": 1963,
       "log_sha256": "aa6bdb0ed86f31b8f223c30b4c075830929bb9560db170ea91bc7ee581277cb8",
       "captured_at": "2026-10-07T04:40:49.498444+00:00"
+    },
+    "stage2_limits": {
+      "max_sources_per_wave": 10,
+      "max_waves": 4,
+      "authorized_recommended_followups": true,
+      "waves": [
+        {
+          "wave": 1,
+          "intakes": [
+            "intake-1963",
+            "intake-1964",
+            "intake-1965",
+            "intake-1966",
+            "intake-1967"
+          ],
+          "status": "verified-complete"
+        },
+        {
+          "wave": 2,
+          "status": "verified-complete",
+          "sources": [
+            {
+              "id": "intake-1968",
+              "url": "https://arxiv.org/abs/2609.23570",
+              "provisional_title": "VibeMemBench",
+              "bearing": [
+                "intake-1963",
+                "intake-1965"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1968/"
+            },
+            {
+              "id": "intake-1969",
+              "url": "https://github.com/ggml-org/llama.cpp/pull/30054",
+              "provisional_title": "EmbeddingGemma2 runtime support",
+              "bearing": [
+                "intake-1967"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1969/"
+            },
+            {
+              "id": "intake-1970",
+              "url": "https://github.com/ggml-org/convert/commit/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90",
+              "provisional_title": "Pinned model conversion recipe",
+              "bearing": [
+                "intake-1967"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1970/"
+            },
+            {
+              "id": "intake-1971",
+              "url": "https://huggingface.co/docs/transformers/model_doc/embedding_gemma2",
+              "provisional_title": "Native Transformers API",
+              "bearing": [
+                "intake-1964",
+                "intake-1967"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1971/"
+            },
+            {
+              "id": "intake-1972",
+              "url": "https://github.com/huggingface/transformers/releases/tag/v5.19.0",
+              "provisional_title": "Transformers native support release",
+              "bearing": [
+                "intake-1964",
+                "intake-1966"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1972/"
+            },
+            {
+              "id": "intake-1973",
+              "url": "https://github.com/huggingface/sentence-transformers/releases/tag/v6.1.0",
+              "provisional_title": "Sentence-Transformers supported API release",
+              "bearing": [
+                "intake-1964",
+                "intake-1966"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1973/"
+            },
+            {
+              "id": "intake-1974",
+              "url": "https://github.com/embeddings-benchmark/mteb/pull/5588",
+              "provisional_title": "Reference implementation and score acceptance",
+              "bearing": [
+                "intake-1964",
+                "intake-1966"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1974/"
+            },
+            {
+              "id": "intake-1975",
+              "url": "https://github.com/embeddings-benchmark/results/pull/745",
+              "provisional_title": "Publisher result-submission status",
+              "bearing": [
+                "intake-1964",
+                "intake-1966"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1975/"
+            }
+          ]
+        },
+        {
+          "wave": 3,
+          "status": "verified-complete",
+          "sources": [
+            {
+              "id": "intake-1976",
+              "url": "https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/VibeMemBench",
+              "provisional_title": "VibeMemBench code/data companion release status",
+              "bearing": [
+                "intake-1968"
+              ],
+              "new": true,
+              "scratch": "/mnt/raid0/llm/tmp/dive-1976/"
+            }
+          ]
+        }
+      ]
+    },
+    "surfaced_secondary_leads": {
+      "selection": "awaiting-operator",
+      "urls": [
+        "https://s5labs.io/resources/insights/google-embeddinggemma-2-multimodal-embeddings/",
+        "https://leaderboard.mteb.org/models",
+        "https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/",
+        "https://www.codesota.com/benchmarks/mteb"
+      ]
+    },
+    "stage2_closeout": {
+      "recommended_sources_verified": 14,
+      "waves_completed": 3,
+      "sources_per_wave": [
+        5,
+        8,
+        1
+      ],
+      "source_gate_closed": false,
+      "pending_selection": [
+        "https://s5labs.io/resources/insights/google-embeddinggemma-2-multimodal-embeddings/",
+        "https://leaderboard.mteb.org/models",
+        "https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/",
+        "https://www.codesota.com/benchmarks/mteb"
+      ],
+      "stage3_started": false,
+      "reviewed_at": "2026-10-07T10:35:33.472741+00:00",
+      "derived_ledger_rows": 35,
+      "source_reading_not_measurement": true
+    },
+    "stage2_review_custody": [
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/wave1-entry-updates.json",
+        "sha256": "9cb72a489cd2f0468d5df88b7f70f0927731ad58ce009daa1d8e925b14af6fd8",
+        "bytes": 107561
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/model-new-entry-proposals.json",
+        "sha256": "e37178f5370f38812217f6b73967a16ca34f9e5651ee10bcaae864e4f2ce1f42",
+        "bytes": 182232
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/paper-entry-proposals-reviewed.json",
+        "sha256": "459d821aa9697fdf474e336903430b97a19927a0cdfb3b9f5d717529474f30ac",
+        "bytes": 14961
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/memory-derived-ledger.json",
+        "sha256": "e4c7e0dfbf8869ce0157eb460aa351cd0607ce32ee75c06791cff200f6e95267",
+        "bytes": 10746
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/second-reader/review-wave1-remaining.json",
+        "sha256": "951c6eb33e994741cfa60827fbd05f62ced4b4f39c1dbc089dc7ed0b80feec11",
+        "bytes": 61625
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/second-reader/review-1967.json",
+        "sha256": "6553811e45b31ba01318c9027728b761d580a91bc894c5480ef19423e541b05a",
+        "bytes": 21569
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/second-reader/review-wave2-runtime.json",
+        "sha256": "7fe3ff3e4ccbeeda6dbf6bf1ce26fade30c4be009f9d12eb5f182259a15d61ed",
+        "bytes": 41836
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/dive-1969/peer-review/independent-review.json",
+        "sha256": "cb551fbc51f0f739a387bb43b54427935d91ea3557a037caed8e10970b810928",
+        "bytes": 10521
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/dive-1969/peer-review/modelwave2-review.json",
+        "sha256": "49137a3fb7821279ae9f365209d29e0e23702d160ad96ecee42171dbda406acf",
+        "bytes": 55687
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/dive-1969/peer-review/review-1976.json",
+        "sha256": "ee722226d175f758335aa80ac4bad815c9676531b13c90d07e9e12d783b13759",
+        "bytes": 1382
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/accepted-stage2-entry-payload.json",
+        "sha256": "bf3acfdfef19d4083e44424a68ce8cec114a576e0904d2a099a2ab19a5b4ebe2",
+        "bytes": 191751
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/final-model-acceptance.json",
+        "sha256": "96d5c7f224ba3e6cc97906a3a267225bfeddf329cb66b53882018b39c9c938a7",
+        "bytes": 5602
+      }
+    ],
+    "stage2_anchor_scope": {
+      "raw_store": "/mnt/raid0/llm/tmp/intake-memory-embedding-20261007/raw-anchor-store",
+      "machine_source_bound_entry": "intake-1963",
+      "other_entries": "Primary quote/hash/revision evidence; native Located ceiling where raw response custody is unavailable. No human attestation invented."
+    },
+    "stage2_validation": {
+      "status": "passed",
+      "entries_validated": 1972,
+      "commands": {
+        "validate_intake": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:44:59.838903+00:00"
+        },
+        "readme_freshness": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:42:59.991051+00:00"
+        },
+        "index_state_check": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:43:06.108266+00:00"
+        },
+        "native_shadow_projection": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:43:06.291488+00:00"
+        },
+        "report_cite_check": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:45:08.666636+00:00"
+        },
+        "whitespace": {
+          "exit_code": 0,
+          "captured_at": "2026-10-07T10:45:08.818927+00:00"
+        }
+      },
+      "native_projection": "isolated shadow ledger; existing literature adapter",
+      "source_gate_closed": false
+    },
+    "stage2_review_closure": {
+      "all_primary_claims_reviewed": true,
+      "unpersisted_false_hypotheses_removed": true,
+      "shape_fix_1969": "restore appended character suffix to prose",
+      "duplicate_scratch_evidence_not_copied_to_index": true,
+      "accepted_payload_sha256": "bf3acfdfef19d4083e44424a68ce8cec114a576e0904d2a099a2ab19a5b4ebe2",
+      "final_second_reader": "All64anchors and corrected semantic/schema checks pass; rootnormalizedprose shape resolved."
     }
   }
 }
