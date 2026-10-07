@@ -4138,3 +4138,7 @@ Planner and replay displays render absent or malformed task rate as `n/a`, prese
 ## Retained-source numerical mismatch controls
 
 Both literature projections pass claim text to the existing retained-RAW numeric helper; [actual synthetic response/store/projection controls and original23/23](../artifacts/ni08/sc78-numeric-anchor-source-20261007/README.md) bind the source. One matching magnitude is sufficient under this mechanical rule, so semantic and full numerical truth remain separate. No actual source fetch or historical warrant is added.
+
+## Daily checker and missing planner evidence
+
+[Daily12:17 UTC full-gate checks](../artifacts/ni08/evl38-periodic-gate-20261007/README.md) retain actual red outcomes before failing CI; the first complete proof fails reference validation and establishes no readiness claim. [Planner display20/20](../artifacts/ni08/rtg23-w9-display-source-20261007/README.md) distinguishes unavailable from measured zero and preserves missing replay evidence as blocked.

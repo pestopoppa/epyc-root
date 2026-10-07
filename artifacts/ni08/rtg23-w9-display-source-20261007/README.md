@@ -1,0 +1,5 @@
+# Planner unavailable-value display
+
+MAIN accepts exact APP508b source after run37561887934/exactROOT30c2189. [Authenticated original review](MAIN-original-review.json) binds all50 ZIP members,33 pinned Git reads plus5 generated contexts, exact20/20 passing cases with zero errors/skips/failures, native TRUE and receipt seal. Existing shared grade remains Judged/Located; complete source/result membership and bytes are unchanged across grading. [Prospective binding](MAIN-prebinding.json), [APP publication](APP-publication.json).
+
+Absent/invalid rates and E values display unavailable, separately from measured zero and positive values. Missing replay evidence stays blocked with an explicit reason. Historical journals, objective/floor/positive flags and archive policies are unchanged. The [first failed run](first-failed-review.json) retains18/20 passing cases: fixture candidate config identities and summary assertion scope were corrected in a normal fixture-only child, without changing product behavior or removing cases. No shared-host project execution, live frontier diagnosis, runtime reload or reconstructed warrant.

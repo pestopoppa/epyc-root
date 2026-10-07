@@ -1,0 +1,150 @@
+name: EVL-38 periodic root candidate-eval gate
+
+on:
+  schedule:
+    - cron: '17 12 * * *'
+  push:
+    branches:
+      - codex/ni08-evl38-periodic-proposal-20261007
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evl38-candidate-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidate-gate:
+    name: captured-full-gate-outcome
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CANDIDATE_EVAL_REQUIRE_DEPS: '1'
+      EPYC_ORCHESTRATOR_REPO: ${{ github.workspace }}/app
+      EPYC_INFERENCE_RESEARCH_REPO: ${{ github.workspace }}/research
+      EPYC_LLAMA_REPO: ${{ github.workspace }}/llama
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize retained status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/evl38/result"
+          printf '%s\n' '{"state":"setup_pending","capture_exit_code":null,"gate_exit_code":null}' \
+            > "$RUNNER_TEMP/evl38/result/status.json"
+
+      - name: Checkout ROOT at the workflow commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout current APP readiness source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: main
+          path: app
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout current Research readiness source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: main
+          path: research
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout immutable frozen llama source for structural scoring
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/llama.cpp
+          ref: ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+          path: llama
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up accepted CPython patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+
+      - name: Provide exact repository layout to existing validators
+        run: |
+          set -euo pipefail
+          mkdir -p root/repos
+          ln -s ../../app root/repos/epyc-orchestrator
+          ln -s ../../research root/repos/epyc-inference-research
+
+      - name: Create isolated venv and install hash-locked binary wheels
+        id: install
+        run: |
+          set +e
+          python -m venv "$RUNNER_TEMP/evl38/venv" > "$RUNNER_TEMP/evl38/result/install.log" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            PIP_DISABLE_PIP_VERSION_CHECK=1 "$RUNNER_TEMP/evl38/venv/bin/python" -m pip install \
+              --require-hashes --no-deps --only-binary=:all: --no-cache-dir \
+              -r root/scripts/ci/evl38-constraints.txt \
+              >> "$RUNNER_TEMP/evl38/result/install.log" 2>&1
+            rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            "$RUNNER_TEMP/evl38/venv/bin/python" -m pip check \
+              >> "$RUNNER_TEMP/evl38/result/install.log" 2>&1
+            rc=$?
+          fi
+          printf '{"state":"install_finished","install_exit_code":%s,"capture_exit_code":null,"gate_exit_code":null}\n' \
+            "$rc" > "$RUNNER_TEMP/evl38/result/status.json"
+          cat "$RUNNER_TEMP/evl38/result/install.log"
+          exit "$rc"
+
+      - name: Capture and grade the exact full-gate observation
+        id: capture
+        if: steps.install.outcome == 'success'
+        run: |
+          set +e
+          "$RUNNER_TEMP/evl38/venv/bin/python" root/scripts/ci/evl38_run_capture.py \
+            "$GITHUB_WORKSPACE/app" "$GITHUB_WORKSPACE/research" "$GITHUB_WORKSPACE/llama" \
+            "$RUNNER_TEMP/evl38/result/capture" \
+            "$RUNNER_TEMP/evl38/result/install.log" \
+            "$RUNNER_TEMP/evl38/result/dependency-manifest.json" \
+            > "$RUNNER_TEMP/evl38/result/driver.log" 2>&1
+          capture_rc=$?
+          gate_rc=null
+          if [ -f "$RUNNER_TEMP/evl38/result/capture/validation.json" ]; then
+            gate_rc=$("$RUNNER_TEMP/evl38/venv/bin/python" -c \
+              'import json,sys; print(json.load(open(sys.argv[1]))["candidate_gate_exit_code"])' \
+              "$RUNNER_TEMP/evl38/result/capture/validation.json")
+          fi
+          printf '{"state":"capture_finished","capture_exit_code":%s,"gate_exit_code":%s}\n' \
+            "$capture_rc" "$gate_rc" > "$RUNNER_TEMP/evl38/result/status.json"
+          cat "$RUNNER_TEMP/evl38/result/driver.log"
+          exit "$capture_rc"
+
+      - name: Preserve original gate, JUnit, source context, install log and native receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evl38-candidate-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evl38/result/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Reflect a red candidate gate after preserving its originals
+        if: ${{ always() && steps.capture.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          rc=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["gate_exit_code"])' \
+            "$RUNNER_TEMP/evl38/result/status.json")
+          if [ "$rc" != "0" ]; then
+            echo "candidate gate returned $rc; original outcome and native receipt were uploaded"
+            exit "$rc"
+          fi

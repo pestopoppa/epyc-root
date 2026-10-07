@@ -1,0 +1,42 @@
+{
+  "MAIN_executed_grade": false,
+  "artifact": 11457575446,
+  "attempt": 1,
+  "contexts": 5,
+  "counts": {
+    "collected": 20,
+    "error": 0,
+    "executed": 20,
+    "failure": 0,
+    "passed": 20,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "git_inputs": 33,
+  "implementation_accepted": true,
+  "job_identity": "github_job_112600782912",
+  "members": 50,
+  "native_value": true,
+  "originals_unchanged": true,
+  "pins": {
+    "app_lock": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "30c2189039df28753362d7f8abe1346d0fa29d4f",
+    "root_context": "0da62ca1cb484f54f0e58dc514f10cd61b9ac001",
+    "source": "508bce0ef804d03caf761eb8807801e48dd327d4"
+  },
+  "readset_count": 38,
+  "receipt_file_sha256": "26e56de322a6270dc806d676d72223f485f32b8e89c893e3aec3fe5f9dbd77a7",
+  "receipt_self_sha256": "9805cba33e3a4cb423f7b4742963cf85ba0562028f86c61a4d38c090080bf47b",
+  "reviewed_at": "2026-10-07T02:27:25.265449+00:00",
+  "run": 37561887934,
+  "scope": "LOW-MEDIUM nullable finite/nonnegative display parser source, measured-zero kept distinct, existing positive flags/journal/floor/objective policies unchanged; successor fixes synthetic candidate identities and assertion scope only.",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "source_integrity_review": "PASS",
+  "testcase_nodes": 20,
+  "zip_bytes": 687407,
+  "zip_sha256": "5c47b7ec1c4aa33f40a93a94ed6683feec29153fd7a05605a28c0af2a645e4e7"
+}

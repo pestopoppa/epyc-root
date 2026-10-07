@@ -1,0 +1,400 @@
+{
+  "expected_junit_cases": [
+    {
+      "classname": "tests.validate.test_candidate_eval_gate_periodic",
+      "name": "test_candidate_eval_gate_records_exact_outcome"
+    }
+  ],
+  "host_project_execution": false,
+  "manual_blast_radius": "MEDIUM off-host scheduled full existing ROOT gate only; dynamic APP/Research actual run heads/source must be recorded and independently reviewed, native FALSE is valid checker observation not green readiness.",
+  "packages": {
+    "PyYAML": "6.0.3",
+    "Pygments": "2.20.0",
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pytest": "9.0.3"
+  },
+  "recipe_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+  "repo_pins": {
+    "app": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+    "llama": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "research": "de02a21d88e006dd542b7a1a56bf8090a27de1f3",
+    "root": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938"
+  },
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "source_context_counts": {
+    "app": 3195,
+    "llama": 571,
+    "research": 2875,
+    "root": 3176
+  },
+  "source_context_file_count": 9817,
+  "source_context_sha256": "7f0df3aeda269194f6003de3e0f4c09b815331040b2f7e05de08f812827a96ad",
+  "source_context_symlink_count": 5,
+  "tracked_file_count": 40,
+  "tracked_files": [
+    {
+      "bytes": 5651,
+      "git_blob": "c12300820a97d137b81f5c1916f5e311ba1fbccf",
+      "mode": "100644",
+      "path": ".github/workflows/evl38-periodic-candidate-gate.yml",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "63d5805c2204c2045af756ca25ad03ad13874079d4df10681cdffcee20146777"
+    },
+    {
+      "bytes": 18841,
+      "git_blob": "65cfcf043a1400731c01fa3b8b80495cfab29f8d",
+      "mode": "100644",
+      "path": "scripts/ci/evl38_run_capture.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "222c7ceeafbf7ac6a6063b8d38b2cd733c107fe59aedfc2ab3a500a81a256ec7"
+    },
+    {
+      "bytes": 5473,
+      "git_blob": "47b2cd643eb4506e3f7de9e79b28af13e9e6516b",
+      "mode": "100644",
+      "path": "scripts/ci/evl38_source_context.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "e03c1f8763bc52e0c33744b20480b6265e888ad1b687102ee41c98c648526389"
+    },
+    {
+      "bytes": 172,
+      "git_blob": "8cf2e773b0111f4fb27546e480f4fad64bf9c484",
+      "mode": "100644",
+      "path": "scripts/ci/evl38_expected_cases.json",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "74eaeeacae1f5ef8a3b78f27dd9b848c8990d9d5f396a959a0a63852d7764561"
+    },
+    {
+      "bytes": 4588,
+      "git_blob": "9273765683c316cd75c95c73810e8be87ca93aa2",
+      "mode": "100644",
+      "path": "scripts/ci/evl38-constraints.txt",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "e44fa8a9c9cb2a127d830fb10885c2d25ed4a0f900cb9e2f573d6a35fc5948aa"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 4450,
+      "git_blob": "98e7b7b1b02f196fb4564ba374de902310bd2296",
+      "mode": "100755",
+      "path": "scripts/validate/candidate_eval_gate.sh",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "5ae41840f4d41e6dcd25f8d560c2fd2d0245b1c01b4faddf1a9338a2599b4023"
+    },
+    {
+      "bytes": 38383,
+      "git_blob": "d5d3235c7afa1a998954aef03a9de75b6a106358",
+      "mode": "100644",
+      "path": "scripts/validate/repo_readiness_scorer.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "32fb4c552b32fdb525a03135ecde4bbbaa5f8da69471180ba8f41d5aff29e3d0"
+    },
+    {
+      "bytes": 1046,
+      "git_blob": "b8cd8c4d312bc490df7200543656e9d101be89b8",
+      "mode": "100755",
+      "path": "scripts/validate/validate_agents_structure.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "22feb0e0d81fd857df8d788cc189b31a3602a73ddf736401f41177ef14a9f32b"
+    },
+    {
+      "bytes": 4282,
+      "git_blob": "53b45eda1f1332172f7cc357dd826dc5bb132713",
+      "mode": "100755",
+      "path": "scripts/validate/validate_agents_references.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "63366d3769b60e32d9cdec36ef14777b61bf030ea4c927e996ef2a45a3749a52"
+    },
+    {
+      "bytes": 2877,
+      "git_blob": "c15883750c488375f6c8407bb4164485e565fe8d",
+      "mode": "100755",
+      "path": "scripts/validate/validate_claude_md_matrix.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "c38724e3d060b63141cbeaab1f5b17b0aa921b9164cad001b1aa7a107ac44104"
+    },
+    {
+      "bytes": 12773,
+      "git_blob": "eaaccdccd460cfec9ede020fd9a6c9f7c429c3f5",
+      "mode": "100644",
+      "path": "scripts/validate/validate_doc_drift.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "75abc0e3f091cac1dc062eed8ceaa5b348e32921d51f8daf1158744c1a3adc2a"
+    },
+    {
+      "bytes": 3329,
+      "git_blob": "b7d9c21240ee84c427753daccf29c8271a489c0d",
+      "mode": "100755",
+      "path": "scripts/validate/validate_registry.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "6d6cc210f54cc2d78df901f525b187cb88376c95afb3824440923e8b5679d62f"
+    },
+    {
+      "bytes": 8544,
+      "git_blob": "eef09c3bb4a97a2864d70a844b4c878591ca37af",
+      "mode": "100644",
+      "path": "scripts/validate/check_model_probe_scoreboard_guard.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "9663b4e398868c156d397b33ba1a7e44c97ce7f1ab697714c7ab6f1ff77ebe23"
+    },
+    {
+      "bytes": 5284,
+      "git_blob": "fbddaf9e5aaca6d7aaae0ca5b132f612c9318800",
+      "mode": "100755",
+      "path": "scripts/validate/check_stack_fact_migration_discipline.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "48cfeb32e12d92787199c61a44a4f95e8906c3914c6279838b29b0fd24f6c656"
+    },
+    {
+      "bytes": 10966,
+      "git_blob": "37f82cafa2a259e6987b2a4833f2c21e8f852711",
+      "mode": "100755",
+      "path": "scripts/validate/pii_fixture_eval.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "71a2115496f57958fdc3e60a4bd76d17a7c523ec4a3852a6147bb6a4d7afe508"
+    },
+    {
+      "bytes": 2377,
+      "git_blob": "2d202725bb368fd9876da40558e9addb58bdc84c",
+      "mode": "100644",
+      "path": "tests/validate/test_candidate_eval_gate_periodic.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "96be668803ba8b7b2c9ac9d72890a8c4cda2558b95dc5202311fa313fbce67db"
+    },
+    {
+      "bytes": 11741,
+      "git_blob": "c42437fe32b383ecfe7ffb677a5aedae83e76519",
+      "mode": "100644",
+      "path": "tests/validate/test_repo_readiness_scorer.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "5b85cec66b5602b4d9d1fd994923d2ec10e52241317427c54b403d5e9d15bda1"
+    },
+    {
+      "bytes": 4977,
+      "git_blob": "b48de5d87070113201c90a26dd690b4d4791900a",
+      "mode": "100644",
+      "path": "tests/validate/test_check_model_probe_scoreboard_guard.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "34b44c3e81c7b2604c25b0ed3839ca2ab86da4197cce1a47285e06506d005076"
+    },
+    {
+      "bytes": 2017,
+      "git_blob": "d00b3145b1e93ebef207499ef4e67849688b12c6",
+      "mode": "100644",
+      "path": "tests/validate/test_check_stack_fact_migration_discipline.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "381ba9417f8ad4138c60abbac61ff604dc10de8b00ebb5d64e00977abcc858ad"
+    },
+    {
+      "bytes": 999,
+      "git_blob": "7c8d00f842e6f53bd495ed80263720255da50e03",
+      "mode": "100644",
+      "path": "tests/conftest.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a"
+    },
+    {
+      "bytes": 833,
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "mode": "100644",
+      "path": "tests/__init__.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "bytes": 2783,
+      "git_blob": "73ca9aeb40417d2579037d7d0826488bc92a0b52",
+      "mode": "100644",
+      "path": "docs/reference/agent-config/CLAUDE_MD_MATRIX.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "73ce7dba2575727206caa220ee8606bf8613893039c33026bb911f82d3275ce9"
+    },
+    {
+      "bytes": 2171,
+      "git_blob": "79e46c040641a7be6afc3bb29cc9b19c4192127f",
+      "mode": "100644",
+      "path": "docs/reference/agent-config/claude_md_matrix.json",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "66cbc73eed14afea335133a39f43fb84e9893d8d0d283cb88878275f64c86883"
+    },
+    {
+      "bytes": 330909,
+      "git_blob": "53943ccb9df3c5f2c9b0b1a9ef9a929f24759bcb",
+      "mode": "100644",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "38b59d30f6ff31874b6ffc8116b98da38662ebc98a2a4352b7777c94fa3fc2b1"
+    },
+    {
+      "bytes": 247265,
+      "git_blob": "d29e76080e7087d8891a6f207a7b0087ff57ce58",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "139ef409529f02b987dcd4dbd850320d415ee073de1fd9aba9bdf444464b67e1"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 12425,
+      "git_blob": "caeae42b0b2e05609dafa240bf9ab4a054ec183f",
+      "mode": "100644",
+      "path": "scripts/vidya/measurement_record.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 27561,
+      "git_blob": "f828cec9d4c6494014194f6f60cb587f5ee23331",
+      "mode": "100755",
+      "path": "scripts/hooks/pii_precommit.sh",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e"
+    },
+    {
+      "bytes": 12997,
+      "git_blob": "ae505c474feebf5759fcd76265263662f62a8225",
+      "mode": "100644",
+      "path": "research/fixtures/pii_hygiene_eval.jsonl",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "b3d491fe299ce3a54530c709c186dfd82172e803dcc44c1ce35d27109a69bca2"
+    },
+    {
+      "bytes": 149161,
+      "git_blob": "4a6987b8a56549f76e48ead9fccaf20ca6c9b1da",
+      "mode": "100644",
+      "path": "orchestration/model_registry.yaml",
+      "repo": "app",
+      "repo_pin": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5"
+    },
+    {
+      "bytes": 726254,
+      "git_blob": "a3935e7bc1a5ab0a96c1677ae0cb1dae8c788a81",
+      "mode": "100644",
+      "path": "orchestration/model_registry.yaml",
+      "repo": "research",
+      "repo_pin": "de02a21d88e006dd542b7a1a56bf8090a27de1f3",
+      "sha256": "bbb0bad29d41e0801bc5e8e917cf57a79c1adffd9827d47e1dabe575fa5afb49"
+    },
+    {
+      "bytes": 9,
+      "git_blob": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+      "mode": "120000",
+      "path": "AGENTS.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "6ebdb617a8104a7756d0cf36578ab01103dc9f07e4dc6feb751296b9c402faf7"
+    },
+    {
+      "bytes": 21493,
+      "git_blob": "5934f010eae2a4989df0d9c7c054cd0c57a425be",
+      "mode": "100644",
+      "path": "CLAUDE.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "a62115bee5770c2923281ae8c3407366e7772ae1876e5415d9e7ddfcd73b1e99"
+    },
+    {
+      "bytes": 4781,
+      "git_blob": "1b8d3e6e30c1b3cc008596eb33d13f013a27c98f",
+      "mode": "100644",
+      "path": "CLAUDE_GUIDE.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "7cae2f18e0656020e0e6ab3a35f448eb7cc3bc03aaf5a24da1e139bde36ebb0f"
+    },
+    {
+      "bytes": 14880,
+      "git_blob": "15ab7f0b2e263880a4375ecee1f2446bd9fdded8",
+      "mode": "100644",
+      "path": "README.md",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "6ab6b0112936baa38abff379edc06c5791f5ab68cf56ad36d879396065954f45"
+    },
+    {
+      "bytes": 1816,
+      "git_blob": "fd421b196afa1e49015d68216636c004f50e1f1c",
+      "mode": "100644",
+      "path": ".claude/dependency-map.json",
+      "repo": "root",
+      "repo_pin": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938",
+      "sha256": "da4574c8b1377b365377acb351155f27cb1508399405f46f1600408ddff31708"
+    }
+  ],
+  "wheel_hashes": 52
+}

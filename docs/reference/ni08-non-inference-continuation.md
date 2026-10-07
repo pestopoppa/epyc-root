@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **83 completed scoped tasks: 52 existing checkbox flips and 31 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **88 completed scoped tasks: 55 existing checkbox flips and 33 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -223,3 +223,7 @@ MAIN corrected RVP-C2-1's obsolete no-suite-seed premise while retaining its rea
 ## BEAM ingest provenance source review
 
 MAIN reviewed Research180a772445e2c227979998cdec9b7a50ae5aa54e against current de02 source, including flattening, pair-chunk construction and the existing QuestionResult provenance writer. The two-file change adds prospective all-role/source-order count/range/granularity metadata and labels the full-history arm accurately. Manual blast radius LOW: adapter provenance payload and its synthetic controls; prompts, chunk selection and score/objective policy unchanged. UTM-B3-SOURCE and VB-UTM-B3-CONFORMANCE now track publication and original native proof separately from the future real BEAM run. No completion counted; NI08 remains83.
+
+## MAIN acceptance: periodic gate, planner display and scaffold custody
+
+[Actual periodic gate RED capture](../../artifacts/ni08/evl38-periodic-gate-20261007/README.md) closes the existing scheduled checker and its pre-enrolled verifier, with twelve actual reference failures tracked as a free source follow-on. [Planner unavailable-versus-zero source and original20/20](../../artifacts/ni08/rtg23-w9-display-source-20261007/README.md) close W9 and its verifier; historical/objective math unchanged. K28.5a historical scaffold custody is published on its original experimental branch at b76d2549e4, exact85+/3- patch; owner dirty tree untouched and performance NO-GO unchanged. **88 scoped completions:55 existing flips +33 additions**. Preparations are not completions; broader source audit and implementation continue.

@@ -1,0 +1,41 @@
+{
+  "MAIN_executed_grade": false,
+  "artifact": 11455384979,
+  "attempt": 1,
+  "contexts": 5,
+  "counts": {
+    "collected": 20,
+    "error": 0,
+    "executed": 20,
+    "failure": 2,
+    "passed": 18,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "git_inputs": 33,
+  "implementation_accepted": false,
+  "job_identity": "github_job_112593315801",
+  "members": 50,
+  "native_value": false,
+  "originals_unchanged": true,
+  "pins": {
+    "app_lock": "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "5917f39134a08d1b84e4349518b93920d2a8dff2",
+    "source": "6d2be3c4c73d34cf3a93626d722b84b6218a5dec"
+  },
+  "readset_count": 38,
+  "receipt_file_sha256": "98e2c950b7aacd9ba184631b61878638b082094c9fff33c27f5db4f29f5dc2ba",
+  "receipt_self_sha256": "97743acdcb0f7859a503afa6da9842376277ac1abb252b5fdcdbc54d5306b404",
+  "reviewed_at": "2026-10-07T02:22:27.044876+00:00",
+  "run": 37559494399,
+  "scope": "LOW-MEDIUM planner formatter distinguishes missing/invalid from measured zero/positive, preserves positive flags and fail-closed replay, no journal/objective/sequential/grade/archive/runtime write.",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "source_integrity_review": "PASS",
+  "testcase_nodes": 20,
+  "zip_bytes": 689463,
+  "zip_sha256": "bd63a88a9e1f9127b79165cba4d69ef797c18b0bd93146f59165b53e3acda76f"
+}

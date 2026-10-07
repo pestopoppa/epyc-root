@@ -1,0 +1,38 @@
+{
+  "MAIN_executed_grade": false,
+  "artifact": 11456013909,
+  "attempt": 1,
+  "checker_capture_accepted": false,
+  "contexts": 4,
+  "counts": {
+    "collected": 1,
+    "error": 0,
+    "executed": 1,
+    "failure": 1,
+    "passed": 0,
+    "skipped": 0
+  },
+  "explicit_regular_git_inputs": 39,
+  "explicit_symlink_provenance": 1,
+  "implementation_accepted": false,
+  "job_identity": "github_job_112594746548",
+  "members": 58,
+  "native_value": false,
+  "originals_unchanged": true,
+  "pins": {
+    "app": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+    "llama": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "research": "de02a21d88e006dd542b7a1a56bf8090a27de1f3",
+    "root": "ac42a4736bbebec945a2746b0a52465af26a496c"
+  },
+  "readset_count": 43,
+  "reviewed_at": "2026-10-07T02:28:32.609710+00:00",
+  "run": 37559959169,
+  "scope": "Failed precursor: actual full gate RED/native FALSE retained; strict snapshot subsequently rejected tracked AGENTS symlink, no shared-grade acceptance. Corrected successor kept literal symlink source identity without following it.",
+  "shared_grade": null,
+  "source_context_regular_files": 9817,
+  "source_context_symlinks": 0,
+  "source_integrity_review": "PASS_NATIVE_ORIGINALS_ONLY",
+  "zip_bytes": 2855968,
+  "zip_sha256": "701a004828c12f9574027609225c6bf0ad37f4c5585072e41fea8d1be2192b30"
+}

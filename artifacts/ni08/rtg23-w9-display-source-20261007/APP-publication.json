@@ -1,0 +1,13 @@
+{
+  "commit": "753074aac7a17a67835604cd886112859127abeb",
+  "live_reload": false,
+  "main_before": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+  "paths": [
+    "src/autopilot_core/planner_evidence.py",
+    "tests/unit/test_planner_evidence.py"
+  ],
+  "previous_head": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+  "promoted": true,
+  "pushed": true,
+  "source": "508bce0ef804d03caf761eb8807801e48dd327d4"
+}

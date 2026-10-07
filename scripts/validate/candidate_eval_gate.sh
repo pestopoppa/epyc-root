@@ -71,7 +71,13 @@ echo "== agent governance =="
 "$PYTHON_BIN" scripts/validate/validate_claude_md_matrix.py
 
 echo "== registry validation =="
-if command -v uv >/dev/null 2>&1; then
+if [[ "${CANDIDATE_EVAL_REQUIRE_DEPS:-0}" == "1" ]]; then
+  "$PYTHON_BIN" -c 'import yaml' || {
+    echo "required locked PyYAML dependency is unavailable" >&2
+    exit 1
+  }
+  "$PYTHON_BIN" scripts/validate/validate_registry.py
+elif command -v uv >/dev/null 2>&1; then
   uv run --with pyyaml python scripts/validate/validate_registry.py
 else
   echo "uv unavailable; skipped registry validation that requires pyyaml"
@@ -84,7 +90,13 @@ echo "== stack fact migration discipline =="
 "$PYTHON_BIN" scripts/validate/check_stack_fact_migration_discipline.py
 
 echo "== model probe scoreboard guard =="
-"$PYTHON_BIN" scripts/validate/check_model_probe_scoreboard_guard.py
+if [[ "${CANDIDATE_EVAL_REQUIRE_DEPS:-0}" == "1" ]]; then
+  "$PYTHON_BIN" scripts/validate/check_model_probe_scoreboard_guard.py \
+    --root-repo "$ROOT_DIR" \
+    --research-repo "$ROOT_DIR/repos/epyc-inference-research"
+else
+  "$PYTHON_BIN" scripts/validate/check_model_probe_scoreboard_guard.py
+fi
 
 if [[ "$STRICT_DOC_DRIFT" -eq 1 ]]; then
   echo "== doc drift =="
@@ -104,7 +116,12 @@ trap 'rm -rf "$TMP_DIR"' EXIT
   --output-remediation-json "$TMP_DIR/repo_readiness_remediation_queue.json" \
   --output-autopilot-remediation-json "$TMP_DIR/repo_readiness_autopilot_pickup.json"
 
-if command -v uv >/dev/null 2>&1; then
+if [[ "${CANDIDATE_EVAL_REQUIRE_DEPS:-0}" == "1" ]]; then
+  echo "== focused tests =="
+  "$PYTHON_BIN" -m pytest -q \
+    tests/validate/test_repo_readiness_scorer.py \
+    tests/validate/test_check_model_probe_scoreboard_guard.py
+elif command -v uv >/dev/null 2>&1; then
   echo "== focused tests =="
   uv run --with pytest pytest -q \
     tests/validate/test_repo_readiness_scorer.py \

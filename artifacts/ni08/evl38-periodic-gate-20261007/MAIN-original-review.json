@@ -1,0 +1,41 @@
+{
+  "MAIN_executed_grade": false,
+  "artifact": 11457147049,
+  "attempt": 1,
+  "checker_capture_accepted": true,
+  "contexts": 4,
+  "counts": {
+    "collected": 1,
+    "error": 0,
+    "executed": 1,
+    "failure": 1,
+    "passed": 0,
+    "skipped": 0
+  },
+  "explicit_regular_git_inputs": 39,
+  "explicit_symlink_provenance": 1,
+  "implementation_accepted": false,
+  "job_identity": "github_job_112599861037",
+  "members": 59,
+  "native_value": false,
+  "originals_unchanged": true,
+  "pins": {
+    "app": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+    "llama": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "research": "de02a21d88e006dd542b7a1a56bf8090a27de1f3",
+    "root": "11b4aaf5aa1a04abd0d2c5338e26e35b7326d938"
+  },
+  "readset_count": 43,
+  "reviewed_at": "2026-10-07T02:25:55.672619+00:00",
+  "run": 37561593874,
+  "scope": "Actual existing full-gate invocation failed agent-reference validation; synthetic wrapper/native FALSE accepted as checker observation only, no readiness/performance/inference warrant.",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "source_context_regular_files": 9817,
+  "source_context_symlinks": 5,
+  "source_integrity_review": "PASS",
+  "zip_bytes": 2862119,
+  "zip_sha256": "793f0cb8240372d69926b4d2aa0e28ceb745363067f5468f77f9bfeee84ca0c8"
+}

@@ -1,0 +1,1 @@
+{"schema":"epyc.evl38.expected_cases/v1","root":[{"classname":"tests.validate.test_candidate_eval_gate_periodic","name":"test_candidate_eval_gate_records_exact_outcome"}]}

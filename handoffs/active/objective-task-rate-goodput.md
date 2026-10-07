@@ -267,7 +267,8 @@ instrument's composition load-bearing in a way it never was under tokens/second.
       deliberately because they feed archived `eval_details.goodput_qph` history but guaranteed to bite whoever
       next reads them as measurements (`src/autopilot_core/tier_specs.py`) (found 2026-09-14, noninf sweep).
       ✅ 2026-10-07 — MAIN accepts optional display helper and explicit legacy-sentinel explanation after original3/3, full native/source custody and APP publication. [Scope/evidence](../../artifacts/ni08/rtg23-w8-display-source-20261007/README.md). Historical values/objective math and W9/W10 unchanged.
-- [ ] **W9 — do the same for `_float()`, which returns `0.0` for absence** and is used for other journal
+- [x] **W9 — do the same for `_float()`, which returns `0.0` for absence** and is used for other journal ✅ 2026-10-07
+  MAIN accepted bounded source/evidence: [review](../../artifacts/ni08/rtg23-w9-display-source-20261007/README.md).
       fields — the same sentinel class, left as a follow-up by coordinator ruling
       (`src/autopilot_core/planner_evidence.py:521`) (found 2026-09-14, noninf sweep).
 - [ ] **W10 — find out why the live `pareto_archive` is empty** (`state["pareto_archive"]` has no keys), so
