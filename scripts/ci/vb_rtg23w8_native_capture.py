@@ -416,6 +416,7 @@ def main() -> int:
         originals = [*file_tree(native), junit, source_manifest, environment, pip_freeze,
                      install_log,
                      result / "pre-status.json"]
+        before_membership = sorted(str(path.relative_to(result)) for path in originals)
         before = {str(path.relative_to(result)): digest(path) for path in originals}
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
@@ -431,8 +432,15 @@ def main() -> int:
                 grade_result = grade(projected)
         except Exception as exc:
             grade_error = f"{type(exc).__name__}: {exc}"
-        after = {str(path.relative_to(result)): digest(path) for path in originals}
+        after_originals = [*file_tree(native), junit, source_manifest, environment, pip_freeze,
+                           install_log, result / "pre-status.json"]
+        after_membership = sorted(str(path.relative_to(result)) for path in after_originals)
+        after = {str(path.relative_to(result)): digest(path) for path in after_originals}
         originals_unchanged = before == after
+        membership_unchanged = before_membership == after_membership
+        expected_grade = ("Judged", "Located")
+        actual_grade = grade_result[:2] if isinstance(grade_result, tuple) else None
+        grade_ok = actual_grade == expected_grade
         analysis = {
             "schema": "epyc.vb_rtg23w8.native_analysis.v1", "scope": "three selected deterministic journal-display and compatibility controls",
             "expected_identities": [list(item) for item in expected_ids],
@@ -442,6 +450,11 @@ def main() -> int:
             "command_exit_code": command_exit,
             "shared_grade": grade_result, "shared_grade_row_count": len(rows),
             "shared_grade_error": grade_error,
+            "shared_grade_expected_qt": list(expected_grade),
+            "shared_grade_matches_expected": grade_ok,
+            "original_membership_before_grade": before_membership,
+            "original_membership_after_grade": after_membership,
+            "original_membership_unchanged": membership_unchanged,
             "original_sha256_before_grade": before,
             "original_sha256_after_grade": after,
             "originals_unchanged": originals_unchanged,
@@ -449,12 +462,14 @@ def main() -> int:
         }
         write_json(result / "shared-grade-analysis.json", analysis)
         passed = (command_exit == 0 and receipt.get("fixture_execution_conformant") is True
-                  and identity_ok and counts_ok and originals_unchanged
-                  and len(rows) == 1 and grade_result is not None and grade_error is None)
+                  and identity_ok and counts_ok and originals_unchanged and membership_unchanged
+                  and len(rows) == 1 and grade_ok and grade_error is None)
         status.update(state="passed" if passed else "failed", exit_code=command_exit,
                       fixture_execution_conformant=receipt.get("fixture_execution_conformant"),
                       exact_case_set=identity_ok and counts_ok,
                       originals_unchanged_after_grade=originals_unchanged,
+                      original_membership_unchanged=membership_unchanged,
+                      shared_grade={"Q": actual_grade[0], "T": actual_grade[1]} if actual_grade else None,
                       receipt_sha256=receipt.get("receipt_sha256"))
         return 0 if passed else 1
     except Exception as exc:
