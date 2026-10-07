@@ -226,3 +226,10 @@ MAIN independently authenticates original37580634048 TRUE3/3,4413members/4326rea
 ## 06:44 UTC — operator-requested periodic full wrap-up
 
 Full routine covers accepted SMT/experimental rollback sources,4 existing checkbox flips, source enrollment and corrected INF64 task routing, and the prevalidated LR11/LR13 terminal package. Wiki synthesis distinguishes source acceptance from operational evidence and reflects CS20/W6 preparations; indices regenerate/check and README/wiki checks gate publication. No pruning, archival or compaction candidate was approved. Exact native/archive/compiler custody and active worker scratch remain retained; no peer removal or production/inference/runtime action.
+
+
+## W4 accepted publication boundary — 2026-10-07
+
+MAIN independently authenticates original hosted37580631576:2/2 outer controls and4×202 actual original gate cases plus invalid-world refusal;320Git+7generated file contexts,360 unchanged uploaded file members. Exact APP9cff source is merged and pushed to APP mainfd1869b1cc020c21402f85799eb28259212928f4. Six empty directories appear only in original snapshot records; ZIP filesystem proof is explicitly unavailable and none were reconstructed. Existing source and VB tasks close (2flips), NI08=135 (78existing+57children). No inference, host runtime or production registry changed. Remaining W4 migration and owner-confirmation work is surfaced by the owning index.
+
+Prospective enrollment at this boundary: S49 shared MTMD helper and SCG test-log isolation each receive an exact native-source companion and source-table row before capture. MAIN corrects the draft’s nonexistent collection-time writer premise: conftest sets the override before imports, and the logger writes during test execution. Private recipe preparation continues; no further completion or runtime claim.

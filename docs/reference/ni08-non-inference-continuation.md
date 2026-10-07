@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **133 completed scoped tasks: 76 existing checkbox flips and 57 newly completed scoped subtasks; physical-core guard and experimental rollback controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **135 completed scoped tasks: 78 existing checkbox flips and 57 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -347,3 +347,8 @@ Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN m
 ## Experimental seeded rollback initializer — 2026-10-07
 
 [Actual original3/3 and64raw captures](../../artifacts/ni08/rvp-rollback-success-acceptance-20261007/README.md) complete the fresh experimental rollback source child and its prospective native companion. Two existing flips bring NI08 to133 (76existing+57children). Production is unchanged; full-device regression, promotion and live seeded events remain parent requirements. New source work and final all-card audit continue.
+
+
+## Actual W4 promotion gate — 2026-10-07
+
+[Original2/2 outer,808 inner executions and exact published source](../../artifacts/ni08/w4-real-gate-success-acceptance-20261007/README.md) close W4-REAL-GATE-SOURCE and VB-W4-STACK-CHANGE-GATE, bringing NI08 to135 scoped completions (78existing+57children). Four actual synthetic worlds each pass the original202 gate identities, and invalid-world refusal is preserved. Six empty directories omitted by artifact ZIP are reported explicitly without reconstruction. Actual consumer migrations, production readiness and owner confirmation remain independent; all-card review and further non-inference source work continue.

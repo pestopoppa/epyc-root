@@ -1,0 +1,52 @@
+{
+  "reviewed_at": "2026-10-07T06:41:48.656722+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37580631576,
+  "attempt": 1,
+  "job_identity": "github_job_112659217456",
+  "artifact": 11464652852,
+  "pins": {
+    "app": "9cff6583c235ed394179fc2f66a8c4bd8a81405f",
+    "research": "01d36835e68d57c231a9b0591802e267531df530",
+    "root": "b550239984fb27fa19d6ac2c81867e5b0768cb70"
+  },
+  "zip_sha256": "234405a5b494154ccda753b2348c1810f7ad841db180c03ebff0363feec4ec4a",
+  "zip_bytes": 3852712,
+  "members": 360,
+  "readset_count": 327,
+  "git_inputs": 320,
+  "generated_contexts": 7,
+  "archive_omitted_empty_directory_records": [
+    "synthetic-cache/",
+    "synthetic-cache/kv_slots/",
+    "synthetic-cache/kv_slots/architect_critic/",
+    "synthetic-cache/kv_slots/architect_general/",
+    "synthetic-cache/kv_slots/frontdoor/",
+    "synthetic-cache/kv_slots/ingest_long_context/"
+  ],
+  "directory_custody_limit": "Six authored empty synthetic-cache directories occur only in original typed stable snapshots; upload ZIP omits empty directories. MAIN neither recreates them nor claims archive filesystem proof.",
+  "synthetic_cache_directory": "fresh empty before import; original complete result snapshots cover authored KV fixture directories",
+  "counts": {
+    "collected": 2,
+    "error": 0,
+    "executed": 2,
+    "failure": 0,
+    "passed": 2,
+    "skipped": 0
+  },
+  "inner_identities_per_world": 202,
+  "worlds": 4,
+  "inner_executions": 808,
+  "invalid_world_refused": true,
+  "native_value": true,
+  "receipt_file_sha256": "548b18dee2c989da46f4e92259ea5723c571da15c547126b1e8225494a558646",
+  "receipt_self_sha256": "b962b9745468e7634270a90f99e439d78adb933b81a5ae083c5fab425ab50913",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "scope": "Actual six-target promotion gate in four approved temporary swapped worlds plus invalid-world refusal only; no live registry update, runtime activation, host capacity/isolation, inference, production readiness or new grading ladder."
+}
