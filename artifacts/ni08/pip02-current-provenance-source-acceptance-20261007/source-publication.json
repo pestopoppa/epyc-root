@@ -1,0 +1,23 @@
+{
+  "source": "3ada26fc231f3f8138914ac3e39895817b022a4f",
+  "parent": "6e06fae72da0c2efbd6984f66ea97651d2c48fb9",
+  "publication_commit": "5fd103e8690733bd49a66865387aab2ebc152dcb",
+  "remote": "https://github.com/pestopoppa/epyc-inference-research.git",
+  "files": [
+    {
+      "path": "scripts/benchmark/odl_bench/paddleocr_vl.py",
+      "mode": "100644",
+      "blob": "6bae695165916c3ca37d6212904510f31c09cdfa",
+      "sha256": "0a068e6afbde3b2efb993848a152140f0aaabd978017d83aa4f8114205d6d48c",
+      "bytes": 15512
+    },
+    {
+      "path": "scripts/benchmark/odl_bench/tests/test_odl_bench.py",
+      "mode": "100644",
+      "blob": "893819999101ec1d0b5a22215202ffe70580318d",
+      "sha256": "c9a48734e6f45f189861d9532620314b96a7c3cfa401e5d0263ffd3864e12e7d",
+      "bytes": 33467
+    }
+  ],
+  "scope": "Exact two product blobs after MAIN authenticated whole30-case original; no runtime/model readiness warrant."
+}

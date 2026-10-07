@@ -1,0 +1,40 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T10:00:15.369346+00:00",
+  "run": 37602237437,
+  "attempt": 1,
+  "job_identity": "github_job_112729136839",
+  "recipe_pin": "569a67164baed96fded6270963f0e5411d1fb2c3",
+  "source_pin": "3ada26fc231f3f8138914ac3e39895817b022a4f",
+  "source_parent": "da25b346fc6f5ce0c654d7705f043793ef829cfd",
+  "artifact_id": 11473148275,
+  "zip_sha256": "030720480dfe3b1680214c14d52613d7c608005062c45a384725045ac4de543e",
+  "zip_bytes": 25711041,
+  "original_regular_member_copies": 743,
+  "frozen_Git_inputs": 664,
+  "original_native_readset": 727,
+  "native_binary_and_library_inputs": 58,
+  "generated_contexts": 5,
+  "cases": 30,
+  "native_value": true,
+  "original_shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "receipt_self_sha256": "908e3fc70080f0ebccd19a72d77d0f57a6a46a6a1592d4a6dedccf284beeeb61",
+  "receipt_sha256": "6d9607292c13b481ff43539f639da70220bbf0dd7ceb0dea0a892bad670723e6",
+  "typed_original_counts": {
+    "directory": 6,
+    "regular": 741
+  },
+  "original_external_lock_after_capture_equals_after_grade": true,
+  "source_before_capture_equals_after_capture_equals_after_grade": true,
+  "result_tree_after_capture_equals_after_grade": true,
+  "MAIN_executed_grade": false,
+  "MAIN_executed_project_code": false,
+  "originals_unchanged": true,
+  "implementation_accepted_for_exact_source": true,
+  "canonical_two_product_preimages_require_review": true,
+  "older_29_case_observation_remains_older_source_only": true,
+  "scope": "Selected experimental binary target library prefix source; current rawbytes/FIFO/input-provenance guards preserved; actual model/table quality/inference/reload/deployment excluded"
+}
