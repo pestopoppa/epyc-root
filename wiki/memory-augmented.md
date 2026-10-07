@@ -1187,3 +1187,8 @@ The existing shared policy and completion producers carry bounded/redacted work 
 ### Bounded work-payload marker source correction — 2026-10-07
 
 The sanitizer now bounds the prefix and decimal metadata before trusting a truncation marker; oversized forged markers cannot bypass the cap through the idempotence path. Legitimate redaction-shortened prefixes remain idempotent. MAIN accepted [exact source and hosted41/41 controls](../artifacts/ni08/m11-work-cap-source-20261007/README.md), APP31185ca5, with unchanged original native custody and shared grade. This is synthetic source conformance, not live-population, privacy or semantic-quality evidence.
+
+
+### Tulving trace backend source conformance — 2026-10-07
+
+The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../artifacts/ni08/utm-b4-tulving-source-20261007/README.md) are source-accepted, including the four formerly skip-prone trace controls. Actual dataset/model/embedding and retrieval-quality comparison remain separate.

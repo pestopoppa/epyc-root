@@ -1,0 +1,88 @@
+name: UTM-B4 Tulving FTS source controls
+on:
+  push:
+    branches: [codex/ni08-utm-b4-tulving-capture-e648-20261007]
+permissions:
+  contents: read
+jobs:
+  tulving-fts-source-controls:
+    name: tulving-fts-source-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ROOT_SOURCE_PIN: e6488a02c5eddf4accccf82a96eb158f84526b97
+      RESEARCH_PIN: de02a21d88e006dd542b7a1a56bf8090a27de1f3
+      APP_PIN: e7e4ffc45164af5a4c66c438ecb1e98120efcf6a
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      UTM_B4_RUNNER_CONTEXT: ubuntu-24.04
+      UTM_B4_EXECUTION_CONTEXT: utm-b4-synthetic-tulving-fts5-no-model-or-embedding
+      UTM_B4_INSTALL_COMMAND: >-
+        python -m venv "$RUNNER_TEMP/ni08-utm-b4-tulving/venv" &&
+        "$RUNNER_TEMP/ni08-utm-b4-tulving/venv/bin/python" -m pip install
+        --require-hashes --no-deps --only-binary=:all: -r
+        recipe/scripts/ci/ni08_utm_b4_requirements.txt
+      EPYC_ORCHESTRATOR_ROOT: ${{ github.workspace }}/app
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize artifact envelope
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ni08-utm-b4-tulving/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ni08-utm-b4-tulving/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: recipe
+          persist-credentials: false
+      - name: Checkout unchanged native carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout Tulving source proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_PIN }}
+          path: research
+          persist-credentials: false
+      - name: Checkout exact trace FTS source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact lock-derived wheel closure
+        run: |
+          set -euo pipefail
+          ${{ env.UTM_B4_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-utm-b4-tulving/result/dependency-install.log"
+      - name: Capture all 23 Tulving context and trace FTS controls
+        env:
+          TULVING_TRACE_DB_DIR: ${{ runner.temp }}/ni08-utm-b4-tulving/trace-db
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE/research"
+          "$RUNNER_TEMP/ni08-utm-b4-tulving/venv/bin/python" recipe/scripts/ci/ni08_utm_b4_capture.py
+      - name: Preserve original conformance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni08-utm-b4-tulving-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ni08-utm-b4-tulving/result/
+            ${{ runner.temp }}/ni08-utm-b4-tulving/source-readset.json
+            ${{ runner.temp }}/ni08-utm-b4-tulving/status.json
+          if-no-files-found: error

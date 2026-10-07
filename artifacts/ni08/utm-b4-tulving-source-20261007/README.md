@@ -1,0 +1,9 @@
+# Tulving retrieved-arm trace backend — MAIN acceptance, 2026-10-07
+
+The existing backend builds chapter Events in a private SQLite/FTS store, uses existing navigation candidate retrieval and BM25 selection, and supplies the retrieved arm through that surface. MAIN verified the original source implementation at Research `de02a21d88e006dd542b7a1a56bf8090a27de1f3` is already an ancestor of published Research main; no duplicate product patch was required.
+
+Recipe ROOT `5c940e30211e5bc66d3de83fb8f9b927c2777705`, the prospectively enrolled ROOT task/source context (its full pin is bound in the recipe), APP `e7e4ffc45164af5a4c66c438ecb1e98120efcf6a`, unchanged carrier `4c0c653baf1654c8c25c66433cf39c8faefd8e52`. [Original run37566194532](https://github.com/pestopoppa/epyc-root/actions/runs/37566194532) passes all23 cases, including four trace-only controls, with zero failure/error/skip. Native TRUE; existing shared grade Judged/Located.
+
+MAIN independently authenticated artifact11459250267: ZIP SHA-256 `01a2ae9b7d964bb95a94468190016ec8bda58e66fc00f2f36994843c00aaea24`, 24,636,912bytes/4,367members. All4,353 Git inputs plus three generated inputs, all exact source/case identities, native receipt seal and complete original result/source custody before/after grading match. Twelve APP-lock-derived packages retain all215 wheel hashes. Originals remain under `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/utm-b4-success-MAIN-original-custody/`.
+
+UTM-B4 source routing and VB-UTM-B4-CONFORMANCE close. No model, embedding, real dataset, retrieval-quality, live trace store or deployment acceptance follows. The previous native23-pass capture whose CI driver expected wrong JUnit classnames remains unchanged and unaccepted; this successor corrects the binding. Parent real BEAM/Tulving experiments and operator-owned memory control remain open.

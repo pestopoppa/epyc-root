@@ -338,9 +338,9 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
       parameter, not plumbing** (`intake-1337#record`). Record exactly which turns were indexed and at
       what granularity: a silent role filter or chunking choice moves the score more than the
       retrieval algorithm does. COMPUTE-GATED rider on UTM-B2.
-- [ ] **UTM-B4 — Route the Tulving `retrieved` arm through this surface** — the backend half of
+- [x] **UTM-B4 — Route the Tulving `retrieved` arm through this surface** — the backend half of
       CME-4 in [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md)
-      (`intake-408#record`). Zero compute to write.
+      (`intake-408#record`). Zero compute to write. ✅ 2026-10-07 — MAIN accepted [existing source and original23/23](../../artifacts/ni08/utm-b4-tulving-source-20261007/README.md).
 
 **Note on UTM-M9** (mandatory no-memory control arm for every memory A/B, above): it is already
 flagged in-file as an operator-gated MEASUREMENT.md trust-boundary ask. M-12a/M-12b satisfy its
@@ -359,6 +359,6 @@ UTM must author and adjudicate its own human-labelled conflicting, stale, poison
 
 - [ ] **UTM-B1-SOURCE — prepare the existing read-only trace navigation registrar and synthetic MCP/SQLite controls.** Exact `ms.search`/`ms.expand` tool names, declared session_id, fixed default read store and no model-selected paths, writes or embeddings. Keep the default orchestrator MCP catalog unchanged until catalog-growth acceptance; source registrar is explicit and uninvoked. Actual off-host FastMCP schema/defaults and synthetic SQLite navigation controls through VB-UTM-B1-CONFORMANCE. Parent model-facing registration and real consumers remain open.
 
-2026-10-07 MAIN source finding: UTM-B4 is already implemented by the checked CME-4 backend in current Research `de02a21d88e006dd542b7a1a56bf8090a27de1f3`: chapter Events in a private SQLite store, existing `navigation.search_records` candidate retrieval and FTS BM25 selection, default retrieved-arm construction and missing-source refusal. VB-UTM-B4-CONFORMANCE now owns a prospective full synthetic native capture, including the four trace-dependent cases with an exact APP source path; no skipped control will count. UTM-B4 stays unchecked until that evidence is accepted. UTM-B3's prospective filter/count source remains executable independently of the future real BEAM run; its historical COMPUTE-GATED rider does not gate source authoring.
+2026-10-07 MAIN source finding: UTM-B4 is already implemented by the checked CME-4 backend in current Research `de02a21d88e006dd542b7a1a56bf8090a27de1f3`: chapter Events in a private SQLite store, existing `navigation.search_records` candidate retrieval and FTS BM25 selection, default retrieved-arm construction and missing-source refusal. VB-UTM-B4-CONFORMANCE now owns a prospective full synthetic native capture, including the four trace-dependent cases with an exact APP source path; no skipped control will count. UTM-B4 source routing is now checked after MAIN accepted original23/23; real-data/model quality remains unassessed. UTM-B3's prospective filter/count source remains executable independently of the future real BEAM run; its historical COMPUTE-GATED rider does not gate source authoring.
 
 - [ ] **UTM-B3-SOURCE — add prospective BEAM memory ingest provenance to question/run artifacts.** Preserve all flattened role/content messages in source order, record zero-based half-open indexed range, normalized role/message/chunk counts and exact pair-chunk granularity for retrieved arms. Label the full-history arm without claiming a retriever lookup; no historical backfill or real BEAM outcome. MAIN-reviewed isolated Research source180a772445e2c227979998cdec9b7a50ae5aa54e; actual synthetic module validation through VB-UTM-B3-CONFORMANCE precedes publication. Parent real experimental run remains open.

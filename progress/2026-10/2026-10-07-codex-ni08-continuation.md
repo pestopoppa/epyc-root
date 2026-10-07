@@ -110,3 +110,8 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## EXL3 teardown polling — MAIN acceptance
 
 [Source and original39/39](../../artifacts/ni08/exl3-teardown-source-20261007/README.md) close the bounded source fix and pre-enrolled native verifier. Delayed-clear/persistent/unknown census controls preserve fail-closed teardown and retained samples. MAIN authenticated complete originals and merged Researche46b01b9; physical EXL3-3b remains open. NI08 now95 scoped completions (56 existing flips+39 children).
+
+
+## Tulving retrieved-arm source — MAIN acceptance
+
+[Existing published source and original23/23](../../artifacts/ni08/utm-b4-tulving-source-20261007/README.md) close UTM-B4 and its prospective native verifier, including all four trace-only controls with zero skips. MAIN verified complete4,356-input and original result custody; no real dataset/model/embedding or retrieval-quality warrant. NI08 now97 scoped completions (57 existing flips+40 children).

@@ -1,0 +1,42 @@
+{
+  "reviewed_at": "2026-10-07T03:23:01.653350+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37566194532,
+  "attempt": 1,
+  "job_identity": "github_job_112614354729",
+  "artifact": 11459250267,
+  "pins": {
+    "app": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "5c940e30211e5bc66d3de83fb8f9b927c2777705",
+    "research": "de02a21d88e006dd542b7a1a56bf8090a27de1f3"
+  },
+  "zip_sha256": "01a2ae9b7d964bb95a94468190016ec8bda58e66fc00f2f36994843c00aaea24",
+  "zip_bytes": 24636912,
+  "members": 4367,
+  "readset_count": 4356,
+  "git_inputs": 4353,
+  "static_git_context": 4353,
+  "contexts": 3,
+  "counts": {
+    "collected": 23,
+    "error": 0,
+    "executed": 23,
+    "failure": 0,
+    "passed": 23,
+    "skipped": 0
+  },
+  "testcase_nodes": 23,
+  "native_value": true,
+  "receipt_file_sha256": "3e16771a122352bd6bf3c395d80a29717e25889e88ff78b4adf99a256454514d",
+  "receipt_self_sha256": "5af46796df165847125dad35ed1f9dc9be28441aa7960e6d9b75d989fa0aafa3",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "Synthetic source conformance only; no model, physical device, live DB, deployment or inference warrant."
+}
