@@ -22,7 +22,6 @@ jobs:
         --require-hashes --no-deps --only-binary=:all: -r
         recipe/scripts/ci/ni08_utm_b4_requirements.txt
       EPYC_ORCHESTRATOR_ROOT: ${{ github.workspace }}/app
-      TULVING_TRACE_DB_DIR: ${{ runner.temp }}/ni08-utm-b4-tulving/trace-db
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
@@ -71,6 +70,8 @@ jobs:
           set -euo pipefail
           ${{ env.UTM_B4_INSTALL_COMMAND }} 2>&1 | tee "$RUNNER_TEMP/ni08-utm-b4-tulving/result/dependency-install.log"
       - name: Capture all 23 Tulving context and trace FTS controls
+        env:
+          TULVING_TRACE_DB_DIR: ${{ runner.temp }}/ni08-utm-b4-tulving/trace-db
         run: |
           set -euo pipefail
           export PYTHONPATH="$GITHUB_WORKSPACE/research"
