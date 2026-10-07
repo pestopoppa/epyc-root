@@ -20,8 +20,8 @@ jobs:
       NI08_RUNNER_CONTEXT: ubuntu-24.04
       NI08_EXECUTION_CONTEXT: evl42-static-synthetic-tests-no-repository-scan
       NI08_INSTALL_COMMAND: >-
-        python -m venv "$RUNNER_TEMP/evl42-pin-static/venv" &&
-        "$RUNNER_TEMP/evl42-pin-static/venv/bin/python" -m pip install
+        python -m venv "$RUNNER_TEMP/evl42-pin-static-venv" &&
+        "$RUNNER_TEMP/evl42-pin-static-venv/bin/python" -m pip install
         --disable-pip-version-check --require-hashes --no-deps --only-binary=:all: -r
         recipe/scripts/ci/ni08_evl42_pin_static_requirements.txt
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
@@ -68,7 +68,7 @@ jobs:
       - name: Capture exact synthetic EVL-42 controls
         run: |
           set -euo pipefail
-          "$RUNNER_TEMP/evl42-pin-static/venv/bin/python" recipe/scripts/ci/ni08_evl42_pin_static_capture.py
+          "$RUNNER_TEMP/evl42-pin-static-venv/bin/python" recipe/scripts/ci/ni08_evl42_pin_static_capture.py
       - name: Preserve complete original capture
         if: always()
         uses: actions/upload-artifact@v4

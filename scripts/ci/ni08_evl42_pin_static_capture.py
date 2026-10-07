@@ -37,6 +37,7 @@ RESEARCH_CHECKER = "scripts/benchmark/check_pin_staleness.py"
 RESEARCH_CONFIG = ("pyproject.toml", "uv.lock")
 CARRIER_FILES = (
     "scripts/ci/native_conformance.py",
+    "scripts/vidya/adapters/__init__.py",
     "scripts/vidya/adapters/ci_conformance.py",
     "scripts/vidya/claim_tuple.py",
     "scripts/vidya/lattice.py",
@@ -48,8 +49,8 @@ LOCKED_PACKAGES = {
     "Pygments": "2.20.0", "pytest": "9.0.3",
 }
 INSTALL_COMMAND = (
-    "python -m venv \"$RUNNER_TEMP/evl42-pin-static/venv\" && "
-    "\"$RUNNER_TEMP/evl42-pin-static/venv/bin/python\" -m pip install "
+    "python -m venv \"$RUNNER_TEMP/evl42-pin-static-venv\" && "
+    "\"$RUNNER_TEMP/evl42-pin-static-venv/bin/python\" -m pip install "
     "--disable-pip-version-check --require-hashes --no-deps --only-binary=:all: -r "
     "recipe/scripts/ci/ni08_evl42_pin_static_requirements.txt"
 )
@@ -214,7 +215,7 @@ def main() -> int:
             raise RuntimeError("runner must be Linux x86_64")
         if platform.python_version() != PYTHON_PIN:
             raise RuntimeError(f"Python runtime differs from pin: {platform.python_version()}")
-        venv = (runner_temp / RESULT_NAME / "venv").resolve()
+        venv = (runner_temp / f"{RESULT_NAME}-venv").resolve()
         if sys.prefix == sys.base_prefix or Path(sys.prefix).resolve() != venv:
             raise RuntimeError("capture Python is not the reviewed isolated venv")
 
