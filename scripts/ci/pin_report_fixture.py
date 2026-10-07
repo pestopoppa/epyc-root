@@ -5,6 +5,8 @@ including complete=True with stale rows, is never a pin-health or readiness clai
 """
 from __future__ import annotations
 import collections
+import base64
+import binascii
 import hashlib
 import json
 import os
@@ -16,6 +18,10 @@ SCHEMA = "epyc.benchmark_pin_staleness.v1"
 STABILITY_SCOPE = ("observed Git HEAD/status snapshots and per-file safe reads; "
                    "not an atomic whole-checkout snapshot or proof of loaded code bytes")
 MAX_BYTES = 16 * 1024 * 1024
+MAX_SCAN_OUTPUT_BYTES = 48 * 1024 * 1024
+MAX_SCAN_INVOCATION_BYTES = 128 * 1024 * 1024
+SCAN_CAPTURE_SCHEMA = "epyc.benchmark_pin_scan_invocation.v1"
+SCAN_ENV_FIELDS = ("LANG", "LC_ALL", "PATH", "PYTHONHASHSEED", "PYTHONPATH", "PYTHONUTF8")
 STATUSES = {"current", "stale", "missing", "unresolved"}
 FIELDS = {"schema", "root", "tracked_python_files", "rows", "counts",
           "source_file_identities", "checker_source", "root_git",
@@ -211,11 +217,107 @@ def read_report(root, relative, expected_sha256):
 
 
 def capture_report_fixture(*, report_relative, **native_recipe):
-    """Declare a fresh generated report before the existing native process launch."""
-    from scripts.ci.native_conformance import capture_fixture_execution
+    """Declare the report and optional sidecars before the native process launch."""
+    from scripts.ci.native_conformance import capture_fixture_execution, _generated_output_paths
+    extra = native_recipe.pop("additional_output_paths", ())
     if "generated_output_paths" in native_recipe:
         raise ValueError("report output declaration is owned by this writer")
-    return capture_fixture_execution(generated_output_paths=[report_relative], **native_recipe)
+    if not isinstance(extra, (list, tuple)) or len(extra) > 4 or any(not isinstance(path, str) for path in extra):
+        raise ValueError("additional output paths must be an explicit sequence of relative paths")
+    # Capture the sidecar first so a missing report never discards original child
+    # stdout/stderr that the carrier has already safely attached.
+    outputs = [*extra, report_relative]
+    if any(len(path) > 256 for path in outputs):
+        raise ValueError("report and additional output paths must be bounded")
+    _generated_output_paths(outputs)
+    if any(a.startswith(b + "/") or b.startswith(a + "/")
+           for index, a in enumerate(outputs) for b in outputs[index + 1:]):
+        raise ValueError("report and additional output paths must not overlap")
+    return capture_fixture_execution(generated_output_paths=outputs, **native_recipe)
+
+
+def _scan_invocation(value):
+    fields = {"schema", "argv", "cwd", "environment", "return_code", "elapsed_ns", "stdout_b64", "stdout_bytes",
+              "stdout_sha256", "stderr_b64", "stderr_bytes", "stderr_sha256",
+              "report_bytes", "report_sha256"}
+    if not isinstance(value, dict) or set(value) != fields or value.get("schema") != SCAN_CAPTURE_SCHEMA:
+        raise ValueError("scan invocation fields/schema differ")
+    if (not isinstance(value["argv"], list) or not value["argv"]
+            or any(not isinstance(arg, str) for arg in value["argv"])):
+        raise ValueError("scan invocation argv is invalid")
+    if (not isinstance(value["cwd"], str) or not Path(value["cwd"]).is_absolute()
+            or not isinstance(value["environment"], dict)
+            or set(value["environment"]) != set(SCAN_ENV_FIELDS)
+            or any(item is not None and not isinstance(item, str)
+                   for item in value["environment"].values())):
+        raise ValueError("scan invocation cwd/environment is invalid")
+    if type(value["return_code"]) is not int or not -255 <= value["return_code"] <= 255:
+        raise ValueError("scan invocation return code is invalid")
+    for key in ("elapsed_ns", "stdout_bytes", "stderr_bytes", "report_bytes"):
+        if not _natural(value[key]):
+            raise ValueError("scan invocation integer field is invalid")
+    for key in ("stdout_sha256", "stderr_sha256"):
+        if not _digest(value[key]):
+            raise ValueError("scan invocation digest is invalid")
+    if value["report_sha256"] is not None and not _digest(value["report_sha256"]):
+        raise ValueError("scan report digest is invalid")
+    if value["report_sha256"] is None and value["report_bytes"] != 0:
+        raise ValueError("absent scan report carries a byte count")
+    if value["report_sha256"] is not None and value["report_bytes"] == 0:
+        raise ValueError("present scan report is empty")
+    for key in ("stdout_b64", "stderr_b64"):
+        if not isinstance(value[key], str):
+            raise ValueError("scan invocation byte field is invalid")
+    if value["stdout_bytes"] > MAX_SCAN_OUTPUT_BYTES or value["stderr_bytes"] > MAX_SCAN_OUTPUT_BYTES:
+        raise ValueError("scan invocation output exceeds bounded size")
+    try:
+        stdout = base64.b64decode(value["stdout_b64"], validate=True)
+        stderr = base64.b64decode(value["stderr_b64"], validate=True)
+    except binascii.Error as exc:
+        raise ValueError("scan invocation base64 is invalid") from exc
+    if (len(stdout) != value["stdout_bytes"] or hashlib.sha256(stdout).hexdigest() != value["stdout_sha256"]
+            or len(stderr) != value["stderr_bytes"] or hashlib.sha256(stderr).hexdigest() != value["stderr_sha256"]):
+        raise ValueError("scan invocation original byte identity differs")
+    parsed = None
+    if value["report_sha256"] is not None:
+        parsed = json.loads(stdout.decode("utf-8"), object_pairs_hook=_pairs,
+                            parse_constant=lambda token: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+        validate_report(parsed)
+    return value, stdout, stderr, parsed
+
+
+def write_scan_invocation(root, relative, invocation):
+    """Write exact child stdout/stderr bytes and invocation metadata exclusively."""
+    invocation, _, _, _ = _scan_invocation(invocation)
+    data = (json.dumps(invocation, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode()
+    if len(data) > MAX_SCAN_INVOCATION_BYTES:
+        raise ValueError("scan invocation sidecar exceeds bounded size")
+    parent, leaf = _parent(root, relative)
+    fd = None
+    identity = None
+    try:
+        fd = os.open(leaf, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=parent)
+        identity = os.fstat(fd)
+        with os.fdopen(fd, "wb") as handle:
+            fd = None
+            if handle.write(data) != len(data):
+                raise OSError("short scan invocation write")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.fsync(parent)
+    except BaseException:
+        if fd is not None:
+            os.close(fd)
+        if identity is not None:
+            current = os.stat(leaf, dir_fd=parent, follow_symlinks=False)
+            if (current.st_dev, current.st_ino) != (identity.st_dev, identity.st_ino):
+                raise RuntimeError("failed sidecar write lost exclusive output ownership")
+            os.unlink(leaf, dir_fd=parent)
+            os.fsync(parent)
+        raise
+    finally:
+        os.close(parent)
+    return {"path": relative, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
 
 
 def read_report_fixture(receipt_path, report_relative):
@@ -227,6 +329,54 @@ def read_report_fixture(receipt_path, report_relative):
     artifact = outputs[0]["artifact"]
     report = read_report(Path(receipt_path).parent, artifact["name"], artifact["sha256"])
     return record, digest, report
+
+
+def read_scan_invocation_fixture(receipt_path, invocation_relative, report_relative=None):
+    """Reopen raw child invocation and, when present, its original report attachment."""
+    from scripts.ci.native_conformance import read_receipt
+    record, receipt_digest = read_receipt(receipt_path)
+    outputs = record.get("generated_outputs", [])
+    sidecars = [row for row in outputs if row["path"] == invocation_relative]
+    if len(sidecars) != 1:
+        raise ValueError("original scan invocation attachment absent or duplicated")
+    artifact = sidecars[0]["artifact"]
+    parent, leaf = _parent(Path(receipt_path).parent, artifact["name"])
+    try:
+        fd = os.open(leaf, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+        with os.fdopen(fd, "rb") as handle:
+            if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+                raise ValueError("scan invocation sidecar is not regular")
+            raw = handle.read(MAX_SCAN_INVOCATION_BYTES + 1)
+    finally:
+        os.close(parent)
+    if len(raw) > MAX_SCAN_INVOCATION_BYTES or hashlib.sha256(raw).hexdigest() != artifact["sha256"]:
+        raise ValueError("original scan invocation sidecar bytes/digest differ")
+    invocation = json.loads(raw.decode("utf-8"), object_pairs_hook=_pairs,
+                             parse_constant=lambda token: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+    invocation, stdout, stderr, parsed = _scan_invocation(invocation)
+    report = None
+    report_outputs = [row for row in outputs if report_relative is not None and row["path"] == report_relative]
+    if invocation["report_sha256"] is None:
+        if report_outputs:
+            raise ValueError("report output exists but invocation declares no parsed report")
+    else:
+        if invocation["return_code"] not in (0, 1) or len(report_outputs) != 1:
+            raise ValueError("original report output/exit code differs from invocation")
+        report_artifact = report_outputs[0]["artifact"]
+        report = read_report(Path(receipt_path).parent, report_artifact["name"], report_artifact["sha256"])
+        parent, leaf = _parent(Path(receipt_path).parent, report_artifact["name"])
+        try:
+            fd = os.open(leaf, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+            with os.fdopen(fd, "rb") as handle:
+                report_bytes = handle.read(MAX_BYTES + 1)
+        finally:
+            os.close(parent)
+        expected_rc = 1 if report["counts"]["stale"] or report["counts"]["missing"] else 0
+        if (len(report_bytes) != invocation["report_bytes"]
+                or hashlib.sha256(report_bytes).hexdigest() != invocation["report_sha256"]
+                or parsed != report or invocation["return_code"] != expected_rc):
+            raise ValueError("child stdout and original report differ")
+    return record, receipt_digest, report, invocation, stdout, stderr
 
 
 def project_report_fixture(receipt_path, report_relative):
