@@ -1,0 +1,63 @@
+name: EVL24 distinct logged-run native controls
+on:
+  push:
+    branches: [codex/ni08-evl24-distinct-run-native-20261007]
+permissions:
+  contents: read
+jobs:
+  complete-repeat-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Preserve original setup status before imports
+        run: |
+          mkdir -p "$RUNNER_TEMP/evl24-distinct-run"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/evl24-distinct-run/status.json"
+      - name: Checkout exact ROOT recipe and unchanged carrier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout approved exact APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 92c9ec879733357677998eae8122960ae57c6cb9
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout MAIN exact prospective source and native enrollment
+        uses: actions/checkout@v4
+        with:
+          ref: beae3116d15a427d553b73d57d505778cad3f399
+          path: context
+          persist-credentials: false
+      - name: Setup exact bounded interpreter
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install isolated ALL-wheel locked pytest closure
+        run: |
+          python -m venv "$RUNNER_TEMP/evl24-distinct-run-venv"
+          "$RUNNER_TEMP/evl24-distinct-run-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/evl24_distinct_run_requirements.txt > "$RUNNER_TEMP/evl24-distinct-run/dependency-install.log" 2>&1
+      - name: Capture whole original unit module and existing shared grade
+        run: |
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/evl24-distinct-run-venv/bin/python" recipe/scripts/ci/evl24_distinct_run_capture.py
+      - name: Preserve all original setup and native outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evl24-distinct-run-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evl24-distinct-run
+          include-hidden-files: true
+          retention-days: 90
