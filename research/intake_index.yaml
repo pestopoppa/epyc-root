@@ -249023,7 +249023,8 @@
   integration_disposition: knowledge_only
   disposition_evidence:
   - Context for Q38P-3; no action beyond a proposed runbook correction
-- arxiv_id: null
+- id: intake-1963
+  arxiv_id: null
   url: https://cognition.com/agent-memory-repo
   source_type: blog
   title: Agent Memory Repo — Cognition Git-backed linked memory proposal
@@ -249039,14 +249040,10 @@
   discovered_via: input
   verdict: adopt_patterns
   ingested_date: '2026-10-07'
-  verification: stage1-unverified
-  read_depth: DIGEST
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
-    any later Stage-3 filing approval remain required.
   authors:
   - Cognition
   key_claims:
@@ -249056,8 +249053,8 @@
     such as queries.
   - Separate per-owner repositories may be composed at session time without merging their ownership or
     histories.
-  - Periodic memory consolidation is proposed to discover patterns, merge duplicates and reconcile outdated
-    or contradictory notes.
+  - Publisher describes periodic Dreaming as a product capability for adding cross-session patterns and
+    cleaning duplicate, outdated or contradictory notes; no independent performance was observed.
   - A task-scoped swarm workspace may collect per-agent findings, cross-agent questions and a common measurement
     artifact.
   techniques:
@@ -249111,9 +249108,287 @@
     a question, not an established missing capability. Orchestrator source snapshot 2b0a727e490b1e4a01f1d2d720dcc7d0349d630e:
     orchestration/repl_memory/routing.py:81-155, episodic_store.py:231,388 and memory_record.py:299-349.
     Wiki review pinned root c94915da9; native claim provenance and semantic belief conflicts remain under
-    existing Vidya rules. Full primary HTML retained as custody, not Stage-2 verification.'
-  id: intake-1963
-- arxiv_id: null
+    existing Vidya rules. Full primary HTML retained as custody, not Stage-2 verification.
+
+
+    Stage 2 verified 2026-10-07: current-source read depth FULL; see dive_corrections for retained-file
+    paths, source revision and exact scope. Stage-1-only/no-clone wording above is historical.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Current page directly describes a Git-backed repo, cross-session memory, compact MEMORY.md entry
+      point and links; this remains a product proposal, not a performance result.
+  - claim_index: 1
+    effect: unaffected
+    note: Source and added-date metadata are optional/recommended examples; paths are memory-root-relative
+      and may link to a reusable SQL query.
+  - claim_index: 2
+    effect: unaffected
+    note: Repos remain separate; page describes per-owner writes and retention of each repo’s ownership,
+      permissions and history.
+  - claim_index: 3
+    effect: narrowed
+    note: Current page describes Dreaming as a periodically running product capability that adds patterns
+      and cleans duplicates/outdated/conflicting notes; behavior and quality are publisher assertions,
+      not independently observed.
+  - claim_index: 4
+    effect: unaffected
+    note: Illustrative swarm tree shows shared findings/questions, per-agent notes and one common benchmark
+      script; example metrics are not empirical evidence.
+  dive_corrections: '2026-10-07 Stage 2: confirmed the current Cognition page describes a Git-backed,
+    linked cross-session memory format and the listed metadata/composability/swarm patterns. Narrowed
+    claim 3: Dreaming is presented as an existing product capability, but no independent operation or
+    outcome evidence was collected. All five quoted spans are exact substrings of the retained native
+    HTML extraction and passed verify_source_anchor against its content-addressed original response. The
+    example swarm performance figures remain illustrative. Stage-1 claim #3 (historical wording): “Periodic
+    memory consolidation is proposed to discover patterns, merge duplicates and reconcile outdated or
+    contradictory notes.”'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Article introduction; native-extracted exact substring
+    quote: Agents work better when they remember things across sessions. With Agent Memory Repo, your
+      agent saves what it learns from you in real time, and that memory is live across sessions.
+    quote_sha256: 03fec66e22ba373a6ec8e412ac833d625b38890dbeed58f7148e8310a54795ae
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Agent swarms; native-extracted exact substring
+    quote: Each agent pushes to the same memory repo, and git flags any edits that conflict.
+    quote_sha256: 080ce7b9c5d5f688bca726f9134eff80f7eb6df34ab2c921d3cf8c665098d890
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Format > MEMORY.md; native-extracted exact substring
+    quote: 'MEMORY.md is the entry point to the repo. Agents load it at the start of every session, so
+      keep it short: include only what every session needs, plus links to everything else.'
+    quote_sha256: 8ec923b9a22c34012ee845f1107dde2111a67ca3a83b7d0a96b1991893d66587
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Format > Entries and metadata; native-extracted exact substring
+    quote: In Markdown notes, each entry is a bullet on one line, with optional metadata at the end.
+    quote_sha256: 905ac8b82469caf0a9254f6bb0b1d87e24b0e98869f44f929c21598bc32574c8
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Format > metadata example; native-extracted exact substring
+    quote: '- Payments and website share a 2026-10-15 launch deadline [source: https://example.com/sessions/102;
+      added: 2026-09-03]'
+    quote_sha256: 111d599aa7a1c554225abdc9fb555c8ee53fe62dadaa376360e0885dbe0160c3
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Format > Cross-links; native-extracted exact substring
+    quote: Use [[path]] to link between files. Paths start at the memory root. Omit .md for Markdown files;
+      keep other extensions, as in [[metrics/autocomplete_keep_rate.sql]] .
+    quote_sha256: 4aff58c84eb5a79cfd7924d8c08b5322c3faeb45a0febbf8b36dbe3bcfdadc60
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Composability > ownership; native-extracted exact substring
+    quote: 'The repos stay separate. The agent tracks who said what and writes each memory to the right
+      repo: Alice’s preferences go to memory-alice/ , and Bob’s go to memory-bob/ . When the destination
+      is unclear, the agent asks.'
+    quote_sha256: 804822286798308dffa5bc7b6b148d15e939ea33340cf23274d121e92e056348
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Composability > ownership and history; native-extracted exact substring
+    quote: Because each repo keeps its own ownership, permissions, and history, future sessions can combine
+      them in any mix.
+    quote_sha256: 86ec3b6ad9879378cf4e659217032a1cd8a0659e43a007fae4a18bccff066ba9
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Dreaming; native-extracted exact substring
+    quote: Dreaming Dreaming is a dedicated agent that runs periodically. It has two jobs. Add new memory.
+      Spot patterns across sessions and save them as new entries. Clean up memory. Merge duplicates, remove
+      outdated entries, and check sources to resolve contradictions.
+    quote_sha256: d1fb04adde786edde05b874dd351ce075e0ee59cbd1268b1f06d925685facdc8
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'Example: agent swarm > workspace tree; native-extracted exact substring'
+    quote: swarms/ slow-checkout/ ← one folder per swarm README.md ← the goal and the rules findings.md
+      ← what each agent has measured questions.md ← agents ask each other agents/ database.md ← one notes
+      file per agent runtime.md cache.md load_balancer.md scripts/ bench.sh ← the one benchmark every
+      agent runs
+    quote_sha256: be7f2b58c04d9c67ba523cd1d6f0b621e45e19fc5256a53f352d2e4d2eb81111
+    source: https://cognition.com/agent-memory-repo
+    source_revision: https://cognition.com/agent-memory-repo
+    observed_revision: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+    source_artifact:
+      entry_url: https://cognition.com/agent-memory-repo
+      requested_url: https://cognition.com/agent-memory-repo
+      effective_url: https://cognition.com/agent-memory-repo
+      retrieved_at_utc: '2026-10-07T04:26:11Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      relative_path: sha256/72/72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a.raw
+      raw_sha256: 72c9a7a0f2f33df3372425df30ea052534931ff38db0728cccc80cdf2045e45a
+      byte_length: 164088
+    located_by: machine
+    verified_by: vidya/machine_anchor
+  depends_on: []
+- id: intake-1964
+  arxiv_id: null
   url: https://huggingface.co/google/embeddinggemma-2
   source_type: repo
   title: EmbeddingGemma 2 — Google DeepMind modular text/code and multimodal embedder
@@ -249129,14 +249404,10 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-07'
-  verification: stage1-unverified
-  read_depth: DIGEST
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
-    any later Stage-3 filing approval remain required.
   authors:
   - Google DeepMind
   key_claims:
@@ -249144,11 +249415,13 @@
     740M, projecting into a shared 768-dimensional space.
   - Publisher reports full-precision MTEB multilingual v2 mean 61.36 versus predecessor 61.15 and code
     v1 NDCG@10 78.68 versus 68.76; these are not comparisons with EPYC incumbents.
-  - The model card specifies an 8192-token context, task-steering prefixes and asymmetric query/document
-    formatting for retrieval.
+  - The model card documents an 8,192-token context window; the repository config advertises 262,144 positional
+    embeddings, but usable context beyond 8,192 was not validated.
   - MRL supports 768/512/256/128 dimensions with L2 renormalization after truncation; queries and indexed
     documents must share the selected dimension.
   - The model card recommends BF16 or FP32 and warns FP16 activations can produce NaNs or silent degradation.
+  - The model card documents task-steering retrieval prefixes and asymmetric SearchQuery/CodeRetrieval
+    query-document formatting.
   techniques:
   - modular multimodal encoders
   - Matryoshka Representation Learning
@@ -249208,9 +249481,315 @@
     with a separate CLIP image path. KB ColBERT is a distinct configured route, not proven live here.
     Dependency/API and CPU latency remain unverified. Frozen llama.cpp source ffc1bac82 maps gemma-embedding
     but not the official artifact gemma-embedding2; source inspection is not a model-load or running-binary
-    test. No kernel, endpoint, dependency or schema change performed.'
-  id: intake-1964
-- arxiv_id: null
+    test. No kernel, endpoint, dependency or schema change performed.
+
+
+    Stage 2 verified 2026-10-07: current-source read depth FULL; see dive_corrections for retained-file
+    paths, source revision and exact scope. Stage-1-only/no-clone wording above is historical.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The pinned card reports the component sizes and shared 768-dimensional multimodal space; counts
+      are publisher specifications.
+  - claim_index: 1
+    effect: narrowed
+    note: Scores are publisher-reported full-precision results against EmbeddingGemma 1, not EPYC incumbents.
+      In the 2026-10-07 saved MTEB review snapshot, the reference implementation was still open and maintainers
+      required reproducible reference-implementation results; exact evaluation setup was not disclosed.
+  - claim_index: 2
+    effect: narrowed
+    note: 'Context claim isolated: the card documents 8,192 tokens; config max_position_embeddings=262144
+      is an architecture limit, not validated usable context.'
+  - claim_index: 3
+    effect: unaffected
+    note: The card states dimensions 768/512/256/128, re-normalization after truncation and equal query/document
+      dimension requirements.
+  - claim_index: 4
+    effect: unaffected
+    note: BF16/FP32 recommendation and FP16 failure warning are publisher guidance, not locally reproduced.
+  - claim_index: 5
+    effect: unaffected
+    note: 'Split retrieval prompt guidance from the context-window claim; source shows asymmetric query/document
+      formatting and task prefixes. Root review: split is history, not an allowed correction effect; the
+      newly explicit, supported prompt claim is unaffected.'
+  dive_corrections: '2026-10-07 Stage 2: confirmed claims 0, 3 and 4 from the pinned Google revision.
+    Narrowed claim 1 to publisher-reported full-precision comparison against EmbeddingGemma 1; saved MTEB
+    PR/review data at this retrieval date show the reference implementation and exact evaluation setup
+    were unresolved. Narrowed claim 2: documented usable context is 8,192 while config positional metadata
+    says 262,144; effective support beyond 8,192 remains unvalidated. No weights were downloaded, packages
+    installed, code run or inference performed. Stage-1 claim #2 (historical wording): “The model card
+    specifies an 8192-token context, task-steering prefixes and asymmetric query/document formatting for
+    retrieval.”'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L35, model overview; shared output dimension in same line
+    quote: The model has 740M total parameters, combining a 270M parameter text model with modular vision
+      (170M) and audio (300M) encoders.
+    quote_sha256: de5c07b400bbbd8fbf193f81d5a0adb677f723315dd0f645e69d005e0671146b
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L41; Model Overview
+    quote: '* **Native multimodality:** Native multimodality: Unifies 4 modalities (text, images, video,
+      and audio) in a single shared 768-dimensional embedding space.'
+    quote_sha256: 064b333ec7765f7ae5bb4d669b4aab28787324699d5592165e4895b44c4fe2a0
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L54; parameter table
+    quote: '|  | **Modality Encoders** | *Vision:* 170M  *Audio:* 300M |'
+    quote_sha256: c20c1be7e95c85d78d730becea0d5311c3f66029a5277449ffd01bb946b288b3
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L80-L81, Overall Evaluation Results (768d)
+    quote: '| *Text* | Massive Text Embedding Benchmark (MTEB, multilingual, v2) | Mean(Task), Multiple
+      | 61.36 | 61.15 |
+
+      |  | Massive Text Embedding Benchmark (MTEB, code, v1) | Mean(Task), NDCG@10 | 78.68 | 68.76 |'
+    quote_sha256: 3e8b86c3e62136f0684e05fb3193073c6e2931b286591ef6210dde6e364e1e93
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L94; complete table metric headings
+    quote: '| Output Dimension | Compression Ratio | MTEB *(multilingual, v2) Mean(Task)* | MTEB  *(eng,
+      v2) Mean(Task)* | MTEB *(code, v1) Mean(Task)* | MIEB *(lite) Mean(TaskType)* | MMEB (v2) *Overall*
+      | MSEB  *(Retrieval) Mean(Task)* | MAEB   *Mean(Task)* |'
+    quote_sha256: 6f2bda37205d5f1ca4884f6d44d6ba010cbbbe47ea90a1f4ea304eb6c7635ad9
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L96; full-dimension reported row
+    quote: '| 768d (Full) | 1:1 | 61.36 | 68.46 | 78.68 | 64.64 | 59.01 | 69.54 | 49.39 |'
+    quote_sha256: 0e5daf205ba6b72914ff0591e4f00d9600bbc45d5a839e5dff3259878a069121
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L99; 128d reported row
+    quote: '| 128d | 1:6 | 57.89 | 65.68 | 71.41 | 59.06 | 45.65 | 56.71 | 46.92 |'
+    quote_sha256: 6bf7fba823f4adb9726d127a165850542d6f7913898adb1d3900e8b037584cec
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md:L67-L70, Input/Output overview; prompts L130-L151
+    quote: '|  | **Context Window** | 8,192 tokens |
+
+      |  | **Native Output Dimension** | 768 |'
+    quote_sha256: 00d642a2fb059f0b5da967d865eac6e7895816ff5313e136cf6d8b4bd604ac7d
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md:L70; model overview
+    quote: '|  | **Context Window** | 8,192 tokens |'
+    quote_sha256: 9bffdc400c6b44bdb03f7cfe1b863289c9525ac7eeedec42305357b1fc6a8db2
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 2
+    kind: page-and-quote
+    locator: config.json JSON pointer /text_config/max_position_embeddings
+    quote: '"max_position_embeddings": 262144'
+    quote_sha256: 05e03d18e1d79a55350debf40cf6ceabc61fe296e3267b0d27c7ca40939806aa
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b8f1e9931b57fbc054acdb445c41765d55b0074c58d145fa82839941ad1b5bb3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/config.json
+    reviewed_source_sha256: b8f1e9931b57fbc054acdb445c41765d55b0074c58d145fa82839941ad1b5bb3
+  - claim_index: 3
+    kind: page-and-quote
+    locator: README.md:L172-L173, Matryoshka Dimension Truncation
+    quote: "* **Re-normalize after truncating:** slicing a unit-length vector does not preserve unit length.\
+      \ The shortened vector must be L2-normalized before it is used for cosine similarity. Skipping this\
+      \ step degrades ranking quality silently—it produces plausible-looking scores rather than an error.\
+      \  \n* **Queries and documents must share a dimension.** A 768-dimensional query cannot be scored\
+      \ against a 128-dimensional corpus."
+    quote_sha256: 4ab639b97194972c630ad650ca11cd7bcf7cd05ae57073faff1a239db64b516a
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 3
+    kind: page-and-quote
+    locator: README.md:L168, Matryoshka Dimension Truncation
+    quote: The supported dimensions are 768, 512, 256, and 128\.
+    quote_sha256: 3a24d1add202bc4cafbd96f672b9070e3652f152db7acd0d6f66c6a4cd05bace
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 3
+    kind: page-and-quote
+    locator: README.md:L168; MRL quality tradeoff statement
+    quote: Shorter vectors reduce storage and speed up similarity search at some cost to quality.
+    quote_sha256: b1cff6357d454b63cfc95408b3d030cc642ad3b69d5263f3e61d649fd4c5526c
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 3
+    kind: page-and-quote
+    locator: README.md:L181; code example normalizes shortened embedding
+    quote: '   normalize_embeddings=True,'
+    quote_sha256: f98435bdeff5ab884144b5671a5df972cf1cc3ac3648b967a9de747bb25f74c4
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 4
+    kind: page-and-quote
+    locator: README.md:L189-L192, Numerical Precision
+    quote: 'Run inference in `bfloat16` or `float32`. Do not use `float16`.
+
+
+      EmbeddingGemma 2''s activation range exceeds the dynamic range of `float16`. In `float16` the model
+      returns NaN or silently degraded embeddings rather than raising an error'
+    quote_sha256: 8cfb9c25c4bbe796cbfe4e690299634daa5d41a4be6979aff8d3a7f24e72be29
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 4
+    kind: page-and-quote
+    locator: README.md:L193; numerical precision guidance
+    quote: '`bfloat16` is safe, and carries the same 8-bit exponent as `float32`. This is the recommended
+      default on hardware with native support, and halves memory use relative to `float32`. Use `float32`
+      elsewhere, including on most CPUs.'
+    quote_sha256: 401d7f29bf0e30d49b0e7f28122b10a34e31a67d384e7593515161ba7acd7bd7
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L78, Overall Evaluation Results
+    quote: '| Modality | Benchmark | Metric | EmbeddingGemma 2 | EmbeddingGemma 1 |'
+    quote_sha256: 1d275dce701c7453947015a6ace5633a5ff7d613fafd6fa794b7608fd09e6c6f
+    source: https://huggingface.co/google/embeddinggemma-2/blob/914f7f89142e33e77833254d9c9b90c3cef7303b/README.md
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L74, Benchmark Results
+    quote: EmbeddingGemma 2 was evaluated across text, code, vision, visual document, video, and audio
+      embedding benchmarks. All results reported below use the full-precision checkpoint.
+    quote_sha256: 9f348b76f9ff0510913bb2094c186151711c1497a423766b14b7cecb3d73d785
+    source: https://huggingface.co/google/embeddinggemma-2/blob/914f7f89142e33e77833254d9c9b90c3cef7303b/README.md
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 1
+    kind: page-and-quote
+    locator: mteb-model-pr-5588-review-comments.json#/13/body
+    quote: An implementation that does not do this is not a valid reference implementation. The result
+      on the results repository **has** to be computed using the reference implementation.
+    quote_sha256: 83a5e52fd47c38ef3270be59781f45bd2c2e6d97275f003b2c7c52b25fc81bda
+    source: https://github.com/embeddings-benchmark/mteb/pull/5588#discussion_r4198813229
+    source_revision: review-comment snapshot retrieved 2026-10-07
+    observed_revision: sha256:95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/mteb-model-pr-5588-review-comments.json
+    reviewed_source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+  - claim_index: 1
+    kind: page-and-quote
+    locator: mteb-model-pr-5588-review-comments.json#/23/body
+    quote: '@schechterh we sadly can''t publish scores that we cannot reproduce. After all the scores
+      should reflect what the user is expected to gain from using the model.'
+    quote_sha256: 098801600cede6d2887eb12ea64162995295e2614e97ea126448ddfc980fa32a
+    source: https://github.com/embeddings-benchmark/mteb/pull/5588#discussion_r4205267512
+    source_revision: review-comment snapshot retrieved 2026-10-07
+    observed_revision: sha256:95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/mteb-model-pr-5588-review-comments.json
+    reviewed_source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+  - claim_index: 1
+    kind: page-and-quote
+    locator: mteb-model-pr-5588-review-comments.json#/9/body
+    quote: I am unable to disclose the exact setup for evals but can confirm a) all instructions used
+      are drawn from the provided prompts
+    quote_sha256: 190598a3e4e27d132c5f57ce3e6d5f8b3af3f73b7854d732cb18cc1c8bcffa1d
+    source: https://github.com/embeddings-benchmark/mteb/pull/5588#discussion_r4198468712
+    source_revision: review-comment snapshot retrieved 2026-10-07
+    observed_revision: sha256:95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/mteb-model-pr-5588-review-comments.json
+    reviewed_source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md:L151, Prefix Notation & Usage
+    quote: '**Please note:** `prompt_name="Document"` applies `title: none`; titled documents must still
+      be formatted manually, like `model.encode(f"title: {title} | text: {document}")`'
+    quote_sha256: d464028d0459beed3832cd8fea09cfc8c91867592d45069cd381a422f3f0d30d
+    source: https://huggingface.co/google/embeddinggemma-2/blob/914f7f89142e33e77833254d9c9b90c3cef7303b/README.md
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md:L143-L146, Prefix Notation & Usage
+    quote: '| Code search | Asymmetric | CodeRetrieval | `task: code retrieval \| query: {query}` | `title:
+      {title or filename} \| text: {code}` |'
+    quote_sha256: 3756b3367c48641a4fec26c1d2a543d8501d4a3ed99ad6b2307d1ed20f6da3c4
+    source: https://huggingface.co/google/embeddinggemma-2
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md:L143, Prefix Notation & Usage
+    quote: '| Web / document search | Asymmetric | SearchQuery | `task: search result \| query: {query}`
+      | `title: {title} \| text: {content}` |'
+    quote_sha256: 6365307f75db7e6c11e710e9f7c22d7bf87fdadd942902ab0bcc3c3ce31ecef4
+    source: https://huggingface.co/google/embeddinggemma-2/blob/914f7f89142e33e77833254d9c9b90c3cef7303b/README.md
+    source_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+    observed_revision: sha256:b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
+    reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  depends_on: []
+- id: intake-1965
+  arxiv_id: null
   url: https://github.com/AgentMemoryRepo/agentmemoryrepo
   source_type: repo
   title: AgentMemoryRepo official specification and local trial skill
@@ -249225,20 +249804,16 @@
   discovered_via: expansion
   verdict: adopt_patterns
   ingested_date: '2026-10-07'
-  verification: stage1-unverified
-  read_depth: DIGEST
+  verification: dive-verified
+  read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
-    any later Stage-3 filing approval remain required.
   authors:
   - AgentMemoryRepo
   - Cognition
   key_claims:
-  - The official format specifies a short MEMORY.md entry point, topic files, per-entry source/date metadata
-    and root-relative wiki links.
+  - The format specifies a short MEMORY.md entry point, topic files, and root-relative links; Markdown
+    bullets may carry open-ended optional metadata, with source/date among the recommended keys.
   - The repository ships a local agent-memory skill and plugin metadata; the README documents an opt-in
     two-session local trial.
   - The documented trial does not include automatic session startup or scheduled Dreaming; connecting
@@ -249271,12 +249846,210 @@
     of the Cognition proposal. Useful for verifying supported local format/ownership behavior. Do not
     execute installation instructions, auto-load external memory as authority, or assume scheduled Dreaming
     exists.
-  notes: Observed via Cognition official GitHub link; no prior canonical-URL collision. Repository revision
+  notes: 'Observed via Cognition official GitHub link; no prior canonical-URL collision. Repository revision
     8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e. Raw README and SPEC retained. No clone/install/execution
     or Stage-2 code verification performed.
-  id: intake-1965
+
+
+    Stage 2 verified 2026-10-07: current-source read depth PARTIAL; see dive_corrections for retained-file
+    paths, source revision and exact scope. Stage-1-only/no-clone wording above is historical.'
   expanded_from: intake-1963
-- arxiv_id: null
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Format is confirmed, but source/date metadata is optional and source/added are recommended keys,
+      not required fields.
+  - claim_index: 1
+    effect: unaffected
+    note: Pinned repository contains the named skill and plugin metadata; README gives an opt-in two-session
+      local trial.
+  - claim_index: 2
+    effect: unaffected
+    note: The trial is local/no-remote and explicitly excludes automatic startup and scheduled Dreaming.
+  dive_corrections: '2026-10-07 Stage 2: verified the official repository at commit 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e.
+    Narrowed claim 0 so source/date metadata are optional/recommended. Claims 1–2 are confirmed from the
+    pinned README, skill and plugin files. The clone was shallow and LICENSE/history/unrelated branches
+    were not read; no install or code execution occurred. Stage-1 claim #0 (historical wording): “The
+    official format specifies a short MEMORY.md entry point, topic files, per-entry source/date metadata
+    and root-relative wiki links.”'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: SPEC.md:21-35 @ 8798cb2
+    quote: '`MEMORY.md` is the entry point to the repo. Agents load it at the start of every session,
+      so keep it short: include only what every session needs, plus links to everything else.'
+    quote_sha256: 59737942fe3515a3d3501bdb5f4c0cfacb7d878c7a50b9226c31c128f40b9a1c
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/SPEC.md
+    reviewed_source_sha256: 62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+  - claim_index: 0
+    kind: page-and-quote
+    locator: SPEC.md:40-54 @ 8798cb2
+    quote: In Markdown notes, each entry is a bullet on one line, with optional metadata at the end. Update
+      or remove entries when the information changes.
+    quote_sha256: 882e5a0bc781fac58f5fdc3a26cbb72cdd9fae9d64326b717ff8f5f56523ba9c
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/SPEC.md
+    reviewed_source_sha256: 62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+  - claim_index: 0
+    kind: page-and-quote
+    locator: SPEC.md:47-54 @ 8798cb2
+    quote: 'Metadata uses `[key: value; key: value]`. Keys are open. Recommended keys:'
+    quote_sha256: ff8aec6e618b2824d67890d6f3b472b2ba304a931c81188e6b8eec56440a0fcb
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/SPEC.md
+    reviewed_source_sha256: 62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+  - claim_index: 0
+    kind: page-and-quote
+    locator: SPEC.md:52-54 @ 8798cb2
+    quote: Use `[[path]]` to link between files. Paths start at the memory root. Omit `.md` for Markdown
+      files; keep other extensions, as in `[[metrics/autocomplete_keep_rate.sql]]`. Keep information in
+      one place and link to it elsewhere. Update links when moving or renaming files.
+    quote_sha256: b0d3baa140360b2e77fc33e12e9ab926641d0c921318ac84bf3edbe1c2a25732
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/SPEC.md
+    reviewed_source_sha256: 62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:9-13 @ 8798cb2
+    quote: For this local trial, use the same machine with persistent storage. Cloud sessions or another
+      machine need a private remote or other persistent storage to carry memory across sessions.
+    quote_sha256: 9c353fe64510977272d19a4e7dd16e8fd594a1fad1976ffd8c8ef71efc3368fa
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/README.md
+    reviewed_source_sha256: 9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:41 @ 8798cb2
+    quote: Use the same project and machine, and replace the placeholder with the path your agent gave
+      you. The new session should retrieve the saved preference from the repo.
+    quote_sha256: fc08fb350338723a9d350907f971c5dd0f314b15e631ee06c61f34e159c67736
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/README.md
+    reviewed_source_sha256: 9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:49 @ 8798cb2
+    quote: The memory repo stays local; no remote is configured by this trial. Invoke the skill when you
+      want to use memory. Automatic startup and scheduled Dreaming are not included.
+    quote_sha256: 8aaa97590c671d4ee42f05f40c57879b073f3bd9fe26c46c7acbc1fb9b5b6216
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/README.md
+    reviewed_source_sha256: 9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+  - claim_index: 1
+    kind: page-and-quote
+    locator: .devin-plugin/plugin.json:1-6 @ 8798cb2
+    quote: "{\n  \"name\": \"agent-memory-repo\",\n  \"description\": \"Keep agent memory in a git repo,\
+      \ following the Agent Memory Repo spec.\",\n  \"repository\": \"https://github.com/AgentMemoryRepo/agentmemoryrepo\"\
+      ,\n  \"license\": \"MIT\"\n}"
+    quote_sha256: 8bca8f217eab719f5dfd30271ce3b35bb17cf0525e8f0d6529e49f07139b1eae
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:11f6c933f5efc9aa18aca575ac8e607181417c3ccbd32734f5da8505fec9d362
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/.devin-plugin/plugin.json
+    reviewed_source_sha256: 11f6c933f5efc9aa18aca575ac8e607181417c3ccbd32734f5da8505fec9d362
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md:11-13 @ 8798cb2
+    quote: 'Your memory lives in a separate repo, never in the public spec repository.
+
+
+      For this local trial, use the same machine with persistent storage. Cloud sessions or another machine
+      need a private remote or other persistent storage to carry memory across sessions.'
+    quote_sha256: 2a402da32b1dcf50d25402e33b7e3f213f755be0c01687ffaa4a7f3dca21dad3
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/README.md
+    reviewed_source_sha256: 9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md:49 @ 8798cb2
+    quote: The memory repo stays local; no remote is configured by this trial. Invoke the skill when you
+      want to use memory. Automatic startup and scheduled Dreaming are not included.
+    quote_sha256: 8aaa97590c671d4ee42f05f40c57879b073f3bd9fe26c46c7acbc1fb9b5b6216
+    source: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/README.md
+    reviewed_source_sha256: 9b1ae9d657371375d743d68366ce793f9ce5cf8d8665c313f8a7a5ad48c1504f
+  - claim_index: 0
+    kind: page-and-quote
+    locator: SPEC.md:L49-L50
+    quote: '- `source`: a link to the agent session where the information was learned.
+
+      - `added`: when it was saved, as `YYYY-MM-DD`.'
+    quote_sha256: cfc1d1e411f8cafbbc455a1c77af98a37ad7e7819924589e0c4b95773018b34e
+    source: https://github.com/AgentMemoryRepo/agentmemoryrepo/blob/8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e/SPEC.md
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/SPEC.md
+    reviewed_source_sha256: 62a3eecd0d8c08aa69f5ced633e5e1d52b23eaf4fbbc78bfbf65fbbe980b1d72
+  - claim_index: 1
+    kind: page-and-quote
+    locator: skills/agent-memory-repo/SKILL.md:L2-L3
+    quote: 'name: agent-memory-repo
+
+      description: Keep memory across sessions in a separate local git repo that follows the Agent Memory
+      Repo spec. Use when the user invokes this skill, asks you to remember something for future sessions,
+      or asks what you remember.'
+    quote_sha256: 4464975b58f764ddf57fb19930921180bb2cdb687aa8b5dccff86533d342e430
+    source: https://github.com/AgentMemoryRepo/agentmemoryrepo/blob/8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e/skills/agent-memory-repo/SKILL.md
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:5b254acb3e4f6d1b3baa170ae4b283e2e38153b54fbe7a4b51193d826185cb44
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/skills/agent-memory-repo/SKILL.md
+    reviewed_source_sha256: 5b254acb3e4f6d1b3baa170ae4b283e2e38153b54fbe7a4b51193d826185cb44
+  - claim_index: 1
+    kind: page-and-quote
+    locator: skills/agent-memory-repo/SKILL.md:L8
+    quote: Keep the user's memory in a git repo that follows the [Agent Memory Repo spec](https://github.com/AgentMemoryRepo/agentmemoryrepo).
+      This skill does work only when it is invoked. It doesn't add hooks, scheduled jobs, or startup scripts,
+      and it doesn't claim that memory loads on its own in later sessions.
+    quote_sha256: ba0429b35cf858907fd6f21e6a47d25d1fc89b0915e2d1407863304e547a92e6
+    source: https://github.com/AgentMemoryRepo/agentmemoryrepo/blob/8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e/skills/agent-memory-repo/SKILL.md
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: sha256:5b254acb3e4f6d1b3baa170ae4b283e2e38153b54fbe7a4b51193d826185cb44
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1965/repo/skills/agent-memory-repo/SKILL.md
+    reviewed_source_sha256: 5b254acb3e4f6d1b3baa170ae4b283e2e38153b54fbe7a4b51193d826185cb44
+  - claim_index: 0
+    kind: page-and-quote
+    locator: SPEC.md:L40-L54; metadata and root-relative links
+    quote: 'In Markdown notes, each entry is a bullet on one line, with optional metadata at the end.
+      Update or remove entries when the information changes.
+
+
+      Metadata uses `[key: value; key: value]`. Keys are open. Recommended keys:
+
+
+      - `source`: a link to the agent session where the information was learned.
+
+      - `added`: when it was saved, as `YYYY-MM-DD`.
+
+
+      Use `[[path]]` to link between files. Paths start at the memory root. Omit `.md` for Markdown files;
+      keep other extensions, as in `[[metrics/autocomplete_keep_rate.sql]]`. Keep information in one place
+      and link to it elsewhere. Update links when moving or renaming files.'
+    quote_sha256: ecdd03c4f11799a6f3453752b1ab57b0a38e2818e09b5a213e2f70614004cc9e
+    source: https://github.com/AgentMemoryRepo/agentmemoryrepo/blob/8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e/SPEC.md
+    source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+    observed_revision: commit:8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
+  depends_on: []
+- id: intake-1966
+  arxiv_id: null
   url: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
   source_type: blog
   title: 'EmbeddingGemma 2: The Developer Guide — task prompts, modular loading and vector truncation'
@@ -249291,14 +250064,10 @@
   discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-10-07'
-  verification: stage1-unverified
-  read_depth: DIGEST
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
-    any later Stage-3 filing approval remain required.
   authors:
   - Maarten Grootendorst
   - Ian Ballantyne
@@ -249307,8 +250076,8 @@
     omitting vision/audio encoders.
   - Queries and documents use separate retrieval prompts; disabling unused encoders retains the same checkpoint-defined
     vector space across supported modality configurations.
-  - The guide requires consistent vector dimensions and normalized truncation, recommending smaller vectors
-    only according to workload quality/storage tradeoffs.
+  - The guide recommends truncating to 512/256/128 dimensions with normalize_embeddings=True and requires
+    equal query/document dimensions; it says shorter vectors reduce storage and speed similarity search.
   techniques:
   - selective encoder loading
   - asymmetric task prompts
@@ -249338,12 +250107,115 @@
   reader_should_conclude: Companion usage contract for the same Google model, not an independent benchmark
     or permission to upgrade packages. Its cross-modal space claims do not establish compatibility with
     any incumbent EPYC store.
-  notes: Observed from official Google launch link, dated 2026-10-06. No instructions executed. The launch
+  notes: 'Observed from official Google launch link, dated 2026-10-06. No instructions executed. The launch
     announcement is retained as supporting discovery/custody, not a second independent corroborating source
     or additional intake entry.
-  id: intake-1966
+
+
+    Stage 2 verified 2026-10-07: current-source read depth FULL; see dive_corrections for retained-file
+    paths, source revision and exact scope. Stage-1-only/no-clone wording above is historical.'
   expanded_from: intake-1964
-- arxiv_id: null
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Guide names sentence-transformers >=6.1.0 and supported modalities; no library was installed
+      or tested.
+  - claim_index: 1
+    effect: narrowed
+    note: Asymmetric retrieval prompts and shared vector space are documented for the same EmbeddingGemma
+      2 checkpoint and supported SentenceTransformers encoder configurations only.
+  - claim_index: 2
+    effect: narrowed
+    note: Guide supports normalize after truncation, equal dimensions, and truncation for storage/search
+      speed only; the model card separately discusses quality tradeoffs.
+  dive_corrections: '2026-10-07 Stage 2: confirmed the current saved developer guide documents the SentenceTransformers
+    minimum, modality-selective loading, asymmetric retrieval prompts, shared same-checkpoint vector space,
+    and Matryoshka truncation/normalization. Narrowed claim 1 to the same checkpoint and supported SentenceTransformers
+    configurations; narrowed claim 2 so the guide’s recommendation is about storage/search speed, with
+    no extra quality claim attributed to it. These are publisher instructions, not runtime validation.
+    Stage-1 claim #2 (historical wording): “The guide requires consistent vector dimensions and normalized
+    truncation, recommending smaller vectors only according to workload quality/storage tradeoffs.”'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: developer-guide.txt:L28, extracted exact paragraph; see saved developer-guide.html raw source
+    quote: 'You can run EmbeddingGemma 2 across text, code, images, video, and audio with the sentence-transformers
+      library (v6.1.0 or later):'
+    quote_sha256: a1e2c833b4a49552664c0ca7b088bfaa11d166a28327646c432e531e47112419
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  - claim_index: 1
+    kind: page-and-quote
+    locator: developer-guide.txt:L37, extracted exact paragraph; see saved developer-guide.html raw source
+    quote: 'For retrieval, encode queries and documents with different prompts:'
+    quote_sha256: 9673e567333bf6398294826254e969ba788f30eff0e901ff003eab8e03afc107
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  - claim_index: 1
+    kind: page-and-quote
+    locator: developer-guide.txt:L33
+    quote: To minimize memory usage, you can omit unused modality encoders at load time by setting `vision_config`
+      or `audio_config` to None in config_kwargs.
+    quote_sha256: 095df8393cb4021409b4837436326c13889191149425c0def0a5ee01bc97aabb
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  - claim_index: 1
+    kind: page-and-quote
+    locator: developer-guide.txt:L49, Choosing Your Configuration
+    quote: 'In sentence-transformers, all four encoder setups load from the same checkpoint, so they share
+      one vector space: a query embedded with the 270M text-only setup can be matched directly against
+      documents embedded with the full model.'
+    quote_sha256: b6126bccd016a53b657f247f3df502c8d3d35e891df9ec54579a3676abc050e8
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  - claim_index: 1
+    kind: page-and-quote
+    locator: developer-guide.txt:L37; exact prompt example at L38 names SearchQuery for queries and Document
+      for documents
+    quote: 'For retrieval, encode queries and documents with different prompts:'
+    quote_sha256: 9673e567333bf6398294826254e969ba788f30eff0e901ff003eab8e03afc107
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  - claim_index: 1
+    kind: page-and-quote
+    locator: developer-guide.txt:L38; saved flattened exact example
+    quote: query_emb = model.encode(query, prompt_name="SearchQuery") doc_emb = model.encode(document,
+      prompt_name="Document")
+    quote_sha256: 78f58f243d4372c5699a3ef6afa46008f363982890c3b8afcc3806ea856d026f
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  - claim_index: 2
+    kind: page-and-quote
+    locator: developer-guide.txt:L45, extracted exact paragraph; see saved developer-guide.html raw source
+    quote: 'Pass truncate_dim (512, 256, or 128) with normalize_embeddings=True to get shorter, unit-length
+      vectors. Queries and documents must use the same dimension:'
+    quote_sha256: 9c2e1688b0f537aab206b7a26376f1e8c59a3b3c5069fabe8fa5e2385fb4b96e
+    source: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
+    source_revision: retrieved 2026-10-07; published 2026-10-06
+    observed_revision: sha256:af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
+    reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
+  depends_on: []
+- id: intake-1967
+  arxiv_id: null
   url: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF
   source_type: repo
   title: EmbeddingGemma 2 GGUF — official ggml-org converted text-model artifacts
@@ -249357,14 +250229,10 @@
   discovered_via: expansion
   verdict: worth_investigating
   ingested_date: '2026-10-07'
-  verification: stage1-unverified
-  read_depth: DIGEST
+  verification: dive-verified
+  read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - Stage-1 source discovery and current-consumer comparison completed; operator deep-dive selection and
-    any later Stage-3 filing approval remain required.
   authors:
   - ggml-org
   key_claims:
@@ -249402,8 +250270,1594 @@
   reader_should_conclude: Distinct artifact that makes a llama.cpp route worth inspecting. Automatic conversion
     and generic quickstarts do not establish correct vectors, multimodal support, kernel compatibility
     or production readiness. No download of model weights or runtime trial occurred.
-  notes: Observed through Google launch official llama.cpp link. Collection snapshot bfcd298762cc34d0357ece5ebdd31791a3a374d8;
+  notes: 'Observed through Google launch official llama.cpp link. Collection snapshot bfcd298762cc34d0357ece5ebdd31791a3a374d8;
     raw 410-byte card retained. Size/quantization metadata are not empirical retrieval-quality claims;
     credibility left null. BF16/Q8 text artifact is not proof of full multimodal encoding support.
-  id: intake-1967
+
+
+    Stage 2 verified 2026-10-07: current-source read depth PARTIAL; see dive_corrections for retained-file
+    paths, source revision and exact scope. Stage-1-only/no-clone wording above is historical.'
   expanded_from: intake-1964
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Main BF16/Q8_0 text-model GGUFs are listed with gemma-embedding2 metadata; separate BF16/Q8_0
+      mmproj files mean the collection is not collection-wide text-only. No successful load is established.
+  - claim_index: 1
+    effect: unaffected
+    note: Pinned tree lists main BF16 and Q8_0 variants and the API identifies google/embeddinggemma-2
+      as base model; sizes are listing metadata, not quality results.
+  - claim_index: 2
+    effect: unaffected
+    note: Card says automatically converted. Cited conversion log shows export and metadata loading, not
+      parity. The first 2 MiB BF16 byte-range was briefly fetched then deleted; no full weight artifact
+      remains and no inference/evaluation occurred.
+  dive_corrections: '2026-10-07 Stage 2: confirmed the pinned collection and conversion metadata; corrected
+    main-model tree pointers to /4 and /5, leaving /6 and /7 for mmproj; checked convert.log anchors at
+    lines 1477, 483 and 1504–1506 against the retained log. Narrowed claim 0 to distinguish main text-model
+    GGUFs from separate projector artifacts. The conversion excerpt supports conversion/metadata events,
+    not output parity or a production load. Read depth remains PARTIAL: the conversion log/PR were selectively
+    read. The first 2 MiB of BF16 weights was fetched by byte range and deleted; no full weights were
+    fetched, no bytes remain, and no inference/evaluation occurred.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: repo-api.json#/gguf (API response)
+    quote: '"gguf":{"total":271002648,"architecture":"gemma-embedding2","context_length":262144,"causal":false'
+    quote_sha256: dc9c8d4c11b3c49542dcb1bfe066a8e107384274f18a014b5c7dbb3423abb5de
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/revision/main
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:4c04311fdc9d7e1fcb7e4a33db60ab7864a211adb391074a2091678a2364cf22
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-api.json
+    reviewed_source_sha256: 4c04311fdc9d7e1fcb7e4a33db60ab7864a211adb391074a2091678a2364cf22
+  - claim_index: 0
+    kind: page-and-quote
+    locator: convert.log:1477
+    quote: 'llama_model_loader: - kv   0:                       general.architecture str              =
+      gemma-embedding2'
+    quote_sha256: 146bec65386a7600faad94c5d073d1760bdad5c454abb4d90daec29a523d4520
+    source: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF/blob/bfcd298762cc34d0357ece5ebdd31791a3a374d8/convert.log
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/convert.log
+    reviewed_source_sha256: 900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
+  - claim_index: 0
+    kind: page-and-quote
+    locator: repo-tree.json#/4/path
+    quote: embeddinggemma-2-BF16.gguf
+    quote_sha256: 217e0c09ea4433042510bbc8afd5acc01c9b0f7140ca4f96d8868f070ea302a9
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/tree/main?recursive=true
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-tree.json
+    reviewed_source_sha256: 6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+  - claim_index: 0
+    kind: page-and-quote
+    locator: repo-tree.json#/5/path
+    quote: embeddinggemma-2-Q8_0.gguf
+    quote_sha256: 12cb32ff081a66bf2eb023b034a40d99ca958d03f451f92cbb7fb0202e5898ad
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/tree/main?recursive=true
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-tree.json
+    reviewed_source_sha256: 6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+  - claim_index: 0
+    kind: page-and-quote
+    locator: repo-tree.json#/6/path
+    quote: mmproj-embeddinggemma-2-BF16.gguf
+    quote_sha256: cb28c4bbcdfe79075aa638c047c91edbd0b537fa4abaf5e7eb1e4502ba1fbb7a
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/tree/main?recursive=true
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-tree.json
+    reviewed_source_sha256: 6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+  - claim_index: 0
+    kind: page-and-quote
+    locator: repo-tree.json#/7/path
+    quote: mmproj-embeddinggemma-2-Q8_0.gguf
+    quote_sha256: 331b6aa4c66c20211142c9ac17335a6bbdcac9587dc0d75b8fc4a5127304583a
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/tree/main?recursive=true
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-tree.json
+    reviewed_source_sha256: 6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+  - claim_index: 1
+    kind: page-and-quote
+    locator: repo-api.json#/cardData/base_model
+    quote: '"base_model":["google/embeddinggemma-2"]'
+    quote_sha256: cd0f72bd3fa1a46dff2c1f1ef60ad605bf1e9f7f8dcfbc1bf79726f1e43cc35f
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/revision/main
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:4c04311fdc9d7e1fcb7e4a33db60ab7864a211adb391074a2091678a2364cf22
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-api.json
+    reviewed_source_sha256: 4c04311fdc9d7e1fcb7e4a33db60ab7864a211adb391074a2091678a2364cf22
+  - claim_index: 1
+    kind: page-and-quote
+    locator: repo-tree.json#/4
+    quote: '"size":557950176'
+    quote_sha256: 23c271fc92d56ba90873cb84f7dc31ea2962ea2ef6148b622e39066c46ddeb4c
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/tree/main?recursive=true
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-tree.json
+    reviewed_source_sha256: 6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+  - claim_index: 1
+    kind: page-and-quote
+    locator: repo-tree.json#/5
+    quote: '"size":309855456'
+    quote_sha256: cfadd763bc16fdf8ed1e383540ad73c6667fc94b1f8bb134dc5f6d58edab5bb2
+    source: https://huggingface.co/api/models/ggml-org/embeddinggemma-2-GGUF/tree/main?recursive=true
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/repo-tree.json
+    reviewed_source_sha256: 6d0e320a3ff04c7a5fe09e5c37fc279bd6829f705ad4e46025c82610699a17f7
+  - claim_index: 2
+    kind: page-and-quote
+    locator: README.md:L24
+    quote: This model is automatically converted using https://github.com/ggml-org/convert
+    quote_sha256: 21294279fbb4aa3f25bf9ed8d6b72785ed10117900f17eb13982b39954881000
+    source: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF/blob/bfcd298762cc34d0357ece5ebdd31791a3a374d8/README.md
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:1e3a35cf706dbcecce8f20ef756c2dd6c14dfbe9a5d93e35edc19e683fd0bc60
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/README.md
+    reviewed_source_sha256: 1e3a35cf706dbcecce8f20ef756c2dd6c14dfbe9a5d93e35edc19e683fd0bc60
+  - claim_index: 2
+    kind: page-and-quote
+    locator: convert.log:483
+    quote: INFO:hf-to-gguf:Model successfully exported to upload-embeddinggemma_2/embeddinggemma-2-BF16.gguf
+    quote_sha256: 11cba31f5d0f25dfadb54cba4e174e242bb885265aa48a3a1b40c4497e09eaf1
+    source: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF/blob/bfcd298762cc34d0357ece5ebdd31791a3a374d8/convert.log
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/convert.log
+    reviewed_source_sha256: 900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
+  - claim_index: 2
+    kind: page-and-quote
+    locator: convert.log:1504-1506
+    quote: 'llama_model_loader: - kv  20: gemma-embedding2.attention.shared_kv_layers u32              =
+      0
+
+      llama_model_loader: - kv  21: gemma-embedding2.embedding_length_per_layer_input u32              =
+      512
+
+      llama_model_loader: - kv  22: gemma-embedding2.attention.sliding_window_pattern arr[bool,24]     =
+      [true, true, true, true, true, false,...'
+    quote_sha256: 3538142a0e032311af7cb95c1aee2223e0620d1d1d7157fa2cc23ef7cc1f81a3
+    source: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF/blob/bfcd298762cc34d0357ece5ebdd31791a3a374d8/convert.log
+    source_revision: HF model revision bfcd298762cc34d0357ece5ebdd31791a3a374d8
+    observed_revision: sha256:900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
+    reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/convert.log
+    reviewed_source_sha256: 900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
+  depends_on: []
+- id: intake-1968
+  arxiv_id: '2609.23570'
+  url: https://arxiv.org/abs/2609.23570
+  source_type: paper
+  title: 'VibeMemBench: Evaluating Memory Systems for Coding Agents on Real Repository Coding Tasks'
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - benchmark_methodology
+  - knowledge_management
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  authors:
+  - Liyang Fan
+  - Yingcheng Shi
+  - Yongbin Li
+  - Chenghao Sun
+  - Xin Chen
+  - Xander Xu
+  - Hu Wei
+  - Shiwen Ni
+  - Min Yang
+  - Jieping Ye
+  key_claims:
+  - VibeMemBench comprises 111 executable repository coding targets from 90 SWE-rebench V2 repositories
+    and 3,634 history trajectories; target retention uses an oracle-assisted reference-solver selection,
+    so results concern an outcome-selected population.
+  - The paper compares paired memory-on/off runs while fixing task, agent, tools, sandbox, budget and
+    limits; executable test resolution is primary, while reported tokens and steps omit latency and memory-side
+    token consumption.
+  - In the paper’s frozen-experience transfer results on five held-out solvers, point changes are +0.0,
+    +2.4, +4.5, +3.6 and +1.1 percentage points; every target-bootstrap 95% interval crosses zero.
+  - In the paper’s selected target set, 11 of 12 pairings of four evaluated memory systems with three
+    solvers are at or below the matched memory-off baseline; no system interval lies above zero, with
+    the glm-5/Mem0 interval below zero.
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §1 / extracted.txt block 0010; benchmark count and construction
+    quote: The benchmark comprises 111 targets across 90 repositories and 3,634 completed history trajectories.
+    quote_sha256: 2ff7173619cd9f419643c87d912a05d6090c84dd298b32ce84e396123c98dfdb
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.3 / extracted.txt block 0042; target-selection caveat
+    quote: Its uplift is specific to the selected targets under the reference solver, and the seed-level
+      argmax lets seed noise inflate it.
+    quote_sha256: 24636b7f74aa638305affd69c65cc9f195dffe9e9e2ad991710c9b5b6b6915c9
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 / extracted.txt block 0035; target-selection leakage boundary
+    quote: The second stage is an oracle-assisted offline patch-pattern screen.
+    quote_sha256: b904aa46a703df30e86e4de6794a7cfb0e8f221d4d179ded68e187a364641b8d
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.4–4.1 / extracted.txt blocks 0044, 0053–0054; intervention and measured quantities
+    quote: Both runs share the task, agent, tools, sandbox, and budget. Only the declared memory condition
+      changes.
+    quote_sha256: 29e615de0e0e170b1fa684305aeb8e6eabde0bb2af061026523494ddc9c39482
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.1 / extracted.txt block 0054; excluded metrics
+    quote: Both measure solver use and interaction length, not latency, and the protocol does not record
+      memory-side token consumption.
+    quote_sha256: 05f98167736bfeb9ccf83d67d7720b0f7b829f5cf43f3da3f5e1a578133b4766
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 / extracted.txt block 0090; transfer inference
+    quote: All five bootstrap intervals cross zero, so at 111 targets the observed gains of 1.1 to 4.5
+      points remain directional evidence rather than effects separable from zero.
+    quote_sha256: aed8faeae2ab74c319b5f3283efecce6bdc9b40758bdfd36abbb93134d869706
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.2 / extracted.txt block 0092; memory-system inference
+    quote: Eleven of the twelve solver and system pairings stay at or below the matched memory-off baseline,
+      no system interval lies above zero, and the glm-5 and Mem0 interval lies entirely below it.
+    quote_sha256: 9b2a46734b1460738be26371dd2eaeb4e93640d9c00bf58f06db2172165e1cae
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 / extracted.txt block 0035; target-selection leakage boundary
+    quote: The second stage is an oracle-assisted offline patch-pattern screen.
+    quote_sha256: b904aa46a703df30e86e4de6794a7cfb0e8f221d4d179ded68e187a364641b8d
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 / extracted.txt block 0091; exact transfer point changes
+    quote: glm-5 gains 2.4 points from the lowest baseline at 55.0 percent, deepseek-v4-pro gains nothing
+      at 67.1, kimi-k2.7-code gains the most at 4.5 from 69.8, glm-5.2 gains 3.6 from 76.8, and qwen3.8-max
+      gains 1.1 from the highest baseline at 79.1.
+    quote_sha256: 3179b7e5ffe618e8f4c9265305e28640b23f21b91acc7a865379f490d6f1868c
+    source_revision: arXiv:2609.23570v1 (HTML; current abs confirms v1)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: extracted.txt block 0044, §3.4 (exact contiguous excerpt)
+    quote: Let AA denote the fixed agent configuration, including the model, prompt, tools, sandbox image,
+      context budget, resource limits, task order, and aggregation rule,
+    quote_sha256: bb58e55bb541a0f39529f5cc701bc1772d5a99cdc2111bc1f1ee985fc682cfa3
+    source_revision: arXiv:2609.23570v1
+    verified_by: independent-second-reader
+    source_file: extracted.txt
+    source_sha256: 3d60f5dabf54bf63be792a6a8bc406392e7081a0fe1e87b3b971f730edda172e
+  - claim_index: 1
+    kind: page-and-quote
+    locator: extracted.txt block 0053, §4.1
+    quote: The primary metric is task resolution. We report Resolved, the share of target-seed runs whose
+      declared test predicate passes
+    quote_sha256: 64489d4f20e67dd2a34ad327672bdbc20761217f89722f87e08215f734a94198
+    source_revision: arXiv:2609.23570v1
+    verified_by: independent-second-reader
+    source_file: extracted.txt
+    source_sha256: 3d60f5dabf54bf63be792a6a8bc406392e7081a0fe1e87b3b971f730edda172e
+  - claim_index: 1
+    kind: page-and-quote
+    locator: extracted.txt block 0054, §4.1
+    quote: Both measure solver use and interaction length, not latency, and the protocol does not record
+      memory-side token consumption.
+    quote_sha256: 05f98167736bfeb9ccf83d67d7720b0f7b829f5cf43f3da3f5e1a578133b4766
+    source_revision: arXiv:2609.23570v1
+    verified_by: independent-second-reader
+    source_file: extracted.txt
+    source_sha256: 3d60f5dabf54bf63be792a6a8bc406392e7081a0fe1e87b3b971f730edda172e
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Constrain generality to the outcome-selected target population; no estimate for arbitrary deployed
+      workloads.
+  - claim_index: 1
+    effect: narrowed
+    note: Paired outcome protocol confirmed; do not infer latency or total memory-side cost from solver
+      token/step measures.
+  - claim_index: 2
+    effect: narrowed
+    note: All five reported intervals cross zero; retain point estimates as descriptive/directional only.
+  - claim_index: 3
+    effect: narrowed
+    note: Bound to this selected benchmark; it does not test source-linked project briefs or diagnostic
+      links directly.
+  dive_corrections: '2026-10-07 Stage-2: exact title and arXiv v1 verified. Primary-paper claims confirmed
+    with per-claim anchors; scope narrowed to outcome-selected tasks, matched protocol, reported intervals,
+    and tested systems. Linked companion code/data are not released at current repository HEAD; see intake-1976
+    for status. No paper score transfers to EPYC.'
+  reported_results:
+  - Publisher-reported frozen experience point changes are +0.0, +2.4, +4.5, +3.6, and +1.1 percentage
+    points across five solvers; all target-bootstrap 95% intervals cross zero.
+  - Publisher reports 11/12 existing system-solver pairings at or below matched memory-off point estimate;
+    no system interval above zero.
+  recommended_actions:
+  - Consider only a narrow DCP-6 held-out task requiring correct use of a source-backed diagnostic artifact;
+    retain the existing matched baseline and outcome/resource/quality controls. This is a proposal for
+    Stage-3 review, not an approved task.
+  - Keep benchmark release verification gated on an observable code/data/manifest release; intake-1976
+    records present companion status.
+  notes: 'Primary arXiv HTML snapshot: arXiv:2609.23570v1; SHA-256 162f023cdcb1862de9ddc6637c05d4280cb551b0a24b62108818cea1a089e7f2.
+    Read-depth PARTIAL: methods/results/tables/controls and Appendices B–O read from disk; bibliography,
+    per-instance Appendix P traces, and full visual figure audit not exhaustive. Current linked benchmark
+    subtree has only README placeholder at 188835d4f9948563a6b9c8ac50cd0f3ae4021ed6. Existing consumer
+    comparison: DCP-4 advisory default-off and DCP-6 awaiting quality-scored falsification; benchmark
+    does not test wiki/source-linked diagnostic context specifically. No inference performed.'
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - delegation-context-preassembly.md
+    experiments: []
+    intake_entries:
+    - intake-1976
+    intake_entry_notes:
+    - intake-1976 (linked benchmark code/data release-status companion; not independent evidence)
+- id: intake-1969
+  title: llama.cpp merged implementation for EmbeddingGemma 2
+  url: https://github.com/ggml-org/llama.cpp/pull/30054
+  source_type: repo
+  authors:
+  - ggml-org
+  categories:
+  - search_retrieval
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  arxiv_id: null
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision:
+    pull_base: a46709b683aba9274d8ab29f5b42f7e551d1dff6
+    pull_head: 1e91a0b054fcb839507671dc2ab9409821c12dc1
+    merge_commit: 4fbc76dec51d0add466f0210855c0596589b60d4
+    current_master: 42b021b4dc42be573f1e1463528532fc8294c650
+    current_status: merged; current master compares ahead 19 / behind 0; converter class and model implementation
+      match merge; generic test still excludes architecture
+  key_claims:
+  - 'PR #30054 is merged; its pinned head is 1e91a0b054fcb839507671dc2ab9409821c12dc1, based on a46709b683aba9274d8ab29f5b42f7e551d1dff6,
+    and merged as 4fbc76dec51d0add466f0210855c0596589b60d4.'
+  - The merged converter registers EmbeddingGemma2Model as GEMMA_EMBEDDING2 and writes its output embedding
+    dimension and noncausal/pooling metadata; llama.cpp maps the architecture to a dedicated model class.
+  - The mapped Gemma Embedding 2 graph is noncausal, and its source comment says per-token projection
+    is equivalent to projecting after mean pooling.
+  - The upstream generic architecture test explicitly excludes GEMMA_EMBEDDING2 because embedding models
+    produce inconsistent results; that test path does not validate this model’s output consistency or
+    reference parity.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr.json:L17
+    quote: '"title": "model: support embeddinggemma2 (text+vision+audio)"'
+    quote_sha256: 3c7613bc4142f4b9986bf75f7a6a1a40e1d074b6141325d352420bc70a85f3c6
+    source_file: /mnt/raid0/llm/tmp/dive-1969/pr.json
+    source_sha256: 60f858ac013a870169672c85a1eb981445a8446beb8a02cdc8510e7450d60068
+    source_url: https://github.com/ggml-org/llama.cpp/pull/30054
+    source_revision: PR API snapshot 2026-10-07
+  - claim_index: 0
+    kind: line-range
+    locator: pr.json:L92
+    quote: '"merge_commit_sha": "4fbc76dec51d0add466f0210855c0596589b60d4"'
+    quote_sha256: 525f9b35040413322e7d0ea9f9d35083573ff0db61b54d677c6662506ea15b0e
+    source_file: /mnt/raid0/llm/tmp/dive-1969/pr.json
+    source_sha256: 60f858ac013a870169672c85a1eb981445a8446beb8a02cdc8510e7450d60068
+    source_url: https://github.com/ggml-org/llama.cpp/pull/30054
+    source_revision: PR API snapshot 2026-10-07
+  - claim_index: 0
+    kind: line-range
+    locator: pr.json:L422
+    quote: '"merged": true'
+    quote_sha256: d3bed59679f779e0213a27eb0a5f6451ed9a23ae59c585b17e4c87419244a46a
+    source_file: /mnt/raid0/llm/tmp/dive-1969/pr.json
+    source_sha256: 60f858ac013a870169672c85a1eb981445a8446beb8a02cdc8510e7450d60068
+    source_url: https://github.com/ggml-org/llama.cpp/pull/30054
+    source_revision: PR API snapshot 2026-10-07
+  - claim_index: 0
+    kind: line-range
+    locator: pr.json:L233 (head.sha)
+    quote: '"sha": "1e91a0b054fcb839507671dc2ab9409821c12dc1"'
+    quote_sha256: c964f1c40bd74da68b2605cf37af52a47411dd69153d16468f29f19b2faf2937
+    source_file: /mnt/raid0/llm/tmp/dive-1969/pr.json
+    source_sha256: 60f858ac013a870169672c85a1eb981445a8446beb8a02cdc8510e7450d60068
+    source_url: https://github.com/ggml-org/llama.cpp/pull/30054
+    source_revision: PR API snapshot 2026-10-07
+  - claim_index: 0
+    kind: line-range
+    locator: pr.json:L370 (base.sha)
+    quote: '"sha": "a46709b683aba9274d8ab29f5b42f7e551d1dff6"'
+    quote_sha256: 416150812c01f4bc6d4db09cdd671e04cf7c332eb05eeae4d28cdcee6ae8320c
+    source_file: /mnt/raid0/llm/tmp/dive-1969/pr.json
+    source_sha256: 60f858ac013a870169672c85a1eb981445a8446beb8a02cdc8510e7450d60068
+    source_url: https://github.com/ggml-org/llama.cpp/pull/30054
+    source_revision: PR API snapshot 2026-10-07
+  - claim_index: 1
+    kind: line-range
+    locator: conversion/gemma.py:L813-L828
+    quote: "@ModelBase.register(\"EmbeddingGemma2Model\")\n# TODO: add example model\nclass EmbeddingGemma2Model(Gemma4Model):\n\
+      \    model_arch = gguf.MODEL_ARCH.GEMMA_EMBEDDING2\n\n    def __init__(self, *args, **kwargs):\n\
+      \        super().__init__(*args, **kwargs)\n        self.hparams[\"num_kv_shared_layers\"] = 0\n\
+      \n    def set_gguf_parameters(self):\n        super().set_gguf_parameters()\n        # HF sliding_window\
+      \ is bidirectional, llama.cpp expects the full window size\n        self.gguf_writer.add_sliding_window(2\
+      \ * self.hparams[\"sliding_window\"])\n        self.gguf_writer.add_embedding_length_out(self.hparams[\"\
+      embedding_dim\"])\n        self.gguf_writer.add_causal_attention(False)\n        self._try_set_pooling_type()"
+    quote_sha256: 50d399768019ea5e8f798d36de7561151a9c62af7dc746dcca70483dfba4232c
+    source_file: /mnt/raid0/llm/tmp/dive-1969/current-conversion-gemma.py
+    source_sha256: 875c65b289d06d59e01641a06050fc159217dd0b4b867d2cda40c83abc39b879
+    source_url: https://github.com/ggml-org/llama.cpp/blob/4fbc76dec51d0add466f0210855c0596589b60d4/conversion/gemma.py
+    source_revision: llama.cpp merge 4fbc76dec51d0add466f0210855c0596589b60d4
+  - claim_index: 1
+    kind: line-range
+    locator: src/llama-arch.cpp:L62-L64
+    quote: "{ LLM_ARCH_GEMMA_EMBEDDING,  \"gemma-embedding\"  },\n    { LLM_ARCH_GEMMA_EMBEDDING2, \"\
+      gemma-embedding2\" },"
+    quote_sha256: 820ff6bd802f0b407feff182f519152dd81a735a639dca1a15b20547cbf863a4
+    source_file: /mnt/raid0/llm/tmp/dive-1969/current-llama-arch.cpp
+    source_sha256: d551ce76e8e3549b88632b4187984cff4b7f3544e8a8745ed893537e0801eb5c
+    source_url: https://github.com/ggml-org/llama.cpp/blob/42b021b4dc42be573f1e1463528532fc8294c650/src/llama-arch.cpp
+    source_revision: llama.cpp current master 42b021b4dc42be573f1e1463528532fc8294c650
+  - claim_index: 1
+    kind: line-range
+    locator: src/llama-model.cpp:L157-L160
+    quote: "case LLM_ARCH_GEMMA_EMBEDDING:\n            return new llama_model_gemma_embedding(params);\n\
+      \        case LLM_ARCH_GEMMA_EMBEDDING2:\n            return new llama_model_gemma_embedding2(params);"
+    quote_sha256: d4ef312e7ab54ab076b1cd90139235ca52973bd1a1ae6693eb57bde1915e1095
+    source_file: /mnt/raid0/llm/tmp/dive-1969/current-llama-model.cpp
+    source_sha256: f4076a3cd46fb7c612a87ff493f38b6480982e3614696de657097c11ccab9802
+    source_url: https://github.com/ggml-org/llama.cpp/blob/42b021b4dc42be573f1e1463528532fc8294c650/src/llama-model.cpp
+    source_revision: llama.cpp current master 42b021b4dc42be573f1e1463528532fc8294c650
+  - claim_index: 2
+    kind: line-range
+    locator: src/models/gemma-embedding2.cpp:L7
+    quote: hparams.causal_attn       = false; // embeddings do not use causal attention
+    quote_sha256: 6065fbd9d79482a67b34658e366da730010f7c3eb372465920ef456697abaa1b
+    source_file: /mnt/raid0/llm/tmp/dive-1969/current-gemma-embedding2.cpp
+    source_sha256: 4cb810eca39dac171581d21d1f594627d00cfe0057225ab9ffa64d166bcea3a7
+    source_url: https://github.com/ggml-org/llama.cpp/blob/42b021b4dc42be573f1e1463528532fc8294c650/src/models/gemma-embedding2.cpp
+    source_revision: llama.cpp current master 42b021b4dc42be573f1e1463528532fc8294c650
+  - claim_index: 2
+    kind: line-range
+    locator: src/models/gemma-embedding2.cpp:L209-L212 (exact current-source indentation)
+    quote: "    // projecting per token is equivalent to projecting after mean pooling\n    cur = build_lora_mm(model.output,\
+      \ cur, model.output_s);\n    cb(cur, \"result_embd\", -1);\n    res->t_embd = cur;"
+    quote_sha256: 800b2e1288b344d4f041835890b634f8ad3727d869bd458496054592094544fa
+    source_file: /mnt/raid0/llm/tmp/dive-1969/current-gemma-embedding2.cpp
+    source_sha256: 4cb810eca39dac171581d21d1f594627d00cfe0057225ab9ffa64d166bcea3a7
+    source_url: https://github.com/ggml-org/llama.cpp/blob/42b021b4dc42be573f1e1463528532fc8294c650/src/models/gemma-embedding2.cpp
+    source_revision: llama.cpp current master 42b021b4dc42be573f1e1463528532fc8294c650
+    source_packet_quote_sha256: 800b2e1288b344d4f041835890b634f8ad3727d869bd458496054592094544fa
+  - claim_index: 3
+    kind: line-range
+    locator: tests/test-llama-archs.cpp:L742-L743
+    quote: "if (arch == LLM_ARCH_LLAMA_EMBED || arch == LLM_ARCH_GEMMA_EMBEDDING || arch == LLM_ARCH_GEMMA_EMBEDDING2\
+      \ || arch == LLM_ARCH_T5ENCODER) {\n        return false; // FIXME Embedding (?) models produce\
+      \ inconsistent results."
+    quote_sha256: 675cadb1fafac34b809220f591d7f248b7d8e74718ada3910d4e172a5cea5f14
+    source_file: /mnt/raid0/llm/tmp/dive-1969/current-test-llama-archs.cpp
+    source_sha256: 523d5f51025dbdde82fcdb93afcb230a61e415980da1c39fe68eb1ba7f48f024
+    source_url: https://github.com/ggml-org/llama.cpp/blob/42b021b4dc42be573f1e1463528532fc8294c650/tests/test-llama-archs.cpp
+    source_revision: llama.cpp current master 42b021b4dc42be573f1e1463528532fc8294c650
+  dive_corrections: "2026-10-07 Stage 2: CONFIRMED PR #30054 merged at 4fbc76dec51d0add466f0210855c0596589b60d4\
+    \ and current master 42b021b contains its EmbeddingGemma2 converter/model implementation. It registers\
+    \ the distinct gemma-embedding2 architecture and provides its noncausal model graph and embedding\
+    \ projection. Narrow capability statement: this is source-level implementation support, not a model-load\
+    \ or vector-parity result. The generic architecture test explicitly skips GEMMA_EMBEDDING2 under a\
+    \ comment that embedding models produce inconsistent results. Current server docs use model-default\
+    \ pooling when no override is given, normalize pooled `/v1/embeddings` output with Euclidean norm,\
+    \ and pass text input as supplied; query/document task prefixes therefore remain caller responsibility.\n\
+    \ Additional independent review on 2026-10-07: claim 2 was narrowed because the code comment establishes\
+    \ projection equivalence, not an execution-order relationship with generic pooling. The exact current-source\
+    \ excerpt is recorded at current-gemma-embedding2.cpp:L209-L212."
+  notes: 'Stage-2 source scope: [''PR metadata and exact base/head/merge revisions; complete PR changed-file
+    list and diff file inventory; relevant conversion/gemma.py converter class; architecture enum/name/model
+    dispatch; complete new gemma-embedding2.cpp; architecture-test exclusion; current server README option
+    and /v1/embeddings contract; relevant server-context.cpp embedding normalization path.''] Unread scope:
+    [''Unselected changed files/details in conversion registry, GGUF tensor maps/constants and test harness;
+    rest of server routes/implementation; all model tensor payloads and any model inference/evaluation.
+    No build, test, install, model weight download or inference.''] Evidence boundary: Upstream source
+    facts only; do not infer local runtime capability or quality/parity. Full source packet and artifact
+    hashes remain in /mnt/raid0/llm/tmp/dive-1969/intake-1969.proposed.json. Current-version/pin check:
+    see the cited source revision and retained packet artifacts; no live runtime status is inferred.'
+  recommended_actions:
+  - D2-ID-05
+  - D2-ID-06
+  cross_references:
+    intake_entries:
+    - intake-1970
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+  - claim_index: 1
+    effect: unaffected
+    note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+  - claim_index: 2
+    effect: narrowed
+    note: 'Narrowed from “projects token representations ... before generic pooling”: the source comment
+      supports equivalence of per-token projection and projection after mean pooling; it does not establish
+      generic execution ordering.'
+  - claim_index: 3
+    effect: unaffected
+    note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+- id: intake-1970
+  title: EmbeddingGemma 2 model-specific GGUF conversion recipe
+  url: https://github.com/ggml-org/convert/commit/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  source_type: repo
+  authors:
+  - ggml-org
+  categories:
+  - local_inference
+  - quantization
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  arxiv_id: null
+  verification: dive-verified
+  read_depth: FULL
+  source_revision:
+    commit: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+    current_master_head: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+    status: the current master tip resolves to this same commit; the three changed model-specific files
+      are the complete commit payload
+  key_claims:
+  - The model-specific recipe identifies google/embeddinggemma-2 as its input and configures an embeddinggemma-2-GGUF
+    destination; its README describes automatic conversion.
+  - The conversion recipe emits a BF16 main GGUF, derives a Q8_0 main GGUF from it, and emits BF16/Q8_0
+    multimodal projector GGUFs.
+  - The recipe delegates conversion to an externally supplied LLAMA_CPP tree and does not itself bind
+    a llama.cpp revision; provenance for a reproduction must record that external revision separately.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: models/embeddinggemma-2/README.md:L8-L9
+    quote: 'base_model:
+
+      - google/embeddinggemma-2'
+    quote_sha256: 01051c7df8101657d370fba9f2af875a3ed091eb93dc72471d78f8c26c86bff8
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-README.md
+    source_sha256: 55fb745e731b7de1ea425e1020491246c70902d3c8426c932a5d436169728b84
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/README.md
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 0
+    kind: line-range
+    locator: models/embeddinggemma-2/README.md:L20-L24
+    quote: '### Source models
+
+      - https://huggingface.co/google/embeddinggemma-2
+
+
+      > [!IMPORTANT]
+
+      > This model is automatically converted using https://github.com/ggml-org/convert'
+    quote_sha256: e8c52a5352391af4917f60a7fdf7cef7ffd1c248b1ca4dcdd4641d60ca3ebfd1
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-README.md
+    source_sha256: 55fb745e731b7de1ea425e1020491246c70902d3c8426c932a5d436169728b84
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/README.md
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 0
+    kind: line-range
+    locator: models/embeddinggemma-2/config.sh:L1-L3
+    quote: 'DISPLAY_NAME="embeddinggemma-2"
+
+      DEST_REPO="embeddinggemma-2-GGUF"
+
+      DEP_PRIMARY="google/embeddinggemma-2"'
+    quote_sha256: 5c767a7079b402e4872b0fbef9659805a037e8b19ac044c7c7fac18ddf64fc29
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-config.sh
+    source_sha256: 32e7161ede575661a11d72b24ca58442fef2392f7940084f3fe38f98ae6bf8d8
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/config.sh
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 1
+    kind: line-range
+    locator: models/embeddinggemma-2/convert.sh:L12-L17
+    quote: "python3 \"$LLAMA_CPP/convert_hf_to_gguf.py\" \"$PATH_PRIMARY\" \\\n    --outtype bf16 --outfile\
+      \ \"$OUTPUT_DIR/${DISPLAY_NAME}-BF16.gguf\" --model-name \"$DISPLAY_NAME\"\n\n# mmproj\npython3\
+      \ \"$LLAMA_CPP/convert_hf_to_gguf.py\" \"$PATH_PRIMARY\" \\\n    --outtype bf16 --outfile \"$OUTPUT_DIR/mmproj-${DISPLAY_NAME}-BF16.gguf\"\
+      \ --mmproj --model-name \"$DISPLAY_NAME\""
+    quote_sha256: 93a6d871b21c58ebf46eb6683c6517683f63168f93318186b08ec0d7dea4523f
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-convert.sh
+    source_sha256: 1b3fa826dea17de97d99ab606730fcb7b4509fb5b0074476f54c0ed85f2ac1dd
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/convert.sh
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 1
+    kind: line-range
+    locator: models/embeddinggemma-2/convert.sh:L21-L25
+    quote: "\"$QUANTIZE\" \"$OUTPUT_DIR/${DISPLAY_NAME}-BF16.gguf\" \"$OUTPUT_DIR/${DISPLAY_NAME}-Q8_0.gguf\"\
+      \ Q8_0 1>&2\n\n# mmproj: Q8_0\npython3 \"$LLAMA_CPP/convert_hf_to_gguf.py\" \"$PATH_PRIMARY\" \\\
+      \n    --outtype q8_0 --outfile \"$OUTPUT_DIR/mmproj-${DISPLAY_NAME}-Q8_0.gguf\" --mmproj --model-name\
+      \ \"$DISPLAY_NAME\""
+    quote_sha256: c562671ac688f7b4bc04a7d9ba7e18c82a8bd25bbc4b48c8acd8f97eec4fb362
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-convert.sh
+    source_sha256: 1b3fa826dea17de97d99ab606730fcb7b4509fb5b0074476f54c0ed85f2ac1dd
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/convert.sh
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 1
+    kind: line-range
+    locator: models/embeddinggemma-2/convert.sh:L29-L32
+    quote: 'echo "${DISPLAY_NAME}-BF16.gguf"        >> "$OUTPUT_DIR/.produced_files"
+
+      echo "${DISPLAY_NAME}-Q8_0.gguf"        >> "$OUTPUT_DIR/.produced_files"
+
+      echo "mmproj-${DISPLAY_NAME}-BF16.gguf" >> "$OUTPUT_DIR/.produced_files"
+
+      echo "mmproj-${DISPLAY_NAME}-Q8_0.gguf" >> "$OUTPUT_DIR/.produced_files"'
+    quote_sha256: 4cd044db844baaf3499b7d854141a83473f0d4629f4f71d47362db1ce80aaa6e
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-convert.sh
+    source_sha256: 1b3fa826dea17de97d99ab606730fcb7b4509fb5b0074476f54c0ed85f2ac1dd
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/convert.sh
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 2
+    kind: line-range
+    locator: models/embeddinggemma-2/convert.sh:L4-L8
+    quote: 'OUTPUT_DIR="$1"
+
+      LLAMA_CPP="$2"
+
+
+      DISPLAY_NAME="embeddinggemma-2"
+
+      QUANTIZE="$LLAMA_CPP/build/bin/llama-quantize"'
+    quote_sha256: 98dff44d83b86098d554ac46c8462af29191bdbc31ba72eb3dc2e9121d3a2ca0
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-convert.sh
+    source_sha256: 1b3fa826dea17de97d99ab606730fcb7b4509fb5b0074476f54c0ed85f2ac1dd
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/convert.sh
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  - claim_index: 2
+    kind: line-range
+    locator: models/embeddinggemma-2/convert.sh:L12-L13
+    quote: "python3 \"$LLAMA_CPP/convert_hf_to_gguf.py\" \"$PATH_PRIMARY\" \\\n    --outtype bf16 --outfile\
+      \ \"$OUTPUT_DIR/${DISPLAY_NAME}-BF16.gguf\" --model-name \"$DISPLAY_NAME\""
+    quote_sha256: 6314a0727ffd3b80747ec15689c46c46f7775640313f8b2089d5c693e2152395
+    source_file: /mnt/raid0/llm/tmp/dive-1970/source-convert.sh
+    source_sha256: 1b3fa826dea17de97d99ab606730fcb7b4509fb5b0074476f54c0ed85f2ac1dd
+    source_url: https://github.com/ggml-org/convert/blob/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90/models/embeddinggemma-2/convert.sh
+    source_revision: aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
+  dive_corrections: '2026-10-07 Stage 2: CONFIRMED the exact upstream recipe selects google/embeddinggemma-2
+    and names embeddinggemma-2-GGUF as its destination. Its complete conversion script exports BF16 main-model
+    and BF16 mmproj files, derives Q8_0 for the main file, directly converts a Q8_0 mmproj, and records
+    all four names in .produced_files. NARROW provenance: the recipe takes a caller-supplied LLAMA_CPP
+    path and does not pin that tree revision; a reproduction must pin model and converter/runtime revisions
+    independently. File-generation instructions do not establish embedding vector parity or retrieval
+    quality.'
+  notes: 'Stage-2 source scope: [''Complete commit metadata and every changed file in the exact source
+    commit: models/embeddinggemma-2/README.md, config.sh and convert.sh. All three raw files were read
+    from disk; their SHA-256 and exact line quote anchors are attached per claim.''] Unread scope: [''Files
+    outside this model-specific commit directory, parent repository workflow and external llama.cpp implementation;
+    no conversion script was run and no model weights/build/install/test/inference performed.''] Evidence
+    boundary: Upstream source facts only; do not infer local runtime capability or quality/parity. Full
+    source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1970/intake-1970.proposed.json.
+    Current-version/pin check: see the cited source revision and retained packet artifacts; no live runtime
+    status is inferred.'
+  recommended_actions:
+  - D2-ID-07
+  - D2-ID-08
+  cross_references:
+    intake_entries:
+    - intake-1969
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+  - claim_index: 1
+    effect: unaffected
+    note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+  - claim_index: 2
+    effect: unaffected
+    note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+- id: intake-1971
+  url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+  title: EmbeddingGemma2 · Hugging Face
+  source_type: repo
+  authors:
+  - Hugging Face Transformers documentation team
+  categories:
+  - search_retrieval
+  - local_inference
+  - tool_implementation
+  verdict: worth_investigating
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  arxiv_id: null
+  discovered_via: expansion
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+  key_claims:
+  - The supplied canonical URL serves an actual EmbeddingGemma2 Transformers documentation page.
+  - The docs recommend Sentence Transformers >=6.1.0 and also document a Transformers AutoModel path using
+    apply_chat_template and mean pooling.
+  - Text retrieval supports distinct query/document prompts and optional task prompts; model dimension
+    can be shortened with MRL while keeping query/document dimensions matched.
+  - Transformers describes modality-specific selective tower loading and a shared 768-dimensional space
+    for text/image/audio/video embeddings.
+  - The Transformers docs specify float32 embedding normalization and expose a dtype parameter, but do
+    not prescribe a BF16/FP32 forward-inference policy or warn against FP16.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: docs.txt:L2 (HTML <title>); HTTP 200, no redirect; effective URL equals requested URL
+    quote: EmbeddingGemma2 · Hugging Face
+    quote_sha256: 8a95cadbdc7ff46bdbfd1f16b6620b629c221f8d0b252cad8f5f541d378fb273
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 0
+    kind: line-range
+    locator: request-metadata.txt:L1-L3; HTTP response and effective URL
+    quote: 'http_code=200
+
+      url_effective=https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+
+      num_redirects=0'
+    quote_sha256: 2adfcb1086aed1d6b9e105d415eab65a95a3528846c2ba3db0d1ea3a1e1b27c0
+    source_file: /mnt/raid0/llm/tmp/dive-1971/request-metadata.txt
+    source_sha256: b67bc1671c532c832b93f6710ec70e5db2f06b4e31bf5db6121ab58c08379190
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: retrieved 2026-10-07
+    source_packet_quote_sha256: 73f82942319b11e904951979afd5801d5e0365a3c8ecf3632ad155ced57cb109
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L537-L538
+    quote: The model supports optional task prompts prepended to the input (and included in mean pooling),
+      though prompts are not mandatory and the model also works without them.
+    quote_sha256: 89d6123729ad0cc184e4b91e5d8302bb9a4ae6a29cc8460a2bafaabf9006e52a
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L528
+    quote: '# encode_query and encode_document apply the "query" and "document" task prompts'
+    quote_sha256: add7eb24437fe8bfbf0999e493283f8786f1039a4105d6871d01766407699fc2
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L448-L458 (split HTML text extraction; dimension sequence)
+    quote: '512'
+    quote_sha256: 94f8607915dff25f013e45fc0642fb9830b0fb25ab0ab46d477eaf1061def379
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L585; task prompt catalog
+    quote: SearchQuery
+    quote_sha256: 040d2c4082ab8833e623c59c13ef612652e58fdb5e758e8716f097f5b647df11
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L586; SearchQuery prompt prefix
+    quote: 'task: search result \| query:'
+    quote_sha256: a1442f26c193e6deae32b1901f8285a0e79571e797bb5dd9f4d9d45df7a1fbda
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L599-L602; task prompt catalog
+    quote: CodeRetrieval
+    quote_sha256: 439413629b71a62a5c338af8429dccc05e46d560248ee78ca33da850dd7d345c
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L602; CodeRetrieval prompt prefix
+    quote: 'task: code retrieval \| query:'
+    quote_sha256: 92658b475fdd17e91e961506f94fab6acd439c02381eef05b099885d05177a54
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L451; embedding_dim
+    quote: '768'
+    quote_sha256: f7b856c054de7ccced087ad4f9413380ec494e40abc818b840aaad990ca3c5bc
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L453; first truncated supported dimension
+    quote: '512'
+    quote_sha256: 94f8607915dff25f013e45fc0642fb9830b0fb25ab0ab46d477eaf1061def379
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L455; second truncated supported dimension
+    quote: '256'
+    quote_sha256: 51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L457; third truncated supported dimension
+    quote: '128'
+    quote_sha256: 2747b7c718564ba5f066f0523b03e17f6a496b06851333d2d59ab6d863225848
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 2
+    kind: line-range
+    locator: docs.txt:L458; MRL normalization/quality statement
+    quote: and re-normalized with minimal quality loss.
+    quote_sha256: 4c33d600c0d412cea719330c6776110b7b9dfb05c21b1124a4508e54be87e44b
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 3
+    kind: line-range
+    locator: docs.txt:L474-L479
+    quote: Unused vision or audio towers can be disabled at load time (
+    quote_sha256: 34e7cb6405a132b7a40a6f507a6c4d31966f459fb5323301f3e833ae0884dbf4
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 3
+    kind: line-range
+    locator: docs.txt:L422-L425
+    quote: into a shared 768-dimensional dense vector space for cross-modal retrieval, semantic similarity,
+      clustering, and classification.
+    quote_sha256: 9ea061c9e4b1a451e2d0294321e90cce6bff8505f25bc405c334f134b8f0fda6
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 4
+    kind: line-range
+    locator: docs.txt:L486-L490
+    quote: float32
+    quote_sha256: 6a937d727b77c219d48d71a177b52389fc8aa7c5cf3d1ab920633d31f1452d0c
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - claim_index: 4
+    kind: line-range
+    locator: docs.txt:L1223-L1224
+    quote: dtype
+    quote_sha256: b6501c5fa512b287b203e9dab33649a2c721fb79ae861c59fe57a3e5177d0343
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1971/docs.html
+    raw_source_sha256: 308f63c19e897e7eeb57ec69190e288bd9d6eac0909c35e73bca8cde39ae9940
+  - quote: 'Sentence Transformers
+
+      (
+
+      >=6.1.0
+
+      ) performs preprocessing, prompt formatting, mean pooling, and normalization automatically and is
+      the recommended entry point. With'
+    quote_sha256: c5be8bb0ebf48e8b5d49946db440d8c3383f8c8822003b393aa3fba214934fd2
+    locator: docs.txt:L491-L494
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    claim_index: 1
+    kind: line-range
+    verified_by: research-intake/stage2; independent reader
+  - quote: 'AutoModel
+
+      , use
+
+      processor.apply_chat_template
+
+      (or
+
+      AutoTokenizer
+
+      for plain text) and pool
+
+      last_hidden_state
+
+      directly.'
+    quote_sha256: dddf6954725cfefb84559c3822699cbaebed2ba01fc03acc1542b9d828dbccef
+    locator: docs.txt:L495-L502
+    source_file: /mnt/raid0/llm/tmp/dive-1971/docs.txt
+    source_sha256: 5aed0438879993fe4bf20c739cc39006322c5f0df13848a792af7d3cae68c8e7
+    source_revision: Transformers v5.19.0 docs rendering (verified by page links); retrieved 2026-10-07
+    source_url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
+    claim_index: 1
+    kind: line-range
+    verified_by: research-intake/stage2; independent reader
+  reported_results: []
+  recommended_actions:
+  - D2-ID-09
+  - D2-ID-10
+  - D2-ID-11
+  - D2-ID-12
+  cross_references:
+    intake_entries: []
+  notes: 'Stage-2 source scope: Complete 600654-byte served HTML and full extracted readable page text
+    read from disk. Page title matches; HTTP 200; requested URL is effective URL; content links implementation
+    API to v5.19.0. Boilerplate and generated API reference included; model-specific examples, overview,
+    prompt, MRL, selective loading, dtype/normalization sections examined. Request metadata records the
+    exact requested/effective URL, HTTP 200, and zero redirects. Read scope: Complete 600654-byte served
+    HTML and full extracted readable page text read from disk. Page title matches; HTTP 200; requested
+    URL is effective URL; content links implementation API to v5.19.0. Boilerplate and generated API reference
+    included; model-specific examples, overview, prompt, MRL, selective loading, dtype/normalization sections
+    examined. Request metadata records the exact requested/effective URL, HTTP 200, and zero redirects.
+    Evidence boundary: Publisher and contributor assertions are source claims, not independent reproduction
+    or local consumer compatibility. Full source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1971/proposed.json.'
+  dive_corrections: '2026-10-07: Removed the unsupported inference that docs establish a BF16/FP32-vs-FP16
+    forward dtype policy. The docs only establish float32 normalization and a dtype parameter. Other model
+    capability descriptions remain publisher assertions, not independent quality evidence.'
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Validated title and page content, so no redirect/404 substitution was needed.
+  - claim_index: 1
+    effect: unaffected
+    note: The complete passage recommends Sentence Transformers >=6.1.0; the following usage example gives
+      the Transformers AutoModel route with apply_chat_template and mean pooling. These are documented
+      usage paths, not local runtime verification.
+  - claim_index: 2
+    effect: unaffected
+    note: The supported MRL dimensions stated on page are 768/512/256/128; the quote above covers shortened
+      dimensions, normalization, and matched dimensions.
+  - claim_index: 3
+    effect: unaffected
+    note: This is official publisher documentation, not independent empirical proof of cross-modal retrieval
+      quality.
+  - claim_index: 4
+    effect: narrowed
+    note: Earlier draft asked whether this page gives a BF16/FP32-versus-FP16 policy; it does not. The
+      retained claim is limited to the documented normalization dtype and parameter. This describes correction
+      of an unpersisted draft hypothesis; no rejected hypothesis is attached to or opposed against the
+      retained truthful claim.
+- id: intake-1972
+  url: https://github.com/huggingface/transformers/releases/tag/v5.19.0
+  title: Release v5.19.0
+  source_type: repo
+  authors:
+  - Hugging Face Transformers maintainers
+  - '@vasqu (EmbeddingGemma2 support PR)'
+  categories:
+  - search_retrieval
+  - local_inference
+  - tool_implementation
+  verdict: adopt_patterns
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  arxiv_id: null
+  discovered_via: expansion
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: Transformers tag v5.19.0 commit c4c4605f961877852b89b97478536bb3a26b6fd1
+  key_claims:
+  - Transformers v5.19.0 release announces EmbeddingGemma2 native model support.
+  - Release note restates 768d multimodal embeddings, MRL dimensions, adjustable visual/video budgets,
+    and tower omission.
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: JSON /body, New Model additions heading / EmbeddingGemma2
+    quote: '### EmbeddingGemma2'
+    quote_sha256: 02e12d56d36c2f31c2add6e6716036b2a5b2676655cd28426fd55764a59d88b4
+    source_file: /mnt/raid0/llm/tmp/dive-1972/release-v5.19.0.json
+    source_sha256: 3cdaf71c57124211030f1787d6b9272e8d0c9dcf70de27a0167997bd98c4af61
+    source_url: https://github.com/huggingface/transformers/releases/tag/v5.19.0
+    source_revision: Transformers tag v5.19.0 commit c4c4605f961877852b89b97478536bb3a26b6fd1
+  - claim_index: 0
+    kind: json-pointer
+    locator: tag-object.json /object/sha (annotated tag target commit)
+    quote: c4c4605f961877852b89b97478536bb3a26b6fd1
+    quote_sha256: 873452275ef0185bb97a1ddca2c9e288d5cf307b0cf73f270625db0ab5b4d066
+    source_file: /mnt/raid0/llm/tmp/dive-1972/tag-object.json
+    source_sha256: 073d4a4a5f36ce9fbb9a82b14dcb11d866c2fd9f1a8d3463d4c257bdbe82a119
+    source_url: https://api.github.com/repos/huggingface/transformers/git/tags/b39d97c836e8d9f0ee6035a87c7a3ce5eaea43a8
+    source_revision: Transformers tag v5.19.0 commit c4c4605f961877852b89b97478536bb3a26b6fd1
+  - claim_index: 1
+    kind: json-pointer
+    locator: JSON /body, EmbeddingGemma2 paragraph
+    quote: EmbeddingGemma 2 is a multimodal embedding model from Google built on the Gemma 4 architecture.
+      It encodes text, images, audio, and video, individually or combined in one input, into a shared
+      768-dimensional vector space for cross-modal retrieval, semantic similarity, clustering, and classification.
+    quote_sha256: 2315caf43428bdc4475cf37a265d2999b5cf5a72e5419a0c7714acbfb79e522d
+    source_file: /mnt/raid0/llm/tmp/dive-1972/release-v5.19.0.json
+    source_sha256: 3cdaf71c57124211030f1787d6b9272e8d0c9dcf70de27a0167997bd98c4af61
+    source_url: https://github.com/huggingface/transformers/releases/tag/v5.19.0
+    source_revision: Transformers tag v5.19.0 commit c4c4605f961877852b89b97478536bb3a26b6fd1
+  - claim_index: 1
+    kind: json-pointer
+    locator: JSON /body, EmbeddingGemma2 paragraph
+    quote: It uses Matryoshka Representation Learning, so embeddings can be truncated to 512, 256, or
+      128 dimensions.
+    quote_sha256: 05fba2856f775de351e86582d8e674491d0e065c112fceba7fd6b54e7a71db0a
+    source_file: /mnt/raid0/llm/tmp/dive-1972/release-v5.19.0.json
+    source_sha256: 3cdaf71c57124211030f1787d6b9272e8d0c9dcf70de27a0167997bd98c4af61
+    source_url: https://github.com/huggingface/transformers/releases/tag/v5.19.0
+    source_revision: Transformers tag v5.19.0 commit c4c4605f961877852b89b97478536bb3a26b6fd1
+  - claim_index: 1
+    kind: json-pointer
+    locator: JSON /body, EmbeddingGemma2 paragraph
+    quote: It also offers configurable visual and video token budgets, and unused vision or audio towers
+      can be disabled at load time to save memory.
+    quote_sha256: 770659e42b89b8f4008348dc34c0d83cd543c7c2a2d4626633239a57f39b4624
+    source_file: /mnt/raid0/llm/tmp/dive-1972/release-v5.19.0.json
+    source_sha256: 3cdaf71c57124211030f1787d6b9272e8d0c9dcf70de27a0167997bd98c4af61
+    source_url: https://github.com/huggingface/transformers/releases/tag/v5.19.0
+    source_revision: Transformers tag v5.19.0 commit c4c4605f961877852b89b97478536bb3a26b6fd1
+  reported_results: []
+  recommended_actions:
+  - D2-ID-13
+  - D2-ID-14
+  - D2-ID-15
+  - D2-ID-16
+  cross_references:
+    intake_entries: []
+  notes: 'Stage-2 source scope: Full GitHub release API JSON body read; annotated release tag resolved
+    to commit c4c4605f961877852b89b97478536bb3a26b6fd1. Read scope: Full GitHub release API JSON body
+    read; annotated release tag resolved to commit c4c4605f961877852b89b97478536bb3a26b6fd1. Evidence
+    boundary: Publisher and contributor assertions are source claims, not independent reproduction or
+    local consumer compatibility. Full source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1972/proposed.json.'
+  dive_corrections: '2026-10-07: The rejected API/dependency question is not a canonical claim. Release
+    proves support inclusion and repeats model capability statements; loader/API and dependency details
+    come from other sources.'
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Release lists documentation and implementation PR #49364; the selected source establishes release
+      inclusion, not execution on local hardware.'
+  - claim_index: 1
+    effect: unaffected
+    note: These are same-publisher release-note restatements of model documentation/card claims, not independent
+      model-quality corroboration.
+- id: intake-1973
+  url: https://github.com/huggingface/sentence-transformers/releases/tag/v6.1.0
+  title: v6.1.0 - Documentation and input handling improvements
+  source_type: repo
+  authors:
+  - Hugging Face Sentence Transformers maintainers
+  - '@tomaarsen (selected changes)'
+  categories:
+  - search_retrieval
+  - local_inference
+  - tool_implementation
+  verdict: worth_investigating
+  novelty: low
+  relevance: high
+  credibility_score: 2
+  arxiv_id: null
+  discovered_via: expansion
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+  key_claims:
+  - Sentence-Transformers v6.1.0 release includes multimodal input-handling improvements and explicitly
+    documents optional image/audio/video extras.
+  - The exact v6.1.0 project metadata requires Transformers >=5.0.0,<6.0.0 and Torch >=2.2, with modality
+    extras mapped to Transformers extras.
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: JSON /body, Changes bullet
+    quote: 'Improved multimodal input handling and chat-template argument routing (#4037, #4048).'
+    quote_sha256: 8a0ed49bd9ae0ae2b54ad95ef3eadb07812521184ede290ed58873748f4693bc
+    source_file: /mnt/raid0/llm/tmp/dive-1973/release-v6.1.0.json
+    source_sha256: 67c00da248d0fbc7084373ac97e49c6070c1bff20f69fecb7fbe89be05e78d14
+    source_url: https://github.com/huggingface/sentence-transformers/releases/tag/v6.1.0
+    source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+  - claim_index: 0
+    kind: json-pointer
+    locator: JSON /body, install instructions
+    quote: 'Multimodal dependencies (optional):'
+    quote_sha256: 05afbdae9a706e4a091c9d1caeb5cba16e7fe6dec3f082edda823982c01e7ca1
+    source_file: /mnt/raid0/llm/tmp/dive-1973/release-v6.1.0.json
+    source_sha256: 67c00da248d0fbc7084373ac97e49c6070c1bff20f69fecb7fbe89be05e78d14
+    source_url: https://github.com/huggingface/sentence-transformers/releases/tag/v6.1.0
+    source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+  - claim_index: 0
+    kind: line-range
+    locator: pyproject-v6.1.0.toml:L50-L53
+    quote: image = ["transformers[vision]"]
+    quote_sha256: 452051ef10af1a6b03c391207634f1bdcfe9e76917dedc960ca8cd8d124cc6a9
+    source_file: /mnt/raid0/llm/tmp/dive-1973/pyproject-v6.1.0.toml
+    source_sha256: b39dea25e66c3f3485bf801c8d5298bc7d1d477874e2c5aff3d20cf72022b89d
+    source_url: https://raw.githubusercontent.com/huggingface/sentence-transformers/v6.1.0/pyproject.toml
+    source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+  - claim_index: 1
+    kind: line-range
+    locator: pyproject-v6.1.0.toml:L33-L37
+    quote: '"transformers>=5.0.0,<6.0.0",'
+    quote_sha256: de4fd3c7e76aac0cbf117606f069d9d0e2d67dc2ccdb8271229f0fc885524a66
+    source_file: /mnt/raid0/llm/tmp/dive-1973/pyproject-v6.1.0.toml
+    source_sha256: b39dea25e66c3f3485bf801c8d5298bc7d1d477874e2c5aff3d20cf72022b89d
+    source_url: https://raw.githubusercontent.com/huggingface/sentence-transformers/v6.1.0/pyproject.toml
+    source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+  - claim_index: 1
+    kind: line-range
+    locator: pyproject-v6.1.0.toml:L50-L53
+    quote: 'image = ["transformers[vision]"]
+
+      audio = ["transformers[audio]"]
+
+      video = ["transformers[video]"]'
+    quote_sha256: b64674b8ae0a8bc08ea1981da627a955e8dbb45b4d12d0ad066f752651325fc2
+    source_file: /mnt/raid0/llm/tmp/dive-1973/pyproject-v6.1.0.toml
+    source_sha256: b39dea25e66c3f3485bf801c8d5298bc7d1d477874e2c5aff3d20cf72022b89d
+    source_url: https://raw.githubusercontent.com/huggingface/sentence-transformers/v6.1.0/pyproject.toml
+    source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+    source_packet_quote_sha256: 69ae2c8d7057a6c8643b8037d741745e9019023c1e2a76590d8912b6c825c90d
+  - claim_index: 1
+    kind: line-range
+    locator: pyproject-v6.1.0.toml:L37
+    quote: '"torch>=2.2",'
+    quote_sha256: 4742e1ba883ecd9d4cb103ad618f177b1ef94ca8b7d6a83038614a27691599e1
+    source_file: /mnt/raid0/llm/tmp/dive-1973/pyproject-v6.1.0.toml
+    source_sha256: b39dea25e66c3f3485bf801c8d5298bc7d1d477874e2c5aff3d20cf72022b89d
+    source_url: https://raw.githubusercontent.com/huggingface/sentence-transformers/v6.1.0/pyproject.toml
+    source_revision: Sentence-Transformers tag v6.1.0 commit b0bf39968ba461c34b29372144794eff1be06f6d
+    verified_by: research-intake/stage2; independent reader
+  reported_results: []
+  recommended_actions:
+  - D2-ID-17
+  - D2-ID-18
+  - D2-ID-19
+  - D2-ID-20
+  cross_references:
+    intake_entries: []
+  notes: 'Stage-2 source scope: Full GitHub release API JSON and full tagged pyproject.toml read. Tag
+    resolves to b0bf39968ba461c34b29372144794eff1be06f6d. Read scope: Full GitHub release API JSON and
+    full tagged pyproject.toml read. Tag resolves to b0bf39968ba461c34b29372144794eff1be06f6d. Evidence
+    boundary: Publisher and contributor assertions are source claims, not independent reproduction or
+    local consumer compatibility. Full source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1973/proposed.json.'
+  dive_corrections: '2026-10-07: The rejected model-specific reproduction question is not a canonical
+    claim. This release supports only general multimodal handling and declared dependency metadata.'
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The release itself does not claim this provides EmbeddingGemma2-specific support; that is specified
+      by the Transformers v5.19 docs and model page.
+  - claim_index: 1
+    effect: unaffected
+    note: Transformers 5.19.0 falls inside this declared range. The model docs separately name Sentence
+      Transformers >=6.1.0. Current orchestrator uv.lock pins ST 5.3.0 and Transformers 4.57.6, so this
+      stack does not satisfy the candidate docs/release pair; no install or change was made.
+- id: intake-1974
+  url: https://github.com/embeddings-benchmark/mteb/pull/5588
+  title: 'model: EmbeddingGemma 2'
+  source_type: repo
+  authors:
+  - Henrique Schechter Vera (@schechterh)
+  - MTEB reviewers @Samoed and @KennethEnevoldsen
+  categories:
+  - search_retrieval
+  - tool_implementation
+  verdict: worth_investigating
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  arxiv_id: null
+  discovered_via: expansion
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+    7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+  key_claims:
+  - The PR proposes an MTEB loader and ModelMeta entries for EmbeddingGemma2 and modular display variants
+    at the pinned HF checkpoint.
+  - The PR discussion says the submitter cannot disclose the exact evaluation setup and the MTEB maintainer
+    says the current submitted scores cannot be accepted without the specified reference implementation.
+  - The fetched PR is still open and unmerged at the captured base/head revisions.
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: wrapper.patch:L48-L57, added loader body; publisher patch is /0/patch in raw files.json
+    quote: +        "google/embeddinggemma-2",
+    quote_sha256: b974f285ddbcc5334a963547c8c2f33a1a9db623fb28adb0e12fabf164d8b7be
+    source_file: /mnt/raid0/llm/tmp/dive-1974/wrapper.patch
+    source_sha256: a862120ceb6a2acb382880e812d594ad015f174cdeebf2c4aecf9b2a5f519155
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1974/files.json
+    raw_source_sha256: 197884217449c38b6105c48a7a34a4590649a406481f15635df8059dc1884161
+    source_packet_quote_sha256: e49dbc3206a4499731c2aa040c2bd1a631fac8ee3c3813f7c940736eaa10005a
+  - claim_index: 0
+    kind: json-pointer
+    locator: wrapper.patch:L60-L67 and L87-L95; publisher patch is /0/patch in raw files.json
+    quote: revision="914f7f89142e33e77833254d9c9b90c3cef7303b",
+    quote_sha256: c7ca1e650e955a34ee008c5519ccda7174cc2ffff9fa56435d6d9a156a399035
+    source_file: /mnt/raid0/llm/tmp/dive-1974/wrapper.patch
+    source_sha256: a862120ceb6a2acb382880e812d594ad015f174cdeebf2c4aecf9b2a5f519155
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1974/files.json
+    raw_source_sha256: 197884217449c38b6105c48a7a34a4590649a406481f15635df8059dc1884161
+  - claim_index: 1
+    kind: json-pointer
+    locator: review-comments.json, comment id 4198468712 by submitting author schechterh; /body
+    quote: I am unable to disclose the exact setup for evals
+    quote_sha256: 411b93052a66c5ba29ef44d6f23cd263ff2cf6045a11b5a96cd9dd6c417d146e
+    source_file: /mnt/raid0/llm/tmp/dive-1974/review-comments.json
+    source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+  - claim_index: 1
+    kind: json-pointer
+    locator: review-comments.json, comment id 4198813229 by MTEB maintainer KennethEnevoldsen; /body
+    quote: An implementation that does not do this is not a valid reference implementation. The result
+      on the results repository **has** to be computed using the reference implementation.
+    quote_sha256: 83a5e52fd47c38ef3270be59781f45bd2c2e6d97275f003b2c7c52b25fc81bda
+    source_file: /mnt/raid0/llm/tmp/dive-1974/review-comments.json
+    source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+  - claim_index: 1
+    kind: json-pointer
+    locator: review-comments.json, comment id 4198836980 by MTEB maintainer KennethEnevoldsen; /body
+    quote: Of course, we can also evaluate using the specified implementation, but then we can't accept
+      the current submitted scores.
+    quote_sha256: 91616e0e23beec9682e3b3bb9d1afecc0c7f8b9b11ebd87690784706bfe85be1
+    source_file: /mnt/raid0/llm/tmp/dive-1974/review-comments.json
+    source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+  - claim_index: 2
+    kind: json-pointer
+    locator: pull.json /state; /merged_at is null
+    quote: open
+    quote_sha256: 2348f998744212575d85959674f9607ab26f67708a917157472832386337c904
+    source_file: /mnt/raid0/llm/tmp/dive-1974/pull.json
+    source_sha256: 42ecdc4abc4a11381a1b0aad3d3b37bb5dd679681c6489970bf4b6e64927df5d
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+  reported_results: []
+  recommended_actions:
+  - D2-ID-21
+  - D2-ID-22
+  - D2-ID-23
+  - D2-ID-24
+  cross_references:
+    intake_entries:
+    - intake-1975
+  notes: 'Stage-2 source scope: Read current PR body, base/head/state; complete 135-add/10-del model-wrapper
+    patch; all 26 reviews and 24 inline review comments plus issue comment. Material threads include synthetic
+    model IDs/metadata and score reproducibility; no execution. Read scope: Read current PR body, base/head/state;
+    complete 135-add/10-del model-wrapper patch; all 26 reviews and 24 inline review comments plus issue
+    comment. Material threads include synthetic model IDs/metadata and score reproducibility; no execution.
+    Evidence boundary: Publisher and contributor assertions are source claims, not independent reproduction
+    or local consumer compatibility. Full source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1974/proposed.json.'
+  dive_corrections: '2026-10-07: Replaced the unsupported acceptance/reproducibility claim with the PR
+    discussion’s exact setup disclosure and maintainer acceptance condition. PR is open and requested
+    changes; no reproduction was run.'
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The PR is open, and reviewer comments question using synthetic model names/parameter-count variants.
+      Proposal is not merged/accepted MTEB support.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Rejected hypothesis: PR status and discussion do not establish an accepted reproducible setup.
+      Retained claim reports the directly evidenced disclosure and maintainer acceptance condition. This
+      describes correction of an unpersisted draft hypothesis; no rejected hypothesis is attached to or
+      opposed against the retained truthful claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: Saved PR updated_at is 2026-10-07T09:29:28Z in the snapshot read 2026-10-07; retrieval time
+      is not inferred from updated_at.
+- id: intake-1975
+  url: https://github.com/embeddings-benchmark/results/pull/745
+  title: 'results: EmbeddingGemma 2'
+  source_type: repo
+  authors:
+  - Henrique Schechter Vera (@schechterh)
+  categories:
+  - search_retrieval
+  - tool_implementation
+  verdict: worth_investigating
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  arxiv_id: null
+  discovered_via: expansion
+  ingested_date: '2026-10-07'
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+    86320b4a418d350e8093f1301471b2a65a45c0fa
+  key_claims:
+  - 'PR #745 submits task-level score JSONs, including the text-only CodeSearchNetRetrieval record pinned
+    to the EmbeddingGemma 2 checkpoint.'
+  - The PR checklist is the submitter’s self-attestation that results used the reference implementation;
+    the companion MTEB review says the current submitted scores cannot be accepted, so acceptance or independent
+    reproduction is not established.
+  - 'The result-submission PR is still open and unmerged, and explicitly names the companion implementation
+    PR #5588.'
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: pull.json /body opening summary
+    quote: 'This PR adds benchmark results for **EmbeddingGemma 2** across 5 evaluation suites:'
+    quote_sha256: 5ed2410017e7b6ea5598107d2d563f6715eb3e6d61a66b27579e508803da4934
+    source_file: /mnt/raid0/llm/tmp/dive-1975/pull.json
+    source_sha256: 02405175068eb4e77db7840c69a357e91cea55642621a006a198f6f8e2c5f605
+    source_url: https://github.com/embeddings-benchmark/results/pull/745
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+  - claim_index: 0
+    kind: line-range
+    locator: CodeSearchNetRetrieval.json.patch:L1-L6, added JSON fields; publisher patch is the CodeSearchNetRetrieval
+      file object in files.json page 1
+    quote: '+  "task_name": "CodeSearchNetRetrieval",'
+    quote_sha256: 92e4a62a2546f000e1581f89cbd95d21909c80220e16ae85aa4ffc30127cf713
+    source_file: /mnt/raid0/llm/tmp/dive-1975/CodeSearchNetRetrieval.json.patch
+    source_sha256: 9eb4315997849b2ebc90ceebbbd33a24bfa840fca6b6ff822948b5aaa6070ff1
+    source_url: https://github.com/embeddings-benchmark/results/pull/745
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1975/files.json
+    raw_source_sha256: 2b650e66904433bbf217ac5f4671a1c94e9f3fd49906a7fd54b4024a99ba9130
+    source_packet_quote_sha256: 1e37e802c30a5fb33d33751f8bec863bda6691c7fa92efeed382cde62b664519
+  - claim_index: 0
+    kind: line-range
+    locator: files-page2.json item filename for submitted text-model metadata, paginated PR file-list
+      page 2
+    quote: results/google__embeddinggemma-2-text/914f7f89142e33e77833254d9c9b90c3cef7303b/model_meta.json
+    quote_sha256: 728001550fc20762a60b02ac6ca3080e595e47584f0d7d1d454631ba6b117796
+    source_file: /mnt/raid0/llm/tmp/dive-1975/files-page2.json
+    source_sha256: cf7e90d8f9e4f9c43a4c8e7d11a5a022143bdcaed460a6f95e503aa7c9a58388
+    source_url: https://api.github.com/repos/embeddings-benchmark/results/pulls/745/files?per_page=100&page=2
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+  - claim_index: 1
+    kind: json-pointer
+    locator: pull.json /body checklist declaration
+    quote: '- [x] The results submitted are obtained using the reference implementation'
+    quote_sha256: 4840f8e5650cbdad0816a56676cceb44239977fb41919621869316d3ff3a2ab3
+    source_file: /mnt/raid0/llm/tmp/dive-1975/pull.json
+    source_sha256: 02405175068eb4e77db7840c69a357e91cea55642621a006a198f6f8e2c5f605
+    source_url: https://github.com/embeddings-benchmark/results/pull/745
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+  - claim_index: 1
+    kind: line-range
+    locator: CodeSearchNetRetrieval.json.patch, added MTEB score row; exact file entry selected from paginated
+      files list; publisher patch is the CodeSearchNetRetrieval file object in files.json page 1
+    quote: '+        "ndcg_at_10": 0.95501,'
+    quote_sha256: 08b876d4d8abb53e22c38010655d719da9bbf7950c54cfd75fb7b0ba2c8e7d78
+    source_file: /mnt/raid0/llm/tmp/dive-1975/CodeSearchNetRetrieval.json.patch
+    source_sha256: 9eb4315997849b2ebc90ceebbbd33a24bfa840fca6b6ff822948b5aaa6070ff1
+    source_url: https://github.com/embeddings-benchmark/results/pull/745
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+    raw_source_file: /mnt/raid0/llm/tmp/dive-1975/files.json
+    raw_source_sha256: 2b650e66904433bbf217ac5f4671a1c94e9f3fd49906a7fd54b4024a99ba9130
+    source_packet_quote_sha256: 1814c753c5363ffe6233d79a39b465d50451fc8677db6226bd7c7200cf22c02f
+  - claim_index: 1
+    kind: line-range
+    locator: 'review-comments.json, MTEB maintainer comment id 4198836980 on companion PR #5588; current
+      PR snapshot sibling evidence'
+    quote: Of course, we can also evaluate using the specified implementation, but then we can't accept
+      the current submitted scores.
+    quote_sha256: 91616e0e23beec9682e3b3bb9d1afecc0c7f8b9b11ebd87690784706bfe85be1
+    source_file: /mnt/raid0/llm/tmp/dive-1974/review-comments.json
+    source_sha256: 95de5732c1fd00f406a065c6165dd33b24bd39e93d6fe8f3bb5e99aede4b60cb
+    source_url: https://github.com/embeddings-benchmark/mteb/pull/5588
+    source_revision: GitHub PR snapshot 2026-10-07; base 74b15646b5c64823146da4044f9e2e11f086287c; head
+      7b63fcee887e5cebf5c0e3445bacc59eed9b6af9
+  - claim_index: 2
+    kind: json-pointer
+    locator: pull.json /state; /merged_at is null
+    quote: open
+    quote_sha256: 2348f998744212575d85959674f9607ab26f67708a917157472832386337c904
+    source_file: /mnt/raid0/llm/tmp/dive-1975/pull.json
+    source_sha256: 02405175068eb4e77db7840c69a357e91cea55642621a006a198f6f8e2c5f605
+    source_url: https://github.com/embeddings-benchmark/results/pull/745
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+  - claim_index: 2
+    kind: json-pointer
+    locator: pull.json /body checklist
+    quote: https://github.com/embeddings-benchmark/mteb/pull/5588
+    quote_sha256: f8e38c9a7076156669626868dffcee8fb846275d0cf2b2fedaa748c0285ff704
+    source_file: /mnt/raid0/llm/tmp/dive-1975/pull.json
+    source_sha256: 02405175068eb4e77db7840c69a357e91cea55642621a006a198f6f8e2c5f605
+    source_url: https://github.com/embeddings-benchmark/results/pull/745
+    source_revision: GitHub PR snapshot 2026-10-07; base 76c02342e832b8f24a7eb814f7144634f36b8b4d; head
+      86320b4a418d350e8093f1301471b2a65a45c0fa
+  reported_results:
+  - 'PR #745 contains submitter-provided task-level score JSONs, including CodeSearchNetRetrieval; these
+    are not accepted or independently reproduced results.'
+  recommended_actions:
+  - D2-ID-25
+  - D2-ID-26
+  - D2-ID-27
+  - D2-ID-28
+  cross_references:
+    intake_entries: []
+  notes: 'Stage-2 source scope: Read PR body/state/base/head and all three paginated file-list pages (246
+    files, including text/audio/vision score records), one result diff for text CodeSearchNetRetrieval,
+    text model_meta diff, all issue/review threads (one issue comment, no reviews/inline comments). Not
+    every task JSON diff was inspected; no results were run. Read scope: Read PR body/state/base/head
+    and all three paginated file-list pages (246 files, including text/audio/vision score records), one
+    result diff for text CodeSearchNetRetrieval, text model_meta diff, all issue/review threads (one issue
+    comment, no reviews/inline comments). Not every task JSON diff was inspected; no results were run.
+    Evidence boundary: Publisher and contributor assertions are source claims, not independent reproduction
+    or local consumer compatibility. Full source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1975/proposed.json.'
+  dive_corrections: '2026-10-07: Replaced the unsupported accepted/reproduced-scores claim. The checklist
+    is author self-attestation; companion MTEB maintainer review says current submitted scores cannot
+    be accepted. Submitted score JSONs remain unverified artifacts.'
+  depends_on:
+  - entry: intake-1974
+    claim_index: 1
+    why: 'Only the statement about current MTEB acceptance/non-acceptance uses the companion PR #5588
+      maintainer review; this PR’s own submission and open status remain independently anchored to #745.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The patched JSON records submitted scores and MTEB version 1.34.7, not a local result or reference
+      rerun.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Rejected hypothesis: author checklist is self-attestation, not acceptance or independent reproduction.
+      Retained claim states the checklist attribution and the companion maintainer’s current non-acceptance
+      statement. This describes correction of an unpersisted draft hypothesis; no rejected hypothesis
+      is attached to or opposed against the retained truthful claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: PR updated_at is 2026-10-06T23:00:14Z in the saved snapshot read 2026-10-07; retrieval time
+      is not inferred from updated_at.
+- id: intake-1976
+  arxiv_id: null
+  url: https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/VibeMemBench
+  source_type: repo
+  title: 'VibeMemBench: Evaluating Memory Systems for Coding Agents on Real Repository Coding Tasks'
+  categories:
+  - benchmark_methodology
+  - memory_augmented
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-07'
+  key_claims:
+  - At the current pinned main revision, the VibeMemBench directory contains only a 100-byte README whose
+    text says “Coming”; benchmark implementation files, data, and manifests are not present in that source
+    directory.
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: VibeMemBench/README.md line 4
+    quote: Coming
+    quote_sha256: 6ae8acc62a5344f44e39817646ad4f253f058589e4a9baf56aa149eb7f65d348
+    source_revision: 188835d4f9948563a6b9c8ac50cd0f3ae4021ed6
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Observed status applies to this linked subtree at pinned current main HEAD; it does not establish
+      absence from separate release channels.
+  dive_corrections: '2026-10-07 Stage-2: current main HEAD 188835d4f9948563a6b9c8ac50cd0f3ae4021ed6 confirmed.
+    The complete linked VibeMemBench subtree has only a 100-byte README saying “Coming”; no implementation/data/manifest
+    present there. This is companion release status, not an independent reproduction or support for paper
+    results.'
+  recommended_actions:
+  - Monitor only for an observable release of implementation code plus manifest and raw result artifacts;
+    no active task or checkbox before that trigger.
+  notes: Entire linked VibeMemBench subtree read/listed at current main HEAD 188835d4f9948563a6b9c8ac50cd0f3ae4021ed6.
+    README SHA-256 fac3b8e2442e70e88b81676bf60385ae2a61cd034f8185352e63e845d4e8bfad. Parent DAMO-ConvAI
+    repository and other release channels not exhaustively reviewed. Same project/paper companion, not
+    independent empirical confirmation. No install, test, model or weight download, or execution.
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1968
+    intake_entry_notes:
+    - intake-1968 (paper this repository accompanies; not independent corroboration)
+  reported_results: []
