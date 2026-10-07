@@ -16,7 +16,8 @@ import tomllib
 import traceback
 from typing import Any
 
-SOURCE_PIN = "6d2be3c4c73d34cf3a93626d722b84b6218a5dec"
+SOURCE_PIN = "508bce0ef804d03caf761eb8807801e48dd327d4"
+ROOT_CONTEXT_PIN = "0da62ca1cb484f54f0e58dc514f10cd61b9ac001"
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_LOCK_PIN = "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
 PYTHON_PIN = "3.13.15"
@@ -28,8 +29,13 @@ TASK_PATH = "handoffs/active/objective-task-rate-goodput.md"
 TABLE_PATH = "scripts/vidya/adapters/README.md"
 VB_PROGRAM_PATH = "handoffs/active/vidya-belief-substrate-program.md"
 TASK_SHA256 = "447b955e6cd8aaffdd5b3e8d57d067370e137d800452924d3377d3a26b247ba9"
-TABLE_SHA256 = "1add75883692e0a7393b8b8e137022c5865460a1a84e611a9cf72f865367251f"
-VB_PROGRAM_SHA256 = "04a68c6c9e7b7daba197cf8b53442c4dccd3a8f786183985cfdaa1eb4efa8755"
+TABLE_SHA256 = "037fd24d69fb2f541fa7eae5bc40ae95f10075e00d60d7267950789c91d169e3"
+VB_PROGRAM_SHA256 = "16dd6029f1678b49cadf483f15b33c272bedc3878a7f8fe267679c80fde354f6"
+ROOT_CONTEXT_BLOBS = {
+    TASK_PATH: "cf7b75ed98bd6f92a31f69fe57327e6fc03b6c30",
+    TABLE_PATH: "800a6e04910394d0d0bcd9c54db537961d553208",
+    VB_PROGRAM_PATH: "634ecfdc7f02e87a5d10831bab8773061603d4de",
+}
 APP_LOCK = "uv.lock"
 APP_LOCK_BLOBS = {
     "pyproject.toml": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
@@ -40,7 +46,7 @@ PACKAGES = {
     "pygments": "2.20.0", "pytest": "9.0.3", "pyyaml": "6.0.3",
 }
 
-APP_BLOBS = {'src/__init__.py': 'ff893046a8e7d2598657b950e9e41449f358d25f', 'src/autopilot_core/__init__.py': '27c9fe394da9d9ea2f2f4b64d254bf99fa8aaa37', 'src/autopilot_core/action_identity.py': 'de768dfce1199a1011a30d1db8db78ec5820e605', 'src/autopilot_core/infra_fingerprint.py': '5673025fff54213490cc6eee12a91ab1645074e3', 'src/autopilot_core/journal_reconstruction.py': '25e224dd700087aa4f8acc545c9505434df50bf7', 'src/autopilot_core/learning_exclusions.py': '82adbc3dab68470570ec8fe0edf62d238ff8b093', 'src/autopilot_core/measurement_guards.py': 'd01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6', 'src/autopilot_core/multitier_decision.py': '5dce1594af423b7a91e7eec916741fb39de02854', 'src/autopilot_core/pareto_math.py': '91f3e59e0918c93004ad4a4f61fe1d384eb48d78', 'src/autopilot_core/planner_evidence.py': '68f515cf1e89b49acace1f7469643441235f90cf', 'src/autopilot_core/rlvr_tiers.py': '19d3813492f3b26807db22daad491fc1bf470e05', 'src/autopilot_core/sequential_verdict.py': '5086b05f9e7517b1c8b7a9b3934f2b57da5f0356', 'src/autopilot_core/tier_specs.py': 'ba47f3dd40b19521c4939a064493362c57ccc998', 'src/registry/__init__.py': '287333a63889217a52c0082a7e316dc64670ee1f', 'src/registry/kernel_paths.py': '6bb3dad23130a763dc4c456c7c432a9535536f30', 'tests/__init__.py': 'd4839a6b14c11e64143d1d200c2d4733595ffc6c', 'tests/unit/__init__.py': '4a5d26360bce3309c1d761d1529117cec7d42e40', 'tests/unit/test_planner_evidence.py': '8e7510713e75a9797d3f34c688896186e4bb86bc'}
+APP_BLOBS = {'src/__init__.py': 'ff893046a8e7d2598657b950e9e41449f358d25f', 'src/autopilot_core/__init__.py': '27c9fe394da9d9ea2f2f4b64d254bf99fa8aaa37', 'src/autopilot_core/action_identity.py': 'de768dfce1199a1011a30d1db8db78ec5820e605', 'src/autopilot_core/infra_fingerprint.py': '5673025fff54213490cc6eee12a91ab1645074e3', 'src/autopilot_core/journal_reconstruction.py': '25e224dd700087aa4f8acc545c9505434df50bf7', 'src/autopilot_core/learning_exclusions.py': '82adbc3dab68470570ec8fe0edf62d238ff8b093', 'src/autopilot_core/measurement_guards.py': 'd01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6', 'src/autopilot_core/multitier_decision.py': '5dce1594af423b7a91e7eec916741fb39de02854', 'src/autopilot_core/pareto_math.py': '91f3e59e0918c93004ad4a4f61fe1d384eb48d78', 'src/autopilot_core/planner_evidence.py': '68f515cf1e89b49acace1f7469643441235f90cf', 'src/autopilot_core/rlvr_tiers.py': '19d3813492f3b26807db22daad491fc1bf470e05', 'src/autopilot_core/sequential_verdict.py': '5086b05f9e7517b1c8b7a9b3934f2b57da5f0356', 'src/autopilot_core/tier_specs.py': 'ba47f3dd40b19521c4939a064493362c57ccc998', 'src/registry/__init__.py': '287333a63889217a52c0082a7e316dc64670ee1f', 'src/registry/kernel_paths.py': '6bb3dad23130a763dc4c456c7c432a9535536f30', 'tests/__init__.py': 'd4839a6b14c11e64143d1d200c2d4733595ffc6c', 'tests/unit/__init__.py': '4a5d26360bce3309c1d761d1529117cec7d42e40', 'tests/unit/test_planner_evidence.py': '5f89516aaa694f95281bfc777de8b4aeb21cd3c9'}
 CARRIER_BLOBS = {
     "scripts/ci/native_conformance.py": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
     "scripts/vidya/adapters/ci_conformance.py": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
@@ -223,8 +229,8 @@ def ast_node_ids(source_root: Path, relative: str, selected_names: set[str],
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
-    recipe, carrier, source, app_lock = (workspace / name for name in
-                                         ("recipe", "carrier", "source", "app-lock"))
+    recipe, carrier, source, app_lock, root_context = (workspace / name for name in
+                                                       ("recipe", "carrier", "source", "app-lock", "root-context"))
     result = runner_temp / "vb-rtg23w9" / "result"
     work = runner_temp / "vb-rtg23w9" / "work"
     result.mkdir(parents=True, exist_ok=True)
@@ -247,21 +253,24 @@ def main() -> int:
             "carrier": require_clean(carrier, "carrier"),
             "source": require_clean(source, "source"),
             "app_lock": require_clean(app_lock, "APP lock source"),
+            "root_context": require_clean(root_context, "published ROOT context"),
         }
         expected_pins = {"recipe": os.environ["GITHUB_SHA"], "carrier": ROOT_CARRIER_PIN,
-                         "source": SOURCE_PIN, "app_lock": APP_LOCK_PIN}
+                         "source": SOURCE_PIN, "app_lock": APP_LOCK_PIN,
+                         "root_context": ROOT_CONTEXT_PIN}
         if pins != expected_pins:
             raise RuntimeError(f"repository identity differs from reviewed pins: {pins}")
 
-        recipe_paths = [WORKFLOW_PATH, DRIVER_PATH, EXPECTED_CASES_PATH, REQUIREMENTS_PATH,
-                        TASK_PATH, TABLE_PATH, VB_PROGRAM_PATH]
+        recipe_paths = [WORKFLOW_PATH, DRIVER_PATH, EXPECTED_CASES_PATH, REQUIREMENTS_PATH]
         recipe_inputs = {name: {"git_blob": git(recipe, "rev-parse", f"HEAD:{name}"),
                                 "sha256": digest(tracked(recipe, name))}
                          for name in recipe_paths}
+        root_context_inputs = verify_blobs(root_context, ROOT_CONTEXT_PIN, ROOT_CONTEXT_BLOBS,
+                                           "published ROOT task/table context")
         for path, expected in ((TASK_PATH, TASK_SHA256), (TABLE_PATH, TABLE_SHA256),
                                (VB_PROGRAM_PATH, VB_PROGRAM_SHA256)):
-            if digest(tracked(recipe, path)) != expected:
-                raise RuntimeError(f"ROOT810 task/table source changed: {path}")
+            if digest(tracked(root_context, path)) != expected:
+                raise RuntimeError(f"published ROOT task/table source changed: {path}")
         app_inputs = verify_blobs(source, SOURCE_PIN, APP_BLOBS, "APP source")
         lock_inputs = verify_blobs(app_lock, APP_LOCK_PIN, APP_LOCK_BLOBS, "APP lock")
         carrier_inputs = verify_blobs(carrier, ROOT_CARRIER_PIN, CARRIER_BLOBS, "ROOT carrier")
@@ -311,6 +320,7 @@ def main() -> int:
             "schema": "epyc.vb_rtg23w9.source_manifest.v1", "repositories": pins,
             "recipe_inputs": recipe_inputs, "app_source_blobs": app_inputs,
             "app_lock_blobs": lock_inputs, "carrier_blobs": carrier_inputs,
+            "published_root_context_blobs": root_context_inputs,
         })
         environment = result / "environment.json"
         write_json(environment, {
@@ -339,6 +349,7 @@ def main() -> int:
         test_argv.append(f"--junitxml={junit}")
 
         read_paths = [tracked(recipe, name) for name in recipe_paths]
+        read_paths.extend(tracked(root_context, name) for name in ROOT_CONTEXT_BLOBS)
         read_paths.extend(tracked(source, name) for name in APP_BLOBS)
         read_paths.extend(tracked(app_lock, name) for name in APP_LOCK_BLOBS)
         read_paths.extend(tracked(carrier, name) for name in CARRIER_BLOBS)
@@ -355,6 +366,7 @@ def main() -> int:
             "--cwd", str(work), "--junit", str(junit), "--output", str(native),
             "--repo", f"recipe={recipe}", "--repo", f"carrier={carrier}",
             "--repo", f"source={source}", "--repo", f"app_lock={app_lock}",
+            "--repo", f"root_context={root_context}",
         ]
         for path in dict.fromkeys(item.resolve() for item in read_paths):
             producer_argv.extend(("--read-path", str(path)))

@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      SOURCE_PIN: 6d2be3c4c73d34cf3a93626d722b84b6218a5dec
+      SOURCE_PIN: 508bce0ef804d03caf761eb8807801e48dd327d4
+      ROOT_CONTEXT_PIN: 0da62ca1cb484f54f0e58dc514f10cd61b9ac001
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       APP_LOCK_PIN: 94a6e8d41ec7d3f7a122f66bad53aa673d401d8a
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
@@ -45,6 +46,13 @@ jobs:
           repository: pestopoppa/epyc-orchestrator
           ref: ${{ env.SOURCE_PIN }}
           path: source
+          persist-credentials: false
+      - name: Checkout actual published ROOT task and source-table context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CONTEXT_PIN }}
+          path: root-context
           persist-credentials: false
       - name: Checkout frozen APP dependency lock source
         uses: actions/checkout@v4
