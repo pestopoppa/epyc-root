@@ -219,3 +219,7 @@ M-11a2b wiring remains complete; a separate forged-marker bound bypass was found
 ## Source-premise reconciliation and next verification
 
 MAIN corrected RVP-C2-1's obsolete no-suite-seed premise while retaining its real SSM_SCAN exception and uncaptured event gate; frozen production is unchanged. Future Gate-R canonical-build language is superseded by the fresh experimental candidate/current-baseline/device-state procedure, with all historical observations intact. Existing Tulving retrieved-arm trace source is already present; its full23 synthetic controls are prospectively enrolled through VB-UTM-B4-CONFORMANCE, including four trace-only cases that must execute. UTM-B3 prospective filter/count source is free to implement before its eventual real BEAM run. No additional completion is counted at this preparation boundary; NI08 remains83.
+
+## BEAM ingest provenance source review
+
+MAIN reviewed Research180a772445e2c227979998cdec9b7a50ae5aa54e against current de02 source, including flattening, pair-chunk construction and the existing QuestionResult provenance writer. The two-file change adds prospective all-role/source-order count/range/granularity metadata and labels the full-history arm accurately. Manual blast radius LOW: adapter provenance payload and its synthetic controls; prompts, chunk selection and score/objective policy unchanged. UTM-B3-SOURCE and VB-UTM-B3-CONFORMANCE now track publication and original native proof separately from the future real BEAM run. No completion counted; NI08 remains83.
