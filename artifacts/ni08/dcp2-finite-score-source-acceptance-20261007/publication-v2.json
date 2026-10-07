@@ -1,0 +1,71 @@
+{
+  "commit": "f0df7ca2f801481d2024ad86c3ed37d60155430e",
+  "diff_paths": [
+    "src/context_discovery.py",
+    "tests/unit/test_context_discovery.py"
+  ],
+  "files": [
+    {
+      "bytes": 11706,
+      "git_blob": "3dab2454498e16da4c5d6cc88b50c4a56a91e5dd",
+      "path": "src/context_discovery.py",
+      "sha256_raw_git_show_bytes": "5fcd2868ad85d7f0a4e9c84768e630de8cb752c43785fd423f7dac1ebdb8b8f9"
+    },
+    {
+      "bytes": 11498,
+      "git_blob": "dde49696fd609334f1ff43d72656f01cc407ed59",
+      "path": "tests/unit/test_context_discovery.py",
+      "sha256_raw_git_show_bytes": "ca9fdb55735220ff47f3f7dc12c264dc10c9023256c32fe86629e314b30f314c"
+    }
+  ],
+  "lease_and_push_evidence": {
+    "operation_token_hashes": [
+      {
+        "mode": "0o600",
+        "name": "push-main.token",
+        "sha256": "d54291d730f758e2f1136a4ff5f7e11eeb18a2c4063ac87ad4bb5ae922146541"
+      },
+      {
+        "mode": "0o600",
+        "name": "push.token",
+        "sha256": "8cb96d7efd1a53ef6137add12d8d0eba6a93c98183cc205ec4dec3941f11431b"
+      },
+      {
+        "mode": "0o600",
+        "name": "wrapup.token",
+        "sha256": "67028e382621c6024473ad9bc46b5fbfbf0b3fe374ec6dfff6d2008785381857"
+      }
+    ],
+    "prior_transcript_report": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-closure-draft-20261007/APP-publication-result.json",
+    "serialization": "Two successful ordinary serializer pushes: proposal branch creation, then main FF 87ecbf18..f0df7ca2; non-force. Serializer output existed in interactive transcript only.",
+    "token_files_removed_after_release": true,
+    "transcript_limited": true,
+    "wrapup_and_push_status_after": {
+      "push": "FREE",
+      "wrapup": "FREE"
+    }
+  },
+  "normal_hook": {
+    "configured_path": "/mnt/raid0/llm/epyc-orchestrator/.git/hooks/pre-commit",
+    "git_commit_succeeded": true,
+    "mode": "0o755",
+    "sha256_raw_bytes": "2385af56caa1b87cf3910144a6dc20193cead6ab1f8a2b1a2763d39c809c8a1e",
+    "stdout_limitation": "The interactive commit transcript has the git commit summary but no hook output; no separate hook stdout was retained."
+  },
+  "parent": "87ecbf18bc3d3793271d0eaf183e19900ad9726a",
+  "published_refs": {
+    "branch_api_raw_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-publication.SOLclXae/v2-github-branch.raw.json",
+    "branch_api_raw_sha256": "4eaf97a4690b656a63057adca6c8747e280202dbb086c661396f0b370846151d",
+    "branch_sha": "f0df7ca2f801481d2024ad86c3ed37d60155430e",
+    "main_api_raw_path": "/mnt/raid0/llm/tmp/codex-ni08-dcp2-publication.SOLclXae/v2-github-main-commit.raw.json",
+    "main_api_raw_sha256": "5303e1f4c6c0a6593f09d5d41ccb54d5ca5453b4c2125cd04827702a23ee6860",
+    "main_sha": "f0df7ca2f801481d2024ad86c3ed37d60155430e",
+    "retrieved_utc": "2026-10-07T12:42:24+00:00"
+  },
+  "raw_binary_diff_bytes": 4988,
+  "raw_binary_diff_sha256": "3d08ecb25aaa8b85e08ade2f4f323227e055775c2020d31d1bc40937b0433e4f",
+  "schema": "private.APP_publication_result.v2",
+  "scope": "Corrected report only. No source, test, or published commit mutation.",
+  "supersedes": "APP-publication-result.json; v1 is retained unchanged but excluded because it decoded/stripped Git output before content hashing. Publication itself is independently confirmed correct by MAIN.",
+  "worktree_clean": true
+}
