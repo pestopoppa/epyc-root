@@ -73,6 +73,14 @@ jobs:
             --disable-pip-version-check --only-binary=:all: --no-deps --require-hashes \
             -r recipe/scripts/ci/vb_rtg23w9_native_requirements.txt \
             2>&1 | tee "$RUNNER_TEMP/vb-rtg23w9/result/pip-install.log"
+      - name: Preserve installed package inventory
+        if: always()
+        run: |
+          if [ -x "$RUNNER_TEMP/vb-rtg23w9/venv/bin/python" ]; then
+            "$RUNNER_TEMP/vb-rtg23w9/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-rtg23w9/result/pip-freeze.txt" || true
+          else
+            : > "$RUNNER_TEMP/vb-rtg23w9/result/pip-freeze.txt"
+          fi
       - name: Capture original JUnit, source readset, native receipt and shared grade
         run: "$RUNNER_TEMP/vb-rtg23w9/venv/bin/python recipe/scripts/ci/vb_rtg23w9_native_capture.py"
       - name: Preserve every capture outcome and original

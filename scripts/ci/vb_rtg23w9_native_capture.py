@@ -12,9 +12,11 @@ import platform
 import re
 import subprocess
 import sys
+import stat
 import tomllib
 import traceback
 from typing import Any
+from pathlib import PurePosixPath
 
 SOURCE_PIN = "508bce0ef804d03caf761eb8807801e48dd327d4"
 ROOT_CONTEXT_PIN = "0da62ca1cb484f54f0e58dc514f10cd61b9ac001"
@@ -76,25 +78,84 @@ def require_clean(repo: Path, label: str) -> str:
 
 
 def tracked(repo: Path, relative: str) -> Path:
+    parsed = PurePosixPath(relative)
+    if (not relative or "\\" in relative or parsed.is_absolute()
+            or parsed.as_posix() != relative
+            or any(part in {"", ".", ".."} for part in parsed.parts)):
+        raise RuntimeError(f"declared source path is not normalized and relative: {relative}")
     path = repo
-    for part in Path(relative).parts:
+    for index, part in enumerate(parsed.parts):
         path = path / part
-        if path.is_symlink():
+        try:
+            info = path.lstat()
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"declared source is missing: {relative}") from exc
+        if stat.S_ISLNK(info.st_mode):
             raise RuntimeError(f"declared source traverses a symlink: {relative}")
-    if not path.is_file():
+        if index < len(parsed.parts) - 1 and not stat.S_ISDIR(info.st_mode):
+            raise RuntimeError(f"declared source parent is not a directory: {relative}")
+    if not stat.S_ISREG(info.st_mode):
         raise RuntimeError(f"declared source is missing or not regular: {relative}")
     entry = git(repo, "ls-tree", "HEAD", "--", relative).split()
     if len(entry) < 3 or entry[0] not in {"100644", "100755"} or entry[1] != "blob":
         raise RuntimeError(f"declared input is not a tracked regular blob: {relative}")
-    return path.absolute()
+    return path
 
 
 def digest(path: Path) -> str:
     h = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1 << 20), b""):
-            h.update(block)
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise RuntimeError(f"digest input is not a regular file: {path}")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            for block in iter(lambda: stream.read(1 << 20), b""):
+                h.update(block)
+    finally:
+        os.close(fd)
     return h.hexdigest()
+
+
+def read_text(path: Path) -> str:
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise RuntimeError(f"text input is not a regular file: {path}")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            return stream.read().decode("utf-8")
+    finally:
+        os.close(fd)
+
+
+def result_snapshot(root: Path) -> dict[str, dict[str, str]]:
+    """Snapshot all files/directories under a fresh result, rejecting links/special files."""
+    if root.is_symlink() or not root.is_dir():
+        raise RuntimeError("result tree is not a regular directory")
+    entries: dict[str, dict[str, str]] = {}
+
+    def fail(error):
+        raise error
+
+    for current, directories, files in os.walk(root, topdown=True, followlinks=False,
+                                                onerror=fail):
+        base = Path(current)
+        for name in sorted(directories):
+            path = base / name
+            info = path.lstat()
+            if not stat.S_ISDIR(info.st_mode):
+                raise RuntimeError(f"result tree contains a link or non-directory: {path}")
+            relative = path.relative_to(root).as_posix()
+            if relative != "status.json":
+                entries[relative] = {"kind": "directory"}
+        for name in sorted(files):
+            path = base / name
+            info = path.lstat()
+            if not stat.S_ISREG(info.st_mode):
+                raise RuntimeError(f"result tree contains a link or non-regular member: {path}")
+            relative = path.relative_to(root).as_posix()
+            if relative != "status.json":
+                entries[relative] = {"kind": "file", "sha256": digest(path)}
+    return entries
 
 
 def verify_blobs(repo: Path, expected_commit: str, blobs: dict[str, str], label: str) -> dict[str, dict[str, str]]:
@@ -111,9 +172,9 @@ def verify_blobs(repo: Path, expected_commit: str, blobs: dict[str, str], label:
 
 
 def verify_lock(app_lock: Path, requirements: Path) -> dict[str, str]:
-    lock = tomllib.loads(app_lock.read_text(encoding="utf-8"))
+    lock = tomllib.loads(read_text(app_lock))
     packages = {row["name"].lower().replace("_", "-"): row for row in lock["package"]}
-    req_text = requirements.read_text(encoding="utf-8")
+    req_text = read_text(requirements)
     declared: dict[str, dict[str, Any]] = {}
     current_name = None
     for line in req_text.splitlines():
@@ -162,29 +223,25 @@ def verify_lock(app_lock: Path, requirements: Path) -> dict[str, str]:
     return versions
 
 
-def file_tree(root: Path) -> list[Path]:
-    if root.is_symlink() or not root.is_dir():
-        raise RuntimeError("native artifact directory is absent or not regular")
-    found = []
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink():
-            raise RuntimeError("native artifact tree contains a symlink")
-        if path.is_file():
-            found.append(path)
-        elif not path.is_dir():
-            raise RuntimeError("native artifact tree contains a non-regular member")
-    return found
-
-
 def write_json(path: Path, value: Any) -> None:
-    path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    data = (json.dumps(value, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW
+    flags |= os.O_TRUNC if path.exists() else os.O_EXCL
+    fd = os.open(path, flags, 0o600)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise RuntimeError(f"JSON output is not a regular file: {path}")
+        with os.fdopen(fd, "wb", closefd=False) as stream:
+            stream.write(data)
+    finally:
+        os.close(fd)
 
 
 def ast_node_ids(source_root: Path, relative: str, selected_names: set[str],
                  *, exact_module: bool = False) -> list[str]:
     """Expand only statically named test functions and literal pytest ids."""
-    path = source_root / relative
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    path = tracked(source_root, relative)
+    tree = ast.parse(read_text(path), filename=str(path))
     found: dict[str, list[str]] = {}
     all_test_names: set[str] = set()
     for node in tree.body:
@@ -276,7 +333,7 @@ def main() -> int:
         carrier_inputs = verify_blobs(carrier, ROOT_CARRIER_PIN, CARRIER_BLOBS, "ROOT carrier")
 
         cases_path = tracked(recipe, EXPECTED_CASES_PATH)
-        manifest = json.loads(cases_path.read_text(encoding="utf-8"))
+        manifest = json.loads(read_text(cases_path))
         provenance = manifest.get("provenance") or {}
         if (manifest.get("schema") != "epyc.vb_rtg23w9.native_selected_cases.v1"
                 or manifest.get("source_commit") != SOURCE_PIN
@@ -314,7 +371,44 @@ def main() -> int:
         app_lock_file = tracked(app_lock, APP_LOCK)
         dependency_versions = verify_lock(app_lock_file, requirements)
         pip_freeze = result / "pip-freeze.txt"
-        pip_freeze.write_bytes(subprocess.check_output([sys.executable, "-m", "pip", "freeze", "--all"]))
+        install_log = result / "pip-install.log"
+        if pip_freeze.is_symlink() or not pip_freeze.is_file():
+            raise RuntimeError("workflow pip-freeze record is missing or not regular")
+        if install_log.is_symlink() or not install_log.is_file():
+            raise RuntimeError("workflow installer log is missing or not regular")
+        pre_status = result / "pre-status.json"
+        if (pre_status.is_symlink() or not pre_status.is_file()
+                or json.loads(read_text(pre_status)) != {
+                    "state": "setup_pending", "job": "rtg23w9-native-conformance", "exit_code": None
+                }):
+            raise RuntimeError("workflow pre-status artifact is missing or changed")
+        initial_result = result_snapshot(result)
+        if set(initial_result) != {"pre-status.json", "pip-install.log", "pip-freeze.txt"}:
+            raise RuntimeError("result directory is not the expected fresh setup-only tree")
+        environment = result / "environment.json"
+        write_json(environment, {
+            "schema": "epyc.vb_rtg23w9.native_environment.v1",
+            "python": sys.version, "python_version": platform.python_version(),
+            "platform": platform.platform(), "repositories": pins,
+            "dependency_versions": dependency_versions,
+            "app_uv_lock_sha256": digest(app_lock_file),
+            "requirements_sha256": digest(requirements),
+            "pip_freeze_sha256": digest(pip_freeze),
+            "pip_install_log_sha256": digest(install_log),
+            "environment_controls": {key: os.environ.get(key) for key in EXPECTED_ENV},
+            "isolation_controls": {
+                "venv_prefix": str(Path(sys.prefix).resolve()),
+                "base_prefix": str(Path(sys.base_prefix).resolve()),
+                "isolated_venv": Path(sys.prefix).resolve() != Path(sys.base_prefix).resolve(),
+                "tmpdir": os.environ.get("TMPDIR"),
+                "orchestrator_ignore_runtime_stack_facts": os.environ.get(
+                    "ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS"),
+                "orchestrator_mock_mode": os.environ.get("ORCHESTRATOR_MOCK_MODE"),
+                "orchestrator_paths_llm_root": os.environ.get("ORCHESTRATOR_PATHS_LLM_ROOT"),
+                "stack_numa_mode_absent": "ORCHESTRATOR_STACK_NUMA_MODE" not in os.environ,
+            },
+            "scope": "Synthetic session SQLite persistence/protocol and existing lease write-fencing controls only; no model or inference calls.",
+        })
         source_manifest = result / "source-manifest.json"
         write_json(source_manifest, {
             "schema": "epyc.vb_rtg23w9.source_manifest.v1", "repositories": pins,
@@ -322,19 +416,6 @@ def main() -> int:
             "app_lock_blobs": lock_inputs, "carrier_blobs": carrier_inputs,
             "published_root_context_blobs": root_context_inputs,
         })
-        environment = result / "environment.json"
-        write_json(environment, {
-            "schema": "epyc.vb_rtg23w9.native_environment.v1", "python": sys.version,
-            "python_version": platform.python_version(), "platform": platform.platform(),
-            "repositories": pins, "selections": list(SELECTED_NODES),
-            "expected_cases": manifest["cases"], "dependency_versions": dependency_versions,
-            "dependency_basis": "The requirements package set and exact Ubuntu 24.04 / Python 3.13.15 compatible wheel hashes must equal the six-package subset derived from the pinned APP uv.lock; installed with --only-binary=:all: --no-deps --require-hashes in an isolated venv, with full installer output retained.",
-            "settings": EXPECTED_ENV,
-            "isolation": "The exact full planner-evidence unit module (20 AST-bound tests); synthetic fixtures only, no live journal, model, inference, benchmark, or host-state read.",
-            "limits": ["no objective, grading, or score change", "no live frontier or rate-improvement claim"],
-        })
-
-        dtap = source
         os.environ["PYTHONPATH"] = str(source)
         test_argv = [sys.executable, "-m", "pytest", "-c", "/dev/null", "--noconftest",
                      f"--rootdir={source}", "--import-mode=importlib", "-o", "addopts=",
@@ -353,14 +434,9 @@ def main() -> int:
         read_paths.extend(tracked(source, name) for name in APP_BLOBS)
         read_paths.extend(tracked(app_lock, name) for name in APP_LOCK_BLOBS)
         read_paths.extend(tracked(carrier, name) for name in CARRIER_BLOBS)
-        pre_status = result / "pre-status.json"
-        if not pre_status.is_file() or json.loads(pre_status.read_text(encoding="utf-8")) != {
-                "state": "setup_pending", "job": "rtg23w9-native-conformance", "exit_code": None}:
-            raise RuntimeError("workflow pre-status artifact is missing or changed")
-        install_log = result / "pip-install.log"
-        if not install_log.is_file():
-            raise RuntimeError("pinned dependency installer log is missing")
         read_paths.extend((source_manifest, environment, pip_freeze, pre_status, install_log))
+        source_readset_before = {str(path): digest(path)
+                                 for path in dict.fromkeys(item for item in read_paths)}
         producer_argv = [
             sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
             "--cwd", str(work), "--junit", str(junit), "--output", str(native),
@@ -381,7 +457,7 @@ def main() -> int:
             status.update(state="capture_failed", exit_code=command_exit or 1,
                           diagnostic="carrier did not produce a receipt")
             return command_exit or 1
-        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        receipt = json.loads(read_text(receipt_path))
         expected_ids = [(row["classname"], row["name"]) for row in manifest["cases"]]
         cases = (receipt.get("summary") or {}).get("cases") or []
         actual_ids = [(row.get("classname"), row.get("name")) for row in cases]
@@ -392,11 +468,10 @@ def main() -> int:
                        and Counter(actual_ids) == Counter(expected_ids))
         counts_ok = counts == expected_counts
 
-        originals = [*file_tree(native), junit, source_manifest, environment, pip_freeze,
-                     install_log,
-                     result / "pre-status.json"]
-        before_membership = sorted(str(path.relative_to(result)) for path in originals)
-        before = {str(path.relative_to(result)): digest(path) for path in originals}
+        result_before = result_snapshot(result)
+        before_membership = sorted(result_before)
+        before = {name: row["sha256"] for name, row in result_before.items()
+                  if row["kind"] == "file"}
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
         grade_error = None
@@ -411,12 +486,15 @@ def main() -> int:
                 grade_result = grade(projected)
         except Exception as exc:
             grade_error = f"{type(exc).__name__}: {exc}"
-        after_originals = [*file_tree(native), junit, source_manifest, environment, pip_freeze,
-                           install_log, result / "pre-status.json"]
-        after_membership = sorted(str(path.relative_to(result)) for path in after_originals)
-        after = {str(path.relative_to(result)): digest(path) for path in after_originals}
-        originals_unchanged = before == after
+        result_after = result_snapshot(result)
+        after_membership = sorted(result_after)
+        after = {name: row["sha256"] for name, row in result_after.items()
+                 if row["kind"] == "file"}
+        result_tree_unchanged = before == after
         membership_unchanged = before_membership == after_membership
+        source_readset_after = {str(path): digest(path)
+                                for path in dict.fromkeys(item for item in read_paths)}
+        source_readset_unchanged = source_readset_before == source_readset_after
         expected_grade = ("Judged", "Located")
         actual_grade = grade_result[:2] if isinstance(grade_result, tuple) else None
         grade_ok = actual_grade == expected_grade
@@ -436,17 +514,25 @@ def main() -> int:
             "original_membership_unchanged": membership_unchanged,
             "original_sha256_before_grade": before,
             "original_sha256_after_grade": after,
-            "originals_unchanged": originals_unchanged,
-            "limits": environment.read_text(encoding="utf-8"),
+            "result_tree_sha256_before_grade": before,
+            "result_tree_sha256_after_grade": after,
+            "result_tree_unchanged": result_tree_unchanged,
+            "source_readset_sha256_before_grade": source_readset_before,
+            "source_readset_sha256_after_grade": source_readset_after,
+            "source_readset_unchanged": source_readset_unchanged,
+            "status_file_excluded_from_snapshot": "status.json is finalized only after both snapshots.",
+            "environment": json.loads(read_text(environment)),
         }
         write_json(result / "shared-grade-analysis.json", analysis)
         passed = (command_exit == 0 and receipt.get("fixture_execution_conformant") is True
-                  and identity_ok and counts_ok and originals_unchanged and membership_unchanged
+                  and identity_ok and counts_ok and result_tree_unchanged and membership_unchanged
+                  and source_readset_unchanged
                   and len(rows) == 1 and grade_ok and grade_error is None)
         status.update(state="passed" if passed else "failed", exit_code=command_exit,
                       fixture_execution_conformant=receipt.get("fixture_execution_conformant"),
                       exact_case_set=identity_ok and counts_ok,
-                      originals_unchanged_after_grade=originals_unchanged,
+                      result_tree_unchanged_after_grade=result_tree_unchanged,
+                      source_readset_unchanged_after_grade=source_readset_unchanged,
                       original_membership_unchanged=membership_unchanged,
                       shared_grade={"Q": actual_grade[0], "T": actual_grade[1]} if actual_grade else None,
                       receipt_sha256=receipt.get("receipt_sha256"))
