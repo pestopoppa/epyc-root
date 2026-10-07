@@ -90,15 +90,17 @@ def snapshots(paths: list[Path]) -> dict[str, dict[str, object]]:
     return result
 
 
-def native_tree_snapshot(directory: Path) -> dict[str, dict[str, object]]:
+def result_tree_snapshot(directory: Path) -> dict[str, dict[str, object]]:
+    """Seal every original in the result tree across shared-grade analysis."""
     result = {}
     for path in sorted(directory.rglob("*")):
         if path.is_symlink():
-            raise RuntimeError(f"symlink appeared in native capture tree: {path}")
-        if path.is_file():
-            data = regular_bytes(path)
-            result[str(path.relative_to(directory))] = {
-                "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+            raise RuntimeError(f"symlink appeared in capture result tree: {path}")
+        if path.is_dir():
+            continue
+        data = regular_bytes(path)
+        result[str(path.relative_to(directory))] = {
+            "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
     return result
 
 
@@ -175,8 +177,7 @@ def main() -> int:
     if record.get("fixture_execution_conformant") is not True:
         raise RuntimeError("existing fixture verifier did not produce a conformant receipt")
     source_before = snapshots(read_paths)
-    native_before = native_tree_snapshot(receipt_dir)
-    junit_before = hashlib.sha256(regular_bytes(junit)).hexdigest()
+    originals_before = result_tree_snapshot(result)
     sys.path.insert(0, str(ROOT / "scripts/vidya"))
     from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
     from claim_tuple import grade
@@ -187,16 +188,15 @@ def main() -> int:
     if judgment[0:2] != ("Judged", "Located"):
         raise RuntimeError("existing shared ClaimTuple ladder did not return Judged/Located")
     source_after = snapshots(read_paths)
-    native_after = native_tree_snapshot(receipt_dir)
-    junit_after = hashlib.sha256(regular_bytes(junit)).hexdigest()
-    if source_before != source_after or native_before != native_after or junit_before != junit_after:
+    originals_after = result_tree_snapshot(result)
+    if source_before != source_after or originals_before != originals_after:
         raise RuntimeError("source inputs or original native/JUnit custody changed during shared grading")
     check = {"receipt": str(receipt_dir / "receipt.json"), "fixture_cases": 23,
              "grade": judgment[0], "location": judgment[1],
              "scope": "synthetic mechanical anchor fixtures only",
              "source_inputs_before": source_before, "source_inputs_after": source_after,
-             "native_tree_before": native_before, "native_tree_after": native_after,
-             "junit_sha256_before": junit_before, "junit_sha256_after": junit_after}
+             "original_result_tree_before": originals_before,
+             "original_result_tree_after": originals_after}
     write_once(result / "shared-grade-check.json",
                (json.dumps(check, sort_keys=True, separators=(",", ":")) + "\n").encode())
     print(json.dumps(check, sort_keys=True))
