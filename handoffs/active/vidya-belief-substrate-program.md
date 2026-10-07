@@ -2827,3 +2827,6 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 2026-10-06 MAIN accepts VB-RTG02-CONFORMANCE after original23/23 and exact source publication; [review](../../artifacts/ni08/rtg02-echo-source-20261006/README.md). Existing shared grade unchanged, no live pool/effect warrant.
 
 2026-10-06 MAIN accepts VB-TUADV-CONFORMANCE after independently reviewed original6/6 and test-only source publication; [scope](../../artifacts/ni08/tuadv-contract-source-20261006/README.md). Parent global/external attack work remains open, shared grade unchanged.
+
+- [ ] **VB-AUD11-F08-CONFORMANCE — bind exact actual-command interval-refusal fixtures and mutation source before off-host capture.** Existing shared native CI carrier only, original unmodified-source controls plus explicitly recorded AST mutation/refusal sensitivity. Test-only source, no real nudge/bus/process, protected source change, operator inference or new grade.
+- [ ] **VB-RTG23-W8-CONFORMANCE — bind planner-display missing-versus-zero source controls before capture.** Preserve legacy stored/helper zero/math; actual missing/malformed display n/a, valid zero and positive unchanged. Exact source/cases/context and existing native carrier/shared grade only; no live frontier, rate improvement or objective amendment.

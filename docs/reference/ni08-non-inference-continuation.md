@@ -149,3 +149,7 @@ MAIN reviewed the fixed-source privacy-minimal HS-19a summary and meaningful unk
 ## Bounded adversarial contract fixtures — MAIN acceptance
 
 [Original6/6 and test-only source publication](../../artifacts/ni08/tuadv-contract-source-20261006/README.md) close TU-ADV-1-SOURCE and pre-enrolled VB companion: **61 scoped completions (42 existing flips +19 additions)**. Actual TU-ADV-1 external/global skill persistence remains open. Native attack verdict unknowns retained; no live robustness claim. All-card source eligibility review and implementation continue.
+
+## All-card audit — additional free work, 2026-10-07
+
+Full active/blocked inventory covers189 tracked Markdown files/179 canonical-index cards/12 no-checkbox files. Source-capable or unclassified68cards are assigned in23/23/22 batches; remaining class labels still require task-level explicit gate/ownership review. Current-source review found the actual AUD11F08 production rate-limit test gap and RTG23W8 missing-as-zero planner display; both source/native scopes are enrolled. They are engineering work, not operator blockers. Mixed handoffs and old toolkit-era tasks must be reviewed at each task text. Preparations add no completions; tally61.
