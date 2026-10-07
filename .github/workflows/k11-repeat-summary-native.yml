@@ -15,6 +15,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
     steps:
       - name: Preserve original setup status before imports
         run: |
@@ -58,7 +59,7 @@ jobs:
           "$RUNNER_TEMP/k11-summary-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/k11_repeat_summary_requirements.txt > "$RUNNER_TEMP/k11-summary/dependency-install.log" 2>&1
       - name: Capture whole original unit module and existing shared grade
         run: |
-          "$RUNNER_TEMP/k11-summary-venv/bin/python" recipe/scripts/ci/k11_repeat_summary_capture.py
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/k11-summary-venv/bin/python" recipe/scripts/ci/k11_repeat_summary_capture.py
       - name: Preserve all original setup and native outputs
         if: always()
         uses: actions/upload-artifact@v4

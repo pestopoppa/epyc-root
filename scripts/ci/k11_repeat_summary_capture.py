@@ -13,7 +13,7 @@ EXPECTED_CASES = [{'classname': 'scripts.benchmark.test_k11_gemma4_determinism_r
 TEST_PATH = 'scripts/benchmark/test_k11_gemma4_determinism_runner.py'
 TEST_AST_SHA256 = '664eb23aab9bbb042fd3764766515ae20d342b856976744e8288a397ddc3af30'
 LITERAL_BRANCH = 'codex/ni08-k11-repeat-summary-native-20261007'
-ENVIRONMENT = {'PYTEST_DISABLE_PLUGIN_AUTOLOAD': '1', 'PYTEST_ADDOPTS': '', 'PYTEST_PLUGINS': '', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONHASHSEED': '0', 'PYTHONUNBUFFERED': '1'}
+ENVIRONMENT = {'PYTEST_DISABLE_PLUGIN_AUTOLOAD': '1', 'PYTEST_ADDOPTS': '', 'PYTEST_PLUGINS': '', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONHASHSEED': '0', 'PYTHONUNBUFFERED': '1', 'PYTHONNOUSERSITE': '1'}
 
 def git(repo: Path, *args: str) -> str:
     return subprocess.check_output(["git", "-C", str(repo), *args], text=True).strip()
@@ -143,14 +143,36 @@ def actual_cases(data):
             for c in tree.body if isinstance(c,ast.ClassDef) for f in c.body
             if isinstance(f,ast.FunctionDef) and f.name.startswith('test_')]
 
+def durable_custody(path, record):
+    with path.open('xb') as handle:
+        handle.write((json.dumps(record, sort_keys=True, indent=2)+'\n').encode())
+        handle.flush(); os.fsync(handle.fileno())
+    fd=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+
+def best_effort_error_custody(run, reads, boundary, error):
+    record={'boundary':boundary,'error':type(error).__name__+': '+str(error),'source_snapshots':{},'snapshot_errors':{}}
+    for path in reads:
+        try: record['source_snapshots'][str(path)]=hash_regular(path)
+        except Exception as exc: record['snapshot_errors'][str(path)]=type(exc).__name__+': '+str(exc)
+    try: record['full_typed_result_tree']=inventory(run,omit_root_status=True)
+    except Exception as exc: record['result_snapshot_error']=type(exc).__name__+': '+str(exc)
+    durable_custody(run/'error-custody.json',record)
+
 def main():
     workspace=Path(os.environ['GITHUB_WORKSPACE']).resolve()
     run=Path(os.environ['RUNNER_TEMP']).resolve()/'k11-summary'
-    status_path=run/'status.json';status={'state':'preparing','native_metric':None}
+    status_path=run/'status.json';status={'state':'preparing','native_metric':None};reads=[];boundary='setup'
     try:
         if run.is_symlink() or not run.is_dir() or status_path.is_symlink() or not status_path.is_file():raise RuntimeError('original setup layout missing')
         if platform.python_version()!='3.13.15' or platform.system()!='Linux' or platform.machine().lower() not in {'x86_64','amd64'}:raise RuntimeError('reviewed Python/Linux runtime differs')
         if Path(sys.prefix).resolve()!=Path(os.environ['RUNNER_TEMP']).resolve()/'k11-summary-venv' or sys.prefix==sys.base_prefix:raise RuntimeError('isolated venv differs')
+        for key in ('LD_LIBRARY_PATH','LD_PRELOAD','PYTHONHOME','PYTHONPATH'):
+            os.environ.pop(key,None)
+        os.environ['PYTHONNOUSERSITE']='1'
+        for name in ('home','tmp'):
+            path=run/name;path.mkdir();os.environ['HOME' if name=='home' else 'TMPDIR']=str(path)
         for key,value in ENVIRONMENT.items():
             if os.environ.get(key)!=value:raise RuntimeError('pytest environment differs: '+key)
         repos={name:workspace/name for name in ('recipe','source','lock-source','context')}
@@ -184,7 +206,7 @@ def main():
             tool_records[command]={'path':str(path),'original_version_stdout':subprocess.check_output([str(path),*version_args],text=True),'original_ldd_stdout':ldd}
         reads.extend(sorted(tool_paths))
         versions=run/'tool-versions.json';versions.write_text(json.dumps({'python':sys.version,'tools':tool_records,'original_native_binary_sha256':{str(p):hash_regular(p) for p in sorted(tool_paths)}},indent=2)+'\n')
-        environment=run/'environment.json';environment.write_text(json.dumps({'env':{k:os.environ.get(k) for k in [*ENVIRONMENT,'PATH','LD_LIBRARY_PATH','GITHUB_RUN_ID','GITHUB_RUN_ATTEMPT','GITHUB_SHA','GITHUB_REF','ImageOS','ImageVersion']},'source_proposition':'complete requested task repeat denominator; zero/negative repeat refusal; original whole K11 unit controls','controls':'existing actual owned-Popen sleep/terminate process-group control retained; fake-server seam is original actual run_execute producer control','excluded_warrants':['live natural-prose Gemma determinism','actual sampler/stop correctness','model/runtime/performance acceptance']},indent=2)+'\n')
+        environment=run/'environment.json';environment.write_text(json.dumps({'env':{k:os.environ.get(k) for k in [*ENVIRONMENT,'HOME','TMPDIR','PYTHONPATH','PYTHONHOME','LD_PRELOAD','PATH','LD_LIBRARY_PATH','GITHUB_RUN_ID','GITHUB_RUN_ATTEMPT','GITHUB_SHA','GITHUB_REF','ImageOS','ImageVersion']},'source_proposition':'complete requested task repeat denominator; zero/negative repeat refusal; original whole K11 unit controls','controls':'existing actual owned-Popen sleep/terminate process-group control retained; fake-server seam is original actual run_execute producer control','excluded_warrants':['live natural-prose Gemma determinism','actual sampler/stop correctness','model/runtime/performance acceptance']},indent=2)+'\n')
         freeze=run/'pip-freeze.txt';freeze.write_bytes(subprocess.check_output([sys.executable,'-m','pip','freeze','--all']))
         install=run/'dependency-install.log'
         if not install.is_file() or install.is_symlink() or not install.stat().st_size:raise RuntimeError('original installation log missing')
@@ -196,10 +218,16 @@ def main():
         for label,repo in repos.items():producer.extend(['--repo',label+'='+str(repo)])
         for path in reads:producer.extend(['--read-path',str(path)])
         for case in EXPECTED_CASES:producer.extend(['--select',str(test)+'::'+case['classname'].rsplit('.',1)[-1]+'::'+case['name']])
+        boundary='capture'
+        before_tree=inventory(run,omit_root_status=True)
+        durable_custody(run/'pre-capture-custody.json',{'source_before_capture':before,'full_typed_result_tree_before_capture':before_tree,'capture_environment':{k:env.get(k) for k in [*ENVIRONMENT,'PATH','HOME','TMPDIR','PYTHONPATH','PYTHONHOME','LD_LIBRARY_PATH','LD_PRELOAD']},'scope':'original source and result snapshots frozen before native invocation'})
         code=subprocess.call([*producer,'--',*argv],cwd=source,env=env)
         receipt_path=result/'native/receipt.json';receipt=json.loads(receipt_path.read_bytes());counts=receipt.get('summary',{}).get('counts',{});actual=receipt.get('summary',{}).get('cases',[])
         exact=len(actual)==len(EXPECTED_CASES) and Counter((c.get('classname'),c.get('name')) for c in actual)==Counter((c['classname'],c['name']) for c in EXPECTED_CASES)
         pregrade=inventory(run,omit_root_status=True);before_grade={str(p):hash_regular(p) for p in reads}
+        boundary='grade'
+        durable_custody(run/'pre-grade-custody.json',{'source_before_capture':before,'source_after_capture_before_grade':before_grade,'full_typed_result_tree_after_capture_before_grade':pregrade,'native_receipt':receipt,'original_exit_code':code,'source_stable':before==before_grade})
+        pregrade=inventory(run,omit_root_status=True)
         sys.path.insert(0,str(repos['recipe']));sys.path.insert(0,str(repos['recipe']/'scripts/vidya'))
         from scripts.vidya.adapters.ci_conformance import native_rows,project_ci_conformance
         from claim_tuple import grade
@@ -216,6 +244,8 @@ def main():
         passed=code==0 and metric is True and exact and counts.get('collected')==n and counts.get('executed')==n and counts.get('passed')==n and all(counts.get(k)==0 for k in ('failure','error','skipped')) and len(grades)==1 and (grades[0]['Q'],grades[0]['T'])==('Judged','Located')
         status.update(state='passed' if passed else 'failed',native_metric=metric,junit_counts=counts,exact_cases=exact,grades=grades,exit_code=0 if passed else code or 1,full_result_tree_after_analysis=inventory(run,omit_root_status=True));return status['exit_code']
     except Exception as exc:
+        try: best_effort_error_custody(run,reads,boundary,exc)
+        except Exception as custody_error: status['error_custody_error']=type(custody_error).__name__+': '+str(custody_error)
         status.update(state='capture_failed',error=type(exc).__name__+': '+str(exc),exit_code=1);return 1
     finally:status_path.write_text(json.dumps(status,sort_keys=True)+'\n')
 
