@@ -170,10 +170,10 @@
     ],
     "source": [
       {
-        "blob": "5816e9ef5f26ccaba1bf9b5167bb6eb387b00dfc",
-        "bytes": 4886,
+        "blob": "41a1b2b85bb9a7b97cc6c95ea5e910f7b6172415",
+        "bytes": 5190,
         "path": "scripts/ci/test_sc42_odl_writer_roundtrip.py",
-        "sha256": "755cc5387dd07334a05459cf9fd68295a55bcb426fccdfc2056a77df8c542dc5"
+        "sha256": "7f3bf2196ce061af50930b3086aced49d7c88105ef1f61efe115519878f98878"
       },
       {
         "blob": "e54295667bf36bef3902c05d1c9b4cc5eae75a54",

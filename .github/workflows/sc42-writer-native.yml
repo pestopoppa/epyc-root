@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-root
-          ref: c8f2de90abf6f79c0637cdc0b1de8f346921a44b
+          ref: a72c7dec5fb89e01fb046cfd1f2bc15a5affaf8c
           path: root-source
           fetch-depth: 1
           persist-credentials: false
