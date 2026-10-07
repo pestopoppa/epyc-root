@@ -211,8 +211,13 @@ class TestClassB(unittest.TestCase):
     def test_variable_target_refused_unresolvable(self):
         self.assert_refused(run_scan("mkdir -p $DEST/x"), "unresolvable_target")
 
-    def test_quoted_target_refused_unresolvable(self):
-        self.assert_refused(run_scan('mkdir -p "/mnt/bigdisk/x"'), "unresolvable_target")
+    def test_quoted_target_refused(self):
+        """lex() now reads a quoted path's plain text, so this is refused as
+        the out-of-root write it is (2026-10-07; before, only as unresolvable).
+        A quoted special character (`$`, a space) is still never interpreted."""
+        self.assert_refused(run_scan('mkdir -p "/mnt/bigdisk/x"'))
+        self.assert_refused(run_scan('mkdir -p "$D/x" "/mnt/raid0/llm/a b"'),
+                            "unresolvable_target")
 
     def test_cd_then_relative_write_refused(self):
         """`cd /mnt/bigdisk && mkdir -p x` resolves x against the device."""
@@ -268,6 +273,221 @@ class TestAllowed(unittest.TestCase):
             cwd = Path(td)
             res = run_scan("mkdir -p out/x", cwd=cwd)
             self.assert_allowed(res)
+
+
+IN_ROOT = "/mnt/raid0/llm/epyc-root"   # a cwd inside the data root
+OUT_ROOT = "/mnt/bigdisk/work"          # a cwd outside every root
+OUT = "/mnt/bigdisk"
+
+
+class TestOperandExtraction(unittest.TestCase):
+    """2026-10-07: redirections, fd duplication and option values were read as
+    write targets — and the real target was then never checked. The cwd is
+    pinned on purpose: on the operator host it is usually inside a root, which
+    masked the fd-dup and `git worktree add` defects (a wrong target that
+    resolves into the cwd passes). Each case says which way it used to fail.
+    """
+
+    def check(self, cmds, cwd, allowed, code=None):
+        for cmd in cmds:
+            with self.subTest(cmd=cmd, cwd=cwd):
+                v = fs.scan_command(cmd, cwd=cwd)
+                self.assertEqual(v.get("verdict") == "allowed", allowed, f"{cmd!r}: {v}")
+                if code is not None:
+                    self.assertEqual(v.get("code"), code, f"{cmd!r}: {v}")
+
+    def test_fd_duplication_is_not_a_file_write(self):
+        """Was refused as a write to '<cwd>/1' / '<cwd>/2' / '<cwd>/&-'."""
+        self.check(["echo hi 2>&1", "ls >&2", "ls 1>&2", "ls 2>&-", "exec 3>&1 4>&2",
+                    "git status 2>&1 | head -5", "make >/dev/null 2>&1",
+                    "out=$(ls 2>&1)"], OUT_ROOT, True)
+
+    def test_file_forms_of_amp_redirection_are_writes(self):
+        """`&>F`, `&>>F`, `>&F` (F not a number or `-`) write F; `x>F`, `>| F`
+        and `>& F` used to slip past the old pattern entirely."""
+        self.check([f"ls &>{OUT}/x", f"ls &>>{OUT}/x", f"ls >&{OUT}/x", f"ls >& {OUT}/x",
+                    f"echo x>{OUT}/x", f"echo x >| {OUT}/x", f"exec 3<>{OUT}/x",
+                    f"ls 2>&1 >{OUT}/x"], IN_ROOT, False, "write_outside_containment_root")
+        self.check(["ls >&out.log"], OUT_ROOT, False)
+        self.check(["ls &>/tmp/x", "cat < /etc/hosts"], OUT_ROOT, True)
+
+    def test_redirection_words_are_not_operands(self):
+        """`cp s /outside 2>/dev/null` checked '2>/dev/null' as the destination
+        (inside an in-root cwd) and never '/outside' — a containment bypass."""
+        self.check([f"cp secret {OUT}/x 2>/dev/null", f"cp secret {OUT}/x 2> /dev/null",
+                    f"cp a {OUT}/x 2>&1", f"mv a {OUT}/x >/dev/null 2>&1",
+                    f"tee {OUT}/x >/dev/null", f"2>/dev/null rm -rf {OUT}",
+                    f">/dev/null cp a {OUT}/x"], IN_ROOT, False,
+                   "write_outside_containment_root")
+        self.check(["cp a /mnt/raid0/llm/b 2>/dev/null", "rm -rf /mnt/raid0/llm/x 2>&1",
+                    "mkdir -p /mnt/raid0/llm/x 2>/dev/null",
+                    "tee >(gzip > /mnt/raid0/llm/x.gz) < in"], OUT_ROOT, True)
+
+    def test_git_worktree_add_checks_the_path_not_the_branch(self):
+        """pos[-1] was the BRANCH: in-root path refused from an out-of-root cwd,
+        out-of-root path ALLOWED from an in-root cwd."""
+        self.check(["git worktree add /mnt/raid0/llm/wt mybranch",
+                    "git worktree add -b nb /mnt/raid0/llm/wt main",
+                    "git -C /mnt/raid0/llm/r worktree add ../wt -b br"], OUT_ROOT, True)
+        self.check([f"git worktree add {OUT}/wt mybranch",
+                    f"git worktree add -b nb {OUT}/wt main",
+                    f"git worktree add --detach {OUT}/wt HEAD",
+                    f"git -C /mnt/raid0/llm/r worktree add {OUT}/wt br",
+                    f"git -C {OUT}/r init"], IN_ROOT, False, "write_outside_containment_root")
+        self.check(["git init"], OUT_ROOT, False)   # initializes the cwd itself
+
+    def test_git_clone_operand_forms(self):
+        self.check([f"git clone https://x/y.git {OUT}/y --",
+                    f"git clone -- https://x/y.git {OUT}/y",
+                    f"git clone --separate-git-dir {OUT}/g https://x/y.git /mnt/raid0/llm/y"],
+                   IN_ROOT, False, "write_outside_containment_root")
+        self.check(["git clone https://x/y.git /mnt/raid0/llm/y --depth 1",
+                    "git clone --depth 1 https://x/y.git /mnt/raid0/llm/y"], OUT_ROOT, True)
+        self.check(["git clone https://x/y.git"], IN_ROOT, True)   # ./y, inside
+        self.check(["git clone https://x/y.git"], OUT_ROOT, False)
+
+    def test_target_directory_forms(self):
+        """`-t` clustered (`-at DIR`), attached (`-tDIR`) or abbreviated
+        (`--target=DIR`) was missed; `install -d` creates EVERY operand."""
+        self.check([f"cp -t {OUT} src", f"cp -t{OUT} src", f"cp -at {OUT} src",
+                    f"ln -st {OUT} src", f"mv --target={OUT} src", f"cp --targ {OUT} src",
+                    f"install -m 644 -t {OUT} src",
+                    f"install -d /mnt/raid0/llm/a {OUT}/b"], IN_ROOT, False)
+        self.check(["cp -t /mnt/raid0/llm/d /etc/hosts"], OUT_ROOT, True)
+
+    def test_boolean_flags_do_not_swallow_the_destination(self):
+        """`rm -r /x`: -r was listed as taking a value, so /x was never checked."""
+        self.check([f"rm -r {OUT}/x", f"rm -f {OUT}/x", f"rmdir -v {OUT}/x",
+                    f"tee -a {OUT}/x", f"tee {OUT}/x /mnt/raid0/llm/y",
+                    f"cp a --preserve {OUT}/x", f"cp a --no-target-directory {OUT}/x",
+                    f"cp a -s {OUT}/x", f"cp a {OUT}/x --suf .bak",
+                    f"chown u {OUT}/b /mnt/raid0/llm/a", f"chmod 644 {OUT}/b /mnt/raid0/llm/a",
+                    f"cd -P {OUT} && mkdir x", f"borg create --stats {OUT}/r::a src",
+                    f"borg --repo {OUT}/r create arch src",
+                    f"rsync -av src/ {OUT}/d/ --exclude .git",
+                    f"rclone copy /mnt/raid0/llm/x {OUT}/y --transfers 8",
+                    f"tar czf {OUT}/b.tgz src", f"tar -czf {OUT}/b.tgz src",
+                    f"tar -xzf x.tgz -C{OUT}", f"tar -xzf x.tgz --directory {OUT}"],
+                   IN_ROOT, False, "write_outside_containment_root")
+        self.check(["chown -R u:g /mnt/raid0/llm/d", "chmod +x /mnt/raid0/llm/s.sh",
+                    "chmod -x /mnt/raid0/llm/s.sh", "mkdir -pm 755 /mnt/raid0/llm/x",
+                    f"tar -xzf {OUT}/b.tgz -C /mnt/raid0/llm/out",   # reading an archive
+                    "rsync -av --exclude .git src/ /mnt/raid0/llm/d/"], OUT_ROOT, True)
+
+    def test_hidden_verbs_and_laundered_paths(self):
+        """A lone `&` hid the next verb; `xargs -I{}` swallowed it; `"$D"/abs`
+        was trimmed to `/abs`; a relative target after `cd $X` resolved
+        against the OLD directory."""
+        self.check([f"sleep 1 & mkdir {OUT}/x", f"xargs -I{{}} cp {{}} {OUT}/"],
+                   IN_ROOT, False, "write_outside_containment_root")
+        self.check(['cp a "$D"/mnt/raid0/llm/x', "cd $X && rm -rf data", "cd - && touch x"],
+                   IN_ROOT, False, "unresolvable_target")
+        self.check(["cd $X && rm -rf /mnt/raid0/llm/data", "sleep 5 & echo ok > /tmp/x"],
+                   IN_ROOT, True)
+
+
+class TestShellStructure(unittest.TestCase):
+    """2026-10-07 security review of the fix above: the shell's own structure —
+    escapes, continuations, heredocs, keywords, substitutions, subshells, -c
+    strings, expansions, links — hid writes the operand rules never saw. Every
+    refused case below was ALLOWED before (probed from both cwd kinds)."""
+
+    check = TestOperandExtraction.check
+
+    def test_escapes_continuations_and_quote_desync(self):
+        """`\\`-newline split one command in two; `\\"`, `$'\\''` and `a\\ #`
+        hid the rest of the line; `\\rm` was not rm; `.\\./` is `../`."""
+        self.check([f"rsync -av \\\n  src/ \\\n  {OUT}/d/", f"mkdir -p \\\n{OUT}/x",
+                    f"\\rm -rf {OUT}/x", f"r\\m -rf {OUT}/x",
+                    f'echo \\" ; mkdir {OUT}/x ; echo \\"',
+                    f"echo $'\\'' ; mkdir {OUT}/x ; echo $'\\''",
+                    f"echo a\\ #; mkdir {OUT}/x", "cp a /mnt/raid0/llm/.\\./x"], IN_ROOT, False,
+                   "write_outside_containment_root")
+        self.check(["cp a /mnt/raid0/llm/my\\ file"], IN_ROOT, False, "unresolvable_target")
+
+    def test_heredoc_markers_count_only_in_code(self):
+        """A `<<EOF` in quotes, a comment or `$((1<<y))` opened a heredoc
+        that blanked the real commands after it."""
+        self.check([f'echo "<<EOF"\nmkdir {OUT}/x\nEOF', f"true # <<EOF\nmkdir {OUT}/x\nEOF",
+                    f"echo $((1<<y))\nmkdir {OUT}/x\ny",
+                    f"cat <<'EOF'\na \\\nEOF\nmkdir {OUT}/x"], IN_ROOT, False)
+        # an unquoted delimiter joins `a \` + `EOF`: the mkdir line is body
+        self.check([f"cat <<EOF\na \\\nEOF\nmkdir {OUT}/x\nEOF",
+                    f"cat <<'EOF' > /tmp/x\nmkdir {OUT}/x\nEOF"], IN_ROOT, True)
+
+    def test_keywords_wrappers_and_quoted_verbs_reveal_the_verb(self):
+        self.check([f"for f in a; do cp $f {OUT}/; done", f"if mkdir {OUT}/x; then :; fi",
+                    f"! mkdir {OUT}/x", f"exec mkdir {OUT}/x", f"eval mkdir {OUT}/x",
+                    f"case a in a) rm -rf {OUT};; esac", f"f() {{ mkdir {OUT}/x; }}; f",
+                    f'"mkdir" {OUT}/x', f'm"kd"ir {OUT}/x', f"sudo -nu root mkdir {OUT}/x",
+                    f"env --unset=X mkdir {OUT}/x", f"numactl --interleave all mkdir {OUT}/x",
+                    f"taskset 0x3 mkdir {OUT}/x", f"xargs -a list rm -rf {OUT}/x",
+                    f"strace -o /tmp/l mkdir {OUT}/x", f'cp "-t" {OUT} a',
+                    f'dd if=/dev/zero "of={OUT}/x"'], IN_ROOT, False,
+                   "write_outside_containment_root")
+
+    def test_substitutions_and_subshells_are_scanned_where_they_run(self):
+        self.check([f"x=$(mkdir -p {OUT}/x)", f'echo "$(rm -rf {OUT})"', f"echo `rm -rf {OUT}`",
+                    f"echo x > >(tee {OUT}/x)", f"cat <(mkdir {OUT}/x)"], IN_ROOT, False,
+                   "write_outside_containment_root")
+        self.check([f"echo '$(rm -rf {OUT})'", "diff <(ls) <(ls /tmp)", "out=$(ls 2>&1)",
+                    f"(cd {OUT} && ls); touch notes"], IN_ROOT, True)
+        # a cd in a subshell, a pipeline stage or the background does not persist
+        self.check(["(cd /mnt/raid0/llm && ls); touch notes", "cd /mnt/raid0/llm | cat; touch n",
+                    "cd /mnt/raid0/llm & touch n", "x=$(cd /mnt/raid0/llm); touch n"],
+                   OUT_ROOT, False)
+
+    def test_shell_strings_and_heredocs_fed_to_a_shell_are_commands(self):
+        self.check([f"sudo sh -c 'echo x > {OUT}/f'", f'bash -lc "mkdir -p {OUT}/x"',
+                    f"bash -c -x 'mkdir {OUT}/x'", f"su -c 'rm -rf {OUT}' root",
+                    f"bash <<'EOF'\nmkdir {OUT}/x\nEOF", f"bash <<< 'mkdir {OUT}/x'"],
+                   IN_ROOT, False, "write_outside_containment_root")
+        self.check(["bash -c 'mkdir -p /mnt/raid0/llm/x && cd /mnt/raid0/llm/x && touch y'",
+                    f"cat <<'EOF' > /mnt/raid0/llm/notes.md\nrm -rf {OUT}\nEOF",
+                    f"python3 - <<'EOF'\nprint('{OUT}')\nEOF"], IN_ROOT, True)
+
+    def test_runner_and_pushd_directories(self):
+        self.check([f"env -C {OUT} mkdir x", f"env --chdir={OUT} mkdir x",
+                    f"sudo -D {OUT} mkdir x", f"pushd {OUT} && mkdir x"], IN_ROOT, False,
+                   "write_outside_containment_root")
+        self.check(["popd; mkdir x", f"CDPATH={OUT} cd work && mkdir x", "sudo -i mkdir x"],
+                   IN_ROOT, False, "unresolvable_target")
+        self.check([f"pushd {OUT}; popd; mkdir x", f"env -C {OUT} ls > out.log"], IN_ROOT, True)
+
+    def test_expansions_and_links(self):
+        """`{/in,/out}` was one path; a glob or a same-command link was read
+        as text; a hard link aliases an out-of-root file; mv deletes."""
+        self.check([f"mkdir -p {{/mnt/raid0/llm/a,{OUT}/b}}", "rm -rf /tmp/{a,../mnt/bigdisk}",
+                    f"ln {OUT}/f /mnt/raid0/llm/l", f"cp -l {OUT}/f /mnt/raid0/llm/l",
+                    f"mv {OUT}/data /mnt/raid0/llm/"], IN_ROOT, False,
+                   "write_outside_containment_root")
+        self.check(["mkdir -p /mnt/raid0/llm/{a,b}/{c,d}", "cp a /mnt/raid0/llm/x{,.bak}",
+                    "ln -s /usr/bin/python3 /mnt/raid0/llm/venv/bin/python"], IN_ROOT, True)
+        with tempfile.TemporaryDirectory(dir="/tmp") as td:
+            os.symlink(OUT, os.path.join(td, "lnk"))
+            self.check([f"rm -rf {td}/ln*", f"cd {td} && rm -rf l?k"], IN_ROOT, False,
+                       "write_outside_containment_root")
+            self.check([f"ln -s {OUT} {td}/new && rm -rf {td}/new/x"], IN_ROOT, False,
+                       "unresolvable_target")
+
+    def test_more_write_tools(self):
+        self.check([f"sed -i 's/a/b/' {OUT}/f", f"sed -i.bak -e s/a/b/ {OUT}/f",
+                    f"unlink {OUT}/f", f"truncate -s 0 {OUT}/f", f"shred -u {OUT}/f",
+                    f"chgrp g {OUT}/f", f"find {OUT} -delete", f"find -L {OUT} -name x -delete",
+                    f"find . -exec cp {{}} {OUT}/ ';'", f"find {OUT} -exec rm {{}} +",
+                    f"find . -fprint {OUT}/list",
+                    f"rsync -a --remove-source-files {OUT}/x /mnt/raid0/llm/",
+                    f"tar --remove-files -czf /mnt/raid0/llm/a.tgz {OUT}/x",
+                    "tar -xf a.tar -C /mnt/raid0/llm -C ../bigdisk"], IN_ROOT, False,
+                   "write_outside_containment_root")
+        self.check(["tar xzf x.tgz", "find . -name '*.pyc' -delete"], OUT_ROOT, False)
+        self.check([f"sed -n 1,5p {OUT}/f", "sed -i s/a/b/ /mnt/raid0/llm/f",
+                    "find /etc -name x -exec grep -l y {} +", "find . -name '*.pyc' -delete",
+                    f"tar -czf /mnt/raid0/llm/a.tgz {OUT}/x", "tar -tzf x.tgz",
+                    'git clone "https://x/y.git" /mnt/raid0/llm/y',
+                    'touch -d "2 days ago" /mnt/raid0/llm/x', "[[ $a > $b ]] && echo ok",
+                    f'git commit -m "mkdir {OUT}; sudo mount /dev/sdb1 /mnt"',
+                    'echo "sudo mount" | tee /mnt/raid0/llm/x.log', "ls 1>&2-"], IN_ROOT, True)
 
 
 class TestAck(unittest.TestCase):
@@ -509,6 +729,14 @@ class TestClaudeWrapper(unittest.TestCase):
         self.assertEqual(res.returncode, 2)
         self.assertIn("BLOCKED", res.stderr)
         self.assertIn("/mnt/bigdisk/x", res.stderr)
+
+    def test_payload_cwd_drives_relative_resolution(self):
+        """The Bash tool's cwd persists across calls; the wrapper resolved
+        `mkdir x` against its own (project) dir, not the payload's (2026-10-07)."""
+        for cwd, rc in (("/mnt/bigdisk/work", 2), ("/mnt/raid0/llm/epyc-root", 0)):
+            res = self.run_wrapper(json.dumps(
+                {"tool_name": "Bash", "tool_input": {"command": "mkdir x"}, "cwd": cwd}))
+            self.assertEqual(res.returncode, rc, res.stderr)
 
     def test_write_in_root_allowed(self):
         res = self.run_wrapper(json.dumps(
