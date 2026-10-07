@@ -356,7 +356,11 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "run_manifest": rec["run_manifest"],
                        # W6e diagnostic carry: optional, authored, descriptive only.  Missing
                        # legacy blocks stay absent and the shared grade above is unchanged.
-                       **({"w6_generalization": rec["w6_generalization"]}
+                       # Certified frames forbid floats. Preserve the authored diagnostic
+                       # as deterministic JSON text, not new numeric certified assertions.
+                       **({"w6_generalization_json": json.dumps(
+                           rec["w6_generalization"], sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=False, allow_nan=False)}
                           if "w6_generalization" in rec else {}),
                        # VB-AP-PROMO-RULE: carried verbatim, never graded; absent keys stay absent.
                        **decision},
