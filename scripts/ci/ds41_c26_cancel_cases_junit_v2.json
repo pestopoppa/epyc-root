@@ -1,0 +1,637 @@
+{
+  "expected_total": 46,
+  "parameter_dimensions": {
+    "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py": [
+      {
+        "names": [
+          "case"
+        ],
+        "values": [
+          [
+            "absent"
+          ],
+          [
+            "reuse"
+          ],
+          [
+            "new_request"
+          ],
+          [
+            "override"
+          ],
+          [
+            "mismatch"
+          ],
+          [
+            "malformed"
+          ],
+          [
+            "dry_run"
+          ],
+          [
+            "failed"
+          ],
+          [
+            "stop"
+          ],
+          [
+            "stop_matched"
+          ]
+        ]
+      },
+      {
+        "names": [
+          "backend"
+        ],
+        "values": [
+          [
+            "cpu"
+          ],
+          [
+            "gpu"
+          ]
+        ]
+      }
+    ]
+  },
+  "pytest_default_id_rule": "literal string/parameter value IDs joined with '-' in bottom-up parametrize decorator application order; verified at hosted capture against exact JUnit identities",
+  "schema": "private.ds41_c26_native_junit_manifest.v2",
+  "selection": [
+    "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py",
+    "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+  ],
+  "selection_mode": "whole file, no deselection",
+  "source_files": {
+    "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py": {
+      "ast_sha256": "ff879c696ffa3e0ed92042d7a3b0427774b4de7bbbf1a6727d9036e28b0664ad",
+      "blob": "d178b7eb44774a6af1633852b1004dab0663ef02",
+      "bytes": 9873,
+      "mode": "100644",
+      "sha256": "3848a706993c7c948e49720e841c3bf36f88bab1ef03e10d947e18d8ea32482c"
+    },
+    "scripts/kernel_rnd/autokernel/loop/test_serving.py": {
+      "ast_sha256": "69b72346a32ae63324de21bbd797640a5948480f2536c490daacc88b5f2bffd6",
+      "blob": "0db6c3a06fb348779551f2131d6caf385f97343c",
+      "bytes": 25195,
+      "mode": "100644",
+      "sha256": "53d9cc95793d7ae459b847e04553037d0531ea3b8d833f8485e9a9ab438161f9"
+    }
+  },
+  "source_pin": "e136226d00421742645bf2f157737a8cedf348f1",
+  "testcases": [
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[absent-cpu]",
+      "param_id_parts": [
+        "absent",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "absent"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[absent-gpu]",
+      "param_id_parts": [
+        "absent",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "absent"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[reuse-cpu]",
+      "param_id_parts": [
+        "reuse",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "reuse"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[reuse-gpu]",
+      "param_id_parts": [
+        "reuse",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "reuse"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[new_request-cpu]",
+      "param_id_parts": [
+        "new_request",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "new_request"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[new_request-gpu]",
+      "param_id_parts": [
+        "new_request",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "new_request"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[override-cpu]",
+      "param_id_parts": [
+        "override",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "override"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[override-gpu]",
+      "param_id_parts": [
+        "override",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "override"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[mismatch-cpu]",
+      "param_id_parts": [
+        "mismatch",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "mismatch"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[mismatch-gpu]",
+      "param_id_parts": [
+        "mismatch",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "mismatch"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[malformed-cpu]",
+      "param_id_parts": [
+        "malformed",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "malformed"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[malformed-gpu]",
+      "param_id_parts": [
+        "malformed",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "malformed"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[dry_run-cpu]",
+      "param_id_parts": [
+        "dry_run",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "dry_run"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[dry_run-gpu]",
+      "param_id_parts": [
+        "dry_run",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "dry_run"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[failed-cpu]",
+      "param_id_parts": [
+        "failed",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "failed"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[failed-gpu]",
+      "param_id_parts": [
+        "failed",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "failed"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[stop-cpu]",
+      "param_id_parts": [
+        "stop",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "stop"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[stop-gpu]",
+      "param_id_parts": [
+        "stop",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "stop"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[stop_matched-cpu]",
+      "param_id_parts": [
+        "stop_matched",
+        "cpu"
+      ],
+      "parameters": {
+        "backend": "cpu",
+        "case": "stop_matched"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "953bab26631ab6cfc411af83f8a4d29432eeae27f9bf6862f496da3184dddbeb",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_initial_serving_floor",
+      "definition": "test_selected_startup_prepares_only_missing_exact_floor",
+      "definition_ast_sha256": "c70762ec76f11f066fc999c738d1d34491947d6b47d13fa05a9fd832cf9d614a",
+      "name": "test_selected_startup_prepares_only_missing_exact_floor[stop_matched-gpu]",
+      "param_id_parts": [
+        "stop_matched",
+        "gpu"
+      ],
+      "parameters": {
+        "backend": "gpu",
+        "case": "stop_matched"
+      },
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_initial_serving_floor.py"
+    },
+    {
+      "body_ast_sha256": "1673f418a7db71ea31068533ac618b979f86f78c2297dfc913dbc1018d685a32",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.RecipeArgv",
+      "definition": "RecipeArgv.test_the_dflash_recipe_emits_the_drafter_flags",
+      "definition_ast_sha256": "36d5abde5ba544c47b140c64335d4579bb375d3ffd52e3847535d4bc8dda3a58",
+      "name": "test_the_dflash_recipe_emits_the_drafter_flags",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "9f98fd48d80b589ac61c9c6d24024c77087274d38460bc763027cab48c9bc924",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.RecipeArgv",
+      "definition": "RecipeArgv.test_a_none_spec_recipe_emits_no_drafter_flags",
+      "definition_ast_sha256": "2851bd21b144f52e59ff80a321b6baf6a06a7c6032d20bc2b4b20ccb26319530",
+      "name": "test_a_none_spec_recipe_emits_no_drafter_flags",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "262e1edca97860e66c4191add0a1abfac60ed1b317b13cb4adb9612942582b09",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.RecipeArgv",
+      "definition": "RecipeArgv.test_mtp_is_general_too",
+      "definition_ast_sha256": "e973ac4116bd71180bff61c4b4cfaca8e4b230771d2e64583cff83af1577846c",
+      "name": "test_mtp_is_general_too",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "d7f1f493f6dc4e22b06f1fc16cdee59bb0d83541f3d49845558afbe3f3d4e245",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.RecipeArgv",
+      "definition": "RecipeArgv.test_kv_unified_flips_the_flag",
+      "definition_ast_sha256": "b90ab8e48e4ee2c1bbe2fc8af1da0a7f25aac1ddc0671676ac05313e8021c280",
+      "name": "test_kv_unified_flips_the_flag",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "2a5b8cfaf1a7fe33816755f890ec20c8faa1ee9bdf49578c856103439d4733f6",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.RecipeArgv",
+      "definition": "RecipeArgv.test_the_shipped_champion_recipe_matches_df2_5_np4",
+      "definition_ast_sha256": "da2ea2d32c9542ad01752c3e9544f02145058532820b23bf4e6cbf8d220fed5d",
+      "name": "test_the_shipped_champion_recipe_matches_df2_5_np4",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "d2ec13e411cb58f835b4a87259c555c994256f40ef29f31608a4f034d2c20915",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.Arithmetic",
+      "definition": "Arithmetic.test_compare_is_fail_closed_without_a_floor",
+      "definition_ast_sha256": "06b42e03609753eac396480fd705451ed83cde9d10ff9443d78afc588b4785ed",
+      "name": "test_compare_is_fail_closed_without_a_floor",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "0ef1870a2064d4a27cddf11550b4b5cf979b2e524edcd7ddcf957d3c1be124f9",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.Arithmetic",
+      "definition": "Arithmetic.test_compare_is_decisive_above_the_floor",
+      "definition_ast_sha256": "52fdc34dfa5045a6073092c61fd88a65dc07201931cfc0f4f0aaf44decfc5ec3",
+      "name": "test_compare_is_decisive_above_the_floor",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "90224f2f5e6fae983ac485318a2fa9834791bed0efe623ec9e687856e8ec37ae",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.Arithmetic",
+      "definition": "Arithmetic.test_a_within_floor_effect_is_not_decisive",
+      "definition_ast_sha256": "3ba2cf03f7364a52c23aa3293a574de0e83595439ea9425c7c2cb821ed68d8ee",
+      "name": "test_a_within_floor_effect_is_not_decisive",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "1073934c6f1e58b9f788823c616f2ebe23d48880bb9d731ddb7c3aa118fe8346",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.Arithmetic",
+      "definition": "Arithmetic.test_floor_is_p95_of_the_aa_spread",
+      "definition_ast_sha256": "e57d30d364c49bdcc01bfe9e159a7f2816425b4b90839a7412bc3a00ed0ed82e",
+      "name": "test_floor_is_p95_of_the_aa_spread",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "6df5055f1aa61c870d74a37bd77b9512f459e3ed09e1ee3689cec5b0ecf5b20e",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.PlannedObservationSeam",
+      "definition": "PlannedObservationSeam.test_frozen_requests_drive_actual_launcher_seam_and_collect_slots",
+      "definition_ast_sha256": "71d32a0316dac84418862e4ea86e6fe7ad24aab0b452661ef32bfccb52e35f1c",
+      "name": "test_frozen_requests_drive_actual_launcher_seam_and_collect_slots",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "f29eea61a13e03c82b9957f813f972df4422a233e90d006f429f78f0fb50ff58",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.PlannedObservationSeam",
+      "definition": "PlannedObservationSeam.test_partial_slot_failure_retains_warmup_and_measurement_records",
+      "definition_ast_sha256": "216433a501277ba3632e858eaa2384f64e43c44659947cb2582057778d2003f8",
+      "name": "test_partial_slot_failure_retains_warmup_and_measurement_records",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "1b6662e9e1a48e28d860fdb49132b7a57e77cd5f9508a5ef0fed634302524cb9",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_hook_covers_setup_load_placement_health_requests_and_owned_teardown",
+      "definition_ast_sha256": "6b310a86223cfa4e4b038d33cad37146a0bc3055b8d93db8bf5e5d562b08d90f",
+      "name": "test_hook_covers_setup_load_placement_health_requests_and_owned_teardown",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "f07e6313e217be75774ba8d21853f62c695c60342489e70b99b0ad712964cba8",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_observer_failure_does_not_skip_cleanup_or_replace_success",
+      "definition_ast_sha256": "61b9b5a636f48fd09b2ba372c911b5521a6510707794c0803f01348bac1c02e8",
+      "name": "test_observer_failure_does_not_skip_cleanup_or_replace_success",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "d7bbb73be09bd659c4da85ee71f2b3b7195cc23a830984c9aa6f2e8806e1c393",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_popen_failure_still_finishes_observer_and_preserves_original",
+      "definition_ast_sha256": "3f7b7605684c281b978f4f583096bcff6ec8a579beaca1e5a5f4479c944bf849",
+      "name": "test_popen_failure_still_finishes_observer_and_preserves_original",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "b3609c837b7f3a5c7c195a1046bfaed08e33dbd0f30a9a41604341a9c382d999",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_readback_failure_tears_down_finishes_and_preserves_original",
+      "definition_ast_sha256": "082da83c99e8f9f590b34474255f6b4a6e7672ccd2045413a56c04e9a7307428",
+      "name": "test_readback_failure_tears_down_finishes_and_preserves_original",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "8800744315a5976c1ac5ec2f01b49eb2c7fd0f09651f2500de643972fee282db",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_request_failure_tears_down_and_finishes_observer",
+      "definition_ast_sha256": "a307a4c3d52f05404cfce7f8afd6d75a97b9dd71e413075f11f0a9fdd43719f2",
+      "name": "test_request_failure_tears_down_and_finishes_observer",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "704b9deb55af1d94909cfb56ec325377e05a98c0e3fcd35633ff4a3c42594df5",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_unresolved_observer_refuses_successor_after_owned_cleanup",
+      "definition_ast_sha256": "9c8d61c3deb73ad6b1423dbc3e7800ed900845e4f7e7c000a5987dea149748c3",
+      "name": "test_unresolved_observer_refuses_successor_after_owned_cleanup",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "b827a858dc549ae225acf153d8b829680eace9bf2032d434f2b34e6a863689aa",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_sampler_constructor_failure_still_finishes_observer",
+      "definition_ast_sha256": "a7c16d3108f549d4afde2f624275321e1f4d479c519e04bc143d91e29eab8c45",
+      "name": "test_sampler_constructor_failure_still_finishes_observer",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "961947158e2997cdf2f6b5250be093074c62a548dc95d15f757dacac4609d843",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.LifecycleObservationHook",
+      "definition": "LifecycleObservationHook.test_residency_export_failure_follows_cleanup_and_still_finishes_observer",
+      "definition_ast_sha256": "9bae0c185f496648ce833d4cb361f2f3b179b2b95df2fa1f1579d22d484225df",
+      "name": "test_residency_export_failure_follows_cleanup_and_still_finishes_observer",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "e499e83066c18a02716b98ff58434bfa44f190d9baa3adf09d2f783a0652f404",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.ServerAffinity",
+      "definition": "ServerAffinity.test_unpinned_is_the_default_and_prepends_nothing",
+      "definition_ast_sha256": "dda6a16299a4c8534c84ce9f1b55ac42f4ae6af754b3e4cb16fbbb57c35256e9",
+      "name": "test_unpinned_is_the_default_and_prepends_nothing",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "70ccb536e2fe1a045f38ad4648bf31c64f51c131b7b4ab1602e266b47d7a32f8",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.ServerAffinity",
+      "definition": "ServerAffinity.test_cpu_list_prepends_taskset_before_the_binary",
+      "definition_ast_sha256": "e7cf979cedb30ed53390252ce0ece9a4ba679727a8181862e8f7b6da5c0d8f16",
+      "name": "test_cpu_list_prepends_taskset_before_the_binary",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "c05a970aaa7f658f7101ca0f0d1b5ed5f47c175fb24582e1348d8912cf7bd6ce",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.ServerAffinity",
+      "definition": "ServerAffinity.test_describe_states_the_pin_so_an_artifact_records_the_condition",
+      "definition_ast_sha256": "0ec39f5fe4e1a9bcd2d0aaa3d5bba0899f85c0012f8f12637258d41db6344660",
+      "name": "test_describe_states_the_pin_so_an_artifact_records_the_condition",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "e29b4ae1c1044b04ff188820fa7c50ce2a211b39f43be3a82bbf74047f532d12",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.CalibrationCancellation",
+      "definition": "CalibrationCancellation.test_legacy_calibration_stops_before_the_next_launch",
+      "definition_ast_sha256": "d03d86f93fe157349956a2e8a6ab47a121a355232b901cf3ee4d9bdb677856ca",
+      "name": "test_legacy_calibration_stops_before_the_next_launch",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "89b80da451855dc233e0ca87ef1b779818390428740f08794a9c1b180944f507",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.CalibrationCancellation",
+      "definition": "CalibrationCancellation.test_completed_launch_is_reaped_before_stop_blocks_successor",
+      "definition_ast_sha256": "13004cb2f543b4ca0ec3686c2119e133bf5a8e0b38fc2d8f2b7e5270ed53efa9",
+      "name": "test_completed_launch_is_reaped_before_stop_blocks_successor",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "ca5b383e3a6ec999736eb5e293e30edb2f99406be25ac634127a2084638517be",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.CalibrationCancellation",
+      "definition": "CalibrationCancellation.test_matched_replacement_launch_checks_stop_too",
+      "definition_ast_sha256": "ce3aed423f20ac61ea40b4b556ee9eca73414a1518cbe48ee46b6636cb1bca46",
+      "name": "test_matched_replacement_launch_checks_stop_too",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    },
+    {
+      "body_ast_sha256": "aaa5202499d0ab996b9590732a858d4d49086f6a46f2f54ac7d3d47fcae55ed0",
+      "classname": "scripts.kernel_rnd.autokernel.loop.test_serving.CalibrationCancellation",
+      "definition": "CalibrationCancellation.test_matched_calibration_stops_before_the_next_launch",
+      "definition_ast_sha256": "2957e567f99620ece67fd788ac98cd71abff3b054e43a0baa1386016ac2a04ba",
+      "name": "test_matched_calibration_stops_before_the_next_launch",
+      "parameters": {},
+      "source_path": "scripts/kernel_rnd/autokernel/loop/test_serving.py"
+    }
+  ]
+}
