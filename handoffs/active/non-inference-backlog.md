@@ -680,3 +680,5 @@ Current selected queue: **35/35 completed** bounded slices, including NI06’s t
 ### LR-8 runtime decision boundary (2026-10-06)
 
 MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8-event-duty-handover-20261006/README.md): reviewed full one-object registry candidate, exact selected-cron opt-in, current source hashes, identity-bound owner stop and rollback. LR-8 remains unchecked until actual handover and natural-cadence acceptance; 88/88 source fixtures do not authorize it. Choice B is recommended; the owning session must acquire current PID/cron custody at its boundary. No daemon, registry, cron, database or current inference was changed.
+
+- [ ] **DISK-ARCHIVE-FIRST — archive then remove the ARCHIVE-FIRST disk items.** Owner: workspace-ec. (filed 2026-10-07) `tmp/ds41-specdec-recipe` 4.4G and `copy-spec-eval-20261006` 1.8G (inventory `artifacts/ec-wrapup-20261007/ec-disk-inventory-20261007.md`). Done when recipe/evidence are in git or artifacts and the operator confirms deletion.

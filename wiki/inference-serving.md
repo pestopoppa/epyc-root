@@ -2625,3 +2625,9 @@ The [strict per-call reader](../docs/reference/serving-call-reader-contract.md) 
 ## 2026-10-06 standalone BSV input integrity
 
 [Standalone report inputs](../docs/reference/bsv-standalone-input-integrity-contract.md) now reject malformed native booleans, IDs, containers, conflicting supported aliases and inadmissible existing dispositions before paired reporting. Valid native producer forms and stable/source ID distinction remain. [Corrected originalCI37454712581](../artifacts/ni07/run-37454712581/README.md) passes38/38 after MAIN full source/API review; original FALSE31/38 CLI fixture failure remains preserved. No campaign, journal, statistical threshold or live acceptance change.
+
+## Incremental synthesis — 2026-10-07: gpu-quiet EXCLUSIVE starves under back-to-back shared claims
+
+A GPU measurement window that needs gpu-quiet EXCLUSIVE can wait forever while AutoKernel lanes take shared claims back to back. Measured 2026-10-07 02:42Z: the Jet-Long 27B window stopped :8083, then the EXCLUSIVE acquire timed out after 600 s with FIFO admission off; the executor restored :8083 and the window was lost. A shared claim is never observed to be free, so absent FIFO default-on or writer preference an exclusive request cannot be served. Task GPUQUIET-WRITER-PREFERENCE (autokernel-concurrent-target-coordination.md); the scripts now use a prefill-only pattern with a 1800 s acquire timeout. Related: standing GPU-window approval branch (GPUWIN-STANDING-APPROVAL, gpu-serving-tie-in-program.md).
+
+Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [concurrent target coordination](../handoffs/active/autokernel-concurrent-target-coordination.md).

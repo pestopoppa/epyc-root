@@ -119,6 +119,11 @@ landing alone closes no box below whose done-test needs a live run; those carry 
 - [x] AKX-AUTO-3 Campaign-level numerics contract (operator: wikitext2 |Δppl| ≤ 0.5% + NMSE + coherence) instead of per-route constants (research f17bb5a3). ppl_contract acceptance is layered (NMSE on served shapes + Δppl ≤ 0.5% + coherence/token agreement on production-length prompts + a ≥1k-token canary), fails closed, and never folds on bench evidence alone (operator: 'utmost care to not introduce garbage').
   - [ ] cross-lane quality gate so low-bit (ppl_contract) keeps can reach the global champion
 - [ ] AKX-AUTO-4 Calibration self-check: reject a contiguous degraded block, or auto-recalibrate when spread is anomalous vs the prior floor (2026-10-05 Q38FN floor 6.528% from a 5.5-min degraded block)
+  - 2026-10-07: the generic matched-floor outlier guard landed (Astra R21-R24, research `e3bcf010`): a suspect
+    floor never carries forward, an unguarded floor >3x the previous floor is refused, atomic
+    `REMEASURE_REQUEST.json` written under `<store>/runtime-source-floors/<recipe_hash>/`. This is evidence-based
+    refusal of a *future* bad floor, not a fix to the Q38FN 6.528% floor itself — a `REMEASURE_REQUEST` was filed
+    for recipe `cff9ad900700…` and is still open. Leave this box open until that remeasure lands.
 - [ ] AKX-AUTO-5 Launch preflight cross-checks lane binding ↔ inputs ↔ anchor ↔ store (2026-10-06: lane1 bound to inputs-b0ba1d427 while running inputs-802bf9ac6)
 - [ ] AKX-AUTO-6 Auto re-anchor/relaunch on champion advance (uses the --new-anchor-epoch path, research 5da038ad)
 - [ ] AKX-AUTO-7 Supported resume of a drained lane, or make drain impossible to issue by mistake (DS41-C126(e))
@@ -218,6 +223,15 @@ landing alone closes no box below whose done-test needs a live run; those carry 
   relative; repetitions bit-identical; row-exactness across N (row i at N=k equals the same row at N=1, which
   speculative decoding needs); a coherence smoke at depth (`coherence_gate`). Done when the route is admitted and its
   reference probe is in the correctness corpus.
+  - 2026-10-07: **pending, not landed** — branch `fix/ak-longctx-identity-oracle-20261007` @ `6f116e55`
+    (research, Codex Astra round 1, "full-observation divergence receipts + DS41 real-mask N>1
+    coverage"). The long-context identity oracle now strips MTP (the anchor's own repeats differed
+    under speculative decoding), plus full divergence receipts, the FA case set widened to N=1..5,
+    and a fail-closed DS41 real-mask probe. C++ follow-ups still open: a probe `--mask-file` mode, a
+    llama.cpp DS41 top-k mask dump hook, and regenerating
+    `test-backend-ops-cpu-fa-longctx-v1.patch`. Wiring `check_cpu_fa_real_mask_identity` into
+    `run.py` is an **operator decision** — it would block `cpu_fa_schedule` until the C++ side
+    lands, so review and merge this branch before the AKX-ALL-21 round, not alongside it.
 - [ ] **AKX-ALL-12: DS41 attention-graph route.** After AKX-ALL-4/5. A multi-file route with
   `identity_arch=deepseek41` admitting `src/models/deepseek41.cpp` `build_attention_v41` and the mask helpers
   (`build_top_k_mask`), and the host-side mask/plan rebuild (DS41-C9). The lever is the graph/mask/host path, not the

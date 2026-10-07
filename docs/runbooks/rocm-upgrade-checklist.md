@@ -49,7 +49,9 @@ experimental-kernel workflow in the root `AGENTS.md`.
   read/write, the arch-VGPR cap and spill columns for mul_mat_f, rocWMMA FA, MMA FA (256-thread) and MMQ to the static
   audit, per compiler cell. Check that `amdgpu-agpr-alloc` is inferred, using IR from `-save-temps`: if it is not, the
   default split caps arch VGPRs at 128. gfx90a support on those releases: ROCm 10.0.0 compatibility matrix lists MI210;
-  TheRock SUPPORTED_GPUS.md lists gfx90a as "Build Passing" only.
+  TheRock SUPPORTED_GPUS.md lists gfx90a on Linux as Build Passing, Sanity Tested and Release Ready (retrieved 2026-10-06;
+  anchor `| CDNA2        | gfx90a      | ✅            | ✅            | ✅            |`, intake-1962#record); Windows is Build Passing only.
+  Its own legend warns that a Build Passing check alone does not imply the runtime works on hardware.
 
 ## Known failure signature
 
