@@ -21,6 +21,7 @@ APP_PIN = "3e34eaeca079c440f31b2f26710fd09790544cc9"
 ROOT_READS = (
     ".github/workflows/ssbench-smt-native.yml",
     "scripts/ci/ssbench_native_capture.py",
+    "scripts/ci/ssbench_synthetic_import_context.py",
     "scripts/ci/ssbench_expected_cases.json",
     "scripts/ci/ssbench_requirements.txt",
     "scripts/ci/ssbench_package_versions.json",
@@ -51,6 +52,7 @@ APP_READS = (
     "src/registry/stack_priors.py", "src/registry_loader.py", "src/roles.py",
     "src/services/worker_pool.py", "tests/__init__.py", "tests/unit/__init__.py",
     "tests/unit/test_bench_core_claim.py", "tests/unit/test_bench_core_claim_api_layer.py",
+    "tests/unit/test_stack_change_guard.py",
 )
 
 
@@ -228,9 +230,18 @@ def main() -> int:
     actual = {name: importlib.metadata.version(name) for name in versions}
     if actual != versions:
         raise RuntimeError("installed packages differ from exact APP uv.lock closure")
+    os.environ["PYTHONPATH"] = str(app) + os.pathsep + str(ROOT / "scripts/ci")
+    os.environ["SSBENCH_APP_SOURCE"] = str(app)
+    os.environ["SSBENCH_SYNTHETIC_IMPORT_CONTEXT"] = "existing_fixture_1tib_import_only"
+    physical_meminfo = result / "runner-physical-meminfo.txt"
+    write_once(physical_meminfo, regular_bytes(Path("/proc/meminfo")))
     env = {"python": sys.version, "python_version": platform.python_version(),
            "platform": platform.platform(), "app_pin": APP_PIN, "packages": actual,
-           "mock_mode": os.environ["ORCHESTRATOR_MOCK_MODE"], "absent_binary_overrides": absent_binaries}
+           "mock_mode": os.environ["ORCHESTRATOR_MOCK_MODE"], "absent_binary_overrides": absent_binaries,
+           "synthetic_import_context": os.environ["SSBENCH_SYNTHETIC_IMPORT_CONTEXT"],
+           "synthetic_fixture": "tests/unit/test_stack_change_guard.py::_synthetic_stack_manifest_inputs",
+           "physical_meminfo": physical_meminfo.name,
+           "scope": "synthetic physical-core source controls only; existing 1TiB import-only fixture and empty kernel directories; no physical capacity, topology, readiness, store or deployment warrant"}
     write_once(result / "environment.json",
                (json.dumps(env, sort_keys=True, separators=(",", ":")) + "\n").encode())
     freeze = subprocess.run([sys.executable, "-m", "pip", "freeze", "--all"],
@@ -248,12 +259,12 @@ def main() -> int:
         raise RuntimeError("the frozen exact-case manifest is not the reviewed 81-case scope")
     command = [sys.executable, "-m", "pytest", "--noconftest", "-c", "/dev/null",
                "--rootdir", str(app), "--import-mode=importlib", "-o", "addopts=", "-p", "no:cacheprovider",
-               "-p", "pytest_asyncio.plugin", "-q", f"--junitxml={junit}",
+               "-p", "pytest_asyncio.plugin", "-p", "ssbench_synthetic_import_context", "-q", f"--junitxml={junit}",
                "tests/unit/test_bench_core_claim.py",
                "tests/unit/test_bench_core_claim_api_layer.py"]
     read_paths = [ROOT / item for item in ROOT_READS] + [app / item for item in APP_READS]
     read_paths += app_dynamic_config_inputs(app) + [app / "uv.lock", context,
-                    result / "environment.json", install_log, result / "pip-freeze.txt"]
+                    result / "environment.json", install_log, result / "pip-freeze.txt", physical_meminfo]
     read_paths = list(dict.fromkeys(path.resolve() for path in read_paths))
     source_before_capture = snapshots(read_paths)
     carrier = load_carrier()
