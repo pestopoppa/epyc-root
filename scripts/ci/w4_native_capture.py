@@ -408,6 +408,7 @@ PACKAGES = {
     'pygments': '2.20.0',
     'pytest': '9.0.3',
     'python-dotenv': '1.2.2',
+    'python-multipart': '0.0.26',
     'pyyaml': '6.0.3',
     'referencing': '0.37.0',
     'requests': '2.33.1',
