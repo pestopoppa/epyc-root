@@ -1,0 +1,26 @@
+{
+  "base_manifest_sha256": "b44f2d72bd868b779d6621e0460f564e6b14c3d18c408b603a41f479416b7a7c",
+  "base_wrapper_sha256": "099b235cf8336f6cda77133d3b282e31521876540d9e9e2bb9d481a51797a9d2",
+  "records": [
+    {
+      "bytes": 917,
+      "logical_name": "MAIN-Research-main-product-publication-acceptance.json",
+      "record_type": "original MAIN acceptance",
+      "sha256": "785e54bece414aa0d490f5f6a5989331c0608af16dfafb60b5e1d0c1ec3739ea",
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/C26-e136-MAIN-product-publication-acceptance.json"
+    },
+    {
+      "bytes": 3582,
+      "logical_name": "source-public-bindings.DERIVED-PROPOSED-v1.json",
+      "record_type": "derived",
+      "sha256": "5270921aced17fbba786724691aac58594c7ff8e28a91814474e86de28741548",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/research-main-promotion-e136-proposed-v1/documentation-proposals-v1/source-public-bindings.DERIVED-PROPOSED-v1.json"
+    }
+  ],
+  "schema": "private.c26_source_acceptance_transport_supplement_manifest.v1",
+  "state": "PROPOSED_PRIVATE_TRANSPORT_ONLY",
+  "wrapper_bytes": 7269,
+  "wrapper_mode": "0600",
+  "wrapper_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/research-main-promotion-e136-proposed-v1/source-acceptance-transport-v2-supplement/source-acceptance-supplement-v2.json",
+  "wrapper_sha256": "968b4e578c05c319a304b024f76e35c3eff86aba035ff26d1c23e773061bc9e4"
+}

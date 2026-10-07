@@ -1,0 +1,156 @@
+{
+  "omitted_large_originals": [
+    {
+      "bytes": 12602788,
+      "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip",
+      "reason": "full raw archive retained in place; not duplicated into compact transport",
+      "sha256": "7573795d32444db1b16da28c1512dbc311146785ac0d96e509ed4b2c1e2b2b48"
+    },
+    {
+      "count": 1588,
+      "member": "native/read-*.bin",
+      "reason": "repeated raw readset excluded from transport; bound by original ZIP hash, readset SHA checks, and MAIN acceptance"
+    }
+  ],
+  "records": [
+    {
+      "archive_member": null,
+      "bytes": 12495,
+      "logical_name": "run-final.stdout",
+      "sha256": "55e9be0137096d71b6f7f867dcdc130fdb20fd86fdb29417ada680bccbd933f8",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/run-final.stdout"
+    },
+    {
+      "archive_member": null,
+      "bytes": 4607,
+      "logical_name": "jobs-final.stdout",
+      "sha256": "925ca619e07177b2941e47188556d498989cae8f9c1603b684d1f4c35635f1ae",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/jobs-final.stdout"
+    },
+    {
+      "archive_member": null,
+      "bytes": 782,
+      "logical_name": "artifacts-final.stdout",
+      "sha256": "10b59f2748333104496274c6b49c432ea65d004430104f9d2c668fa8011fce36",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifacts-final.stdout"
+    },
+    {
+      "archive_member": null,
+      "bytes": 47190,
+      "logical_name": "logs-run-37685510597.zip",
+      "sha256": "2a1a0b1e163248f95bd189c702cb47019acfb8a243023ba9f5eaf4a531a697c7",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/logs-run-37685510597.zip"
+    },
+    {
+      "archive_member": "status.json",
+      "bytes": 1190,
+      "logical_name": "status.json",
+      "sha256": "e8e2a8235811af087bf990a29b1299303ff8d1b0987a012fe045bc4ee796d841",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "environment.json",
+      "bytes": 1352,
+      "logical_name": "environment.json",
+      "sha256": "4bcdd87bfcd39db2a57f3cc9998d8bac62052fb6a4264d4f1c186b74efa0f137",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "junit-verification.json",
+      "bytes": 557,
+      "logical_name": "junit-verification.json",
+      "sha256": "f1cfa3cba40735d1d7fb63efd72b8e05bc2f909b25eb546739547ba3af3eff9b",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "native/execution-request.json",
+      "bytes": 398402,
+      "logical_name": "native__execution-request.json",
+      "sha256": "9d655286c07247cf6af09c8ef37cb05278b060fe725e92822eaa4e54d3d2f783",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "native/receipt.json",
+      "bytes": 416659,
+      "logical_name": "native__receipt.json",
+      "sha256": "c0b6fb3485898464287eafa6748aa973bb641b9ed448db8533003c5dc36f7f36",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "native/command.log",
+      "bytes": 99,
+      "logical_name": "native__command.log",
+      "sha256": "dc5516c30ab566cb51c47ac88ede21a8252e257daff9a00d5e09cfbe8f2cbf58",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "native-command.exit",
+      "bytes": 2,
+      "logical_name": "native-command.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "native-command.stdout",
+      "bytes": 113,
+      "logical_name": "native-command.stdout",
+      "sha256": "8cc1090fa5bc565bb0dbcdcd2257fb2e5be62d295865231fbabfdbca722016cc",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "native/original-junit.xml",
+      "bytes": 8030,
+      "logical_name": "native__original-junit.xml",
+      "sha256": "b56de6521b4bdc019db2684eead48ed53029075c993427ae3ff76ac1fd187d8c",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "final-custody.json",
+      "bytes": 1120011,
+      "logical_name": "final-custody.json",
+      "sha256": "fed552ffb0636de63b2ead82db620a1b1f33f5087cd7d65402c0f9076fc9768f",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "pre-capture-custody.json",
+      "bytes": 280480,
+      "logical_name": "pre-capture-custody.json",
+      "sha256": "5ebcf5ee0162593b70dde43b73abf3250cb170f86e6f4c54227da8afc8da7573",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "pre-grade-custody.json",
+      "bytes": 1397661,
+      "logical_name": "pre-grade-custody.json",
+      "sha256": "1ff9b1936ef8a82d5ed11f1bf139a17cc0bd9caa91caeb6411ecf2195fe07cc0",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": "shared-grade-custody.json",
+      "bytes": 1431662,
+      "logical_name": "shared-grade-custody.json",
+      "sha256": "4a7497146b1971ec003c46f82e59e6b8d7484cc04c0c6a1ba30a873bbe46b4dd",
+      "source_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/recipe-e136-source-recipe-publication-v1/native-original-attempt1/artifact-11510956326.zip"
+    },
+    {
+      "archive_member": null,
+      "bytes": 1439,
+      "logical_name": "MAIN-original-success-acceptance.json",
+      "sha256": "f7b481e81c160f0f775e68587e336ef09eb70a75750aa45dce2b59b7fdbd1461",
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/C26-5933-MAIN-original-success-acceptance.json"
+    },
+    {
+      "archive_member": null,
+      "bytes": 1256,
+      "logical_name": "MAIN-original-failure-acceptance.json",
+      "sha256": "6a5626aeeecfed3b220dc39383d8631f32476ac21b79a72f9653a69b52b1b3b7",
+      "source_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/C26-aad7-MAIN-original-failure-acceptance.json"
+    }
+  ],
+  "schema": "private.c26_source_acceptance_transport_manifest.v1",
+  "state": "PROPOSED_PRIVATE_TRANSPORT_ONLY",
+  "wrapper_bytes": 6840141,
+  "wrapper_mode": "0600",
+  "wrapper_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/c26-current-source-reconcile-private-20261007/research-main-promotion-e136-proposed-v1/source-acceptance-transport-v1/source-acceptance-originals.json",
+  "wrapper_sha256": "099b235cf8336f6cda77133d3b282e31521876540d9e9e2bb9d481a51797a9d2"
+}

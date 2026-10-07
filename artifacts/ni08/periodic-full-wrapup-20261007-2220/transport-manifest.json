@@ -1,0 +1,244 @@
+{
+  "authorization_state": "MAIN_REVIEWED_CANONICAL_CUSTODY_PENDING_GIT_PUBLICATION",
+  "e85_ff_scan": {
+    "changed_sources": 7,
+    "journal_sha256": "90d20a17e93b2ca0f81a5a8b95206ac92984454989b7c6565134985622c17ba0",
+    "operation": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/ff-e85-scan-readonly-xh1vuvgl",
+    "raw_scan_sha256": "66dbe6dafb2675e8465dd0efc0bf037b18f3ec2303f2052882f8889a9080fe09",
+    "source_scan_result_sha256": "4f72e37a275267128f2477b4c897b3ea5102d5cbb77077949b917b6d22d1fc97",
+    "source_set_hash": "eb0bac159aa835edeaf9f42773c98efe6a6c3d61e9a0f03edd98a6d2692abd9d",
+    "total_manifest_sources": 1348
+  },
+  "governance_acceptance": {
+    "acceptance_original": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-MAIN-governance-acceptance.json",
+    "acceptance_sha256": "260e53829a07fcf8c08fa868807ae3cb7c86d362f07313d06e7f9b0f0d85ca4d",
+    "accepted_journal_sha256": "1f593c9cc53dc48f6a44d20d6f14faec7f1e95fe6c47e105f63965f61d6877ff",
+    "accepted_receipt_sha256": "fb851912721b170e2ff881e6a585c08b78e6e1dab1964526056fea9afa605c78",
+    "commands_reopened_by_MAIN": 36,
+    "lease_token": {
+      "bytes": 44,
+      "mode": "0600",
+      "release_acknowledged": true,
+      "same_identity_through_release": true,
+      "sha256": "ac6e474bdf9ebf11f39104dcca57fd353b17e22bbbe5e84be8672a278618a4ba",
+      "unlink_absence_verified": true
+    },
+    "rc_counts": {
+      "0": 34,
+      "1": 2
+    }
+  },
+  "kind": "periodic FULL183 governance transport candidate",
+  "main_corrections": [
+    "Derived candidate README/summary omitted final hexadecimal digit of MAIN acceptance SHA; restored from original acceptance bytes."
+  ],
+  "original_candidate_manifest_sha256": "3feaaea963b251d97611df70ab2a461d6ebb89f51ccf4493dc47c0731ee2a14e",
+  "original_candidate_readme_sha256": "b8536521f4a4d3ba35a23a175084ae14dc02988c11afab30dc98e314b551c5a6",
+  "prior_scratch_refusal": {
+    "approved_k_sha256": "9487f099241dedc85b2d4afdd212a08da3b89c26957377c995a8314fc828eeca",
+    "journal_sha256": "8191dadaf391fb7f552dc7260ad9529d1cff400a7e6ef45fcc0509e850501a64",
+    "reason": "initial plan recommended an additional scratch path; no deletion was selected or applied; fresh v5 K explicitly retained the recommendation"
+  },
+  "public_namespace": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/",
+  "schema_version": 1,
+  "transport_records": [
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 222588,
+      "original_mode": "0o600",
+      "original_sha256": "1f593c9cc53dc48f6a44d20d6f14faec7f1e95fe6c47e105f63965f61d6877ff",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-c26v2-MAIN-governance-1wec4mgm/original-command-journal.jsonl",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/governance/original-command-journal.jsonl.b64",
+      "wrapper_bytes": 296785,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "f6836efca19ab6af96e2c6e6639591885c58bcec06e91aff5eba3e641b50dbfa"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 10194,
+      "original_mode": "0o600",
+      "original_sha256": "fb851912721b170e2ff881e6a585c08b78e6e1dab1964526056fea9afa605c78",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-c26v2-MAIN-governance-1wec4mgm/governance-receipt.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/governance/governance-receipt.json.b64",
+      "wrapper_bytes": 13593,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "cd1dd1ee862e0c3debbdc8a0c54dc64dacaf3e29a349944a689b9e20e92b74a5"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 353,
+      "original_mode": "0o600",
+      "original_sha256": "5a954fa7cf6b1eadd6e8f9008d82d9e64c8ea60376ed45c8aa9f42afd2fd09ad",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-v5-outer-dwy1lgzq/original-argv.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/governance/outer-original-argv.json.b64",
+      "wrapper_bytes": 473,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "c36997b4aa41ff94ea9935ea863eca7cb4423d46dd40a104b1109493d975740b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 218,
+      "original_mode": "0o600",
+      "original_sha256": "c52da64559cb8f4386a65798646a85759d9a76168963f13c8f1318e0ff63c2e9",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-v5-outer-dwy1lgzq/stdout.original",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/governance/outer-stdout.original.b64",
+      "wrapper_bytes": 293,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "668d659f2e0c0db6f9e779facc4d80b3a10773691e3688f464111b5a79330660"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 0,
+      "original_mode": "0o600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-v5-outer-dwy1lgzq/stderr.original",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/governance/outer-stderr.original.b64",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 2,
+      "original_mode": "0o600",
+      "original_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-v5-outer-dwy1lgzq/returncode.original",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/governance/outer-returncode.original.b64",
+      "wrapper_bytes": 5,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "9e48b9419ef4c3e43d961a8b045cf28bd29243cd19b98887fafc2eee700ee4bc"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 47022,
+      "original_mode": "0o600",
+      "original_sha256": "8191dadaf391fb7f552dc7260ad9529d1cff400a7e6ef45fcc0509e850501a64",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-c26v2-MAIN-governance-q4_hx3or/original-command-journal.jsonl",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/diagnostic-initial-refusal/original-command-journal.jsonl.b64",
+      "wrapper_bytes": 62697,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "1f47d3e4e68479e439812fb693bf90a8deda2c805b4cad134953e5794e17c327"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 353,
+      "original_mode": "0o600",
+      "original_sha256": "5aa3f1948a3ee047bbf3c122ac95c27c6b542c4b13741a56ca3c7b6380f702a2",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-outer-hv5vmji4/original-argv.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/diagnostic-initial-refusal/outer-original-argv.json.b64",
+      "wrapper_bytes": 473,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "9d6b761358afcc6930b8dc770f61228cffb4e93c3a0d116f2e653ad564aac13b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 0,
+      "original_mode": "0o600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-outer-hv5vmji4/stdout.original",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/diagnostic-initial-refusal/outer-stdout.original.b64",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 1283,
+      "original_mode": "0o600",
+      "original_sha256": "0cc1fd662c5bf657e28f3966ecdd70c507d2e84fa1cf9264f669f564ec9ea560",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-outer-hv5vmji4/stderr.original",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/diagnostic-initial-refusal/outer-stderr.original.b64",
+      "wrapper_bytes": 1713,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "c8ed75b281810fbf9fb5ad023cef530fd0daaabcb48823e8b25d37213f1b8864"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 2,
+      "original_mode": "0o600",
+      "original_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL183-approved-governance-outer-hv5vmji4/returncode.original",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/diagnostic-initial-refusal/outer-returncode.original.b64",
+      "wrapper_bytes": 5,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "e57bd932dadfda5f9dddb59410175d892aa644cc358c4d069110280b8c149060"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 2923,
+      "original_mode": "0o600",
+      "original_sha256": "260e53829a07fcf8c08fa868807ae3cb7c86d362f07313d06e7f9b0f0d85ca4d",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-MAIN-governance-acceptance.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/main-acceptance/FULL183-MAIN-governance-acceptance.json.b64",
+      "wrapper_bytes": 3901,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "e7ce3ff3238b6163725169573026e7803668c5b3a24b6d7c2306168caa906240"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 733467,
+      "original_mode": "0o600",
+      "original_sha256": "90d20a17e93b2ca0f81a5a8b95206ac92984454989b7c6565134985622c17ba0",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/ff-e85-scan-readonly-xh1vuvgl/original-command-journal.jsonl",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/e85-ff-scan/original-command-journal.jsonl.b64",
+      "wrapper_bytes": 977957,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "6030fe48568c11fcd8929e9a23894f590f26309d29afe8006e5d66a5470a6b37"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 75335,
+      "original_mode": "0o600",
+      "original_sha256": "4f72e37a275267128f2477b4c897b3ea5102d5cbb77077949b917b6d22d1fc97",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/ff-e85-scan-readonly-xh1vuvgl/source-scan-result.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/e85-ff-scan/source-scan-result.json.b64",
+      "wrapper_bytes": 100449,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "23049d838a79b119de17540650929fbbdb767e509b9a490f64ad6908f2e7b269"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 3408,
+      "original_mode": "0o600",
+      "original_sha256": "66dbe6dafb2675e8465dd0efc0bf037b18f3ec2303f2052882f8889a9080fe09",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/ff-e85-scan-readonly-xh1vuvgl/wiki-source-scan.raw.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/e85-ff-scan/wiki-source-scan.raw.json.b64",
+      "wrapper_bytes": 4545,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "79e2ac1422bdb68c772ee05698e49374bb655a9c9bba3e246d74b0bde912e46d"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 27714,
+      "original_mode": "0o600",
+      "original_sha256": "9487f099241dedc85b2d4afdd212a08da3b89c26957377c995a8314fc828eeca",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-MAIN-governance-v4-K.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/inputs/FULL183-MAIN-governance-v4-K.json.b64",
+      "wrapper_bytes": 36953,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "0b3459fcdd3dbe5fb4d5bfd6f8e5dd5eec0b9157880c535b260868ed10ba0d9d"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 28300,
+      "original_mode": "0o600",
+      "original_sha256": "6b321202837ca8cf751938dc306d8b841846f22f784ad9eb4bb30a4dd8ccaf34",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-MAIN-governance-v5-K.json",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/inputs/FULL183-MAIN-governance-v5-K.json.b64",
+      "wrapper_bytes": 37737,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "4a54d1d9590274672b7b24f8673f5d7c546320d3777e0770c6267ad17b66fef9"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_bytes": 15811,
+      "original_mode": "0o600",
+      "original_sha256": "f983467e7eb46ac08b84a4eaba4d73441eaae3b82412cb3aba9a6f462d94ecef",
+      "private_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/FULL-C26-governance-helper-CANDIDATE-v2.py",
+      "public_path": "artifacts/ni08/periodic-full-wrapup-20261007-2220/transport-originals/inputs/FULL-C26-governance-helper-CANDIDATE-v2.py.b64",
+      "wrapper_bytes": 21085,
+      "wrapper_mode": "0600",
+      "wrapper_sha256": "58cb432235e77c35349720e32619b1fb299f03709f2e6533380fe1406f715093"
+    }
+  ]
+}

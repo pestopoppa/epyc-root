@@ -1687,3 +1687,11 @@ Source references: [authored contract](../docs/design/experience-distillation-da
 ## 2026-10-07 — UFH source checkpoint and dated campaign evidence
 
 The UFH12 spill-summary change makes the 4,000-character request limit include labels, bounded prior summary, and at least one character from the new tail. Acceptance is tied to the published exact-source APP product and original mocked-worker control, with typed custody projected through the existing CI carrier and shared grade. This is a source/API boundary result, not a finding that generated summaries are correct or evidence-complete; TOC-SP-3 and inference/runtime/deployment gates remain separate. [Source handoff](../handoffs/active/tool-output-compression.md#prospective-bounded-spill-summary-request-correction--2026-10-07) · [Original acceptance record](../artifacts/ni08/ufh12-spill-summary-source-acceptance-20261007/README.md).
+
+### Bounded CI source controls and remaining runtime boundary — 2026-10-07
+
+EVL42 preserves the original actual-wrapper attachment path and 44 synthetic controls; its source-bound checker result is incomplete (rc=1; 1 current, 3 missing, 3 stale, 41 unresolved). The accepted carrier supports fixture conformance only and does not establish healthy or repaired pins. [Original source and custody](../artifacts/ni08/evl42-actual-pin-scan-source-acceptance-20261007/README.md).
+
+C26’s accepted source/native pair covers a mocked stop-cancellation control surface. The original hosted run passed all 46 selected JUnit cases and its full source/readset/typed-result custody is accepted. This does not test the mixed runtime parent, physical serving floor, actual cancellation during inference, quality or performance. The `0858` NULL and `aad7`/`17f` FALSE outcomes are retained as separate originals. [C26 scope and custody](../artifacts/ni08/c26-current-source-acceptance-20261007/README.md) · [DS41 owner handoff](../handoffs/active/deepseek-v41-flash-evaluation.md).
+
+TD-29.M0a.S0 remains a prospective source-control child: 119 AST definitions are proposal-time inventory only; the original JUnit determines actual collected cases. No original native capture or product publication is established at this checkpoint. Keep its independent sidecar/runtime parent and dependency gate open. [TD-29 source task](../handoffs/active/typed-decision-plane.md).
