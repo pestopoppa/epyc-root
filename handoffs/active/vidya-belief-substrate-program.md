@@ -498,8 +498,9 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       (AutoKernel V27 is candidate-only — instrument/target-equality receipts, no promotion)**
 - [ ] **SC55 — wire the INF-70 per-node / per-thread graph profiler as a measurement source, write side
       FIRST.** Filed 2026-09-05 by INF-70 as its arms began producing them. This instrument
-      (`GGML_CPU_PROF` + SYNC-1's per-(node,thread) extension: `wall_max`, `argmax_ev`, `spikes`, per-thread
-      compute, `NNODES_EQ/MIN/MAX` graph-shape filters, `PATHROW` with `ne_calls`/`GBs_per_ne_call`) now
+      (`GGML_CPU_PROF` + SYNC-1's aggregate thread extension: `wall_max_us`, `wall_max_ev`, `spikes`,
+      `thr_max_us/thr_mean_us/thr_min_us`, `NNODES_EQ/MIN/MAX` graph-shape filters, `PATHROW` with
+      `calls_per_eval`, `bytes_per_eval`, `GBs_on_compute/GBs_on_wall`) now
       produces the campaign's primary evidence and has already overturned four published figures.
       **Project, not grade.** Caveats that MUST ride in every tuple, each one a measured way these numbers
       have already been misread: (a) **thread-0 vs mean-thread** — a dead-time figure from thread 0
@@ -3019,3 +3020,18 @@ SC-EVL42-PIN-REPORT-WIRING is complete through the real historical checker attac
 
 
 2026-10-07 MAIN accepted the existing CI-family projection: exactly five original receipts (EVL actual-wrapper and44 controls plus currentC26 TRUE; preservedaad7/17f FALSE) append15frames to canonicalledger14354→14369. The complete14642518-byte prior prefix and all5819 prior beliefs remain unchanged; independent whole-chain/same-asof fold verifies five new Judged/Located observations. Both private V4/V5 wrapper refusals happened before append and retain original custody; the separately approved V6 succeeds with actual inode lease and44-byte sidecar lifecycle/release/absence proof. Original booleans and seals remain unchanged; oldestNULL emitszero tuples. This means source fixture conformance only, never pin health, runtime, performance or promotion authority.
+
+
+## Prospective HG5 and SC55 source boundaries — MAIN enrollment 2026-10-07
+
+- [ ] **VB-HG5-FORCE-SOURCE-CONFORMANCE — capture the exact focused force-mode source controls before source acceptance.** Bind whole APP source envelope and four whole modules: tests/unit/test_v1_escalation.py, test_v1_escalation_off_golden.py, test_openai_compat_default_golden.py and test_stages.py. Pin source/config/lock/all-wheel identities before one later MAIN-approved original off-host push event. Existing native CI producer, ci-fixture-conformance reader and shared claim_tuple.grade() only. Preserve original TRUE/FALSE/NULL, JUnit identity multiset, source/result/error/readset/API/ZIP custody. No live model, inference, quality, routing activation, runtime or deployment warrant. HG5 remains open pending native acceptance and publication.
+
+- [ ] **VB-HG5-TAP-WRITE — preserve new source-owned request escalation events at capture time.** Prepare producer/schema and synthetic fixtures after HG5 source acceptance: requested mode, feature/eligibility result, initial role, quality/caller_forced trigger, target, step outcome, actual calls/token/timing counters, bounded failure, final role and source revision. Bind immutable event bytes and contemporaneous source/window; missing or ambiguous counters refuse projection. Live capture remains with its inference owner; no historical backfill, correctness claim or new ladder.
+
+- [ ] **VB-HG5-TAP-READ — strictly project an accepted new request-event envelope.** After the writer and MAIN-accepted source-owned envelope, validate exact version/schema/hash, request/step cardinality, finite nonnegative timing, integer token/call counts and trigger/result/final-role/failure consistency. Project factual intervention/cost through the existing measurement ladder, never answer correctness; no runtime authorization. Static reader and refusal fixtures are non-inference work.
+
+- [ ] **SC55-WRITE — implement capture-time immutable graph-profiler provenance before new measurements.** In Research, prepare a source-owned envelope binding raw TSV/node table/log/run receipts by path/size/hash, actual source commit/tree, capture window, profiler .so digest and compiled-knob strings proof, effective knobs/thread count, graph identity/filter, eval/warmup semantics, measuring-thread/dispersion and IQK state. Capture pre/during-run facts contemporaneously; finalization only seals them after raw outputs close. Missing/unknown provenance is unprojectable. Implement static writer/schema/refusal fixtures without host inference or production-kernel changes; owner-controlled live capture follows later. Historical files are never backfilled.
+
+- [ ] **SC55-READ — implement a strict graph-profiler reader after the source writer contract.** Validate exact producer headers (19 node columns, seven PATHROW columns), bound digests/sizes, unique node identities/cardinality, integer identities/evals, finite nonnegative values and graph/thread/filter semantics. Use an accepted source-owned envelope and existing measurement ClaimTuple ladder; malformed/ambiguous/unknown provenance emits no tuple. Synthetic controls are non-inference work; no new grading rule.
+
+Actual-source clarification: node fields use wall_max_us/wall_max_ev and aggregate thr_max_us/thr_mean_us/thr_min_us, not per-thread vectors. PATHROW uses calls_per_eval, bytes_per_eval, GBs_on_compute and GBs_on_wall. The output knob is GGML_CPU_PROF_PERNODE_FILE; absent GGML_CPU_PROF_THREADS makes zero thread columns unavailable evidence, not measured balance. Current shape/node indices do not prove structural graph identity. Source audit retains production commitffc1bac and grammar blobebc487; no frozen tree modification. Existing aggregate node_profile.py JSON and ROOT cycle samples are different native producers.

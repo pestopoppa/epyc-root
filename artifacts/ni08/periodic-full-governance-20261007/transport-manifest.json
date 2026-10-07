@@ -1,0 +1,528 @@
+{
+  "schema_version": 1,
+  "kind": "periodic FULL governance custody transport candidate",
+  "authorization_state": "PREPARED ONLY — MAIN publication review and a fresh exact publisher K pending",
+  "public_namespace": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/",
+  "operation": {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i",
+    "approved_input_sha256": "07f57f768f66144b1a75b9a1a12caf67d080e613b799e3671626112eb8343d77",
+    "helper_sha256": "bbf601b6755e7f95bd175cecfba4cdfaa6e4bab27139379369c486b96eaacdca",
+    "root_head": "9f9ee4d4eb68486221ea72c44f98aa06c6082fbc",
+    "source_movement": false,
+    "before_path_count": 32,
+    "after_path_count": 34,
+    "checkbox_flip_count": 0,
+    "added_unchecked_count": 5,
+    "checked_release": true,
+    "token_removed": true,
+    "outer_argv": [
+      "python3",
+      "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-8c46-private-20261007/FULL-current-governance-helper-REVIEW-ONLY.py",
+      "--input-manifest",
+      "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-continuation-MAIN-governance-input-K.json",
+      "--approved-input-sha",
+      "07f57f768f66144b1a75b9a1a12caf67d080e613b799e3671626112eb8343d77"
+    ],
+    "outer_exit_code": 0,
+    "outer_stdout_sha256": "27d1dd9b97c35e0b4ada20eb00e5da7ec228b9dd168542d17da899e9cada6409",
+    "outer_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_command_journal_sha256": "ee2feeb9b1d22ab98b354dd80b9e0ab3b72459c640d5c5ad289cb261daf18108",
+    "main_acceptance": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-continuation-MAIN-governance-acceptance.json",
+      "sha256": "761251dd605372bc5186a6eb4153db9be8413a4157992e827287db7129710627",
+      "state": "ACCEPTED_GOVERNANCE_ONLY_PENDING_PUSH",
+      "journal_sha256": "ee2feeb9b1d22ab98b354dd80b9e0ab3b72459c640d5c5ad289cb261daf18108",
+      "commands": 36,
+      "events": 4,
+      "checkbox_flips": 0,
+      "new_open_tasks": 5,
+      "source_delta": 7,
+      "source_set_hash": "075ba022da70cf8498bd7cd52c21f12194de89c482a92b39873cf48c174959b5",
+      "no_deletion_pruning_compaction": true
+    }
+  },
+  "final_source_projection": {
+    "scan_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/MAIN-final-incremental-scan.json.b64",
+    "private_scan_sha256": "a3c20dfccf0728acab03689e79e34ce80d55f9b747e6b934613366dc2c7aa093",
+    "mode": "incremental",
+    "total_new": 7,
+    "source_set_hash": "075ba022da70cf8498bd7cd52c21f12194de89c482a92b39873cf48c174959b5"
+  },
+  "scratch_plan_custody": {
+    "mode": "plan-only --no-fetch; zero apply/deletion",
+    "selected_for_deletion": [],
+    "remove_counts": {
+      "non-inference-backlog": 4,
+      "vidya-belief-substrate-program": 5
+    },
+    "exact_plan_removals": {
+      "non-inference-backlog": [
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-0xrpmyba",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-8cl0lxve",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-tg683lcd",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-v0rriege"
+      ],
+      "vidya-belief-substrate-program": [
+        "/mnt/raid0/llm/worktrees/vidya-belief-substrate-program-ni07-serving",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-0xrpmyba",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-8cl0lxve",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-tg683lcd",
+        "/mnt/raid0/llm/tmp/c106-root-wrap-publish-v0rriege"
+      ]
+    }
+  },
+  "transport_record_count": 41,
+  "transport_records": [
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/both-handoff-scratch-plan.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/both-handoff-scratch-plan.json.b64",
+      "original_bytes": 22873,
+      "original_mode": "0600",
+      "original_sha256": "6b7e433d42b03282269d1bae286746b8dc4ce1b6d0c9913a3e23b3b917061ca2",
+      "wrapper_bytes": 30501,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "8a72fe264f5d52b4124f59eaa6792dc2c2db8df4fc5bfda802c842e6c5f03700"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/cite-check.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/cite-check.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/cite-check.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/cite-check.stdout.b64",
+      "original_bytes": 65905,
+      "original_mode": "0600",
+      "original_sha256": "f067694ffa7e6a7c2e836d702b16890c7cc5a76221d5eb6df055346bd3286040",
+      "wrapper_bytes": 87877,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "9d2cba10e5513ef66ef94435abb491e0e43a00a2968663ccd4a257e6a52aceb3"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/diff-check.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/diff-check.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/diff-check.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/diff-check.stdout.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/governance-receipt.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/governance-receipt.json.b64",
+      "original_bytes": 9981,
+      "original_mode": "0600",
+      "original_sha256": "fa7dd73e8a11fa6c47d1a050fc6730fdefff007d6c90d3417072b945c1d0a4c4",
+      "wrapper_bytes": 13309,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "92a097007a81ee476563f511cc5bd6b205a9333b66349f3449eaad76bb2782d2"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/index-check.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/index-check.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/index-check.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/index-check.stdout.b64",
+      "original_bytes": 3240,
+      "original_mode": "0600",
+      "original_sha256": "35cdaa84a58aa0d4e286e0b6c1eb6d3644f83038230128db806ce9c659c3d54b",
+      "wrapper_bytes": 4321,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "e11b25ef1a073ca52d987d5953441d473b56fc13318e0b46bba271791020f315"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/index-regeneration.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/index-regeneration.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/index-regeneration.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/index-regeneration.stdout.b64",
+      "original_bytes": 682,
+      "original_mode": "0600",
+      "original_sha256": "bfcf1c76afcd97ba4f1292ec736c3d4ef173af2abe2f99a45cafac5c30bf2a81",
+      "wrapper_bytes": 913,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "4c2323f0d3d71a4dd82d9a389b22344a7e1104c8b87296577e0b7192093459fd"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/non-inference-backlog-scratch-plan.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/non-inference-backlog-scratch-plan.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/non-inference-backlog-scratch-plan.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/non-inference-backlog-scratch-plan.stdout.b64",
+      "original_bytes": 12632,
+      "original_mode": "0600",
+      "original_sha256": "ef2485f6a727a3c6c6226ecf8cfbdebe808b83d44f4fa11810cef8a435ccde8e",
+      "wrapper_bytes": 16845,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "5e01dbdbea18a729487c5402db13d64cc4dd01a8aeede0db67e2768240e30892"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/original-command-journal.jsonl",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/original-command-journal.jsonl.b64",
+      "original_bytes": 203362,
+      "original_mode": "0600",
+      "original_sha256": "ee2feeb9b1d22ab98b354dd80b9e0ab3b72459c640d5c5ad289cb261daf18108",
+      "wrapper_bytes": 271153,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "4b8b3ebd0a4c3d349ebcb46b72287037918bb1c56f2f21e2fe0067a9c366edeb"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/readme-check.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/readme-check.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/readme-check.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/readme-check.stdout.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/scratch-KEEP-check.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/scratch-KEEP-check.json.b64",
+      "original_bytes": 11287,
+      "original_mode": "0600",
+      "original_sha256": "a885370d8522f10422fca52b4e9d396258b84009e484420d509073b50646ad9f",
+      "wrapper_bytes": 15053,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "62824d7be45ef6f529c6f2a0c569ba0aa51de78ee4074ffa0dba177b2765f6c9"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/vidya-belief-substrate-program-scratch-plan.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/vidya-belief-substrate-program-scratch-plan.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/vidya-belief-substrate-program-scratch-plan.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/vidya-belief-substrate-program-scratch-plan.stdout.b64",
+      "original_bytes": 5605,
+      "original_mode": "0600",
+      "original_sha256": "21159c1453b16ec9b6081ab30d8bad400c409c2fa5a44d5ffce830268b63cf58",
+      "wrapper_bytes": 7477,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "1ed38708aa55794a15cb8f0aff10af1183aba53b1b164c3562f940fc86f73f48"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-lint.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-lint.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-lint.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-lint.stdout.b64",
+      "original_bytes": 29369,
+      "original_mode": "0600",
+      "original_sha256": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+      "wrapper_bytes": 39161,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "9909c4113661b6729922c800ddc6aa75a39657d2bcfbb2f2300ecec3758c9c1e"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-manifest-check.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-manifest-check.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-manifest-check.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-manifest-check.stdout.b64",
+      "original_bytes": 609,
+      "original_mode": "0600",
+      "original_sha256": "4378e42a9d594fd8fe1aa95a35424eb6e12dc7773fc7a7c26ec4151692eb870c",
+      "wrapper_bytes": 813,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "b983f13977215b16c371dcf6c5615dab9bec0bbb1fca33088064b2a93ce6e221"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-source-scan.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-source-scan.stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-source-scan.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-source-scan.stdout.b64",
+      "original_bytes": 3453,
+      "original_mode": "0600",
+      "original_sha256": "716c0c34ea69ce7a2f55dec68ee21b9a7ff243295b0578c7bb39d4029e0f046c",
+      "wrapper_bytes": 4605,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "aba7c3e4234cdcbd5c884d7bb34c827731b546c0c41d5cfdde8d636ed18aec27"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-touch.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-touch.stderr.b64",
+      "original_bytes": 228,
+      "original_mode": "0600",
+      "original_sha256": "dc0ac6c17ae91ce1174abf6601e8c8e26a96a1684f59228b0738dc0e2162bd4e",
+      "wrapper_bytes": 305,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "308d5e13f79169dddd92d805c3cd8e9a58036bcbbcbb18a630f6bde3d6aae27c"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-c26-private-v2-20261007/periodic-full-after-8c46-MAIN-governance-nfu5e29i/wiki-touch.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/governance/wiki-touch.stdout.b64",
+      "original_bytes": 3453,
+      "original_mode": "0600",
+      "original_sha256": "716c0c34ea69ce7a2f55dec68ee21b9a7ff243295b0578c7bb39d4029e0f046c",
+      "wrapper_bytes": 4605,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "aba7c3e4234cdcbd5c884d7bb34c827731b546c0c41d5cfdde8d636ed18aec27"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/governance-invocation-20261007/outer-process.original.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/outer/outer-process.original.json.b64",
+      "original_bytes": 1247,
+      "original_mode": "0600",
+      "original_sha256": "15237a93fa6aeab8e5d9a1ed9fac6fbd2827c27679dcf0c18954d6fb59371b7c",
+      "wrapper_bytes": 1665,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "b97b1ab80fdff0485dd019a6f75bc419932c711b0d4559cc81c599df7e41a256"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/governance-invocation-20261007/stdout.original",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/outer/stdout.original.b64",
+      "original_bytes": 217,
+      "original_mode": "0600",
+      "original_sha256": "27d1dd9b97c35e0b4ada20eb00e5da7ec228b9dd168542d17da899e9cada6409",
+      "wrapper_bytes": 293,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "58a50a60ded0b2b4c4635f2ffbdd2cb0fcf10147d25044627608e69aa7c9fe66"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/governance-invocation-20261007/stderr.original",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/outer/stderr.original.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-continuation-MAIN-governance-input-K.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/MAIN-approved-governance-input-K.json.b64",
+      "original_bytes": 31467,
+      "original_mode": "0600",
+      "original_sha256": "07f57f768f66144b1a75b9a1a12caf67d080e613b799e3671626112eb8343d77",
+      "wrapper_bytes": 41957,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "a782785d47178bd21695efaf6226bbcfbb544fd5700c13c72834beb1b7c5c7af"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-8c46-private-20261007/FULL-current-governance-helper-REVIEW-ONLY.py",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/reviewed-governance-helper.py.b64",
+      "original_bytes": 16412,
+      "original_mode": "0600",
+      "original_sha256": "bbf601b6755e7f95bd175cecfba4cdfaa6e4bab27139379369c486b96eaacdca",
+      "wrapper_bytes": 21885,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "bb2075ae25890240f6874c841a3980ca7fbdd566414617ffa54f2956ab9cbb37"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL184-MAIN-final-incremental-scan.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/MAIN-final-incremental-scan.json.b64",
+      "original_bytes": 3453,
+      "original_mode": "0600",
+      "original_sha256": "a3c20dfccf0728acab03689e79e34ce80d55f9b747e6b934613366dc2c7aa093",
+      "wrapper_bytes": 4605,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "afcdbe1826595a8ff492759a92bbfb603a84d0c13ab52084cf6b43bce3288da9"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-420d-MAIN-publication-acceptance.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/prior-FULL183-publication-acceptance.json.b64",
+      "original_bytes": 927,
+      "original_mode": "0600",
+      "original_sha256": "c237920f580cef30d1698912747c6bd9f2d46ef3aa90df3304ad18a48aaa20ec",
+      "wrapper_bytes": 1237,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "f21e1da5a34ce31f290d5b00129a7eed1b097fd366a9e1f39a7500a74e88cf0e"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-8c46-private-20261007/FULL184-current-governance-input-CANDIDATE-REVIEW-ONLY.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/subagent-review-only-input-candidate.json.b64",
+      "original_bytes": 31380,
+      "original_mode": "0600",
+      "original_sha256": "cf4d4d7647a24c6cd9cdcb723ba6dc8206750394e0ef8c208169bc779c519da5",
+      "wrapper_bytes": 41841,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "a675cba9b381d0e636b5dacc739781b3eb2d342d2f3e11409c64a0629c829b4f"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/fresh-scratch-plans-20261007/non-inference-backlog.process.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/fresh-plan/backlog-process.json.b64",
+      "original_bytes": 955,
+      "original_mode": "0600",
+      "original_sha256": "a8fdec0f7b5057ef21fedff19320841431f6e1b7270629a11e9d6726343f26e7",
+      "wrapper_bytes": 1277,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "e26658cdff6d8e827e0a657e24c5bf3e5a3e0690671104bd082ac50f6d9574a5"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/fresh-scratch-plans-20261007/non-inference-backlog.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/fresh-plan/backlog-stdout.b64",
+      "original_bytes": 12632,
+      "original_mode": "0600",
+      "original_sha256": "ef2485f6a727a3c6c6226ecf8cfbdebe808b83d44f4fa11810cef8a435ccde8e",
+      "wrapper_bytes": 16845,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "5e01dbdbea18a729487c5402db13d64cc4dd01a8aeede0db67e2768240e30892"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/fresh-scratch-plans-20261007/non-inference-backlog.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/fresh-plan/backlog-stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/fresh-scratch-plans-20261007/vidya-belief-substrate-program.process.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/fresh-plan/vidya-process.json.b64",
+      "original_bytes": 981,
+      "original_mode": "0600",
+      "original_sha256": "c3ad97b9e3f8bb1440858540fa1f1e41b2e45abaed856a433d648a444033ec3a",
+      "wrapper_bytes": 1309,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "d6942654670f9fdc67fa56d139e59d7ef7cce6ec2c11d04bd600f224c0f96d21"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/fresh-scratch-plans-20261007/vidya-belief-substrate-program.stdout",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/fresh-plan/vidya-stdout.b64",
+      "original_bytes": 5605,
+      "original_mode": "0600",
+      "original_sha256": "321ea14a4f53b31341a822b2718497e2ef9246a995a8c73e3b8ff2344d0d4a3c",
+      "wrapper_bytes": 7477,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "2a385d756ac42156d1f0eed921f7c81a4bd409f0f0ecd9855b6d67f090ba8ed4"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/fresh-scratch-plans-20261007/vidya-belief-substrate-program.stderr",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/fresh-plan/vidya-stderr.b64",
+      "original_bytes": 0,
+      "original_mode": "0600",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_bytes": 1,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "encoding": "base64 with one terminal LF",
+      "original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-continuation-MAIN-governance-acceptance.json",
+      "public_path": "artifacts/ni08/periodic-full-governance-20261007/transport-originals/inputs/MAIN-governance-acceptance.json.b64",
+      "original_bytes": 899,
+      "original_mode": "0600",
+      "original_sha256": "761251dd605372bc5186a6eb4153db9be8413a4157992e827287db7129710627",
+      "wrapper_bytes": 1201,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "40e34d3a0beea51a454fb9b9c7d054d87b819eab5fc8c264f88fa0a1a5124e60"
+    }
+  ]
+}

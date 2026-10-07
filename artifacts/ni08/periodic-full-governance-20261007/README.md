@@ -1,0 +1,9 @@
+# Periodic FULL governance custody — 2026-10-07
+
+This package preserves the successful periodic FULL governance run, independently accepted by MAIN. MAIN accepted the governance boundary in `FULL183-continuation-MAIN-governance-acceptance.json` (SHA-256 `761251dd605372bc5186a6eb4153db9be8413a4157992e827287db7129710627`), with the original journal SHA-256 `ee2feeb9b1d22ab98b354dd80b9e0ab3b72459c640d5c5ad289cb261daf18108`. The fixed helper completed with exit code 0; the accepted state is governance only; this evidence grants no native, inference or runtime authority.
+
+The run kept ROOT at `9f9ee4d4eb68486221ea72c44f98aa06c6082fbc` and verified 32 source paths plus the generated tracked index and wiki-manifest paths. MAIN recorded 0 checked flips and 5 new unchecked prospective children. The final incremental wiki projection contained 7 changed sources with source-set hash `075ba022da70cf8498bd7cd52c21f12194de89c482a92b39873cf48c174959b5`.
+
+Both current handoff scratch plans were plan-only. Their exact REMOVE recommendations are included in the transport manifest and captured outputs; no cleanup apply or deletion was selected. The governance lease release was checked and the token was verified removed.
+
+`transport-manifest.json` binds 41 unchanged private artifacts, including original command records and clearly identified preparation/review records. Each wrapper is base64 with one terminal LF; decoding it restores the exact original bytes, with source path, original mode, size, and SHA-256 recorded. The source cut is the bound incremental scan at23:37:36UTC; later TD29/HG5 native and source operations are recorded at their next task boundaries. The completion tally stays183: this cut adds five open tasks and zero closures. Index pruning and handoff compaction selected no changes; scratch evidence and foreign recommendations remain retained.

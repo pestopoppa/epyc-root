@@ -1695,3 +1695,12 @@ EVL42 preserves the original actual-wrapper attachment path and 44 synthetic con
 C26’s accepted source/native pair covers a mocked stop-cancellation control surface. The original hosted run passed all 46 selected JUnit cases and its full source/readset/typed-result custody is accepted. This does not test the mixed runtime parent, physical serving floor, actual cancellation during inference, quality or performance. The `0858` NULL and `aad7`/`17f` FALSE outcomes are retained as separate originals. [C26 scope and custody](../artifacts/ni08/c26-current-source-acceptance-20261007/README.md) · [DS41 owner handoff](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
 TD-29.M0a.S0 remains a prospective source-control child: 119 AST definitions are proposal-time inventory only; the original JUnit determines actual collected cases. No original native capture or product publication is established at this checkpoint. Keep its independent sidecar/runtime parent and dependency gate open. [TD-29 source task](../handoffs/active/typed-decision-plane.md).
+
+
+## HG5 force control and TD29 fixture preparation — 2026-10-07
+
+HG5’s bounded five-file force-mode patch has MAIN structural acceptance only. It adds one explicit `architect_general` consultation to eligible completed direct/frontdoor answers, preserves the default-off feature flag and old default/off goldens, and retains the original answer with bounded actual accounting when the consultant fails or returns empty/error output. REPL finals, tool/image/role-override and empty/error initial answers remain ineligible. Four focused whole-module controls and source publication must still be accepted before closing HG5; no flag or runtime activation is implied.
+
+TD29’s private current-tip APP130a and ROOT46e9 recipe commits are reviewed, with the ordinary installed ROOT hook passing. The original122-control off-host event and product publication are still pending in this cut. Package refusals preserve their original evidence and require corrected fresh MAIN-bound approval; they do not create a new operator decision. Source-only conformance never establishes runtime prefill speed or the parent’s three-arm sidecar evidence.
+
+Sources: [HG5 owning task](../handoffs/active/reviewer-escalation-and-human-gate-policy.md), [prospective fixture/source tasks](../handoffs/active/vidya-belief-substrate-program.md), [MAIN continuation](../docs/reference/ni08-non-inference-continuation.md), [dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
