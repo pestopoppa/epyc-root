@@ -32,14 +32,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-inference-research
-          ref: 9f415a7165dd2c22f7bbf1a52ac3035292c7f5e0
+          ref: b2b44fedba3db5ce4c240d9aee0573b753103c53
           path: source
           fetch-depth: 0
           persist-credentials: false
       - name: Checkout MAIN exact prospective source and native enrollment
         uses: actions/checkout@v4
         with:
-          ref: 8b540512ed8017fc0ed80ea8f5d3a0381fc08ead
+          ref: 09c7b2df444beb70fc97e0ee6feefbc6f36fd9af
           path: context
           persist-credentials: false
       - name: Checkout exact carrier input
