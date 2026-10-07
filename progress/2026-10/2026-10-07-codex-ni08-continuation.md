@@ -135,3 +135,8 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## Prospective reference and registry/env source enrollment
 
 MAIN reviewed and prospectively enrolled the actual governance-reference validator and combined compiler/environment compatibility controls before hosted execution. The reference scope covers the nine reviewed corrections plus the actual complete scan/target readset; it does not substitute for the full candidate gate. APP0a40117c source remains private pending native proof and integration. Updated existing domain next actions; no new handoff/index row or completion count. NI08 remains105, broader source/audit work continues.
+
+
+## Voice strict payload and typed choice — prospective source boundary
+
+MAIN reviewed APPbbf38c98 six-file proposal and complete callers/tests, MEDIUM additive route/controller/cascade contract. Explicit protected/verbatim turns bypass unsupported interlocutors; owner-pinned cancel cannot cancel a replacement turn. Prospective CS16-SOURCE/CS18-SOURCE and VB-CS16-18-CONFORMANCE/table enrolled before capture. Normal/default streaming retained; strict modes buffer before exact-text validation. No phrase classifier, audio fidelity, real service, or latency acceptance. Native verification/source integration remain next; NI08 tally remains105.
