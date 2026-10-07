@@ -2,6 +2,9 @@ name: INF50 registry compiler projection (ungraded)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/ni08-inf50-projection-private-ci-20261007
 
 permissions:
   contents: read
