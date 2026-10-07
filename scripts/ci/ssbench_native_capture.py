@@ -139,7 +139,7 @@ def verify_locked_wheels(app: Path) -> None:
     current = None
     for line in regular_bytes(requirements).decode("utf-8").splitlines():
         row = line.strip()
-        if not row:
+        if not row or row.startswith("#"):
             continue
         if not line[:1].isspace():
             if not row.endswith("\\"):
