@@ -1650,3 +1650,10 @@ Source references: [SCG owner](../handoffs/active/stack-change-governance-pipeli
 
 
 [ET13 honest routing source and original140/140 controls](../artifacts/ni08/et13-honest-routing-source-acceptance-20261007/README.md) preserve raw route bytes, denominators and existing safety/default/objective rules while attributing frontdoor only to an explicit label. The earlier setup failure, native NULL collection errors and FALSE139/140 fixture failure remain immutable; the corrected fixture receives its own fresh accepted original. Accepted APP87ec publication omitted required serialization leases; the separate earlier absent-ref force-with-lease deviation also remains recorded. MAIN stops further worker publication pending canonical lock-command review and supplies no retrospective lease or installed-hook attestation. This source conformance gives no live routing/model/runtime warrant.
+
+
+### Prospective request-budget and pointer lexical controls — 2026-10-07
+
+The [tool-output owner](../handoffs/active/tool-output-compression.md) and [ROCm verification owner](../handoffs/active/rocm-verify-profile-backend.md) prospectively enroll TOC-SP-4 and RVP-C6-26-C-POINTER-SOURCE with their existing-CI companions. The reviewed proposals retain whole15 mocked-worker and whole9 lexical controls respectively; all four checkboxes remain open in this published checkpoint. Enrollment is not native/source acceptance, quote quality, arbitrary memoization absence, GPU timing or parent completion. The [belief source program](../handoffs/active/vidya-belief-substrate-program.md) records their prospective original-custody requirements.
+
+The pointer attempt subsequently exposed a real quoted-string false positive (original37617279801 FALSE8/9). The source repair uses a pointer-only literal/comment mask with stronger negatives and retained active-key positives; it remains proposed until fresh frozen native evidence is independently accepted. The earlier failed original is preserved. DS41-C104 future-writer source likewise propagates the existing decisive comparison flag; historical store records and the native decision predicate remain separate.

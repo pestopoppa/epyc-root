@@ -1,0 +1,76 @@
+{
+  "schema": "epyc.main.full_wrapup_review.v1",
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T12:15:04.787033+00:00",
+  "ROOT_before": "cfb0d6c625f2581082e0893ce8d391a8a7c42cc9",
+  "baseline_full": "8808c861afec47285cb25568441323074ad0c1b5",
+  "worker_draft_source_delta": 7,
+  "actual_final_source_delta": 8,
+  "full_source_population": 1347,
+  "source_set_hash": "6e9b26affc9116fa315e780083c055155a2fb517f728c5348bec02917c8be6f6",
+  "manifest_after_touch_new": 0,
+  "manifest_drift": false,
+  "wiki_lint": {
+    "errors": 0,
+    "existing_warnings": 96
+  },
+  "README_warnings": 0,
+  "handoff_index": {
+    "valid": true,
+    "nodes": 179,
+    "ready": 132,
+    "blocked": 41,
+    "no_open": 6
+  },
+  "index_pruning": 0,
+  "archives_or_compactions": 0,
+  "new_completed_scopes_since_previous_full": 1,
+  "checkbox_closures_this_full": 0,
+  "new_unchecked_C104_scope_tasks": 2,
+  "NI08": {
+    "accepted_total": 160,
+    "existing_tasks": 99,
+    "scoped_children": 61
+  },
+  "scratch": {
+    "plan_exit_code": 1,
+    "exit_1_means_any_KEEP_per_tool_contract": true,
+    "supplied_roots": 174,
+    "coalesced_entries": 49,
+    "verdict_counts": {
+      "KEEP-MARKED": 13,
+      "KEEP-UNLANDED-CLONE": 5,
+      "KEEP-DIRTY": 10,
+      "KEEP-UNLANDED": 12,
+      "KEEP-REFERENCED": 2,
+      "KEEP-EVIDENCE": 1,
+      "KEEP-UNVERIFIABLE": 2,
+      "KEEP-PROTECTED": 4
+    },
+    "initial_unmarked_prejob_custody_candidates": 19,
+    "retention_markers_added": 2,
+    "original_indexed_bytes_unchanged": true,
+    "destructive_actions": 0
+  },
+  "checks_sha256": {
+    "periodic-wrapup-1200-source-scan.json": "3d0e4504a23e08d391514b5b7a05ef754ebd3752c603dec3fd919bced0c6a459",
+    "periodic-wrapup-1200-after-touch.json": "af609cd2c3bce627579162092f2d0a72a47830906583403f6a03353adf7a9e79",
+    "periodic-wrapup-1200-manifest-check.json": "723cee2c3fa900816a1012b2e947f06bf41c7b33c3fc1c6dca08ff27302d0b5f",
+    "periodic-wrapup-1200-wiki-lint.txt": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+    "periodic-wrapup-1200-readme.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "periodic-wrapup-1200-index-check.txt": "285f6e66d170f69e3d429b083cf56fa738102e6096a33c85aa68662593d7c811",
+    "periodic-wrapup-1200-scratch-plan-after-retention.json": "94f6a79b3217aa8f6b2d85c94f203d3d6427131e3ae87285c2fac282ef9a5b79"
+  },
+  "applied_paths_sha256": {
+    "wiki/speculative-decoding.md": "20f85db1fe178e7461a52751596163ce953be7903bdff56fb952234003f63f3a",
+    "wiki/tool-implementation.md": "e8bcd7824062357ce55b3439bfddbc76ad36f33bc43460fa609c0fba33e4d6f6",
+    "wiki/knowledge-management.md": "e9b40ca5d68678a48a46364b185f3efde9b9e08c73e157fc6f2cdd94a7deb43b",
+    "progress/2026-10/2026-10-07.md": "7d8b39502b1736bc28551cfd5e3dadae6e21364a160e15d582dd90ba45cf8c4f",
+    "handoffs/active/rocm-verify-profile-backend.md": "4264a3ca526555df72aec7d9e5cd0803b327db5234ec03d1b1d7db4d05f3dbdd",
+    "handoffs/active/vidya-belief-substrate-program.md": "d792f53cb358bdf7e64bdf7e0a9014da31dff4087c6f09781f5722594c8d6b14",
+    "scripts/vidya/adapters/README.md": "d2c939ca8f6a7369974316b8a223ff7c8d6a2edfeda12ec7ccf7dfb890d38172",
+    "handoffs/active/deepseek-v41-flash-evaluation.md": "4ffc37dda8db50ceda52b78661711d8b3613f2c27a71cf5f922a0a0c18fdb8ab",
+    "wiki/source_manifest.json": "d9f07f12a7b75a7fb51902e2c99caa8bd0b242ee1a706cc1063a6aca09b0a7eb"
+  },
+  "scope": "Operator-requested periodic full routine, no production/measurement trust/grade mutation. Pointer failed original remains unaccepted, C104futurewriter prospective, actual DCP success still pending separate MAIN original review. No sharedhost project execution/inference/reload/build/modeldownload."
+}

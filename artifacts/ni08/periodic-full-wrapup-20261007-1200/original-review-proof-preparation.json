@@ -1,0 +1,69 @@
+{
+  "root_pin": "cfb0d6c625f2581082e0893ce8d391a8a7c42cc9",
+  "baseline": "8808c861afec47285cb25568441323074ad0c1b5",
+  "source_population": 1347,
+  "source_delta": 7,
+  "removed_sources": [],
+  "accepted_total": 160,
+  "existing": 99,
+  "children": 61,
+  "new_existing_closures": [
+    "+- [x] **SR-5 \u2014 align this handoff's NG-vs-operator wording with the ratified source.** \u2705 2026-10-07 \u2014 Research `c49729505b6b85bcc2ef68255168014b4ae6a84d` changes only the retired `ngram_candidate_spec_type` historical prose scalar. RATIFY-STACKCHG-DFLASH2-20261003 governs: one drafter per role, eligibility in `roles.<model_role>.drafters`, actual selection in `stack_topology.yaml` `drafter_selection`; `default_spec_type: draft-mtp` is legacy for roles without drafters. The 2026-07-31 composed recipe is superseded history; NG1\u2013NG3 remain scoped to their arms. [Source review/publication and limits](../../artifacts/ni08/inf50-retired-policy-source-acceptance-20261007/README.md). No operative config/selection-policy or generated APP lean change; NG5 remains open."
+  ],
+  "prospective_enrollments": [
+    "TOC-SP-4",
+    "VB-TOC-SP-4-CONFORMANCE",
+    "RVP-C6-26-C-POINTER-SOURCE",
+    "VB-RVP-C6-26-C-POINTER-CONFORMANCE",
+    "SR5-LEAN-DOC-PROJECTION",
+    "VB-INF50-LEAN-DOC-PROJECTION"
+  ],
+  "domain_rows": 179,
+  "reference_checks": [
+    {
+      "from_path": "wiki/speculative-decoding.md",
+      "target": "artifacts/ni08/inf50-retired-policy-source-acceptance-20261007/README.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/speculative-decoding.md",
+      "target": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/tool-implementation.md",
+      "target": "handoffs/active/tool-output-compression.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/tool-implementation.md",
+      "target": "handoffs/active/rocm-verify-profile-backend.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/tool-implementation.md",
+      "target": "handoffs/active/vidya-belief-substrate-program.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/knowledge-management.md",
+      "target": "docs/reference/ni08-non-inference-continuation.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/knowledge-management.md",
+      "target": "progress/2026-10/2026-10-07.md",
+      "exists": true
+    },
+    {
+      "from_path": "wiki/knowledge-management.md",
+      "target": "handoffs/active/non-inference-backlog.md",
+      "exists": true
+    }
+  ],
+  "canonical_checks": "NOT EXECUTED; MAIN owns managed-venv wiki/README/index scanner checks and touch/publication.",
+  "scratch_disposition": "All declared evidence/proposal roots KEEP; no deletion/pruning/archive/compaction.",
+  "DCP": "Published context states custody repair under review; no bound prejob refusal evidence supplied in this packet, no DCP acceptance or inferred diagnostic.",
+  "private_pointer_original": "Separate nativeFALSE8/9 original37617279801 preserved; outside pinned canonical checkpoint, no source acceptance.",
+  "patch_sha256": "7169fa73d46f7bffa756318c41f4dd7e14d3204264825e967d390a5c9651e3c9"
+}

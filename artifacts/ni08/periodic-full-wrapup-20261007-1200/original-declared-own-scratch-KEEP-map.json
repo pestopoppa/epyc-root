@@ -1,0 +1,1002 @@
+[
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/colgrep-score-normalization-current-20261007",
+    "device": 2431,
+    "inode": 207097500,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/colgrep-score-normalization-current-review-20261007",
+    "device": 2431,
+    "inode": 207101500,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/colgrep-score-normalization-freeze-20261007",
+    "device": 2431,
+    "inode": 206876807,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/dcp2-colgrep-recipe-root-20261007",
+    "device": 2431,
+    "inode": 207126965,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl24-distinct-run-native-root-20261007",
+    "device": 2431,
+    "inode": 204649345,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl24-distinct-run-source-candidate-20261007",
+    "device": 2431,
+    "inode": 204911423,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl24-distinct-run-source-proposal-20261007",
+    "device": 2431,
+    "inode": 206871464,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl24-distinct-run-source-proposal-v2-20261007",
+    "device": 2431,
+    "inode": 207005317,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl24-native-preparation-20261007",
+    "device": 2431,
+    "inode": 205564301,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl24-original-run-37608090336",
+    "device": 2431,
+    "inode": 204387229,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl38-original-run-37572099379",
+    "device": 2431,
+    "inode": 204383706,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-original-run-37575558969",
+    "device": 2431,
+    "inode": 204386532,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-original-run-37577080153",
+    "device": 2431,
+    "inode": 204491424,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-pin-report-wiring-proposal",
+    "device": 2431,
+    "inode": 204494914,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-report-enrollment-draft",
+    "device": 2431,
+    "inode": 204386774,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-report-original-run-37586226428",
+    "device": 2431,
+    "inode": 204629721,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-report-original-run-37586226428-api",
+    "device": 2431,
+    "inode": 204629722,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/fw1-original-run-37577092312",
+    "device": 2431,
+    "inode": 204491459,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/fw1-original-run-37577590308",
+    "device": 2431,
+    "inode": 204386611,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf09-rtg07-stale-premise-drafts",
+    "device": 2431,
+    "inode": 204491368,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf16-k11-complete-task-denominator-proposal",
+    "device": 2431,
+    "inode": 204632376,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf18-ernie-rocm-f32-proposal",
+    "device": 2431,
+    "inode": 204384516,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf18-ernie-rocm-source-proposal-20261007",
+    "device": 2431,
+    "inode": 204387059,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf18-gater-current-kernel-draft",
+    "device": 2431,
+    "inode": 204384513,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf33-g16-current-tip-source-proposal-20261007",
+    "device": 2431,
+    "inode": 205173588,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf33-primary-log-linear-source-20261007",
+    "device": 2431,
+    "inode": 206746412,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-literal-repair-proposal-20261007",
+    "device": 2431,
+    "inode": 207532999,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-publication-original-20261007",
+    "device": 2431,
+    "inode": 207371337,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-recipe-canonical-linked-publication-20261007",
+    "device": 2431,
+    "inode": 208545380,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c-pointer-source-canonical-linked-publication-20261007",
+    "device": 2431,
+    "inode": 207371345,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c6-26-c-pointer-source-proposal-20261007",
+    "device": 2431,
+    "inode": 204911562,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c6-26-pointer-final-freeze-20261007",
+    "device": 2431,
+    "inode": 208306136,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c6-26-pointer-native-preparation-20261007",
+    "device": 2431,
+    "inode": 208286525,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c6-26-pointer-native-root-20261007",
+    "device": 2431,
+    "inode": 207371283,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c6-26-pointer-source-candidate-20261007",
+    "device": 2431,
+    "inode": 208049461,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-c6-26-two-sided-gpu-twin-source-proposal-20261007",
+    "device": 2431,
+    "inode": 205015030,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-geak-eval-license-current-api-20261007",
+    "device": 2431,
+    "inode": 207231841,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-pareval-gfx90a-source-proposal-20261007",
+    "device": 2431,
+    "inode": 205015026,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf48-pareval-primary-source-20261007",
+    "device": 2431,
+    "inode": 205015025,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf50-root-checkpoint-preparation-20261007",
+    "device": 2431,
+    "inode": 208306230,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-decisive-writer-source-proposal-20261007",
+    "device": 2431,
+    "inode": 208306151,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-source-candidate-20261007",
+    "device": 2431,
+    "inode": 207532942,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c104-source-freeze-review-20261007",
+    "device": 2431,
+    "inode": 207532995,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-c42-zero-eligible-source-proposal-20261007",
+    "device": 2431,
+    "inode": 207371275,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/inf77-ds41-u32-loader-source-proposal-20261007",
+    "device": 2431,
+    "inode": 207371268,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/k11-null-compatible-native-root-20261007",
+    "device": 2431,
+    "inode": 206338684,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/k11-original-run-37594059944",
+    "device": 2431,
+    "inode": 206206444,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/k11-original-run-37596204461",
+    "device": 2431,
+    "inode": 206453016,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/k11-repeat-summary-native-root-20261007",
+    "device": 2431,
+    "inode": 205820230,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/k11-reporting-current-source-20261007",
+    "device": 2431,
+    "inode": 204517922,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/k11-subtest-compatible-source-20261007",
+    "device": 2431,
+    "inode": 204386993,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/lr11-lr13-close-rules",
+    "device": 2431,
+    "inode": 204371578,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/lr12-original-run-37575902163",
+    "device": 2431,
+    "inode": 204487301,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/lr12-original-run-37577067448",
+    "device": 2431,
+    "inode": 204491365,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/lr12-reference-root",
+    "device": 2431,
+    "inode": 204371550,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/lr12-source",
+    "device": 2431,
+    "inode": 204371586,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12h-chronological-judge-guard",
+    "device": 2431,
+    "inode": 204384146,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12h-chronological-judge-source-proposal-20261007",
+    "device": 2431,
+    "inode": 204518120,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m17e-single-vector",
+    "device": 2431,
+    "inode": 204383463,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-wrapup-1110-159-preparation-20261007",
+    "device": 2431,
+    "inode": 207788209,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-wrapup-1110-preparation-20261007",
+    "device": 2431,
+    "inode": 207532378,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-wrapup-1110-scratch-preparation-20261007",
+    "device": 2431,
+    "inode": 207371244,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-wrapup-1200-preparation-20261007",
+    "device": 2431,
+    "inode": 204911568,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-binary-linkage-source-proposal",
+    "device": 2431,
+    "inode": 204496473,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-current-original-run-37602237437",
+    "device": 2431,
+    "inode": 205304613,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-current-provenance-source-20261007",
+    "device": 2431,
+    "inode": 206603609,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-original-run-37596771632",
+    "device": 2431,
+    "inode": 206453118,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-selected-library-native-root-20261007",
+    "device": 2431,
+    "inode": 204911132,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/pip02-selected-library-source-20261007",
+    "device": 2431,
+    "inode": 204632385,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/private-wrap-packet-20261007",
+    "device": 2431,
+    "inode": 204387063,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg11-k4a-master-default",
+    "device": 2431,
+    "inode": 204383697,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg48-r25-residual-citation-draft",
+    "device": 2431,
+    "inode": 204384520,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rtg56-m0a-raw-prefill-proposal",
+    "device": 2431,
+    "inode": 204385014,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rvp-native-preparation",
+    "device": 2431,
+    "inode": 204383702,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rvp-original-run-37579641909",
+    "device": 2431,
+    "inode": 204386672,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rvp-original-run-37580634048",
+    "device": 2431,
+    "inode": 204497685,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/rvp-ssm-experimental",
+    "device": 2431,
+    "inode": 204379629,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-dep-child-20261007",
+    "device": 2431,
+    "inode": 204387025,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-multipart-original-run-20261007",
+    "device": 2431,
+    "inode": 206453092,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-multipart-repair-private-20261007",
+    "device": 2431,
+    "inode": 206453014,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-native-recipe-private-20261007",
+    "device": 2431,
+    "inode": 206070621,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-original-run-20261007",
+    "device": 2431,
+    "inode": 206191522,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-recipe-child-20261007",
+    "device": 2431,
+    "inode": 206206493,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/s49-run-7f26-20261007",
+    "device": 2431,
+    "inode": 204911302,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/sc42-original-run-37573691811",
+    "device": 2431,
+    "inode": 204384411,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/sc42-original-run-37575126755",
+    "device": 2431,
+    "inode": 204386533,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/sc55-actual-profiler-parser-source-proposal-20261007",
+    "device": 2431,
+    "inode": 205960115,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-child-20261007",
+    "device": 2431,
+    "inode": 204387077,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-original-run-37602092844-20261007",
+    "device": 2431,
+    "inode": 206871470,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-proposal-20261007",
+    "device": 2431,
+    "inode": 206735074,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-original-run-109942318-20261007",
+    "device": 2431,
+    "inode": 204518125,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-original-run-20261007",
+    "device": 2431,
+    "inode": 206453064,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-private-recipe-20261007",
+    "device": 2431,
+    "inode": 204518029,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-yaml-fix-child-20261007",
+    "device": 2431,
+    "inode": 206453887,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-yaml-fix-proposal-20261007",
+    "device": 2431,
+    "inode": 204387056,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/smt-original-run-37577177643",
+    "device": 2431,
+    "inode": 204487371,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/smt-original-run-37577564322",
+    "device": 2431,
+    "inode": 204492128,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/smt-original-run-37578164683",
+    "device": 2431,
+    "inode": 204493737,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/smt-original-run-37579644041",
+    "device": 2431,
+    "inode": 204495291,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/source-screen-20261007",
+    "device": 2431,
+    "inode": 204387070,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh05-finite-runner-research-candidate-20261007",
+    "device": 2431,
+    "inode": 205959905,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh05-finite-runner-root-candidate-20261007",
+    "device": 2431,
+    "inode": 206586323,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh12-placement-discovery",
+    "device": 2431,
+    "inode": 204383653,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh12-spill-budget-recipe-root-20261007",
+    "device": 2431,
+    "inode": 207264297,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh12-spill-summary-budget-candidate-20261007",
+    "device": 2431,
+    "inode": 204911500,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh12-spill-summary-budget-review-20261007",
+    "device": 2431,
+    "inode": 204387215,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/ufh12-spill-summary-budget-source-proposal-20261007",
+    "device": 2431,
+    "inode": 204911467,
+    "keep_marker": true,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37571161701",
+    "device": 2431,
+    "inode": 204383479,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37573678577",
+    "device": 2431,
+    "inode": 204384273,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37575113953",
+    "device": 2431,
+    "inode": 204472321,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37575895828",
+    "device": 2431,
+    "inode": 204487152,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37577270119",
+    "device": 2431,
+    "inode": 204491686,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37577824164",
+    "device": 2431,
+    "inode": 204493361,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37579638942",
+    "device": 2431,
+    "inode": 204386651,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w4-original-run-37580631576",
+    "device": 2431,
+    "inode": 204506549,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-anchored-original-run-37605275884",
+    "device": 2431,
+    "inode": 207102211,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-attempt2-original",
+    "device": 2431,
+    "inode": 204632317,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-carry-original-run-37598878501",
+    "device": 2431,
+    "inode": 204649183,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-carry-private-recipe-20261007",
+    "device": 2431,
+    "inode": 206191566,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-informational-json-source-candidate-20261007",
+    "device": 2431,
+    "inode": 206735175,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-informational-json-source-proposal-20261007",
+    "device": 2431,
+    "inode": 206721038,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-json-original-run-37602263864",
+    "device": 2431,
+    "inode": 206876154,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-original-anchored-test-source-proposal-20261007",
+    "device": 2431,
+    "inode": 207005322,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/w6e-schema-original-run-37606877926",
+    "device": 2431,
+    "inode": 207122031,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/xllm-prefill-source-audit",
+    "device": 2431,
+    "inode": 204494953,
+    "keep_marker": false,
+    "disposition": "KEEP",
+    "reason": "Declared own ongoing proposal/original/accepted boundary evidence; no removal authorization."
+  }
+]

@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T11:20:36Z",
+  "last_compile": "2026-10-07T12:11:20Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T11:20:36Z",
+  "scan_time": "2026-10-07T12:11:20Z",
   "schema_version": 1,
-  "source_set_hash": "2daf112bb58ac083b44df6cfa9c854fae1b7538de909642dbf49b8e34aca6795",
+  "source_set_hash": "6e9b26affc9116fa315e780083c055155a2fb517f728c5348bec02917c8be6f6",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -367,10 +367,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a52d484596b83ac43f7b54b93c6d61c051babc619defd54f36337d3939fe9edf",
-      "modified": "2026-10-07T03:23:02Z",
+      "content_hash": "4ffc37dda8db50ceda52b78661711d8b3613f2c27a71cf5f922a0a0c18fdb8ab",
+      "modified": "2026-10-07T12:06:43Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 146631,
+      "size": 147982,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "48120e909fc180a5a8136dca51d3fd3ca75ce4498c62ced14d06849d8b0aba61",
-      "modified": "2026-10-07T11:14:46Z",
+      "content_hash": "cad071714dfd143eeff8233edd6653f7025a906dc1da37d2fbe72ce4d9acbd12",
+      "modified": "2026-10-07T11:54:27Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 129991,
+      "size": 130579,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1183,10 +1183,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dced2ba8e30491bd9d5e6a7f84eca4862b57c3cf2050a73da9f5458124a81c56",
-      "modified": "2026-10-07T06:39:26Z",
+      "content_hash": "4264a3ca526555df72aec7d9e5cd0803b327db5234ec03d1b1d7db4d05f3dbdd",
+      "modified": "2026-10-07T12:06:11Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 159773,
+      "size": 161158,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1263,10 +1263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7efa96114ec6074ab149ea75654289a8c5e466626a4bbf81927a519073755d4b",
-      "modified": "2026-10-07T04:56:39Z",
+      "content_hash": "9df1a36e7eb376467962c7a9451ee4a00830cec5a73ae97bbf93a3751109564a",
+      "modified": "2026-10-07T11:54:27Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 74944,
+      "size": 75896,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1343,10 +1343,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "486f7cbbe6dab7e46677030cb5f5d00bc6244b7d53cb8e95d63dca8a499e3f9f",
-      "modified": "2026-10-06T22:27:28Z",
+      "content_hash": "2836a06fb1279d0d8c535e5f1a062d24f3dcf2377e894c225f3a385704552614",
+      "modified": "2026-10-07T11:29:30Z",
       "path": "handoffs/active/tool-output-compression.md",
-      "size": 68813,
+      "size": 69880,
       "title": "Tool Token Optimization \u2014 Output Compression + Definition Reduction",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b69a7b03948119f68def3d3ba3a291a5ff0699f425804e3cdbeda95af3b99c85",
-      "modified": "2026-10-07T11:14:46Z",
+      "content_hash": "d792f53cb358bdf7e64bdf7e0a9014da31dff4087c6f09781f5722594c8d6b14",
+      "modified": "2026-10-07T12:06:43Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 364667,
+      "size": 367494,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9407,10 +9407,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e7f336a7f9832682c3d0a6c407164cdfb22e737f932e8bb3add19c10ff5905d7",
-      "modified": "2026-10-07T11:18:43Z",
+      "content_hash": "7d8b39502b1736bc28551cfd5e3dadae6e21364a160e15d582dd90ba45cf8c4f",
+      "modified": "2026-10-07T12:06:11Z",
       "path": "progress/2026-10/2026-10-07.md",
-      "size": 19386,
+      "size": 21418,
       "title": "2026-10-07",
       "type": "progress"
     },
@@ -10375,10 +10375,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "9fd0cdf3b70d1b17f871ffd15252205a9e1233b1dda6a80538de71f78a9ea4f8",
-      "modified": "2026-10-07T11:14:46Z",
+      "content_hash": "8289ce2db06b9942cb22a461e18b1ddf8b7a63b21c4cbe53a0ad5dc081d2156f",
+      "modified": "2026-10-07T11:54:27Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 57887,
+      "size": 58436,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

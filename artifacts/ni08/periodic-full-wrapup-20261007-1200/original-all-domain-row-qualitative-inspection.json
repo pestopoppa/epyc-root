@@ -1,0 +1,1613 @@
+[
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | Spike S3-ACH-01's actor allowlist; scope AC-CHECKPOINT-ALLOC against eligible independent continuations | \u2014 |",
+    "target": "handoffs/active/agent-collab-rnd-harness.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e163453635e7be986d0fa55e9e28fb85f4582ac30a0148fa40af2044d2c19885"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | the C5 backlog; REGAUDIT-3 and AGPR-1 parked (operator 2026-09-27; resume steps in file) | INF-48, EVL-47 |",
+    "target": "handoffs/active/agentic-rocm-kernel-authoring.md",
+    "open_checkboxes": 25,
+    "checked_checkboxes": 88,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "dd11064c9e8deb6bc37651820558d44241b97545f5d6633477a3fd39ca8518e5"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | \u2014 |",
+    "target": "handoffs/active/angelslim-techniques-evaluation.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3aca2f98059b411572da4fa7346cefc5c9e0de62d41dec3c3813a397d3fd5f6d"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | \u2014 |",
+    "target": "handoffs/active/attention-matching-kv-compaction.md",
+    "open_checkboxes": 10,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "1204469bb1e4de5105d9c16e24f65beace2e31b0157bab1d95085ca85f7ae4ac"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47, INF-64 |",
+    "target": "handoffs/active/autokernel-research-loop.md",
+    "open_checkboxes": 71,
+    "checked_checkboxes": 285,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b6d0bafc270e201f0c64c6a3e5dc43fbbe034f5784ed6da1d3103d54c1148319"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes | \u2014 |",
+    "target": "handoffs/active/autokernel-restart-and-strip.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 18,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "09b05526f38d05876bc18d16725edc6dc475f712dab8528b3e3a731b4505294a"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | HEAD-3 np=24/32 needs operator go; V6R-4a/4c and CH-17 (re-select drafters at freeze) ride the v11 gate | INF-06, INF-62, INF-64 |",
+    "target": "handoffs/active/autokernel-champion-aggregate.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 17,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3af885f44a2f84cc2ad9243f6d996fab645d9d28a5c38269a30e370cbbd6f2c9"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | v10 PROMOTED (ffc1bac82/10303) and serving; next R23-64 thread re-sweep, then R23-62 champion-divergence closer | INF-06, INF-64, INF-65 |",
+    "target": "handoffs/active/autokernel-rebuild-program.md",
+    "open_checkboxes": 76,
+    "checked_checkboxes": 112,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c39eaaa0f34c127ac641b47086cbe2764d5c9843ab049dbf1594334f40b18523"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 \u2014 the never-measured NUMA\u00d7batch 2D sweep; needs a post-promotion quiet window | \u2014 |",
+    "target": "handoffs/active/batched-decode-measurement.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 43,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "0b7056320fde5785f2c342a63fdc38dc4f105b9dcb594b3e8e38fb74b3e38320"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 \u2014 experimental qwen35 prefill barrier/graph-fusion prototype: | \u2014 |",
+    "target": "handoffs/active/cpu-prefill-compute-large-models.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 27,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4a3fe2834ba1b021fd882e7cd5a2eb8a0dc99423d7a74dd96bb0fd6bdb52a895"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Receipts-only holder for the CPU gemv axis; live re-ranking is INF-70 \u2014 reopen only on the CPU18/CPU26 or intake re-surface triggers | \u2014 |",
+    "target": "handoffs/active/cpu-shape-specialized-gemv-decode.md",
+    "open_checkboxes": 0,
+    "checked_checkboxes": 2,
+    "inspection": "MAIN qualitative review: no open checkbox does not establish whole-handoff completion or authorize pruning.",
+    "source_sha256": "5ae0bf03e4b9214130aa1c8efc4c41469c50c611ec7c708c28330781a2c1db90"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-67 | cpu fused decoder blocks | [cpu-fused-decoder-blocks.md](cpu-fused-decoder-blocks.md) | FD-DIV-1: fused decode diverges + double-frees off-scale (owner TBD: Flash-Next owner); keep FUSED_DECODE_OFF=1 | INF-10 |",
+    "target": "handoffs/active/cpu-fused-decoder-blocks.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c7a6af165f57e52fac5e4dc78efca8bfbe495eea14f45cc22f96ebffd491998b"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-QWOPUS K1 gate: 12-prompt none/MTP-nmax/base-DF2 sweep + role quality A/B vs Qwen3.8; no training until K1 passes | INF-06, INF-50 |",
+    "target": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+    "open_checkboxes": 14,
+    "checked_checkboxes": 15,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "77437f78c9b24ca684a78e36b333c4a1f24f45d0cd73aa25a563ac0b004c4957"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | \u2014 |",
+    "target": "handoffs/active/delta-mem-reproduction.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "983b9b909ee87599386dc9cb243679e083b0641f5644d538fd4cd4f2d0fb872d"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | \u2014 |",
+    "target": "handoffs/active/engram-conditional-memory.md",
+    "open_checkboxes": 8,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "5f5757de5b331daf5cc4503bc9a1c446df2d1aa7899456d89f748629459aa5c3"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 \u2014 on a quiesced host, confirm the nodes[0] collision via stderr keylog, then re-eval Lever A and decide land/drop | \u2014 |",
+    "target": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 111,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f8def09c61e2086cc7c2a363097cd08e9bd1a970833d609004062c0d6fbd58d3"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-67, INF-10, INF-63 |",
+    "target": "handoffs/active/cpu-decode-roofline-program.md",
+    "open_checkboxes": 77,
+    "checked_checkboxes": 85,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a98d8043483ee397a9e40400a2554601e7c65864c97e3cfc1222f6437f7af66a"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-72 | moe routing locality tap | [moe-routing-tap-and-locality-measurement.md](moe-routing-tap-and-locality-measurement.md) | Port llama-moe-trace onto an llama.cpp-experimental branch off v9; emit SRP/SCH/EOR | INF-34, INF-70 |",
+    "target": "handoffs/active/moe-routing-tap-and-locality-measurement.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "5eddb881de7f4e95506e0c84c2eefbe8f434419bca646c3ff034240e2a0a479d"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | DS41-C128: critic now gpt-6-astra@high on both lanes; add a measurement-granularity pause to serial_run | INF-31, RTG-57 |",
+    "target": "handoffs/active/deepseek-v41-flash-evaluation.md",
+    "open_checkboxes": 109,
+    "checked_checkboxes": 76,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a52d484596b83ac43f7b54b93c6d61c051babc619defd54f36337d3939fe9edf"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-78 | autokernel orchestrator actor backend | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) | OAB-29/30 wire-test gate + stub e2e; OAB-34 16384 output-cap hit rate per role; OAB-28 best-of fence (OAB-4/9b/12/15-19/33 parked 09-27) | INF-77, INF-66, EVL-37, RTG-56, UFH-01 |",
+    "target": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+    "open_checkboxes": 23,
+    "checked_checkboxes": 20,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "0e97c435300b76d2c6fc965a8219257d99b6a473cddda239548ba3226a493f34"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-79 | conversation stack (speech) | [conversation-stack.md](conversation-stack.md) | Review CS20/21 HTTP clients and WAV harness source; bind full native controls before separate live acceptance | \u2014 |",
+    "target": "handoffs/active/conversation-stack.md",
+    "open_checkboxes": 43,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "88429a076190df968ca6ed2e1686d4460571a29a952646cc5e6939032ade6211"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-80 | exl3 cpu mi210 implementation | [exl3-cpu-mi210-implementation.md](exl3-cpu-mi210-implementation.md) | EXL3-6c5 emit measurement rows, then tick; EXL3-LB1b seed #1 confirm | \u2014 |",
+    "target": "handoffs/active/exl3-cpu-mi210-implementation.md",
+    "open_checkboxes": 20,
+    "checked_checkboxes": 20,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2c96f3c756e8ac33294656734e1dc221f499a810e45a693c21bba677c49da399"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | \u2014 |",
+    "target": "handoffs/active/gpu-acceleration-path.md",
+    "open_checkboxes": 8,
+    "checked_checkboxes": 13,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "bcac38ba884c53011b0554382b9252f9cf030cc4271892a9a78f849892a3d969"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 \u2014 future decision instrument (separate from G3-3). Select and run a decision-grade, | \u2014 |",
+    "target": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 7,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "51a8d68af3a3b2e83a97d35ce7616ad92977a62e4d3fdbf3856154027dc68a90"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 \u2014 broader K2 admission runner/package: build the dry-run-first K2 | \u2014 |",
+    "target": "handoffs/active/gpu-drafter-control-redesign.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 18,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f71d070e7d833c8e133e4ca0e91a1eb137690d77a66a50de392ed7d936df08ec"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | P0-1 (operator) \u2014 run the E8 ratification once Codex presents the apply-ready D4 bundle | \u2014 |",
+    "target": "handoffs/active/gpu-serving-tie-in-program.md",
+    "open_checkboxes": 30,
+    "checked_checkboxes": 39,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "5ad0b7592f616916f6a05f1f85f7ae0f2cdf5bc3c4362eeb5e767de4cf8d332d"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-23 | heterogeneous slot fabric residency | [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) | HSF-3 \u2014 publish per-session inter-call gap p50/p90/p99 from existing session-keyed logs; HSF-1 receipts accrue on GPU launches | \u2014 |",
+    "target": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+    "open_checkboxes": 14,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "d5dfbd0b6e3324c94b401a4ae4f127a9a9f07c80456664d940000c3c7794d36d"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-24 | inference batch loop | [inference-batch-loop.md](inference-batch-loop.md) | P0 RCP prologue \u2014 RCP-W1 relaunch + preflight, RCP-W2 ledger materialize, RCP-W3 calibration smoke; gated OP-6a/6b + stack-restart approval | \u2014 |",
+    "target": "handoffs/active/inference-batch-loop.md",
+    "open_checkboxes": 13,
+    "checked_checkboxes": 15,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "9532fa83207b6e1d600365d2d2e298bfa660d501a279f7b74eb3049a6337c29b"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-26 | iqk iquant enablement | [iqk-iquant-enablement.md](iqk-iquant-enablement.md) | NEW-8 steps 0-1 (scratch ik build with qwen4exp, Q8_0 source download) \u2014 unblocks backlog c3; T2 IQ4_KT/IQ2_KT bench in scratch ik | \u2014 |",
+    "target": "handoffs/active/iqk-iquant-enablement.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 14,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "194aa0e6584a7136738bead92ce36e8a839c7855b54b93b5d1336e562c025390"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-28 | laguna s21 cpu port | [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) | L-9P \u2014 conditional CPU throughput/config discovery. The prepared | \u2014 |",
+    "target": "handoffs/active/laguna-s21-cpu-port.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3ac16feb4376d91d60d304d885442208bea21ee665cc6afc98d7893724573ad6"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-29 | large moe expert parallelism | [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | CPU15-REVAL \u2014 Fresh canonical matrix if reopening: before enabling EP anywhere, run: | \u2014 |",
+    "target": "handoffs/active/large-moe-expert-parallelism.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "6dfffb663bb7061999b53bd74099d854a9e3be751924c2271cd8fc91d2746e5e"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-30 | lightning attention port | [lightning-attention-port.md](lightning-attention-port.md) | LQ-2 \u2014 Run a focused AIME/MATH/GPQA bundle (reasoning_budget=0, exact templates); waits on an owned current-era q-scorer/routing A/B | \u2014 |",
+    "target": "handoffs/active/lightning-attention-port.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "78cd0ec7c22d53019e4eb6791e25c2823a9858dd21dbfe020eb9eb9b2a8c661d"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-31 | llama cpp dsa contribution | [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) | D4 residual \u2014 pin the faulty `dequantize_V_bf16` line and file upstream (D4 done: c49a37c4) | \u2014 |",
+    "target": "handoffs/active/llama-cpp-dsa-contribution.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 7,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "848b8ca7da0c4e8bc80aa74f1099f32eef8710f1a86ed910faed30dfbee50682"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU | INF-48 |",
+    "target": "handoffs/active/log-linear-gated-deltanet-readiness.md",
+    "open_checkboxes": 14,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "892b9d8ac5b9f65bb77da243749f7a6a231258d44ce35254a558989996c10bd3"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-34 | mi210 big model and acceleration roadmap | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | DR-3e \u2014 rerun the K2 admission GPU claims under the current production-named kernel for P-GPU-1 certification | \u2014 |",
+    "target": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 14,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b2a32c7a585cfa638fc2b4d88c504c2181ed94b63d9cbe7563c83a99ed1fc525"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | Resolve Q4/IQ2 approvals; scope INF37-MOE-Q8-FUSION's experimental GLU correctness slice | INF-48, EVL-47 |",
+    "target": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+    "open_checkboxes": 11,
+    "checked_checkboxes": 20,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "40106ffb6e3f13cc24214a24d4bfa8e92326fbf219c562332c54abfe04ea9fed"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-40 | moe spec cpu spec dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | After the AutoKernel window: 5-rep moe_spec_budget sweep on qwen4exp + champion ef81196d5 (future architect_critic), MTP n-max\u22653 | \u2014 |",
+    "target": "handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "61b1f764d38a845ad1814e3bacd733be311c156d2b8572821d62a0af908c8a83"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-41 | multimodal pipeline | [multimodal-pipeline.md](multimodal-pipeline.md) | S-20: cold-vision refusal must fail fast (27.9 s today); S-16 close-out (VL-30B already serves :8086, now cold CPU) | \u2014 |",
+    "target": "handoffs/active/multimodal-pipeline.md",
+    "open_checkboxes": 13,
+    "checked_checkboxes": 41,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3535538ccf2de394929f33383d9889e6eee51a13ce5f3d829fac5b74043af376"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-42 | multiscreen attention evaluation | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | G1 \u2014 finish the 37 remaining 128K trials and the f16-KV control, run a 5\u201310 trial 256K diagnostic on MI210, publish recall curve | \u2014 |",
+    "target": "handoffs/active/multiscreen-attention-evaluation.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "437fb449bcdec071f7897f0a912b60da772eef815cff2e64ff7dfb59191269ca"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-43 | numa placement defect | [numa-placement-defect-20260730.md](numa-placement-defect-20260730.md) | T3 \u2014 Re-run the 27 confounded E5 cells on declared 1-full + 2-half placement, incl. 0-95 --interleave=all, per P-BENCH-PLACEMENT-1 | \u2014 |",
+    "target": "handoffs/active/numa-placement-defect-20260730.md",
+    "open_checkboxes": 10,
+    "checked_checkboxes": 36,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "7f5d8f8b83bbb97c26619b91b91aaedff3b2a2e14ac899f3c1ed3c9d02e30036"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-44 | numa prefill decode disaggregation | [numa-prefill-decode-disaggregation.md](numa-prefill-decode-disaggregation.md) | Blocked on INF-34 PF1 (CPU-vs-MI210 prefill crossover); then run NPD-1 or close the GPU-prefill branch | INF-34 |",
+    "target": "handoffs/active/numa-prefill-decode-disaggregation.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "d004e565f7a54079a1c1202707fcc40c7146727fea5eb27b2b8223820ec04222"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-45 | numa topology cutover resume | [numa-topology-cutover-resume-20260730.md](numa-topology-cutover-resume-20260730.md) | P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos | \u2014 |",
+    "target": "handoffs/active/numa-topology-cutover-resume-20260730.md",
+    "open_checkboxes": 84,
+    "checked_checkboxes": 62,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b046d49579988246a35214105c36257700983fd74b1949595b04f616496b5823"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-63 | qwen38 flash next fp8 evaluation | [qwen38-flash-next-fp8-evaluation.md](qwen38-flash-next-fp8-evaluation.md) | BLOCKED: the FP8 artifact was deleted 08-28 (verified absent 08-31) \u2014 re-acquisition waits on the disk-reclaim decision | \u2014 |",
+    "target": "handoffs/active/qwen38-flash-next-fp8-evaluation.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f26a157b75c1387af8131cfe794d2a176efcd114499ea5cef548196d1fdba1b1"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-46 | qwen mtp llamacpp port | [qwen-mtp-llamacpp-port.md](qwen-mtp-llamacpp-port.md) | P6b \u2014 Operator-gated load + gate bench of unsloth/Qwen3.6-35B-A3B-MTP-GGUF on fresh experimental: matched Q4 no-spec vs Q4-MTP | \u2014 |",
+    "target": "handoffs/active/qwen-mtp-llamacpp-port.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a1c788133f94805bbcbb0bcb7b3f60cc2f4b361ea094f23fcd78e5add0de8a05"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-48 | rocm verify profile backend | [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) | Repair audited C6 carriers and wire the isolated oracle/Ghost boundary before AutoKernel launch | EVL-47 |",
+    "target": "handoffs/active/rocm-verify-profile-backend.md",
+    "open_checkboxes": 49,
+    "checked_checkboxes": 92,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e595a4612ba18404618d04a1fafbad0e2fcea51162b0bdcf6ecadbaa0710be9a"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-49 | sarathi serve cpu evaluation | [sarathi-serve-cpu-evaluation.md](sarathi-serve-cpu-evaluation.md) | Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (the multi-tenant trigger fired by batched-decode E2) | \u2014 |",
+    "target": "handoffs/active/sarathi-serve-cpu-evaluation.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a05d24e9d5b566f7cb142dad546e7b7e59214dc5c9a62941cbc59ddf2bfc3f15"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-50 | speculative decoding mtp refresh | [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) | Check SR5-LEAN-DOC-PROJECTION with registry_compiler --dry-run, then SW-2 clamp | \u2014 |",
+    "target": "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "open_checkboxes": 26,
+    "checked_checkboxes": 36,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "9df1a36e7eb376467962c7a9451ee4a00830cec5a73ae97bbf93a3751109564a"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-51 | streaming llm baseline | [streaming-llm-baseline.md](streaming-llm-baseline.md) | Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models | \u2014 |",
+    "target": "handoffs/active/streaming-llm-baseline.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "9a2a7a8541548bd9503bd1f433770b3679dad0505d01f5514b72228e032958fb"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-52 | summary token attention readiness | [summary-token-attention-readiness.md](summary-token-attention-readiness.md) | Monitor Gates A\u2013D (served-model KSA/GSA checkpoint, llama.cpp support PR, CPT-capable GPU, major-lab adoption); no work until one fires | \u2014 |",
+    "target": "handoffs/active/summary-token-attention-readiness.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b6f21e9b0f2f3c76003747526d5a740926cb3c6b7b207e4c06adb0722116a885"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-53 | tidar one pass variant b | [tidar-one-pass-variant-b.md](tidar-one-pass-variant-b.md) | W2 \u2014 Watch for a Q4_K_M-quantizable TiDAR-class checkpoint; on release, quantize it and return a go/no-go quality verdict | \u2014 |",
+    "target": "handoffs/active/tidar-one-pass-variant-b.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a73004f2c3d07f5d622d5996a0e31498494ca5d989d35c68cd26d7199a53729a"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-54 | tq3 quantization evaluation | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree | \u2014 |",
+    "target": "handoffs/active/tq3-quantization-evaluation.md",
+    "open_checkboxes": 16,
+    "checked_checkboxes": 17,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "588e59de6c39702b2b6cb25c64c1edb7a1810ae8f313e59bfe965a45cac697f8"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-56 | triattention kv selection | [triattention-kv-selection.md](triattention-kv-selection.md) | S8 \u2014 Sweep keep_ratio and layer_weights per production role; persist quality/speed/cost/reliability Pareto profiles | \u2014 |",
+    "target": "handoffs/active/triattention-kv-selection.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "8c003527d17e5083f655fef9b5370bc8091448cbdc094a51ae8b5658d5769ba1"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-58 | v9 kernel per request speculative params | [v9-kernel-per-request-speculative-params.md](v9-kernel-per-request-speculative-params.md) | Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback | \u2014 |",
+    "target": "handoffs/active/v9-kernel-per-request-speculative-params.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 7,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "893728d998f1b32b356b902b9de14d563e78f876745f4f551e9cdd6abdbe6305"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Rerun JETLONG-GPU27B-WINDOWS (prefill-only scripts ready) once gpu-quiet writer-preference/lane pause available | RTG-57 |",
+    "target": "handoffs/active/yarn-context-extension-research.md",
+    "open_checkboxes": 28,
+    "checked_checkboxes": 17,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "6b00cc5ee053a59507910854cc96026d81eb0e23d8ad6cc334e74d967e7beef1"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Q38-T7a organic DFlash2 acceptance from serving records (passive read); Q38-T7b neutral-haystack paired needle; VB-SERVING-DF2 | \u2014 |",
+    "target": "handoffs/active/qwen38-27b-replace-qwen36.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 22,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "87af4c725475c5647f40a4968959327f734f8ee63aae8f438e150dc384fa7496"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Run a same-window n-max 4 vs 8 ABA at np\u22652 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna | INF-60 |",
+    "target": "handoffs/active/gpu-candidates-surface-qwen38-update.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "44b6e3d52e95d1de44f42d0c0cc037626352261e325b254fc9b1db0036614a79"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | AKU-RED-LOOP: full-suite rerun of autokernel/loop after 58c86506; owner call on keep_candidate-vs-kept (run.py:5876) | INF-66, INF-65, INF-70 |",
+    "target": "handoffs/active/autokernel-unified-surface-program.md",
+    "open_checkboxes": 83,
+    "checked_checkboxes": 178,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b73ac0a0dd9972ccc45a4bdfd8cb267aee482c26977635a363463fc9a444fc51"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Review CTC-REVIEW: model-independent stage coordination and resident GPU overlap; implementation requires approval | INF-73 |",
+    "target": "handoffs/active/autokernel-concurrent-target-coordination.md",
+    "open_checkboxes": 10,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "9a99fd29bf8507877c01295e0536b24f31857aca0721fe3065677a7df8ba4a8b"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | AKX-P0d \u2014 run the W1\u2013W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6 | INF-73, INF-66, INF-65 |",
+    "target": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+    "open_checkboxes": 14,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "960fef1b8cd9d84feadc2dc3989b5af6f82008e8f7ff863c99ebba7a9014f6d3"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | GPU run 2 (critic now Astra; needs EC GPU window, measurement mode); land longctx-oracle 6f116e55 after Astra re-review | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |",
+    "target": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+    "open_checkboxes": 40,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ecdc8f028fe5ecfb5c97f68d9a262746c55eca3ba44cb2cc28fc148b97882e6c"
+  },
+  {
+    "index": "handoffs/active/inference-research-index.md",
+    "row": "| INF-76 | paw compiled specialists | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 \u2014 self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |",
+    "target": "handoffs/active/paw-compiled-specialists.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "6ef9f93d3b616b14623e49f8201bd7de46a97a1f2d2169c8a6aa2afe78a2466b"
+  },
+  {
+    "index": "handoffs/active/pipeline-integration-index.md",
+    "row": "| PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | G14 \u2014 re-export Reason-mxbai-colbert-v0-32m with pylate-onnx-export 1.7.0 in a py3.10\u20133.12 venv, then PREFIX-3 parity | \u2014 |",
+    "target": "handoffs/active/colbert-reranker-web-research.md",
+    "open_checkboxes": 10,
+    "checked_checkboxes": 16,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "44a4168194c75982a6b72cddc5af3de2632bdcfd0321d750305d89eb6146ec93"
+  },
+  {
+    "index": "handoffs/active/pipeline-integration-index.md",
+    "row": "| PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Resolve PP-DocLayoutV3 weights and record cache path + size \u2014 a separate download from the GGUF | \u2014 |",
+    "target": "handoffs/active/document-parser-table-bench.md",
+    "open_checkboxes": 16,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f6c03316cb2aa8fd76d760bc641984b09063c797eb40a7ca85bd7da9283af8c0"
+  },
+  {
+    "index": "handoffs/active/pipeline-integration-index.md",
+    "row": "| PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record admissible outputs | \u2014 |",
+    "target": "handoffs/active/ernie-image-turbo-evaluation.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c750849c5fb49ad307dcd8edceb88a08c28d3d74c56aaf66cb743ae7307502f2"
+  },
+  {
+    "index": "handoffs/active/pipeline-integration-index.md",
+    "row": "| PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | Source-review remaining K2/web contracts and independent dependency consumers | \u2014 |",
+    "target": "handoffs/active/internal-kb-rag.md",
+    "open_checkboxes": 21,
+    "checked_checkboxes": 39,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f9ecd6643d2b0b16cb7e5d26ce59690fb75a966a6ce3029e3089bd9822004d2a"
+  },
+  {
+    "index": "handoffs/active/pipeline-integration-index.md",
+    "row": "| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | CPU subset DONE 2026-08-25; next: canonical-profile A/B rerun (gated on inference-stop order) | \u2014 |",
+    "target": "handoffs/active/opendataloader-pipeline-integration.md",
+    "open_checkboxes": 18,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "29867b457df8fb390a781363c560a2e893a0c12cb328dccc52dffecc025d76cd"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-01 | agent file prose compression | [agent-file-prose-compression.md](agent-file-prose-compression.md) | AFC-P5.E3 \u2014 run the n=30 compliance campaign. READY but HELD (operator: \"I will tell | \u2014 |",
+    "target": "handoffs/active/agent-file-prose-compression.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e5c617a4d181633849848dc2a105b3ee6aff477aeae443cc5e443127f23e54f8"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Decide :596 EffiBench-X adoption once the 2607.01211 ingest lands; gpqa_diamond_cot arm per ROI rule | \u2014 |",
+    "target": "handoffs/active/architect-model-selection-bench.md",
+    "open_checkboxes": 29,
+    "checked_checkboxes": 72,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f8cc0e30d8fdbc4937a58a853ddd9c9ac45b0a2e6244bb3b795bb51fbe5d96bf"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | EV-CONF-2 \u2014 build an answer-span/salient-token confidence source, then re-baseline math AUROC before any math-domain use | \u2014 |",
+    "target": "handoffs/active/autopilot-decision-plane-audit-2026-07-22.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 46,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e95db226feb9586c3199edc876b878950d152c5ad57ceb9da6fe85230f6e824e"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | After RTG-02 prospective capture, run both sealed Shinka variants without derived menus or counterfactual outcomes | RTG-02 |",
+    "target": "handoffs/active/autopilot-sequential-allocation.md",
+    "open_checkboxes": 14,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ad58089b93e49f97a73e5a82920dc38835ffb13b6bb13c6daf36bd199064336d"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-05 | backlog roi audit 2026 07 14 | [backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) | RE-1 \u2014 re-baseline math suites under math_verify (EV-11c) once EV-CONF real-confidence plumbing lands | \u2014 |",
+    "target": "handoffs/active/backlog-roi-audit-2026-07-14.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "1567b08b29affeed9a42a85dc74bfaba9e1fdc0b2aa876d9895de14dc406cb87"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Source-review remaining model-free campaign contracts; retain K-LCM-1 inference gate | \u2014 |",
+    "target": "handoffs/active/bulk-inference-campaign.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 7,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "243c3dcab54d1f87b85e5ce6663e39b18e59bf6df1d2fcc9cb093eff3da4714b"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation | \u2014 |",
+    "target": "handoffs/active/canonical-judge-suite-revamp.md",
+    "open_checkboxes": 34,
+    "checked_checkboxes": 13,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2c3c412a89447e04848c5eab0c0bef2e118869435cfe8f59be842bb9fe8090d8"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-09 | design backlog triage 2026 07 23 | [design-backlog-triage-2026-07-23.md](design-backlog-triage-2026-07-23.md) | REFERENCE SNAPSHOT, not a task list \u2014 cite it; dispatchable work lives in eval-tower-verification.md and autopilot-control-plane-integration | \u2014 |",
+    "target": "handoffs/active/design-backlog-triage-2026-07-23.md",
+    "open_checkboxes": 0,
+    "checked_checkboxes": 0,
+    "inspection": "MAIN qualitative review: no open checkbox does not establish whole-handoff completion or authorize pruning.",
+    "source_sha256": "edb17642e4c673d6ab3690e6a38535593189e32d492b1323a744714ec48a7ff5"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M11-WORK-CAP-SOURCE bound regression; separate M-12 judge/score at inference-owner boundary | \u2014 |",
+    "target": "handoffs/active/episodic-memory-integrity.md",
+    "open_checkboxes": 18,
+    "checked_checkboxes": 43,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4da47751713ca7e688de146bc16e36cb98aea968951b1f8f4f05c6d65b74b7f3"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-11 | eval benchmark cost reduction | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies | \u2014 |",
+    "target": "handoffs/active/eval-benchmark-cost-reduction.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4fa4fe61aca4dd2ef868c05e866042920390eb1504d0b8372b236703a56843db"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-12 | eval tower architecture audit 2026 07 20 | [eval-tower-architecture-audit-2026-07-20.md](eval-tower-architecture-audit-2026-07-20.md) | E1 ARCH-1 \u2014 finish splitting the eval_tower god-module: extract the concurrency ladder, one import bootstrap, rubric-parsing sidecar | \u2014 |",
+    "target": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 44,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "12d980a558d7a3f63e6be6c54eb5fb4e2e9c7c8a749336820abf6301ddb17d30"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-13 | eval tower loop robustness audit 2026 07 20 | [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) | H2.v8 \u2014 remeasure the contention matrix under frozen v8 (inference-gated) | \u2014 |",
+    "target": "handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 29,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "7cd4904a24df0abeeb01a72dfeeaabf10258bf2eee1cdccfcef7a0be90cadb28"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-14 | eval tower verification | [eval-tower-verification.md](eval-tower-verification.md) | Retain EV-PROTO and live calibration acceptance | \u2014 |",
+    "target": "handoffs/active/eval-tower-verification.md",
+    "open_checkboxes": 43,
+    "checked_checkboxes": 58,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c3018f34bc93a1691a66271a56099a865260f7bd66af67846239f807402e2b69"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-15 | evidence plane instrument repair | [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) | W5 \u2014 Promote core_v2 once the operator rules on the E4/core autopilot_quality era row; then collect alarm-free W6 audit evidence | \u2014 |",
+    "target": "handoffs/active/evidence-plane-instrument-repair.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "22d8a46445d9b2b4780f8bfa560da7c1a5c22a9dbe3ef2a1a0b4cc3883a77bd7"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-16 | evidence plane ledger and sequential verdict | [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) | W8b \u2014 Continue live W8 candidate attempts; confirm a keepable replayable candidate, then collect sequential and promotion-eval evidence | \u2014 |",
+    "target": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 13,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "7b0cc6217c383929ead2732f833e7d8d6f17be24282ace19909c33c8de63b5bf"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-19 | fable5 window2 findings 01 optimizer integri | [fable5-window2-findings-01-optimizer-integrity.md](fable5-window2-findings-01-optimizer-integrity.md) | R2-current \u2014 Accrue a current-era trusted per-question ledger for a reproducible \u226540-item core selection; do not reuse the July-3 set | \u2014 |",
+    "target": "handoffs/active/fable5-window2-findings-01-optimizer-integrity.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "6ec3488e3dac3e521b45021e17b3737eb9f74f763c136eb2129ee401f46f9ca2"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-20 | fable5 window2 findings 02 heterogeneous gpu | [fable5-window2-findings-02-heterogeneous-gpu.md](fable5-window2-findings-02-heterogeneous-gpu.md) | F1 \u2014 per-split GPU/CPU timing under static -cmoe on one MoE model; report | \u2014 |",
+    "target": "handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2deb61f07eafa85e9f656bd2079b733b19e2240d53ab6df9bf7b9b95ebdd18fe"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-21 | fable5 window2 findings 03 portfolio and mas | [fable5-window2-findings-03-portfolio-and-master-queue.md](fable5-window2-findings-03-portfolio-and-master-queue.md) | G1 \u00b7 Ratify P-GPU-1 (operator; measurement trust boundary \u2014 human-amendment-only). findings-02 \u00a75 | \u2014 |",
+    "target": "handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+    "open_checkboxes": 13,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ddbc731f48e6e0ac278e09ec794a0e01aa434acb926cd6beb112b1a4aa6ae21a"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-24 | frontier f2 self running lab | [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) | W3 \u2014 Collect real shadow/reviewed lab verdicts and use scripts/lab/promote_job.py as the only job-promotion path | \u2014 |",
+    "target": "handoffs/active/frontier-f2-self-running-lab.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 12,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ac1d15a1dea54c075fae23320b6928c8dfa2b4b18903003adf941f27bcd5e369"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-25 | frontier f3 data flywheel | [frontier-f3-data-flywheel.md](frontier-f3-data-flywheel.md) | W3 \u2014 run a GRPO pass that demonstrates learning: a movable reward, completion cap above natural length, pre-registered pass rule | \u2014 |",
+    "target": "handoffs/active/frontier-f3-data-flywheel.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2ed85e923afe9971e975fc84378a4e2b139b2948abb75d6091a6b9435960803b"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-26 | frontier f4 continuity backup | [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) | restic backend landed 2026-08-23; real run blocked on operator-named off-array target | \u2014 |",
+    "target": "handoffs/active/frontier-f4-continuity-backup.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "633a83e020c59b65ed1e21bf2e146d94c75e72de34981681a0816fb784a8464b"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-27 | frontier f6 upstream publication | [frontier-f6-upstream-publication.md](frontier-f6-upstream-publication.md) | W1 \u2014 Build the D2 CPU sparse prompt-processing path per llama-cpp-dsa-contribution.md (D1 superseded by #23346); profile, then PR | \u2014 |",
+    "target": "handoffs/active/frontier-f6-upstream-publication.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "487c72f701d129ba48a0b76ad0a43b76799573c9ae4a8914486b71fd9fc8d3ab"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-29 | intake derived work 2026 07 25 | [intake-derived-work-2026-07-25.md](intake-derived-work-2026-07-25.md) | Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners | \u2014 |",
+    "target": "handoffs/active/intake-derived-work-2026-07-25.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 31,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b13cb4c4ec91c153f5000c0e54a7940e9f4d53b593691c45939e863e558e7e08"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-30 | integration test coverage | [integration-test-coverage.md](integration-test-coverage.md) | Recorded red-baseline classification; pick targeted API/parser regression slice as risk warrants | \u2014 |",
+    "target": "handoffs/active/integration-test-coverage.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 1,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3456b7579c31b9f78a26423fbf622da1592308468b1ed0c841cb87e604088497"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-31 | mathsmith hc formalizer eval | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Resolve approval-gated artifact acquisition/conversion, then run the zero-question contract probe | \u2014 |",
+    "target": "handoffs/active/mathsmith-hc-formalizer-eval.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "8b7aef37ae62edd92ce8c1d37b412b8f5a7ecd55ff9c92cd8f4b6ceee0e1621d"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-32 | minimax h3 video generation eval | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) | OPERATOR scope decision: is video gen a product need? If yes, download Ref2VA + 10Eros beta4 INT8 (~165 GB) | \u2014 |",
+    "target": "handoffs/active/minimax-h3-video-generation-evaluation.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "5bc88a9abb69aeb7cd0c01610df75b01282bc9afc44f6b57afd3d714b38a266a"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-33 | per request reasoning budget | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | PRB-T4-RERUN \u2014 GPU re-run of TALE-EP on the refreshed pool (4 suites, n=400); then Step 3 budget=0 think-scaffold fix | \u2014 |",
+    "target": "handoffs/active/per-request-reasoning-budget.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "bc262ffffed0393c6bd0f0f664f8f589a3ec2c0b9c2a0145413e1098b9a6ebfa"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-34 | rao redel substrate spike | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation | \u2014 |",
+    "target": "handoffs/active/rao-redel-substrate-spike.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "aad89830fc1e461910555782150a70a7a2bed9b3ee878e44b57344732f5c5e3e"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-35 | re4 protocol redesign | [re4-protocol-redesign.md](re4-protocol-redesign.md) | RE-4.2 \u2014 Run the non-saturation probe in an operator quiet window: frontdoor-only, two-phase, R=4096, 30 rows; gate accuracy in (10%,90%) | \u2014 |",
+    "target": "handoffs/active/re4-protocol-redesign.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c0950fc204bc3bfb6ee281c0409fdbdaf223eee7f540a450c199f7a92f8bce0a"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-36 | repl session memory maturity | [repl-session-memory-maturity.md](repl-session-memory-maturity.md) | D-f1 live lease validation at its inference-owner boundary | \u2014 |",
+    "target": "handoffs/active/repl-session-memory-maturity.md",
+    "open_checkboxes": 14,
+    "checked_checkboxes": 13,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f807b6bf8c8fe965c59b7445e52982b7e8b68aedc24b2c45bb99a094a9c73be1"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-37 | repl turn efficiency | [repl-turn-efficiency.md](repl-turn-efficiency.md) | S4 Omega A/B \u2014 measure turns, token cost and accuracy delta per task; gates the verbosity and tool-surface changes (inference-gated) | \u2014 |",
+    "target": "handoffs/active/repl-turn-efficiency.md",
+    "open_checkboxes": 17,
+    "checked_checkboxes": 9,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "50e5ed1021b8c6d04928dfef1d508f0ab50cb289421938ab8070d259e7dc7af5"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-38 | repo readiness scorer | [repo-readiness-scorer.md](repo-readiness-scorer.md) | EVL38-REFERENCE-PORTABILITY-SOURCE scoped validator proof; then periodic full-gate observation | \u2014 |",
+    "target": "handoffs/active/repo-readiness-scorer.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 9,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "698ff838f136938dd7bd1346fba0bf4bcedf0b64767f1a22c8ee3b785babfbf7"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-39 | rlm contested claims self evaluation | [rlm-contested-claims-self-evaluation.md](rlm-contested-claims-self-evaluation.md) | E1 \u2014 measure Base vs Depth-1 on synthetic NIAH with the E1a strict+lenient scorer; report latency and tokens separately | \u2014 |",
+    "target": "handoffs/active/rlm-contested-claims-self-evaluation.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "9a9be34602d519d52fe2ecc04973dc0269ccef16456ed0e4974f18c9311a76ed"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-41 | scorer fork drift audit 2026 07 22 | [scorer-fork-drift-audit-2026-07-22.md](scorer-fork-drift-audit-2026-07-22.md) | DONE 2026-08-23 \u2014 shared measurement_guards module (verified 2 defs); research debug_scorer now a B7 delegation shim (d876adfe) | \u2014 |",
+    "target": "handoffs/active/scorer-fork-drift-audit-2026-07-22.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 7,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ccea9c8ec5f9038593ebf97d974ef63b031fb6d2a984af866a875cf6119e1661"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-42 | scoring infra standardization | [scoring-infra-standardization.md](scoring-infra-standardization.md) | Wire future EVL42 pin-scan reports prospectively; then refresh the separate LCB contamination window | \u2014 |",
+    "target": "handoffs/active/scoring-infra-standardization.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 27,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "56e00d01d3132106e617e80c96a03499ae5d28a8324d210ee588b0b586eac2b6"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-43 | sliders local validation | [sliders-local-validation.md](sliders-local-validation.md) | Operator decision: KB-RAG K7 precondition fired \u2014 evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked? | \u2014 |",
+    "target": "handoffs/active/sliders-local-validation.md",
+    "open_checkboxes": 9,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "aca23f941108c10746148e72962068fd5ded28a9e4917408f4ded0c6d071f0b1"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-44 | stale open audit 2026 07 18 | [stale-open-audit-2026-07-18.md](stale-open-audit-2026-07-18.md) | Recast x-mas-text-routing to telemetry-watch; internal-kb-rag stays active (KB-WM-6, KB-GS-1..4 open since 09-17) | \u2014 |",
+    "target": "handoffs/active/stale-open-audit-2026-07-18.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 13,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "81ad990f690c8b633f8e8e1fd3a1d8fba5a8082a662b876e08827a8bc53c4236"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-45 | strand rust coder rustevo2 verification | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential | \u2014 |",
+    "target": "handoffs/active/strand-rust-coder-rustevo2-verification.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "17ff46ecbfc5d8586ad2201e6188d22c51e9c86a2ccc5c0f1a348ce09a382d6d"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | Source-review remaining deterministic tool contracts; retain live DTAP and scoring 2a-iv isolation gates | \u2014 |",
+    "target": "handoffs/active/tool-use-eval-contract.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 18,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2ad3230f4c295cbf7e692507e7e67df531a9efb64e4bfde93a2ce482888db62a"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | Finish enrolled source verifiers and prospective consumer wiring; bind four intake profiles before measured runs | EVL-50 |",
+    "target": "handoffs/active/vidya-belief-substrate-program.md",
+    "open_checkboxes": 136,
+    "checked_checkboxes": 171,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "1885173b5e89f21dedd84bf6181a7532d4476ac2911b2ea8f6f03cca3da93013"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 \u2014 quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | \u2014 |",
+    "target": "handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md",
+    "open_checkboxes": 18,
+    "checked_checkboxes": 12,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c548e27941445d47e7d8506bb8bb6f8a71b38889b1c5475ce82697e746a54c77"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-04 \u2014 refresh the E5 Stage-B readiness verification (14 days stale), then S-05's corrected re-measurement grid | INF-06, INF-07, RTG-46 |",
+    "target": "handoffs/active/reboot-gated-inventory-and-staging.md",
+    "open_checkboxes": 17,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "74238fdd0670e9ed5fb5bbf15658fd83112d8c91a9a573dd78006521010a0d1f"
+  },
+  {
+    "index": "handoffs/active/research-evaluation-index.md",
+    "row": "| EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-3 \u2014 carry the BEAM harness-defect note on every BEAM number quoted outside the SC68 tuple | EVL-10 |",
+    "target": "handoffs/active/conversational-memory-eval-instrument.md",
+    "open_checkboxes": 0,
+    "checked_checkboxes": 4,
+    "inspection": "MAIN qualitative review: no open checkbox does not establish whole-handoff completion or authorize pruning.",
+    "source_sha256": "e67a1f8ac3196f9a5bd5c138465d38f2bd5619d59b0d2355ea317db23befad85"
+  },
+  {
+    "index": "handoffs/active/reviewer-control-plane-index.md",
+    "row": "| REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | GC-1a/2a/3a \u2014 run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles | INF-77 |",
+    "target": "handoffs/active/glm52-reviewer-capability-gates.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 51,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b20385a0de89b89457e4f084b37c5c061783b2cc6a749a151d5e2820349d496b"
+  },
+  {
+    "index": "handoffs/active/reviewer-control-plane-index.md",
+    "row": "| REV-03 | reviewer calibration accounting | [reviewer-calibration-accounting.md](reviewer-calibration-accounting.md) | RC-10 \u2014 specify candidate-distribution adapter preserving EV-15b/c semantics; RC-8 live baseline remains corpus-gated | \u2014 |",
+    "target": "handoffs/active/reviewer-calibration-accounting.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f053299ecfa64fe3f17c3593d55060d1356f1295c01e6789852dbe637bb816df"
+  },
+  {
+    "index": "handoffs/active/reviewer-control-plane-index.md",
+    "row": "| REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | After EV-13b and judge-stable gates pass, measure detector-pool F1 on Augment-v1 under the existing Step 2 gate | UFH-01 |",
+    "target": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+    "open_checkboxes": 9,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "80e88063f436b9e0f0b4b98ec6686b254abcaa160d755983ae6f30303a20024b"
+  },
+  {
+    "index": "handoffs/active/reviewer-control-plane-index.md",
+    "row": "| REV-06 | reviewer latency and sampling budget | [reviewer-latency-and-sampling-budget.md](reviewer-latency-and-sampling-budget.md) | LB-1 \u2014 Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing | \u2014 |",
+    "target": "handoffs/active/reviewer-latency-and-sampling-budget.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3dd9826ec6e67ca9bb29fdebdfacb0176e37004966cdb39d6994145503ff060b"
+  },
+  {
+    "index": "handoffs/active/reviewer-control-plane-index.md",
+    "row": "| REV-07 | reviewer model ablations | [reviewer-model-ablations.md](reviewer-model-ablations.md) | RM-2 \u2014 finish the anchor arms: A4g hot-expert offload (needs skew profile + GLM repair hypothesis) and the Ref external judge | REV-02 |",
+    "target": "handoffs/active/reviewer-model-ablations.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 12,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "6a7416c60b656577136272c4a9b3be32d4346935948e45ceb788af9c7d475358"
+  },
+  {
+    "index": "handoffs/active/reviewer-control-plane-index.md",
+    "row": "| REV-09 | reviewer typed artifacts | [reviewer-typed-artifacts.md](reviewer-typed-artifacts.md) | RA-13a \u2014 run the N=20 blind read-back pilot after the existing operator gate | \u2014 |",
+    "target": "handoffs/active/reviewer-typed-artifacts.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 17,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a3ec5b08404936c0aee2e330183a3a69f44c21b8b6c3e2ce0d2d8e65c909f5e0"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-01 | agent world env synthesis | [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run the AW-6 48h bootstrap discovery (\u226550 envs / \u2265500 tools / \u2265500 tasks) with incremental persistence | \u2014 |",
+    "target": "handoffs/active/agent-world-env-synthesis.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2cb23dbd49c6d7d11ad78cd223023fbccbc834747f91ab029d2b31ccd1fadc76"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay | \u2014 |",
+    "target": "handoffs/active/autopilot-continuous-optimization.md",
+    "open_checkboxes": 87,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ef76bdeebad652f1bbe32bfb5d537169ec9db530960e9d473e6906b03fdceeeb"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-03 | autopilot dashboard fidelity audit 2026 07 2 | [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) | On next live lineup, verify C1 #2 against its producer; route C1 #3 to stack owner | \u2014 |",
+    "target": "handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "10513afa05f704221e2144ea0b771f7e3b77e29c26abb2dd8911100f1d8b6d0c"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-04 | batched edit parallel apply | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) | BEP-2 / J8 \u2014 Optional CPU latency A/B for the legacy patchset path: batch-edit mode vs interleaved Root LM loop on an edit workload | \u2014 |",
+    "target": "handoffs/active/batched-edit-parallel-apply.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4f796140f3f1e55a04f05dcab1d5f646b5fcc6efeb045dbf89fb32137e7e41f7"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-05 | bep dcp falsification harness | [bep-dcp-falsification-harness.md](bep-dcp-falsification-harness.md) | DCP-6 \u2014 At a host-quiet window, clear the feature-flag intent diffs, then run inference; record top-up rate, token overhead, success deltas | \u2014 |",
+    "target": "handoffs/active/bep-dcp-falsification-harness.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "521e017a53fda16db96c280ceae23fe39c638885d568ebdc91d1a1d924d355d0"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-06 | capability registry and promotion | [capability-registry-and-promotion.md](capability-registry-and-promotion.md) | W3-b \u2014 LIVE shadowed role-restart attestation (BLOCKED: reload window owned by the inference session) | \u2014 |",
+    "target": "handoffs/active/capability-registry-and-promotion.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "7367f720067cc25de8154aff379c88b49c09a9820765bf0a0716a3355a5618d5"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-07 | contention model device and load axes rider | [contention-model-device-and-load-axes-rider.md](contention-model-device-and-load-axes-rider.md) | Parameterize Artifact 2 capacity/VRAM fit, then Artifact 3 interference cost; retain E5 as final calibration dependency | INF-07 |",
+    "target": "handoffs/active/contention-model-device-and-load-axes-rider.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e323272da81fe7237839cf1c9014fa1798564b011ecc3a402914f4be6a3abf4e"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-08 | context folding progressive | [context-folding-progressive.md](context-folding-progressive.md) | CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune | \u2014 |",
+    "target": "handoffs/active/context-folding-progressive.md",
+    "open_checkboxes": 18,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "ba1dc47e959b064c2b100e2004e32cd3015cdcb40c28864fd2a511ea6bb4c129"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-09 | decision aware routing | [decision-aware-routing.md](decision-aware-routing.md) | Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first | \u2014 |",
+    "target": "handoffs/active/decision-aware-routing.md",
+    "open_checkboxes": 44,
+    "checked_checkboxes": 28,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f29f3a56c2f1cbd222380ba2571f69c3943785314d2a54177fb7a1ae98247700"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-10 | delegation context preassembly | [delegation-context-preassembly.md](delegation-context-preassembly.md) | Review DCP2-FINITE-SCORE-SOURCE with its prospective native conformance task | \u2014 |",
+    "target": "handoffs/active/delegation-context-preassembly.md",
+    "open_checkboxes": 13,
+    "checked_checkboxes": 13,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "eab9dd6a3474d298ad2c6dabfb02b5965c6abc8d56b7c6f2d36e4cafad0d8cde"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-11 | dynamic stack concurrency | [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md) | G4 \u2014 measure the post-restore prompt-reuse rate on the hybrid frontdoor (slot save/restore, upstream #25913); K4a master-registry drift | \u2014 |",
+    "target": "handoffs/active/dynamic-stack-concurrency.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 9,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "6dd2acbf6503beb64425b7a7ed1aeafb75cfe164257fa388ce8cce49a48a7b0e"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-13 | evidence plane event sourcing and narrative | [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md) | W3 \u2014 after the first automatic segment snapshot (trial 1999\u21922000), demonstrate bounded startup cost on the next AutoPilot restart | \u2014 |",
+    "target": "handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "98fc162d4f75662835a61eb62c511c5c354b625f2b52b86025845a5426b8ad90"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-14 | internal interaction lifecycle | [internal-interaction-lifecycle.md](internal-interaction-lifecycle.md) | P3-3 \u2014 run consult_gate_probe on T2/T3 hard slices: always-consult vs targeted gate on quality, tasks/hour, false skips | \u2014 |",
+    "target": "handoffs/active/internal-interaction-lifecycle.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 27,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "89bddc24d86a206e43d702142c9fa61c0103fd78a15b4df08d00793d6c7df779"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-15 | learned routing controller | [learned-routing-controller.md](learned-routing-controller.md) | EP-5 \u2014 re-run the outcome-label probe on rows updated after 24b43990 (or after the EPD-1b backfill); then EPD-3 | \u2014 |",
+    "target": "handoffs/active/learned-routing-controller.md",
+    "open_checkboxes": 29,
+    "checked_checkboxes": 41,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "dcf026a5b7ecc7a4b2154fed520eeb9f1e87f5b4c36d58ffbc908981200e9cdb"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-16 | loops and dashboards audit 2026 07 05 | [loops-and-dashboards-audit-2026-07-05.md](loops-and-dashboards-audit-2026-07-05.md) | De-saturate real_suite_v1 to MDE < 0.15 before OP-1 (instability root-caused 2026-09-24; needs a larger eval run \u2014 inference) | \u2014 |",
+    "target": "handoffs/active/loops-and-dashboards-audit-2026-07-05.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 45,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "52b12b2b2b454aefa92458896daf0b7bba084fac7ba7900ea0c24efb3a26b155"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-17 | model capability descriptors | [model-capability-descriptors.md](model-capability-descriptors.md) | W5 \u2014 GATED tail: unified cascade (Phase 3) (2\u20133 weeks IF ever opened): one calibrated bilinear P(success \\| task_features, model_descriptor\u2026 | \u2014 |",
+    "target": "handoffs/active/model-capability-descriptors.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "8fa7479c1046508a4588b72c18da30f2943d4b9dba3a890bec44012111f065d2"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-18 | model stack change standardization audit | [model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md) | Keep as the per-change update checklist \u2014 run it at every model-stack change; never dispatch or flip its boxes | \u2014 |",
+    "target": "handoffs/active/model-stack-change-standardization-audit.md",
+    "open_checkboxes": 11,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "eafbf0b00e3a6de515aae4bcffe2c7f068be2942a45ce07e2db612493e30543a"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-19 | model stack single source update pipeline | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | SSU-F8 owner confirmation; enumerate remaining W4 migrations from per-consumer source evidence | \u2014 |",
+    "target": "handoffs/active/model-stack-single-source-update-pipeline.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 44,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "671a4b29219fea467f03d9c1733b788495c376592c1fa42e58cce5d45d8c6780"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | \u2014 |",
+    "target": "handoffs/active/model-stack-update-pipeline-audit.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2564b58d73680d0170cd66673e3fb91a6138b30427daae50d0d11dd727ca0e6c"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-VBS-2 \u2014 add a verify-before-FINAL step to the edit rider, then re-run the BEP sandbox and re-measure | \u2014 |",
+    "target": "handoffs/active/multi-file-coding-completion-capability.md",
+    "open_checkboxes": 8,
+    "checked_checkboxes": 6,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4379f7676e9e46fcb69b6596d4666176274d795e9c4621b4a3cbad128ab2ed24"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | Complete OBS-12a source; obtain exact LR-11/LR-13 human terminal ratification | \u2014 |",
+    "target": "handoffs/active/non-inference-backlog.md",
+    "open_checkboxes": 16,
+    "checked_checkboxes": 73,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "cad071714dfd143eeff8233edd6653f7025a906dc1da37d2fbe72ce4d9acbd12"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3e \u2014 merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence) | \u2014 |",
+    "target": "handoffs/active/objective-task-rate-goodput.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 17,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e0f404d52fb2f5a469f832200a42a4369bf4cef777c9c45114d96e031491fba4"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | \u2014 |",
+    "target": "handoffs/active/orchestration-robustness-audit-2026-07-11.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 46,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c4e9196a1a68728e5c3064aecfd17765b537e7bbaeb024f8c61d4f6f523cf528"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 \u2014 Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1\u20133 | \u2014 |",
+    "target": "handoffs/active/prompt-construction-determinism.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "aa7cee6d91978f7e9b56ac91cc2bc97799f4b550ae2cf087fbbae822f81a3625"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-28 | reasoning effort levels | [reasoning-effort-levels.md](reasoning-effort-levels.md) | TB-1 \u2014 per-model budget curve on a truncation-inducing suite | \u2014 |",
+    "target": "handoffs/active/reasoning-effort-levels.md",
+    "open_checkboxes": 18,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "1aa295145fb804f1521bfd41789ad1bc19e17ebc8a8b630f4e5ac576a36351c3"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-29 | retrain routing models | [retrain-routing-models.md](retrain-routing-models.md) | Operator decision: run a --keep-enabled bracket to actually enable live routing | \u2014 |",
+    "target": "handoffs/active/retrain-routing-models.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "24574b38c65b22c8b40cfd4d3f6aa65df518cd2af59838c73621cbede61190c8"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-30 | routing intelligence | [routing-intelligence.md](routing-intelligence.md) | RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24 | UFH-14 |",
+    "target": "handoffs/active/routing-intelligence.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "11042b8df45f4a06213e95ddfddc884ddb593af5fddc3ec78b8f25f6c2074933"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 \u2014 Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row | \u2014 |",
+    "target": "handoffs/active/scaffold-autopilot-cost-lever-deployment.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "8fbc4560146c089332e30ea22a2f09496687ed88990bd39106ea4399da9e7602"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364 | \u2014 |",
+    "target": "handoffs/active/searxng-search-backend.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 19,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3df4a77e752a5711b87421b39c068c0c5dd7ab8bd64b52831c3f47403e94ae56"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 \u2014 deploy exact guarded source and require ordinary-work refusal; then resume live canaries | \u2014 |",
+    "target": "handoffs/active/session-bus-thin-dispatcher.md",
+    "open_checkboxes": 50,
+    "checked_checkboxes": 157,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4ec98eebe7bbf40ea35a6739c5b0e501acdafb5713361291550df0e57b715797"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review | \u2014 |",
+    "target": "handoffs/active/shape-keyed-contention-gating.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 21,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "a792811b7646aba67ef70b8d37f7ca5f0cbd8242a68a9925d0477a0699bef726"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | \u2014 |",
+    "target": "handoffs/active/stack-change-governance-pipeline.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 14,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3935189b8a2b3f0183c97d0b3bda0e015511e58dfbf87c9a945fb6f681e01ff4"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-38 | standardized stack update pipeline finalizat | [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) | W4 swap-CI \u2014 prove representative stack changes move generated descriptors, priors and gate execution together | \u2014 |",
+    "target": "handoffs/active/standardized-stack-update-pipeline-finalization.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 8,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "595d57206600d04b680ed225733cc4857df397f4eea16580a43930440db42612"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-39 | swarm dataset distillation | [../blocked/swarm-dataset-distillation.md](../blocked/swarm-dataset-distillation.md) | BLOCKED on strand Phase B \u2014 correct the premise first: distillation objective is ~2pp, the teacher-prompting change is ~38pp | EVL-45 |",
+    "target": "handoffs/blocked/swarm-dataset-distillation.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "10b2d0fbf57416645265e3642522a562980871b554cfc0072eca03ebd481ed91"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-40 | tri role coordinator architecture | [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md) | TR-4.1 \u2014 Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing | \u2014 |",
+    "target": "handoffs/active/tri-role-coordinator-architecture.md",
+    "open_checkboxes": 7,
+    "checked_checkboxes": 21,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "81dbb06b6243093d5bb36f7d98ccbc10b68d72695a716b5ccef8700c5eb95c42"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-41 | unified trace memory service | [unified-trace-memory-service.md](unified-trace-memory-service.md) | UTM-B1 catalog-growth acceptance; UTM-B2 real-data pairing | \u2014 |",
+    "target": "handoffs/active/unified-trace-memory-service.md",
+    "open_checkboxes": 15,
+    "checked_checkboxes": 28,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "4d8dcdeaf095928ebb76f1a52d3a1d6ae9c6ddcf54b77beee9611ec890edaddd"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-42 | within role placement state machine | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) | WP-8 \u2014 teach compute_max_safe_concurrency the largest-dimension rule for quarters-only eval fan-out (WP-6/WP-7 await the operator) | \u2014 |",
+    "target": "handoffs/active/within-role-placement-state-machine.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 16,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "7fa41b673995ef7ec065e481dd01eb93c1301cde9f6d787ef58aece335d8d9f2"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-43 | wp12 fleet layer design | [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) | Post-soak \u00a75 cleanup \u2014 retire the legacy per-role build path; waits on the operator retiring the ORCHESTRATOR_FLEET_LAYER rollback | \u2014 |",
+    "target": "handoffs/active/wp12-fleet-layer-design.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 14,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "f7fe7843349cbe4d68690b7b835f354469fb1b159fe8a8cfd4a231c9e710a858"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-45 | x mas text routing | [x-mas-text-routing.md](x-mas-text-routing.md) | Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload | \u2014 |",
+    "target": "handoffs/active/x-mas-text-routing.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "afcdced954d353d75c516a2779ddfe1211b52f565e5c1596c643d5ad2d317510"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Human visual verdict on the :8100 graph lattice layout (4cd106c2 deployed); OP-9 hub_supervisor relaunch pending | \u2014 |",
+    "target": "handoffs/active/handoff-index-and-backlog-graph.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 21,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "7be614f88bf14b5f0641e4dca5f20023d46ec72cc708e1af15a8675876d115b5"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Re-eyeball the tap's live ACTIVE/streaming token counters under real traffic; Phase 1b awaits operator parity | \u2014 |",
+    "target": "handoffs/active/dashboard-architecture-restructure.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 18,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "0c6b40a3ebe4dfaec904973ee9e94457fd6fcd506c289e468c2eaf96a468d3e5"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-48 | coordinator role failure modes | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) | Auditor: audit the Mech column \u2014 a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it | RTG-34 |",
+    "target": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+    "open_checkboxes": 20,
+    "checked_checkboxes": 39,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "61e00b8f9a0bd1aae0a4319d98ba80e785ba4438854b4f7d9451419c8c59e74b"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-49 | fleet fanout measurement | [fleet-fanout-measurement.md](fleet-fanout-measurement.md) | FM-2 Stage 1 \u2014 add adamast base_url passthrough + Claude/Codex JSONL normalizer, run adamast judge on a stratified trace sample | RTG-34, RTG-48 |",
+    "target": "handoffs/active/fleet-fanout-measurement.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e0cb9d022126660aa5fb67bc17fbbd111dae97cf8468c06ac549ab03d3ded61b"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-50 | decomposition to batch mapping | [decomposition-to-batch-mapping.md](decomposition-to-batch-mapping.md) | DB-1 \u2014 establish whether a task decomposition can be expressed as np-batch slots across CPU and GPU instances | RTG-49 |",
+    "target": "handoffs/active/decomposition-to-batch-mapping.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 0,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "19d6305a8a1352531c5d8a441b5c2b2d3a80168997f930ee346b60f0fba4aa7d"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-51 | wrap up division of labor policy | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Reconcile the Phase-5 instruction migration matrix and prepare protected policy signoff; retain the real Auditor canary | RTG-34, RTG-48 |",
+    "target": "handoffs/active/wrap-up-division-of-labor-policy.md",
+    "open_checkboxes": 8,
+    "checked_checkboxes": 20,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "e71142b0af7248a26753a3ed539801eb6be910035e59a97f442c22713717384d"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 \u2014 adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |",
+    "target": "handoffs/active/loop-owned-fleet-implementation.md",
+    "open_checkboxes": 11,
+    "checked_checkboxes": 51,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "42823e948235ab53067a627689f66347ac7a1863148ca35615433572e692c50e"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 \u2014 re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | \u2014 |",
+    "target": "handoffs/active/qwen-chat-template-evaluation.md",
+    "open_checkboxes": 4,
+    "checked_checkboxes": 12,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "d0d618b5f5b5db846bd328b5c1e270ae4ffdb7097343e09ea56960e92872b37f"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |",
+    "target": "handoffs/active/promptforge-mutation-safety-contract.md",
+    "open_checkboxes": 8,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b9474ec3e4d41c8933f7377990496d95fed09b47284e69d3343efd76b6c90824"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Retain TD-16 no-harm, TD-29 shadow/prefill counts, and TD-1d.3 isolated-question branches | \u2014 |",
+    "target": "handoffs/active/typed-decision-plane.md",
+    "open_checkboxes": 29,
+    "checked_checkboxes": 23,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "5a4a2ccef4d4f7b04539571e75f0ac7dde06b41164bf82b3280e11bb6be803a4"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16g-1 row-5c A/B on 98c0ce12a; KVU-19b-rework-c2-cal; V11-FA-4/-6 into v11; fold-c1-p3; CPU-FA-VKQ-2 bench | RTG-19, RTG-36, INF-41 |",
+    "target": "handoffs/active/kv-unified-stack-rollout.md",
+    "open_checkboxes": 16,
+    "checked_checkboxes": 21,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "349a049137bbd978193b16c4c7809d0178b1decb9e9d8ebc314b0bfe1589ba25"
+  },
+  {
+    "index": "handoffs/active/routing-and-optimization-index.md",
+    "row": "| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-27d shadow windows on :8083 with FORK=auto; KPF-27e checkpoint_at via KPF-21; re-cut KPF-17a for the current champion | RTG-57, RTG-27, INF-65 |",
+    "target": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+    "open_checkboxes": 28,
+    "checked_checkboxes": 11,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c481e2b4c80cadcc2c8ccece859cbc26abdba42955bf016c52417a38ef27873c"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | \u2014 |",
+    "target": "handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md",
+    "open_checkboxes": 9,
+    "checked_checkboxes": 2,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "5784d2b49cfc69855dd305ec246a05acbeeef110bcad8205e3969c7b4712f2ff"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | UFH14-DEPLOY-EC-2 live proofs; A6a sandbox leak (053c3bd82) + planted read; A3a one-warm re-run; A4a post-compaction re-prefill | INF-77, UFH-01 |",
+    "target": "handoffs/active/agentic-serving-harness-fixes.md",
+    "open_checkboxes": 31,
+    "checked_checkboxes": 22,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "66c151018ca2009d16dfeb93895bfe3ff04ce4319ffc571cba381f7ebece4c9c"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |",
+    "target": "handoffs/active/harness-selection-and-integration.md",
+    "open_checkboxes": 31,
+    "checked_checkboxes": 14,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "327f557295873c0110b3f1c0985b807be03d765ec9a889eb01992a4d4580f972"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-15 | OpenCode shell integration | [opencode-shell-integration.md](opencode-shell-integration.md) | Validate remaining P0 override carry at the inference owner boundary; screen independent shell source follow-ons | UFH-01 |",
+    "target": "handoffs/active/opencode-shell-integration.md",
+    "open_checkboxes": 2,
+    "checked_checkboxes": 4,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3bc32a7f7df8b54e9a33dc840cf4d83f878dafbc9bf1816a7785d0ffc264781f"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | \u2014 |",
+    "target": "handoffs/active/memento-block-reasoning-compression.md",
+    "open_checkboxes": 5,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2ec14ae6d963f2875981f975981f855f67e8bdbdf2a8ffedeb23f0950b1a93c0"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 \u2014 Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | \u2014 |",
+    "target": "handoffs/active/minddr-deep-research-mode.md",
+    "open_checkboxes": 9,
+    "checked_checkboxes": 3,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "3c393889c8322b7fc1c60f23bd639a61ce87150c6857938440de82740350a15e"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | Bind the published finite actor source to a reviewed native recipe; keep model execution with its owner | \u2014 |",
+    "target": "handoffs/active/reasoning-compression.md",
+    "open_checkboxes": 6,
+    "checked_checkboxes": 27,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "b25e0b2d170b1f14d572b56cf0148ca07b99993609c6aea76dd1789dbdcfad79"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | Review TOC-SP-4 spill-summary context-budget source and prospective native controls | \u2014 |",
+    "target": "handoffs/active/tool-output-compression.md",
+    "open_checkboxes": 10,
+    "checked_checkboxes": 21,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "2836a06fb1279d0d8c535e5f1a062d24f3dcf2377e894c225f3a385704552614"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-6 \u2014 choose A/B/C from the reviewed architecture package, then implement the selected source seams | UFH-01 |",
+    "target": "handoffs/active/harness-improvement-loop.md",
+    "open_checkboxes": 1,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "c8d0b04dcbfcae6b22290afcebc0359848a4ba606c0e9220d8efb5e2bb5fd337"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | Complete FW-4 executor refuse-without-hook integration with VB-FW-1 before GUI-authored measurement runs | \u2014 |",
+    "target": "handoffs/active/fuzzy-workflow-authoring-gui.md",
+    "open_checkboxes": 0,
+    "checked_checkboxes": 4,
+    "inspection": "MAIN qualitative review: no open checkbox does not establish whole-handoff completion or authorize pruning.",
+    "source_sha256": "1fba00ec506f907b8224260746b816dc441e03609870035870d8136152754ebe"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant \u2014 revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |",
+    "target": "handoffs/active/browser-agent-surface.md",
+    "open_checkboxes": 0,
+    "checked_checkboxes": 0,
+    "inspection": "MAIN qualitative review: no open checkbox does not establish whole-handoff completion or authorize pruning.",
+    "source_sha256": "b9f0d5080416e34d7e79451be715c7a15bb3dd259169f77b288051ddccc6b808"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 \u2014 obtain the contact destination and reviewed-page launch choice for GitHub Pages | \u2014 |",
+    "target": "handoffs/active/amd-ai-lab-website-publication.md",
+    "open_checkboxes": 3,
+    "checked_checkboxes": 5,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "1b043b9946a86daaf24e2ff00324333af403124eab0c6abd87753c35936db976"
+  },
+  {
+    "index": "handoffs/active/user-facing-harness-index.md",
+    "row": "| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.2 offline recall eval (wire VB-UFH12-RETR first) | UFH-07, INF-78, EVL-37, UFH-01 |",
+    "target": "handoffs/active/repl-embedding-retrieval.md",
+    "open_checkboxes": 12,
+    "checked_checkboxes": 9,
+    "inspection": "Retain: actual open task text exists; no whole-handoff completion inferred.",
+    "source_sha256": "06167c7b289b9f9062679fba69b8ef0318caca29ea71d40741bace25d1b64861"
+  }
+]
