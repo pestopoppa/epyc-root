@@ -1,4 +1,4 @@
-"""Capture selected CS-14 voice stream native SQLite-store controls under the shared carrier."""
+"""Capture complete CS16/18 voice route/controller synthetic controls."""
 from __future__ import annotations
 
 import hashlib
@@ -14,27 +14,34 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-ROOT_CONTEXT_PIN = "f018782258f65118019a555f6832125f25646f11"
-SOURCE_PIN = "caa6b5ecf7a9355929f01459aa32cd0a2350519d"
+ROOT_CONTEXT_PIN = "3178d1c34189ae9b7fa5b5fa6ea09198169b38fb"
+SOURCE_PIN = "bbf38c98b6a9984d6fc6f8f9f7656dd0cad0ec3f"
 APP_PIN = "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
 PYTHON_PIN = "3.13.15"
-WORKFLOW = ".github/workflows/vb-cs14-voice-native.yml"
-DRIVER = "scripts/ci/vb_cs14_voice_native_capture.py"
-REQUIREMENTS = "scripts/ci/vb_cs14_voice_native_requirements.txt"
-CASES = "scripts/ci/vb_cs14_voice_cases.json"
+WORKFLOW = ".github/workflows/vb-cs16-18-voice-native.yml"
+DRIVER = "scripts/ci/vb_cs16_18_voice_native_capture.py"
+REQUIREMENTS = "scripts/ci/vb_cs16_18_voice_native_requirements.txt"
+CASES = "scripts/ci/vb_cs16_18_voice_cases.json"
 TASK = "handoffs/active/conversation-stack.md"
 SOURCE_TABLE = "scripts/vidya/adapters/README.md"
 VB_PROGRAM = "handoffs/active/vidya-belief-substrate-program.md"
+ENROLLED_CONTEXT = {
+    TASK: (
+        "**CS16-SOURCE — implement explicit normal/verbatim response fields, display-only payload handling, and exact protected-value controls.**",
+        "**CS18-SOURCE — expose a typed retain/cancel disposition for an active turn.**",
+    ),
+    SOURCE_TABLE: (
+        "| Voice response payload and explicit turn-choice source controls | existing native CI verifier; existing shared grade only |",
+        "VB-CS16-18-CONFORMANCE (prospective)",
+    ),
+    VB_PROGRAM: (
+        "**VB-CS16-18-CONFORMANCE — bind the exact APP source, full affected test modules, dependency lock, context, and unchanged native CI carrier before off-host execution.**",
+        "Do not claim spoken quality, exact audio realization, first-token/cancel latency, microphone/device support, or real Whisper/QwenTTS/service behavior.",
+    ),
+}
 SELECTIONS = (
-    'tests/unit/test_inference_mixin.py',
-    'tests/unit/test_llama_server.py',
-    'tests/unit/test_openai_client_tool_mode.py',
-    'tests/unit/test_openai_direct_prompt_contract.py',
-    'tests/unit/test_voice_controller_contract.py',
-    'tests/unit/test_voice_route_contract.py',
-    'tests/unit/test_session_conversation_messages.py',
-    'tests/unit/test_session_protocol.py',
-    'tests/unit/test_session_lease.py',
+    "tests/unit/test_voice_route_contract.py",
+    "tests/unit/test_voice_controller_contract.py",
 )
 LOCKED = {'annotated-doc': '0.0.4', 'annotated-types': '0.7.0', 'anyio': '4.13.0', 'attrs': '26.1.0', 'certifi': '2026.2.25', 'charset-normalizer': '3.4.7', 'colorama': '0.4.6', 'fastapi': '0.135.3', 'h11': '0.16.0', 'httpcore': '1.0.9', 'httpx': '0.28.1', 'idna': '3.11', 'iniconfig': '2.3.0', 'jsonpatch': '1.33', 'jsonpointer': '3.1.1', 'jsonschema': '4.26.0', 'jsonschema-specifications': '2025.9.1', 'langchain-core': '1.2.28', 'langgraph': '1.1.6', 'langgraph-checkpoint': '4.0.1', 'langgraph-prebuilt': '1.0.9', 'langgraph-sdk': '0.3.13', 'langsmith': '0.7.30', 'logfire-api': '4.32.0', 'numpy': '2.4.4', 'orjson': '3.11.8', 'ormsgpack': '1.12.2', 'packaging': '26.0', 'pluggy': '1.6.0', 'pydantic': '2.13.0', 'pydantic-core': '2.46.0', 'pydantic-graph': '1.80.0', 'pydantic-settings': '2.13.1', 'pygments': '2.20.0', 'pytest': '9.0.3', 'python-dotenv': '1.2.2', 'python-multipart': '0.0.26', 'pyyaml': '6.0.3', 'referencing': '0.37.0', 'requests': '2.33.1', 'requests-toolbelt': '1.0.0', 'rpds-py': '0.30.0', 'sniffio': '1.3.1', 'starlette': '1.0.0', 'tenacity': '9.1.4', 'typing-extensions': '4.15.0', 'typing-inspection': '0.4.2', 'urllib3': '2.6.3', 'uuid-utils': '0.14.1', 'xxhash': '3.6.0', 'zstandard': '0.25.0'}
 EXPECTED_ENV = {
@@ -47,7 +54,7 @@ EXPECTED_ENV = {
 
 def expected_isolated_path_env(runner_temp: str) -> dict[str, str]:
     """Bind absent serving binaries to this capture's isolated runner temp."""
-    root = Path(runner_temp) / "vb-cs14-voice" / "absent"
+    root = Path(runner_temp) / "vb-cs16-18-voice" / "absent"
     return {
         "ORCHESTRATOR_PATHS_LLM_ROOT": str(Path(runner_temp) / "isolated-llm"),
         "TMPDIR": str(Path(runner_temp) / "isolated-tmp"),
@@ -191,19 +198,19 @@ def verify_lock(lock_path: Path, req: Path) -> dict[str, str]:
 
 def expected_cases(path: Path) -> set[tuple[str, str]]:
     data = json.loads(read_text(path))
-    if (data.get("schema") != "epyc.vb.cs14_voice.selected_cases.v1"
-            or data.get("source_commit") != SOURCE_PIN or data.get("count") != 276):
+    if (data.get("schema") != "epyc.vb.cs16_18_voice.selected_cases.v1"
+            or data.get("source_commit") != SOURCE_PIN or data.get("count") != 31):
         raise RuntimeError("selected case manifest schema, source, or count differs")
     provenance = data.get("provenance") or {}
     if any(provenance.get(key) is not False for key in
            ("test_bodies_executed", "test_modules_imported", "module_level_code_executed")):
         raise RuntimeError("case manifest lacks static-only provenance")
     rows = data.get("cases")
-    if not isinstance(rows, list) or len(rows) != 276:
+    if not isinstance(rows, list) or len(rows) != 31:
         raise RuntimeError("selected case list is incomplete")
     pairs = {(x.get("classname"), x.get("name")) for x in rows
              if isinstance(x, dict) and x.get("nodeid")}
-    if len(pairs) != 276:
+    if len(pairs) != 31:
         raise RuntimeError("selected case identities are malformed or duplicated")
     return pairs
 
@@ -216,8 +223,8 @@ def verify_junit(path: Path, native: dict, expected: set[tuple[str, str]]) -> di
     if not isinstance(summary, dict) or not isinstance(summary.get("counts"), dict):
         raise RuntimeError("native receipt has no case summary; fixture result remains ungraded")
     counts = summary["counts"]
-    if (set(cases) != expected or len(cases) != 276 or len(set(cases)) != 276
-            or counts.get("collected") != 276 or counts.get("executed") != 276
+    if (set(cases) != expected or len(cases) != 31 or len(set(cases)) != 31
+            or counts.get("collected") != 31 or counts.get("executed") != 31
             or counts.get("skipped") != 0 or counts.get("failure") != 0
             or counts.get("error") != 0 or native.get("fixture_execution_conformant") is not True):
         raise RuntimeError("original JUnit/native summary differs from exact reviewed case set")
@@ -226,10 +233,10 @@ def verify_junit(path: Path, native: dict, expected: set[tuple[str, str]]) -> di
 
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
-    result = Path(os.environ["RUNNER_TEMP"]).resolve() / "vb-cs14-voice" / "result"
+    result = Path(os.environ["RUNNER_TEMP"]).resolve() / "vb-cs16-18-voice" / "result"
     result.mkdir(parents=True, exist_ok=True)
     status_path = result / "status.json"
-    status = {"state": "preparing", "job": "cs14-voice-native-conformance", "exit_code": None}
+    status = {"state": "preparing", "job": "cs16-18-voice-native-conformance", "exit_code": None}
     status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
     try:
         if platform.python_version() != PYTHON_PIN:
@@ -260,7 +267,7 @@ def main() -> int:
         package_versions = verify_lock(lock, requirements)
         selected = expected_cases(cases_file)
         source_map = json.loads(read_text(cases_file))["source_files"]
-        if len(source_map) != 444:
+        if len(source_map) != 452:
             raise RuntimeError("static source manifest has unexpected file count")
         source_paths = []
         manifest_rows = []
@@ -275,6 +282,9 @@ def main() -> int:
         context_paths = []
         for label, relative in contexts:
             path = tracked(context, relative)
+            content = read_text(path)
+            if any(snippet not in content for snippet in ENROLLED_CONTEXT[relative]):
+                raise RuntimeError(f"published {label} enrollment contract is absent")
             context_paths.append(path)
             manifest_rows.append({"repository": label, "pin": git(context, "rev-parse", "HEAD"),
                                   "path": relative, "git_blob": blob(context, relative),
@@ -288,7 +298,7 @@ def main() -> int:
         workflow = tracked(recipe, WORKFLOW)
         driver = tracked(recipe, DRIVER)
         source_manifest = result / "source-manifest.json"
-        source_manifest.write_text(json.dumps({"schema": "epyc.vb.cs14_voice.source_manifest.v1",
+        source_manifest.write_text(json.dumps({"schema": "epyc.vb.cs16_18_voice.source_manifest.v1",
                                                "repositories": pins, "inputs": manifest_rows},
                                               sort_keys=True, indent=2) + "\n", encoding="utf-8")
         pre_status = result / "pre-status.json"
@@ -309,7 +319,7 @@ def main() -> int:
             },
             "pytest_argv": ["python -m pytest", "-c /dev/null", "--noconftest",
                             "--rootdir=<source>", "--import-mode=importlib",
-                            "-p no:cacheprovider", "-o addopts=", "selected 276 AST-bound exact cases"],
+                            "-p no:cacheprovider", "-o addopts=", "selected 31 AST-bound exact cases"],
             "plugin_autoload_disabled": True,
             "conftest_disabled": True,
             "bytecode_disabled": True,
@@ -324,7 +334,7 @@ def main() -> int:
                        "--rootdir", str(source), "--import-mode=importlib", "-p", "no:cacheprovider",
                        "-o", "addopts=", "-q", *SELECTIONS, f"--junitxml={junit}"]
         os.environ["PYTHONPATH"] = str(source)
-        status.update(state="running", repositories=pins, selected_case_count=276)
+        status.update(state="running", repositories=pins, selected_case_count=31)
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         from importlib.util import module_from_spec, spec_from_file_location
         carrier_file = tracked(carrier, "scripts/ci/native_conformance.py")

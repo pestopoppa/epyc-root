@@ -1,1334 +1,54 @@
 {
   "cases": [
     {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_circuit_breaker_open",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_circuit_breaker_open"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_does_not_double_lock_concurrency_aware_backend"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_forwards_sampling_params",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_forwards_sampling_params"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_inference_failure",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_inference_failure"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_locks_direct_single_instance_under_per_region",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_locks_direct_single_instance_under_per_region"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_records_inference_meta_for_non_frontdoor",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_records_inference_meta_for_non_frontdoor"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_success",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_success"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_uses_concrete_url_for_full_speed_role",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_uses_concrete_url_for_full_speed_role"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_uses_registry_role_config",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_uses_registry_role_config"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_call_caching_backend_with_stop_sequences",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_call_caching_backend_with_stop_sequences"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_direct_full_eval_backend_joins_certified_native_batch_lease",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_direct_full_eval_backend_joins_certified_native_batch_lease"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_eval_batch_frontdoor_alias_locks_physical_half_lane",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_eval_batch_frontdoor_alias_locks_physical_half_lane"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_primary_url_strips_full_marker",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_primary_url_strips_full_marker"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_real_call_with_n_probs_uses_batch_path_and_preserves_rows"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_sampling_cache_key_only_includes_explicit_params",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_sampling_cache_key_only_includes_explicit_params"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
-      "name": "test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestCallCachingBackend::test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
-      "name": "test_fallback_batch_forwards_json_schema",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestFallbackBatch::test_fallback_batch_forwards_json_schema"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
-      "name": "test_fallback_batch_forwards_n_tokens",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestFallbackBatch::test_fallback_batch_forwards_n_tokens"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
-      "name": "test_fallback_batch_omits_schema_when_not_provided",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestFallbackBatch::test_fallback_batch_omits_schema_when_not_provided"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
-      "name": "test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
-      "name": "test_gate_denial_has_typed_non_race_provenance",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_gate_denial_has_typed_non_race_provenance"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
-      "name": "test_real_call_fallback_to_model_server",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_real_call_fallback_to_model_server"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
-      "name": "test_real_call_no_backend_raises_error",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_real_call_no_backend_raises_error"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
-      "name": "test_real_call_records_inference_meta_for_non_frontdoor_model_server",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_real_call_records_inference_meta_for_non_frontdoor_model_server"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
-      "name": "test_real_call_with_caching_backend",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestInferenceMixinRealCall::test_real_call_with_caching_backend"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_forwards_json_schema_and_grammar",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_forwards_json_schema_and_grammar"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_forwards_n_tokens",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_forwards_n_tokens"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_handles_errors",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_handles_errors"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_no_backend_raises_error",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_no_backend_raises_error"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_omits_n_tokens_when_not_provided",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_omits_n_tokens_when_not_provided"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_omits_schema_when_not_provided",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_omits_schema_when_not_provided"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_parallel_execution",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_parallel_execution"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_sequential_path_forwards_json_schema",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_sequential_path_forwards_json_schema"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
-      "name": "test_real_batch_with_model_server",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRealBatch::test_real_batch_with_model_server"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
-      "name": "test_grammar_present",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRequestIsGrammarConstrained::test_grammar_present"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
-      "name": "test_json_schema_present",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRequestIsGrammarConstrained::test_json_schema_present"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
-      "name": "test_neither_present",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestRequestIsGrammarConstrained::test_neither_present"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestStreamingRepetitionGuardSchemaExemption",
-      "name": "test_schema_constrained_repetitive_stream_is_not_aborted",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestStreamingRepetitionGuardSchemaExemption::test_schema_constrained_repetitive_stream_is_not_aborted"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestStreamingRepetitionGuardSchemaExemption",
-      "name": "test_unconstrained_repetitive_stream_is_still_aborted",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestStreamingRepetitionGuardSchemaExemption::test_unconstrained_repetitive_stream_is_still_aborted"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
-      "name": "test_worker_pool_batch_fallback_forwards_json_schema",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestWorkerPoolBatch::test_worker_pool_batch_fallback_forwards_json_schema"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
-      "name": "test_worker_pool_batch_fallback_forwards_n_tokens",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestWorkerPoolBatch::test_worker_pool_batch_fallback_forwards_n_tokens"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
-      "name": "test_worker_pool_batch_fallback_on_error",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestWorkerPoolBatch::test_worker_pool_batch_fallback_on_error"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
-      "name": "test_worker_pool_batch_forwards_json_schema",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestWorkerPoolBatch::test_worker_pool_batch_forwards_json_schema"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
-      "name": "test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestWorkerPoolBatch::test_worker_pool_batch_forwards_n_tokens_as_max_tokens"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
-      "name": "test_worker_pool_batch_routes_correctly",
-      "nodeid": "tests/unit/test_inference_mixin.py::TestWorkerPoolBatch::test_worker_pool_batch_routes_correctly"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin",
-      "name": "test_certified_native_batch_width_resolves_worker_registry_alias",
-      "nodeid": "tests/unit/test_inference_mixin.py::test_certified_native_batch_width_resolves_worker_registry_alias"
-    },
-    {
-      "classname": "tests.unit.test_inference_mixin",
-      "name": "test_native_enqueue_stamp_precedes_backend_admission",
-      "nodeid": "tests/unit/test_inference_mixin.py::test_native_enqueue_stamp_precedes_backend_admission"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestCacheStats",
-      "name": "test_hit_rate_calculation",
-      "nodeid": "tests/unit/test_llama_server.py::TestCacheStats::test_hit_rate_calculation"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestCacheStats",
-      "name": "test_hit_rate_zero_requests",
-      "nodeid": "tests/unit/test_llama_server.py::TestCacheStats::test_hit_rate_zero_requests"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestCacheStats",
-      "name": "test_token_savings_rate",
-      "nodeid": "tests/unit/test_llama_server.py::TestCacheStats::test_token_savings_rate"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestCacheStats",
-      "name": "test_token_savings_zero_tokens",
-      "nodeid": "tests/unit/test_llama_server.py::TestCacheStats::test_token_savings_zero_tokens"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
-      "name": "test_n_probs_translates_to_openai_logprobs_params",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsLogprobs::test_n_probs_translates_to_openai_logprobs_params"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
-      "name": "test_no_n_probs_leaves_payload_and_result_clean",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsLogprobs::test_no_n_probs_leaves_payload_and_result_clean"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
-      "name": "test_post_sampling_probs_translates_to_openai_chat_params",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsLogprobs::test_post_sampling_probs_translates_to_openai_chat_params"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_completion_lane_json_schema_and_grammar_unchanged",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_completion_lane_json_schema_and_grammar_unchanged"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_completion_lane_no_schema_unchanged",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_completion_lane_no_schema_unchanged"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_grammar_forwarded_non_streaming",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_grammar_forwarded_non_streaming"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_grammar_forwarded_streaming",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_grammar_forwarded_streaming"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_json_schema_and_grammar_both_forwarded_independently",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_json_schema_and_grammar_both_forwarded_independently"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_json_schema_becomes_response_format_non_streaming",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_json_schema_becomes_response_format_non_streaming"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_json_schema_becomes_response_format_streaming",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_json_schema_becomes_response_format_streaming"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_no_schema_leaves_v1_payload_byte_identical_to_before",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_no_schema_leaves_v1_payload_byte_identical_to_before"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
-      "name": "test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
-      "nodeid": "tests/unit/test_llama_server.py::TestChatCompletionsSchemaForwarding::test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestEarlyStopTiming",
-      "name": "test_early_stop_produces_timing",
-      "nodeid": "tests/unit/test_llama_server.py::TestEarlyStopTiming::test_early_stop_produces_timing"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_adds_logit_probe_probs_for_frontdoor_only"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_cache_prompt_override",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_cache_prompt_override"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_explicit_temperature_overrides_registry",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_explicit_temperature_overrides_registry"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_forwards_post_sampling_probs",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_forwards_post_sampling_probs"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_honors_explicit_n_probs",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_honors_explicit_n_probs"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_minimal",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_minimal"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_omits_logit_probe_probs_when_disabled",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_omits_logit_probe_probs_when_disabled"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_pins_sampling_seed_and_allows_request_override",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_pins_sampling_seed_and_allows_request_override"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_temperature_from_generation_defaults",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_temperature_from_generation_defaults"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_temperature_from_role",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_temperature_from_role"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_build_payload_with_stop_sequences",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_build_payload_with_stop_sequences"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_chat_completions_stream_forwards_registry_chat_template_kwargs",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_chat_completions_stream_forwards_registry_chat_template_kwargs"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_chat_completions_stream_token_estimate_respects_request_cap",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_chat_completions_stream_token_estimate_respects_request_cap"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_get_slots",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_get_slots"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_get_slots_legacy_field_fallback",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_get_slots_legacy_field_fallback"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_health_check_failure",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_health_check_failure"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_health_check_rate_limiting",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_health_check_rate_limiting"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_health_check_success",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_health_check_success"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_empty_long_generation_is_failure",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_empty_long_generation_is_failure"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_http_error",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_http_error"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_http_status_error_returns_structured_failure",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_http_status_error_returns_structured_failure"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_returns_completion_probabilities_when_present",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_returns_completion_probabilities_when_present"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_stream_text_empty_long_generation_is_failure",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_stream_text_empty_long_generation_is_failure"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_stream_text_partial_timeout_sets_partial_flags",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_stream_text_partial_timeout_sets_partial_flags"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_stream_text_read_timeout_covers_full_budget",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_stream_text_read_timeout_covers_full_budget"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_success",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_success"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_timeout",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_timeout"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_infer_writes_logit_probe_for_frontdoor_completion_probs",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_infer_writes_logit_probe_for_frontdoor_completion_probs"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_initialization_with_base_url",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_initialization_with_base_url"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_initialization_with_config",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_initialization_with_config"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_load_raises_error_on_unhealthy_server",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_load_raises_error_on_unhealthy_server"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_save_slot_failure",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_save_slot_failure"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_save_slot_success",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_save_slot_success"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
-      "name": "test_unload_always_succeeds",
-      "nodeid": "tests/unit/test_llama_server.py::TestLlamaServerBackend::test_unload_always_succeeds"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestServerConfig",
-      "name": "test_config_creation_with_defaults",
-      "nodeid": "tests/unit/test_llama_server.py::TestServerConfig::test_config_creation_with_defaults"
-    },
-    {
-      "classname": "tests.unit.test_llama_server.TestServerConfig",
-      "name": "test_config_creation_with_overrides",
-      "nodeid": "tests/unit/test_llama_server.py::TestServerConfig::test_config_creation_with_overrides"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_absent_keys_leave_trace_untouched",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_absent_keys_leave_trace_untouched"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_failure_is_502",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_failure_is_502"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_forwards_structured_payload_and_parses_tool_calls[False]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_forwards_structured_payload_and_parses_tool_calls[False]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_forwards_structured_payload_and_parses_tool_calls[True]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_forwards_structured_payload_and_parses_tool_calls[True]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_http_error_keeps_server_reason",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_http_error_keeps_server_reason"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_parses_server_usage_including_cached_tokens[usage0-None-7168]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_parses_server_usage_including_cached_tokens[usage0-None-7168]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_parses_server_usage_including_cached_tokens[usage1-timings1-42]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_parses_server_usage_including_cached_tokens[usage1-timings1-42]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_parses_server_usage_including_cached_tokens[usage2-None-None]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_parses_server_usage_including_cached_tokens[usage2-None-None]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_backend_without_payload_ignores_tool_calls_and_keeps_single_turn",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_backend_without_payload_ignores_tool_calls_and_keeps_single_turn"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides0]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides0]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides10]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides10]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides11]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides11]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides12]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides12]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides1]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides1]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides2]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides2]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides3]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides3]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides4]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides4]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides5]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides5]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides6]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides6]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides7]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides7]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides8]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides8]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_bad_request_key_values_are_422[overrides9]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422[overrides9]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_chat_payload_survives_prefix_cache_slot_routing",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_chat_payload_survives_prefix_cache_slot_routing"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_client_mode_uses_the_same_role_resolution[overrides0-frontdoor]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_client_mode_uses_the_same_role_resolution[overrides0-frontdoor]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_client_mode_uses_the_same_role_resolution[overrides1-coder_escalation]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_client_mode_uses_the_same_role_resolution[overrides1-coder_escalation]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_client_mode_uses_the_same_role_resolution[overrides2-architect_general]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_client_mode_uses_the_same_role_resolution[overrides2-architect_general]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_client_tool_mode_with_disable_repl_uses_external_executor",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_client_tool_mode_with_disable_repl_uses_external_executor"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_contention_denied_is_503",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_contention_denied_is_503"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_default_mode_keeps_permissive_tool_choice",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_default_mode_keeps_permissive_tool_choice"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_default_mode_usage_uses_server_reported_prompt_tokens[False]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_default_mode_usage_uses_server_reported_prompt_tokens[False]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_default_mode_usage_uses_server_reported_prompt_tokens[True]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_default_mode_usage_uses_server_reported_prompt_tokens[True]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_disable_repl_refuses_rendered_tool_instructions_before_inference[nonstream]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_disable_repl_refuses_rendered_tool_instructions_before_inference[nonstream]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_disable_repl_refuses_rendered_tool_instructions_before_inference[stream]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_disable_repl_refuses_rendered_tool_instructions_before_inference[stream]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_disable_repl_with_tool_choice_none_keeps_direct_path",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_disable_repl_with_tool_choice_none_keeps_direct_path"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_client_class_is_echoed_and_bound_to_trace_keys",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_client_class_is_echoed_and_bound_to_trace_keys"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_vision_sampling_control_is_refused_before_inference[max_completion_tokens-300-max_tokens]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_vision_sampling_control_is_refused_before_inference[max_completion_tokens-300-max_tokens]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_vision_sampling_control_is_refused_before_inference[max_tokens-300-max_tokens]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_vision_sampling_control_is_refused_before_inference[max_tokens-300-max_tokens]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_vision_sampling_control_is_refused_before_inference[seed-7-seed]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_vision_sampling_control_is_refused_before_inference[seed-7-seed]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_vision_sampling_control_is_refused_before_inference[temperature-0.0-temperature]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_vision_sampling_control_is_refused_before_inference[temperature-0.0-temperature]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_vision_sampling_control_is_refused_before_inference[top_k-20-top_k]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_vision_sampling_control_is_refused_before_inference[top_k-20-top_k]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_explicit_vision_sampling_control_is_refused_before_inference[top_p-0.9-top_p]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_explicit_vision_sampling_control_is_refused_before_inference[top_p-0.9-top_p]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_can_be_disabled",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_can_be_disabled"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_flag_is_on_by_default_in_production",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_flag_is_on_by_default_in_production"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_leaves_other_clients_alone[]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_leaves_other_clients_alone[]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_leaves_other_clients_alone[OpenAI/Python 1.99]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_leaves_other_clients_alone[OpenAI/Python 1.99]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_leaves_other_clients_alone[aider/0.86]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_leaves_other_clients_alone[aider/0.86]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_leaves_other_clients_alone[python-httpx/0.28]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_leaves_other_clients_alone[python-httpx/0.28]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_passes_opencode_with_session_id",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_passes_opencode_with_session_id"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_refuses_client_mode_without_session_id[False]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_refuses_client_mode_without_session_id[False]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_refuses_client_mode_without_session_id[True]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_refuses_client_mode_without_session_id[True]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_refuses_opencode_user_agent_without_session_id[ai-sdk/5.0 OpenCode (linux)]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_refuses_opencode_user_agent_without_session_id[ai-sdk/5.0 OpenCode (linux)]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_guard_refuses_opencode_user_agent_without_session_id[opencode/0.15.2]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_guard_refuses_opencode_user_agent_without_session_id[opencode/0.15.2]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_image_input_is_refused_in_client_mode",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_image_input_is_refused_in_client_mode"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_invalid_tool_choice_is_422_in_client_mode[overrides0]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_invalid_tool_choice_is_422_in_client_mode[overrides0]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_invalid_tool_choice_is_422_in_client_mode[overrides1]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_invalid_tool_choice_is_422_in_client_mode[overrides1]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_invalid_tool_choice_is_422_in_client_mode[overrides2]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_invalid_tool_choice_is_422_in_client_mode[overrides2]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_invalid_tool_choice_is_422_in_client_mode[overrides3]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_invalid_tool_choice_is_422_in_client_mode[overrides3]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_keys_are_echoed_in_nonstream_metadata_and_trace",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_keys_are_echoed_in_nonstream_metadata_and_trace"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_keys_are_echoed_in_stream_metadata",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_keys_are_echoed_in_stream_metadata"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_keys_in_default_mode_are_echoed_without_changing_the_repl_contract",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_keys_in_default_mode_are_echoed_without_changing_the_repl_contract"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_multipart_text_is_flattened_and_length_passes_through",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_multipart_text_is_flattened_and_length_passes_through"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_nameless_backend_tool_call_is_502_not_a_silent_stop[bad_call0]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_nameless_backend_tool_call_is_502_not_a_silent_stop[bad_call0]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_nameless_backend_tool_call_is_502_not_a_silent_stop[bad_call1]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_nameless_backend_tool_call_is_502_not_a_silent_stop[bad_call1]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_nameless_backend_tool_call_is_502_not_a_silent_stop[bad_call2]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_nameless_backend_tool_call_is_502_not_a_silent_stop[bad_call2]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_nameless_backend_tool_call_is_terminal_sse_error",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_nameless_backend_tool_call_is_terminal_sse_error"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_nonstream_client_mode_usage_is_the_backends",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_nonstream_client_mode_usage_is_the_backends"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_nonstream_tool_call_is_returned_as_message_tool_calls",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_nonstream_tool_call_is_returned_as_message_tool_calls"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_omitted_vision_sampling_controls_keep_vision_path",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_omitted_vision_sampling_controls_keep_vision_path"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_openai_thread_stream_close_waits_for_worker_quiescence",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_openai_thread_stream_close_waits_for_worker_quiescence"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_primitives_chat_completion_call_binds_payload_and_returns_tool_calls",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_primitives_chat_completion_call_binds_payload_and_returns_tool_calls"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_primitives_chat_completion_call_raises_instead_of_inband_error",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_primitives_chat_completion_call_raises_instead_of_inband_error"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_primitives_chat_completion_call_refuses_mock_mode",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_primitives_chat_completion_call_refuses_mock_mode"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_primitives_chat_completion_call_returns_backend_usage",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_primitives_chat_completion_call_returns_backend_usage"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_primitives_streams_content_chunks_and_returns_whole_tool_calls",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_primitives_streams_content_chunks_and_returns_whole_tool_calls"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_sampling_and_max_tokens_are_forwarded",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_sampling_and_max_tokens_are_forwarded"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_backend_failure_is_terminal_error_event",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_backend_failure_is_terminal_error_event"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_client_mode_include_usage_emits_final_usage_chunk",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_client_mode_include_usage_emits_final_usage_chunk"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_tool_call_is_emitted_as_tool_call_deltas",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_tool_call_is_emitted_as_tool_call_deltas"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_tool_call_only_turn_carries_role_on_first_delta",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_tool_call_only_turn_carries_role_on_first_delta"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_without_include_usage_has_no_usage_chunk[None]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_without_include_usage_has_no_usage_chunk[None]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_without_include_usage_has_no_usage_chunk[stream_options1]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_without_include_usage_has_no_usage_chunk[stream_options1]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_stream_without_include_usage_has_no_usage_chunk[stream_options2]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_stream_without_include_usage_has_no_usage_chunk[stream_options2]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_call_without_id_gets_one",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_call_without_id_gets_one"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_choice_is_forwarded_verbatim[auto]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_choice_is_forwarded_verbatim[auto]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_choice_is_forwarded_verbatim[choice3]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_choice_is_forwarded_verbatim[choice3]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_choice_is_forwarded_verbatim[none]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_choice_is_forwarded_verbatim[none]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_choice_is_forwarded_verbatim[required]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_choice_is_forwarded_verbatim[required]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_result_history_round_trips_to_backend[False]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_result_history_round_trips_to_backend[False]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_tool_result_history_round_trips_to_backend[True]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_tool_result_history_round_trips_to_backend[True]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_trace_keys_reach_inference_tap_metadata",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_trace_keys_reach_inference_tap_metadata"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_trace_keys_setter_drops_none_and_copies",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_trace_keys_setter_drops_none_and_copies"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_unreported_prompt_count_is_zero_not_an_estimate[False]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_unreported_prompt_count_is_zero_not_an_estimate[False]"
-    },
-    {
-      "classname": "tests.unit.test_openai_client_tool_mode",
-      "name": "test_unreported_prompt_count_is_zero_not_an_estimate[True]",
-      "nodeid": "tests/unit/test_openai_client_tool_mode.py::test_unreported_prompt_count_is_zero_not_an_estimate[True]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_chat_completions_role_stays_bare",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_chat_completions_role_stays_bare"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_completion_role_gets_chat_template",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_completion_role_gets_chat_template"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_forced_completion_role_is_templated_without_suffix",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_forced_completion_role_is_templated_without_suffix"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_message_omits_absent_reasoning_content",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_message_omits_absent_reasoning_content"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_no_reasoning_key_when_answer_has_no_think_block",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_no_reasoning_key_when_answer_has_no_think_block"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_role_enum_is_resolved_by_value",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_role_enum_is_resolved_by_value"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_split_leading_reasoning[  <think>a\\nb</think>ok-a\\nb-ok]",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_split_leading_reasoning[  <think>a\\nb</think>ok-a\\nb-ok]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_split_leading_reasoning[-None-]",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_split_leading_reasoning[-None-]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_split_leading_reasoning[<think>\\nr1\\n</think>\\n\\nThe answer.-r1-The answer.]",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_split_leading_reasoning[<think>\\nr1\\n</think>\\n\\nThe answer.-r1-The answer.]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_split_leading_reasoning[<think>still thinking-None-<think>still thinking]",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_split_leading_reasoning[<think>still thinking-None-<think>still thinking]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_split_leading_reasoning[Use <think>x</think> tags.-None-Use <think>x</think> tags.]",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_split_leading_reasoning[Use <think>x</think> tags.-None-Use <think>x</think> tags.]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_split_leading_reasoning[plain answer-None-plain answer]",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_split_leading_reasoning[plain answer-None-plain answer]"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_stream_emits_reasoning_delta_before_content",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_stream_emits_reasoning_delta_before_content"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_streaming_reasoning_filter_preserves_nonleading_tag_text",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_streaming_reasoning_filter_preserves_nonleading_tag_text"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_streaming_reasoning_filter_recognizes_tags_split_across_chunks",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_streaming_reasoning_filter_recognizes_tags_split_across_chunks"
-    },
-    {
-      "classname": "tests.unit.test_openai_direct_prompt_contract",
-      "name": "test_streaming_reasoning_filter_refuses_unbounded_leading_whitespace",
-      "nodeid": "tests/unit/test_openai_direct_prompt_contract.py::test_streaming_reasoning_filter_refuses_unbounded_leading_whitespace"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_archive_retains_messages_and_explicit_delete_removes_them",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_archive_retains_messages_and_explicit_delete_removes_them"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_delete_winning_during_summary_callback_does_not_recreate_session",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_delete_winning_during_summary_callback_does_not_recreate_session"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_empty_summary_result_does_not_replace_previous_state",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_empty_summary_result_does_not_replace_previous_state"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_equal_frontier_does_not_call_summary_callback",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_equal_frontier_does_not_call_summary_callback"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_existing_database_recreates_additive_message_table",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_existing_database_recreates_additive_message_table"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_message_window_returns_newest_rows_in_chronological_order",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_message_window_returns_newest_rows_in_chronological_order"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_message_write_requires_existing_session_and_json_display",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_message_write_requires_existing_session_and_json_display"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_messages_round_trip_in_order_and_are_scoped_to_session",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_messages_round_trip_in_order_and_are_scoped_to_session"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_newer_concurrent_frontier_wins_over_slow_older_summary",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_newer_concurrent_frontier_wins_over_slow_older_summary"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_frontier_cannot_move_backwards",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_frontier_cannot_move_backwards"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_frontier_tracks_highest_appended_id_when_timestamps_are_out_of_order",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_frontier_tracks_highest_appended_id_when_timestamps_are_out_of_order"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_refresh_empty_window_returns_existing_summary_without_callback",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_refresh_empty_window_returns_existing_summary_without_callback"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_refresh_is_injected_and_preserves_previous_state_on_failure",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_refresh_is_injected_and_preserves_previous_state_on_failure"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_refresh_passes_prior_state_and_only_unseen_suffix",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_refresh_passes_prior_state_and_only_unseen_suffix"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_refresh_refuses_unseen_backlog_over_cap_without_callback",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_refresh_refuses_unseen_backlog_over_cap_without_callback"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_summary_refresh_uses_ordered_messages_and_records_its_frontier",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_summary_refresh_uses_ordered_messages_and_records_its_frontier"
-    },
-    {
-      "classname": "tests.unit.test_session_conversation_messages",
-      "name": "test_transcript_writes_require_the_current_token_for_a_leased_session",
-      "nodeid": "tests/unit/test_session_conversation_messages.py::test_transcript_writes_require_the_current_token_for_a_leased_session"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_crashed_owner_is_reclaimed_immediately_by_liveness",
-      "nodeid": "tests/unit/test_session_lease.py::test_crashed_owner_is_reclaimed_immediately_by_liveness"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_delayed_stale_writer_is_fenced_off",
-      "nodeid": "tests/unit/test_session_lease.py::test_delayed_stale_writer_is_fenced_off"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_foreign_host_owner_only_expires",
-      "nodeid": "tests/unit/test_session_lease.py::test_foreign_host_owner_only_expires"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_heartbeat_extends_and_expired_lease_cannot_be_revived",
-      "nodeid": "tests/unit/test_session_lease.py::test_heartbeat_extends_and_expired_lease_cannot_be_revived"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_held_session_lease_renews_reports_and_releases",
-      "nodeid": "tests/unit/test_session_lease.py::test_held_session_lease_renews_reports_and_releases"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_leased_read_modify_write_loses_no_update_across_six_processes",
-      "nodeid": "tests/unit/test_session_lease.py::test_leased_read_modify_write_loses_no_update_across_six_processes"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_pid_reuse_is_detected_by_start_time",
-      "nodeid": "tests/unit/test_session_lease.py::test_pid_reuse_is_detected_by_start_time"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_process_start_ticks_distinguishes_missing_pid",
-      "nodeid": "tests/unit/test_session_lease.py::test_process_start_ticks_distinguishes_missing_pid"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_rebooted_host_owner_is_dead",
-      "nodeid": "tests/unit/test_session_lease.py::test_rebooted_host_owner_is_dead"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_release_is_idempotent_and_token_stays_monotonic",
-      "nodeid": "tests/unit/test_session_lease.py::test_release_is_idempotent_and_token_stays_monotonic"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_same_process_contender_is_also_excluded",
-      "nodeid": "tests/unit/test_session_lease.py::test_same_process_contender_is_also_excluded"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_sessions_api_maps_a_leased_session_write_to_409",
-      "nodeid": "tests/unit/test_session_lease.py::test_sessions_api_maps_a_leased_session_write_to_409"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_simultaneous_acquire_across_processes_has_one_winner",
-      "nodeid": "tests/unit/test_session_lease.py::test_simultaneous_acquire_across_processes_has_one_winner"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_unreadable_owner_identity_is_not_treated_as_dead",
-      "nodeid": "tests/unit/test_session_lease.py::test_unreadable_owner_identity_is_not_treated_as_dead"
-    },
-    {
-      "classname": "tests.unit.test_session_lease",
-      "name": "test_writes_are_fenced_and_reads_are_not",
-      "nodeid": "tests/unit/test_session_lease.py::test_writes_are_fenced_and_reads_are_not"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
-      "name": "test_archive_nonexistent_session",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_archive_nonexistent_session"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
-      "name": "test_archive_session",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_archive_session"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
-      "name": "test_build_resume_context",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_build_resume_context"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestBaseSessionStore",
-      "name": "test_build_resume_context_missing_session",
-      "nodeid": "tests/unit/test_session_protocol.py::TestBaseSessionStore::test_build_resume_context_missing_session"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestCheckpointProtocolNormalization",
-      "name": "test_normalize_forward_payload_drops_unknown_fields",
-      "nodeid": "tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization::test_normalize_forward_payload_drops_unknown_fields"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestCheckpointProtocolNormalization",
-      "name": "test_normalize_legacy_payload_missing_version",
-      "nodeid": "tests/unit/test_session_protocol.py::TestCheckpointProtocolNormalization::test_normalize_legacy_payload_missing_version"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestSessionStoreProtocol",
-      "name": "test_mock_store_implements_protocol",
-      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_mock_store_implements_protocol"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestSessionStoreProtocol",
-      "name": "test_session_crud_operations",
-      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_session_crud_operations"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestSessionStoreProtocol",
-      "name": "test_tag_operations",
-      "nodeid": "tests/unit/test_session_protocol.py::TestSessionStoreProtocol::test_tag_operations"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestWhereFilter",
-      "name": "test_where_filter_combined",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_combined"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestWhereFilter",
-      "name": "test_where_filter_comparison_operators",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_comparison_operators"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestWhereFilter",
-      "name": "test_where_filter_in_operator",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_in_operator"
-    },
-    {
-      "classname": "tests.unit.test_session_protocol.TestWhereFilter",
-      "name": "test_where_filter_simple",
-      "nodeid": "tests/unit/test_session_protocol.py::TestWhereFilter::test_where_filter_simple"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_cancel_marks_active_turn_before_cleanup_and_attempts_all_hooks_on_errors",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_cancel_marks_active_turn_before_cleanup_and_attempts_all_hooks_on_errors"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_cascade_synthesizes_only_a_complete_text_turn_and_emits_pcm_order",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_cascade_synthesizes_only_a_complete_text_turn_and_emits_pcm_order"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_controller_rejects_a_second_active_turn_and_idle_cancel_only_stops_queue",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_controller_rejects_a_second_active_turn_and_idle_cancel_only_stops_queue"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_controller_rejects_malformed_turns_events_and_missing_terminal",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_controller_rejects_malformed_turns_events_and_missing_terminal"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_empty_explicit_transcript_is_valid_and_malformed_route_data_fails_closed",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_empty_explicit_transcript_is_valid_and_malformed_route_data_fails_closed"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_healthy_supported_interlocutor_is_used_and_cancel_order_is_explicit",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_healthy_supported_interlocutor_is_used_and_cancel_order_is_explicit"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_incomplete_or_failed_voice_turn_never_reaches_synthesizer",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_incomplete_or_failed_voice_turn_never_reaches_synthesizer"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_inject_hook_can_reenter_cancel_without_holding_controller_lock",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_inject_hook_can_reenter_cancel_without_holding_controller_lock"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_interlocutor_falls_back_for_unsupported_language_and_unhealthy_backend",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_interlocutor_falls_back_for_unsupported_language_and_unhealthy_backend"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_owner_remains_reserved_until_stream_and_cancel_hooks_finish",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_owner_remains_reserved_until_stream_and_cancel_hooks_finish"
-    },
-    {
-      "classname": "tests.unit.test_voice_controller_contract",
-      "name": "test_route_answer_accumulation_has_a_fixed_upper_bound",
-      "nodeid": "tests/unit/test_voice_controller_contract.py::test_route_answer_accumulation_has_a_fixed_upper_bound"
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_turn_feature_defaults_off_in_both_profiles",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_turn_feature_defaults_off_in_both_profiles"
     },
     {
       "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_consumer_exception_keeps_session_lease_until_worker_exits",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_consumer_exception_keeps_session_lease_until_worker_exits"
+      "name": "test_voice_route_is_disabled_by_default_until_explicit_enable",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_is_disabled_by_default_until_explicit_enable"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_route_streams_native_chunks_and_persists_only_completed_answer",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_streams_native_chunks_and_persists_only_completed_answer"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_response_verbatim_preserves_literal_values_before_emitting",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_response_verbatim_preserves_literal_values_before_emitting"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_display_goal_emits_a_nonspoken_payload_and_persists_it_separately",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_display_goal_emits_a_nonspoken_payload_and_persists_it_separately"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_missing_protected_value_fails_closed_without_emitting_or_persisting_answer",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_missing_protected_value_fails_closed_without_emitting_or_persisting_answer"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_route_refuses_header_identity_mismatch_before_write",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_refuses_header_identity_mismatch_before_write"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_route_does_not_persist_partial_answer_on_generation_failure",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_does_not_persist_partial_answer_on_generation_failure"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_timeout_uses_timeout_event_and_deadline",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_timeout_uses_timeout_event_and_deadline"
+    },
+    {
+      "classname": "tests.unit.test_voice_route_contract",
+      "name": "test_voice_setup_timeout_returns_http_504_before_stream_headers",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_setup_timeout_returns_http_504_before_stream_headers"
     },
     {
       "classname": "tests.unit.test_voice_route_contract",
@@ -1347,48 +67,104 @@
     },
     {
       "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_route_does_not_persist_partial_answer_on_generation_failure",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_does_not_persist_partial_answer_on_generation_failure"
+      "name": "test_consumer_exception_keeps_session_lease_until_worker_exits",
+      "nodeid": "tests/unit/test_voice_route_contract.py::test_consumer_exception_keeps_session_lease_until_worker_exits"
     },
     {
-      "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_route_is_disabled_by_default_until_explicit_enable",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_is_disabled_by_default_until_explicit_enable"
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_interlocutor_falls_back_for_unsupported_language_and_unhealthy_backend",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_interlocutor_falls_back_for_unsupported_language_and_unhealthy_backend"
     },
     {
-      "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_route_refuses_header_identity_mismatch_before_write",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_refuses_header_identity_mismatch_before_write"
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_healthy_supported_interlocutor_is_used_and_cancel_order_is_explicit",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_healthy_supported_interlocutor_is_used_and_cancel_order_is_explicit"
     },
     {
-      "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_route_streams_native_chunks_and_persists_only_completed_answer",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_route_streams_native_chunks_and_persists_only_completed_answer"
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_explicit_retain_cancel_choice_keeps_or_cancels_named_turn",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_explicit_retain_cancel_choice_keeps_or_cancels_named_turn"
     },
     {
-      "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_setup_timeout_returns_http_504_before_stream_headers",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_setup_timeout_returns_http_504_before_stream_headers"
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_sticky_cancel_choice_holds_owner_until_cleanup_before_same_id_replacement",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_sticky_cancel_choice_holds_owner_until_cleanup_before_same_id_replacement"
     },
     {
-      "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_timeout_uses_timeout_event_and_deadline",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_timeout_uses_timeout_event_and_deadline"
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_retain_cancel_choice_requires_typed_choice_and_active_turn",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_retain_cancel_choice_requires_typed_choice_and_active_turn"
     },
     {
-      "classname": "tests.unit.test_voice_route_contract",
-      "name": "test_voice_turn_feature_defaults_off_in_both_profiles",
-      "nodeid": "tests/unit/test_voice_route_contract.py::test_voice_turn_feature_defaults_off_in_both_profiles"
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_cascade_passes_response_mode_and_exact_protected_values_to_speech_input",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_cascade_passes_response_mode_and_exact_protected_values_to_speech_input"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_strict_turn_bypasses_healthy_interlocutor_without_preservation_contract",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_strict_turn_bypasses_healthy_interlocutor_without_preservation_contract"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_cascade_refuses_to_synthesize_when_a_protected_value_is_missing",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_cascade_refuses_to_synthesize_when_a_protected_value_is_missing"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_controller_rejects_a_second_active_turn_and_idle_cancel_only_stops_queue",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_controller_rejects_a_second_active_turn_and_idle_cancel_only_stops_queue"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_cancel_marks_active_turn_before_cleanup_and_attempts_all_hooks_on_errors",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_cancel_marks_active_turn_before_cleanup_and_attempts_all_hooks_on_errors"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_inject_hook_can_reenter_cancel_without_holding_controller_lock",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_inject_hook_can_reenter_cancel_without_holding_controller_lock"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_owner_remains_reserved_until_stream_and_cancel_hooks_finish",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_owner_remains_reserved_until_stream_and_cancel_hooks_finish"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_controller_rejects_malformed_turns_events_and_missing_terminal",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_controller_rejects_malformed_turns_events_and_missing_terminal"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_cascade_synthesizes_only_a_complete_text_turn_and_emits_pcm_order",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_cascade_synthesizes_only_a_complete_text_turn_and_emits_pcm_order"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_incomplete_or_failed_voice_turn_never_reaches_synthesizer",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_incomplete_or_failed_voice_turn_never_reaches_synthesizer"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_empty_explicit_transcript_is_valid_and_malformed_route_data_fails_closed",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_empty_explicit_transcript_is_valid_and_malformed_route_data_fails_closed"
+    },
+    {
+      "classname": "tests.unit.test_voice_controller_contract",
+      "name": "test_route_answer_accumulation_has_a_fixed_upper_bound",
+      "nodeid": "tests/unit/test_voice_controller_contract.py::test_route_answer_accumulation_has_a_fixed_upper_bound"
     }
   ],
-  "count": 276,
+  "count": 31,
   "provenance": {
     "module_level_code_executed": false,
+    "source_closure": "Reviewed 444-file CS14 baseline source set plus the AST-resolved first-party import closure of both complete selected voice test modules, including package initializers; no source modules were imported and no tests executed.",
     "test_bodies_executed": false,
     "test_modules_imported": false
   },
-  "schema": "epyc.vb.cs14_voice.selected_cases.v1",
-  "source_commit": "caa6b5ecf7a9355929f01459aa32cd0a2350519d",
+  "schema": "epyc.vb.cs16_18_voice.selected_cases.v1",
+  "source_commit": "bbf38c98b6a9984d6fc6f8f9f7656dd0cad0ec3f",
   "source_files": {
     "orchestration/derived/stack_priors.yaml": {
       "git_blob": "d3152fc7585e724ef298b7d199a47800634ab4d3",
@@ -1463,8 +239,8 @@
       "sha256": "1051757140bc1346be9520382c55273dc01acdbdaafa100e110776853bdee16c"
     },
     "orchestration/repl_memory/memory_record.py": {
-      "git_blob": "db78be3e32289b34385e83122c399f604d9ea873",
-      "sha256": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b"
+      "git_blob": "10bf602e890be98487952d8d64dccaeac713f6bf",
+      "sha256": "463ae4aa74ef7ecc0b7acc5dca14af091fd4ae0c0a1a75ed57123de644930702"
     },
     "orchestration/repl_memory/parallel_embedder.py": {
       "git_blob": "1c25cbdff3c36de4626d5bc3260da331d42564e8",
@@ -1803,8 +579,8 @@
       "sha256": "04c452763aaf9c683924ff1b729f1043901374b38767b2f157d12e4d770c5224"
     },
     "src/api/routes/chat_vision.py": {
-      "git_blob": "94f236ae3eede3682584f75932548707fab60bbc",
-      "sha256": "d04b2a291afc74ce2481b0320c551b8aebbb50b71eddfa87ccacfb8e13d764f3"
+      "git_blob": "9dba9a34e4cf44efbc1fe246556c1e2a859ea84b",
+      "sha256": "4230bee86a02a11dad7b9be02a8e13ec8a55f553bc02dffa91dbf0f8130a4bde"
     },
     "src/api/routes/config.py": {
       "git_blob": "e5553b4728d3f6d13aa7f5981055e57d88587ec2",
@@ -1893,6 +669,10 @@
     "src/api/routes/vision_serving.py": {
       "git_blob": "01f0ad40f55c641d474b61fd083ceaf3db6acbaa",
       "sha256": "9d161d2a712f70944b3ea98c0a3a3a828bda4a81b846c0a1238ecf16a8d9914f"
+    },
+    "src/api/routes/voice.py": {
+      "git_blob": "3cf331738e83856d03a596e830fe5eff05033fdb",
+      "sha256": "b1e8d09fb030bbbef342779de43f06e19b45820b7a31b84d6f7a3e36addd5dff"
     },
     "src/api/services/__init__.py": {
       "git_blob": "6858d52b175d88c32450298876bf0127f4efc77f",
@@ -2594,6 +1374,10 @@
       "git_blob": "20349ec18e483d01ce5c8aa769dfc2a6c94fd8bc",
       "sha256": "e1d157548fd44e2a7c54ea7ad362129e5bfec9be153682e2a39b042e314cd2a1"
     },
+    "src/repl_environment/exploration_core.py": {
+      "git_blob": "84c895c4c35d8f2bd80edd2c48d6f23509449248",
+      "sha256": "4f203b7ab59ad6467ade8d5cd3540fb203ca9b047620749f36a780adbb0ad310"
+    },
     "src/repl_environment/external_access.py": {
       "git_blob": "0312d4ef84c42c21efcf1b869d7bfabf1dbb4148",
       "sha256": "92431c9daed8331fed29d7ceb79f0693f99b317621fbc5ca8f7f83e83a771fc3"
@@ -3126,9 +1910,33 @@
       "git_blob": "83ea1ca212ce833032f1c3d548b3c7d0fb17db2c",
       "sha256": "71b6efe24cc36d42c52fd9509282ac5e1f7072aaff0d805e680b00312f711062"
     },
+    "src/voice/__init__.py": {
+      "git_blob": "0a13da2691f3c29fa2e1cf156253550bd25564b9",
+      "sha256": "16c841aff5dfdf1a9b311e26bde859dae6effad6b7a4473e23a99a3ae55be6cb"
+    },
+    "src/voice/cascade.py": {
+      "git_blob": "5d13dd035cd8cfb1ceedcb58baeb2876e9bed436",
+      "sha256": "f65d05ae14187a00eb9cf39e98e40c3d312d902800b147c02deda3c528e66063"
+    },
+    "src/voice/contracts.py": {
+      "git_blob": "aa956c4ff1020df2c8c7689a20009b0de42c1ae5",
+      "sha256": "52b90d6e6ffb1600da13522bcea352c6823005a947c230f5f2b426d4d7f53b1e"
+    },
+    "src/voice/controller.py": {
+      "git_blob": "82a859b58e04231a9bf26e7cb5aed6a02103bbcc",
+      "sha256": "edf7853e5a75dfe0fbfaae24a8d50965aa01d723cd03f4f81b3c73450a034f68"
+    },
     "src/workload_model.py": {
       "git_blob": "cb4581714cc4a1631dea833865fc322f2181cc6f",
       "sha256": "6fff754ce59a70edf28159fa13e071d8b2ea38bef97968cca6508a54924a315f"
+    },
+    "tests/__init__.py": {
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    "tests/unit/__init__.py": {
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
     },
     "tests/unit/test_inference_mixin.py": {
       "git_blob": "31cb7dd43b4d8095c285c8f92d227dce9c377d08",
@@ -3159,12 +1967,12 @@
       "sha256": "8ac112b81de3de3a9cc1294478031a85ed52ef6080f04c43c35179fbceedb69c"
     },
     "tests/unit/test_voice_controller_contract.py": {
-      "git_blob": "409db34f5db14b3750b23fa473cd1852301f0d33",
-      "sha256": "dca37aa5f59bb2ebfa45a374bca02155b7d55d27c9b98c4045be81034cdced32"
+      "git_blob": "3c8e1645c5c3883432fd915b16dabc0e16d2b3f0",
+      "sha256": "6032f14b0b31ff68db5fa923172a7dd2ec021830e47040dc7e805487574cf1f1"
     },
     "tests/unit/test_voice_route_contract.py": {
-      "git_blob": "049db6da41b33fd5197e239b5b41801d4aef09aa",
-      "sha256": "05425f4c71d219499cec5c6ac7cb93b391b42a7cee5adbff5a1a8828dba15d13"
+      "git_blob": "6fe8c35857edda43ff5a60f38f297a649ce245d3",
+      "sha256": "087dbddb411e3408b483f3b37b2df64f39cac7ce3dc135fd47c69407255fe958"
     }
   }
 }
