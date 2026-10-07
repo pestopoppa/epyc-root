@@ -200,7 +200,8 @@ def verify_locked_requirements(app: Path, requirements: Path, source_map: dict) 
             declared_hashes[current] = set()
         if current:
             declared_hashes[current].update(re.findall(r"--hash=sha256:([0-9a-f]{64})", stripped))
-    roots = set(source_map["dependencies"]["external_distribution_roots"].values())
+    roots = (set(source_map["dependencies"]["external_distribution_roots"].values()) |
+             set(source_map["dependencies"].get("invocation_distribution_roots", {}).values()))
     todo = [name.lower().replace("_", "-") for name in roots]
     closure = set()
     while todo:
@@ -522,7 +523,11 @@ def main() -> int:
             if any(path.is_symlink() for path in native_items):
                 raise RuntimeError("native output contains a symlink")
             native_files = [path for path in native_items if path.is_file()]
-            return list(dict.fromkeys([*read_paths, junit, stdout, stderr, freeze, environment,
+            # Preserve missing JUnit when the exact original command fails before pytest starts.
+            junit_items = [junit] if junit.exists() else []
+            if junit.is_symlink() or (junit.exists() and not junit.is_file()):
+                raise RuntimeError("JUnit output is not a regular file")
+            return list(dict.fromkeys([*read_paths, *junit_items, stdout, stderr, freeze, environment,
                                        command_record, *native_files]))
 
         boundary = "post_capture_inventory"

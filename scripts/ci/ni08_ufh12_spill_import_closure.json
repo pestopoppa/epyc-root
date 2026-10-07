@@ -2534,7 +2534,7 @@
       "to": "src/exceptions.py"
     }
   ],
-  "locked_package_count": 23,
+  "locked_package_count": 28,
   "locked_wheel_only_packages": [
     {
       "name": "annotated-types",
@@ -3375,6 +3375,56 @@
       "wheel_hashes": [
         "sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7"
       ]
+    },
+    {
+      "name": "iniconfig",
+      "version": "2.3.0",
+      "wheel_file_names": [
+        "iniconfig-2.3.0-py3-none-any.whl"
+      ],
+      "wheel_hashes": [
+        "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
+      ]
+    },
+    {
+      "name": "packaging",
+      "version": "26.0",
+      "wheel_file_names": [
+        "packaging-26.0-py3-none-any.whl"
+      ],
+      "wheel_hashes": [
+        "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"
+      ]
+    },
+    {
+      "name": "pluggy",
+      "version": "1.6.0",
+      "wheel_file_names": [
+        "pluggy-1.6.0-py3-none-any.whl"
+      ],
+      "wheel_hashes": [
+        "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+      ]
+    },
+    {
+      "name": "pygments",
+      "version": "2.20.0",
+      "wheel_file_names": [
+        "pygments-2.20.0-py3-none-any.whl"
+      ],
+      "wheel_hashes": [
+        "sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
+      ]
+    },
+    {
+      "name": "pytest",
+      "version": "9.0.3",
+      "wheel_file_names": [
+        "pytest-9.0.3-py3-none-any.whl"
+      ],
+      "wheel_hashes": [
+        "sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9"
+      ]
     }
   ],
   "module_count": 121,
@@ -3506,7 +3556,7 @@
   "pyproject_sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
   "pytest_conftest_files": [],
   "requirements_file": "ufh12-spill-test-requirements.txt",
-  "requirements_sha256": "d5376d57b5d3e8121b71f07db62b2e58bc06f02a94cee4f6b5ada100227eb332",
+  "requirements_sha256": "83a75a571a77210d4d86dc97cda657a769f705b43563bd3011fa063fe7733650",
   "runner_env_required": {
     "CI": "true",
     "ORCHESTRATOR_MOCK_MODE": "1",
@@ -3539,6 +3589,9 @@
   "scope_note": "Static transitive module import closure plus explicit local-import bodies for the whole selected test module and the REPLEnvironment constructor, global builder, validation, normal/structured execute paths, spill path, timeout/fallback helpers, and file peek/grep calls present in this module. Optional NumPy/SciPy imports in _build_globals are guarded; numpy remains in closure via src.research_context. Capture command uses --noconftest, so repository conftests are intentionally excluded.",
   "selection": "tests/unit/test_repl_spill_output.py",
   "uv_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
-  "wheel_hash_record_count": 328,
-  "whole_module_case_count": 15
+  "wheel_hash_record_count": 333,
+  "whole_module_case_count": 15,
+  "invocation_distribution_roots": {
+    "python -m pytest": "pytest"
+  }
 }

@@ -17181,10 +17181,10 @@
     "selection": "tests/unit/test_repl_spill_output.py"
   },
   "dependencies": {
-    "all_platform_wheel_hash_records": 328,
+    "all_platform_wheel_hash_records": 333,
     "app_uv_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
     "closure_file": "scripts/ci/ni08_ufh12_spill_import_closure.json",
-    "closure_sha256": "83a00cb92f365a31eead21e3b2707b7fdf000a7f25e54fd59069906770f65690",
+    "closure_sha256": "2bf4e63b7f2088764ce93661e125fb4a5e82c11b39630543f3f450eb706ab195",
     "external_distribution_roots": {
       "RestrictedPython": "RestrictedPython",
       "httpx": "httpx",
@@ -17195,7 +17195,7 @@
       "pydantic_settings": "pydantic-settings",
       "yaml": "pyyaml"
     },
-    "locked_package_count": 23,
+    "locked_package_count": 28,
     "packages": [
       {
         "name": "annotated-types",
@@ -18036,10 +18036,63 @@
         "wheel_hashes": [
           "sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7"
         ]
+      },
+      {
+        "name": "iniconfig",
+        "version": "2.3.0",
+        "wheel_file_names": [
+          "iniconfig-2.3.0-py3-none-any.whl"
+        ],
+        "wheel_hashes": [
+          "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
+        ]
+      },
+      {
+        "name": "packaging",
+        "version": "26.0",
+        "wheel_file_names": [
+          "packaging-26.0-py3-none-any.whl"
+        ],
+        "wheel_hashes": [
+          "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"
+        ]
+      },
+      {
+        "name": "pluggy",
+        "version": "1.6.0",
+        "wheel_file_names": [
+          "pluggy-1.6.0-py3-none-any.whl"
+        ],
+        "wheel_hashes": [
+          "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+        ]
+      },
+      {
+        "name": "pygments",
+        "version": "2.20.0",
+        "wheel_file_names": [
+          "pygments-2.20.0-py3-none-any.whl"
+        ],
+        "wheel_hashes": [
+          "sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
+        ]
+      },
+      {
+        "name": "pytest",
+        "version": "9.0.3",
+        "wheel_file_names": [
+          "pytest-9.0.3-py3-none-any.whl"
+        ],
+        "wheel_hashes": [
+          "sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9"
+        ]
       }
     ],
     "requirements_file": "scripts/ci/ni08_ufh12_spill_requirements.txt",
-    "requirements_sha256": "d5376d57b5d3e8121b71f07db62b2e58bc06f02a94cee4f6b5ada100227eb332"
+    "requirements_sha256": "83a75a571a77210d4d86dc97cda657a769f705b43563bd3011fa063fe7733650",
+    "invocation_distribution_roots": {
+      "python -m pytest": "pytest"
+    }
   },
   "enrollment_binding": {
     "APP_source_candidate": "63399d6f1a7ec5caea6ef31ee898c14e977e85c2",
@@ -27729,12 +27782,12 @@
         "status": "regular exact native read"
       },
       {
-        "candidate_bytes": 39793,
-        "candidate_git_blob": "d9d8f4cebd3df48e465e3ebc8b34ac398a52a153",
+        "candidate_bytes": 40208,
+        "candidate_git_blob": "01c7bea456c156482ebe850746a327d7051bacff",
         "kind": "regular",
         "mode": "100644",
         "path": "scripts/ci/ni08_ufh12_spill_capture.py",
-        "sha256": "e9dfb6296ecb2f5907d38995ad80badb3385bd8fb601cd300dd69e1666844d19",
+        "sha256": "d5ba9ce73ecce25d409c693873922a245e7e5cf3f9a505706578cd29c9313a1f",
         "status": "regular exact native read"
       },
       {
@@ -27763,21 +27816,21 @@
         "status": "regular exact native read"
       },
       {
-        "candidate_bytes": 140420,
-        "candidate_git_blob": "b4118cf918caaf77e03b9b0b4dc64f0ee5ef55c4",
+        "candidate_bytes": 141781,
+        "candidate_git_blob": "62c00ede17abe3d5871c1cbfc6254769f61a1898",
         "kind": "regular",
         "mode": "100644",
         "path": "scripts/ci/ni08_ufh12_spill_import_closure.json",
-        "sha256": "83a00cb92f365a31eead21e3b2707b7fdf000a7f25e54fd59069906770f65690",
+        "sha256": "2bf4e63b7f2088764ce93661e125fb4a5e82c11b39630543f3f450eb706ab195",
         "status": "regular exact native read"
       },
       {
-        "candidate_bytes": 28606,
-        "candidate_git_blob": "d92586d6530d194a031720944853d766d9d370ad",
+        "candidate_bytes": 29216,
+        "candidate_git_blob": "06b5017985cf963c62c87b928ed67aae29720ab1",
         "kind": "regular",
         "mode": "100644",
         "path": "scripts/ci/ni08_ufh12_spill_requirements.txt",
-        "sha256": "d5376d57b5d3e8121b71f07db62b2e58bc06f02a94cee4f6b5ada100227eb332",
+        "sha256": "83a75a571a77210d4d86dc97cda657a769f705b43563bd3011fa063fe7733650",
         "status": "regular exact native read"
       },
       {
@@ -31006,10 +31059,10 @@
           "path": "scripts/ci/ni08_sw5_sw6_scg_capture.py"
         },
         {
-          "candidate_bytes": 39793,
-          "candidate_git_blob": "d9d8f4cebd3df48e465e3ebc8b34ac398a52a153",
-          "candidate_only": false,
-          "candidate_sha256": "e9dfb6296ecb2f5907d38995ad80badb3385bd8fb601cd300dd69e1666844d19",
+          "candidate_bytes": 40208,
+          "candidate_git_blob": "01c7bea456c156482ebe850746a327d7051bacff",
+          "candidate_only": true,
+          "candidate_sha256": "d5ba9ce73ecce25d409c693873922a245e7e5cf3f9a505706578cd29c9313a1f",
           "git_blob": "993364231a8d93dcd575663789cbacee90382f19",
           "kind": "regular",
           "mode": "100644",
