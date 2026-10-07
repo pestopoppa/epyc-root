@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-ROOT_CONTEXT_PIN = "2977a81b68ebf6df1e03a4d6b8ae20389bc5b8cc"
+ROOT_CONTEXT_PIN = "7981a9acf2b8e2c328b9add8e21a68656c99c1d6"
 SOURCE_PIN = "129a58c29d3ed1814caa1acfa29d14f604020886"
 APP_PIN = "3fc9f947bd3240fdb65daa719f37625e3ac6c7df"
 PYTHON_PIN = "3.13.15"
@@ -159,6 +159,26 @@ def blob(repo: Path, relative: str) -> str:
     return fields[2]
 
 
+def tree_entry(repo: Path, relative: str) -> tuple[str, str]:
+    """Return only a regular tracked blob's mode and object id."""
+    output = git(repo, "ls-tree", "HEAD", "--", relative)
+    metadata, separator, path = output.partition("\t")
+    fields = metadata.split()
+    if (not separator or path != relative or len(fields) != 3
+            or fields[0] not in {"100644", "100755"} or fields[1] != "blob"
+            or len(fields[2]) != 40):
+        raise RuntimeError(f"expected a tracked regular file at {relative}")
+    return fields[0], fields[2]
+
+
+def verify_enrollment(context: Path, task_text: str, source_table: str) -> None:
+    task = read_text(tracked(context, task_text))
+    table = read_text(tracked(context, source_table))
+    for identity in ("VB-RTG23-W6E-SOURCE-CONFORMANCE", "VB-RTG23-W6E-DIAGNOSTIC-CARRY"):
+        if identity not in task or identity not in table:
+            raise RuntimeError(f"published context lacks exact W6 enrollment: {identity}")
+
+
 def verify_lock(lock_path: Path, req: Path) -> dict[str, str]:
     lock = tomllib.loads(read_text(lock_path))
     packages = {item["name"].lower(): item for item in lock["package"]}
@@ -272,6 +292,7 @@ def main() -> int:
             manifest_rows.append({"repository": label, "pin": git(context, "rev-parse", "HEAD"),
                                   "path": relative, "git_blob": blob(context, relative),
                                   "sha256": digest(path)})
+        verify_enrollment(context, TASK, SOURCE_TABLE)
         carrier_names = (
             "scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py", "scripts/vidya/adapters/ci_conformance.py",
             "scripts/vidya/claim_tuple.py", "scripts/vidya/lattice.py",
