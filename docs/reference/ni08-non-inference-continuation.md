@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **122 completed scoped tasks: 65 existing checkbox flips and 57 newly completed scoped subtasks; the corrected voice verifier is accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **123 completed scoped tasks: 66 existing checkbox flips and 57 newly completed scoped subtasks; the corrected voice verifier is accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -317,3 +317,8 @@ MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14
 ## Prospective ODL source — MAIN boundary, 2026-10-07
 
 [Source and original8/8](../../artifacts/ni08/sc42-odl-write-source-20261007/README.md) close SC42-SOURCE and the pre-enrolled native verifier after full source/API/34Git+4generated/50member original review. Research source normally published; ROOT writer-reader/ingest and exact capture recipe integrated here. Existing SC42 stays open until actual canonical A/B and first measured tuple; historical demo and originalFALSE remain unchanged. NI08 now122scoped completions (65existing+57children). Further non-inference source work and full task audit continue.
+
+
+## Conditional heavy-wrap command contract — 2026-10-07
+
+MAIN completed the RTG-51 Phase-4 command documentation: request identity, immutable receipt cut, one writer/lease, ordered mutations, Coordinator promotion, completion receipt and failure/reboot barriers. The contract explicitly retains operator-only pruning/wiki authority until protected Phase-5 ratification. Manual source/caller review is LOW risk; no runtime execution or new test result is claimed. One existing checkbox closes; NI08 now123 scoped completions (66existing+57children). Remaining Phase-5 migration reconciliation and actual Auditor canary stay open.

@@ -189,3 +189,8 @@ MAIN independently accepts [corrected original276/276](../../artifacts/ni08/cs14
 ## Prospective ODL source — MAIN boundary, 2026-10-07
 
 [Source and original8/8](../../artifacts/ni08/sc42-odl-write-source-20261007/README.md) close SC42-SOURCE and the pre-enrolled native verifier after full source/API/34Git+4generated/50member original review. Research source normally published; ROOT writer-reader/ingest and exact capture recipe integrated here. Existing SC42 stays open until actual canonical A/B and first measured tuple; historical demo and originalFALSE remain unchanged. NI08 now122scoped completions (65existing+57children). Further non-inference source work and full task audit continue.
+
+
+## RTG-51 command documentation — MAIN reviewed boundary
+
+MAIN completed the RTG-51 Phase-4 command documentation: request identity, immutable receipt cut, one writer/lease, ordered mutations, Coordinator promotion, completion receipt and failure/reboot barriers. The contract explicitly retains operator-only pruning/wiki authority until protected Phase-5 ratification. Manual source/caller review is LOW risk; no runtime execution or new test result is claimed. One existing checkbox closes; NI08 now123 scoped completions (66existing+57children). Remaining Phase-5 migration reconciliation and actual Auditor canary stay open.
