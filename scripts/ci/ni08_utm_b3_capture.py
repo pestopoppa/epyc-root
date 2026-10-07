@@ -196,6 +196,7 @@ def verify_lock(app: Path, requirements: Path) -> dict[str, str]:
 def ast_cases(path: Path) -> list[dict[str, str]]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=TEST_FILE)
     cases: list[dict[str, str]] = []
+    module = ".".join(PurePosixPath(TEST_FILE).with_suffix("").parts)
     for node in tree.body:
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or not node.name.startswith("test_"):
             continue
@@ -215,11 +216,17 @@ def ast_cases(path: Path) -> list[dict[str, str]]:
                                   for index, _ in enumerate(values)]
                 break
         if parameter_rows:
-            cases.extend({"classname": Path(TEST_FILE).stem,
+            cases.extend({"classname": module,
                           "name": f"{node.name}[{row}]"} for row in parameter_rows)
         else:
-            cases.append({"classname": Path(TEST_FILE).stem, "name": node.name})
+            cases.append({"classname": module, "name": node.name})
     return cases
+
+
+def ast_test_method_count(path: Path) -> int:
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=TEST_FILE)
+    return sum(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+               and node.name.startswith("test_") for node in tree.body)
 
 
 def main() -> int:
@@ -288,6 +295,7 @@ def main() -> int:
                 raise RuntimeError(f"source differs from reviewed hash: {name}")
         versions = verify_lock(app, requirements)
         cases = ast_cases(research_files[TEST_FILE])
+        test_method_count = ast_test_method_count(research_files[TEST_FILE])
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         rows = manifest.get("cases") or []
         expected = Counter((item["classname"], item["name"]) for item in cases)
@@ -295,9 +303,13 @@ def main() -> int:
         if (manifest.get("research_commit") != RESEARCH_PIN
                 or manifest.get("test_file") != TEST_FILE
                 or manifest.get("test_file_sha256") != RESEARCH_SOURCES[TEST_FILE]
+                or manifest.get("test_method_count") != 19
+                or manifest.get("expanded_case_count") != 21
                 or manifest.get("count") != 21
                 or len(cases) != 21 or manifested != expected or len(rows) != 21):
             raise RuntimeError("full-module AST cases differ from frozen exact manifest")
+        if test_method_count != 19:
+            raise RuntimeError("full-module AST method count differs from the enrolled source")
 
         install_log = result / "dependency-install.log"
         if install_log.is_symlink() or not install_log.is_file():
@@ -311,6 +323,7 @@ def main() -> int:
             "install_command": INSTALL_COMMAND, "requirements_sha256": hashlib.sha256(requirements.read_bytes()).hexdigest(),
             "app_uv_lock_sha256": APP_LOCK_SHA256, "dependency_versions": versions,
             "expected_case_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            "ast_test_method_count": test_method_count, "expanded_junit_case_count": len(cases),
             "expected_cases": cases, "root_task": {"path": TASK, "sha256": TASK_SHA256},
             "source_table": {"path": TABLE, "sha256": TABLE_SHA256},
             "pytest_plugin_autoload": "disabled", "pytest_config": "/dev/null",
@@ -318,7 +331,7 @@ def main() -> int:
             "trace_root": str(app), "trace_db_root": env_expected["TULVING_TRACE_DB_DIR"],
             "legacy_test_path": str(legacy_app_path),
             "legacy_test_path_target": str(legacy_app_path.resolve()),
-            "execution_scope": "Synthetic BEAM parquet and repo-tree fixtures; temporary isolated SQLite/FTS5 database with the exact APP checkout at the historical hard-coded test path. All 21 expanded test cases required. No BEAM dataset, model, embedding service, network or production DB.",
+            "execution_scope": "Synthetic BEAM parquet and repo-tree fixtures; temporary isolated SQLite/FTS5 database with the exact APP checkout at the historical hard-coded test path. The complete pinned module has 19 AST test functions, one parameterized into 3 collected items, for exactly 21 JUnit cases. No BEAM dataset, model, embedding service, network or production DB.",
             "dependency_closure": "Minimal pytest, PyYAML, pandas and PyArrow closure verified against complete APP uv.lock wheel hashes.",
         }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
@@ -346,7 +359,7 @@ def main() -> int:
                     "--repo", f"research={research}", "--repo", f"app={app}"]
         for path in dict.fromkeys(item.resolve() for item in read_paths):
             producer.extend(("--read-path", str(path)))
-        selections = [f"{TEST_FILE}::{item['name']}" for item in cases]
+        selections = [TEST_FILE]
         producer.extend(("--select", TEST_FILE))
         command = [sys.executable, "-m", "pytest", "-c", "/dev/null", "--rootdir", str(research),
                    "--noconftest", "-o", "addopts=", "-p", "no:cacheprovider", "-q",

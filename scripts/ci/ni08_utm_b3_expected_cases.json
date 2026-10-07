@@ -1,93 +1,95 @@
 {
   "cases": [
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_pair_chunks_start_at_user_turns_and_rebuild_the_transcript"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_bm25_finds_the_right_pair_and_keeps_conversation_order"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_bm25_budget_and_isolation"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_full_arm_prompt_is_unchanged"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_memory_arms_are_prompt_matched_and_differ_only_in_the_excerpts"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_injected_retriever_gets_conversation_and_budget"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_default_rag_arm_retrieves_only_from_its_own_conversation"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_env_selects_the_arm_and_budget"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_bad_arm_configuration_is_refused[kwargs0-exc0]"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_bad_arm_configuration_is_refused[kwargs1-exc1]"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_bad_arm_configuration_is_refused[kwargs2-exc2]"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_a_memory_arm_without_a_retriever_never_degrades"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_trace_arm_goes_through_navigation_by_relevance_within_the_conversation"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_trace_arm_refuses_a_recency_ordered_orchestrator"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_adapter_builds_the_trace_arm_and_cleans_its_store"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_missing_trace_surface_is_loud"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_trace_arm_against_the_real_trace_store"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_suite_keeps_conversations_contiguous_and_pins_params"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_judged_payload_carries_the_recorded_arm"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_scorer_refuses_an_arm_the_rows_do_not_record"
     },
     {
-      "classname": "test_beam_memory_arms",
+      "classname": "scripts.benchmark.test_beam_memory_arms",
       "name": "test_scorer_accepts_the_recorded_arm"
     }
   ],
   "count": 21,
-  "derivation": "Top-level test functions and literal pytest.mark.parametrize tuple rows expanded from Python AST; no pytest collection. Default parameter IDs bind argument names and row ordinal.",
+  "derivation": "19 top-level AST test functions; one @pytest.mark.parametrize decorator expands to 3 exact JUnit items; complete-module JUnit classnames derive from the rootdir-relative module path; no pytest collection or execution",
   "research_commit": "180a772445e2c227979998cdec9b7a50ae5aa54e",
   "test_file": "scripts/benchmark/test_beam_memory_arms.py",
-  "test_file_sha256": "5225e6913253d27e90c8d10070785c3468a8cb3a14b9513d65e78d9ad0506cd3"
+  "test_file_sha256": "5225e6913253d27e90c8d10070785c3468a8cb3a14b9513d65e78d9ad0506cd3",
+  "test_method_count": 19,
+  "expanded_case_count": 21
 }
