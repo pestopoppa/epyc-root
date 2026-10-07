@@ -427,6 +427,9 @@ without warrant. That check is what killed the `benchmarks/results` row above.
 same thing read as N independent witnesses. Same-harness runs are not independent evidence — use a
 run-level locator, not a file-level one.
 
+
+RTG-39 source reconciliation: intake-913#record retains its existing dive-overturned status, claims and native literature wiring. MAIN corrected two administrative action notes and the blocked handoff from the already completed full-text review; [inert field contract](../../../docs/design/experience-distillation-data-contract.md). No record, dataset producer, literature tuple, grade or ledger change is emitted by this documentation task. Future teacher/student output capture must enroll its write-side provenance before execution.
+
 ## The other half: what CONSUMES a belief
 
 An adapter that nobody reads is a ledger with no drivetrain. Every write-side row above exists to
