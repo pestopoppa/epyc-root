@@ -21219,9 +21219,9 @@
     },
     "declared_named_regular_reads": [
       {
-        "candidate_bytes": 7583,
-        "candidate_git_blob": "f71d37a85a174cf07bf194394e95778947f63c43",
-        "candidate_sha256": "48193e0e76feb07e86118bc25951d7a93591ad4735bff2724dbb9a4a3b2a76b5",
+        "candidate_bytes": 7589,
+        "candidate_git_blob": "58753e8c48c667941fca0c497dbe1e5127f374b6",
+        "candidate_sha256": "b3486b657a02965605742a5c2acf8c0edcc46bb72ccf38b1dc4f0d91e0f94b4d",
         "kind": "regular",
         "mode": "100644",
         "path": ".github/workflows/ni08-dcp2-colgrep-score-capture.yml"
@@ -25497,7 +25497,7 @@
     },
     "qualification": "map self bytes are named regular reads but excluded from its recursive recipe content envelope; exact recipe commit tree/GITHUB_SHA and native readset bind them. No self-referential SHA claim.",
     "recipe_source_config_envelope": {
-      "base_git_pin": "b082bc7a447d1c054a6648594be200834fa2a9a7",
+      "base_git_pin": "51cf161b60313f19235ae33d36f5ac23fc07f373",
       "file_count": 901,
       "files": [
         {
@@ -26221,11 +26221,11 @@
           "path": ".github/workflows/ni08-c5-seed-map-capture.yml"
         },
         {
-          "candidate_bytes": 7583,
-          "candidate_git_blob": "f71d37a85a174cf07bf194394e95778947f63c43",
+          "candidate_bytes": 7589,
+          "candidate_git_blob": "58753e8c48c667941fca0c497dbe1e5127f374b6",
           "candidate_only": false,
-          "candidate_sha256": "48193e0e76feb07e86118bc25951d7a93591ad4735bff2724dbb9a4a3b2a76b5",
-          "git_blob": "f71d37a85a174cf07bf194394e95778947f63c43",
+          "candidate_sha256": "b3486b657a02965605742a5c2acf8c0edcc46bb72ccf38b1dc4f0d91e0f94b4d",
+          "git_blob": "58753e8c48c667941fca0c497dbe1e5127f374b6",
           "kind": "regular",
           "mode": "100644",
           "path": ".github/workflows/ni08-dcp2-colgrep-score-capture.yml"
@@ -34550,7 +34550,7 @@
   ],
   "workflow_validation_correction": {
     "capture_or_publication_authorized": false,
-    "change": "Move unchanged REPL_COLGREP_BIN runner.temp expression from job-level env to the capture step env; no source/test/dependency/context/carrier changes. Step env permits runner context per official GitHub contexts reference.",
+    "change": "Move unchanged REPL_COLGREP_BIN runner.temp expression from job-level env to the capture step env; separately align both the on.push branch filter and runner branch literal with the already-published trigger ref. No source/test/dependency/context/carrier changes.",
     "corrected_expression_path": "jobs.dcp2-colgrep-score-controls.steps[capture].env.REPL_COLGREP_BIN",
     "driver_branch_literal_static_correction": {
       "classification": "separate latent exact-trigger mismatch; not the cause of original pre-job GitHub rejection",
@@ -34566,6 +34566,24 @@
     "original_failure_record_bound": true,
     "prior_recipe_pin": "d07c879a26c19bc4afc798ac676f117c82f83efb",
     "review_required_before_any_publication_or_new_attempt": true,
+    "three_way_trigger_binding": {
+      "latent_mismatch_classification": "separate from original pre-job runner-context rejection; caught by exact frozen-map review before any second attempt",
+      "runner_literal": "codex/ni08-dcp2-colgrep-score-recipe-20261007",
+      "runner_literal_path": "scripts/ci/ni08_dcp2_colgrep_capture.py",
+      "target_ref": "refs/heads/codex/ni08-dcp2-colgrep-score-recipe-20261007",
+      "target_ref_observed_by": "git ls-remote origin refs/heads/codex/ni08-dcp2-colgrep-score-recipe-20261007",
+      "target_ref_sha": "d07c879a26c19bc4afc798ac676f117c82f83efb",
+      "workflow_and_runner_target_equal": true,
+      "workflow_branch_filter": "codex/ni08-dcp2-colgrep-score-recipe-20261007",
+      "workflow_path": ".github/workflows/ni08-dcp2-colgrep-score-capture.yml",
+      "workflow_trigger_fix_commit": "51cf161b60313f19235ae33d36f5ac23fc07f373"
+    },
+    "workflow_branch_filter_static_correction": {
+      "commit": "51cf161b60313f19235ae33d36f5ac23fc07f373",
+      "new": "codex/ni08-dcp2-colgrep-score-recipe-20261007",
+      "old": "codex/ni08-dcp2-colgrep-recipe-20261007",
+      "path": ".github/workflows/ni08-dcp2-colgrep-score-capture.yml"
+    },
     "workflow_fix_commit": "687184651ce5989da4c86c44a019550fad0c65e6"
   }
 }
