@@ -291,7 +291,7 @@ def main() -> int:
             manifest_rows.append({"repository": label, "pin": git(context, "rev-parse", "HEAD"),
                                   "path": relative, "git_blob": blob(context, relative),
                                   "sha256": digest(path)})
-        verify_enrollment(context, TASK, SOURCE_TABLE)
+        verify_enrollment(context, VB_PROGRAM, SOURCE_TABLE)
         carrier_names = (
             "scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py", "scripts/vidya/adapters/ci_conformance.py",
             "scripts/vidya/claim_tuple.py", "scripts/vidya/lattice.py",
