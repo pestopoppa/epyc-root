@@ -58,6 +58,11 @@ esac
 
 VALUE=$(printf '%s' "$INPUT" | jq -r --arg f "$FIELD" '.tool_input[$f] // empty')
 [[ -z "$VALUE" ]] && exit 0
+# The session's cwd from the payload, not this hook's: the Bash tool's cwd
+# persists across calls, so after `cd /outside` a later `mkdir x` resolved x
+# against the project dir (origin 2026-10-07; the codex bridge and the
+# opencode plugin already pass theirs).
+CWD=$(printf '%s' "$INPUT" | jq -r '.cwd // empty')
 
 SCAN="$(dirname "${BASH_SOURCE[0]}")/filesystem_containment_scan.py"
 
@@ -94,7 +99,7 @@ fi
 # Scanner stdout = JSON verdict (captured); scanner stderr = the human refusal
 # message (passes through to the session, untouched).
 set +e
-JSON=$(python3 "$SCAN" "$MODE" "$VALUE" 2>/dev/null)
+JSON=$(python3 "$SCAN" "$MODE" "$VALUE" ${CWD:+--cwd "$CWD"} 2>/dev/null)
 RC=$?
 set -e
 
