@@ -270,3 +270,7 @@ MAIN independently verifies64unique actual ROOT/Research source blobs,145exact i
 
 
 K11 source-only follow-on prospectively enrolled before any hosted capture: MAIN full caller/diff review finds LOW reporting/input-refusal risk, exact complete repeat denominator/unknown oracle and zero-repeat refusal, with producer-level persisted original regressions. Natural free-form serving parent remains open; no live model or kernel operation. Source and CI preparation continue, no completion counted yet.
+
+### Prospective PIP02 selected-executable library source gate — 2026-10-07
+
+MAIN reviewed the exact two-file Research candidate `ccbca3e80ba5281bf061f77406ad0672d66e6f6b`: the actual launcher accepted `config.binary` but supplied a fixed legacy experimental library directory. The correction uses the resolved selected executable's parent, with original direct-path and symlink argv controls. Manual caller review found LOW impact, confined to experimental launch argument construction; no launcher, project tests/imports, models, libraries or kernels ran on the shared host. MAIN prospectively enrolled the parent companion, source-table row and existing CI-family task before final hosted context binding. The whole original 29-control recipe remains private and requires durable pre-grade/error custody plus explicit sanitized environments before MAIN capture approval. No completion is claimed; NI08 remains 143 bounded accepted scopes (83 existing task closures plus60 completed children).
