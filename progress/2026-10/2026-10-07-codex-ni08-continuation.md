@@ -35,3 +35,7 @@ SC78/SC79 bounded numeric source child and its native CI companion are enrolled 
 ## Additional source enrollment and failed-preparation custody
 
 SMT launch-guard and server-only vision fallback bounded source/VB scopes are enrolled; periodic candidate-gate native wiring is enrolled before any capture. [MAIN original failure custody](../../artifacts/ni08/source-preparation-failures-20261007/README.md) preserves AP60 FALSE114/115, W8 NULL preflight and W8 FALSE2/3 without claiming acceptance. P6 unpublished-input checkout failure is under original review; exact source is now published. All preparations add zero completions; **NI08 remains70 (48 existing flips +22 additions)**. Task-level eligibility/source audits continue; whole-backlog exhaustion is unproved.
+
+## W8 optional display source — MAIN acceptance
+
+[Independent38Git+5context/all55member/original3/3 review and APP publication](../../artifacts/ni08/rtg23-w8-display-source-20261007/README.md) close W8 plus its pre-enrolled VB companion. **72 scoped completions (49 existing flips +23 additions)**. Actual unknown/zero/positive displays are distinct; old storage/helper and objective math preserved. Prior NULL/FALSE originals retained; no live frontier/rate improvement/runtime claim. Other source/audit work continues; whole-backlog exhaustion is unproved.

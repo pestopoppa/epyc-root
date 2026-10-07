@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **70 completed scoped tasks: 48 existing checkbox flips and 22 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **72 completed scoped tasks: 49 existing checkbox flips and 23 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -179,3 +179,7 @@ SC78/SC79 bounded numeric source child and its native CI companion are enrolled 
 ## Additional source enrollment and failed-preparation custody
 
 SMT launch-guard and server-only vision fallback bounded source/VB scopes are enrolled; periodic candidate-gate native wiring is enrolled before any capture. [MAIN original failure custody](../../artifacts/ni08/source-preparation-failures-20261007/README.md) preserves AP60 FALSE114/115, W8 NULL preflight and W8 FALSE2/3 without claiming acceptance. P6 unpublished-input checkout failure is under original review; exact source is now published. All preparations add zero completions; **NI08 remains70 (48 existing flips +22 additions)**. Task-level eligibility/source audits continue; whole-backlog exhaustion is unproved.
+
+## W8 optional display source — MAIN acceptance
+
+[Independent38Git+5context/all55member/original3/3 review and APP publication](../../artifacts/ni08/rtg23-w8-display-source-20261007/README.md) close W8 plus its pre-enrolled VB companion. **72 scoped completions (49 existing flips +23 additions)**. Actual unknown/zero/positive displays are distinct; old storage/helper and objective math preserved. Prior NULL/FALSE originals retained; no live frontier/rate improvement/runtime claim. Other source/audit work continues; whole-backlog exhaustion is unproved.
