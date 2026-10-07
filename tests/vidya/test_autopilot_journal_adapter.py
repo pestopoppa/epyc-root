@@ -6,8 +6,11 @@ would pass while the two halves disagreed — the write and read sides were auth
 sitting, which is exactly when that mistake is easiest to make and hardest to see.
 """
 
+import hashlib
+import functools
 import json
 import os
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -17,12 +20,56 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 from adapters import autopilot_journal as apj  # noqa: E402
+from frames import FrameValidationError, validate_frame  # noqa: E402
 
 # A worktree has no `repos/` symlinks; EPYC_ORCH_ROOT points the real-writer tests at a checkout.
 ORCH = Path(os.environ.get("EPYC_ORCH_ROOT") or ROOT / "repos" / "epyc-orchestrator")
 # A writer-side branch not yet on the default clone can be checked against this reader by
 # pointing VIDYA_ORCH_WRITER_ROOT at its worktree.
 WRITER = Path(os.environ.get("VIDYA_ORCH_WRITER_ROOT") or ORCH)
+
+
+def _redirect_trace_store(monkeypatch, tmp_path):
+    """Keep the real emitter, but direct its SQLite output into this test's temp tree."""
+    from src.trace import emit as trace_emit
+
+    target = tmp_path / "trace" / "events.sqlite"
+    source_db = ORCH / "data" / "trace" / "events.sqlite"
+    before = hashlib.sha256(source_db.read_bytes()).hexdigest() if source_db.is_file() else None
+    monkeypatch.setattr(
+        trace_emit, "emit", functools.partial(trace_emit.emit, db_path=target))
+    return target, source_db, before
+
+
+def _assert_real_trace_write(trace):
+    target, source_db, source_before = trace
+    with sqlite3.connect(target) as conn:
+        (count,) = conn.execute("SELECT COUNT(*) FROM event").fetchone()
+    assert count > 0, "real trace emitter did not write its isolated event store"
+    source_after = hashlib.sha256(source_db.read_bytes()).hexdigest() if source_db.is_file() else None
+    assert source_after == source_before, "writer touched the source checkout's default trace store"
+
+
+def _record_real_writer_custody(tmp_path, *, case_id, shard, trace):
+    """Bind one real-writer test case to its original journal and isolated trace bytes."""
+    shard = Path(shard)
+    trace_path = Path(trace[0])
+    root = tmp_path.resolve()
+    shard_rel = shard.resolve().relative_to(root).as_posix()
+    trace_rel = trace_path.resolve().relative_to(root).as_posix()
+    marker = {
+        "schema": "epyc.vidya.real_writer_custody.v1",
+        "case_id": case_id,
+        "root": ".",
+        "journal_path": shard_rel,
+        "journal_sha256": hashlib.sha256(shard.read_bytes()).hexdigest(),
+        "trace_path": trace_rel,
+        "trace_sha256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
+    }
+    marker_path = root / ".vidya-real-writer-custody.json"
+    with marker_path.open("x", encoding="utf-8") as stream:
+        json.dump(marker, stream, sort_keys=True)
+        stream.write("\n")
 
 
 def write_journal(tmp_path: Path, rows: list[dict]) -> Path:
@@ -239,6 +286,101 @@ def test_ap55_would_hold_counterfactual_is_carried_verbatim(tmp_path):
             == sup(s_old, r_old)["provenance"]["grade_reasons"])
 
 
+def _w6_report(status, reason, core, fresh, core_n, fresh_n, gap):
+    """Mirror the producer's authored `EvalResult.details` block, not a derived journal tuple."""
+    return {
+        "status": status,
+        "reason": reason,
+        "core_quality": core,
+        "fresh_quality": fresh,
+        "core_quality_denominator_n": core_n,
+        "fresh_quality_denominator_n": fresh_n,
+        "quality_denominator_policy": (
+            "scored_and_task_failed; task_failed_scores_zero; "
+            "infra_and_scoring_failures_excluded"
+        ),
+        "core_minus_fresh_quality": gap,
+        "scale": "mean_question_accuracy_0_to_3",
+        "positive_means": "core quality exceeds fresh-audit quality",
+        "comparison_scope": (
+            "descriptive partition difference; core and fresh may have "
+            "different question and suite mixes; not a matched causal "
+            "overfitting estimate"
+        ),
+    }
+
+
+@pytest.mark.parametrize(
+    "report",
+    [
+        pytest.param(_w6_report("measured", None, 2.25, 1.5, 4, 4, 0.75), id="core-fresh"),
+        pytest.param(_w6_report("unavailable", "w6_audit_disabled", None, None, 0, 0, None),
+                     id="disabled"),
+        pytest.param(_w6_report("unavailable", "trial_not_on_audit_cadence", None, None,
+                                0, 0, None), id="off-cadence"),
+        pytest.param(_w6_report("unavailable", "core_and_fresh_unscored", None, None,
+                                0, 0, None), id="empty"),
+        # The source records denominator policy, not dispositions; the W6 producer tests own
+        # proof that task_failed scores zero and remains in that denominator.
+        pytest.param(_w6_report("measured", None, 1.5, 0.75, 2, 2, 0.75),
+                     id="task-failed-in-denominator"),
+        pytest.param(_w6_report("unavailable", "core_unscored", None, 1.5, 0, 2, None),
+                     id="infra-failure-excluded"),
+        pytest.param(_w6_report("unavailable", "fresh_unscored", 1.5, None, 2, 0, None),
+                     id="scoring-failure-excluded"),
+    ],
+)
+def test_w6_generalization_is_optional_informational_support_only(tmp_path, report):
+    """Carry only the producer-authored block; preserve nullable values and the existing grade."""
+    old_root = write_journal(tmp_path / "old", [row()])
+    new_root = write_journal(
+        tmp_path / "new",
+        [row(eval_details={"details": {"w6_generalization": report}})],
+    )
+    (old_shard, old_row), = list(apj.iter_measured_rows(old_root))
+    (new_shard, new_row), = list(apj.iter_measured_rows(new_root))
+    old_frames = apj.frames_for_row(old_shard, old_row, as_of="t")
+    new_frames = apj.frames_for_row(new_shard, new_row, as_of="t")
+    support_type = "epyc.vidya/frame/evidence_supports_claim/v1"
+    old_support = next(frame for frame in old_frames if frame["frame_type"] == support_type)
+    new_support = next(frame for frame in new_frames if frame["frame_type"] == support_type)
+
+    assert "w6_generalization" not in old_support["assertion"]
+    assert json.loads(new_support["assertion"]["w6_generalization_json"]) == report
+    assert new_support["assertion"]["w6_generalization_json"] == json.dumps(
+        report, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    )
+    validate_frame(new_support)
+    raw_float_frame = json.loads(json.dumps(new_support))
+    raw_float_frame["assertion"]["w6_generalization"] = {"core_quality": 2.25}
+    with pytest.raises(FrameValidationError, match="float values are forbidden"):
+        validate_frame(raw_float_frame)
+    assert new_support["assertion"]["grade"] == old_support["assertion"]["grade"]
+    assert new_support["provenance"]["grade_reasons"] == old_support["provenance"]["grade_reasons"]
+    assert [frame for frame in new_frames if frame["frame_type"] != support_type] == [
+        frame for frame in old_frames if frame["frame_type"] != support_type
+    ]
+    assert {key: value for key, value in new_support["assertion"].items()
+            if key != "w6_generalization_json"} == old_support["assertion"]
+
+
+def test_w6_generalization_does_not_backfill_legacy_eval_details(tmp_path):
+    """Legacy journal rows and malformed outer shapes have no reconstructed W6 evidence."""
+    inputs = [
+        row(),
+        row(eval_details={"details": {"partition_quality": {"core": 3.0, "audit": 0.0}}}),
+        row(eval_details={"details": None}),
+    ]
+    roots = [write_journal(tmp_path / f"legacy-{index}", [item]) for index, item in enumerate(inputs)]
+    support_type = "epyc.vidya/frame/evidence_supports_claim/v1"
+    for root in roots:
+        (shard, journal_row), = list(apj.iter_measured_rows(root))
+        support = next(frame for frame in apj.frames_for_row(shard, journal_row, as_of="t")
+                       if frame["frame_type"] == support_type)
+        assert "w6_generalization" not in support["assertion"]
+        assert "w6_generalization_json" not in support["assertion"]
+
+
 def _writer_emits_ap55_gate() -> bool:
     src = WRITER / "scripts" / "autopilot" / "experiment_journal.py"
     return src.exists() and '"ap55_gate"' in src.read_text()
@@ -246,10 +388,12 @@ def _writer_emits_ap55_gate() -> bool:
 
 @pytest.mark.skipif(not _writer_emits_ap55_gate(),
                     reason="orchestrator writer does not emit ap55_gate (set VIDYA_ORCH_WRITER_ROOT)")
-def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path):
+def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     sys.path.insert(0, str(WRITER / "scripts" / "autopilot"))
     sys.path.insert(0, str(WRITER))
     from experiment_journal import ExperimentJournal, JournalEntry
+
+    trace = _redirect_trace_store(monkeypatch, tmp_path)
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
@@ -279,6 +423,13 @@ def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path):
         legs.update(would_hold_enforce=True, would_hold_enforce_reasons=["seed_rerun:MISSING"],
                     would_hold_strict=True)
     assert got == legs
+    _assert_real_trace_write(trace)
+    _record_real_writer_custody(
+        tmp_path,
+        case_id="tests/vidya/test_autopilot_journal_adapter.py::test_ap55_gate_end_to_end_against_the_real_writer",
+        shard=d / "autopilot_journal.jsonl",
+        trace=trace,
+    )
 
 
 def test_a_trial_is_always_a_candidate(tmp_path):
@@ -296,14 +447,37 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     sys.path.insert(0, str(ORCH))  # the writer imports `src.autopilot_core.*`
     from experiment_journal import ExperimentJournal, JournalEntry
 
+    trace = _redirect_trace_store(monkeypatch, tmp_path)
+
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
+    w6_report = {
+        "status": "unavailable",
+        "reason": "fresh_unscored",
+        "core_quality": 2.0,
+        "fresh_quality": None,
+        "core_quality_denominator_n": 1,
+        "fresh_quality_denominator_n": 0,
+        "quality_denominator_policy": (
+            "scored_and_task_failed; task_failed_scores_zero; "
+            "infra_and_scoring_failures_excluded"
+        ),
+        "core_minus_fresh_quality": None,
+        "scale": "mean_question_accuracy_0_to_3",
+        "positive_means": "core quality exceeds fresh-audit quality",
+        "comparison_scope": (
+            "descriptive partition difference; core and fresh may have "
+            "different question and suite mixes; not a matched causal "
+            "overfitting estimate"
+        ),
+    }
     ExperimentJournal(journal_dir=d).record(JournalEntry(
         trial_id=1, timestamp="2026-08-12T10:00:00+00:00", species="s",
         action_type="numeric_trial", tier=1, quality=0.5, speed=1.0, cost=2.0,
         reliability=0.9, pareto_status="candidate",
         harness_metrics={"schema_version": 1},
-        eval_details={"details": {"quality_denominator": 30}}))
+        eval_details={"details": {"quality_denominator": 30,
+                                  "w6_generalization": w6_report}}))
 
     measured = list(apj.iter_measured_rows(tmp_path))
     assert len(measured) == 1, "the adapter could not read what the writer produced"
@@ -312,11 +486,38 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     assert rec["protocol_id"] == "autopilot/metric-v1+harness-v1"
     assert (rec["reps"], rec["reps_basis"]) == (30, "scored:quality_denominator")
     assert len(rec["attestation"]["sha256"]) == 64
+    assert rec["w6_generalization"] == w6_report
+    import measurement_record
+    before_root = measurement_record.REPO_ROOT
+    original_tuple = measurement_record.to_tuple(rec)
+    assert original_tuple.attestation_present is False
+    assert original_tuple.attestation_verified is True
+    support = _support(shard, r)
+    assert measurement_record.REPO_ROOT == before_root
+    assert support["assertion"]["grade"] == {"Q": "Witnessed", "T": "Anchored"}
+    assert support["provenance"]["method"] == apj.ADAPTER_ID
+    assert any("artifact is not on disk" in reason
+               for reason in support["provenance"]["grade_reasons"])
+    assert json.loads(support["assertion"]["w6_generalization_json"]) == w6_report
+    _assert_real_trace_write(trace)
+    _record_real_writer_custody(
+        tmp_path,
+        case_id="tests/vidya/test_autopilot_journal_adapter.py::test_end_to_end_against_the_real_writer",
+        shard=d / "autopilot_journal.jsonl",
+        trace=trace,
+    )
 
     import measurement_record
     orig, measurement_record.REPO_ROOT = measurement_record.REPO_ROOT, tmp_path
     try:
         assert measurement_record.grade(rec)[:2] == ("Witnessed", "Attested")
+        resolved_tuple = measurement_record.to_tuple(rec)
+        assert resolved_tuple.attestation_present is True
+        assert resolved_tuple.attestation_verified is True
+        # Earlier frames retain the original resolver context; no retroactive regrading.
+        assert support["assertion"]["grade"] == {
+            "Q": "Witnessed", "T": "Anchored",
+        }
     finally:
         measurement_record.REPO_ROOT = orig
 
@@ -416,7 +617,7 @@ def test_a_speed_axis_reseed_event_is_neither_a_commit_nor_projected(tmp_path):
 
 @pytest.mark.skipif(not (ORCH / "scripts" / "autopilot" / "experiment_journal.py").exists(),
                     reason="orchestrator repo not present")
-def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
+def test_decision_fields_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     """The writer's vocabulary and the ledger event shape, produced by the real journal code."""
     sys.path.insert(0, str(ORCH / "scripts" / "autopilot"))
     sys.path.insert(0, str(ORCH))
@@ -424,6 +625,8 @@ def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
     from safety_gate import PROMOTION_RULE_FRONTIER
     from src.autopilot_core.learning_exclusions import (
         FRONTIER_ADMISSION_KEY, FRONTIER_ADMISSION_REPRESENTATIVE)
+
+    trace = _redirect_trace_store(monkeypatch, tmp_path)
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
@@ -448,3 +651,10 @@ def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
     assert sup["assertion"]["promotion_committed"] is True
     # Trial 2 is the newest row and its commit never landed: held back, not projected.
     assert apj.frames_for_row(*got[2], as_of="t") == []
+    _assert_real_trace_write(trace)
+    _record_real_writer_custody(
+        tmp_path,
+        case_id="tests/vidya/test_autopilot_journal_adapter.py::test_decision_fields_end_to_end_against_the_real_writer",
+        shard=d / "autopilot_journal.jsonl",
+        trace=trace,
+    )

@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **153 completed scoped tasks: 92 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **154 completed scoped tasks: 93 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -401,3 +401,7 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## PIP02 current-provenance selected-binary source — MAIN acceptance
 
 [MAIN current-source/original30/30 acceptance](../../artifacts/ni08/pip02-current-provenance-source-acceptance-20261007/README.md) closes PIP02-SELECTED-LIBRARY-SOURCE and its native companion. Fresh30/30 and exact Research5fd publication preserve current raw-byte/FIFO/provenance guards and UFH/K11 artifacts; older29/29 remains an older-source observation. NI08=153 (92 existing+61 children), with no linkage, residency, model, parser-quality or performance warrant.
+
+## W6 journal informational carry — MAIN acceptance
+
+[MAIN optional-carry source and original31/31](../../artifacts/ni08/w6e-journal-carry-success-acceptance-20261007/README.md) closes the one actual unchecked VB-RTG23-W6E-DIAGNOSTIC-CARRY task. No second parent checkbox exists for this scope; already accepted W6 producer tasks are not counted again. NI08=154 (93 existing+61 children). All31 original controls, three real-writer markers/four projected rows, source custody and strict carrier semantics are authenticated; prior FALSE/setup originals remain immutable.

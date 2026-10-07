@@ -332,3 +332,5 @@ Tick waypoints here + one-line progress entry; all rate numbers via the MEASUREM
 
 
 W6e source accepted2026-10-07 after separate fresh attempt2; original attempt1 and wrong prebinding remain intact. Optional journal informational carry remains independently tracked under VB-RTG23-W6E-DIAGNOSTIC-CARRY; objectives, shared quality grade, shadow-only behavior and historical rows are unchanged.
+
+W6 optional journal informational carry accepted2026-10-07: [MAIN optional-carry source and original31/31](../../artifacts/ni08/w6e-journal-carry-success-acceptance-20261007/README.md). Actual authored raw block and certified canonical JSON support preserve strict frames/quality/objective/shared grade and absent legacy rows. Three real-writer markers/four projected original rows are authenticated; no live generalization or promotion warrant. The only previously unchecked task for this scope is VB-RTG23-W6E-DIAGNOSTIC-CARRY; the already accepted W6 producer tasks are not counted again.

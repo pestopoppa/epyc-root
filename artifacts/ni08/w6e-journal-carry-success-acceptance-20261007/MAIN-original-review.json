@@ -1,0 +1,52 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T10:37:08.445369+00:00",
+  "run": 37606877926,
+  "attempt": 1,
+  "job_identity": "github_job_112744403116",
+  "recipe_pin": "0340eacae93db431981224b4f7b9466442778d6c",
+  "source_pin": "0e44c5496aaafb7045b4c6eeeca2441aaee225d8",
+  "artifact_id": 11475501984,
+  "zip_sha256": "e9226eea82fdde02292fd2efa71be2175b5893c77a649fd34f5bdbfecc09cd83",
+  "zip_bytes": 3654931,
+  "original_regular_member_copies": 194,
+  "frozen_Git_inputs": 42,
+  "native_readset": 47,
+  "generated_original_inputs": 5,
+  "cases": 31,
+  "native_value": true,
+  "receipt_self_sha256": "69a411d700c9989a1fd7dc6a4d1dd8637a9565cb11c56653da0a7d00542676c5",
+  "receipt_file_sha256": "19f902570d2643374a781a43d2f2265b8b55fdef70e084d2d648513e535a0da9",
+  "original_outer_shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "real_writer_custody_markers": 3,
+  "real_journal_rows_projected": 4,
+  "original_row_shared_grades": {
+    "Witnessed/Attested": 4
+  },
+  "typed_original_result_counts": {
+    "directory": 274,
+    "regular_file": 146,
+    "symlink": 25
+  },
+  "zip_alias_and_empty_directory_topology_limits_qualified": true,
+  "source_readset_stable_before_capture_after_capture_after_grade": true,
+  "preexisting_result_entries_unchanged_during_grade": true,
+  "exact_new_grade_custody_artifacts": [
+    "journal-source-grades.json",
+    "pre-grade-custody.json",
+    "shared-grade.json"
+  ],
+  "source_default_trace_db_absent_unchanged": true,
+  "originals_unchanged": true,
+  "MAIN_executed_project_or_grade": false,
+  "implementation_accepted_for_exact_source": true,
+  "scope": "Synthetic actual W6 writer informational carry only; original strict frames/quality/objective/ladder preserved; no live generalization or promotion warrant",
+  "prior_originals_preserved": {
+    "37598878501": "FALSE26/31",
+    "37602263864": "FALSE30/31",
+    "37605275884": "setup failure without native receipt"
+  }
+}

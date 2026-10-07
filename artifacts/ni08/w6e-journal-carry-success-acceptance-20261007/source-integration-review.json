@@ -1,0 +1,20 @@
+{
+  "source_pin": "0e44c5496aaafb7045b4c6eeeca2441aaee225d8",
+  "canonical_parent": "f71cc137fc3bc17325d6255884eaed7e9dee98c9",
+  "review": "PASS",
+  "files": [
+    {
+      "path": "scripts/vidya/adapters/autopilot_journal.py",
+      "preimage_sha256": "f838845f873b84fec0244d164a373bd088b69f3fd845ac4c60b2f124817ac324",
+      "source_sha256": "1102acd59c66ef01cf3d4f87ee9f1ad7d9be670270f2fcef81333aa7da31a440",
+      "source_blob": "0339294e00576ea0cf023d15105049cb04833b7f"
+    },
+    {
+      "path": "tests/vidya/test_autopilot_journal_adapter.py",
+      "preimage_sha256": "1916f801b3c999ef2983a8ef33d3630a206a3da008eb7cebe331971c53aec888",
+      "source_sha256": "f398c07348f1ae08c5417125a23e5e6076f31e10ada1d8fddef2d0c951fb3d7a",
+      "source_blob": "0021d2aebe365eb28e247688e9338b441dc4feda"
+    }
+  ],
+  "scope": "Exact two bounded source products; all other canonical source unchanged; publication follows normal ROOT checkpoint"
+}
