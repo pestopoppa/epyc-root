@@ -1,0 +1,77 @@
+name: C-style pointer lexical native controls
+on:
+  push:
+    branches: [codex/ni08-inf48-c-pointer-native-20261007]
+permissions:
+  contents: read
+jobs:
+  complete-repeat-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Preserve original setup status before imports
+        run: |
+          mkdir -p "$RUNNER_TEMP/inf48-c-pointer"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/inf48-c-pointer/status.json"
+      - name: Checkout exact ROOT recipe and unchanged carrier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout approved exact APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 9f415a7165dd2c22f7bbf1a52ac3035292c7f5e0
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout MAIN exact prospective source and native enrollment
+        uses: actions/checkout@v4
+        with:
+          ref: 8b540512ed8017fc0ed80ea8f5d3a0381fc08ead
+          path: context
+          persist-credentials: false
+      - name: Checkout exact carrier input
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact lock input
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 70096b763939a43409a1f1827ab633d62425a6c1
+          path: lock
+          persist-credentials: false
+      - name: Setup exact bounded interpreter
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install isolated ALL-wheel locked pytest closure
+        run: |
+          python -m venv "$RUNNER_TEMP/inf48-c-pointer-venv"
+          "$RUNNER_TEMP/inf48-c-pointer-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/inf48_c_pointer_requirements.txt > "$RUNNER_TEMP/inf48-c-pointer/dependency-install.log" 2>&1
+      - name: Capture whole original unit module and existing shared grade
+        run: |
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/inf48-c-pointer-venv/bin/python" recipe/scripts/ci/inf48_c_pointer_capture.py
+      - name: Preserve all original setup and native outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: inf48-c-pointer-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inf48-c-pointer
+          include-hidden-files: true
+          retention-days: 90
