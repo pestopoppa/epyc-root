@@ -194,7 +194,12 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
       (intake-1330#record). BEAM Table 8: removing working memory **BEATS** the full system at 100K
       (0.327 vs 0.311), at 500K and at 1M; only at 10M is every component positive. The paper's own
       abstract contradicts it, which makes this a self-published negative result and therefore
-      strong evidence for the anchor CF-3c already mandates at :166.
+      strong evidence for the anchor CF-3c already mandates at :166. Harness caveat: upstream
+      BEAM's published evaluator passes `probing_question` to all ten evaluators but omits it from
+      the judge prompt. Its 100K split also uses one-item refusal rubrics for all 40 abstention
+      prompts, so this comparison is not question-conditioned and does not test multi-criterion
+      abstention ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
+      [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
 - **CF-SA-1 (record, no work)** — semantic-anchor recurrent-state checkpointing is currently
   **INEXPRESSIBLE** here. Three prerequisites, in order: emit real structural boundaries
   (multi-message rendering or in-band special tokens); move the live edit path off

@@ -80,15 +80,27 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
       `test_all_half_run_scores_0500_not_1000` pins 0.500 (and asserts the binarised rate reads 1.000
       as a labelled diagnostic); further tests cover the unweighted-column headline vs the
       question-weighted and rubric-weighted alternatives, both folds' counts, and off-scale refusal.
-- [ ] **CME-3 — Carry the BEAM harness-defect note wherever a BEAM number is quoted, ours or
-      anyone's** (intake-1330#record): the judge never sees the probing question (all ten
-      `evaluate_*` functions accept `probing_question` and discard it, against a prompt that
-      mandates a responsiveness check), and every abstention rubric is a single-nugget refusal
-      template. Both are properties of the PUBLISHED artifact and apply retroactively to Table 1
-      and to every third-party quote.
-      *Progress 2026-09-15 (not ticked):* the note rides in every SC68 BEAM tuple
-      (`beam_memory_capture.HARNESS_NOTE`) and our judge prompt passes the probing question
-      (`question_in_judge_prompt` recorded); quotes outside the tuple still need it.
+- [x] **CME-3 — Carry the BEAM harness-defect note wherever a BEAM number is quoted, ours or
+      anyone's** (intake-1330#record). Verified 2026-10-07 against upstream BEAM
+      `mohammadtavakoli78/BEAM@b2da22eac88bb0874c64665f13457eb99835774a`:
+      `src/evaluation/run_evaluation.py` passes `probing_question` into all ten evaluators;
+      `src/evaluation/compute_metrics.py` accepts it in each evaluator but never reads it while
+      building the judge prompt, whose responsiveness section therefore has no question input.
+      A static function-body census confirms this for all ten (`evaluate_abstention`,
+      `evaluate_contradiction_resolution`, `evaluate_event_ordering`,
+      `evaluate_information_extraction`, `evaluate_instruction_following`,
+      `evaluate_knowledge_update`, `evaluate_multi_session_reasoning`,
+      `evaluate_preference_following`, `evaluate_summarization`, and
+      `evaluate_temporal_reasoning`). In the published 100K prompt files, all 40 abstention
+      questions have one-item refusal rubrics; this is a scoped observation, not a survey of
+      every split. The caveat is now adjacent to the live 100K numeric quotes in
+      `wiki/memory-augmented.md`, `episodic-memory-integrity.md`, and
+      `context-folding-progressive.md`; `wiki/benchmark-methodology.md` also distinguishes count
+      granularity from judge validity. This describes the upstream published artifact; the local
+      scorer's question-aware fix does not repair upstream scores. Source: [pinned judge code](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
+      [pinned prompt template](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/prompts.py),
+      and [pinned 100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K).
+      ✅ 2026-10-07 — exact source/callsite census and 20-file, 40-question rubric audit. [MAIN source review](../../artifacts/ni08/beam-caveat-source-20261007/README.md).
 - [x] **CME-4 — Add a `context_mode` parameter {none, retrieved, full} to the Tulving adapter's
       `_row_to_prompt`** (verified at `tulving_episodic_adapter.py:582`, which always prepends the
       book). Route `retrieved` through the `src/trace` FTS5 + `navigation.py` surface. **The

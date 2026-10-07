@@ -165,3 +165,7 @@ Full active/blocked inventory covers189 tracked Markdown files/179 canonical-ind
 ## Fixed-verdict descriptive-summary source — MAIN acceptance
 
 [Original4/4 and exact fixed-source custody](../../artifacts/ni08/hs19d-p0-summary-source-20261007/README.md) close pre-enrolled source/VB companions: **67 scoped completions (45 existing flips +22 additions)**. Descriptive counts are ungraded and absent native/tap/template fields remain unknown. Broader P0/template work remains open; source/audit implementation continues and backlog exhaustion is unproved.
+
+## BEAM numeric-consumer caveat — MAIN acceptance
+
+[Independent23-file upstream API/source review](../../artifacts/ni08/beam-caveat-source-20261007/README.md) closes CME-3 after reconciling every identified live numeric consumer, including the second Table8 wiki paragraph found in MAIN review. **68 scoped completions (46 existing flips +22 additions)**. All ten evaluator bodies omit the question argument; the twenty published100K fixture files carry40single-item abstention rubrics. Historical figures and local scorer behavior unchanged; no host/model/test execution, new grade or policy threshold. Whole-backlog audit/source work continues.

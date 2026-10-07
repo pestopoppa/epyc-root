@@ -489,7 +489,11 @@ failure caught in amber.
         ChromaDB arm (49.0% author fold / 55.7% BEAM fold, BEAM 100K, configuration fully
         specified) is a **sanity floor** — far below it means a configuration bug, not a finding.
         It is NOT a target: that run discarded assistant turns and capped answers at 512 tokens
-        (intake-1337#record).
+        (intake-1337#record). Harness caveat: upstream BEAM's published evaluator passes
+        `probing_question` to all ten evaluators but omits it from the judge prompt; all 40
+        abstention prompts in the 100K split use one-item refusal rubrics, so this is not a
+        question-conditioned responsiveness or multi-criterion abstention measure ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
+        [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
   - [ ] **M-12e-a — make the Tulving adapter's dataframe load FAIL LOUDLY.** `tulving_episodic_adapter._load_qa_from_variant`
     swallows a missing pandas/pyarrow and then scores every question as missing, so an M-12a run in the research venv
     (which has no pyarrow) would emit an all-zero summary that looks like a result. Raise instead, and add pyarrow to

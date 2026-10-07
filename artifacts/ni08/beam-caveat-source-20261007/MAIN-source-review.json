@@ -1,0 +1,248 @@
+{
+  "schema": "ni08-main-cme3-upstream-source-review/v1",
+  "review": "PASS",
+  "repository": "mohammadtavakoli78/BEAM",
+  "commit": "b2da22eac88bb0874c64665f13457eb99835774a",
+  "files": [
+    {
+      "path": "chats/100K/1/probing_questions/probing_questions.json",
+      "git_blob_sha1": "5fa1ae816022693665af2c3e2f4f03a96ade370a",
+      "size_bytes": 31547,
+      "sha256": "047398ff1497674b11585e7b4829c3d64d2d5e63f7f3572c826b73ca1faaf898",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/1/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/10/probing_questions/probing_questions.json",
+      "git_blob_sha1": "0e4c8ceece7267702e7f2fbcac9eddb283d732f1",
+      "size_bytes": 32129,
+      "sha256": "e9bf9bb545b350425a770ef65b501434ba9983c7535b4524dd6ae4d5743b5a95",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/10/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/11/probing_questions/probing_questions.json",
+      "git_blob_sha1": "ef6d49ee20bbd2e34b2f835b5512e87c76e3848e",
+      "size_bytes": 33044,
+      "sha256": "3aa98a74a03be59472834422dd14004d3b432a0c800bbef8f316865834449c08",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/11/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/12/probing_questions/probing_questions.json",
+      "git_blob_sha1": "2497fa6913890a79504382c9ac6beda5dafb4f52",
+      "size_bytes": 33666,
+      "sha256": "c36c9b1d4df0d063d1c7db81b35b5ea4743e38a804382d6e557f37ec46e1d6e3",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/12/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/13/probing_questions/probing_questions.json",
+      "git_blob_sha1": "6a5a8c263b26a788f0d7b18560f14e1ba3dd2545",
+      "size_bytes": 32094,
+      "sha256": "02dee0ba1d5576aed8ac535328a23fe4f882f6dcff3b96e039162e10d547236b",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/13/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/14/probing_questions/probing_questions.json",
+      "git_blob_sha1": "ad118749ec58becc527ffec7f07d067313a2276d",
+      "size_bytes": 30180,
+      "sha256": "f30350303b4ccd52a36deaf57750a2bf6924fa5885da92d8230797a82dcfbe5f",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/14/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/15/probing_questions/probing_questions.json",
+      "git_blob_sha1": "c6405c320ebb977b13df55594a32ac1197e2bf8c",
+      "size_bytes": 28314,
+      "sha256": "6d6ed59bd8cad87ce279c08f42137c2199502d09f198cfa880ef3ab04debd891",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/15/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/16/probing_questions/probing_questions.json",
+      "git_blob_sha1": "6bb7f50bcf89044a7287c251cd3f7ccbdaaeaa1b",
+      "size_bytes": 30613,
+      "sha256": "abf20d16a37322112af0fe48f5c43be0d824d54ae2bb2c5e3e069c6e84c54033",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/16/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/17/probing_questions/probing_questions.json",
+      "git_blob_sha1": "2d694e44b110a1494fd26c99d3cb79842877f38b",
+      "size_bytes": 30779,
+      "sha256": "7948981c2e40751bfe9ace82e53497d32229245e6012a2e5d4da2e801c929451",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/17/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/18/probing_questions/probing_questions.json",
+      "git_blob_sha1": "7a0915100624549c50d5e268e4f900563739f21e",
+      "size_bytes": 27006,
+      "sha256": "d813db9e2b416e6ac7cc22841b131ea5c80e5931e690f81bb37aa16c3b9edc3a",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/18/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/19/probing_questions/probing_questions.json",
+      "git_blob_sha1": "b12b9d3740fa89dba78df438e1a93a327bf248d8",
+      "size_bytes": 28691,
+      "sha256": "b911651b2b18e835aaac58b2bc3cb018bc782e252b9161dca8174961ca498ce2",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/19/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/2/probing_questions/probing_questions.json",
+      "git_blob_sha1": "5c7c155923a885a4c9d6074ae35e9815d749ffed",
+      "size_bytes": 29546,
+      "sha256": "d188e929644c9ef9fcd4520e7b5a3daf2c2e069b1247a324bd13d5aadd1ed96e",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/2/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/20/probing_questions/probing_questions.json",
+      "git_blob_sha1": "61a655adda0bf04e140432c585988e171929fe02",
+      "size_bytes": 30564,
+      "sha256": "46b679bffff904fd71ed247f5172e9a4a30ed7eb2fdaacc1d89aac0932e5f043",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/20/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/3/probing_questions/probing_questions.json",
+      "git_blob_sha1": "7bde542e40cfccb83baef58dc8349dcdace1c4e8",
+      "size_bytes": 32522,
+      "sha256": "f53030f3753b0e0a93b330bc62d597cb66375c0c794094d7e69b7646df46e324",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/3/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/4/probing_questions/probing_questions.json",
+      "git_blob_sha1": "a315e8db9a28bb02ef652cfef579a538934fe3d3",
+      "size_bytes": 34657,
+      "sha256": "f69eda522cd7325830c8f78b6f02a571c992b6cf43311fa96f28043fd3c18dae",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/4/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/5/probing_questions/probing_questions.json",
+      "git_blob_sha1": "ad98f4f3520cfecc7d19c9664b805a647c03e0d8",
+      "size_bytes": 29882,
+      "sha256": "bdd0819a911e46951dbf998905b8eba96a0cdb103cd3dda79ae9c6831e5f195d",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/5/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/6/probing_questions/probing_questions.json",
+      "git_blob_sha1": "46e7be78b14adf00507888473a1d9211098cd2d8",
+      "size_bytes": 34228,
+      "sha256": "7a6f88dfdeb3f1b582209a745e7c980158dbb2829a9ceae6cdb08bb868a00035",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/6/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/7/probing_questions/probing_questions.json",
+      "git_blob_sha1": "2bec447bc76d1c0ca1334e61e96a4f736bc2db8a",
+      "size_bytes": 32366,
+      "sha256": "2c00219e839d54c7cd3e4fbb396f8a2517fd9f143d3a3b8ea1c4fb9f5c4435c7",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/7/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/8/probing_questions/probing_questions.json",
+      "git_blob_sha1": "1c842a13e989fcfbf1b375c841ef87096ec31f7f",
+      "size_bytes": 30609,
+      "sha256": "d279dbd8fd293692d29f0057b3dd2468ccb97c7da6df28ae2adc8481d9970148",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/8/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "chats/100K/9/probing_questions/probing_questions.json",
+      "git_blob_sha1": "130ed6b7bbf722705934fccd4f2f9ba875cce306",
+      "size_bytes": 32766,
+      "sha256": "b7ab1c7022c0b7ac6928f4c2efadd08e2a438dc91e1288209df066cdcd5e9573",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K/9/probing_questions/probing_questions.json",
+      "abstention_questions": 2,
+      "one_item_rubric_count": 2,
+      "one_item_refusal_template_count": 2
+    },
+    {
+      "path": "src/evaluation/compute_metrics.py",
+      "git_blob_sha1": "85048250af007704feccbb0bc46c6a8240b49a51",
+      "size_bytes": 19830,
+      "sha256": "e72bf25d36d521d166862063ec94f8e7875328193142d1edddb9b4677d47780d",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py"
+    },
+    {
+      "path": "src/evaluation/run_evaluation.py",
+      "git_blob_sha1": "b3bf42bbe2d70b05445db709fb16c64f81a3a3c1",
+      "size_bytes": 10458,
+      "sha256": "518894ab65860043a24259457ddf3b1ab8ae18427b6e01e5aa90cd29c4256a3b",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/run_evaluation.py"
+    },
+    {
+      "path": "src/prompts.py",
+      "git_blob_sha1": "4c9fb1528da7bf40ae01e7d0b5720d8b3bc0708e",
+      "size_bytes": 633361,
+      "sha256": "81fe51ab2bcd7e8ad218b3a9a969a340c38d31f90ac2d93fa78a3bb890ba157b",
+      "url": "https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/prompts.py"
+    }
+  ],
+  "evaluators": [
+    "evaluate_abstention",
+    "evaluate_contradiction_resolution",
+    "evaluate_event_ordering",
+    "evaluate_information_extraction",
+    "evaluate_instruction_following",
+    "evaluate_knowledge_update",
+    "evaluate_multi_session_reasoning",
+    "evaluate_preference_following",
+    "evaluate_summarization",
+    "evaluate_temporal_reasoning"
+  ],
+  "evaluator_call_sites": 11,
+  "question_argument_loaded_by_evaluators": false,
+  "prompt_files": 20,
+  "abstention_cases": 40,
+  "one_item_template_rubrics": 40,
+  "scope": "Published 100K fixture/code observations only; no new evaluation, scientific truth, semantic grade or correction of historical numbers.",
+  "host_project_execution": false
+}

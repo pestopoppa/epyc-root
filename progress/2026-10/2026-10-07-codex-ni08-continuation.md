@@ -21,3 +21,7 @@ MAIN original2,831member/API reviewPASS2,818Git+3contexts/exact4/4/receiptseal/u
 ## AP62 second original-failure review boundary
 
 MAIN [463member original review](../../artifacts/ni08/ap62-second-failure-20261007/README.md) binds449Git+3contexts/all14cases/full3318sourcecontext/seals/unchangedinputs. NativeFALSE13/14: eager document-upload route needs absent python-multipart. Complete locked API-import closure successor remains engineering work; no source acceptance/completion or host project execution. Tally67 remains; AP60 successor independently approved3442Git/115ASTcases/48versions782wheels, P6/W8 recipe corrections and full-card task audit continue.
+
+## BEAM caveat source boundary
+
+MAIN reopens23upstream APIoriginals/exactGitSHA+bytes/all10evaluator bodies/11calls/all40abstention rubrics across20published100K files. Reconciles current quoted figures and count-granularity consumers; additional Table8 wiki consumer found in MAIN sweep corrected. CME-3 checked; NI08now68(46existingflips+22additions). [Source review](../../artifacts/ni08/beam-caveat-source-20261007/README.md), no hostprojectexecution/model/test or grading/threshold amendment. Other source/CIPE and full-card audits continue.

@@ -348,6 +348,11 @@ human-amendment-only). Rows are compute-gated: filed, never run.
   in-context for all four published models. BEAM: issue #125's Raw ChromaDB arm (49.0% author fold /
   55.7% BEAM fold at 100K) is a **sanity floor** — far below it means a configuration bug, not a
   finding; it is NOT a target (that run discarded assistant turns and capped answers at 512 tokens).
+  Harness caveat: upstream BEAM's published evaluator passes `probing_question` to all ten
+  evaluators but omits it from the judge prompt; in its 100K split, all 40 abstention prompts use a
+  one-item refusal rubric. This reference therefore does not measure question-conditioned
+  responsiveness or multi-criterion abstention ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
+  [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
 
 ### M-12e — DONE 2026-09-14: THREE scorer defects, fixed, and this page's quoted numbers refreshed
 
@@ -428,7 +433,7 @@ authoring is pure code; compute-gated work is filed, never run.
 - **CME-3** — the **BEAM harness-defect note must ride wherever a BEAM number is quoted, ours or
   anyone's**: the judge never sees the probing question (all ten `evaluate_*` functions accept
   `probing_question` and discard it, against a prompt that mandates a responsiveness check), and
-  every abstention rubric is a single-nugget refusal template. Both are properties of the PUBLISHED
+  all forty reviewed 100K abstention rubrics are single-item refusal templates. Both are properties of the PUBLISHED
   artifact and apply retroactively to Table 1 and every third-party quote.
 - **CME-4** — `context_mode {none, retrieved, full}` on the Tulving adapter's `_row_to_prompt`
   (:582), `retrieved` routed through the FTS5 + `navigation.py` surface. Load-bearing detail: the
@@ -468,7 +473,7 @@ MEASUREMENT.md trust-boundary ask; M-12a/M-12b satisfy its intent and **UTM-M9 m
   memory BEATS the full system at 100K–1M (0.327 vs 0.311 at 100K) — a self-published negative
   result (the paper's own abstract contradicts it) that independently supports the masking anchor
   context-folding already mandates. Full context-folding compilation lives on [Context
-  Management](context-management.md), not here.
+  Management](context-management.md), not here. Harness caveat: the published judge omits the probing question; the 100K abstention fixtures use one refusal criterion. These figures remain harness-limited observations. [MAIN source review](../artifacts/ni08/beam-caveat-source-20261007/README.md).
 
 ### Source References (2026-09-08 memory-instruments compile)
 

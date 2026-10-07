@@ -1332,7 +1332,12 @@ worth **5 pp at 10M** and **2.5 pp at 100K**. Any BEAM delta below that granular
 question's worth of noise and must not be reported as an ability difference. The same arithmetic is
 the general check: divide 100 by the per-cell question count before quoting a per-cell delta.
 Pair it with the confounded-ability test — an ability whose score moves only together with another
-is not independently measured.
+is not independently measured. These resolution values describe question counts, not judge
+validity: upstream BEAM's published judge omits each probing question from the actual judge prompt.
+In the 100K split, its 40 abstention prompts each carry one refusal criterion. Treat its scores as
+harness-limited rather than question-conditioned responsiveness or multi-criterion abstention
+([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
+[100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
 
 ### The aggregation-identity check is TWO-SIDED (`intake-1337`)
 
