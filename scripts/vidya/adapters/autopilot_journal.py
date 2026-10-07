@@ -217,13 +217,30 @@ def _ap55_gate(raw, eval_details=None) -> dict:
     return out
 
 
+def _w6_generalization(eval_details) -> dict | None:
+    """Return the optional authored W6 diagnostic block, without interpreting it.
+
+    The writer stores this under ``eval_details.details.w6_generalization``.  An absent or
+    malformed outer shape stays absent; a producer-authored block is copied verbatim, including
+    nullable measurements and its reason.  This support metadata is informational and never
+    participates in ``grade()`` or promotion decisions.
+    """
+    if not isinstance(eval_details, dict):
+        return None
+    details = eval_details.get("details")
+    if not isinstance(details, dict):
+        return None
+    report = details.get("w6_generalization")
+    return dict(report) if isinstance(report, dict) else None
+
+
 def as_record(shard: Path, row: dict) -> dict:
     """Shape a journal row into the record `measurement_record.grade()` consumes."""
     meas = row["measurement"]
     att = meas.get("attestation") or {}
     ident = f"{shard.stem}_{row['trial_id']}"
     basis = meas.get("reps_basis") or ""
-    return {
+    record = {
         "measurement_id": ident,
         "date": meas.get("date") or "",
         "metric": "autopilot_trial_objectives",
@@ -277,6 +294,12 @@ def as_record(shard: Path, row: dict) -> dict:
             "verified": True if _attestation_verified(row) else None,
         },
     }
+    w6_generalization = _w6_generalization(row.get("eval_details"))
+    if w6_generalization is not None:
+        # Authored informational support only.  Do not derive a missing block from historical
+        # row fields or allow this descriptive comparison to change the existing quality claim.
+        record["w6_generalization"] = w6_generalization
+    return record
 
 
 def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
@@ -331,6 +354,10 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "eval_fence": rec["eval_fence"],
                        "eval_fence_enforcement": rec["eval_fence_enforcement"],
                        "run_manifest": rec["run_manifest"],
+                       # W6e diagnostic carry: optional, authored, descriptive only.  Missing
+                       # legacy blocks stay absent and the shared grade above is unchanged.
+                       **({"w6_generalization": rec["w6_generalization"]}
+                          if "w6_generalization" in rec else {}),
                        # VB-AP-PROMO-RULE: carried verbatim, never graded; absent keys stay absent.
                        **decision},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,

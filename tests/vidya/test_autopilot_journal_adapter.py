@@ -239,6 +239,92 @@ def test_ap55_would_hold_counterfactual_is_carried_verbatim(tmp_path):
             == sup(s_old, r_old)["provenance"]["grade_reasons"])
 
 
+def _w6_report(status, reason, core, fresh, core_n, fresh_n, gap):
+    """Mirror the producer's authored `EvalResult.details` block, not a derived journal tuple."""
+    return {
+        "status": status,
+        "reason": reason,
+        "core_quality": core,
+        "fresh_quality": fresh,
+        "core_quality_denominator_n": core_n,
+        "fresh_quality_denominator_n": fresh_n,
+        "quality_denominator_policy": (
+            "scored_and_task_failed; task_failed_scores_zero; "
+            "infra_and_scoring_failures_excluded"
+        ),
+        "core_minus_fresh_quality": gap,
+        "scale": "mean_question_accuracy_0_to_3",
+        "positive_means": "core quality exceeds fresh-audit quality",
+        "comparison_scope": (
+            "descriptive partition difference; core and fresh may have "
+            "different question and suite mixes; not a matched causal "
+            "overfitting estimate"
+        ),
+    }
+
+
+@pytest.mark.parametrize(
+    "report",
+    [
+        pytest.param(_w6_report("measured", None, 2.25, 1.5, 4, 4, 0.75), id="core-fresh"),
+        pytest.param(_w6_report("unavailable", "w6_audit_disabled", None, None, 0, 0, None),
+                     id="disabled"),
+        pytest.param(_w6_report("unavailable", "trial_not_on_audit_cadence", None, None,
+                                0, 0, None), id="off-cadence"),
+        pytest.param(_w6_report("unavailable", "core_and_fresh_unscored", None, None,
+                                0, 0, None), id="empty"),
+        # The source records denominator policy, not dispositions; the W6 producer tests own
+        # proof that task_failed scores zero and remains in that denominator.
+        pytest.param(_w6_report("measured", None, 1.5, 0.75, 2, 2, 0.75),
+                     id="task-failed-in-denominator"),
+        pytest.param(_w6_report("unavailable", "core_unscored", None, 1.5, 0, 2, None),
+                     id="infra-failure-excluded"),
+        pytest.param(_w6_report("unavailable", "fresh_unscored", 1.5, None, 2, 0, None),
+                     id="scoring-failure-excluded"),
+    ],
+)
+def test_w6_generalization_is_optional_informational_support_only(tmp_path, report):
+    """Carry only the producer-authored block; preserve nullable values and the existing grade."""
+    old_root = write_journal(tmp_path / "old", [row()])
+    new_root = write_journal(
+        tmp_path / "new",
+        [row(eval_details={"details": {"w6_generalization": report}})],
+    )
+    (old_shard, old_row), = list(apj.iter_measured_rows(old_root))
+    (new_shard, new_row), = list(apj.iter_measured_rows(new_root))
+    old_frames = apj.frames_for_row(old_shard, old_row, as_of="t")
+    new_frames = apj.frames_for_row(new_shard, new_row, as_of="t")
+    support_type = "epyc.vidya/frame/evidence_supports_claim/v1"
+    old_support = next(frame for frame in old_frames if frame["frame_type"] == support_type)
+    new_support = next(frame for frame in new_frames if frame["frame_type"] == support_type)
+
+    assert "w6_generalization" not in old_support["assertion"]
+    assert new_support["assertion"]["w6_generalization"] == report
+    assert new_support["assertion"]["grade"] == old_support["assertion"]["grade"]
+    assert new_support["provenance"]["grade_reasons"] == old_support["provenance"]["grade_reasons"]
+    assert [frame for frame in new_frames if frame["frame_type"] != support_type] == [
+        frame for frame in old_frames if frame["frame_type"] != support_type
+    ]
+    assert {key: value for key, value in new_support["assertion"].items()
+            if key != "w6_generalization"} == old_support["assertion"]
+
+
+def test_w6_generalization_does_not_backfill_legacy_eval_details(tmp_path):
+    """Legacy journal rows and malformed outer shapes have no reconstructed W6 evidence."""
+    inputs = [
+        row(),
+        row(eval_details={"details": {"partition_quality": {"core": 3.0, "audit": 0.0}}}),
+        row(eval_details={"details": None}),
+    ]
+    roots = [write_journal(tmp_path / f"legacy-{index}", [item]) for index, item in enumerate(inputs)]
+    support_type = "epyc.vidya/frame/evidence_supports_claim/v1"
+    for root in roots:
+        (shard, journal_row), = list(apj.iter_measured_rows(root))
+        support = next(frame for frame in apj.frames_for_row(shard, journal_row, as_of="t")
+                       if frame["frame_type"] == support_type)
+        assert "w6_generalization" not in support["assertion"]
+
+
 def _writer_emits_ap55_gate() -> bool:
     src = WRITER / "scripts" / "autopilot" / "experiment_journal.py"
     return src.exists() and '"ap55_gate"' in src.read_text()
@@ -298,12 +384,33 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
     d.mkdir(parents=True)
+    w6_report = {
+        "status": "unavailable",
+        "reason": "fresh_unscored",
+        "core_quality": 2.0,
+        "fresh_quality": None,
+        "core_quality_denominator_n": 1,
+        "fresh_quality_denominator_n": 0,
+        "quality_denominator_policy": (
+            "scored_and_task_failed; task_failed_scores_zero; "
+            "infra_and_scoring_failures_excluded"
+        ),
+        "core_minus_fresh_quality": None,
+        "scale": "mean_question_accuracy_0_to_3",
+        "positive_means": "core quality exceeds fresh-audit quality",
+        "comparison_scope": (
+            "descriptive partition difference; core and fresh may have "
+            "different question and suite mixes; not a matched causal "
+            "overfitting estimate"
+        ),
+    }
     ExperimentJournal(journal_dir=d).record(JournalEntry(
         trial_id=1, timestamp="2026-08-12T10:00:00+00:00", species="s",
         action_type="numeric_trial", tier=1, quality=0.5, speed=1.0, cost=2.0,
         reliability=0.9, pareto_status="candidate",
         harness_metrics={"schema_version": 1},
-        eval_details={"details": {"quality_denominator": 30}}))
+        eval_details={"details": {"quality_denominator": 30,
+                                  "w6_generalization": w6_report}}))
 
     measured = list(apj.iter_measured_rows(tmp_path))
     assert len(measured) == 1, "the adapter could not read what the writer produced"
@@ -312,11 +419,17 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     assert rec["protocol_id"] == "autopilot/metric-v1+harness-v1"
     assert (rec["reps"], rec["reps_basis"]) == (30, "scored:quality_denominator")
     assert len(rec["attestation"]["sha256"]) == 64
+    assert rec["w6_generalization"] == w6_report
+    support = _support(shard, r)
+    assert support["assertion"]["w6_generalization"] == w6_report
 
     import measurement_record
     orig, measurement_record.REPO_ROOT = measurement_record.REPO_ROOT, tmp_path
     try:
         assert measurement_record.grade(rec)[:2] == ("Witnessed", "Attested")
+        assert support["assertion"]["grade"] == {
+            "Q": "Witnessed", "T": "Attested",
+        }
     finally:
         measurement_record.REPO_ROOT = orig
 
