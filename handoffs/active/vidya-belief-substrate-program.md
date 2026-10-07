@@ -2941,3 +2941,6 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 
 
 ✅ 2026-10-07 VB-EVL42-PIN-REPORT-CONFORMANCE: [MAIN exact source and original29/29](../../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md).10unique nested original seals retained (8TRUE/1FALSE/1NULL),13archive path copies only;11symlink/91empty-directory archive limitations explicit. Actual pin-health scan/wiring remains independently open.
+
+
+- [ ] **VB-K11-REPEAT-SUMMARY-CONFORMANCE — bind the actual requested-repeat summary producer and full synthetic controls before capture.** Exact Research source/test blobs, complete eager source/config and lock-wheel closure, actual run_execute fake-server/persisted per-run and summary TRUE/FALSE/NULL tests, original nonpositive-repeat refusal and owned-process cleanup; existing native verifier/CI family/shared grade only. No server/model, kernel build, live determinism or new ladder; original source/result/readset/API/JUnit custody retained at capture.
