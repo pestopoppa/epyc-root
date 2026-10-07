@@ -853,3 +853,8 @@ comparisons are **external** (one vendor, one model), cited as records only.
 - [EXL3 CPU/MI210 implementation](../handoffs/active/exl3-cpu-mi210-implementation.md) — EXL3-X0 and its decision rule.
 - [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — X0 filed; the operator wants EXL3 taken seriously, including building the missing kernels if X0 is positive.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the X0 window grant and its production handling.
+
+
+### Existing IQ-family wiring in frozen v10 — 2026-10-07
+
+[INF54's four-blob source adjudication](../artifacts/ni08/inf54-current-iq-source-adjudication-20261007/README.md) finds the requested IQ2_XXS/IQ3_XXS/IQ2_S wiring already present in frozen v10: the real iquant implementation is registered, entrypoints are no longer stubs, and dispatch supports those types. IQ4_XS is also supported, superseding the historical instruction to leave it on the native path. This closes the source-port checklist item without kernel changes. Compiled identity, runtime performance/quality and the trellis measurement/port decisions remain independent gates in the [quantization owner](../handoffs/active/tq3-quantization-evaluation.md).
