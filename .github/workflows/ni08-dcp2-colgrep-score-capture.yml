@@ -1,7 +1,7 @@
 name: NI08 DCP2 finite ColGREP score controls
 on:
   push:
-    branches: [codex/ni08-dcp2-colgrep-recipe-20261007]
+    branches: [codex/ni08-dcp2-colgrep-score-recipe-20261007]
 permissions:
   contents: read
 jobs:
