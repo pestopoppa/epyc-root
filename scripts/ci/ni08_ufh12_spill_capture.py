@@ -30,8 +30,6 @@ WORKFLOW = ".github/workflows/ni08-ufh12-spill-summary-capture.yml"
 RUNNER = "scripts/ci/ni08_ufh12_spill_capture.py"
 SOURCE_MAP = "scripts/ci/ni08_ufh12_spill_source_map.json"
 FUNCTION_GRAPH = "scripts/ci/ni08_ufh12_executed_function_source_graph.json"
-FUNCTION_GRAPH = "scripts/ci/ni08_ufh12_executed_function_source_graph.json"
-FUNCTION_GRAPH = "scripts/ci/ni08_ufh12_executed_function_source_graph.json"
 EXPECTED_CASES = "scripts/ci/ni08_ufh12_spill_expected_cases.json"
 CLOSURE = "scripts/ci/ni08_ufh12_spill_import_closure.json"
 REQUIREMENTS = "scripts/ci/ni08_ufh12_spill_requirements.txt"
@@ -337,16 +335,26 @@ def main() -> int:
         if setup_path.is_symlink() or not setup_path.is_file() or not stat.S_ISREG(setup_path.lstat().st_mode):
             raise RuntimeError("GitHub spill-root setup record is missing or nonregular")
         setup_record = json.loads(setup_path.read_text(encoding="utf-8"))
-        if setup_record.get("state") != "created_owned_empty" or setup_record.get("path") != SPILL_ROOT:
+        if (setup_record.get("state") != "created_owned_empty" or setup_record.get("path") != SPILL_ROOT
+                or setup_record.get("runner_uid") != os.getuid() or setup_record.get("runner_gid") != os.getgid()
+                or setup_record.get("uid") != os.getuid() or setup_record.get("gid") != os.getgid()
+                or setup_record.get("mode") != 0o700 or setup_record.get("empty_at_creation") is not True):
             raise RuntimeError("owned spill-root setup receipt differs")
         spill_stat = spill_root.lstat()
         if (not stat.S_ISDIR(spill_stat.st_mode) or stat.S_ISLNK(spill_stat.st_mode)
-                or spill_stat.st_uid != os.getuid() or stat.S_IMODE(spill_stat.st_mode) != 0o700
+                or spill_stat.st_uid != os.getuid() or spill_stat.st_gid != os.getgid()
+                or stat.S_IMODE(spill_stat.st_mode) != 0o700
                 or spill_stat.st_dev != setup_record.get("device") or spill_stat.st_ino != setup_record.get("inode")):
             raise RuntimeError("spill root path identity, ownership, or mode changed after setup")
-        for identity in setup_record.get("ancestor_identity", []):
+        expected_chain = ["/", "/mnt", "/mnt/raid0", "/mnt/raid0/llm", SPILL_ROOT]
+        identities = setup_record.get("ancestor_identity")
+        if not isinstance(identities, list) or [row.get("path") for row in identities] != expected_chain:
+            raise RuntimeError("spill root setup ancestor chain differs from the exact reviewed path")
+        for identity in identities:
             ancestor=Path(identity["path"]); actual=ancestor.lstat()
-            if stat.S_ISLNK(actual.st_mode) or not stat.S_ISDIR(actual.st_mode) or (actual.st_dev,actual.st_ino)!=(identity["device"],identity["inode"]):
+            if (stat.S_ISLNK(actual.st_mode) or not stat.S_ISDIR(actual.st_mode)
+                    or (actual.st_dev,actual.st_ino,actual.st_uid,actual.st_gid,stat.S_IMODE(actual.st_mode))
+                    != (identity["device"],identity["inode"],identity["uid"],identity["gid"],identity["mode"])):
                 raise RuntimeError("spill root ancestor identity changed after setup")
         if any(os.scandir(spill_root)):
             raise RuntimeError("spill root is not empty immediately before original whole-module run")

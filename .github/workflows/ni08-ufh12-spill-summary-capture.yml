@@ -77,27 +77,89 @@ jobs:
         id: spill_root_setup
         run: |
           python3 - "$UFH12_SPILL_ROOT" "$RUNNER_TEMP/ni08-ufh12-spill-summary/result/spill-root-setup.json" <<'PYROOT'
-          import json, os, stat, sys
+          import json, os, stat, subprocess, sys
           from pathlib import Path
           root=Path(sys.argv[1]); record=Path(sys.argv[2])
           if str(root)!='/mnt/raid0/llm/tmp': raise SystemExit('spill root differs from reviewed absolute path')
-          if root.exists() or root.is_symlink(): raise SystemExit('spill root already exists; refusing to reuse non-owned fixture data')
-          old_umask=os.umask(0o077)
-          try: root.mkdir(mode=0o700,parents=True,exist_ok=False)
-          finally: os.umask(old_umask)
-          st=root.lstat()
-          if not stat.S_ISDIR(st.st_mode) or stat.S_ISLNK(st.st_mode): raise SystemExit('spill root is not a real directory')
-          os.chmod(root,0o700,follow_symlinks=False)
-          st=root.lstat()
-          if st.st_uid!=os.getuid() or stat.S_IMODE(st.st_mode)!=0o700: raise SystemExit('spill root owner or mode differs')
-          if any(os.scandir(root)): raise SystemExit('new spill root is not empty')
-          chain=[]
-          for path in (Path('/mnt'),Path('/mnt/raid0'),Path('/mnt/raid0/llm'),root):
-              row=path.lstat()
-              if stat.S_ISLNK(row.st_mode) or not stat.S_ISDIR(row.st_mode): raise SystemExit('spill root ancestor is not a real directory')
-              chain.append({'path':str(path),'device':row.st_dev,'inode':row.st_ino,'uid':row.st_uid,'mode':stat.S_IMODE(row.st_mode)})
-          payload={'state':'created_owned_empty','path':str(root),'created_by':'GitHub-hosted workflow step spill_root_setup','preexisting_path_refused':True,'uid':st.st_uid,'gid':st.st_gid,'mode':stat.S_IMODE(st.st_mode),'device':st.st_dev,'inode':st.st_ino,'empty_at_creation':True,'ancestor_identity':chain}
-          with record.open('x') as handle: json.dump(payload,handle,sort_keys=True,indent=2);handle.write('\n');handle.flush();os.fsync(handle.fileno())
+          uid,gid=os.getuid(),os.getgid()
+          chain=[Path('/'),Path('/mnt'),Path('/mnt/raid0'),Path('/mnt/raid0/llm'),root]
+          created=[]
+          payload={'schema':'ni08.ufh12.github-owned-spill-root-setup.v2','state':'preflight','path':str(root),'runner_uid':uid,'runner_gid':gid,'refuse_preexisting_root':True,'root_preexisting':None,'initial_chain':[],'created_paths':[],'ancestor_identity':[]}
+          def write_record(initial=False):
+              encoded=(json.dumps(payload,sort_keys=True,indent=2)+'\n').encode()
+              flags=os.O_WRONLY|getattr(os,'O_NOFOLLOW',0)
+              if initial: flags|=os.O_CREAT|os.O_EXCL
+              fd=os.open(record,flags,0o600)
+              try:
+                  row=os.fstat(fd)
+                  if not stat.S_ISREG(row.st_mode) or row.st_nlink!=1 or row.st_uid!=uid or row.st_gid!=gid:
+                      raise SystemExit('setup record is not an owned single-link regular file')
+                  if not initial: os.ftruncate(fd,0)
+                  with os.fdopen(fd,'wb',closefd=False) as handle:
+                      handle.write(encoded);handle.flush();os.fsync(handle.fileno())
+              finally: os.close(fd)
+          def snapshot(path):
+              try: row=os.lstat(path)
+              except FileNotFoundError: return {'path':str(path),'present':False}
+              result={'path':str(path),'present':True,'device':row.st_dev,'inode':row.st_ino,'uid':row.st_uid,'gid':row.st_gid,'mode':stat.S_IMODE(row.st_mode),'is_symlink':stat.S_ISLNK(row.st_mode),'is_directory':stat.S_ISDIR(row.st_mode)}
+              if result['is_symlink'] or not result['is_directory']:
+                  raise RuntimeError('existing spill path ancestor is a symlink or non-directory: '+str(path))
+              return result
+
+          def fail_preflight(message):
+              payload.update(state='preflight_refused',error=message,root_preexisting=any(x.get('path')==str(root) and x.get('present') for x in payload['initial_chain']))
+              write_record(initial=True)
+              raise SystemExit(message)
+          if record.exists() or record.is_symlink(): raise SystemExit('spill-root setup record already exists; refusing overwrite')
+          try:
+              missing_seen=False
+              for path in chain:
+                  try: row=snapshot(path)
+                  except Exception as exc:
+                      payload['initial_chain'].append({'path':str(path),'present':True,'inspection_error':str(exc)[:300]})
+                      fail_preflight(str(exc))
+                  payload['initial_chain'].append(row)
+                  if path in (Path('/'),Path('/mnt')) and not row['present']:
+                      fail_preflight('required system anchor is missing: '+str(path))
+                  if path==root and row['present']:
+                      fail_preflight('spill root already exists; refusing to reuse non-owned fixture data')
+                  if not row['present']: missing_seen=True
+                  elif missing_seen: fail_preflight('spill path exists below a missing ancestor')
+              payload['root_preexisting']=False
+              payload['state']='preflight_passed'
+              write_record(initial=True)
+              for path,row in zip(chain[1:],payload['initial_chain'][1:]):
+                  if row['present']: continue
+                  parent=snapshot(path.parent)
+                  if not parent['present']: raise RuntimeError('spill parent was not created in reviewed order: '+str(path.parent))
+                  subprocess.run(['sudo','-n','mkdir','-m','0700','--',str(path)],check=True,capture_output=True,text=True)
+                  created.append(str(path));payload.update(state='creating',created_paths=list(created));write_record()
+                  subprocess.run(['sudo','-n','chown','--',f'{uid}:{gid}',str(path)],check=True,capture_output=True,text=True)
+                  subprocess.run(['sudo','-n','chmod','0700','--',str(path)],check=True,capture_output=True,text=True)
+                  made=snapshot(path)
+                  if (made['uid'],made['gid'],made['mode'])!=(uid,gid,0o700):
+                      raise RuntimeError('new spill fixture directory ownership or mode differs: '+str(path))
+                  payload.update(created_paths=list(created));write_record()
+              final=[]
+              initial_by_path={row['path']:row for row in payload['initial_chain']}
+              for path in chain:
+                  row=snapshot(path)
+                  if not row['present']: raise RuntimeError('spill fixture path remains missing: '+str(path))
+                  before=initial_by_path[str(path)]
+                  if before['present'] and (row['device'],row['inode'],row['uid'],row['gid'],row['mode'])!=(before['device'],before['inode'],before['uid'],before['gid'],before['mode']):
+                      raise RuntimeError('pre-existing ancestor identity changed during setup: '+str(path))
+                  final.append({key:row[key] for key in ('path','device','inode','uid','gid','mode')})
+              target=final[-1]
+              if (target['uid'],target['gid'],target['mode'])!=(uid,gid,0o700): raise RuntimeError('spill root owner/group/mode differs from workflow identity')
+              if any(os.scandir(root)): raise RuntimeError('new spill root is not empty')
+              payload.update(state='created_owned_empty',uid=uid,gid=gid,mode=0o700,device=target['device'],inode=target['inode'],empty_at_creation=True,ancestor_identity=final,created_paths=list(created))
+              write_record()
+          except BaseException as exc:
+              if payload.get('state') not in ('preflight_refused','created_owned_empty'):
+                  payload.update(state='setup_failed',created_paths=list(created),error_type=type(exc).__name__,error=str(exc)[:500])
+                  try: write_record(initial=not record.exists())
+                  except Exception: pass
+              raise
           PYROOT
       - name: Capture original whole-module source controls
         id: capture
