@@ -25,12 +25,12 @@ EXPECTED_CASES = [{'classname': 'tests.ci.test_pin_report_fixture', 'name': 'tes
 TEST_PATH = 'tests/ci/test_pin_report_fixture.py'
 CHECKER_PATH = 'scripts/benchmark/check_pin_staleness.py'
 CHECKER_SHA256 = '2fc0680f070cc2f051bd8d74b66748a1c00e09f3d8d8f229ab46b9167152e666'
-CONTEXT_PIN = '7981a9acf2b8e2c328b9add8e21a68656c99c1d6'
-CONTEXT_INPUTS = {'handoffs/active/scoring-infra-standardization.md': '56541ec5134bec43fe888fd3977c2ce20b40677436ab80c5d28ee524a28daa25', 'handoffs/active/vidya-belief-substrate-program.md': 'b18435c0b2e0f0aa3d37dc23892aaebb63235f328bffda5dc9084ae324e95cb1', 'scripts/vidya/adapters/README.md': '32633774ffb96d17c97b357b55f8c18de4b3ac1d9b2c7f9846620c021a6d229d'}
+CONTEXT_PIN = '1b2c0c0aa959e162d492ba367ce15b36074033eb'
+CONTEXT_INPUTS = {'handoffs/active/scoring-infra-standardization.md': '371eff63c0bb4d27fb53e09644e6ec5a62afec4ac7420e1ffba67ddd902b8e90', 'handoffs/active/vidya-belief-substrate-program.md': 'de092d4d80028bbc04ffdcf131268d849b31fbc59e19052c4da5a4a3ca2cdba0', 'scripts/vidya/adapters/README.md': '0d672fc68ce2a8980f46277959a4d54b868e48afb465c745e7357f642fc3c840'}
 REQUIREMENTS_SHA256 = 'e10bd23d53c73d76ae3fdd231dfd28b177d777e8107f6f56762299002711512a'
 TEST_AST_SHA256 = '50fa33618644c75a54e8d0d8ff425ded0d2c29ed4f52c07a034ff932bcce40d6'
 LITERAL_BRANCH = 'codex/ni08-evl42-report-native-20261007'
-CONTEXT_MARKERS = {'handoffs/active/scoring-infra-standardization.md': 'SC-EVL42-PIN-REPORT-WIRING', 'handoffs/active/vidya-belief-substrate-program.md': 'SC-EVL42-PIN-REPORT-WIRING', 'scripts/vidya/adapters/README.md': 'SC-EVL42-PIN-REPORT-WIRING'}
+CONTEXT_MARKERS = {'handoffs/active/scoring-infra-standardization.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE'), 'handoffs/active/vidya-belief-substrate-program.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE'), 'scripts/vidya/adapters/README.md': ('SC-EVL42-PIN-REPORT-WIRING', 'VB-EVL42-PIN-REPORT-CONFORMANCE')}
 ENVIRONMENT = {'PYTEST_DISABLE_PLUGIN_AUTOLOAD': '1', 'PYTEST_ADDOPTS': '', 'PYTEST_PLUGINS': '', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONHASHSEED': '0', 'PYTHONUNBUFFERED': '1'}
 
 def git(repo: Path, *args: str) -> str:
@@ -229,7 +229,7 @@ def main():
             path=tracked_file(repos['context'],rel)
             if hash_regular(path)!=digest:
                 raise RuntimeError('MAIN enrollment bytes differ')
-            if CONTEXT_MARKERS[rel] not in path.read_text(encoding='utf-8'):
+            if any(marker not in path.read_text(encoding='utf-8') for marker in CONTEXT_MARKERS[rel]):
                 raise RuntimeError('prospective MAIN enrollment marker missing')
             reads.append(path)
         checker=tracked_file(repos['research'],CHECKER_PATH)
