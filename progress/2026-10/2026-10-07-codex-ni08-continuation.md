@@ -150,3 +150,8 @@ MAIN accepted [published Git/AST source identity](../../artifacts/ni08/evl30-rel
 ## Read-only trace MCP source — MAIN acceptance
 
 [Published source and original5/5](../../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md) close UTM-B1-SOURCE and its prospective native verifier. MAIN authenticated43 original members, matched26Git+5generated inputs, and preserved full source/result custody; APP53079bee normally merges source286 and disjoint peer work. Default MCP catalog and actual consumers remain open. NI08 now108 scoped completions (59existing+49children); whole-backlog exhaustion is not claimed.
+
+
+## Registry banner and override source — MAIN acceptance
+
+[Published source and original97/97](../../artifacts/ni08/registry-banner-override-source-20261007/README.md) close SW-6, SCG-ENVOVR-EXPIRED and their native verifier after MAIN3754-input/3764-member original custody review and normal APP3d93b7a0 integration. SW-5 broader editing-reference sweep stays open; prior physical-capacity collection NULL is preserved. NI08 now111 scoped completions (61existing+50children); remaining free work continues.
