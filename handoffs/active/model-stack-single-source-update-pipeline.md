@@ -544,3 +544,7 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 
 
 2026-10-06 reconciliation: the NI05-75 approval and corrected-capture paragraphs above are historical checkpoints, superseded by the accepted final outcome in the immediately preceding completion record and the linked final wrap. NI05-75 is complete; no operator approval or capture remains pending.
+
+## W4 real-gate follow-on — 2026-10-07
+
+- [ ] **W4-REAL-GATE-SOURCE — make the swap verifier execute its original six target suites from any temporary world using the invoking interpreter.** Source proposal APP`3512707441fd77d8b8ab942c1e2ad614251585a8` replaces relative `uv run` resolution with absolute targets, explicit project configuration and `sys.executable`; new outer controls run actual frontdoor/worker/vision/ingest swaps and preserve corrupted-output refusal. VB-W4-STACK-CHANGE-GATE owns exact hosted proof. No runtime deployment or broad standing W4-growth acceptance.

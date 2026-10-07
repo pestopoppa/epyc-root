@@ -41,7 +41,7 @@
 | EVL-35 | re4 protocol redesign | [re4-protocol-redesign.md](re4-protocol-redesign.md) | RE-4.2 — Run the non-saturation probe in an operator quiet window: frontdoor-only, two-phase, R=4096, 30 rows; gate accuracy in (10%,90%) | — |
 | EVL-36 | repl session memory maturity | [repl-session-memory-maturity.md](repl-session-memory-maturity.md) | D-f1 live lease validation at its inference-owner boundary | — |
 | EVL-37 | repl turn efficiency | [repl-turn-efficiency.md](repl-turn-efficiency.md) | S4 Omega A/B — measure turns, token cost and accuracy delta per task; gates the verbosity and tool-surface changes (inference-gated) | — |
-| EVL-38 | repo readiness scorer | [repo-readiness-scorer.md](repo-readiness-scorer.md) | DONE 2026-08-25 — root L5.self_optimizing_loop closed (vidya-loop detector; queue 13→6, remainder frozen llama L5) | — |
+| EVL-38 | repo readiness scorer | [repo-readiness-scorer.md](repo-readiness-scorer.md) | EVL38-REFERENCE-PORTABILITY-SOURCE hosted correction proof through existing periodic gate | — |
 | EVL-39 | rlm contested claims self evaluation | [rlm-contested-claims-self-evaluation.md](rlm-contested-claims-self-evaluation.md) | E1 — measure Base vs Depth-1 on synthetic NIAH with the E1a strict+lenient scorer; report latency and tokens separately | — |
 | EVL-41 | scorer fork drift audit 2026 07 22 | [scorer-fork-drift-audit-2026-07-22.md](scorer-fork-drift-audit-2026-07-22.md) | DONE 2026-08-23 — shared measurement_guards module (verified 2 defs); research debug_scorer now a B7 delegation shim (d876adfe) | — |
 | EVL-42 | scoring infra standardization | [scoring-infra-standardization.md](scoring-infra-standardization.md) | 2d — refresh the LCB contamination window; 1c-fix (a)/(c) remain production-gated | — |

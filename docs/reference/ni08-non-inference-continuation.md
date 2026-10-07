@@ -227,3 +227,7 @@ MAIN reviewed Research180a772445e2c227979998cdec9b7a50ae5aa54e against current d
 ## MAIN acceptance: periodic gate, planner display and scaffold custody
 
 [Actual periodic gate RED capture](../../artifacts/ni08/evl38-periodic-gate-20261007/README.md) closes the existing scheduled checker and its pre-enrolled verifier, with twelve actual reference failures tracked as a free source follow-on. [Planner unavailable-versus-zero source and original20/20](../../artifacts/ni08/rtg23-w9-display-source-20261007/README.md) close W9 and its verifier; historical/objective math unchanged. K28.5a historical scaffold custody is published on its original experimental branch at b76d2549e4, exact85+/3- patch; owner dirty tree untouched and performance NO-GO unchanged. **88 scoped completions:55 existing flips +33 additions**. Preparations are not completions; broader source audit and implementation continue.
+
+## MAIN prospective enrollment — SC42, W4 and EVL reference correction
+
+MAIN accepted frozen source proposals for hosted preparation: SC42 actual Unlimited-OCR write-time provenance plus strict reader/roundtrip; W4 invoking-interpreter/absolute-target actual swap gate; EVL twelve stale-reference corrections across nine tracked docs. Source-table and prospective native verification companions are enrolled before capture. No checkbox is closed at this review boundary; NI08 remains88. Real ODL inference, production stack readiness and later full-gate checks remain separate evidence requirements.
