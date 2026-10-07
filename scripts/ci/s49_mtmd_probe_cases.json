@@ -1,0 +1,49 @@
+{
+  "schema": "epyc.s49.junit-cases/v1",
+  "cases": [
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_shared_probe_merges_output_and_prefixes_candidate_library_dir"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_shared_probe_moves_an_existing_candidate_dir_to_front_once"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_shared_probe_uses_symlink_target_directory_for_library_prefix"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_shared_probe_preserves_nonzero_status_and_complete_merged_text"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_python_callers_keep_distinct_strict_and_tolerant_parsers"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_shared_probe_reports_nonexecutable_candidate"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_vl_resolver_keeps_configured_then_production_candidate_order"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_shared_probe_captures_timeout_status_and_output"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_timeout_kills_term_ignoring_child_and_leaves_no_process"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_env_sh_rejects_nonzero_version_output_then_selects_next_candidate"
+    },
+    {
+      "classname": "tests.unit.test_mtmd_probe",
+      "name": "test_env_sh_preserves_explicit_mtmd_override_without_probing"
+    }
+  ]
+}

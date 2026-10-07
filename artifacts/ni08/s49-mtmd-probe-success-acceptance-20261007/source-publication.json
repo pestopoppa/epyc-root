@@ -1,0 +1,25 @@
+{
+  "commit": "7134d796493b8da8c4637c1e53ff1906f9c8ea34",
+  "main_before": "ce48ed2c386c2f69d23ad87289e384d7942ee7a5",
+  "source_pin": "0b0f35ac4bd4e4520ab95c6c073bdcdcd0458ba6",
+  "paths": [
+    "scripts/lib/env.sh",
+    "scripts/lib/mtmd_probe.sh",
+    "src/services/lightonocr_llama_server.py",
+    "src/services/mtmd_probe.py",
+    "src/vision/analyzers/vl_describe.py",
+    "tests/unit/test_mtmd_probe.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "accepted_native_run": 37597364740,
+  "all_nonproduct_APP_captured_closure_blobs_match_current": true,
+  "source_sha256": {
+    "scripts/lib/env.sh": "5ac051531ed3c19989e647ddbd49476d7e1ca624f740605cbb8081468e988cc3",
+    "scripts/lib/mtmd_probe.sh": "85dc54486e0af73a8f0fd2c2e4a4f63fa6c175e4a1f672b92f769f3f9de9b462",
+    "src/services/lightonocr_llama_server.py": "060e66c59bbb4efc034f42b14f8886732fbd973188cbfdfedb84d487d8e4ae2b",
+    "src/services/mtmd_probe.py": "acef099613f12135344cde407a4d25f20f566e991f7e63b2bd9e9ef2292593e7",
+    "src/vision/analyzers/vl_describe.py": "b683a338c15c56b43875f2f97dfc8a92bd26bfcf738e685b59d70869771d2222",
+    "tests/unit/test_mtmd_probe.py": "cdf465ebdfdc6cd6d9df3a3fd22cfe47271ab2c39ee6750d25580e7a9be2f467"
+  }
+}
