@@ -1388,7 +1388,7 @@
     "test_modules_imported": false
   },
   "schema": "epyc.vb.cs14_voice.selected_cases.v1",
-  "source_commit": "1ed2abe1fe75a64f05d915354813df443ef9e13d",
+  "source_commit": "caa6b5ecf7a9355929f01459aa32cd0a2350519d",
   "source_files": {
     "orchestration/derived/stack_priors.yaml": {
       "git_blob": "d3152fc7585e724ef298b7d199a47800634ab4d3",
@@ -3131,16 +3131,16 @@
       "sha256": "6fff754ce59a70edf28159fa13e071d8b2ea38bef97968cca6508a54924a315f"
     },
     "tests/unit/test_inference_mixin.py": {
-      "git_blob": "15959c2c5f5d6315ecf7db2c2a46f48a353a9c02",
-      "sha256": "b8b0d04d780c429a6adaf519d410fd268308dcb36eedf1674b384ab4a6558d07"
+      "git_blob": "31cb7dd43b4d8095c285c8f92d227dce9c377d08",
+      "sha256": "d9ecca08274051276a02881da62c711a2cd273446bddca0a41631d515576704d"
     },
     "tests/unit/test_llama_server.py": {
-      "git_blob": "ba4f7500848c86340d59ce9665bcd92371298b11",
-      "sha256": "b22b889fbe5fbf3853c9110fc0db1d019e1f100684826fb54cc8009b929d69e3"
+      "git_blob": "6f2c99ae37d7de712fac5a7dc46a687a2ba59377",
+      "sha256": "56dfd7457effc253eb5877599cca1312dfb26b78d747ad5933b4abcbd1de14c3"
     },
     "tests/unit/test_openai_client_tool_mode.py": {
-      "git_blob": "eed2c3a00e7600d00a5e2392f45fe05dae0debca",
-      "sha256": "312f2286406e0143b00c532f6b5ff58897feecfcf79c9b6852f5087dc6bd5016"
+      "git_blob": "d944e379fa7744250fb148ad1b990e38342f48e9",
+      "sha256": "86d5c538f9da0d69277bd9eb68df64c1eb49d314afb6d97faca2e2a281d9f995"
     },
     "tests/unit/test_openai_direct_prompt_contract.py": {
       "git_blob": "b483986805694bb3f2f1f83aba546d8488473c94",
@@ -3159,8 +3159,8 @@
       "sha256": "8ac112b81de3de3a9cc1294478031a85ed52ef6080f04c43c35179fbceedb69c"
     },
     "tests/unit/test_voice_controller_contract.py": {
-      "git_blob": "b5b77c7ec9cd9591cfa92736391e185258c8d9c4",
-      "sha256": "edf8ea3a9c6f41ab219664f4b9d587f384a6befe3daa8db855a5a448e4fe4381"
+      "git_blob": "409db34f5db14b3750b23fa473cd1852301f0d33",
+      "sha256": "dca37aa5f59bb2ebfa45a374bca02155b7d55d27c9b98c4045be81034cdced32"
     },
     "tests/unit/test_voice_route_contract.py": {
       "git_blob": "049db6da41b33fd5197e239b5b41801d4aef09aa",

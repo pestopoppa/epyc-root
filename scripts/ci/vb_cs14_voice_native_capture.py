@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 ROOT_CONTEXT_PIN = "f018782258f65118019a555f6832125f25646f11"
-SOURCE_PIN = "1ed2abe1fe75a64f05d915354813df443ef9e13d"
+SOURCE_PIN = "caa6b5ecf7a9355929f01459aa32cd0a2350519d"
 APP_PIN = "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
 PYTHON_PIN = "3.13.15"
 WORKFLOW = ".github/workflows/vb-cs14-voice-native.yml"
