@@ -2451,6 +2451,14 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   - Done when AKX-ALL-4's runner and the AKX-ALL-7 regenerator emit the record shape, and one real long-surface run
     plus one bucket regeneration ingest.
 
+## VB-AK-REALMASK — DS41 CPU FA real-mask identity source (filed 2026-10-07)
+
+- [ ] **VB-AK-REALMASK — wire the producer-authored DS41 real-mask anchor-identity finding before its first real capture.** The native record binds model identity, the DS41 C++ mask source `src/models/deepseek41.cpp`, source/build commit and binary digest, recipe execution and request digests, actual mask dimensions/type/raw bytes and SHA-256, capture timestamp, original anchor/candidate repeat observations, and the exact identity proposition/verdict with any divergence detail. The strict reader reopens the producer bytes and projects only the verifier finding through the existing verifier carrier and `claim_tuple.grade()`. Synthetic fixtures prove source conformance only; do not relabel them as real-mask observations or reconstruct historical tuples. No throughput, candidate-promotion warrant, new ClaimTuple class, or grading rule. OP80 accepts wiring `check_cpu_fa_real_mask_identity` fail-closed into `cpu_fa_schedule` until the C++ probe/dump producer is available. Land capture and read-path controls before the first real-mask run.
+
+## VB-AK-GPU-LOCAL-PHASES — original GPU local-owner receipts (filed 2026-10-07)
+
+- [ ] **VB-AK-GPU-LOCAL-PHASES — enroll original `direct_held_intervals.v2` GPU/local release captures prospectively before consumption.** Bind selection, device/phase component artifact identities, exact decided ownership/exclusion proposition, original clock/acquire/release facts and v1/v2 provenance; project through existing ClaimTuple grading only. Never reconstruct missing ownership on read or infer CPU fraction from affinity, prediction or quiet. Capture starts only after independent harness review, targeted tests and owner-agreed live window.
+
 ## Non-inference campaign source wiring — 2026-10-05
 
 - [x] **VB-NI-DURABILITY — capture and project docs/handoff durability scan receipts before the first broad scan.**

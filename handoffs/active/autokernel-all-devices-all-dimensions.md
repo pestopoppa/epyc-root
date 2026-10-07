@@ -229,15 +229,18 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     The long-context identity oracle now strips MTP (the anchor's own repeats differed
     under speculative decoding), plus full divergence receipts, the FA case set widened to N=1..5,
     and a fail-closed DS41 real-mask probe. Astra R22 change requests are addressed in the branch
-    but it has not yet been re-reviewed.
+    but it had not yet been re-reviewed at the first checkpoint. Follow-up: Astra's original review
+    returned FAIL; corrected Python commit `5da222c4` received static PASS, then Astra's C++ review
+    passed for research commit `f6b24d54` and kernel patch commit `8393305bc`. Bounded tests/build remain
+    pending; the branch is not landed, and no live real-mask capture exists.
     - [ ] C++ follow-up: a probe `--mask-file` mode.
     - [ ] C++ follow-up: a llama.cpp DS41 top-k mask dump hook.
     - [ ] C++ follow-up: regenerate `test-backend-ops-cpu-fa-longctx-v1.patch`.
-    - [ ] Get the branch re-reviewed by Astra now that R22 is addressed; merge before the
+    - [ ] Complete bounded test validation and land after the corrected review; do so before the
       AKX-ALL-21 round, not alongside it.
-    - [ ] Operator decision: wiring `check_cpu_fa_real_mask_identity` into
-    `run.py` — it would block `cpu_fa_schedule` until the C++ side
-    lands, so it is not something to wire unilaterally. Index row drafted (operator queue).
+    - OP80 settled 2026-10-07: wire `check_cpu_fa_real_mask_identity` into `run.py`; fail-closed
+      `oracle_unavailable` blocking until the C++ producer lands is accepted. Producer capture and
+      reader wiring are prepared under VB-AK-REALMASK; no real-mask capture exists yet.
 - [ ] **AKX-ALL-12: DS41 attention-graph route.** After AKX-ALL-4/5. A multi-file route with
   `identity_arch=deepseek41` admitting `src/models/deepseek41.cpp` `build_attention_v41` and the mask helpers
   (`build_top_k_mask`), and the host-side mask/plan rebuild (DS41-C9). The lever is the graph/mask/host path, not the

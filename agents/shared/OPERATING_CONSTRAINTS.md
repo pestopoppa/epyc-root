@@ -174,6 +174,24 @@ investigation; Appendix)
     claims. Schedule subagent benches around headline runs; never leave them free-running against a lock that a
     headline run needs.
   - (origin: INC-20261004-subagent-unlocked-cpu-in-held-window, second recurrence)
+- **Correctness work needs no quiet host; only timing does.** Numerical calibration, op tests, input-hash
+  verification and builds are correctness work: shard it and claim a narrow build-role cpu list
+  (`region-lock run --cpu-list <list> --role build -- <command>`), never a full-host bench claim. Only a TIMING
+  measurement (a headline speed number, an A/B that compares rates) needs the exclusive quiet
+  window. Treating a served-shape calibration like a timing run serializes it behind every other
+  claim on the host for no correctness benefit. (origin: 2026-10-06/07 served-shape calibration,
+  DS41/Q38FN — sharded under ONE build-role region-lock claim, research `1bace97d`/`a23af0a7`)
+- **`region-lock` takes `LOCK_EX` per region regardless of role**, so sharded claims against the
+  same region still serialize one shard at a time even though none of them is a timing run. Size
+  the shard count to the claimed cpu list, not to the host's full core count — research `a23af0a7`
+  confines shards to the lock's own cpu list and sets the default to `min(16, cases, lock_cpus //
+  4)`. A shard count sized off `nproc` over-subscribes a narrow claim and serializes shards that
+  should have run concurrently inside it.
+- **A served topology's `taskset` prefix defeats a narrowed region-lock claim** unless the prefix
+  itself is rewritten to the lock's cpu list. A process launched with a stale `taskset -c <wide
+  list>` ignores a narrower claim taken around it — the claim is advisory to callers who read it,
+  not an OS-enforced affinity change — so a narrowed lock produces no actual narrowing unless the
+  launcher's own affinity argv is updated to match.
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
