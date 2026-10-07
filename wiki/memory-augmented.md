@@ -1239,3 +1239,16 @@ The [existing chapter-Event/SQLite/FTS/navigation backend and original23/23](../
 ### Read-only trace MCP registrar — 2026-10-07
 
 [Published source and original5/5](../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md) accept explicit ms.search/ms.expand registration through existing navigation and synthetic SQLite/FastMCP controls. The default catalog is unchanged; model-facing activation and real-data retrieval remain separate acceptance work.
+
+
+## Incremental checkpoint — 2026-10-07: registration proof and activation
+
+**Update confidence**: verified for synthetic registration and source publication.
+
+The [read-only MCP registrar](../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md) has five original passing FastMCP/navigation controls and a normally published APP source. It exposes the existing search/expand implementation through an explicit caller-owned registrar with a fixed store path. Default catalog growth, actual model-selected consumers and real-data retrieval acceptance stay open in the [unified service handoff](../handoffs/active/unified-trace-memory-service.md). Existing BEAM ingest provenance and Tulving routing companions retain their separate accepted source records; the [continuation](../docs/reference/ni08-non-inference-continuation.md) does not turn those synthetic outcomes into retrieval-quality evidence.
+
+### Source References
+
+- [MCP source and original custody](../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md).
+- [Unified service](../handoffs/active/unified-trace-memory-service.md).
+- [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).

@@ -5184,3 +5184,18 @@ The shared read-only core supports bounded explicit-root callers while current R
 ### Calendar-independent recent-evaluation fixture — 2026-10-07
 
 [Published source audit](../artifacts/ni08/evl30-relative-clock-source-20261007/README.md) confirms relative UTC old/recent rows in the autopilot recency-window control. Source requirement is satisfied; unit-suite red-baseline resolution remains separate.
+
+
+## Incremental checkpoint — 2026-10-07: source acceptance stays bounded
+
+**Update confidence**: verified for the cited source/conformance records.
+
+The [relative-clock audit](../artifacts/ni08/evl30-relative-clock-source-20261007/README.md) confirms that the existing recent-evaluation fixture already uses UTC-relative old/recent rows; duplicate repair is unnecessary, while the suite baseline remains an independent task. The [registry and attestation capture](../artifacts/ni08/registry-banner-override-source-20261007/README.md) accepts canonical-master banner guidance and refusal of uncovered expired/wrong-PID overrides through97 synthetic controls. A broader edit-the-lean documentation sweep is still required. Neither source check proves a live reload, host capacity or model result.
+
+The [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) records an explicit registrar/native companion boundary, newly enrolled hook/static-checker verification and the still-incomplete whole-backlog source audit. Task text and actual callers govern eligibility. A broad inference or subsystem label cannot gate an independently executable source fix.
+
+### Source References
+
+- [Integration coverage](../handoffs/active/integration-test-coverage.md) — focused slices and standing-rule scope.
+- [Registry source/attestation](../artifacts/ni08/registry-banner-override-source-20261007/README.md) — exact97-case evidence and narrower accepted tasks.
+- [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) — current boundaries and free-work queue.

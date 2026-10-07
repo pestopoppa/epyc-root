@@ -141,13 +141,17 @@ def in_linked_worktree() -> bool:
 
 
 def warn_if_worktree_mtime_basis() -> None:
-    """Incremental scanning compares file mtime against the watermark. `git worktree add`
-    stamps EVERY checked-out file with the checkout instant, so from a linked worktree
-    every source looks newer than any watermark and `total_new` is meaningless.
+    """Warn when the explicit ``--since`` mtime scan runs in a linked worktree.
+
+    `git worktree add` stamps EVERY checked-out file with the checkout instant, so from
+    a linked worktree every source looks newer than any watermark and `total_new` is
+    meaningless for that mtime-based scan. The default incremental scan uses content
+    hashes and is unaffected.
 
     Measured 2026-09-03: a real drift of 52 sources reported as 928 (18x), and 916 of the
-    928 carried one identical mtime. Use content-hash comparison (`--check-manifest`)
-    from a worktree; the mtime basis is only valid in the canonical clone.
+    928 carried one identical mtime. Use the default content-hash incremental scan or
+    `--check-manifest` from a worktree; the explicit mtime basis is only valid in the
+    canonical clone.
     """
     if in_linked_worktree():
         print(
@@ -715,8 +719,9 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    # the mtime basis is invalid from a linked worktree — say so before reporting a count
-    warn_if_worktree_mtime_basis()
+    # Only --since selects the explicit mtime basis; the default is content-hash based.
+    if args.since:
+        warn_if_worktree_mtime_basis()
 
     if args.check_manifest is not None and args.changed_since_manifest is not None:
         print(

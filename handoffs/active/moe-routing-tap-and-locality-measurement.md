@@ -59,11 +59,16 @@ foreign paper's. The instrument is the deliverable; no throughput claim is licen
   exactly the failure "vacuous verification" and "rule out the test method first" exist to catch.
   `intake-1336#00`.
 
-- [ ] **RT-4 — Scope-out, written down so the numbers are never re-cited.** COMPUTE-GATED — FILE ONLY.
-  The bandwidth-wall and PMS-ceiling findings (Sections 3, 5) do **not** transfer: every systems number
-  is an 8 GB VRAM card behind a 2.4 GB/s SSD, and Limitations (v) says the speed projections are
-  modelled, not deployed (`intake-1336#05`). A good SCH does **not** license a throughput claim.
+- [x] **RT-4 — Scope-out, written down so the numbers are never re-cited.** COMPUTE-GATED — FILE ONLY.
+  Source boundary: Suram, [*Cacheable by Design?*, arXiv:2608.18261v1](https://arxiv.org/html/2608.18261v1) §§2–5 and Limitations (v)
+  (`intake-1336#record`, `intake-1336#05`). Its serving measurements and PMS ceiling use one RTX 3070
+  with 8 GB VRAM, 32 GB system RAM, a 134 GB Q4_K_M model, and a DRAM-less PCIe-3 NVMe SSD measured at
+  about 2.4 GB/s. The paper's PMS result (about 0.9 tok/s; 2–7× over its baseline) is a projection
+  from measured IO/cache rates, not an end-to-end PMS deployment. These machine-specific measurements
+  and projections do not transfer to EPYC, and a local routing/SCH result alone licenses no throughput
+  claim. This scope-out is documentary; it calls for no local capture or performance measurement.
 
+  ✅ 2026-10-07 — MAIN independently checked the primary source and accepted this documentary scope-out; no local inference or throughput claim.
 - [ ] **RT-5 — AK-G rider: expert-skew report for Qwen3.6-35B-A3B on the CPU frontdoor.** From the RT-1 tap (or a diagnostic counter in MUL_MAT_ID), report per-layer share of selections in the top 10% and 25% of experts on >= 2 workloads against the 3.13% chance baseline. It gates CAFE-7 (MoE expert-cache HIP port): trigger is top-10% share >= 60% on >= 2 workloads. COMPUTE-GATED — FILE ONLY. (intake-1925 claim 1: the fork publishes no skew statistic) — Owner: workspace-ec (2026-10-06).
 
 ## Open Questions

@@ -3658,3 +3658,16 @@ The [M19/FW2 contract boundary](../artifacts/ni08/workflow-contract-design-20261
 [Offline tool-use reporting](../artifacts/ni08/tool-use-report-source-20261006/README.md) keeps native attempted and scoreable denominators separate from missing traces and partial files. An observed attempt scored wrong is co-occurrence, not evidence of causal evaluator divergence.
 
 [Usage-source arithmetic](../artifacts/ni08/usage-source-audit-20261006/README.md) includes uncached, cache-read and cache-created input in its denominator. Source-event/unique-record subsets cannot substitute for billing totals, write-time purpose labels or ordered completed-task quality/time measurements.
+
+
+## Incremental checkpoint — 2026-10-07: prospective verification sources
+
+**Update confidence**: verified for source enrollment and the reviewed original records.
+
+The [belief-source program](../handoffs/active/vidya-belief-substrate-program.md) and [producer table](../scripts/vidya/adapters/README.md) now keep three upcoming boundaries explicit: lane-root hook subprocess controls, synthetic static pin-checker conformance, and future categorical pin-report wiring. An existing native CI receipt and shared grade can verify the synthetic controls. Actual pin findings still require their producer's original checker/source identities and scan membership, captured before consumption; no new ladder, retrospective tuple or automatic re-pin is authorized. The [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) distinguishes accepted original source/result custody from unfinished report wiring and live runtime acceptance.
+
+### Source References
+
+- [Belief-source program](../handoffs/active/vidya-belief-substrate-program.md).
+- [Producer table](../scripts/vidya/adapters/README.md).
+- [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md).

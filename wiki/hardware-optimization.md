@@ -6146,3 +6146,14 @@ MAIN recorded the [qualified primary-source comparison](../research/sources/inta
 ### Bounded EXL3 teardown polling source — 2026-10-07
 
 The [polling source and original39/39](../artifacts/ni08/exl3-teardown-source-20261007/README.md) accept delayed bookkeeping clearance within a bounded interval and refuse persistent/unknown census. Source conformance is accepted; the real device rerun and EXL3-3b physical acceptance remain open.
+
+
+### Hardware-specific cache projection scope — 2026-10-07
+
+The [RT-4 scope-out](../handoffs/active/moe-routing-tap-and-locality-measurement.md) preserves the [paper's primary-source limitations](https://arxiv.org/html/2608.18261v1): its projected PMS improvement comes from measured cache/IO rates on one consumer machine, rather than an end-to-end PMS deployment. This offers no EPYC throughput warrant. Local routing locality and local throughput need their own measurements.
+
+### Source References
+
+- [RT-4 scope-out](../handoffs/active/moe-routing-tap-and-locality-measurement.md).
+- [Primary paper, sections2–5 and limitations(v)](https://arxiv.org/html/2608.18261v1).
+- [NI08 source/documentary checkpoint](../docs/reference/ni08-non-inference-continuation.md).

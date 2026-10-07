@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **111 completed scoped tasks: 61 existing checkbox flips and 50 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **113 completed scoped tasks: 62 existing checkbox flips and 51 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -283,3 +283,12 @@ MAIN completed the existing [GPU acceleration recording task](../../handoffs/act
 ## Registry banner and override source — MAIN acceptance
 
 [Published source and original97/97](../../artifacts/ni08/registry-banner-override-source-20261007/README.md) close SW-6, SCG-ENVOVR-EXPIRED and their native verifier after MAIN3754-input/3764-member original custody review and normal APP3d93b7a0 integration. SW-5 broader editing-reference sweep stays open; prior physical-capacity collection NULL is preserved. NI08 now111 scoped completions (61existing+50children); remaining free work continues.
+
+
+## Operator-requested full checkpoint — 2026-10-07
+
+Completed since the previous published checkpoint: EVL30 source-clock task, UTM-B1 source/native companions (five cases) and SW-6/SCG/native companions (97 cases), with exact original custody and normal source integration. RT-4 documentary scope-out is now independently primary-source-reviewed and checked; these seven scoped closures bring NI08 to112 (62existing+50children). SW-5's broader edit-master references remain active source work. Three new unchecked source/verifier tasks prospectively enroll LR12 hook controls and EVL42 synthetic/report wiring before any new capture.
+
+Full wrap-up is an operator-invoked checkpoint, not a session stop or exhaustion claim. MAIN owns canonical docs, indices, wiki synthesis, checks and publication; workers continue private implementation/audits. Separate exact source changes, synthetic proof and real model/runtime acceptance. Pending operator packages retain their prior decisions and do not block independent work.
+
+The full checkpoint also corrected a stale mtime warning on healthy content-hash scans: a diagnostic-only single-caller change, with default and explicit --since scans checked. NI08 now113 (62existing+51children). No watermark algorithm changed.
