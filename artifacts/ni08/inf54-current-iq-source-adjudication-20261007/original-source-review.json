@@ -1,0 +1,51 @@
+{
+  "scope": "INF54 exact STEP 1 source-only still-needed adjudication",
+  "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "context_commit": "beae3116d15a427d553b73d57d505778cad3f399",
+  "task_text": "STEP 1 (~1 day, do first): add iqk_gemm_iquants.cpp, remove iquant stubs, add IQ2_XXS/IQ3_XXS/IQ2_S cases",
+  "current_checkbox": "still unchecked in exact current MAIN context",
+  "inputs": [
+    {
+      "path": "ggml/src/ggml-cpu/CMakeLists.txt",
+      "mode": "100644",
+      "blob": "11d3db58b3328bf18776bd8426c1ceb10959b4dc",
+      "sha256": "fc72faf4b5f66fd244a1f50d9c0125e2bd4baae7cc78e26621b83b24c7b0c9b6",
+      "bytes": 35562
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqk/iqk_stubs.cpp",
+      "mode": "100644",
+      "blob": "d60fad0e70a5af47aa4016c5c6ff7a6a3e607dcc",
+      "sha256": "82ee82ec3605722cfac3bc9484bd389018f4a43891e01d69470eb97aee95474a",
+      "bytes": 2086
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp",
+      "mode": "100644",
+      "blob": "9e4c7c3376e7eb16d40dfe9c70937d045e1c9bed",
+      "sha256": "9f0b70a310f53764348b05cfa9a97cc3fd89cdeb11a60623a807cec6ad69397f",
+      "bytes": 30187
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqk/iqk_gemm_iquants.cpp",
+      "mode": "100644",
+      "blob": "45946a790f45f5ffd04558ab8076a268a87f561d",
+      "sha256": "a02f3ea31f4eeca71e5402ac192286ced95c395177c2d437d416ad493ba10051",
+      "bytes": 202647
+    }
+  ],
+  "findings": [
+    "CMakeLists already includes actual iqk_gemm_iquants.cpp line58",
+    "Both iquant stubs removed; actual implementations exist in compiled source",
+    "iqk_typeA_supported already returns true for all three requested IQ types",
+    "Current accepted dispatch additionally enables IQ4_XS; historical instruction to leave IQ4_XS native conflicts with current production source and must not be reapplied"
+  ],
+  "prepared_MAIN_action": "Qualify this stale source-only STEP1 as implemented in current frozen v10; preserve runtime/performance/correctness and trellis STEP2/3 gates. MAIN task text/checklist edits only after independent source review.",
+  "not_claimed": [
+    "native execution",
+    "runtime dispatch residency",
+    "measured gains",
+    "all task card complete"
+  ],
+  "kernel_touched": false
+}

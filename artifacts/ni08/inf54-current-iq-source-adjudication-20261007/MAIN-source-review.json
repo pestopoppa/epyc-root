@@ -1,0 +1,45 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T10:58:21.919397+00:00",
+  "kernel_source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "Git_inputs": [
+    {
+      "path": "ggml/src/ggml-cpu/CMakeLists.txt",
+      "mode": "100644",
+      "blob": "11d3db58b3328bf18776bd8426c1ceb10959b4dc",
+      "sha256": "fc72faf4b5f66fd244a1f50d9c0125e2bd4baae7cc78e26621b83b24c7b0c9b6",
+      "bytes": 35562
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqk/iqk_stubs.cpp",
+      "mode": "100644",
+      "blob": "d60fad0e70a5af47aa4016c5c6ff7a6a3e607dcc",
+      "sha256": "82ee82ec3605722cfac3bc9484bd389018f4a43891e01d69470eb97aee95474a",
+      "bytes": 2086
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp",
+      "mode": "100644",
+      "blob": "9e4c7c3376e7eb16d40dfe9c70937d045e1c9bed",
+      "sha256": "9f0b70a310f53764348b05cfa9a97cc3fd89cdeb11a60623a807cec6ad69397f",
+      "bytes": 30187
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqk/iqk_gemm_iquants.cpp",
+      "mode": "100644",
+      "blob": "45946a790f45f5ffd04558ab8076a268a87f561d",
+      "sha256": "a02f3ea31f4eeca71e5402ac192286ced95c395177c2d437d416ad493ba10051",
+      "bytes": 202647
+    }
+  ],
+  "checks": [
+    "CMake registers actual iquant source",
+    "two requested iquant entrypoints absent from stub file and defined in real source",
+    "requested IQ2_XXS/IQ3_XXS/IQ2_S dispatch cases present",
+    "IQ4_XS also supported; historical instruction to disable is stale"
+  ],
+  "scope": "Existing source wiring only; no compiled binary/runtime/correctness/performance/trellis acceptance",
+  "host_project_execution": false,
+  "kernel_tree_touched": false,
+  "original_source_manifest_unchanged": true
+}

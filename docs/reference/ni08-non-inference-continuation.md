@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **156 completed scoped tasks: 95 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **157 completed scoped tasks: 96 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -409,3 +409,7 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## EVL24 distinct logged-run evidence — MAIN acceptance
 
 [MAIN source/original16/16 acceptance](../../artifacts/ni08/evl24-distinct-run-source-acceptance-20261007/README.md) closes the actual EVL24-DISTINCT-RUN-SOURCE and prospective native companion. Original16/16 source/result custody and exact APP739 two-product publication are authenticated; duplicate verdicts can no longer satisfy multi-run thresholds. Existing stages/thresholds/override/latest-record/risk/gold/operator policy remain unchanged. NI08=156 (95 existing+61 children), with actual promotion readiness/W3/W4 and inference parents open.
+
+## INF54 already-present IQ source wiring — MAIN disposition
+
+[Four exact frozen Git blobs](../../artifacts/ni08/inf54-current-iq-source-adjudication-20261007/README.md) close the one stale STEP1 implementation checkbox. Actual current dispatch also supports IQ4_XS; its historical native-only instruction is superseded. No kernel mutation, build, binary/runtime or performance/quality/trellis claim. NI08=157 (96 existing+61 children); STEP2/3 and other quantization source/runtime work stay open.

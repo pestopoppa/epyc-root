@@ -1,0 +1,5 @@
+# INF54 IQ-family source wiring — current-source disposition
+
+MAIN independently verifies four frozen Git blobs at production sourceffc1bac82eeca6f9099e1ccd9ba49703c460a115. CMake registers iqk_gemm_iquants.cpp, the two iquant entrypoints are real definitions rather than link stubs, and dispatch supports requested IQ2_XXS/IQ3_XXS/IQ2_S. IQ4_XS is also supported: the old instruction to leave it native must not be reapplied. [Original prepared inventory](original-source-review.json) and [MAIN source review](MAIN-source-review.json) retain exact Git/mode/hash/byte identities.
+
+STEP1 implementation is already present and needs no repeated port. This is a source-only finding; no compiled binary, runtime correctness, performance, quantization-quality or trellis result is established. STEP2/3 and actual native measurement gates remain open. No production source/build/kernel-store write, project import/test/build, inference or process action occurred. These records reuse the existing JEV-aware handoff audit/document-dependency handling, carry no new source class/grade ladder or retrospective measurement tuple, and preserve the source/audit task boundary.
