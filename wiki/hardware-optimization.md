@@ -6188,3 +6188,10 @@ Source reference: [RVP source and parent gates](../handoffs/active/rocm-verify-p
 Source references: [stack pipeline finalization](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [RVP parent/source gates](../handoffs/active/rocm-verify-profile-backend.md), [prospective source consumers](../handoffs/active/vidya-belief-substrate-program.md).
 
 The13:40Z owner checkpoint also records atomic activation of the exact reference-hook bytes after its separate seven-control validation; settings/mode/shared checkout HEAD are recorded unchanged. This wiki cites that owner record rather than asserting a new independent runtime verification. [Dated original owner progress](../progress/2026-10/2026-10-07.md), [unified campaign scope](../handoffs/active/autokernel-unified-surface-program.md), [all-device gate boundaries](../handoffs/active/autokernel-all-devices-all-dimensions.md).
+
+
+### Owner-reported full-gate failure remains a failure — 2026-10-07
+
+The14:18Z owner checkpoint records focused394/394 passing while the original full gate has5,129 passed/103failed/11skipped/two xfailed. Full/native waits1 and full-stage cleanup false remain distinct from later worker-final cleanup true. Targeted repair passes do not establish consolidated acceptance or activation. G3 mask/64k progress retains native identity, grade and cleanup prerequisites. This synthesis attributes findings to the dated owning-session record and adds no independent inference, cleanup or runtime warrant.
+
+Source references: [owner original checkpoint](../progress/2026-10/2026-10-07.md), [unified-surface campaign](../handoffs/active/autokernel-unified-surface-program.md), [NI08 source-only scope](../docs/reference/ni08-non-inference-continuation.md).

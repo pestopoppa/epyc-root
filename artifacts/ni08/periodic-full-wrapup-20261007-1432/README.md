@@ -1,0 +1,7 @@
+# Operator-requested periodic full wrap-up — 2026-10-07 14:32 source cut
+
+MAIN applies and reviews canonical documentation/indices/wiki after worker preparation. C106 exact Research361 and original16 controls close two owned checkboxes: NI08=170 (107 existing +63 completed children). C26 source/native and one-entry literature coverage are prospective only. INF50 original partial custody and distinct corrected custody remain separate; generated-product publication is not yet accepted.
+
+Read-only dashboard generated14:32:36Z reports active182/blocked7/completed211/archived120 and3,671 checked/6,085 active+blocked tasks (60.3%,2,414unchecked,12no-checklist cards). It precedes this checkpoint and is not a current campaign-completion denominator. RTG39 remains owned by the blocked full ledger; the active compatibility pointer is intentional. Its next action exposes ungated preparation. No index pruning, archive, compaction, peer-checkbox completion or source/evidence deletion is applied.
+
+Original bytes remain lossless; b64 transport is neither redaction nor confidentiality. Original private source/archive/readpayload/capture/worktree custody remains KEEP. Normal checked publication uses canonical common-directory leases and installed hooks, with no force or bypass. Native/source acceptance warrants no live model/kernel/performance/activation claim. The owner-reported failed AutoKernel full gate is retained without deriving a PASS from focused repair cohorts.

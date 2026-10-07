@@ -1,0 +1,55 @@
+{
+  "schema": "ni08.full-wrap.review.v1",
+  "reviewer": "MAIN",
+  "accepted_scopes": 170,
+  "existing_checkbox_closures": 107,
+  "completed_children": 63,
+  "applied_owned_checkbox_flips": 2,
+  "source_paths_and_hashes": [
+    {
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "type": "handoff-active",
+      "content_hash": "05848b2f62b748084adf1b2d565480f86612c697410cf21d06bb82fd572112fc"
+    },
+    {
+      "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "type": "handoff-active",
+      "content_hash": "4d39fd8ad51b6be6bd753c53085a5e044d586b237d701add68313b707544ee1e"
+    },
+    {
+      "path": "handoffs/active/non-inference-backlog.md",
+      "type": "handoff-active",
+      "content_hash": "8378f19be81a24f4f00a565934da5056ca8e5fe6a0eb9d0fd90f0b8573a31d0d"
+    },
+    {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "type": "handoff-active",
+      "content_hash": "c6bab2f262319c3bf4cfda724e42894374c4969b1696862bb18774eda58dddb5"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07-codex-ni08-continuation.md",
+      "type": "progress",
+      "content_hash": "2e7674f8d6e99c63d6c0dc3a06388f47e40c49e7f94d285548fdb8fdd12cb358"
+    },
+    {
+      "path": "progress/2026-10/2026-10-07.md",
+      "type": "progress",
+      "content_hash": "c46037e948c8b88a47845c1c4453e60bdd7bc0949e937c75a9d7f7ffbed8c414"
+    },
+    {
+      "path": "docs/reference/ni08-non-inference-continuation.md",
+      "type": "docs",
+      "content_hash": "b5edeb44843d9312590f4061c56a31bc0c3f0a3b099fe0474c3b6fd483e932fc"
+    }
+  ],
+  "synthesized_pages": [
+    "wiki/tool-implementation.md",
+    "wiki/knowledge-management.md",
+    "wiki/hardware-optimization.md"
+  ],
+  "pruned": [],
+  "archived": [],
+  "compacted": [],
+  "scratch_policy": "KEEP all source/original/capture roots; owner-only sparse recovery separately reviewed",
+  "runtime_or_inference_warrant": false
+}

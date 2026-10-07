@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **168 completed scoped tasks: 105 existing checkbox flips and 63 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **170 completed scoped tasks: 107 existing checkbox flips and 63 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -442,3 +442,10 @@ MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted
 ## Exact citation-source repair — MAIN acceptance
 
 The full-checkpoint source scan finds two dangling anchors in decision-aware routing. [Native source evidence](../../artifacts/ni08/periodic-full-wrapup-20261007-1325/citation-source-repair/source-context.md) proves the original reasoning-feature annotation cited an unrelated episodic-memory entry; it is explicitly withdrawn for lacking a recorded source rationale in that handoff. The capability risk uses exact intake-1333#01, retains its source-reported/non-gating limitation, and remains unknown to the current ledger because source coverage is absent. One completed bounded repair child yields **168 scoped completions (105 existing flips +63 completed children)**. No research source is deemed inapplicable, intake/native record/grade is amended or live quality claim asserted; existing source-coverage wiring is independently reviewed next.
+
+
+## C106 exact HOLD source acceptance — 2026-10-07
+
+MAIN accepted the original whole16 synthetic controls and independently reopened the exact two-file Research public product `3613455d5114d78968fab464b9cdc8a18df2f306` on parent9299. Unsupported ROLLBACK was removed and unsupported constructor selectors now refuse; default HOLD and floor/cadence/keep/serving behavior are preserved. The existing DS41-C106 and native companion close: NI08 now **170 = 107 existing checkbox closures + 63 completed scoped children**. [Original custody and scope](../../artifacts/ni08/c106-hold-source-acceptance-20261007/README.md) binds all16 test bodies,23 Git inputs, ALL5 locked wheel identities, original native receipt/JUnit/API/archive and successful publication records. Source conformance does not warrant live loop deployment, inference, performance or production promotion. Mixed parent work remains open.
+
+Operator-requested full wrap-up is in progress at this boundary. The first INF50 native-writer original remains an accepted partial diagnostic: upload omitted the hidden cache file. The separately approved direct-child recipe now has a new original capture with hidden bytes retained; independent MAIN review remains required before any product or task closure. C26 and UFH source/custody recipes are private preparation, not completed implementation or captures.
