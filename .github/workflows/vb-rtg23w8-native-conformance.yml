@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      SOURCE_PIN: 94a6e8d41ec7d3f7a122f66bad53aa673d401d8a
+      SOURCE_PIN: e94c2dc5f3129d150602bae1710cfa4c47f5e19b
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       APP_LOCK_PIN: 94a6e8d41ec7d3f7a122f66bad53aa673d401d8a
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'

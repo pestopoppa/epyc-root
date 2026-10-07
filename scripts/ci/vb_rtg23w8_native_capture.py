@@ -16,7 +16,7 @@ import tomllib
 import traceback
 from typing import Any
 
-SOURCE_PIN = "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
+SOURCE_PIN = "e94c2dc5f3129d150602bae1710cfa4c47f5e19b"
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_LOCK_PIN = "94a6e8d41ec7d3f7a122f66bad53aa673d401d8a"
 PYTHON_PIN = "3.13.15"
@@ -61,7 +61,7 @@ APP_BLOBS = {
     'tests/__init__.py': 'd4839a6b14c11e64143d1d200c2d4733595ffc6c',
     'tests/unit/__init__.py': '4a5d26360bce3309c1d761d1529117cec7d42e40',
     'tests/unit/test_autopilot_core_contracts.py': '09603eb9ee5bf34305e79b429790fe9553f793ce',
-    'tests/unit/test_planner_evidence.py': 'd9d78a9ec38abd0c3758a28bf1f647ae1c4eb0df',
+    'tests/unit/test_planner_evidence.py': '48d4d9ee437ce0f4c052e4dc78a44bdbc71f757a',
     'tests/unit/test_task_rate_goodput_replay.py': '28b423aafb714c4b94baaeac991e42eb809b0106',
 }
 CARRIER_BLOBS = {
