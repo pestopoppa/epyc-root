@@ -16,6 +16,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
     steps:
       - name: Initialize original setup status and absent binaries before imports
         run: |
@@ -68,7 +69,7 @@ jobs:
       - name: Checkout exact prospective MAIN enrollment context
         uses: actions/checkout@v4
         with:
-          ref: 1b2c0c0aa959e162d492ba367ce15b36074033eb
+          ref: a322a6eb0cb4c261894cb14ef7b13b85678c0990
           path: context
           persist-credentials: false
       - name: Setup bounded original interpreter
@@ -108,7 +109,7 @@ jobs:
           "$RUNNER_TEMP/pip02-library-venv/bin/python" -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/pip02_selected_library_requirements.txt > "$RUNNER_TEMP/pip02-library/dependency-install.log" 2>&1
       - name: Capture actual whole original ODL module and existing shared grade
         run: |
-          "$RUNNER_TEMP/pip02-library-venv/bin/python" recipe/scripts/ci/pip02_selected_library_capture.py
+          env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/pip02-library-venv/bin/python" recipe/scripts/ci/pip02_selected_library_capture.py
       - name: Preserve all original setup and capture outputs
         if: always()
         uses: actions/upload-artifact@v4
