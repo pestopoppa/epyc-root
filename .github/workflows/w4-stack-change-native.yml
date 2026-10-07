@@ -53,6 +53,23 @@ jobs:
           python-version: '3.13.15'
       - name: Create isolated runner environment
         run: python -m venv "$RUNNER_TEMP/w4-stack-change/venv"
+      - name: Prepare the declared fresh hosted registry parent
+        run: |
+          set -euo pipefail
+          registry=/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+          for directory in /mnt /mnt/raid0 /mnt/raid0/llm /mnt/raid0/llm/epyc-inference-research /mnt/raid0/llm/epyc-inference-research/orchestration; do
+            if [ -L "$directory" ] || { [ -e "$directory" ] && [ ! -d "$directory" ]; }; then
+              echo "Refusing non-directory or symlink registry parent: $directory" >&2
+              exit 1
+            fi
+          done
+          if [ -e "$registry" ] || [ -L "$registry" ]; then
+            echo "Refusing preexisting hosted registry input" >&2
+            exit 1
+          fi
+          if [ ! -d /mnt/raid0/llm/epyc-inference-research/orchestration ]; then
+            sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0755 /mnt/raid0/llm/epyc-inference-research/orchestration
+          fi
       - name: Capture real gate, inner outputs, outer JUnit and shared-grade receipt
         id: capture
         run: |
