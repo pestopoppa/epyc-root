@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **148 completed scoped tasks: 88 existing checkbox flips and 60 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **149 completed scoped tasks: 88 existing checkbox flips and 61 newly completed scoped subtasks; physical-core guard, experimental rollback and real swap-gate controls are accepted, and additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -389,3 +389,7 @@ Concrete voice HTTP/WAV source9c768 and W6 diagnostic source129a58 passed MAIN m
 ## EVL38 owning-source checklist reconciliation — 2026-10-07
 
 MAIN reconciles EVL38-REFERENCE-PORTABILITY-SOURCE to the independently accepted/published fifteen-doc reference correction and original1/1 proof at ROOT04cc51bc4. The historical113 tally explicitly counted only its native companion; the owning source checkbox had remained unchecked. It now closes as one additional existing task: NI08=148 (88 existing+60 children). No observation is repeated or relabeled, and full candidate readiness remains separate.
+
+## UFH05 finite actor source package — 2026-10-07
+
+[MAIN exact seven-blob source-only publication](../../artifacts/ni08/ufh05-finite-runner-source-20261007/README.md) closes one bounded source child RC-XLLM-PREFILL-SOURCE. Research6e06fae72 preserves current source and publishes the approved actor/primary patch/shim/provenance only. No native execution, weights, device compatibility or feasibility is claimed. Actual runtime and VB-RI-OPS-WIRE parents remain open. NI08=149 (88 existing+61 scoped children); more non-inference source work remains.
