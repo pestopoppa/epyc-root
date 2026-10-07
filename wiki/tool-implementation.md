@@ -1676,3 +1676,9 @@ Source references: [original output and publication](../artifacts/ni08/inf50-nat
 ## Reviewed sparse-index preflight — 2026-10-07
 
 **Confidence: verified for source-view custody.** Read-only Git checks refreshed the private index cache’s inode/mtime/ctime. MAIN approved an explicit comparison projection for those three auxiliary fields while retaining original snapshots and exact raw-index/semantic-stage/source/configuration checks. Three guarded sparse-set checkpoints preserve the eleven retained source files and committed originals. Prior refusal journals and large source/index backups remain private KEEP dependencies; no C26 or UFH native task closes through this bookkeeping operation. [Original guarded custody](../artifacts/ni08/three-source-view-sparse-custody-20261007/README.md), [running source scope](../docs/reference/ni08-non-inference-continuation.md).
+
+## Inert experience-data contract — 2026-10-07
+
+**Confidence: verified for the authored source contract only.** RTG-39 now has a13-field provenance contract separating recorded observations from generated targets, a frozen teacher from a trainable student, and packing lineage from verifier evidence. It carries masks, splits, licenses and source identities without creating records, training a model or producing a ClaimTuple. The reviewed paper does not show a KL advantage over sampled next-token targets; prompt improvement, same-task retention and OOD transfer retain separate metrics and budgets. Its unspecified checkpoint sizes and absolute training costs remain unsized. Broader distillation and domain choice retain their existing gates.
+
+Source references: [authored contract](../docs/design/experience-distillation-data-contract.md), [RTG-39 source findings and gates](../handoffs/blocked/swarm-dataset-distillation.md), [MAIN published acceptance](../artifacts/ni08/rtg39-source-contract-acceptance-20261007/README.md), [official paper](https://arxiv.org/html/2607.21051v1).
