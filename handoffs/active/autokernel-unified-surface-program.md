@@ -4011,3 +4011,21 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     (SHA-256 `b66fca407dfd85caf2fda745803629f4d96d2463d5d2ce8b6c70644337e1afc1`); the canonical
     review path now names the corrected PASS. Maintenance remains desired `paused` / observed
     `pausing`, with natural worker completion and observe-only watcher v4 PID 718959.
+
+
+  - 2026-10-07 07:56Z survivor-lifetime source correction checkpoint: new independent review
+    found candidate `eedaf468c6b4b54ab3a1f3002506c5068645f103` SOURCE FAIL in
+    `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/consolidated-harness/ASTRA_CONSOLIDATED_SURVIVOR_LIFETIME_FAIL.md`
+    (SHA-256 `26b1f5f67e419be1eff7a4c698290e148041f72088dab1cba2452d34db93b1e5`). This explicitly
+    supersedes the 07:41 SOURCE PASS as current authority while preserving that review as history.
+    The active approval is revoked by
+    `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/consolidated-harness/ROOT_CONSOLIDATED_SOURCE_APPROVAL_REVOKED.json`
+    (SHA-256 `7f85cf046e5c8e9cbf0ade5e12bdf8ed3d1e6030fae3410bade5c3e258eaa2c1`). Current captured
+    descendants or an uncertain process census can cause ScratchRefused and retain path fences
+    while releasing the original physical CPU owner. Earlier controls faulted receipt publication
+    only after child death and therefore did not prove owner retention during survivor cleanup;
+    `/proc` enumeration failure also can be represented as an empty map. The fix must preserve the
+    original owner through exact-identity bounded cleanup and permit release only after verified
+    death and a complete empty census, retaining failure state. The `runtime_driver_fix` owner is
+    correcting source and runner together; new review/runtime validation remain pending. ROOT
+    approval is absent; no runtime gate, activation, asset apply, deployment, or performance claim.
