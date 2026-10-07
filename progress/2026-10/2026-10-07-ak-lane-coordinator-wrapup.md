@@ -169,3 +169,163 @@ No new index row drafted — all touched handoffs (`deepseek-v41-flash-evaluatio
 `autokernel-all-devices-all-dimensions.md`, `autokernel-unified-surface-program.md`) already have
 rows in `inference-research-index.md` / `routing-and-optimization-index.md`; only their bodies
 changed. `python3 scripts/handoffs/index_state.py --check` run after edits (see wrap-up report).
+
+## 9. FULL wrap-up 2026-10-07 (operator-invoked, agent `claude-ak-coordinator`)
+
+Lane worktree `/mnt/raid0/llm/worktrees/root-wrapup2-ak-20261007` @ `lane/wrapup2-ak-20261007`,
+built on top of `eef14e1d4` (this file through §8) and `5ccf4502b` (AK loop test triage). New facts
+since those two landed:
+
+### 9.1 Critic swap — both AK lanes now run with zero Claude models
+
+2026-10-07 03:03Z: both AK lanes relaunched with the critic switched from `claude-opus-5-5` to
+`gpt-6-astra@high` in all 4 common-args files under
+`/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/` (backups `*.bak-20261007-critic`). New-epoch
+watchdogs, both under that same directory:
+- `q38fn_watchdog3.sh` — state dir `state-6ed37a-*`, `LONGCTX=1`.
+- `ds41_watchdog6.sh` — state dir `state-337615-*`, hold file `DS41_WATCHDOG6_HOLD`.
+
+The common-args documents are part of `serial_run.py`'s continuation binding
+(`serial_run.py:824-827`): any config edit (including a critic swap) needs a NEW-epoch watchdog,
+never a continuation off the old one — seeding from an old continuation dies with "continuation
+binding does not match its own original arguments". This is the same lesson as the §2 calibration
+relaunch, now confirmed on a second, unrelated config change (critic model), so it generalizes to
+*any* common-args edit, not just served-shape recalibration.
+
+### 9.2 Q38FN forced SIGKILL mid-batch for an EC GPU window — pause granularity gap
+
+Q38FN was stopped mid-batch at ~02:55Z for EC's Jet-Long GPU window. A control-endpoint pause only
+lands at batch boundaries (one batch ≈ 3.4 h) — far too coarse for a window request. `SIGTERM` to
+`serial_run` did not stop the `run.py` batch child within minutes; `SIGKILL` was needed (operator
+authorized). EC then cancelled the window anyway, so the kill bought nothing this time, but the gap
+is real and will recur.
+
+- [ ] Task: give `serial_run`/`run.py` a pause or yield that lands at measurement granularity (one
+  case, not one batch), so a GPU-window request doesn't need a kill. Filed under AK loop ownership
+  — see index draft below (owning session applies).
+
+### 9.3 Disk — delete_safe.sh run by the operator; crisis resolved
+
+Updates ` §7 (the 86 GiB crisis)`: the operator ran
+`/mnt/raid0/llm/tmp/disk-audit-20261007/delete_safe.sh`. Free disk is now **175 GiB** (was 86 GiB
+at the crisis, 116 GiB after the coordinator's + EC's worktree cleanup). **No operator decision
+item needed — this is DONE, not open.**
+
+Still open from the same audit (`/mnt/raid0/llm/tmp/disk-audit-20261007/AUDIT.md`):
+- [ ] Task: 207 of 606 worktrees audited were `codex-ni*/ni0X` lanes not cleaned up at ticket
+  close — a process-fix (cleanup-at-close for that lane class), not a one-off deletion.
+- EC's mid-cleanup removal of 2 coordinator worktrees (`ratify-token-rules-20261005`,
+  `token-rules-record-20261006`) caused no loss — both were clean and on `origin/main`. No action
+  needed; noted here only so it isn't re-investigated.
+
+### 9.4 Lessons patch for OPERATING_CONSTRAINTS.md — BLOCKED a second time, confirms the guard defect
+
+Re-attempted the §8 (a)-(c) insertion from this fresh lane worktree
+(`/mnt/raid0/llm/worktrees/root-wrapup2-ak-20261007`, `agents/shared/OPERATING_CONSTRAINTS.md`,
+inserting immediately before the `Full policy: agents/shared/MEASUREMENT_POLICY.md` line in §
+Inference and Benchmarks). **Still BLOCKED** by `scripts/hooks/agents_reference_guard.sh`:
+
+```
+BLOCKED: unresolved local markdown references in .../agents/shared/OPERATING_CONSTRAINTS.md:
+  - docs/guides/agent-workflows/cleanup-reference-check.md
+```
+
+Root-caused precisely this time: the hook resolves `PROJECT_DIR=${CLAUDE_PROJECT_DIR:-$(pwd)}`
+(`scripts/hooks/agents_reference_guard.sh:8`), and `CLAUDE_PROJECT_DIR` is a harness-level
+environment variable fixed to `/workspace` for the whole session — it is **not** reset by `cd`ing
+into a lane worktree, and the Bash tool's `$(pwd)` fallback never applies because the var is set
+(confirmed: `echo $CLAUDE_PROJECT_DIR` prints empty in a plain shell but the hook's own process
+sees it non-empty and pointing at `/workspace`). `/workspace` genuinely lacks
+`docs/guides/agent-workflows/cleanup-reference-check.md` at its current tip, while the lane
+worktree (ahead of `/workspace`) has it. The guard scans the *whole* post-edit file against
+`$PROJECT_DIR`, so **any** edit to `OPERATING_CONSTRAINTS.md` or `INCIDENT_LOG.md` is refused
+regardless of content, for as long as `/workspace`'s checkout lags the lane doing the edit — which
+is true of every lane worktree by construction (that's the point of a lane).
+
+**Not bypassed** (no `sed`/sandbox workaround), per the hard rule. The lessons text for (a)-(c) is
+still the exact text drafted in §8 above, unapplied. This has now reproduced twice on two different
+lane worktrees against two different harness instances, which upgrades it from "a one-off" to a
+structural defect:
+
+- [ ] Task: fix `scripts/hooks/agents_reference_guard.sh` to resolve bare markdown refs against the
+  edited file's own repo root (`git -C <file_dir> rev-parse --show-toplevel`), not
+  `${CLAUDE_PROJECT_DIR:-$(pwd)}` — the latter is the harness's launch directory, not the worktree
+  actually being edited, and is wrong for every lane-worktree edit to a governance file whenever
+  `/workspace` lags the lane (always, for a lane ahead of main). Index row drafted below.
+
+### 9.5 AK loop test triage — cluster 1+4 fix landed; cluster list refreshed
+
+Research `58c86506` ("thread tmp_path through runtime_anchor() call sites; fix stale hold() stub")
+landed and fixes both cluster 1 (357/451, the `runtime_anchor(target, recipe, tmp_path)` signature
+mismatch across 7 modules) and cluster 4 (the gpu `hold()` stub). epyc-root `fedc411f3` records it
+in `progress/2026-10/2026-10-07.md`.
+
+Per-file rerun result: **172 pass, 5 fail**:
+- 4x `test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners` — now fails on
+  `"keep_candidate"` vs `"kept"` after the R23-44 keep-gate change (`run.py:5876`); this reads as a
+  stale-assertion-vs-intentional-behavior-change question, **needs an owner call**, not a
+  mechanical fix.
+- 1x ordering flake in `test_unified_worker.py`.
+
+The full-suite rerun (`pytest autokernel/loop -q`, all ~5000+ tests) was **not completed** this
+session. Still open, unresolved: clusters 2, 3, 5, 6, and the ~62-item long tail from the original
+triage (`/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md`).
+
+- [ ] Task: full-suite rerun of `autokernel/loop` on origin/main (post-`58c86506`) to get a clean
+  failure count before further triage.
+- [ ] Task: owner call on the 4 keep-gate assertion failures (update test expectation to
+  `"keep_candidate"`, or treat as a regression) — `run.py:5876`, R23-44.
+- [ ] Task: triage clusters 2, 3, 5, 6 (lane-affecting: 3 and 5 per the operator's own flag) plus
+  the long tail.
+
+### 9.6 Q38FN REMEASURE_REQUEST — resolved by the new epoch
+
+The `REMEASURE_REQUEST.json` filed for recipe `cff9ad900700…` (§3 above, the 6.528%-floor
+contamination) is **no longer pending**: it is present only as
+`REMEASURE_REQUEST.claimed-20261007T030349159542Z-1658951.json` under
+`.../ak-q38fn-cpu-decode-20261003/store-b0ba1d427/runtime-source-floors/cff9ad9.../` — claimed at
+03:03:49Z, i.e. consumed automatically when the lane relaunched on the new epoch (§9.1). No action
+needed.
+
+### 9.7 Research branch `fix/ak-longctx-identity-oracle-20261007` — still unlanded
+
+Branch @ `6f116e55`, worktree `/mnt/raid0/llm/worktrees/research-ak-longctx-oracle-20261007`
+(**KEEP** — do not clean up). Astra R22 change requests are addressed in the branch but it has not
+yet been re-reviewed.
+
+- [ ] Operator decision: wiring `check_cpu_fa_real_mask_identity` into `run.py` would block
+  `cpu_fa_schedule` until the matching C++ change lands — not something to wire unilaterally. Index
+  row drafted below (operator queue).
+- [ ] Task: C++ follow-up — a probe `--mask-file` mode.
+- [ ] Task: C++ follow-up — a DS41 top-k mask dump hook in llama.cpp.
+- [ ] Task: C++ follow-up — regenerate `test-backend-ops-cpu-fa-longctx-v1.patch`.
+- [ ] Task: get the branch re-reviewed by Astra now that R22 is addressed.
+
+### 9.8 Memory / process rules adopted 2026-10-07 — not yet landed in project docs
+
+Three rules adopted this session that belong in `agents/shared/SESSION_LIFECYCLE.md` (wrap-up
+cadence) or `agents/shared/OPERATING_CONSTRAINTS.md` (subagent brief section), whichever already
+hosts the nearest-matching section — not yet checked for duplication against current doc text:
+
+1. Per-task wrap-up includes the task's own scratch cleanup (this generalizes the §8(d) lesson
+   already landed about the disk crisis).
+2. Every subagent brief requires: logs, progress, and handoff updates for its own work, then
+   clearing its own scratch — **only if no longer needed**.
+3. The main thread (not the subagent) decides scratch lifetime per brief.
+
+- [ ] Task: land rules 1-3 above into `SESSION_LIFECYCLE.md`/`OPERATING_CONSTRAINTS.md` once
+  `/workspace` has caught up past this lane (the §9.4 guard defect blocks editing those files from
+  a lane ahead of `/workspace`, which this one is).
+
+### 9.9 Wrap-up mechanics for this invocation
+
+- Checklist-sync gate: all new tasks above are filed as `- [ ]` in this progress file, and mirrored
+  into the owning handoffs in the same edit pass (see handoff updates below) rather than left as
+  prose-only.
+- Derived-actionables gate: every "task"/"owner call" conclusion above has a checkbox; none left as
+  bare prose only.
+- Index rows: PREPARED ONLY in this report (subagent constraint) — see `## Index pruning /
+  handoff compaction` and the index-row diff in the wrap-up report. This session does not write
+  index files.
+- `scripts/hooks/agents_reference_guard.sh` blocked one governance-doc edit (§9.4); no other edits
+  were blocked.
