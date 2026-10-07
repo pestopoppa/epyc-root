@@ -4,29 +4,31 @@
     "handoff-active": 179,
     "handoff-blocked": 2,
     "handoff-completed": 209,
-    "progress": 628,
+    "progress": 629,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-06T06:33:38Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 3,
+      "added": 1,
+      "changed": 4,
       "removed": 0
     },
-    "at": "2026-10-06T18:31:17Z",
+    "at": "2026-10-07T03:04:36Z",
     "scope_paths": [
-      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/autokernel-concurrent-target-coordination.md",
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
       "handoffs/active/yarn-context-extension-research.md",
-      "progress/2026-10/2026-10-06-workspace-ec.md"
+      "progress/2026-10/2026-10-07-workspace-ec.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-06T18:31:17Z",
+  "scan_time": "2026-10-07T03:04:36Z",
   "schema_version": 1,
-  "source_set_hash": "c7f78fa8fdf9311168e24af7ccdf91a170f2f33b8289de1629aaacd53bd7acfc",
+  "source_set_hash": "0ff05eaca1cd275f9c4f6df48b2630623ccc1df9f02d83e593a48148b7027596",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -125,10 +127,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6d8126104521109550d648786c7b3a04b7ef25b9a1c6b024c3a11cc8b31cf8d7",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "9a99fd29bf8507877c01295e0536b24f31857aca0721fe3065677a7df8ba4a8b",
+      "modified": "2026-10-07T03:03:59Z",
       "path": "handoffs/active/autokernel-concurrent-target-coordination.md",
-      "size": 25961,
+      "size": 26309,
       "title": "AutoKernel concurrent target coordination \u2014 implementation handoff for review",
       "type": "handoff-active"
     },
@@ -653,10 +655,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9033e2084c496aa3cd188c80b0afabc6a49b5659016543e7534d1fe11397ead9",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "5ad0b7592f616916f6a05f1f85f7ae0f2cdf5bc3c4362eeb5e767de4cf8d332d",
+      "modified": "2026-10-07T03:03:59Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 83244,
+      "size": 85342,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -749,10 +751,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0bc1cf7b253e532531b8d856f40b384a3336477b2c847286eaadf60c4df9702f",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "349a049137bbd978193b16c4c7809d0178b1decb9e9d8ebc314b0bfe1589ba25",
+      "modified": "2026-10-07T03:02:54Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 125288,
+      "size": 33772,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -1453,10 +1455,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "91c640254209b1e6bfcda29b7f847e9dcb1f9e7d049ce2d05ecf39e543d9450c",
-      "modified": "2026-10-06T18:26:18Z",
+      "content_hash": "6b00cc5ee053a59507910854cc96026d81eb0e23d8ad6cc334e74d967e7beef1",
+      "modified": "2026-10-07T03:03:59Z",
       "path": "handoffs/active/yarn-context-extension-research.md",
-      "size": 32868,
+      "size": 38587,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -9293,6 +9295,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "a39f4226512ac12bedc1f93faa47cc8ed7b89cc1aac7925853178d992c62ed90",
+      "modified": "2026-10-07T03:03:59Z",
+      "path": "progress/2026-10/2026-10-07-workspace-ec.md",
+      "size": 8506,
+      "title": "2026-10-07 Wrap-up \u2014 workspace-ec (research intake: Q38FN on 2x DGX Spark, Stage 4)",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-10-06T06:31:53Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -10309,7 +10319,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1285,
+  "total_new": 1286,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

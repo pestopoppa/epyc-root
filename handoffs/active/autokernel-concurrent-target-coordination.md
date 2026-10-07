@@ -174,3 +174,5 @@ Earlier examples cited Qwen tip `ef81196d5`, COR `445e93a8`, tg128 screen/confir
 Still subject to review: the staged concurrency proposal, its FIFO admission behavior, and any measured-overlap policy not already authorized. Explicitly outside this follow-up: new model architectures, a new GPU serving profiler, instrument conversion, generalized multi-host scheduling, and rewriting measurement governance. Those are not prerequisites silently added to this work.
 
 The previously reported LOW GitNexus impact on `_drive`, `hold_cpu` and `publish_intervals` is only a static callgraph observation. Closure callbacks and runtime claim consumers above show why it is not a correctness assurance. Re-index the implementation checkout and review these consumers before editing.
+
+- [ ] GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.

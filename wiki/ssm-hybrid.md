@@ -657,3 +657,12 @@ The correct output of this paper is this record, not an investigation.
 - **Spec-dec link.** The `n_rs_seq` setting selects between per-position recurrent snapshots (`n_rs_seq=4`, MTP and ngram+MTP arms) and checkpoint restore plus re-decode (`n_rs_seq=0`, the ngram-only arm: 220 restore lines against 0), which is also two different numerical paths; see [speculative-decoding](speculative-decoding.md).
 
 Sources: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE_TEST.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [NO_DIVERGENCE](../artifacts/copyspec-20261006/NO_DIVERGENCE.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).
+
+## Compiled Update — 2026-10-07: prefill-only boundary checkpoints give the first observed hybrid prefix reuse
+
+- v10 context checkpoints on a hybrid (GDN/recurrent) model land only at n-4 and n-16 of each prompt, so a follow-on turn that extends the prompt cannot restore one and does a full re-prefill (check (2) of the save/restore pre-test failed for this reason).
+- A **prefill-only boundary request** closes the gap. On CPU 27B (fixed Jet-Long build, `-ub 16`, `--ctx-checkpoints 8`, `--cache-ram 8192`, DFlash2): a 3556-token prefix, then Q1 prompt_n 58 and Q1b prompt_n 74 (restored checkpoint 3539), then an extension prompt_n 2219.
+- Slot save (280.8 MB, 70 ms) and restore (36 ms) into a fresh server: extension prompt_n equals the delta (2203), output byte-identical, DFlash2 acceptance 33/41 in both runs.
+- Follow-on: HYBRID-PREFIX-REUSE (correctness on the serving port) in kv-unified-stack-rollout.md.
+
+Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
