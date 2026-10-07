@@ -43,7 +43,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: 83004c1137015a9fc8d0cf411e648432bc51a1c9
+          ref: e6afe15f966d175d20756d8cff3fcbcc1becf756
           path: enrollment-context
           persist-credentials: false
       - uses: actions/setup-python@v5

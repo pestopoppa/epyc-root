@@ -1,5 +1,5 @@
 {
-  "enrollment_context_is_provisional": true,
+  "enrollment_context_is_provisional": false,
   "expected_cases": [
     {
       "classname": "scripts.ci.rvp_native_case",
@@ -61,16 +61,16 @@
     ],
     "context": [
       {
-        "blob": "24c990f9f32021274d7e695f5cf6a266df051694",
-        "bytes": 255558,
+        "blob": "232ecfc006d7020106327387664acf49d51d8c82",
+        "bytes": 257796,
         "path": "scripts/vidya/adapters/README.md",
-        "sha256": "579511b3eb41ab4167cda45441df866bc1feebda626b155e81eef3b2bf354c6e"
+        "sha256": "710be1af803c25a5a59eba60ea25eb044a4c1c7bb4d7c27a1fdcd03b644dfe92"
       },
       {
-        "blob": "c93d189cdaf0db1bd92a38450081a8ad779a3444",
-        "bytes": 345273,
+        "blob": "f8e56a3262f8f7005d27d8cdf9f28ad6a81df85e",
+        "bytes": 349670,
         "path": "handoffs/active/vidya-belief-substrate-program.md",
-        "sha256": "8857c5d01fcf02a2cde77f4fc832fa7cfd1ca858b4116971f4d293edc06972f3"
+        "sha256": "3e9324cfe65987faacd9a89a60b0b803ed0675b81bc8d7b432e7b60a3b4f71a2"
       }
     ],
     "lock_source": [
