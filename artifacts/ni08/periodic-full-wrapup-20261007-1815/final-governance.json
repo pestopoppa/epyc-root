@@ -1,0 +1,119 @@
+{
+  "scope": "operator-requested periodic FULL177 cutoff",
+  "result": "PASS",
+  "governance_input_sha256": "57fbd7c02b9da78e2c715d59db4ffa6e249582f161a8230a8a86f9befdd98540",
+  "source_head": "7d95053c4d94f0b6ac344a11db36fe3be208581e",
+  "changed_wiki_inputs": 9,
+  "changed_source_set_sha256": "53dc35118086571bae1091d4e1e183675f30bc77fd40a8469f3604e0f31a0f5b",
+  "full_manifest_source_count": 1348,
+  "full_manifest_source_set_sha256": "cfbf301dda2ba86d8db5364056ac9cc2ef7c7edb2b9b5d9a04665375050f4906",
+  "last_compile": "2026-10-07T18:48:28Z",
+  "manifest_drift": false,
+  "index_nodes": 179,
+  "index_problems": 0,
+  "index_advisory": "140 existing handoffs lack Scratch declarations; not new hard problems",
+  "readme_warnings": [],
+  "wiki_lint_errors": 0,
+  "wiki_lint_warnings": 96,
+  "citation_check_rc": 0,
+  "scratch_selected_for_deletion": [],
+  "lease_release_verified": true,
+  "token_absent": true,
+  "prior_attempt": "plan-only recommendation refused before index/wiki changes; all original commands and successful release retained separately",
+  "gates": [
+    {
+      "argv": [
+        "python3",
+        "scripts/handoffs/index_state.py"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/handoffs/index_state.py",
+        "--check"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "python3",
+        ".claude/skills/project-wiki/scripts/check_readme_freshness.py"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+        "-I",
+        "scripts/vidya/cli.py",
+        "cite-check",
+        "--as-of",
+        "2026-10-07T18:48:16Z"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+        "-I",
+        ".claude/skills/project-wiki/scripts/compile_sources.py"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+        "-I",
+        ".claude/skills/project-wiki/scripts/compile_sources.py",
+        "--touch"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+        "-I",
+        ".claude/skills/project-wiki/scripts/compile_sources.py",
+        "--check-manifest"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+        "-I",
+        ".claude/skills/project-wiki/scripts/lint_wiki.py"
+      ],
+      "rc": 0
+    }
+  ],
+  "transports": [
+    {
+      "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-bzi5o8b6/original-command-journal.jsonl",
+      "transport": "final-governance-original-commands.jsonl.b64",
+      "raw_bytes": 201287,
+      "raw_sha256": "66d27d41104f14903b1c9b594570ec27177cade5a41e99e99e768bcd49c60ba6",
+      "encoded_bytes": 268385,
+      "encoded_sha256": "cc528f275d3f64b542f22c905a2b1cd4f58c53d3deb01533f88f663103e19443"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-bzi5o8b6/governance-receipt.json",
+      "transport": "final-governance-receipt.json.b64",
+      "raw_bytes": 14067,
+      "raw_sha256": "7cb906a59f57746e3c96bac957e907a5a84e46eb0550c785b156793a076280e5",
+      "encoded_bytes": 18757,
+      "encoded_sha256": "a31d48b3f45d7f6d4e927aa101435d01c82ad3e32fc615ac7930bc2b290a450f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-a64pny7v/original-command-journal.jsonl",
+      "transport": "failed-plan-admission-original-commands.jsonl.b64",
+      "raw_bytes": 39451,
+      "raw_sha256": "a5d03948faf8509fafc949f92d205881ee1d7e39177066ea8e0acef3424c850c",
+      "encoded_bytes": 52605,
+      "encoded_sha256": "29a0e0d13ec1ef65c943d83b473251551ddb61cdd17b1c0e08410a902b82ecb0"
+    }
+  ],
+  "publication": "pending normal MAIN-approved commit/push; no completion claim from local preparation"
+}

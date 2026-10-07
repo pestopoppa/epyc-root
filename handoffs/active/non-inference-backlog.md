@@ -750,3 +750,7 @@ MAIN accepted the one-entry native projection of intake-1333#record through the 
 ## RTG-39 source/documentation checkpoint
 
 MAIN reconciled the two existing RTG-39 source/documentation tasks using the retained official v1 source. Table 6 does not establish a KL gain; Table 7 prompt results, same-task retention and OOD transfer retain their separate metrics. The inert 13-field contract separates frozen teacher target generation from trainable-student SFT and preserves actual observations. Only two administrative action strings in intake-913#record change; status, claims, dive corrections and native ledger remain unchanged. Strand Phase B, operator domain selection and P1–P5 remain gated. NI08 now **177 = 112 existing checkbox closures + 65 completed scoped children**.
+
+## Continuing source review — periodic full boundary after RTG-39
+
+The tally stays177. UFH's fresh15-case original has independently accepted custody, with product publication still pending; both earlier NULL originals remain unchanged. C26 needs a fresh current-tip source reconciliation before another capture because the parallel owner's Research5c945 changed the same CPU/GPU ownership source family. EVL42 actual-scan wiring remains prospective. These are actionable source/integration tasks and add no closures at this boundary. [Detailed remaining actions and snapshot](../../docs/reference/ni08-non-inference-continuation.md).
