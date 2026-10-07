@@ -225,13 +225,19 @@ landing alone closes no box below whose done-test needs a live run; those carry 
   reference probe is in the correctness corpus.
   - 2026-10-07: **pending, not landed** — branch `fix/ak-longctx-identity-oracle-20261007` @ `6f116e55`
     (research, Codex Astra round 1, "full-observation divergence receipts + DS41 real-mask N>1
-    coverage"). The long-context identity oracle now strips MTP (the anchor's own repeats differed
+    coverage"), worktree `/mnt/raid0/llm/worktrees/research-ak-longctx-oracle-20261007` (**KEEP**).
+    The long-context identity oracle now strips MTP (the anchor's own repeats differed
     under speculative decoding), plus full divergence receipts, the FA case set widened to N=1..5,
-    and a fail-closed DS41 real-mask probe. C++ follow-ups still open: a probe `--mask-file` mode, a
-    llama.cpp DS41 top-k mask dump hook, and regenerating
-    `test-backend-ops-cpu-fa-longctx-v1.patch`. Wiring `check_cpu_fa_real_mask_identity` into
-    `run.py` is an **operator decision** — it would block `cpu_fa_schedule` until the C++ side
-    lands, so review and merge this branch before the AKX-ALL-21 round, not alongside it.
+    and a fail-closed DS41 real-mask probe. Astra R22 change requests are addressed in the branch
+    but it has not yet been re-reviewed.
+    - [ ] C++ follow-up: a probe `--mask-file` mode.
+    - [ ] C++ follow-up: a llama.cpp DS41 top-k mask dump hook.
+    - [ ] C++ follow-up: regenerate `test-backend-ops-cpu-fa-longctx-v1.patch`.
+    - [ ] Get the branch re-reviewed by Astra now that R22 is addressed; merge before the
+      AKX-ALL-21 round, not alongside it.
+    - [ ] Operator decision: wiring `check_cpu_fa_real_mask_identity` into
+    `run.py` — it would block `cpu_fa_schedule` until the C++ side
+    lands, so it is not something to wire unilaterally. Index row drafted (operator queue).
 - [ ] **AKX-ALL-12: DS41 attention-graph route.** After AKX-ALL-4/5. A multi-file route with
   `identity_arch=deepseek41` admitting `src/models/deepseek41.cpp` `build_attention_v41` and the mask helpers
   (`build_top_k_mask`), and the host-side mask/plan rebuild (DS41-C9). The lever is the graph/mask/host path, not the

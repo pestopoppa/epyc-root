@@ -3931,3 +3931,20 @@ Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`
     ~62-count long tail, largest single file `test_campaign_service.py` (13). No evidence found of an
     actual production bug in `serving.py`, `gates.py`, `longctx.py`, `model_identity.py`, or
     `serial_run.py`.
+  - 2026-10-07 (later): cluster 1 + cluster 4 (gpu `hold()` stub) **fixed** — research `58c86506`
+    ("thread tmp_path through runtime_anchor() call sites; fix stale hold() stub"), epyc-root
+    `fedc411f3`. Per-file rerun: 172 pass, 5 fail — 4x
+    `test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners` now fail on
+    `"keep_candidate"` vs `"kept"` after the R23-44 keep-gate change (`run.py:5876`, needs an owner
+    call, not a mechanical fix), plus 1 ordering flake in `test_unified_worker.py`. The full-suite
+    rerun (`pytest autokernel/loop -q`, ~5000+ tests) was not completed this session.
+  - [ ] Full-suite rerun of `autokernel/loop` on origin/main (post-`58c86506`) for a clean count.
+  - [ ] Owner call: update the 4 `test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners`
+    assertions to `"keep_candidate"`, or treat the R23-44 keep-gate change as a regression —
+    `run.py:5876`.
+  - [ ] Triage clusters 2, 3, 5, 6 (3 and 5 flagged lane-affecting) plus the ~62-item long tail —
+    `/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md`.
+  - [ ] Give `serial_run`/`run.py` a pause or yield that lands at measurement granularity (one case,
+    not one batch — a batch is ≈3.4h). 2026-10-07 03:03Z: a control-endpoint pause for an EC GPU
+    window only lands at batch boundaries; `SIGTERM` did not stop the batch child within minutes and
+    `SIGKILL` was needed (operator-authorized). The window was cancelled anyway, but the gap is real.

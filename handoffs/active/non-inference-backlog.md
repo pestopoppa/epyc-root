@@ -356,6 +356,35 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
 - [ ] **LR-10** (workspace-ec) — land the orchestrator half (`lane/leak-tests-20261004`, which includes `9a2a35bf`:
       age-based eviction for the unbounded fence-kernel spec-file cache) on orch main. As of 2026-10-04 04:00Z the branch
       exists only locally and is not pushed. Close with the orch main sha.
+- [ ] **LR-11** — **`codex-ni*`/`ni0X` worktrees are not cleaned up at ticket close.** 2026-10-07 disk
+      audit (`/mnt/raid0/llm/tmp/disk-audit-20261007/AUDIT.md`): 207 of 606 worktrees audited were this
+      lane class, left behind after their owning ticket closed — a process gap (no close-time cleanup
+      hook for this lane class), not a one-off. The 2026-10-07 crisis itself (562 worktrees / 414 GiB,
+      tmp 255 GiB, free fell to 86 GiB, blocking a DS41 lane relaunch) was resolved: operator ran
+      `/mnt/raid0/llm/tmp/disk-audit-20261007/delete_safe.sh`, free disk is now 175 GiB. This box is the
+      remaining structural fix — a cleanup step at ticket/PR close for the `codex-ni*`/`ni0X` lane class,
+      analogous to `LR-2`'s wrap-up-time sweep but triggered at close rather than at wrap-up.
+- [ ] **LR-12** — **`scripts/hooks/agents_reference_guard.sh` resolves markdown refs against the wrong
+      root for lane-worktree edits.** It computes `PROJECT_DIR=${CLAUDE_PROJECT_DIR:-$(pwd)}`
+      (`agents_reference_guard.sh:8`) and `CLAUDE_PROJECT_DIR` is a harness-level env var fixed to
+      `/workspace` for the session, not reset by `cd`-ing into a lane worktree — so it resolves a bare
+      markdown ref against `/workspace`'s checkout, not the worktree actually being edited. Reproduced
+      twice (2026-10-07, two different lane worktrees/harness instances) editing
+      `agents/shared/OPERATING_CONSTRAINTS.md`: the ref `docs/guides/agent-workflows/cleanup-reference-check.md`
+      exists at the editing lane's own tip but not yet at `/workspace`'s (lagging) tip, so the hook
+      `BLOCKED` every edit to the file regardless of content. Fix: resolve against the edited file's own
+      repo root (`git -C <file_dir> rev-parse --show-toplevel`), not the harness's launch directory. Both
+      blocked edits are text-ready and unapplied — see `progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md`
+      §8 and §9.4 for the exact patch text.
+- [ ] **LR-13** — land three subagent-brief/wrap-up memory rules adopted 2026-10-07 into
+      `agents/shared/SESSION_LIFECYCLE.md` (wrap-up cadence section) or
+      `agents/shared/OPERATING_CONSTRAINTS.md` (subagent brief section), whichever already hosts the
+      nearest-matching text — not yet checked for duplication: (1) per-task wrap-up includes the
+      task's own scratch cleanup (generalizes the existing disk-crisis lesson); (2) every subagent
+      brief requires logs, progress and handoff updates for its own work, then clearing its own
+      scratch **only if no longer needed**; (3) the main thread, not the subagent, decides scratch
+      lifetime per brief. Same `LR-12` guard defect blocks editing these files from a lane ahead of
+      `/workspace` — land LR-12 first or edit once `/workspace` has caught up.
 
 ## 2026-09-27 compaction — orphaned residuals boxed
 
