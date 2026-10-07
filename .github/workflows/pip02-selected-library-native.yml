@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-inference-research
-          ref: ccbca3e80ba5281bf061f77406ad0672d66e6f6b
+          ref: 3ada26fc231f3f8138914ac3e39895817b022a4f
           path: source
           fetch-depth: 0
           persist-credentials: false
