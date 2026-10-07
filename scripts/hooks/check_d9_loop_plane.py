@@ -49,6 +49,33 @@ all. A guard that fires on text rather than on effect teaches people to route
 around it — which is how the unguarded path this hook exists to close got there
 in the first place. The pathspec is now scoped to the commit's own shell segment
 and handed to git verbatim.
+
+WHAT IT MATCHES ON, corrected 2026-10-06 (the heredoc/false-positive defect).
+"is this command a `git commit`" was decided with `re.search(r"\bgit\b[^|;&]*
+\bcommit\b", cmd)` — a substring search over the RAW command text. That matches
+"git" and "commit" wherever they appear, including inside a heredoc body (a
+`python3 <<'EOF' ... EOF` payload that merely CONTAINS the words "git commit",
+e.g. as text the script itself writes or asserts on) and inside a quoted
+argument (`python3 -c "... git commit ..."`). Measured 2026-10-06: a subagent
+ran a `python3 <<'EOF' ... EOF` heredoc that edited files in a DIFFERENT repo
+and never committed anything; the heredoc body happened to contain
+commit-shaped text. The regex fired, the hook then probed /workspace (the
+payload cwd, unrelated to the heredoc's actual target repo) for dirty guarded
+paths, found a peer's legitimately-dirty `coordination/session-bus/config.yaml`,
+and refused a command that was not a commit at all.
+
+The fix: heredoc bodies are stripped from the command text before any
+detection or tokenisation runs (`_strip_heredocs`), and "is this a commit" is
+now decided the same way the pathspec always was — by finding an actual `git`
+... `commit` TOKEN pair inside one shell segment via `shlex.split`, never by
+substring-searching the raw text. A quoted string or `-c` argument containing
+the words "git commit" becomes a single shlex token (the whole quoted string),
+which does not equal either bare word, so it no longer matches. The commit's
+target repository is also resolved from the command itself now — its own
+`-C <dir>`, or the effective directory after any `cd` earlier in the same
+command — rather than trusting the hook payload's cwd unconditionally; a commit
+chained after `cd` into an unguarded repo is no longer evaluated against
+/workspace's tree.
 """
 
 from __future__ import annotations
@@ -89,7 +116,8 @@ def is_guarded(path: str) -> bool:
 # to: every INF-70 subagent commits from a worktree under /mnt/raid0/llm/**. Running the
 # probes in the wrong repo made this hook refuse unrelated commits on the strength of a
 # peer's dirty scripts/coordination/** in /workspace (measured 2026-09-05, two independent
-# agents blocked). Set once from the hook payload.
+# agents blocked). Set once from the hook payload, then refined by `_resolve_commit_cwd`
+# against the command's own `-C`/`cd` (2026-10-06).
 _GIT_CWD: str | None = None
 
 
@@ -152,8 +180,79 @@ def _segments(toks):
     return segs
 
 
-def commit_pathspec(cmd: str):
-    """The pathspec of the `git commit` in `cmd`, or None if it has none.
+# Matches a heredoc opener: `<<`, optional `-`/`~` (strip-tabs / indented forms), optional
+# quoting around the delimiter word. Group 1 is the dash/tilde (quoting disables expansion
+# in real bash but is irrelevant here — we only need the delimiter text), group 3 the word.
+_HEREDOC_OPEN_RE = re.compile(r"<<([-~]?)\s*(['\"]?)(\w+)\2")
+
+
+def _strip_heredocs(cmd: str) -> str:
+    """Remove heredoc BODIES from `cmd`, leaving the surrounding shell text intact.
+
+    A heredoc body is literal data handed to the command's stdin — `python3 <<'EOF'
+    ... EOF` is one command (`python3`) with a multi-line payload, not a sequence of
+    further shell commands. Before this fix, every downstream check (the commit-shape
+    regex, `shlex.split`, `_segments`) read heredoc body text as if it were more shell
+    source, so a payload that merely CONTAINED the words "git" and "commit" — e.g. a
+    script literal, an assertion message, prose — was indistinguishable from an actual
+    `git commit` invocation. Stripping the body first means detection only ever sees
+    real command text.
+
+    Unterminated heredoc (no matching delimiter line): strip to end of string. That is
+    the conservative direction — it can only make the hook see LESS text, never invent
+    a commit that was not literally typed outside a heredoc.
+    """
+    out = []
+    i = 0
+    while True:
+        m = _HEREDOC_OPEN_RE.search(cmd, i)
+        if not m:
+            out.append(cmd[i:])
+            break
+        out.append(cmd[i:m.end()])
+        delim = m.group(3)
+        strip_tabs = m.group(1) == "-"
+        body_start = cmd.find("\n", m.end())
+        if body_start == -1:
+            # Opener with no newline after it at all: nothing to strip, nothing more
+            # to scan either (the "body" is the rest of the string, i.e. absent).
+            break
+        body_start += 1
+        indent = r"[ \t]*" if strip_tabs else ""
+        delim_re = re.compile(r"^" + indent + re.escape(delim) + r"[ \t]*$", re.M)
+        dm = delim_re.search(cmd, body_start)
+        if dm is None:
+            # Unterminated: strip everything from here to end of string.
+            i = len(cmd)
+            break
+        i = dm.end()
+    return "".join(out)
+
+
+def _find_commit_segment(cmd: str):
+    """The shell segment (token list) that invokes `git ... commit`, or None.
+
+    TOKEN identity, not substring text — the fix for the 2026-10-06 false positive
+    alongside `_strip_heredocs`. A quoted argument containing the words "git commit"
+    (e.g. `python3 -c "... git commit ..."`) becomes ONE shlex token (the whole quoted
+    string), which is not equal to either bare word `git` or `commit`, so it no longer
+    satisfies this check the way a raw substring search did.
+    """
+    try:
+        toks = shlex.split(_strip_heredocs(cmd))
+    except ValueError:
+        return "UNPARSEABLE"
+    for seg in _segments(toks):
+        if "commit" not in seg or "git" not in seg:
+            continue
+        if seg.index("commit") < seg.index("git"):
+            continue
+        return seg
+    return None
+
+
+def commit_pathspec(seg: list[str]):
+    """The pathspec of the `git commit` segment `seg`, or None if it has none.
 
     SCOPED TO THE COMMIT'S OWN SEGMENT. The 2026-08-18 defect this fixes: the previous
     implementation took every token after the FIRST `--` to end-of-string, so a chained
@@ -161,38 +260,18 @@ def commit_pathspec(cmd: str):
     that script's path in and refused a commit that touched no guarded file. Everything
     after a shell separator belongs to a different command, not to this commit's pathspec.
     """
-    try:
-        toks = shlex.split(cmd)
-    except ValueError:
+    if "--" not in seg:
         return None
-    for seg in _segments(toks):
-        if "commit" not in seg:
-            continue
-        try:
-            gi = seg.index("git")
-        except ValueError:
-            continue
-        if seg.index("commit") < gi:
-            continue
-        if "--" not in seg:
-            return None
-        paths = [t for t in seg[seg.index("--") + 1:] if not t.startswith("-")]
-        return paths or None
-    return None
+    paths = [t for t in seg[seg.index("--") + 1:] if not t.startswith("-")]
+    return paths or None
 
 
-def _uses_commit_all(cmd: str) -> bool:
-    """Does this invocation carry -a/--all (including inside a bundle like -am)?
+def _uses_commit_all(seg: list[str]) -> bool:
+    """Does this commit segment carry -a/--all (including inside a bundle like -am)?
 
-    Conservative by construction: it inspects only tokens BEFORE a `--` pathspec separator,
-    and treats an unparseable command as using -a, so a command we cannot read is inspected
-    over-broadly rather than allowed.
+    Conservative by construction: it inspects only tokens BEFORE a `--` pathspec separator.
     """
-    try:
-        toks = shlex.split(cmd)
-    except ValueError:
-        return True
-    for t in toks:
+    for t in seg:
         if t == "--":
             break
         if t == "--all":
@@ -203,8 +282,9 @@ def _uses_commit_all(cmd: str) -> bool:
     return False
 
 
-def commit_targets(cmd: str):
-    """What this commit will actually record, ACCORDING TO GIT — never parsed path text.
+def commit_targets(seg: list[str]):
+    """What this commit segment will actually record, ACCORDING TO GIT — never parsed
+    path text.
 
     Two shapes, because they read different sources:
       * `git commit -- <pathspec>` bypasses the index and records the WORKING TREE state of
@@ -214,22 +294,59 @@ def commit_targets(cmd: str):
       * a plain `git commit` records the INDEX, so the answer is `git diff --cached`.
 
     On any git failure the fallback is deliberately over-broad — staged plus every dirty path
-    — so a malformed pathspec produces a refusal to inspect rather than a silent allow.
+    — so a malformed pathspec produces a refusal to inspect rather than a silent allow. This
+    fallback is only ever reached once `main()` has already confirmed `seg` is a real `git
+    commit` token sequence AND that `_GIT_CWD` is the commit's actual target repo (see
+    `_resolve_commit_cwd`), so it can no longer fire against an unrelated repo's dirty tree.
     """
     # `-a` / `--all` stages every tracked modified file before committing, so the recorded
     # set is the WORKING TREE, not the index — and with nothing staged the index is empty.
     # Reading `git diff --cached` here returned nothing and ALLOWED the commit: measured
     # 2026-09-05, `git commit -am` on a dirty scripts/coordination/ file passed D9 cleanly.
     # The hook's own refusal text says "a control with an unguarded path is not a control".
-    if _uses_commit_all(cmd):
+    if _uses_commit_all(seg):
         return sorted(set(staged_paths()) | set(dirty_paths()))
-    spec = commit_pathspec(cmd)
+    spec = commit_pathspec(seg)
     if spec is None:
         return staged_paths()
     named = _run(["git", "diff", "HEAD", "--name-only", "--"] + spec)
     if named is None:
         return sorted(set(staged_paths()) | set(dirty_paths()))
     return named
+
+
+def _resolve_commit_cwd(cmd: str, seg: list[str], base_cwd: str | None) -> str | None:
+    """The directory the commit segment's `git` actually targets.
+
+    Prefers the segment's own `-C <dir>` (git's own "run as if started in <dir>"). Failing
+    that, replays any `cd <dir>` segments that appear EARLIER in the same chained command
+    (`cd /other/repo && git commit ...`) against `base_cwd`, since those run in the same
+    shell and do change the effective directory the git segment sees. A `cd` or `-C` target
+    is resolved relative to the running total, matching shell semantics; a bare `cd` with no
+    argument is left alone (shell would go to $HOME, which this hook cannot know and should
+    not guess at — falls through to whatever `base_cwd` already is).
+
+    This is what makes "a real commit chained after `cd` into an unguarded repo is not
+    guarded" possible without weakening "a real commit against /workspace is still
+    guarded" — the payload's own cwd remains the base case when no `-C`/`cd` is present.
+    """
+    for i, t in enumerate(seg):
+        if t == "-C" and i + 1 < len(seg):
+            d = seg[i + 1]
+            return d if os.path.isabs(d) else os.path.join(base_cwd or ".", d)
+
+    try:
+        toks = shlex.split(_strip_heredocs(cmd))
+    except ValueError:
+        return base_cwd
+    cwd = base_cwd
+    for s in _segments(toks):
+        if s is seg:
+            break
+        if s and s[0] == "cd" and len(s) > 1:
+            d = s[1]
+            cwd = d if os.path.isabs(d) else os.path.join(cwd or ".", d)
+    return cwd
 
 
 def main() -> int:
@@ -242,18 +359,33 @@ def main() -> int:
     cmd = (payload.get("tool_input") or {}).get("command") or ""
     if "git" not in cmd or "commit" not in cmd:
         return 0
-    # `git commit` proper, not `git log --format=...commit...` and friends
-    if not re.search(r"\bgit\b[^|;&]*\bcommit\b", cmd):
+
+    # TOKEN identity of an actual `git ... commit` invocation, with heredoc bodies and
+    # quoted/embedded text excluded — not a substring search over the raw command text.
+    # See the 2026-10-06 docstring addendum above for the false positive this replaces.
+    seg = _find_commit_segment(cmd)
+    if seg is None:
         return 0
+    if seg == "UNPARSEABLE":
+        # Cannot tokenise the command at all: fall back to the old, deliberately
+        # over-broad text check so an unparseable command is inspected rather than
+        # silently allowed — unchanged failure direction from before this fix.
+        if not re.search(r"\bgit\b[^|;&]*\bcommit\b", cmd):
+            return 0
+        seg = None  # commit_pathspec/_uses_commit_all need a segment; treat as plain commit below with no spec
 
     if os.environ.get("EPYC_D9_ACK", "").strip():
         return 0
     if ACK_RE.search(cmd):
         return 0
 
-    # Probe the repository the commit actually targets, not the hook's inherited cwd.
+    # Probe the repository the commit actually targets: its own `-C`/`cd`, else the
+    # hook payload's cwd. NOT the hook's inherited cwd, and NOT unconditionally the
+    # payload cwd either — a commit chained after `cd` into a different repo targets
+    # that repo, not wherever the Bash tool call started.
     global _GIT_CWD
-    _GIT_CWD = (payload.get("cwd") or "").strip() or None
+    base_cwd = (payload.get("cwd") or "").strip() or None
+    _GIT_CWD = _resolve_commit_cwd(cmd, seg, base_cwd) if seg else base_cwd
 
     # D9 governs one repository's loop plane. A repo that does not CONTAIN the guarded
     # tree cannot carry a loop-plane change, so the hook does not apply there. This is
@@ -267,7 +399,10 @@ def main() -> int:
     if not any(is_guarded(p) for p in dirty_paths()):
         return 0
 
-    guarded = sorted({p for p in commit_targets(cmd) if is_guarded(p)})
+    if seg is None:
+        guarded = sorted({p for p in staged_paths() if is_guarded(p)})
+    else:
+        guarded = sorted({p for p in commit_targets(seg) if is_guarded(p)})
     if not guarded:
         return 0
 

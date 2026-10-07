@@ -11,6 +11,14 @@ read the pusher's path as part of the commit's pathspec and refused a commit tha
 guarded file. A guard that fires on text rather than on effect teaches people to route around
 it, which is how the unguarded path this hook exists to close got there in the first place.
 
+A second false-positive class, measured 2026-10-06: "is this command a commit at all" was
+decided by substring-searching the RAW command text for the words "git" and "commit". That
+matched inside a heredoc BODY (data handed to a command's stdin, not more shell source) and
+inside a quoted string/`-c` argument, so a `python3 <<'EOF' ... EOF` payload that merely
+mentioned "git commit" — and committed nothing — was treated as a commit and evaluated
+against whatever repo the hook happened to be probing (often /workspace, unrelated to the
+heredoc's real target), refusing a command that was not a commit at all.
+
 So each false-positive case below is PAIRED with a case proving the guard still refuses the
 real thing. A hook that allowed everything would pass the first half alone.
 
@@ -57,21 +65,37 @@ class D9HookTest(unittest.TestCase):
         _git(self.repo, "add", "-A")
         _git(self.repo, "commit", "-q", "-m", "base")
 
+        # A second, independent repo WITHOUT a loop plane at all — used by the
+        # cross-repo false-positive cases (`-C`/`cd` into it).
+        self._tmp_other = tempfile.TemporaryDirectory()
+        self.other_repo = Path(self._tmp_other.name)
+        _git(self.other_repo, "init", "-q", "-b", "main")
+        _git(self.other_repo, "config", "user.email", "t@t")
+        _git(self.other_repo, "config", "user.name", "t")
+        (self.other_repo / "README.md").write_text("base\n", encoding="utf-8")
+        _git(self.other_repo, "add", "-A")
+        _git(self.other_repo, "commit", "-q", "-m", "base")
+
     def tearDown(self):
         self._tmp.cleanup()
+        self._tmp_other.cleanup()
 
-    def run_hook(self, cmd: str) -> int:
+    def run_hook(self, cmd: str, cwd: Path | None = None) -> int:
+        cwd = cwd or self.repo
         return subprocess.run(
             [sys.executable, str(HOOK)],
-            input=json.dumps({"tool_name": "Bash", "tool_input": {"command": cmd}}),
-            capture_output=True, text=True, cwd=self.repo).returncode
+            input=json.dumps({"tool_name": "Bash",
+                               "tool_input": {"command": cmd},
+                               "cwd": str(cwd)}),
+            capture_output=True, text=True, cwd=cwd).returncode
 
-    def touch(self, *rels: str) -> None:
+    def touch(self, *rels: str, repo: Path | None = None) -> None:
+        repo = repo or self.repo
         for rel in rels:
-            p = self.repo / rel
+            p = repo / rel
             p.write_text(p.read_text(encoding="utf-8") + "change\n", encoding="utf-8")
 
-    # ---- the measured false positive, and its paired coverage case -------
+    # ---- the 2026-08-18 false positive, and its paired coverage case -----
 
     def test_chained_pusher_path_is_not_this_commits_pathspec(self):
         """THE BUG: tokens after a `;` belong to the next command, not to the commit."""
@@ -89,6 +113,63 @@ class D9HookTest(unittest.TestCase):
         """PAIRED COVERAGE: without this the tests above would pass on a no-op hook."""
         self.touch(GUARDED)
         self.assertEqual(self.run_hook(f'git commit -m "x" -- {GUARDED}'), 2)
+
+    # ---- the 2026-10-06 false positive: heredoc body is data, not source -
+
+    def test_heredoc_body_mentioning_commit_text_is_not_a_commit(self):
+        """THE 2026-10-06 BUG, reproduced exactly: a heredoc payload containing
+        commit-shaped text with a syntactically invalid pathspec (`:(fooinvalid)bogus`)
+        makes `git diff HEAD --name-only -- <pathspec>` fail, which trips the
+        deliberately-over-broad fallback (staged union dirty) and refuses a command
+        that committed nothing at all. Confirmed against the unpatched hook: it
+        returns 2 here; the fix must return 0."""
+        self.touch(GUARDED)   # guarded file genuinely dirty in THIS repo, nothing staged
+        cmd = (
+            "python3 <<'EOF'\n"
+            'git commit -m "x" -- :(fooinvalid)bogus\n'
+            "EOF\n"
+        )
+        self.assertEqual(self.run_hook(cmd), 0)
+
+    def test_quoted_dash_c_argument_mentioning_commit_is_not_a_commit(self):
+        """Same class: the words live inside a single quoted token, not as bare commands."""
+        self.touch(GUARDED)
+        cmd = 'python3 -c "print(\'please run git commit by hand\')"'
+        self.assertEqual(self.run_hook(cmd), 0)
+
+    def test_real_commit_after_a_heredoc_in_the_same_command_still_refuses(self):
+        """PAIRED COVERAGE: a real commit chained AFTER a heredoc must still be caught —
+        proves _strip_heredocs only removes the body, not the rest of the command."""
+        self.touch(GUARDED)
+        cmd = (
+            "python3 <<'EOF'\n"
+            "print('no git commit here, just talking about it')\n"
+            "EOF\n"
+            f'\ngit commit -m "x" -- {GUARDED}'
+        )
+        self.assertEqual(self.run_hook(cmd), 2)
+
+    # ---- cross-repo resolution: a commit targeting an unguarded repo ------
+
+    def test_commit_in_another_repo_via_dash_c_is_not_guarded(self):
+        """A `-C <dir>` commit targets THAT repo, not wherever the hook payload cwd was."""
+        self.touch(GUARDED)  # dirty in self.repo, but the commit below targets other_repo
+        (self.other_repo / "README.md").write_text("changed\n", encoding="utf-8")
+        cmd = f'git -C {self.other_repo} commit -am "x"'
+        self.assertEqual(self.run_hook(cmd, cwd=self.repo), 0)
+
+    def test_commit_in_another_repo_via_cd_is_not_guarded(self):
+        """Same resolution, via a `cd` earlier in the same chained command."""
+        self.touch(GUARDED)
+        (self.other_repo / "README.md").write_text("changed\n", encoding="utf-8")
+        cmd = f'cd {self.other_repo} && git commit -am "x"'
+        self.assertEqual(self.run_hook(cmd, cwd=self.repo), 0)
+
+    def test_commit_via_cd_into_this_repo_is_still_guarded(self):
+        """PAIRED COVERAGE: `cd` resolution must not become a blanket escape hatch."""
+        self.touch(GUARDED)
+        cmd = f'cd {self.repo} && git commit -am "x"'
+        self.assertEqual(self.run_hook(cmd, cwd=self.other_repo), 2)
 
     # ---- the staged path -------------------------------------------------
 
@@ -111,6 +192,14 @@ class D9HookTest(unittest.TestCase):
         self.touch(GUARDED, DOC)
         _git(self.repo, "add", GUARDED)
         self.assertEqual(self.run_hook(f'git commit -m "x" -- {DOC}'), 0)
+
+    # ---- -a / --all --------------------------------------------------------
+
+    def test_commit_dash_a_still_caught(self):
+        """`-a` records the working tree, not the (empty) index — paired with the -am
+        regression fixed 2026-09-05."""
+        self.touch(GUARDED)
+        self.assertEqual(self.run_hook('git commit -am "x"'), 2)
 
     # ---- acks ------------------------------------------------------------
 
