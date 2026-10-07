@@ -3977,3 +3977,18 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     hard-floor controls are durably queued (launcher PID 627900, region-lock waiter PID 627915;
     manifest `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/environment-roster/manifest.json`);
     pytest has not started. No source landing/FF or production change is recorded.
+
+  - 2026-10-07 07:10Z checkpoint: the earlier GPU local-phase SOURCE PASS is revoked. Independent
+    review of the 58-file consolidated snapshot returned SOURCE FAIL (`/mnt/raid0/llm/tmp/ak-codex-handover-20261007/consolidated-harness/ASTRA_CONSOLIDATED_SOURCE_REVIEW.md`,
+    SHA-256 `b66fca407dfd85caf2fda745803629f4d96d2463d5d2ce8b6c70644337e1afc1`): `_hold` lacks
+    post-native-entry poisoning/BaseException coverage, and the CPU build owner closes before the
+    owned-child cleanup sweep verifies compiler descendants. The revoked approval binds the
+    unchanged helper SHA `4301266637de592d4b5f1b8ca86c93e31d37d8e45275151e1477f990271c02d9`,
+    and the scratch asset-apply helper blocks further use pending new clearance;
+    `/root/combined_phase_lifecycle_fix` is preparing the consolidated correction, with no new
+    PASS yet. Old sequencers 4167523/4078361 are absent; no signal or exit status is inferred and
+    original GPU assets remain unchanged per `gpu-live-assets-before.json` and `GPU_HARNESS_REPORT.md`.
+    OP80 candidate `896ea0697c207aa8e7ea4d352bd8353485a8ff28`
+    has independent source PASS, while its three-module gate remains queued (launcher 713156,
+    waiter 713159); old acquire-only r2 ended RC 143 before pytest. CPU gates remain queued; no
+    landing/FF, activation, or production change is recorded.
