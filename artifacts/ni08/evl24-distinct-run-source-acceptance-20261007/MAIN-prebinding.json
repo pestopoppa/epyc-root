@@ -1,0 +1,300 @@
+{
+  "schema": "epyc.main.native_prebinding.v1",
+  "review": "PASS",
+  "recipe_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+  "tracked_files": [
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "mode": "100644",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/vidya/lattice.py",
+      "mode": "100644",
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/vidya/frames.py",
+      "mode": "100644",
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "repo": "carrier",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/vidya/canonical.py",
+      "mode": "100644",
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "scripts/lab/promote_job.py",
+      "mode": "100644",
+      "git_blob": "4ff6838fb65e31c7a0c3e83009ecfdfa24154714",
+      "bytes": 15154,
+      "sha256": "2b68893f9631c09f598b956d484913668e8281bb09acb5fce9ae27d45fdc3646"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "tests/unit/test_lab_promote_job.py",
+      "mode": "100644",
+      "git_blob": "3581ccb3fdb7b8c2c8e14726241ac40c4ce2cdbb",
+      "bytes": 13247,
+      "sha256": "b37ef2cb3e8126ba5be17f49eb84d2c2686254f2f6c117c9ff29fab756addddb"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "scripts/lab/__init__.py",
+      "mode": "100644",
+      "git_blob": "275a3ce355449ce6bf52a7166440933524de44bc",
+      "bytes": 34,
+      "sha256": "93a62b77460c114e35645851a2542a296128ba2909b4c4f1a843e023b623b5c6"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "tests/__init__.py",
+      "mode": "100644",
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "bytes": 16,
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "tests/unit/__init__.py",
+      "mode": "100755",
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "bytes": 21,
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "git_blob": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+      "bytes": 6832,
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "repo": "source",
+      "repo_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "beae3116d15a427d553b73d57d505778cad3f399",
+      "path": "handoffs/active/frontier-f2-self-running-lab.md",
+      "mode": "100644",
+      "git_blob": "c36836c7a902877b44de20fe54db25c0489cb0d1",
+      "bytes": 31604,
+      "sha256": "0c56f59a96d0870d9ff738049f11c0c8af6d1e40efe077f95fec15fbd747ef01"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "beae3116d15a427d553b73d57d505778cad3f399",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "mode": "100644",
+      "git_blob": "fc31f36e3d86a63992b2ffa519b4f300b99e56c0",
+      "bytes": 363071,
+      "sha256": "4a69b19884f79e6322ddcd804876c2239744791e5b4b409be66a1a8bb469e62d"
+    },
+    {
+      "repo": "context",
+      "repo_pin": "beae3116d15a427d553b73d57d505778cad3f399",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "a526bac47d1f90f4b1322d210138a49b29ceeaa1",
+      "bytes": 267000,
+      "sha256": "754b8f5079da165a339566b364bf5f074f161fb7088c4293d30326ca847e001b"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": ".github/workflows/evl24-distinct-run-native.yml",
+      "mode": "100644",
+      "git_blob": "192e25078a129f6e387964488110f648201a4760",
+      "bytes": 2584,
+      "sha256": "6a9755bd593d1031ccbebc9c6e93c3b3348f14fa96587d749bb8bc9e730ae7af"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/ci/evl24_distinct_run_capture.py",
+      "mode": "100644",
+      "git_blob": "361949a4ccc62c0114632d0a63d3110edbe33904",
+      "bytes": 22145,
+      "sha256": "49130be84ca78a0d7fff51058e2139dd7c97a8930c16d7dc92fcfe857d5795b8"
+    },
+    {
+      "repo": "recipe",
+      "repo_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+      "path": "scripts/ci/evl24_distinct_run_requirements.txt",
+      "mode": "100644",
+      "git_blob": "f6d5b787e1d2f02c1344b0bef8ec4c777894dbd2",
+      "bytes": 4512,
+      "sha256": "d6f9cbf868054b6b4625526148919d478f0a59b20cebca0576812f1de55cd1fe"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_reviewed_requires_ten_cloud_reference_gold_tuples"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_reviewed_requires_saved_gold_tuple_paths"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_autonomous_requires_read_only_and_accept_rate"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_autonomous_rejects_write_reviewed_jobs"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_apply_requires_confirmation_and_updates_job_stage"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_promotions_must_follow_stage_ladder"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_autonomous_requires_operator_reviewed_gold_tuples"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_gold_tuple_paths_must_exist_when_queue_dir_is_known"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_repeated_verdicts_cannot_substitute_for_distinct_runs[shadow-reviewed-10]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_repeated_verdicts_cannot_substitute_for_distinct_runs[reviewed-autonomous-20]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_invalid_selected_run_identity_refuses_apply[None]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_invalid_selected_run_identity_refuses_apply[]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_invalid_selected_run_identity_refuses_apply[   ]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_selected_verdict_requires_its_logged_run_before_apply[absent]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_selected_verdict_requires_its_logged_run_before_apply[other-job]"
+    },
+    {
+      "classname": "tests.unit.test_lab_promote_job",
+      "name": "test_unselected_and_unscored_rows_do_not_require_run_identity"
+    }
+  ],
+  "module_ast_identities": [
+    {
+      "repo": "source",
+      "path": "tests/unit/test_lab_promote_job.py",
+      "source_sha256": "b37ef2cb3e8126ba5be17f49eb84d2c2686254f2f6c117c9ff29fab756addddb",
+      "module_ast_sha256": "831eb51807ee9b3422b0dd2e645ea1bf65751be976640c44cca504e5ffd6c566"
+    }
+  ],
+  "expected_generated_contexts": [
+    {
+      "path": "tool-versions.json",
+      "identity": "native original bytes captured before execution"
+    },
+    {
+      "path": "environment.json",
+      "identity": "native original bytes captured before execution"
+    },
+    {
+      "path": "pip-freeze.txt",
+      "identity": "native original bytes captured before execution"
+    },
+    {
+      "path": "dependency-install.log",
+      "identity": "native original bytes captured before execution"
+    }
+  ],
+  "packages": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pytest": "9.0.3",
+    "pyyaml": "6.0.3"
+  },
+  "wheel_hashes": 52,
+  "manual_blast_radius": "LOW bounded synthetic distinct logged-run refusal; no actual promotion readiness warrant",
+  "host_project_execution": false,
+  "final_approval": true,
+  "approved_at_utc": "2026-10-07T10:31:29.828641+00:00",
+  "source_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+  "source_context_pin": "beae3116d15a427d553b73d57d505778cad3f399",
+  "manual_caller_review": {
+    "promote_job": "actual run_from_args temporary apply plus evaluate_promotion selected verdict refusal",
+    "readiness_report": "existing PromotionError main refusal path retained; no live readiness warrant"
+  },
+  "capture_authorized": "One exact GitHub-hosted capture after ordinary source branch publication; normal ROOT trigger branch publication only; no force, local project execution or grader amendment",
+  "source_boundary": "distinct valid logged-run identities only; existing latest-record lookup, explicit stage override,10/20/90%,risk/gold/operator policies preserved"
+}

@@ -1,0 +1,38 @@
+{
+  "review": "PASS",
+  "reviewed_at_utc": "2026-10-07T10:36:40.747698+00:00",
+  "run": 37608090336,
+  "attempt": 1,
+  "job_identity": "github_job_112748403793",
+  "recipe_pin": "6d47193e4286f9deb6d4b60d72cbdb2af1685453",
+  "source_pin": "92c9ec879733357677998eae8122960ae57c6cb9",
+  "source_context_pin": "beae3116d15a427d553b73d57d505778cad3f399",
+  "artifact_id": 11475558758,
+  "zip_sha256": "4704d3a96645e3346a671fa71d5149aca47b2c35eda08a4b9265e99d14a1e496",
+  "zip_bytes": 4526374,
+  "original_regular_member_copies": 418,
+  "frozen_Git_inputs": 20,
+  "native_readset": 30,
+  "additional_generated_and_native_binary_inputs": 10,
+  "cases": 16,
+  "native_value": true,
+  "receipt_self_sha256": "588e361384a6b2e76e1bf4ee15e659549fddb95016984dc7f60c5818d6c35e36",
+  "receipt_file_sha256": "6d8b657828b4d2fa972d75c56eec1441a10068837000966a6630d53f9b7dc16e",
+  "original_shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "typed_original_result_counts": {
+    "directory": 61,
+    "regular": 250,
+    "symlink": 12
+  },
+  "source_readset_stable_before_capture_after_capture_after_grade": true,
+  "result_tree_after_capture_equals_after_grade": true,
+  "zip_alias_and_empty_directory_topology_limits_qualified": true,
+  "originals_unchanged": true,
+  "MAIN_executed_project_or_grade": false,
+  "implementation_accepted_for_exact_source": true,
+  "canonical_two_product_preimages_require_review": true,
+  "scope": "Synthetic distinct logged-run promotion evidence refusal and unchanged positive control source conformance; no actual promotion readiness/live queue/model/inference warrant"
+}

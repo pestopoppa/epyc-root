@@ -1,0 +1,23 @@
+{
+  "source": "92c9ec879733357677998eae8122960ae57c6cb9",
+  "parent": "b87998e3b5a0cbb9da36c8db9fd2fcfbb69aba0d",
+  "publication_commit": "73984542dc85fc2ecd0f2581877e8e003378ec6b",
+  "remote": "https://github.com/pestopoppa/epyc-orchestrator.git",
+  "files": [
+    {
+      "path": "scripts/lab/promote_job.py",
+      "mode": "100644",
+      "blob": "4ff6838fb65e31c7a0c3e83009ecfdfa24154714",
+      "sha256": "2b68893f9631c09f598b956d484913668e8281bb09acb5fce9ae27d45fdc3646",
+      "bytes": 15154
+    },
+    {
+      "path": "tests/unit/test_lab_promote_job.py",
+      "mode": "100644",
+      "blob": "3581ccb3fdb7b8c2c8e14726241ac40c4ce2cdbb",
+      "sha256": "b37ef2cb3e8126ba5be17f49eb84d2c2686254f2f6c117c9ff29fab756addddb",
+      "bytes": 13247
+    }
+  ],
+  "scope": "Exact two product blobs after MAIN authenticated whole16-case original; no runtime/model readiness warrant."
+}

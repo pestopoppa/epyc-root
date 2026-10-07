@@ -36,7 +36,7 @@ rewrite) now exist or are queued; this is the 10× on the lab itself.
 
 ### Bounded promotion evidence source correction
 
-- [ ] **EVL24-DISTINCT-RUN-SOURCE** — close the reviewed duplicate-verdict inflation gap in actual `scripts/lab/promote_job.py`: selected scored verdicts must identify distinct nonblank logged runs for the same job; duplicate, invalid or missing logged-run evidence must refuse before apply. Preserve existing 10/20 thresholds, 90% acceptance, stages, latest-record lookup, risk/gold/operator requirements and explicit stage override. Bind exact source92c9ec87 and all16 whole-module cases through VB-EVL24-DISTINCT-RUN-CONFORMANCE before MAIN source acceptance. No live lab queue/promotion readiness or model/runtime warrant; W3 accumulation and W4 expansion remain open.
+- [x] **EVL24-DISTINCT-RUN-SOURCE** — close the reviewed duplicate-verdict inflation gap in actual `scripts/lab/promote_job.py`: selected scored verdicts must identify distinct nonblank logged runs for the same job; duplicate, invalid or missing logged-run evidence must refuse before apply. Preserve existing 10/20 thresholds, 90% acceptance, stages, latest-record lookup, risk/gold/operator requirements and explicit stage override. Bind exact source92c9ec87 and all16 whole-module cases through VB-EVL24-DISTINCT-RUN-CONFORMANCE before MAIN source acceptance. No live lab queue/promotion readiness or model/runtime warrant; W3 accumulation and W4 expansion remain open. ✅ 2026-10-07 — [MAIN source/original16/16 acceptance](../../artifacts/ni08/evl24-distinct-run-source-acceptance-20261007/README.md); exact APP73984542, TRUE16/16; live parent gates unchanged.
 
 ## Gates & pitfalls
 
