@@ -259,7 +259,7 @@ def main():
         before_tree=inventory(run,omit_root_status=True)
         durable_custody(run/'pre-capture-custody.json',{'source_before_capture':before,'full_typed_result_tree_before_capture':before_tree,'full_typed_external_lock_before_capture':inventory(lock_root),'capture_environment':{k:env.get(k) for k in [*ENVIRONMENT,'PATH','HOME','TMPDIR','PYTHONPATH','PYTHONHOME','LD_LIBRARY_PATH','LD_PRELOAD']}})
         code=subprocess.call([*producer,'--',*argv],cwd=source,env=env)
-        receipt_path=result/'native/receipt.json';receipt=json.loads(receipt_path.read_bytes());counts=receipt.get('summary',{}).get('counts',{});actual=receipt.get('summary',{}).get('cases',[])
+        receipt_path=result/'native/receipt.json';receipt=json.loads(receipt_path.read_bytes());summary=receipt.get('summary') or {};counts=summary.get('counts') or {};actual=summary.get('cases') or []
         exact=len(actual)==len(EXPECTED_CASES) and Counter((c.get('classname'),c.get('name')) for c in actual)==Counter((c['classname'],c['name']) for c in EXPECTED_CASES)
         external=inventory(lock_root)
         if set(external)!={'.','inference-call-window.lock'}: raise RuntimeError('unexpected synthetic lock output membership')
