@@ -346,8 +346,8 @@ def main() -> int:
         receipt_path = native_dir / "receipt.json"
         native, receipt_sha = api.read_receipt(receipt_path)
         if native.get("fixture_execution_conformant") is not True:
-            # Failed collection/execution still retains authenticated original
-            # JUnit and receipt custody, but has no measured case tuple to grade.
+            # Every non-passing native result (including FALSE and NULL) retains
+            # its exact original outcome and custody without shared grading.
             result_after = snapshot_tree(result, omit=result_omit)
             readset_after = {str(path): digest(path) for path in dict.fromkeys(read_paths)}
             reopened, reopened_sha = api.read_receipt(receipt_path)
@@ -357,9 +357,11 @@ def main() -> int:
                 raise RuntimeError("failed native capture custody changed during review")
             status.update(
                 state="capture_failed", exit_code=1, native_receipt="native/receipt.json",
-                junit="original-junit.xml", fixture_execution_conformant=None,
-                grade=None,
-                error="native fixture execution did not conform; original retained ungraded",
+                junit="original-junit.xml",
+                fixture_execution_conformant=native.get("fixture_execution_conformant"),
+                native_summary=native.get("summary"),
+                native_exit_code=native.get("exit_code"), grade=None,
+                error="native fixture result is non-passing or has no complete case summary; original retained ungraded",
             )
             return 1
         cases = verify_junit(junit, native, selected)
