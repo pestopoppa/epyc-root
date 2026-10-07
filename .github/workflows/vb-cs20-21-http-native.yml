@@ -1,0 +1,93 @@
+name: VB CS-20/21 HTTP/WAV native fixture conformance
+on:
+  push:
+    branches: [codex/cs20-21-native-recipe-20261007]
+permissions:
+  contents: read
+jobs:
+  vb-cs20-21-http-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      RECIPE_PIN: ${{ github.sha }}
+      SOURCE_PIN: 9c76824f549f45f22cf315e1fb3cb7f832558a13
+      ROOT_CONTEXT_PIN: 2977a81b68ebf6df1e03a4d6b8ae20389bc5b8cc
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      APP_PIN: 3fc9f947bd3240fdb65daa719f37625e3ac6c7df
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/vb-cs20-21-http/result" "$RUNNER_TEMP/isolated-tmp" "$RUNNER_TEMP/isolated-llm"
+          printf 'ORCHESTRATOR_PATHS_LLM_ROOT=%s\n' "$RUNNER_TEMP/isolated-llm" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$RUNNER_TEMP/vb-cs20-21-http/absent/cpu" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$RUNNER_TEMP/vb-cs20-21-http/absent/llama-mtmd-cli" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$RUNNER_TEMP/vb-cs20-21-http/absent/llama-server" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s\n' "$RUNNER_TEMP/isolated-tmp" >> "$GITHUB_ENV"
+          printf '{"state":"setup_pending","job":"vb-cs20-21-http-conformance","exit_code":null}\n' > "$RUNNER_TEMP/vb-cs20-21-http/result/status.json"
+          cp "$RUNNER_TEMP/vb-cs20-21-http/result/status.json" "$RUNNER_TEMP/vb-cs20-21-http/result/pre-status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout reviewed native conformance carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout frozen APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.SOURCE_PIN }}
+          path: source
+          persist-credentials: false
+      - name: Checkout actual published task and source-table context
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CONTEXT_PIN }}
+          path: context
+          persist-credentials: false
+      - name: Checkout APP dependency lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated Python environment
+        run: python -m venv "$RUNNER_TEMP/vb-cs20-21-http/venv"
+      - name: Install exact selected-test wheel closure
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/vb-cs20-21-http/venv/bin/python" -m pip install --only-binary=:all: --no-deps --require-hashes -r recipe/scripts/ci/vb_cs20_21_http_native_requirements.txt 2>&1 | tee "$RUNNER_TEMP/vb-cs20-21-http/result/pip-install.log"
+      - name: Record exact installed versions
+        if: always()
+        run: |
+          "$RUNNER_TEMP/vb-cs20-21-http/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-cs20-21-http/result/pip-freeze.txt" || true
+      - name: Capture original JUnit, source readset, receipt, and shared grade
+        run: |
+          "$RUNNER_TEMP/vb-cs20-21-http/venv/bin/python" recipe/scripts/ci/vb_cs20_21_http_native_capture.py
+      - name: Retain every capture outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vb-cs20-21-http-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb-cs20-21-http/result/
+          if-no-files-found: error
+          include-hidden-files: true
