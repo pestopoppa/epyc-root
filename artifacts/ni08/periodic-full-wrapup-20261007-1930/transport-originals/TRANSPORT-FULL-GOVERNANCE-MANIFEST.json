@@ -1,0 +1,216 @@
+{
+  "decode_compare_required": true,
+  "entries": [
+    {
+      "base64_bytes": 298019,
+      "base64_sha256": "f607ad1053dd3bc2044b890b434f6ab0a9aab03428be1bc39a96fe8e99fe0226",
+      "base64_transport_artifact": "transport-originals/full-governance/original-command-journal.jsonl.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 220611,
+      "original_sha256": "b0c37f916ffbc616cf73b80c676a0cff5ff60970f6d048177f34385daa3d96cd",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/original-command-journal.jsonl"
+    },
+    {
+      "base64_bytes": 29958,
+      "base64_sha256": "ab8dcae5f2b7c26118350a549f4121644050d0508356c1a47d2271ca768ef6d5",
+      "base64_transport_artifact": "transport-originals/full-governance/governance-receipt.json.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 22174,
+      "original_sha256": "9035e2f95f74cca9b69c32f86f6be7b44791d85ff7c9e125bed993319c83ae65",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/governance-receipt.json"
+    },
+    {
+      "base64_bytes": 1289,
+      "base64_sha256": "9d50888005ff7e0b44cbba3e921aae748a794e055cd11c06532c1bb399212196",
+      "base64_transport_artifact": "transport-originals/full-governance/process-record.json.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 953,
+      "original_sha256": "69c1b9e992c363680f1da77f5b49181fc32830d20e107ab61795fd2c52e3d282",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-ufh179-private-20261007/final-source-freeze-prep/FULL179-governance-run.process.json"
+    },
+    {
+      "base64_bytes": 288,
+      "base64_sha256": "18486055788f261368653d24ff290fbc31fe8fb973af2c6374e8b11eb108de65",
+      "base64_transport_artifact": "transport-originals/full-governance/stdout.bin.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 211,
+      "original_sha256": "aae55c3a6c73383c330caf79c45af123d240bc76bb700fa33e018f2ec86c2a95",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-ufh179-private-20261007/final-source-freeze-prep/FULL179-governance-run.stdout"
+    },
+    {
+      "base64_bytes": 0,
+      "base64_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "base64_transport_artifact": "transport-originals/full-governance/stderr.bin.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-ufh179-private-20261007/final-source-freeze-prep/FULL179-governance-run.stderr"
+    },
+    {
+      "base64_bytes": 27587,
+      "base64_sha256": "72249fddf6fe7d9024be50bcf4774fcf03eb014f1be6091a28f8f0ead93b55c2",
+      "base64_transport_artifact": "transport-originals/full-governance/both-handoff-scratch-plan.json.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 20419,
+      "original_sha256": "28a56eaea1f9def7a3b596991b1fdfca12ecb36c423d6a925c8d5875cdcf8b9b",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/both-handoff-scratch-plan.json"
+    },
+    {
+      "base64_bytes": 1415,
+      "base64_sha256": "0f50fe41d45f38cede01f2c2b25f8867e9b66a27b1f79a02974b36393f9196c0",
+      "base64_transport_artifact": "transport-originals/full-governance/scratch-KEEP-check.json.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 1046,
+      "original_sha256": "8645f367a5a8cdfa5c2433f40ec8ba417ec4180aa0cc0df610b072a682fd6716",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/scratch-KEEP-check.json"
+    },
+    {
+      "base64_bytes": 924,
+      "base64_sha256": "23aa97fdd3fd4006c74ad90764b3a679b33dac0888f14c6c166f7c25537c353b",
+      "base64_transport_artifact": "transport-originals/full-governance/index-regeneration.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 682,
+      "original_sha256": "5b9a237395e87a6cac8d8777891be21d696492ffbe9f0ee95490aabc5b27199b",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/index-regeneration.stdout"
+    },
+    {
+      "base64_bytes": 5775,
+      "base64_sha256": "07b6410a03dc0a2628c131a08984b839ae36892713d3d361ae0f5d6be18647ff",
+      "base64_transport_artifact": "transport-originals/full-governance/index-check.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 4274,
+      "original_sha256": "b0a2e5022d5c2b2c5a788ded074621153cd0f767b990ca365c646bdd98c943d9",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/index-check.stdout"
+    },
+    {
+      "base64_bytes": 0,
+      "base64_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "base64_transport_artifact": "transport-originals/full-governance/readme-check.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/readme-check.stdout"
+    },
+    {
+      "base64_bytes": 89033,
+      "base64_sha256": "d1454d0e4896aee7b48873a54bb0d5d7a9462f2eb8d166a3375d167a191e367e",
+      "base64_transport_artifact": "transport-originals/full-governance/cite-check.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 65905,
+      "original_sha256": "e0b7354b30e7ea2e1658bc4903e570f856dba03b67c7ef8ad9abb8b1fdc9ea88",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/cite-check.stdout"
+    },
+    {
+      "base64_bytes": 5103,
+      "base64_sha256": "1490c4b81e668b9185f7ed04790ecbb32252bcbdc0ef34677ce83a03f08e17fc",
+      "base64_transport_artifact": "transport-originals/full-governance/wiki-source-scan.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 3775,
+      "original_sha256": "c8c099c1aabd9614487701500ed9cc0cbe9de6b9c31bb03a2d4f2fd4cb195e71",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/wiki-source-scan.stdout"
+    },
+    {
+      "base64_bytes": 5103,
+      "base64_sha256": "1490c4b81e668b9185f7ed04790ecbb32252bcbdc0ef34677ce83a03f08e17fc",
+      "base64_transport_artifact": "transport-originals/full-governance/wiki-touch.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 3775,
+      "original_sha256": "c8c099c1aabd9614487701500ed9cc0cbe9de6b9c31bb03a2d4f2fd4cb195e71",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/wiki-touch.stdout"
+    },
+    {
+      "base64_bytes": 823,
+      "base64_sha256": "80a4891327789260931aca2ba54843e1c49e7db6164b5508baccdfba298b2794",
+      "base64_transport_artifact": "transport-originals/full-governance/wiki-manifest-check.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 609,
+      "original_sha256": "c3d4425874c23de27bdbe423a7bddfb378c022b572dbd4cce801eb78001b9a1a",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/wiki-manifest-check.stdout"
+    },
+    {
+      "base64_bytes": 39676,
+      "base64_sha256": "9cd588cd476fcb40c3c52af2fae9013cf7548368df689e4a91c89f7e77c5e3da",
+      "base64_transport_artifact": "transport-originals/full-governance/wiki-lint.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 29369,
+      "original_sha256": "d1bb86ee2c9fd3945ee807d1cd68a6f211ad282ea79a53ef53be8e532b2e1a18",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/wiki-lint.stdout"
+    },
+    {
+      "base64_bytes": 0,
+      "base64_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "base64_transport_artifact": "transport-originals/full-governance/wiki-lint.stderr.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/wiki-lint.stderr"
+    },
+    {
+      "base64_bytes": 0,
+      "base64_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "base64_transport_artifact": "transport-originals/full-governance/diff-check.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after177-private-20261007/periodic-full-after177-MAIN-governance-221rw4nh/diff-check.stdout"
+    },
+    {
+      "base64_bytes": 15822,
+      "base64_sha256": "a7b0fca9f1fe4911e71bb74c619fad3088d4f10fb43d9f57701f397e41886998",
+      "base64_transport_artifact": "transport-originals/full-governance/non-inference-backlog-scratch-plan.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 11712,
+      "original_sha256": "155f3b7464a743f7a0ab27e781a9d3e078332a5b9db00b17eb25a6914aceff70",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-ufh179-private-20261007/final-source-freeze-prep/non-inference-backlog-scratch-plan.stdout"
+    },
+    {
+      "base64_bytes": 6331,
+      "base64_sha256": "50f5111f5df2f5487b2091ce6435581bbce11f2fb0030c2f931a3bd4fedf0ecb",
+      "base64_transport_artifact": "transport-originals/full-governance/vidya-belief-substrate-program-scratch-plan.stdout.b64",
+      "encoding": "RFC4648 base64, 76-char lines, LF, terminal LF (empty payload remains empty)",
+      "include_in_artifact": true,
+      "kind": "original",
+      "original_bytes": 4685,
+      "original_sha256": "ebcb7355117b5fa4a1bfa6b84d3ec0fded82321334764f1edb660de158133f31",
+      "raw_transport_private": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/periodic-full-after-ufh179-private-20261007/final-source-freeze-prep/vidya-belief-substrate-program-scratch-plan.stdout"
+    }
+  ],
+  "entry_count": 19,
+  "kind": "FULL179 governance transport additions; private review candidate only"
+}
