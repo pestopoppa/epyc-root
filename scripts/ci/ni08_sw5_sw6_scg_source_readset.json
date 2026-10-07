@@ -6071,7 +6071,7 @@
     },
     {
       "path": "tests/unit/test_diag_env_override.py",
-      "sha256": "ede50c6241c0fc8112cab3c36fc5c2e2e79d1d7ca225fae2137313a47e217163"
+      "sha256": "cd257d441703386effb97d2bd6bc358f741b6954452044b4ffc42b9bd99d14cf"
     },
     {
       "path": "tests/unit/test_diagnostic_writer.py",
@@ -8783,7 +8783,7 @@
     }
   ],
   "app_repository": "pestopoppa/epyc-orchestrator",
-  "app_revision": "0a40117c9645218a6239d56e337b999440ac383d",
+  "app_revision": "90d16452dd874278bc02587780480ca71a5c8df6",
   "app_tracked_python_config_count": 2195,
   "app_uv_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
   "carrier_files": [

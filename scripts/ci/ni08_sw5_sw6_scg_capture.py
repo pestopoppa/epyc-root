@@ -19,7 +19,7 @@ import tomllib
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-APP_PIN = "0a40117c9645218a6239d56e337b999440ac383d"
+APP_PIN = "90d16452dd874278bc02587780480ca71a5c8df6"
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 ROOT_SOURCE_PIN = "83004c1137015a9fc8d0cf411e648432bc51a1c9"
 ROOT_TASKS = {
