@@ -1,0 +1,17 @@
+{
+  "previous_head": "53079bee9eabc4243171b4efaf0d77782bec07eb",
+  "main_before": "53079bee9eabc4243171b4efaf0d77782bec07eb",
+  "source": "90d16452dd874278bc02587780480ca71a5c8df6",
+  "commit": "3d93b7a0a253d4f123ce0c7470b795e01e6de072",
+  "paths": [
+    "docs/ARCHITECTURE.md",
+    "scripts/server/env_attestation.py",
+    "src/registry/registry_compiler.py",
+    "tests/unit/test_diag_env_override.py",
+    "tests/unit/test_env_attestation.py",
+    "tests/unit/test_registry_compiler.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

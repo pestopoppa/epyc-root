@@ -135,3 +135,32 @@ MAIN completed the existing literature-recording task with a [durable source rec
 ## Prospective reference and registry/env source enrollment
 
 MAIN reviewed and prospectively enrolled the actual governance-reference validator and combined compiler/environment compatibility controls before hosted execution. The reference scope covers the nine reviewed corrections plus the actual complete scan/target readset; it does not substitute for the full candidate gate. APP0a40117c source remains private pending native proof and integration. Updated existing domain next actions; no new handoff/index row or completion count. NI08 remains105, broader source/audit work continues.
+
+
+## Voice strict payload and typed choice — prospective source boundary
+
+MAIN reviewed APPbbf38c98 six-file proposal and complete callers/tests, MEDIUM additive route/controller/cascade contract. Explicit protected/verbatim turns bypass unsupported interlocutors; owner-pinned cancel cannot cancel a replacement turn. Prospective CS16-SOURCE/CS18-SOURCE and VB-CS16-18-CONFORMANCE/table enrolled before capture. Normal/default streaming retained; strict modes buffer before exact-text validation. No phrase classifier, audio fidelity, real service, or latency acceptance. Native verification/source integration remain next; NI08 tally remains105.
+
+
+## EVL30 stale relative-clock task
+
+MAIN accepted [published Git/AST source identity](../../artifacts/ni08/evl30-relative-clock-source-20261007/README.md), closed the existing stale checkbox and corrected EVL30 next action (the card still has a real red-baseline task). No host tests or whole-suite GREEN claim. NI08 now106.
+
+
+## Read-only trace MCP source — MAIN acceptance
+
+[Published source and original5/5](../../artifacts/ni08/utm-b1-read-only-mcp-source-20261007/README.md) close UTM-B1-SOURCE and its prospective native verifier. MAIN authenticated43 original members, matched26Git+5generated inputs, and preserved full source/result custody; APP53079bee normally merges source286 and disjoint peer work. Default MCP catalog and actual consumers remain open. NI08 now108 scoped completions (59existing+49children); whole-backlog exhaustion is not claimed.
+
+
+## Registry banner and override source — MAIN acceptance
+
+[Published source and original97/97](../../artifacts/ni08/registry-banner-override-source-20261007/README.md) close SW-6, SCG-ENVOVR-EXPIRED and their native verifier after MAIN3754-input/3764-member original custody review and normal APP3d93b7a0 integration. SW-5 broader editing-reference sweep stays open; prior physical-capacity collection NULL is preserved. NI08 now111 scoped completions (61existing+50children); remaining free work continues.
+
+
+## Operator-requested full checkpoint — 2026-10-07
+
+Completed since the previous published checkpoint: EVL30 source-clock task, UTM-B1 source/native companions (five cases) and SW-6/SCG/native companions (97 cases), with exact original custody and normal source integration. RT-4 documentary scope-out is now independently primary-source-reviewed and checked; these seven scoped closures bring NI08 to112 (62existing+50children). SW-5's broader edit-master references remain active source work. Three new unchecked source/verifier tasks prospectively enroll LR12 hook controls and EVL42 synthetic/report wiring before any new capture.
+
+Full wrap-up is an operator-invoked checkpoint, not a session stop or exhaustion claim. MAIN owns canonical docs, indices, wiki synthesis, checks and publication; workers continue private implementation/audits. Separate exact source changes, synthetic proof and real model/runtime acceptance. Pending operator packages retain their prior decisions and do not block independent work.
+
+The full checkpoint additionally closes NI08-WIKI-WARNING, one diagnostic-only CLI fix. Since ROOT3178, eight checked task boundaries (four existing+four scoped companions) are recorded, with three new prospective unchecked tasks. Current NI08 cumulative scoped tally113=62existing+51children. No pruning candidate passed the generated conservative screen; no handoff or index row is removed. All original custody and ongoing private source/recipe branches remain retained for their declared continuing purposes.

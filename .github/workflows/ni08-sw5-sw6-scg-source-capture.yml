@@ -1,0 +1,93 @@
+name: NI08 SW5/SW6 and SCG synthetic source controls
+
+on:
+  push:
+    branches: [codex/ni08-scg-sw-source-capture-20261007]
+
+permissions:
+  contents: read
+
+jobs:
+  sw5-sw6-scg-synthetic-controls:
+    name: sw5-sw6-scg-synthetic-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RECIPE_PIN: ${{ github.sha }}
+      APP_PIN: 90d16452dd874278bc02587780480ca71a5c8df6
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      ROOT_SOURCE_PIN: 83004c1137015a9fc8d0cf411e648432bc51a1c9
+      NI08_SW_SCG_RUNNER_CONTEXT: ubuntu-24.04
+      NI08_SW_SCG_EXECUTION_CONTEXT: offline-synthetic-registry-and-environment-attestation
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTEST_ADDOPTS: ''
+      PYTEST_PLUGINS: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+      ORCHESTRATOR_LOG_DIR: /dev/null
+      ORCHESTRATOR_SERVING_CALLS_LOG: 'off'
+      ORCHESTRATOR_COHERENCE_JUDGE_LOG: 'off'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/sw5-sw6-scg/result"
+          printf '{"state":"setup_pending","job":"sw5-sw6-scg-synthetic-controls","exit_code":null}\n' > "$RUNNER_TEMP/sw5-sw6-scg/status.json"
+          mkdir -p "$RUNNER_TEMP/sw5-sw6-scg/absent-binaries"
+          for pair in \
+            'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN:llama-cpp-bin' \
+            'ORCHESTRATOR_PATHS_LLAMA_MTMD:llama-mtmd-cli' \
+            'ORCHESTRATOR_PATHS_LLAMA_SERVER:llama-server'; do
+            key=${pair%%:*}
+            leaf=${pair#*:}
+            path="$RUNNER_TEMP/sw5-sw6-scg/absent-binaries/$leaf"
+            test ! -e "$path" && test ! -L "$path"
+            printf '%s=%s\n' "$key" "$path" >> "$GITHUB_ENV"
+          done
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout immutable native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact ROOT task text
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_PIN }}
+          path: root-source
+          persist-credentials: false
+      - name: Checkout reviewed APP proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact APP uv.lock pytest import closure
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps --only-binary=:all: --require-hashes -r recipe/scripts/ci/ni08_sw5_sw6_scg_test_requirements.txt 2>&1 | tee "$RUNNER_TEMP/sw5-sw6-scg/result/dependency-install.log"
+      - name: Run collection-guarded controls and capture native receipt
+        run: python recipe/scripts/ci/ni08_sw5_sw6_scg_capture.py
+      - name: Retain native receipt, original JUnit, readset, and status on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sw5-sw6-scg-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/sw5-sw6-scg/result/
+            ${{ runner.temp }}/sw5-sw6-scg/status.json
+            ${{ runner.temp }}/sw5-sw6-scg/shared-grade.json
+          if-no-files-found: error

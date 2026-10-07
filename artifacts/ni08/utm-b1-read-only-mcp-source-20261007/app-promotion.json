@@ -1,0 +1,14 @@
+{
+  "previous_head": "adfe61e93e17134948cd2360c20b1679808d10ec",
+  "main_before": "2b0a727e490b1e4a01f1d2d720dcc7d0349d630e",
+  "source": "286bf88520728bdd54d9dc21d527b7436a51533f",
+  "commit": "53079bee9eabc4243171b4efaf0d77782bec07eb",
+  "paths": [
+    "src/mcp_server.py",
+    "src/trace/mcp_tools.py",
+    "tests/unit/test_trace_mcp_tools.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

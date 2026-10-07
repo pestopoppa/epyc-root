@@ -2,7 +2,48 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-09-25 (OAB-9 paired context placement result); 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-25 (OAB-9 paired context placement result); 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+
+## Latest source review — 2026-10-07
+
+## Source synthesis — context identity and the evidence for compression
+
+Context preparation now distinguishes selecting material from preserving the identity of the selected material. DCP refuses changed bound readable file content before FULL, SLICES or CODEMAP rendering returns a seed; its advisory caller may fall back. The separate hit-span policy candidate prevents nonempty ColGREP ranges from silently becoming signature-only context, retaining a mode ceiling or explicitly excluding missing evidence. Neither establishes an absolute rendered-prompt budget, AST-complete coverage, live discovery quality or feature adoption. DCP remains default-off pending its owning quality and latency gates.
+
+The fresh privacy-bounded usage audit separates cache-read, cache-creation and uncached input under an all-input-components denominator. Its explicitly bounded stable/conservative cohorts supersede using historical transcript figures as if they described the current cohort. Those aggregates still cannot identify coordination purpose or a completed-task quality/time trajectory under a fixed judge. Purpose needs native write-time labels, not later transcript classification; aggregate token intensity is not a billing or coordination-share result.
+
+The HarnessFactory survey contributes a design catalogue with four common memory/planning/action/tool-policy interfaces. Its eleven shipped implementations differ in memory selection, folding, summarization, scheduling and workspace handling despite their common signatures; ordinary tool exposure is broadly an all-tools baseline. This is source structure, without execution, copied code or local efficacy. The reviewed JIT code's license scope remains distinct from benchmark data and the original AgentFold/ReSum repositories, discussed as intake-155#record and intake-157#record.
+
+Historical rationale needs two corrections. The RLM reproduction's large latency ratio compares Base with depth two; it is not the marginal depth-one-to-depth-two cost, and the source does not isolate RoPE as its cause or establish uniform depth-two accuracy degradation. Likewise, upstream BEAM's published evaluator omits the probing question from its judge prompt and the reviewed 100K abstention rubrics do not test multiple criteria. Preserve these source limitations alongside the mandatory masking/truncation anchor; neither external result can silently become a local compaction warrant.
+
+### Source References
+
+- [DCP handoff](../handoffs/active/delegation-context-preassembly.md) — render identity, hit spans and usage limits.
+- [Progressive folding](../handoffs/active/context-folding-progressive.md) — BEAM caveat and source survey.
+- [HarnessFactory comparison](../docs/reference/harnessfactory-source-comparison-20261006.md) — shared interfaces and structural contrasts.
+- [Completed folding ledger](../handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md) and [meta-harness ledger](../handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md) — corrected historical attribution and rationale.
+
+### Later source acceptance and experimental invalidation
+
+The [October 7 continuation](../docs/reference/ni08-non-inference-continuation.md) now records published conversation transcript/summary storage and prospective BEAM ingest provenance, superseding their earlier proposal state. The synthetic controls establish storage and identity contracts; consumers, voice/model timing, semantic summary quality and real retrieval quality remain separate. BEAM's prospective counts, ranges and granularity do not re-author a historical run.
+
+The later [workspace-ec record](../progress/2026-10/2026-10-07-workspace-ec.md) invalidates pre-fix above-native hybrid Jet-Long results: the experimental hybrid input class did not initialize its Jet-Long inputs or block inappropriate reuse. A corrected-build prefix/checkpoint save-restore observation supersedes the earlier blanket statement that hybrid prefix reuse had never been observed, within that record's exact tested conditions. GPU windows were not completed. These are source-reported experimental boundaries, not production deployment or a new comparative measurement adopted by this synthesis.
+
+### Incremental clarification — 2026-10-07: preserve selected evidence through packing and rendering
+
+DCP now verifies a bound file-body hash again before rendering FULL, SLICES or CODEMAP_ONLY; changed readable content refuses the bundle and the advisory caller falls back to base context. Unbound manual candidates remain compatible. Ranged ColGREP hits also retain their FULL/SLICES ceiling instead of downgrading to CODEMAP_ONLY; if no allowed mode fits, they are excluded with a missing-evidence reason. These are source/body and packing-policy checks, not AST-complete context or an absolute serialized budget: headers remain outside planning cost, and DCP-12/ON-versus-current quality gates remain separate. ([Render identity](../docs/reference/dcp-render-content-identity-contract.md), [hit-span preparation](../docs/reference/dcp-hit-span-policy-preparation.md))
+
+## Source References
+
+- [DCP handoff](../handoffs/active/delegation-context-preassembly.md)
+- [Progressive folding](../handoffs/active/context-folding-progressive.md)
+- [HarnessFactory comparison](../docs/reference/harnessfactory-source-comparison-20261006.md)
+- [Completed folding ledger](../handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md)
+- [meta-harness ledger](../handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md)
+- [October 7 continuation](../docs/reference/ni08-non-inference-continuation.md)
+- [workspace-ec record](../progress/2026-10/2026-10-07-workspace-ec.md)
+- [Render identity](../docs/reference/dcp-render-content-identity-contract.md)
+- [hit-span preparation](../docs/reference/dcp-hit-span-policy-preparation.md)
 
 ## Compiled Update — 2026-09-25: moving planner context to files raised total work on the 27B seat
 
@@ -836,7 +877,7 @@ Five papers occupying distinct cells in a (training-required, representation-typ
 
 **@jun_song (Super-Tune) X-post** (intake-542) — Korean practitioner direction-setting signal: after testing most viral X "speed tricks", only SFT-duplicate-suppression + Adaptive Thinking verified as quality-preserving at 100k+ context. @ZenMagnets reply: spec-dec hurts high-concurrency throughput. Both signals partially corroborated by academic papers (CGR + ECHO) but with caveats: bimodal brittleness for adaptive thinking; scheduler-level fixes recover spec-dec at concurrency.
 
-**Sources**: [intake-545](https://arxiv.org/abs/2604.22709) Abstract CoT · [intake-559](https://arxiv.org/abs/2412.06769) Coconut · [intake-560](https://arxiv.org/abs/2502.21074) CODI · [intake-561](https://arxiv.org/abs/2502.03275) Token Assorted · [intake-562](https://arxiv.org/abs/2505.15778) Soft Thinking · [intake-542](https://x.com/i/status/2052103646712828119) jun_song · [intake-566](https://arxiv.org/abs/2509.07820) CGR · [intake-567](https://arxiv.org/abs/2604.09603) ECHO · [Latent-CoT deep-dive](../research/deep-dives/2026-05-19-latent-cot-cluster.md) · [Adaptive-thinking + spec-dec deep-dive](../research/deep-dives/2026-05-19-adaptive-thinking-specdec-cluster.md)
+**Sources**: 60 native document references (source review 2026-10-07)
 
 ## Context PRE-assembly: the *assemble* side, vs folding's *evict* side (Repo Prompt, 2026-05-25)
 

@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 105 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 113 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -711,3 +711,5 @@ Current selected queue: **35/35 completed** bounded slices, including NI06’s t
 MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8-event-duty-handover-20261006/README.md): reviewed full one-object registry candidate, exact selected-cron opt-in, current source hashes, identity-bound owner stop and rollback. LR-8 remains unchecked until actual handover and natural-cadence acceptance; 88/88 source fixtures do not authorize it. Choice B is recommended; the owning session must acquire current PID/cron custody at its boundary. No daemon, registry, cron, database or current inference was changed.
 
 - [ ] **DISK-ARCHIVE-FIRST — archive then remove the ARCHIVE-FIRST disk items.** Owner: workspace-ec. (filed 2026-10-07) `tmp/ds41-specdec-recipe` 4.4G and `copy-spec-eval-20261006` 1.8G (inventory `artifacts/ec-wrapup-20261007/ec-disk-inventory-20261007.md`). Done when recipe/evidence are in git or artifacts and the operator confirms deletion.
+
+- [x] **NI08-WIKI-WARNING — limit the linked-worktree mtime warning to explicit --since scans.** ✅ 2026-10-07 — MAIN reviewed the single CLI caller and diagnostic-only fix. Default incremental selection remains content-hash based; watermark behavior is unchanged. Actual default and explicit-date governance scans are checked during this operator-requested full checkpoint.

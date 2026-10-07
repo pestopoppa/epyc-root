@@ -142,7 +142,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `_reset_config_between_tests`, and a patched `get_config` lambda was still in place at `cache_clear()`. That caused
   9 teardown errors (`test_safe_pickle` ×2, `test_typed_decisions_tool_args_integration` ×7). The fixture now uses a
   private `MonkeyPatch.context()`.
-- [ ] **SCG-ENVOVR-EXPIRED — an expired embedder override of an UNDECLARED key is silent in env attestation.**
+- [x] **SCG-ENVOVR-EXPIRED — an expired embedder override of an UNDECLARED key is silent in env attestation.** ✅ 2026-10-07 — [MAIN original97/97 acceptance](../../artifacts/ni08/registry-banner-override-source-20261007/README.md).
   (filed 2026-10-03, workspace-ec, found building the diagnostic override, orch aa1d6894) In
   `scripts/server/env_attestation.py` (~:200-207) the loop over keys the embedder record overrides but the stack does
   not declare (e.g. `KMP_LIBRARY`) appends EXPECTED when the record covers the live value and does nothing otherwise.
@@ -356,3 +356,6 @@ After each waypoint:
 
 
 2026-10-07 MAIN source boundary: reviewed APP0a40117c missing undeclared-override branch reports expired/wrong-PID deviations with restore hints, preserving the original diagnostic coverage path. VB-SW-SCG-SOURCE-CONFORMANCE prospectively binds full compiler/environment/diagnostic/embedder modules before hosted capture. SCG-ENVOVR-EXPIRED remains unchecked pending source integration and original compatibility proof; no live /proc read or reload occurred.
+
+
+2026-10-07 MAIN acceptance: [normally published source and original97/97](../../artifacts/ni08/registry-banner-override-source-20261007/README.md) close SW-6, SCG-ENVOVR-EXPIRED and the prospective verifier. SW-5 keeps its wider active editing-reference documentation sweep open. Full source/result custody verified; original capacity collection NULL retained; no shared-host test, runtime reload or measurement warrant.
