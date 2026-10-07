@@ -30,51 +30,49 @@ ENV = {
     "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONHASHSEED": "0", "PYTHONUNBUFFERED": "1", "PYTEST_ADDOPTS": "",
     "PYTEST_PLUGINS": "", "ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS": "1",
-    "ORCHESTRATOR_MOCK_MODE": "1",
+    "ORCHESTRATOR_MOCK_MODE": "1", "PYTHONNOUSERSITE": "1",
 }
 
 
-def sha(path: Path) -> str:
-    h = hashlib.sha256()
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
-    fd = os.open(path, flags)
-    try:
-        before = os.fstat(fd)
-        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
-            raise RuntimeError(f"not a single-link regular file: {path}")
-        with os.fdopen(fd, "rb", closefd=False) as stream:
-            for block in iter(lambda: stream.read(1 << 20), b""):
-                h.update(block)
-        after = os.fstat(fd)
-        if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
-                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns):
-            raise RuntimeError(f"changed while hashing: {path}")
-        named = os.stat(path, follow_symlinks=False)
-        if (after.st_dev, after.st_ino) != (named.st_dev, named.st_ino):
-            raise RuntimeError(f"named path changed while hashing: {path}")
-    finally:
-        os.close(fd)
-    return h.hexdigest()
-
+def file_identity(info):
+    return (info.st_dev,info.st_ino,info.st_mode,info.st_nlink,info.st_size,info.st_mtime_ns,info.st_ctime_ns)
 
 def regular_bytes(path: Path) -> bytes:
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
-    fd = os.open(path, flags)
+    path=Path(os.path.abspath(path));parts=path.parts
+    dfd=os.open(parts[0],os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+    fd=None
     try:
-        before = os.fstat(fd)
-        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
-            raise RuntimeError(f"not a single-link regular file: {path}")
-        with os.fdopen(fd, "rb", closefd=False) as stream:
-            data = stream.read()
-        after = os.fstat(fd)
-        named = os.stat(path, follow_symlinks=False)
-        if ((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns)
-                != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)
-                or (after.st_dev, after.st_ino) != (named.st_dev, named.st_ino)):
+        for part in parts[1:-1]:
+            child=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=dfd)
+            os.close(dfd);dfd=child
+        named_before=os.stat(parts[-1],dir_fd=dfd,follow_symlinks=False)
+        fd=os.open(parts[-1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=dfd)
+        before=os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink!=1 or file_identity(before)!=file_identity(named_before):
+            raise RuntimeError(f"not a stable single-link regular file: {path}")
+        chunks=[]
+        while True:
+            data=os.read(fd,1<<20)
+            if not data:break
+            chunks.append(data)
+        after=os.fstat(fd);named_after=os.stat(parts[-1],dir_fd=dfd,follow_symlinks=False)
+        if file_identity(before)!=file_identity(after) or file_identity(after)!=file_identity(named_after):
             raise RuntimeError(f"file changed while reading: {path}")
-        return data
+        return b"".join(chunks)
     finally:
-        os.close(fd)
+        if fd is not None:os.close(fd)
+        os.close(dfd)
+
+def sha(path: Path) -> str:
+    return hashlib.sha256(regular_bytes(path)).hexdigest()
+
+def durable_custody(path: Path, record: dict) -> None:
+    with path.open("xb") as handle:
+        handle.write((json.dumps(record,sort_keys=True,indent=2)+"\n").encode())
+        handle.flush();os.fsync(handle.fileno())
+    fd=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY)
+    try:os.fsync(fd)
+    finally:os.close(fd)
 
 
 def git(repo: Path, *args: str) -> str:
@@ -176,10 +174,14 @@ def main() -> int:
     status_path = result / "status.json"
     status = {"state": "preparing", "job": "vb-rtg23-w6e-carry-conformance", "exit_code": None,
               "fixture_execution_conformant": None, "promotion_or_release_acceptance": None}
+    read_paths=[];app_source=None;boundary="setup"
     try:
+        for key in ("LD_LIBRARY_PATH","LD_PRELOAD","PYTHONHOME","PYTHONPATH"):
+            os.environ.pop(key,None)
         os_release = platform.freedesktop_os_release() if hasattr(platform, "freedesktop_os_release") else {}
         if (platform.python_version() != PYTHON_PIN or sys.platform != "linux"
-                or platform.machine() != "x86_64" or sys.prefix == sys.base_prefix
+                or platform.machine() != "x86_64" or platform.python_implementation() != "CPython"
+                or Path(sys.prefix).resolve() != runner_temp / "vb-w6e-carry" / "venv" or sys.prefix == sys.base_prefix
                 or os_release.get("ID") != "ubuntu" or os_release.get("VERSION_ID") != "24.04"):
             raise RuntimeError("runner, OS, architecture, Python, or isolated venv differs from recipe")
         if (os.environ.get("GITHUB_EVENT_NAME") != "push"
@@ -192,7 +194,8 @@ def main() -> int:
         isolated = {
             "EPYC_ORCH_ROOT": str(workspace / "app_source"),
             "VIDYA_ORCH_WRITER_ROOT": str(workspace / "app_source"),
-            "TMPDIR": str(runner_temp / "isolated-tmp"),
+            "TMPDIR": str(result / "tmp"),
+            "HOME": str(result / "home"),
             "ORCHESTRATOR_PATHS_LLM_ROOT": str(runner_temp / "isolated-llm"),
             "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": str(runner_temp / "vb-w6e-carry" / "absent" / "cpu"),
             "ORCHESTRATOR_PATHS_LLAMA_MTMD": str(runner_temp / "vb-w6e-carry" / "absent" / "llama-mtmd-cli"),
@@ -219,8 +222,8 @@ def main() -> int:
                                  (app_lock, APP_LOCK_PIN, "APP lock"),
                                  (recipe, recipe_pin, "recipe")):
             verify_repo(repo, pin, label)
-        if git(recipe, "rev-parse", "HEAD^") != ROOT_SOURCE_PIN:
-            raise RuntimeError("recipe must be the exact child commit of its separately pinned ROOT source")
+        for ancestor in (ROOT_SOURCE_PIN, "91882528d942f8d35965a139cf8b78c6e37d7442"):
+            git(recipe, "merge-base", "--is-ancestor", ancestor, "HEAD")
         cases_path, req_path = tracked(recipe, CASES), tracked(recipe, REQUIREMENTS)
         cases = json.loads(cases_path.read_text(encoding="utf-8"))
         if (cases.get("schema") != "epyc.vb.rtg23.w6e_carry.selected_cases.v1"
@@ -375,6 +378,8 @@ def main() -> int:
                                     "app_lock": APP_LOCK_PIN, "recipe": recipe_pin})
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         result_before_capture = snapshot(result, {"status.json"})
+        boundary="capture"
+        durable_custody(result/"pre-capture-custody.json", {"source_readset_before":readset_before,"source_default_trace_db_before":source_trace_state,"full_typed_result_tree_before_capture":result_before_capture})
         record = api.capture_fixture_execution(
             argv=argv, cwd=root_source, junit=junit, output=result / "native",
             repositories={"root_source": root_source, "app_source": app_source,
@@ -424,6 +429,9 @@ def main() -> int:
             raise RuntimeError("real-writer custody case identities or row totals are invalid")
         custody = []
         custody_error = None
+        boundary="journal_and_outer_grade"
+        durable_custody(result/"pre-grade-custody.json", {"source_readset_before":readset_before,"source_readset_after_capture_before_grade":source_readset_after_capture,"source_default_trace_db_before":source_trace_state,"source_default_trace_db_after_capture_before_grade":source_trace_after_capture,"full_typed_result_tree_after_capture_before_grade":after_capture_before_shared_grade,"original_native_record":record})
+        original_pregrade_tree=snapshot(result,{"status.json"})
         grade_rows = []
         marker_paths = sorted(pytest_tmp.rglob(".vidya-real-writer-custody.json"))
         try:
@@ -506,6 +514,14 @@ def main() -> int:
         except Exception as exc:
             outer_grade_error = f"{type(exc).__name__}: {exc}"
 
+        if custody_error is not None or outer_grade_error is not None:
+            durable_custody(result/"grade-error-custody.json", {
+                "journal_grade_error":custody_error,"outer_grade_error":outer_grade_error,
+                "source_readset_after_grade_error":{str(path):sha(path) for path in dict.fromkeys(read_paths)},
+                "source_default_trace_db_after_grade_error":optional_state(app_source,"data/trace/events.sqlite"),
+                "full_typed_result_tree_after_grade_error":snapshot(result,{"status.json"}),
+                "original_native_record":record})
+
         (result / "journal-source-grades.json").write_text(json.dumps({
             "schema": "epyc.vb.rtg23.w6e_carry.original_writer_rows.v1",
             "custody_markers": custody, "rows": grade_rows if custody_error is None else [],
@@ -525,6 +541,8 @@ def main() -> int:
         if source_trace_after_capture != source_trace_after_grade or source_readset_after_capture != source_readset_after_grade:
             raise RuntimeError("source or APP default trace DB changed during outer shared grade")
         after_grade = snapshot(result, {"status.json"})
+        if any(after_grade.get(path)!=value for path,value in original_pregrade_tree.items()):
+            raise RuntimeError("original result files or topology changed during grades")
         inventory = {"schema": "epyc.vb.rtg23.w6e_carry.run_root_inventory.v2",
                      "before_capture": result_before_capture,
                      "after_capture_before_shared_grade": after_capture_before_shared_grade,
@@ -541,7 +559,8 @@ def main() -> int:
                      "promotion_or_release_acceptance": None}
         (result / "run-root-inventory.json").write_text(json.dumps(inventory, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         passed = (native_ok and exact_cases and custody_error is None and outer_grade_error is None
-                  and outer_grade is not None and outer_grade.get("value") is True)
+                  and outer_grade is not None and outer_grade.get("value") is True
+                  and outer_grade.get("grade",[])[:2] == ["Judged","Located"])
         status.update(state="passed" if passed else "native_outcome_retained",
                       exit_code=0 if passed else 1,
                       fixture_execution_conformant=record.get("fixture_execution_conformant"),
@@ -553,6 +572,17 @@ def main() -> int:
                       original_outcome_preserved=True, promotion_or_release_acceptance=None)
         return 0 if passed else 1
     except Exception as exc:
+        error_record={"boundary":boundary,"error":f"{type(exc).__name__}: {exc}","source_snapshots":{},"snapshot_errors":{}}
+        for source in dict.fromkeys(read_paths):
+            try:error_record["source_snapshots"][str(source)]=sha(source)
+            except Exception as snapshot_error:error_record["snapshot_errors"][str(source)]=f"{type(snapshot_error).__name__}: {snapshot_error}"
+        try:error_record["full_typed_result_tree_after_exception"]=snapshot(result,{"status.json"})
+        except Exception as snapshot_error:error_record["result_snapshot_error"]=f"{type(snapshot_error).__name__}: {snapshot_error}"
+        if app_source is not None:
+            try:error_record["source_default_trace_db_after_exception"]=optional_state(app_source,"data/trace/events.sqlite")
+            except Exception as snapshot_error:error_record["default_db_snapshot_error"]=f"{type(snapshot_error).__name__}: {snapshot_error}"
+        try:durable_custody(result/"error-custody.json",error_record)
+        except Exception as custody_error:status["custody_error"]=f"{type(custody_error).__name__}: {custody_error}"
         status.update(state="capture_failed", exit_code=1, error=f"{type(exc).__name__}: {exc}")
         return 1
     finally:

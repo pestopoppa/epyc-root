@@ -19,6 +19,7 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
+      PYTHONNOUSERSITE: '1'
       PYTEST_ADDOPTS: ''
       PYTEST_PLUGINS: ''
       ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS: '1'
@@ -27,12 +28,13 @@ jobs:
       - name: Initialize isolated paths and outcome artifact
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/vb-w6e-carry/result" "$RUNNER_TEMP/isolated-tmp" "$RUNNER_TEMP/isolated-llm"
+          mkdir -p "$RUNNER_TEMP/vb-w6e-carry/result" "$RUNNER_TEMP/vb-w6e-carry/result/tmp" "$RUNNER_TEMP/isolated-llm" "$RUNNER_TEMP/vb-w6e-carry/result/home"
           printf 'ORCHESTRATOR_PATHS_LLM_ROOT=%s\n' "$RUNNER_TEMP/isolated-llm" >> "$GITHUB_ENV"
           printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$RUNNER_TEMP/vb-w6e-carry/absent/cpu" >> "$GITHUB_ENV"
           printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$RUNNER_TEMP/vb-w6e-carry/absent/llama-mtmd-cli" >> "$GITHUB_ENV"
           printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$RUNNER_TEMP/vb-w6e-carry/absent/llama-server" >> "$GITHUB_ENV"
-          printf 'TMPDIR=%s\n' "$RUNNER_TEMP/isolated-tmp" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s\n' "$RUNNER_TEMP/vb-w6e-carry/result/tmp" >> "$GITHUB_ENV"
+          printf 'HOME=%s\n' "$RUNNER_TEMP/vb-w6e-carry/result/home" >> "$GITHUB_ENV"
           printf 'EPYC_ORCH_ROOT=%s/app_source\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
           printf 'VIDYA_ORCH_WRITER_ROOT=%s/app_source\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
           printf 'VB_W6E_CARRY_RESULT=%s\n' "$RUNNER_TEMP/vb-w6e-carry/result" >> "$GITHUB_ENV"
@@ -44,6 +46,7 @@ jobs:
           repository: pestopoppa/epyc-root
           ref: ${{ github.sha }}
           path: recipe
+          fetch-depth: 0
           persist-credentials: false
       - name: Checkout private ROOT source commit with custody instrumentation
         uses: actions/checkout@v4
@@ -51,6 +54,7 @@ jobs:
           repository: pestopoppa/epyc-root
           ref: ${{ env.ROOT_SOURCE_PIN }}
           path: root_source
+          fetch-depth: 0
           persist-credentials: false
       - name: Checkout actual APP writer
         uses: actions/checkout@v4
@@ -107,7 +111,7 @@ jobs:
         run: |
           "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" -m pip freeze --all > "$RUNNER_TEMP/vb-w6e-carry/result/pip-freeze.txt" || true
       - name: Capture full ROOT reader module against the real APP writer
-        run: "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" recipe/scripts/ci/vb_rtg23_w6e_carry_native_capture.py
+        run: env -u LD_LIBRARY_PATH -u LD_PRELOAD -u PYTHONHOME -u PYTHONPATH "$RUNNER_TEMP/vb-w6e-carry/venv/bin/python" recipe/scripts/ci/vb_rtg23_w6e_carry_native_capture.py
       - name: Preserve pre-capture setup failure as ungraded NULL
         if: always()
         run: |
