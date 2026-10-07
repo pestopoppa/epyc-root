@@ -1,0 +1,329 @@
+{
+  "cases": [
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_single_range"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_multiple_ranges"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_single_cpu"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[empty]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[letters]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[trailing-comma]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[missing-end]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[descending]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[bad-member]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[multiple-separators]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[leading-space]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_parse_cpu_list_refuses_malformed[trailing-space]"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_format_cpu_list_folds_ranges"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_format_cpu_list_single_cpu"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_format_cpu_list_full_range"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_placement_overlaps_detects_intersection"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_placement_overlaps_refuses_malformed_placement"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_sibling_map_reads_symmetric_groups_from_injected_sysfs"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_sibling_map_rejects_missing_or_asymmetric_sysfs"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_sibling_map_rejects_malformed_sysfs"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_rejects_incomplete_candidate_topology"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_is_bench_process_matches_driver_names"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_is_bench_process_excludes_supervisors_naming_a_bench"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_detection_uses_executable_or_script_not_author_prompt"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_detect_running_cpu_bench_skips_probe_and_supervisors"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_no_bench_is_empty"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_unions_main_and_threads"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_unions_across_drivers"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_malformed_thread_list_is_unobservable"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_descending_range_is_unobservable"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_missing_status_is_unobservable"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_vanished_pid_is_unobservable"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_read_bench_claim_thread_churn_is_unobservable"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_empty_claim_proceeds_with_explicit_placement"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_empty_claim_proceeds_with_default_affinity"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_bench_claiming_0_95_refuses_placement_48_95"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_bench_claiming_0_95_refuses_smt_sibling_placement_96_191"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_bench_claiming_0_95_refuses_whole_host_placement"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_overlapping_placement_bypasses_with_force"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_unobservable_claim_refuses_explicit_placement"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_unobservable_claim_refuses_default_affinity"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_unobservable_claim_bypasses_with_force"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_malformed_declared_placement_refuses"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_malformed_declared_placement_bypasses_with_force"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_refuses_when_claim_covers_all_physical_cores"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_pins_off_partial_claim"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_refuses_when_bench_claims_every_host_core"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_refuses_when_host_set_unknown"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_pins_even_with_force"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_default_affinity_no_fallback_bypasses_with_force"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_enforce_placement_refusal_prints_incident_context_and_raises"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_enforce_placement_unobservable_prints_and_raises"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_enforce_placement_pins_default_affinity_off_physical_claim"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_enforce_placement_refuses_when_bench_claims_all_physical_cores"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_enforce_placement_refuses_when_host_set_unreadable"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_enforce_placement_proceeds_when_no_bench"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_host_core_set_reads_sys_online"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_host_core_set_unreadable_is_none"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_guarded_numa_prefix_passes_through_when_bench_free"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_guarded_numa_prefix_pins_default_affinity"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_guarded_numa_prefix_refusal_propagates"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_guarded_numa_prefix_forwards_force_to_enforce_placement"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_placement_from_prefix_shapes"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_main_returns_2_on_bench_placement_refusal"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_cmd_reload_forwards_allow_during_bench_as_bench_force"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim",
+      "name": "test_cmd_reload_defaults_bench_force_to_false"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_fake_proc_seam_yields_claimed_cores"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_no_bench_spawn_is_byte_identical"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_no_bench_spawn_unchanged_without_numactl"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_bench_claiming_partial_physical_range_pins_worker_smt_safe"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_bench_claiming_all_physical_cores_refuses_worker_spawn"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_bench_claiming_middle_range_pins_to_complement"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_bench_claiming_every_core_refuses_spawn"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_unobservable_claim_refuses_spawn"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_allow_during_bench_env_bypasses_refusal_and_logs_loudly"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_allow_knob_set_without_bench_stays_silent"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_llamacppbackend_cmd_pinned_off_bench_claim"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_llamacppbackend_cmd_quiet_path_byte_identical"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_llamacppbackend_cmd_refuses_unobservable_claim"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_lightonocr_spawn_pinned_off_bench_claim"
+    },
+    {
+      "classname": "tests.unit.test_bench_core_claim_api_layer",
+      "name": "test_lightonocr_spawn_quiet_path_unchanged"
+    }
+  ],
+  "schema": "epyc.ssbench.expected_cases/v1"
+}

@@ -1,0 +1,58 @@
+name: SS-BENCH-GATE physical-core source controls
+on:
+  push:
+    branches: [codex/ni08-ss-smt-native-proposal-20261007]
+permissions:
+  contents: read
+jobs:
+  ssbench-smt-source-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      APP_PIN: 3e34eaeca079c440f31b2f26710fd09790544cc9
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+    steps:
+      - name: Initialize retained status before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ssbench/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ssbench/result/status.json"
+      - name: Checkout exact ROOT verifier and recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          persist-credentials: false
+      - name: Checkout reviewed APP physical-core proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 3e34eaeca079c440f31b2f26710fd09790544cc9
+          path: app
+          persist-credentials: false
+      - name: Set up accepted CPython patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated capture environment
+        run: python -m venv "$RUNNER_TEMP/ssbench/venv"
+      - name: Capture exact source-only controls through the existing verifier
+        id: capture
+        run: |
+          set +e
+          "$RUNNER_TEMP/ssbench/venv/bin/python" root/scripts/ci/ssbench_native_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/ssbench/result/capture" > "$RUNNER_TEMP/ssbench/result/driver.log" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/ssbench/result/driver.log"
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/ssbench/result/status.json"
+          exit "$rc"
+      - name: Preserve status, original receipt, JUnit, and input snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssbench-smt-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ssbench/result/
+          if-no-files-found: error
+          retention-days: 90
