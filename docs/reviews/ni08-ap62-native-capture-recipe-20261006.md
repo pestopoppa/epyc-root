@@ -15,6 +15,14 @@ explicit exclusion) is bound alongside the exact ROOT carrier, shared adapter/gr
 workflow, case manifest, package-version manifest, requirements and generated source context.
 The readset includes the recursive tracked-module import graph for the selected test and its imported package initializers, plus all original route-scanner inputs; dynamic string imports remain a stated static-analysis limit. Dependencies are installed only from the hash-locked wheel closure recorded from APP `uv.lock`.
 
+The selected test imports the normal `src.api` package, whose module initialization constructs the
+app and reads three configured llama paths. The driver therefore sets those three path variables to
+distinct, initially absent locations under the fresh `RUNNER_TEMP` result directory before test
+collection, records them in `environment.json`, and requires them to remain absent after capture.
+These sentinels provide configuration values only: no production store, kernel binary, server
+startup, or API lifespan is supplied or invoked. The locked package/version manifest includes the
+FastAPI import closure (`fastapi`, `annotated-doc`, and `starlette`).
+
 The existing native fixture carrier must report the exact 14 identities with no failures, errors or
 skips. The retained receipt is projected through the existing `ci_conformance` adapter and
 `ClaimTuple.grade()` and must remain at its existing `Judged/Located` ceiling. Input SHA-256 maps are

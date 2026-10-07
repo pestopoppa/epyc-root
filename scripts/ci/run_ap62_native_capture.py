@@ -57,8 +57,17 @@ def _install(run_dir: Path) -> tuple[Path, Path, dict[str, str]]:
     actual = {name: importlib.metadata.version(name) for name in packages}
     if actual != packages:
         raise RuntimeError("installed package versions differ from the pinned lock")
+    api_path_overrides = {
+        "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": str(run_dir / "absent-kernel-paths" / "llama-cpp-bin"),
+        "ORCHESTRATOR_PATHS_LLAMA_MTMD": str(run_dir / "absent-kernel-paths" / "llama-mtmd-cli"),
+        "ORCHESTRATOR_PATHS_LLAMA_SERVER": str(run_dir / "absent-kernel-paths" / "llama-server"),
+    }
+    if any(Path(value).exists() for value in api_path_overrides.values()):
+        raise RuntimeError("API config placeholders unexpectedly resolve to filesystem paths")
+    os.environ.update(api_path_overrides)
     environment = {"python": sys.version, "python_version": platform.python_version(),
-                   "platform": platform.platform(), "packages": actual}
+                   "platform": platform.platform(), "packages": actual,
+                   "api_config_path_overrides": api_path_overrides}
     env = run_dir / "environment.json"
     _write_once(env, (json.dumps(environment, sort_keys=True, separators=(",", ":")) + "\n").encode())
     return log, env, actual
@@ -171,6 +180,13 @@ def main() -> int:
         read_paths=reads, selections=nodeids)
     exact = _exact(record, expected)
     before = _snapshot((output, junit, manifest, install_log, environment))
+    api_paths = json.loads(environment.read_bytes()).get("api_config_path_overrides", {})
+    if not isinstance(api_paths, dict) or set(api_paths) != {
+        "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN", "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+        "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+    }:
+        raise RuntimeError("environment receipt lacks the exact API config placeholder set")
+    placeholders_absent_after = all(not Path(value).exists() for value in api_paths.values())
     grades, grade_error = {}, ""
     if record.get("fixture_execution_conformant") is True and exact:
         try:
@@ -194,9 +210,11 @@ def main() -> int:
         "shared_verifier_grade": grades, "shared_verifier_error": grade_error,
         "input_hashes_before_sharedgrade": before, "input_hashes_after_sharedgrade": after,
         "sharedgrade_inputs_unchanged": before == after,
+        "api_config_placeholders_absent_after_capture": placeholders_absent_after,
         "scope": "synthetic source-only controls; no live API/server, inference, production concurrency rate, or deployment claim"}
     _write_once(run_dir / "validation.json", (json.dumps(validation,sort_keys=True,separators=(",",":"))+'\n').encode())
-    if record.get("fixture_execution_conformant") is not True or not exact or before != after or grade_error:
+    if (record.get("fixture_execution_conformant") is not True or not exact or before != after
+            or not placeholders_absent_after or grade_error):
         return 1
     return 0
 
