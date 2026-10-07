@@ -1,0 +1,361 @@
+{
+  "artifact_target": "artifacts/ni08/evl42-actual-pin-scan-source-acceptance-20261007/",
+  "files": {
+    "README.md": {
+      "bytes": 5747,
+      "mode": "600",
+      "sha256": "99088fb665a19fd6b15be7ee4a390c66e960932937b46327fc02b540562ac43d"
+    },
+    "bindings/MAIN-original-success-acceptance.json": {
+      "bytes": 1506,
+      "mode": "600",
+      "sha256": "7480bfc093c2e4fc6fd441927052e40ae8db017a79952d3a072e49fd523e3710"
+    },
+    "bindings/MAIN-product-publication-acceptance.json": {
+      "bytes": 976,
+      "mode": "600",
+      "sha256": "229d5715c58e5e08ee12debf2808d5ea1dbc479fc3e892fea95fcb859fc7ce56"
+    },
+    "bindings/MAIN-task-governance-K.json.b64": {
+      "bytes": 35165,
+      "mode": "600",
+      "sha256": "c6edc465ef497a23ab3cbc5fe0654b9757dd8b2837c84d402a6e10ed95a17365"
+    },
+    "bindings/MAIN-task-governance-acceptance.json": {
+      "bytes": 709,
+      "mode": "600",
+      "sha256": "0052a4cdf34eb12ed61dd2f846132f38b7f79e33e51132ef9d762bfd4848db98"
+    },
+    "bindings/canonical-checkbox-closure-proposal.md": {
+      "bytes": 2335,
+      "mode": "600",
+      "sha256": "4a049a91e890d39448b7f8afe0757d110a0b052fa9c3ea33566aecc975b8f8ae"
+    },
+    "bindings/handoff-checkbox-proposal.patch.b64": {
+      "bytes": 4669,
+      "mode": "600",
+      "sha256": "f1f81b8d7ca6d0b7fc066f8e8b7e2dc6708d9e6ea559ef15300a5b0fa9671c68"
+    },
+    "bindings/original-task-governance-journal.jsonl.b64": {
+      "bytes": 228409,
+      "mode": "600",
+      "sha256": "756b7a14d00ec005f01f49ce46d2bd8da35f726273c70eb6cfeb9f6afc0f33e3"
+    },
+    "bindings/original-task-governance-receipt.json": {
+      "bytes": 14949,
+      "mode": "600",
+      "sha256": "aab1f02b1e021e37177398e51ff4ce273de26191f5389ee6c79aad79dc14c4b2"
+    },
+    "bindings/private-commit-schema-refusal.json": {
+      "bytes": 1662,
+      "mode": "600",
+      "sha256": "6a2f8df7543f27fdbb38eb83237b5357a3a42aed92b9b4b375346a65cf652427"
+    },
+    "bindings/publisher-attempt-20261007-failure.json": {
+      "bytes": 2218,
+      "mode": "600",
+      "sha256": "543527c00c577ec7a8ec72bc2e7b660c3a3dc35e0710e803b54f65066552d416"
+    },
+    "bindings/versions-and-bindings.json": {
+      "bytes": 3051,
+      "mode": "600",
+      "sha256": "b8ce03f67b19a3e62db5946ca1e4de151b33313ca8a3e82c09dffd4e5567a0a3"
+    },
+    "evidence/actual-native-receipt.json": {
+      "bytes": 110888,
+      "mode": "600",
+      "sha256": "2ccc8cfa3f75ccbc38b3ab9fa6553f8e1d888c889012b0f84886b1e3a3b3ad73"
+    },
+    "evidence/actual-original-junit.xml": {
+      "bytes": 367,
+      "mode": "600",
+      "sha256": "e71c6cfe0685c46a0f6d08007dfa933253004c09eaf2fea8b95d3236c08d5087"
+    },
+    "evidence/actual-pin-report.json": {
+      "bytes": 83243,
+      "mode": "600",
+      "sha256": "2fd544e7885bb098cf35569b36d36c7f5b1a8a6721790d29c15bfcafcc368dd3"
+    },
+    "evidence/actual-scan-invocation.json": {
+      "bytes": 140193,
+      "mode": "600",
+      "sha256": "e653db39a8664a054b715aa9b8d6e2ce4e3f4e007595d8ba6ff23d1b10035e87"
+    },
+    "evidence/controls-native-receipt.json": {
+      "bytes": 129401,
+      "mode": "600",
+      "sha256": "8f0022c414015d986407641c697b4cb029d8f43e9cc813fa1ab073237085c60d"
+    },
+    "evidence/controls-original-junit.xml": {
+      "bytes": 6612,
+      "mode": "600",
+      "sha256": "a37fedd81255dbb8daf8da7fcea586b583ed834521797f747e87a3ba1bca3af6"
+    },
+    "evidence/native-projection-custody-v2.json": {
+      "bytes": 17471,
+      "mode": "600",
+      "sha256": "39873fdfd7f7641954c9d810d16971c40497b1b1afa0b02819b33ef8feecf625"
+    },
+    "raw-github-metadata/artifact-api-redirect.argv.json": {
+      "bytes": 562,
+      "mode": "600",
+      "sha256": "df3a72bfe4b9a7d937b8d58afa9404aa7be783017b8ef244db6d354037918849"
+    },
+    "raw-github-metadata/artifact-api-redirect.body.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/artifact-api-redirect.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/artifact-api-redirect.headers.bin.b64": {
+      "bytes": 2289,
+      "mode": "600",
+      "sha256": "f11f149ba948f773a4b8f281f9a01958fe7027a27af3d94825b61fd5d7a273a6"
+    },
+    "raw-github-metadata/artifact-api-redirect.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/artifact-api-redirect.stdout.bin": {
+      "bytes": 6,
+      "mode": "600",
+      "sha256": "5fc1cd06e4f727e3627dea045af707373327e4e980c4311f2112d00fecac04ee"
+    },
+    "raw-github-metadata/artifact-integrity-summary.json": {
+      "bytes": 19239,
+      "mode": "600",
+      "sha256": "2e6c9e055f41c9fa9a4dbdfe20b70888f5fb65a3078a234111823a89832ba6c5"
+    },
+    "raw-github-metadata/artifact-object.argv.json": {
+      "bytes": 103,
+      "mode": "600",
+      "sha256": "740d9c7159831a2f487d981008f110230b3518464a8ad3fb2ed0b52865b1b3cc"
+    },
+    "raw-github-metadata/artifact-object.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/artifact-object.response.bin.b64": {
+      "bytes": 2829,
+      "mode": "600",
+      "sha256": "d303b623ec62348e9851784737d39b2545ac4f2b52f2a9b0fa6d791f4f0fddcf"
+    },
+    "raw-github-metadata/artifact-object.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/artifact-zip.argv.json": {
+      "bytes": 606,
+      "mode": "600",
+      "sha256": "8b4f3c7721b9daa33b142e5491243ca0b8ea27857b2a27d53d31edb931e25ef9"
+    },
+    "raw-github-metadata/artifact-zip.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/artifact-zip.headers.bin.b64": {
+      "bytes": 1409,
+      "mode": "600",
+      "sha256": "de834403f1042830556f18b3cb44e3246520ff43bfdeeb6d9cf83c627c446125"
+    },
+    "raw-github-metadata/artifact-zip.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/artifact-zip.stdout.bin": {
+      "bytes": 13,
+      "mode": "600",
+      "sha256": "b323d342bc0f62e12df750d00096154a2368f7571068328ddafb53fbb68751ee"
+    },
+    "raw-github-metadata/artifacts-api.argv.json": {
+      "bytes": 130,
+      "mode": "600",
+      "sha256": "5ae3dbbaefab64d11c0e6a93697b8c5d28ea8e6ea51e9504e442904b9c7dd1db"
+    },
+    "raw-github-metadata/artifacts-api.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/artifacts-api.response.bin.b64": {
+      "bytes": 2873,
+      "mode": "600",
+      "sha256": "e135507b9fcdfdafbef22a07d17d0d69e6f18e9aadd684be8dd4a318283d5cbc"
+    },
+    "raw-github-metadata/artifacts-api.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/jobs-api.argv.json": {
+      "bytes": 125,
+      "mode": "600",
+      "sha256": "c768cb94a29080fd17dc9a991ec2e25c7756ebf2a31c23c79fcd0891731ff1be"
+    },
+    "raw-github-metadata/jobs-api.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/jobs-api.response.bin.b64": {
+      "bytes": 6105,
+      "mode": "600",
+      "sha256": "dd8767da4cd5d36d2ba30746d59800b87cbaf932156325299651880deca98237"
+    },
+    "raw-github-metadata/jobs-api.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/run-api.argv.json": {
+      "bytes": 98,
+      "mode": "600",
+      "sha256": "dcd9a4e062ba2273d89913e9395e2714deab0358f0bb766141994d3012daf449"
+    },
+    "raw-github-metadata/run-api.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/run-api.response.bin.b64": {
+      "bytes": 18493,
+      "mode": "600",
+      "sha256": "21779c57312032e4b9a5f0b67c15526cab23e9a902cf78535c48639714a99620"
+    },
+    "raw-github-metadata/run-api.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/run-list.argv.json": {
+      "bytes": 204,
+      "mode": "600",
+      "sha256": "d4bebb91bd09ac113b883ff0a5035f6f60f23834f99f95ed8e01adaec4728dec"
+    },
+    "raw-github-metadata/run-list.exit": {
+      "bytes": 2,
+      "mode": "600",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "raw-github-metadata/run-list.response.bin.b64": {
+      "bytes": 18541,
+      "mode": "600",
+      "sha256": "6718b3bc8840a77c3a22d40ffd2ab13db7ae136af58ebdb7939cb5157e54d8cf"
+    },
+    "raw-github-metadata/run-list.stderr.bin": {
+      "bytes": 0,
+      "mode": "600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw-github-metadata/run-selection.json": {
+      "bytes": 648,
+      "mode": "600",
+      "sha256": "d7daac763d33d33b9bd074045539b00b82f5f4eb305605310869e283901854c1"
+    },
+    "raw-inputs-base64-manifest.json": {
+      "bytes": 758299,
+      "mode": "600",
+      "sha256": "0863af2238d3ad6c6d798367a890c2733dc39fccded3064a6543b89e3636bc8f"
+    }
+  },
+  "original_private_package": "../evl42-actual-pin-scan-source-acceptance-20261007/",
+  "path_semantics": "raw-inputs-base64-manifest package_path/source_path values retain original private provenance paths; for the three converted responses, they are not public path promises; decode from the inline base64 or use the matching .b64 wrapper. Original whitespace-bearing raw payloads are retained privately and represented in the public package only by the lossless .b64 paths listed in whitespace_safe_rebindings.",
+  "publisher_failure_summary": {
+    "path": "bindings/publisher-attempt-20261007-failure.json",
+    "record_type": "derived summary; raw original journal and outer streams remain private",
+    "sha256": "543527c00c577ec7a8ec72bc2e7b660c3a3dc35e0710e803b54f65066552d416"
+  },
+  "raw_response_rebindings": [
+    {
+      "encoding": "base64 standard alphabet; one trailing LF; decoded bytes equal original",
+      "original_bytes": 13869,
+      "original_sha256": "8c5448635fbac71bc2a3cced2340cadeadddf2052e763a16d744f61f9ab0bc55",
+      "private_original_package_path": "raw-github-metadata/run-api.response.bin",
+      "public_package_path": "raw-github-metadata/run-api.response.bin.b64",
+      "wrapper_bytes": 18493,
+      "wrapper_sha256": "21779c57312032e4b9a5f0b67c15526cab23e9a902cf78535c48639714a99620"
+    },
+    {
+      "encoding": "base64 standard alphabet; one trailing LF; decoded bytes equal original",
+      "original_bytes": 13905,
+      "original_sha256": "aabab20ca8a35bcc049f66a34c7a20a588d678acf8833aa62da41b57a2d12601",
+      "private_original_package_path": "raw-github-metadata/run-list.response.bin",
+      "public_package_path": "raw-github-metadata/run-list.response.bin.b64",
+      "wrapper_bytes": 18541,
+      "wrapper_sha256": "6718b3bc8840a77c3a22d40ffd2ab13db7ae136af58ebdb7939cb5157e54d8cf"
+    },
+    {
+      "encoding": "base64 standard alphabet; one trailing LF; decoded bytes equal original",
+      "original_bytes": 4577,
+      "original_sha256": "2361388cb0dcee951fee3f604dbad852be1856afe671a6c50ad36bd9654e91f1",
+      "private_original_package_path": "raw-github-metadata/jobs-api.response.bin",
+      "public_package_path": "raw-github-metadata/jobs-api.response.bin.b64",
+      "wrapper_bytes": 6105,
+      "wrapper_sha256": "dd8767da4cd5d36d2ba30746d59800b87cbaf932156325299651880deca98237"
+    }
+  ],
+  "schema": "private.evl42_actual_pin_scan_source_acceptance_public_manifest.v3",
+  "source_manifest_sha256": "3cb61ac65cf180564e735625b40bfd32f9cfab2531967c6cd930f6969e71a9df",
+  "state": "derived public manifest candidate for lossless whitespace-safe transport correction; original v2 manifest retained unchanged privately",
+  "whitespace_safe_rebindings": [
+    {
+      "encoding": "RFC 4648 standard base64 with one trailing LF; decoded bytes are byte-identical",
+      "original_bytes": 3501,
+      "original_path": "bindings/handoff-checkbox-proposal.patch",
+      "original_sha256": "4e590e1f2f23cd2113a580849c413fe16a0b3d3336c01e28781a16acc3a5a869",
+      "private_original_package_path": "bindings/handoff-checkbox-proposal.patch",
+      "public_path": "bindings/handoff-checkbox-proposal.patch.b64",
+      "wrapper_bytes": 4669,
+      "wrapper_sha256": "f1f81b8d7ca6d0b7fc066f8e8b7e2dc6708d9e6ea559ef15300a5b0fa9671c68"
+    },
+    {
+      "encoding": "RFC 4648 standard base64 with one trailing LF; decoded bytes are byte-identical",
+      "original_bytes": 1715,
+      "original_path": "raw-github-metadata/artifact-api-redirect.headers.bin",
+      "original_sha256": "eea1f9867337aeecb964dc4d34109bd1c9abff73c813fcd4af9fe9e6aec583ac",
+      "private_original_package_path": "raw-github-metadata/artifact-api-redirect.headers.bin",
+      "public_path": "raw-github-metadata/artifact-api-redirect.headers.bin.b64",
+      "wrapper_bytes": 2289,
+      "wrapper_sha256": "f11f149ba948f773a4b8f281f9a01958fe7027a27af3d94825b61fd5d7a273a6"
+    },
+    {
+      "encoding": "RFC 4648 standard base64 with one trailing LF; decoded bytes are byte-identical",
+      "original_bytes": 2121,
+      "original_path": "raw-github-metadata/artifact-object.response.bin",
+      "original_sha256": "6f243c69ae3c0a4189c2064edb4224567fa0ca58a380aae57b1b74a5b9304ea4",
+      "private_original_package_path": "raw-github-metadata/artifact-object.response.bin",
+      "public_path": "raw-github-metadata/artifact-object.response.bin.b64",
+      "wrapper_bytes": 2829,
+      "wrapper_sha256": "d303b623ec62348e9851784737d39b2545ac4f2b52f2a9b0fa6d791f4f0fddcf"
+    },
+    {
+      "encoding": "RFC 4648 standard base64 with one trailing LF; decoded bytes are byte-identical",
+      "original_bytes": 1055,
+      "original_path": "raw-github-metadata/artifact-zip.headers.bin",
+      "original_sha256": "a2a194622f4f546071d4343e5cb61e72c4c265c32e1be561ef412731d60063c2",
+      "private_original_package_path": "raw-github-metadata/artifact-zip.headers.bin",
+      "public_path": "raw-github-metadata/artifact-zip.headers.bin.b64",
+      "wrapper_bytes": 1409,
+      "wrapper_sha256": "de834403f1042830556f18b3cb44e3246520ff43bfdeeb6d9cf83c627c446125"
+    },
+    {
+      "encoding": "RFC 4648 standard base64 with one trailing LF; decoded bytes are byte-identical",
+      "original_bytes": 2153,
+      "original_path": "raw-github-metadata/artifacts-api.response.bin",
+      "original_sha256": "e6c85d2f5fdaf3f88c428189734f1a83b2a21e06408a0aad97dba03596818512",
+      "private_original_package_path": "raw-github-metadata/artifacts-api.response.bin",
+      "public_path": "raw-github-metadata/artifacts-api.response.bin.b64",
+      "wrapper_bytes": 2873,
+      "wrapper_sha256": "e135507b9fcdfdafbef22a07d17d0d69e6f18e9aadd684be8dd4a318283d5cbc"
+    }
+  ]
+}

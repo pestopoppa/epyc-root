@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="3.080" timestamp="2026-10-07T20:07:48.974674+00:00" hostname="runnervmmprz5"><testcase classname="tests.ci.test_pin_report_fixture" name="test_actual_research_pin_scan_attachment" time="3.004" /></testsuite></testsuites>

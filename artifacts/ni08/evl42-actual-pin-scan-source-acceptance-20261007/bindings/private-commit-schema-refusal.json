@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "python3",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/product5-integration-proposal/product5_commit_proposal.py",
+    "--main-k",
+    "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/EVL42-MAIN-private5-product-commit-K.json",
+    "--approved-k-sha256",
+    "da15b7fc61fffffc0cb4712fcb6616b3a4bd0395cde53537364294e046a8ce5a",
+    "--agent",
+    "codex-ni-main"
+  ],
+  "output": "REFUSE: unexpected private input schema/state\nTraceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/product5-integration-proposal/product5_commit_proposal.py\", line 204, in <module>\n    try: main(ap.parse_args())\n         ~~~~^^^^^^^^^^^^^^^^\n  File \"/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/product5-integration-proposal/product5_commit_proposal.py\", line 48, in main\n    refuse('unexpected private input schema/state')\n    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-final-binding-private-20261007/product5-integration-proposal/product5_commit_proposal.py\", line 14, in refuse\n    def refuse(msg): raise RuntimeError('REFUSE: '+msg)\n                     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nRuntimeError: REFUSE: unexpected private input schema/state\n",
+  "return_code": 1,
+  "schema": "private.evl42.product5_commit_attempt_record.v1",
+  "stream_capture": "functions.exec_command returned a single combined output string; refusal and traceback are preserved exactly below"
+}
