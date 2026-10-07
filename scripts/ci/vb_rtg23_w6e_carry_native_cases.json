@@ -319,9 +319,10 @@
     "d882143900b323093460d8286cbf973d41985213",
     "419f4250b52d2a424e40da017992ede3c0251cdf",
     "7a5e8852cf57c9cc94c343e288fc437482b3a728",
-    "5a865fd0242bd911d668152c48af238a44f89581"
+    "5a865fd0242bd911d668152c48af238a44f89581",
+    "0e44c5496aaafb7045b4c6eeeca2441aaee225d8"
   ],
-  "root_source_commit": "5a865fd0242bd911d668152c48af238a44f89581",
+  "root_source_commit": "0e44c5496aaafb7045b4c6eeeca2441aaee225d8",
   "root_source_files": [
     {
       "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
@@ -384,11 +385,11 @@
       "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
     },
     {
-      "git_blob": "66a1db167559946a8b57505224e7576a9778d12a",
+      "git_blob": "0021d2aebe365eb28e247688e9338b441dc4feda",
       "git_mode": "100644",
       "path": "tests/vidya/test_autopilot_journal_adapter.py",
-      "sha256": "bef695936a453eaa4340761341b45468b54a6a77db19f86d3881ca4301d38999",
-      "size_bytes": 32732
+      "sha256": "f398c07348f1ae08c5417125a23e5e6076f31e10ada1d8fddef2d0c951fb3d7a",
+      "size_bytes": 34195
     }
   ],
   "schema": "epyc.vb.rtg23.w6e_carry.selected_cases.v1",
