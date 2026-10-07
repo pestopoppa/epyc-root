@@ -3903,6 +3903,14 @@ Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`
 - [ ] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON.
 - [ ] Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
 
+2026-10-07 Codex checkpoint: deterministic controls are prepared in orchestrator `56fabf52`
+(`codex/ak-fifo-controls-20261007`); real tickets/flocks remain active and barriers control only
+poll wakeups. Native focused checks and `make gates` are queued, so neither gate is closed.
+Research `9fca6a5d` separately reduces occupied-region attempts under CPU shared quiet to 0.25s,
+allowing the existing provider's quiet-free backoff. Acquired CPU tails retain their protection and
+v1 receipts. Native original-owner/backoff/control/stop/reopen tests are queued; no live client
+or FIFO default changed. Both current CPU placements still own q0–q3, so timing remains isolated.
+
 **Starvation evidence**: a region-lock build claim on cpu 0-3 waited 3872 s behind a live AK loop on 2026-10-05.
 
 - [ ] **AKU-RED-LOOP — triage the red research AutoKernel loop suites** (filed 2026-09-17; handed over by
@@ -3939,12 +3947,22 @@ Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`
     call, not a mechanical fix), plus 1 ordering flake in `test_unified_worker.py`. The full-suite
     rerun (`pytest autokernel/loop -q`, ~5000+ tests) was not completed this session.
   - [ ] Full-suite rerun of `autokernel/loop` on origin/main (post-`58c86506`) for a clean count.
-  - [ ] Owner call: update the 4 `test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners`
-    assertions to `"keep_candidate"`, or treat the R23-44 keep-gate change as a regression —
-    `run.py:5876`.
+  - [ ] Validate the existing CPU/GPU keep and pruning paths against original kernel-coverage
+    controls. Research `906bb7b5` repairs the shared fake binary's symbol fixture while retaining
+    the real coverage/source gate; symbol-loss controls require `keep_candidate`, no promotion
+    and no branch move. Focused consumer checks are queued; this is not an operator decision.
   - [ ] Triage clusters 2, 3, 5, 6 (3 and 5 flagged lane-affecting) plus the ~62-item long tail —
     `/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md`.
   - [ ] Give `serial_run`/`run.py` a pause or yield that lands at measurement granularity (one case,
     not one batch — a batch is ≈3.4h). 2026-10-07 03:03Z: a control-endpoint pause for an EC GPU
     window only lands at batch boundaries; `SIGTERM` did not stop the batch child within minutes and
     `SIGKILL` was needed (operator-authorized). The window was cancelled anyway, but the gap is real.
+  - 2026-10-07 Codex follow-up: cluster 2 is a real producer/consumer mismatch, rather than a
+    fixture-only repair. Research `62f1ac58` gives expanded raw source identity a separate v2 grammar
+    while preserving exact historical v1 and unchanged response payload v1. Independent Astra
+    source review PASS; old-parent live FF compatibility FAIL. Keep this writer out of the pinned
+    lane worktree until a coordinated fresh parent/worker epoch; OP80's separately authorized
+    next-batch FF must target its exact validated commit before v2 lands. Focused tests are queued.
+    Heartbeat source guards are repaired in `52d871f9` and queued. Campaign-service long-tail
+    tracing found another stale helper caller and a possible deployment package-path defect;
+    those are being fixed and checked without changing grading or historical evidence.

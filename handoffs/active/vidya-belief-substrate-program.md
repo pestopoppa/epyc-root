@@ -2459,6 +2459,10 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
 
 - [ ] **VB-AK-GPU-LOCAL-PHASES — enroll original `direct_held_intervals.v2` GPU/local release captures prospectively before consumption.** Bind selection, device/phase component artifact identities, exact decided ownership/exclusion proposition, original clock/acquire/release facts and v1/v2 provenance; project through existing ClaimTuple grading only. Never reconstruct missing ownership on read or infer CPU fraction from affinity, prediction or quiet. Capture starts only after independent harness review, targeted tests and owner-agreed live window.
 
+## VB-AK-CPU-HELD-SEGMENTS — original CPU yielded-resource segments (filed 2026-10-07)
+
+- [ ] **VB-AK-CPU-HELD-SEGMENTS — capture original native CPU per-generation close/release and reacquire/open components before prospective settlement.** Bind selection, native lock identities, original clock domain, actual physical fraction, generations and failed-owner refusals. Add a compatible versioned reader and completed-batch/new-watchdog epoch transition; preserve CPU v1 journals and never infer their missing held gaps from a side ledger on read. Project through existing ClaimTuple grading only; no new grading or policy amendment. Source audit confirms the v1 writer retains the first-acquire/final-release envelope and both serial settlement paths charge it unchanged; the CPU-window side ledger is not a discount input. No particular historical journal's overcharge is quantified or rewritten. This repair is separate from GPU local v2 and the bounded CPU quiet-wait fix.
+
 ## Non-inference campaign source wiring — 2026-10-05
 
 - [x] **VB-NI-DURABILITY — capture and project docs/handoff durability scan receipts before the first broad scan.**
