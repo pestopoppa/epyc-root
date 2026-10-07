@@ -167,15 +167,7 @@ failure caught in amber.
         Trial 1460 wrote 9 episodic rows and **0 trace events**. Emission now hooks
         `Journal.record()` — the one chokepoint every path crosses, including skips and the
         AUTOPILOT_KILLED placeholder — under a new `EventSource.AUTOPILOT_LIVE`. Fails open.
-  - [ ] M-11a2b — **`work`-payload capture still NOT wired** (measured 2026-07-28: **0 of 58,655** rows
-        carry `work`). The live write sites (`q_scorer.py:1194,1291,1402`) pass only
-        objective/metrics — nothing passes `answer`/`tool_calls`/`repl_steps`/`reasoning`, so the
-        contract's work-storage capability sits unused and future distillation stays
-        objective+outcome-only. Wiring capture is zero-inference but design-adjacent (what to
-        capture, size policy) — coordinate with
-        [repl-session-memory-maturity.md](repl-session-memory-maturity.md), which owns trajectory
-        richness. Until this lands, do not expect distilled skills to encode HOW a task was solved,
-        only WHICH routing outcomes succeeded.
+  - [x] M-11a2b — **bounded `work` capture is wired through the production write path.** ✅ 2026-10-07 (orchestrator `a4132e57`). MAIN verified six completion producers, the single redaction/bounds policy and routing/external append writers, plus the real progress-JSONL → QScorer → SQLite synthetic case in accepted115/115. Escalation carries failure metadata without task-solving work. [Exact source review and evidence](../../artifacts/ni08/m11-work-capture-source-20261007/README.md). The **2026-07-28 0of58,655** remains historical; this closure establishes wiring only, no current corpus prevalence, real-traffic accumulation, distillation usefulness or skill efficacy. M-11a re-distillation remains open.
 
         Historical context — the reseeded store holds 200-char
         objective stubs; rich trajectories arrive only from new live-traffic/autopilot writes, so

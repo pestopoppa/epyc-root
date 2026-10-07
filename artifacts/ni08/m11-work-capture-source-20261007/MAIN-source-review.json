@@ -1,0 +1,60 @@
+{
+  "review": "PASS",
+  "accepted_source": "a4132e57c96edb78088dedcfb7eb315497ef28db",
+  "published_app": "e7e4ffc45164af5a4c66c438ecb1e98120efcf6a",
+  "files": [
+    {
+      "path": "orchestration/repl_memory/memory_record.py",
+      "sha256": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
+      "bytes": 20938
+    },
+    {
+      "path": "orchestration/repl_memory/q_scorer.py",
+      "sha256": "c2ec3aff13c2b9bb70e4a3dbe54861ecfdb89ab73a32e036807dd525cdaab35c",
+      "bytes": 97722
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/telemetry.py",
+      "sha256": "87eb0d70067e9236d2d0f98e79e9f9cb32d515042cafaada0161c024cf8fec97",
+      "bytes": 2968
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/vision_stage.py",
+      "sha256": "c6ead2a58220c0b406b8cdeddf6492e79c9ab4ccc8ce80b64ee72aee287c5a90",
+      "bytes": 15091
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/delegation_stage.py",
+      "sha256": "a160da4bd9a5223be155975575f61cbf87d20d3aa1a0fe091f0619e9d76dde6e",
+      "bytes": 12554
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/stages.py",
+      "sha256": "a36e8249e72c54a928ef481ab67861f899c6d8963cbe84abc95d96849bc11fb8",
+      "bytes": 15322
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/direct_stage.py",
+      "sha256": "73cd4fec13e7ad336299f35f56e58deb72d609a00406e952d22f708232a2e74d",
+      "bytes": 10793
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/proactive_stage.py",
+      "sha256": "6e8094f49da410c18f62db588d76937403144a5070f03ddeaee3353082f8362c",
+      "bytes": 15388
+    },
+    {
+      "path": "src/api/routes/chat_pipeline/repl_executor.py",
+      "sha256": "650725866a7d69145243c2e8da07376ea39bb0053cfc3cfe12ccf71f7c8681f6",
+      "bytes": 46523
+    }
+  ],
+  "existing_original_review": "../ap60-instance-settings-source-20261007/MAIN-original-review.json",
+  "native_full_path_case": {
+    "classname": "tests.unit.test_episodic_work_payload.TestEndToEndThroughTheRealChannel",
+    "name": "test_work_survives_the_full_production_path",
+    "status": "passed"
+  },
+  "host_execution": false,
+  "live_population_count": null
+}

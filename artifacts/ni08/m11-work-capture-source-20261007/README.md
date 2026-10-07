@@ -1,0 +1,7 @@
+# M-11a2b source wiring closure
+
+The stale work-payload wiring task is implemented in existing accepted source. MAIN rechecked the shared bounded/redacted work policy, all six completion producers and all three QScorer append writers; their nine exact blobs still match APPa4132e57. Routing first-write and external first-write carry extracted answer/tool calls/REPL steps/reasoning through `build_memory_record` into SQLite context. Escalation stores failure-reason/tier metadata and has no task-solving work to carry. Existing-record Q updates do not rewrite old payloads.
+
+The [existing115/115 native receipt](../ap60-instance-settings-source-20261007/README.md) includes the passed real-channel `test_work_survives_the_full_production_path`: completion metadata → progress JSONL → ProgressReader → QScorer → SQLite. MAIN verified its original JUnit identity and source parity in [this source review](MAIN-source-review.json). No new run or retrospective tuple was created. Shared native carrier/grade unchanged.
+
+The 2026-07-28 0of58,655 finding stays a dated historical observation. Current population and real-traffic accumulation were not measured; re-distillation and skill efficacy remain open. Work text is bounded at32,000 characters plus a truthful truncation marker; lists retain the last200 items plus an elision sentinel and entries are bounded at4,000 characters plus markers. Existing credential redaction is default-on and fail-open; no new policy or privacy guarantee is asserted.

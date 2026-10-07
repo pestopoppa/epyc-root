@@ -1179,3 +1179,7 @@ The [UTM conformance contract](../docs/reference/utm-synthetic-conformance-contr
 ## QScorer construction settings
 
 Each QScorer now snapshots the existing write-enable and match-k environment keys at construction, so later fixture/configuration changes do not alter existing instances. Defaults and reward/score semantics remain unchanged. [AP-60 source and original115/115 hosted conformance](../artifacts/ni08/ap60-instance-settings-source-20261007/README.md); no live memory or quality outcome is claimed.
+
+## Work-payload capture wiring
+
+The existing shared policy and completion producers carry bounded/redacted work through progress JSONL into routing/external episodic first writes. [M-11a2b source closure and existing end-to-end native case](../artifacts/ni08/m11-work-capture-source-20261007/README.md). The July28 zero-payload count is historical; current corpus prevalence and the benefit of re-distilling real trajectories remain unmeasured.

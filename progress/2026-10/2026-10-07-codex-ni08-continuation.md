@@ -59,3 +59,7 @@ MAIN verified exact site Git blobs and both historical screenshot hashes, publis
 ## HS4 P6 shared exploration source — MAIN acceptance
 
 [Original11/11, all2,835 ZIP members, 2,822 inputs plus3 contexts and exact APP publication](../../artifacts/ni08/hs4-p6-exploration-source-20261007/README.md) close HS4-P6-SOURCE and its prospective VB companion. **80 scoped completions (51 existing flips +29 additions)**. Existing REPL admission fences and legacy behavior remain covered. Parent active-catalog/actor acceptance remains open; prior setup NULLs retained. Other source work and exact task eligibility audit continue.
+
+## M-11a2b wiring closure and prospective source enrollment
+
+[Existing actual write-path source and original real-channel case](../../artifacts/ni08/m11-work-capture-source-20261007/README.md) close one stale existing wiring task. **81 scoped completions (52 existing flips +29 additions)**. Historical0/58,655 is unchanged; no current population or skill-quality claim. W9 formatter verification, EXL3 teardown polling source/verification, and protected RTG52 assignment/target-selection source/verification are enrolled prospectively. Enrollment adds no completions; protected merge still requires exact D9 acknowledgement. Source work continues.
