@@ -1,55 +1,71 @@
-name: AUD10 control-flow proposal fixtures
+name: aud10 prospective native proposal fixtures
 on:
   push:
-    branches: [codex/m12f-candidate-fixtures-20261008]
+    branches: [codex/proposal-fixture-native-20261008]
 permissions:
   contents: read
 jobs:
-  fake-only-controls:
+  source-fixture-controls:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ROOT_ENROLLMENT_PIN: 84c441145cca9b088dfe7b9687e01b9e03156f75
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Initialize original capture directory
-        run: mkdir -p proposed/aud10/originals
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - name: Initialize original status envelope
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/proposal-native-aud10/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/proposal-native-aud10/status.json"
+      - name: Checkout exact recipe and copied candidate subjects
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout unchanged existing producer and shared reader
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout published prospective enrollment independently
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_ENROLLMENT_PIN }}
+          path: enrollment
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/vidya/adapters/README.md
+            handoffs/active/vidya-belief-substrate-program.md
+          sparse-checkout-cone-mode: false
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.13.15'
-      - name: Verify exact copied candidate source pins
-        working-directory: proposed/aud10
+      - name: Install original locked pytest closure
         run: |
-          set +e
-          python verify-source-pins.py > originals/pin-verifier.stdout 2> originals/pin-verifier.stderr
-          status=$?
-          printf '%s\n' "$status" > originals/pin-verifier.exit
-          exit "$status"
-      - name: Install exact six-package pytest closure
-        working-directory: proposed/aud10
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/proposal-native-aud10/venv"
+          "$RUNNER_TEMP/proposal-native-aud10/venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: -r recipe/scripts/ci/proposal_fixture_native/requirements.txt 2>&1 | tee "$RUNNER_TEMP/proposal-native-aud10/result/dependency-install.log"
+      - name: Execute whole copied modules through existing capture producer
         run: |
-          set +e
-          python -m pip install --require-hashes --only-binary=:all: --no-deps -r requirements.txt > originals/pip-install.stdout 2> originals/pip-install.stderr
-          status=$?
-          printf '%s\n' "$status" > originals/pip-install.exit
-          exit "$status"
-      - name: Record exact runner context and run fake-only controls
-        working-directory: proposed/aud10
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
-          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
-          AUD10_BASETEMP: ${{ runner.temp }}/aud10-pytest-basetemp
-        run: |
-          mkdir -p originals
-          python --version > originals/python-version.stdout 2> originals/python-version.stderr
-          python -m pytest --version > originals/pytest-version.stdout 2> originals/pytest-version.stderr
-          python -c 'import json,os; keys=("RUNNER_OS","RUNNER_ARCH","GITHUB_SHA","GITHUB_REF","GITHUB_WORKFLOW","PYTHONDONTWRITEBYTECODE","PYTEST_DISABLE_PLUGIN_AUTOLOAD"); print(json.dumps({k:os.environ.get(k) for k in keys},sort_keys=True))' > originals/environment.json
-          python -c 'import json,os; print(json.dumps(["python","-m","pytest","-p","no:cacheprovider","payload/scripts/hooks/test_check_git_clean_untracked.py","--basetemp",os.environ["AUD10_BASETEMP"],"--junitxml","originals/junit.xml"]))' > originals/argv.json
-          set +e
-          python -m pytest -p no:cacheprovider payload/scripts/hooks/test_check_git_clean_untracked.py --basetemp "$AUD10_BASETEMP" --junitxml originals/junit.xml > originals/stdout 2> originals/stderr
-          status=$?
-          printf '%s\n' "$status" > originals/exit
-          exit "$status"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+          set -euo pipefail
+          "$RUNNER_TEMP/proposal-native-aud10/venv/bin/python" -I recipe/scripts/ci/proposal_fixture_native/capture.py aud10
+      - name: Retain original result errors and source custody
         if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: aud10-control-flow-proposal-originals
-          path: proposed/aud10/originals/
-          if-no-files-found: warn
+          name: proposal-native-aud10-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/proposal-native-aud10/result/
+            ${{ runner.temp }}/proposal-native-aud10/source-readset.json
+            ${{ runner.temp }}/proposal-native-aud10/status.json
+          if-no-files-found: error
