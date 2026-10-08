@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T03:46:01Z",
+  "last_compile": "2026-10-08T05:21:40Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T03:46:01Z",
+  "scan_time": "2026-10-08T05:21:40Z",
   "schema_version": 1,
-  "source_set_hash": "01af92c09722ea48031980012085e70a8920dd550becafbadb222e4bbebc8746",
+  "source_set_hash": "d15f39430a25741a794e4a7edb9baa0a595e0878fe98cb2b5e3ab2e572e0318c",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9148f995508e26ed2f1a2fb36236e6f935a146a7534778e1a8f46728e9acef3c",
-      "modified": "2026-10-08T03:07:51Z",
+      "content_hash": "cecf2813a7c114643973da2a78f9ca38965931f8f8a8fd78856ab32ca1ba9d10",
+      "modified": "2026-10-08T04:58:24Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 154555,
+      "size": 156117,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1143,10 +1143,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "00927856ee79c9e1e71daf5b56bb83f1b1363a8dcde2ae8966802d36fc2c8fe4",
-      "modified": "2026-10-07T23:35:21Z",
+      "content_hash": "ff5b60b461a0447ceae9cee71d2aa18c40aca95293671b50f3fa577e7a8237bb",
+      "modified": "2026-10-08T04:09:00Z",
       "path": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
-      "size": 12534,
+      "size": 12525,
       "title": "Reviewer Control Plane \u2014 Escalation & Human-Gate Policy (H7, stub-grade)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "81f11c8dfd4b8f60e5248c24228c3a0796b17db042d779fe6723974c4d566232",
-      "modified": "2026-10-08T03:07:51Z",
+      "content_hash": "ca3184abdbd4a4d34a5d4ad41ac5d6c5c18232e91d6f10cb7815adc129fb3b87",
+      "modified": "2026-10-08T05:01:54Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 392988,
+      "size": 396066,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "8dbfbec8397db5aa582e50ab6674d869dba5d36772edce413c5fbf4bb4fc513e",
-      "modified": "2026-10-08T03:41:47Z",
+      "content_hash": "42ae24e8f16bf4dfaed1b2ac31e763190ae4db2cbaca3b00caff1f648c641adc",
+      "modified": "2026-10-08T04:58:24Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 11696,
+      "size": 15478,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10399,10 +10399,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "d4ceb6e3e6357b18ae385a2b4fca88057b0b9f5b1e7c923951288f38516610e5",
-      "modified": "2026-10-08T02:34:55Z",
+      "content_hash": "243031e49aca5170c72a71451fe682fdc2f631c69cdf0565d83dc3867347d358",
+      "modified": "2026-10-08T04:09:00Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 88255,
+      "size": 89138,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
