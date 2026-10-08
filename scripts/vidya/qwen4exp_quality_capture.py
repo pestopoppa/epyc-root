@@ -137,6 +137,9 @@ def monitor_maps(proc: subprocess.Popen[bytes], seen: dict[tuple, dict[str, Any]
     next_hash: dict[tuple, int] = {}
     while not stop.is_set() and proc.poll() is None:
         rows = maps_shared_objects(proc.pid)
+        # A snapshot begun while live may finish after the child exits.
+        if stop.is_set() or proc.poll() is not None:
+            break
         now = clock_ns()
         if rows is not None:
             # /proc/maps can contain many regions for one object. Count one sample for
@@ -170,6 +173,10 @@ def monitor_maps(proc: subprocess.Popen[bytes], seen: dict[tuple, dict[str, Any]
                                 os.minor(identity["device"]) != row["device_minor"]):
                             raise ValueError("mapped path device/inode differs at live sample")
                         observation = {"observed_at_utc": utc_now(), "identity": identity}
+                        # Completion, not start, bounds a successful live hash sample.
+                        # Discard a final in-flight hash after termination; prior samples remain.
+                        if stop.is_set() or proc.poll() is not None:
+                            return
                         if slot["live_first"] is None:
                             slot["live_first"] = observation
                         elif identity != slot["live_first"]["identity"]:
@@ -179,6 +186,8 @@ def monitor_maps(proc: subprocess.Popen[bytes], seen: dict[tuple, dict[str, Any]
                         slot["live_latest"] = observation
                         slot["live_hash_sample_count"] += 1
                     except (OSError, ValueError) as exc:
+                        if stop.is_set() or proc.poll() is not None:
+                            return
                         # Sticky: an incomplete observation cannot be erased by a later
                         # successful sample. Store one bounded diagnostic only.
                         if slot["live_identity_error"] is None:

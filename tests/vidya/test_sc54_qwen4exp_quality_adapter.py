@@ -139,6 +139,60 @@ class SC54ProjectionControls(unittest.TestCase):
         self.assertNotIn("live_identity_observations", slot)
         self.assertLess(len(json.dumps(slot)), 4096)
 
+        # A maps snapshot or hash may complete after the process exits. Neither is live evidence.
+        class RaceProcess:
+            pid = 123
+            dead = False
+            def poll(self): return 0 if self.dead else None
+        class RaceStop:
+            def is_set(self): return False
+            def wait(self, _seconds): raise AssertionError("terminated sample must exit")
+        for phase in ("maps", "hash"):
+            proc = RaceProcess()
+            def maps(_pid):
+                if phase == "maps": proc.dead = True
+                return [maprow]
+            def identity(_path):
+                proc.dead = True
+                return ident
+            writer.maps_shared_objects = maps
+            writer.file_identity = identity
+            race_seen = {}
+            writer.monitor_maps(proc, race_seen, RaceStop(), monotonic_ns=lambda: 0)
+            if phase == "maps":
+                self.assertEqual(race_seen, {})
+            else:
+                race_slot = next(iter(race_seen.values()))
+                self.assertEqual(race_slot["mapping_sample_count"], 1)
+                self.assertEqual(race_slot["live_hash_sample_count"], 0)
+                self.assertIsNone(race_slot["live_first"])
+                self.assertIsNone(race_slot["live_latest"])
+
+        # Preserve earlier successful hashes and sticky live errors when the final hash is interrupted.
+        for live_error in (False, True):
+            proc = RaceProcess()
+            hash_calls = [0]
+            class CountStop(RaceStop):
+                def wait(self, _seconds): pass
+            writer.maps_shared_objects = lambda _pid: [maprow]
+            def completing_identity(_path):
+                hash_calls[0] += 1
+                if live_error and hash_calls[0] == 2:
+                    raise OSError("synthetic live hash error")
+                if hash_calls[0] == 4:
+                    proc.dead = True
+                    raise OSError("synthetic interrupted final hash")
+                return ident
+            writer.file_identity = completing_identity
+            retained = {}
+            ticks = itertools.count(0, 1_000_000_001)
+            writer.monitor_maps(proc, retained, CountStop(), monotonic_ns=lambda: next(ticks))
+            saved = next(iter(retained.values()))
+            self.assertEqual(saved["live_hash_sample_count"], 2 if live_error else 3)
+            self.assertEqual(saved["live_first"]["identity"], ident)
+            self.assertEqual(saved["live_latest"]["identity"], ident)
+            self.assertEqual(saved["live_identity_error"], "OSError: synthetic live hash error" if live_error else None)
+
     def test_writer_latches_identity_change_for_reader_refusal(self):
         writer_path = ROOT / "scripts" / "vidya" / "qwen4exp_quality_capture.py"
         spec = importlib.util.spec_from_file_location("_sc54_writer_change_control", writer_path)

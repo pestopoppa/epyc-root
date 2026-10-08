@@ -550,9 +550,9 @@
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": "scripts/vidya/qwen4exp_quality_capture.py",
       "repo": "recipe",
-      "sha256": "914929344f1804be2efca379520868ffc02ab9bf872fe8254f55b42dd76410a3",
-      "size": 42168,
-      "source_state": "exact_source_commit"
+      "sha256": "99422b081ca30cc9e57f521ade018a3a912cc21ed20debd4828a63e0bdca9faf",
+      "size": 42704,
+      "source_state": "exact_live_window_race_correction_candidate"
     },
     {
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
@@ -814,9 +814,9 @@
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
       "repo": "recipe",
-      "sha256": "5a198a78eb77ae183a369021bcf750035b95f93aeb92da3f00e05f1446065328",
-      "size": 35944,
-      "source_state": "exact_corrective_candidate"
+      "sha256": "cc7ff5803b2046e39523cb9b3e402d90b8c743aade62dbfa60f6063655fa764f",
+      "size": 38590,
+      "source_state": "exact_live_window_race_correction_candidate"
     },
     {
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
