@@ -1,0 +1,338 @@
+[
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_actual_writer_registered_source_preserves_ungraded_facts"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_unknown_native_counters_decline_without_legacy_zero"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_observed_zero_call_count_is_not_adoption_outcome"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_force_failure_native_bounded_fallback_fact"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_partial_nullable_metric_declines_only_missing_metric"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_native_counter_reset_preserves_unknown"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_no_step_actual_writer_disabled_event_declines"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_body_tampering_without_new_seal_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_resealed_semantic_inconsistency_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_native_mode_and_hardlink_custody_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_native_terminal_and_parent_symlink_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_duplicate_json_key_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_mapping_cannot_fabricate_attestation"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_actual_writer_source_context_never_proves_loaded_runtime"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_nonfinite_json_number_and_unknown_extra_key_refuse"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_actual_cli_refuses_unlabelled_native_cost_without_ledger_rows"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_adopted_step_cannot_carry_failure_status"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_actual_predeclared_empty_protocol_yields_shared_observation"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_native_citation_copied_without_ratification_claim"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_unsealed_declaration_change_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_missing_native_label_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_wrong_direction_refuses"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_cannot_claim_human_ratification_or_runtime"
+  },
+  {
+    "classname": "recipe.tests.test_hg5_request_event_reader.ReaderControls",
+    "name": "test_v2_actual_cli_records_native_labelled_counter_rows"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_wired_adapter_projects_through_a_registered_projection"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[ak-actor-seat]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[autopilot-journal]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[autopilot-reproposal-rate]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[beam]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[chat-template-ab]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[contention-gate]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[contention-matrix]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[eval-tower-band]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[fanout-outcome]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[inf70-arms]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[kb-rag-qlen]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[memento-lora]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[mhs-guard-ops]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[mhs-guard-verdicts]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[occ1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[opencode-shell]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[orchestrator-serving-call]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[pareval]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[research-screen]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[research-sweep-g1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[research-sweep-g234]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[review-f1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[reviewer-fa]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[session-intercall-gap]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[tale-budget]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[tulving]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[typed-decisions-measurement]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[ufh13-thesis-measurement]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_dry_run_appends_nothing"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_pre_hook_arm_is_declined_not_filled"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_foreign_report_is_refused_by_name"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_missing_path_is_reported_and_a_defaultless_source_needs_a_path"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_sealed_manifest_discovery_matches_its_own_walk"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_autopilot_journal_accepts_a_shard_file_and_declines_a_foreign_file"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_mhs_guard_verdicts_decline_without_a_hook_epoch"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_mhs_guard_rows_counts"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_limit_is_a_global_row_limit"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_dispatched_adapter_declares_its_authority"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_tale_budget_pre_hook_results_are_declined_and_foreign_sidecars_too"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_review_f1_mutated_summary_still_ingests_as_an_unverified_observation"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_repeat_at_a_new_timestamp_is_a_noop"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_duplicate_paths_append_each_claim_once"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices0]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices2]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices3]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_accepts_new_claims_alongside_existing_ones"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_to_revive_retracted_evidence"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_dry_run_filters_without_writing"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_torn_tail_without_repairing_it"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_does_not_silently_apply_to_other_ingesters"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_default_repeat_ingestion_preserves_existing_behavior"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_counts_live_opposing_evidence"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_corrupt_chain_before_append"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_divergent_duplicate_identity"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_projected_bundles[indices0]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_projected_bundles[indices1]"
+  }
+]

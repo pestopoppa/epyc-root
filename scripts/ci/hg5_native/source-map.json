@@ -1,16 +1,16 @@
 {
   "app": {
-    "commit": "974cb4017791a5d500269fd44f7d9903528e1d5d",
-    "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed. Plus both exact golden JSON fixtures. Includes immutable historical goldens and both versioned public62 current-stream contract fixtures.",
-    "parent": "eadb959172fbc433da41aaf069c1bcf20c6ce98f",
+    "commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+    "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed. Plus both exact golden JSON fixtures. Includes immutable historical goldens and both versioned public62 current-stream contract fixtures. Plus exact version2 declaration schema JSON and native label controls; refresh all original rows from actualdaca source, including acceptedMF helperf50.",
+    "parent": "daca4a46b3110de2fcacde0fc1a9e2d74769516d",
     "parents": [
-      "eadb959172fbc433da41aaf069c1bcf20c6ce98f"
+      "daca4a46b3110de2fcacde0fc1a9e2d74769516d"
     ],
     "repository": "pestopoppa/epyc-orchestrator",
-    "tree": "809ec3aa77a12e577643664e0405e9529428c885"
+    "tree": "65cc1287e77cd17f9aaa409ed12ab3a9bcb8eb8d"
   },
   "app_source_config_envelope": {
-    "file_count": 2220,
+    "file_count": 2222,
     "files": [
       {
         "blob": "8e0520ffe821da7a34192e5f750cfd5d7f3045ab",
@@ -6145,11 +6145,11 @@
         "sha256": "6853dd4fc7f3480b27ebe83c81530e60cb3e01855811d70cae03e6abf61a4cf8"
       },
       {
-        "blob": "64e8fb412a42c608d07c1880593a905dff82e2bc",
-        "bytes": 75435,
+        "blob": "e04952df3f7a8b453dcc98b41c805381e97636ce",
+        "bytes": 88438,
         "mode": "100644",
         "path": "src/graph/helpers.py",
-        "sha256": "dfb2dd16f5496121f5f683aa95feb85cede82a44557549c0c1dde6c0eb364fa3"
+        "sha256": "f50ff4a8f565e06cabe57fbf74e7009fa1a12fab68d7416ac17b4e87633491e8"
       },
       {
         "blob": "ebce26aaa483e7d4366fcf85342948118810f419",
@@ -7335,11 +7335,11 @@
         "sha256": "bebc88c2d0ed1076c3fbb0903c22e4e686d67b9cb6deb90593303f4543eedd5d"
       },
       {
-        "blob": "8652a53eb494afbfa59ae005281892f20e778993",
-        "bytes": 7298,
+        "blob": "8e9db1bf237041e8b9bb460dd4e05c431d81710c",
+        "bytes": 10214,
         "mode": "100644",
         "path": "src/runtime/hg5_request_event.py",
-        "sha256": "994d581338b080bf28e9f587164f397720bd51f9befdfe3bdba6759164a409df"
+        "sha256": "a69a6c3cc0386582a98a97918dea77d8a4640e857098e42c69bba3d1455ec489"
       },
       {
         "blob": "cf283ebfb928f4217f5eb6b29f649cbc57225197",
@@ -7417,6 +7417,13 @@
         "mode": "100644",
         "path": "src/runtime/schemas/hg5-request-intervention-v1.json",
         "sha256": "d1a0b46d1df1e7de6a0af43a3c328b7ca635e6422fce0bbfda679544c3115868"
+      },
+      {
+        "blob": "07d15792558ced407ceefca8f6ba449eba95303e",
+        "bytes": 9711,
+        "mode": "100644",
+        "path": "src/runtime/schemas/hg5-request-intervention-v2.json",
+        "sha256": "4e00cc2565cf50bf187f50714c8bd4281abfaaf56b63f23bce9cf7f4ddded600"
       },
       {
         "blob": "f4ccd57f9e6969c8ce723fe0b4e90d40a4b43306",
@@ -8656,6 +8663,13 @@
         "mode": "100644",
         "path": "tests/integration/test_ufh14_b1_graph.py",
         "sha256": "c7c7059f82c2bb74195b455e772445c33b10af921eafbc42c17c3133cee3e695"
+      },
+      {
+        "blob": "a399709978ed4861f3ca17b0cb4ecbd5830c615e",
+        "bytes": 4891,
+        "mode": "100644",
+        "path": "tests/native/test_hg5_request_event_labels_native.py",
+        "sha256": "62596be5f78eb513299f4c2fb5de17703ca3f1d132aacf1b732b9fef606f9e5f"
       },
       {
         "blob": "72ba14ab8c93217d330847b461a1d17613cbead2",
@@ -17016,39 +17030,41 @@
     "repository": "pestopoppa/epyc-root"
   },
   "root_context": {
-    "commit": "152fb52cd0489b8756a69999c38e7d0e0afa9488",
+    "commit": "11649e2a2245407b4bf5a1d66bd993901654e5ac",
     "files": [
       {
-        "blob": "593115278dfcd2c87ec3234920b8fced5299ed19",
-        "bytes": 389518,
+        "blob": "c63013dde375a3c06a809618399896c7fa41f6a7",
+        "bytes": 404318,
         "mode": "100644",
         "path": "handoffs/active/vidya-belief-substrate-program.md",
-        "sha256": "2dfdef1dc69711011c8e50edb4b3430209034da5f685cc44ce18ee839b52eeaa"
+        "sha256": "31bb8b763ca58ce1a5ea148db304c2beacd2e9bf9483ead98708a4cf572f7791"
       },
       {
-        "blob": "12be370b2036db819be2ba94b0855c5a37c4a696",
-        "bytes": 281943,
+        "blob": "bcb41dc3afa7ca0d51695f22588f55ac05fe4e64",
+        "bytes": 291580,
         "mode": "100644",
         "path": "scripts/vidya/adapters/README.md",
-        "sha256": "024d3beca52b27f1cb114d7cd61e6b9e8c7a589a0d77691e32b3e0cc1e7048ab"
+        "sha256": "e153b9d737f716a6ceb369f9f1f9c85d420b9add26214a116ca77232054fbc64"
       }
     ],
     "repository": "pestopoppa/epyc-root"
   },
   "schema": "private.hg5.native.source_map.v1",
   "static_evidence": {
-    "TAP_additional_cases_unrun": 31,
-    "current209_original_accepted_base": "eadb959172fbc433da41aaf069c1bcf20c6ce98f",
-    "definitions": 205,
+    "MF_current_APPmain_base": "a4cc85eb774c066f30adc7b91aa26a40bbcc9036",
+    "definitions": 214,
+    "new_label_controls_unrun": 9,
     "no_native_claim": true,
-    "prospective_cases": 240,
-    "whole_modules": 8
+    "prospective_cases": 249,
+    "prospective_label_enrollment_published_ROOT": "11649e2a2245407b4bf5a1d66bd993901654e5ac",
+    "unchanged_original240_case_multiset_retained": true,
+    "whole_modules": 9
   },
   "status": "PRIVATE_UNEXECUTED_RECIPE_DRAFT",
   "test_identity": {
-    "ast_definition_count": 205,
-    "ast_derived_expected_junit_identities": 240,
-    "case_manifest_sha256": "477cb60072e58a69b64a40d923825570786904ba41c4501403b91de1cdf5726c",
+    "ast_definition_count": 214,
+    "ast_derived_expected_junit_identities": 249,
+    "case_manifest_sha256": "4b2a4b5f72fa71b2ab50a51d608bb678ea86c020198f8cfb869e2aed1ed02e82",
     "conftests": [
       "tests/conftest.py",
       "tests/unit/conftest.py"

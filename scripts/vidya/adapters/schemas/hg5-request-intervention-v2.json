@@ -1,0 +1,408 @@
+{
+  "$defs": {
+    "body": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_scope": {
+          "const": "intervention_and_actual_counter_facts_only"
+        },
+        "disabled_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "eligible": {
+          "type": "boolean"
+        },
+        "event_id": {
+          "pattern": "^[0-9a-f]{32}$",
+          "type": "string"
+        },
+        "failure": {
+          "additionalProperties": false,
+          "properties": {
+            "exception_type": {
+              "maxLength": 80,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "message": {
+              "maxLength": 240,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "status": {
+              "enum": [
+                "reported",
+                "none",
+                "request_failed"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "exception_type",
+            "message"
+          ],
+          "type": "object"
+        },
+        "feature_enabled": {
+          "type": "boolean"
+        },
+        "final_role": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "initial_role": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "plan_enabled": {
+          "type": "boolean"
+        },
+        "projection": {
+          "additionalProperties": false,
+          "properties": {
+            "binding": {
+              "const": "source_authored_pre_capture_context"
+            },
+            "declaration": {
+              "additionalProperties": false,
+              "properties": {
+                "category": {
+                  "enum": [
+                    "OPTIMUM",
+                    "BASELINE",
+                    "CANDIDATE"
+                  ]
+                },
+                "metric_direction": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "calls": {
+                      "enum": [
+                        "higher_better",
+                        "lower_better"
+                      ]
+                    },
+                    "completion_tokens": {
+                      "enum": [
+                        "higher_better",
+                        "lower_better"
+                      ]
+                    },
+                    "generation_ms": {
+                      "enum": [
+                        "higher_better",
+                        "lower_better"
+                      ]
+                    },
+                    "prompt_ms": {
+                      "enum": [
+                        "higher_better",
+                        "lower_better"
+                      ]
+                    },
+                    "prompt_tokens": {
+                      "enum": [
+                        "higher_better",
+                        "lower_better"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "calls",
+                    "prompt_tokens",
+                    "completion_tokens",
+                    "prompt_ms",
+                    "generation_ms"
+                  ],
+                  "type": "object"
+                },
+                "protocol_id": {
+                  "maxLength": 128,
+                  "pattern": "^$|^[A-Za-z0-9][A-Za-z0-9_.:/#-]{0,127}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "category",
+                "metric_direction",
+                "protocol_id"
+              ],
+              "type": "object"
+            },
+            "declaration_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "human_ratification": {
+              "const": "not_asserted"
+            }
+          },
+          "required": [
+            "declaration",
+            "declaration_sha256",
+            "binding",
+            "human_ratification"
+          ],
+          "type": "object"
+        },
+        "request_counters_at_capture": {
+          "$ref": "#/$defs/counters"
+        },
+        "request_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "requested_mode": {
+          "enum": [
+            "auto",
+            "off",
+            "architect_general",
+            "force_architect_general"
+          ]
+        },
+        "requested_target_role": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runtime_origin": {
+          "const": "unknown"
+        },
+        "schema": {
+          "const": "hg5.request_intervention.v2"
+        },
+        "source": {
+          "additionalProperties": false,
+          "properties": {
+            "commit": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "origin": {
+              "enum": [
+                "unknown",
+                "source_authored_run_context"
+              ]
+            },
+            "producer_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "tree": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "origin",
+            "commit",
+            "tree",
+            "producer_sha256"
+          ],
+          "type": "object"
+        },
+        "stage": {
+          "enum": [
+            null,
+            "direct",
+            "repl"
+          ]
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/step"
+          },
+          "maxItems": 1,
+          "type": "array"
+        },
+        "window": {
+          "additionalProperties": false,
+          "properties": {
+            "end_monotonic_ns": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "end_utc_ns": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "start_monotonic_ns": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "start_utc_ns": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "start_utc_ns",
+            "end_utc_ns",
+            "start_monotonic_ns",
+            "end_monotonic_ns"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema",
+        "event_id",
+        "request_id_sha256",
+        "window",
+        "source",
+        "runtime_origin",
+        "requested_mode",
+        "feature_enabled",
+        "eligible",
+        "plan_enabled",
+        "disabled_reason",
+        "stage",
+        "initial_role",
+        "final_role",
+        "requested_target_role",
+        "steps",
+        "request_counters_at_capture",
+        "failure",
+        "claim_scope",
+        "projection"
+      ],
+      "type": "object"
+    },
+    "counters": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "completion_tokens": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "generation_ms": {
+          "minimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "prompt_ms": {
+          "minimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "prompt_tokens": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "calls",
+        "prompt_tokens",
+        "completion_tokens",
+        "prompt_ms",
+        "generation_ms"
+      ],
+      "type": "object"
+    },
+    "step": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "$ref": "#/$defs/counters"
+        },
+        "before": {
+          "$ref": "#/$defs/counters"
+        },
+        "call_status": {
+          "enum": [
+            "unknown",
+            "not_called",
+            "called"
+          ]
+        },
+        "delta": {
+          "$ref": "#/$defs/counters"
+        },
+        "initial_role": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "adopted",
+            "not_adopted",
+            "failed"
+          ]
+        },
+        "target_role": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "trigger": {
+          "enum": [
+            "quality_escalation",
+            "caller_forced"
+          ]
+        }
+      },
+      "required": [
+        "trigger",
+        "initial_role",
+        "target_role",
+        "outcome",
+        "call_status",
+        "before",
+        "after",
+        "delta"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "hg5.request_intervention.v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "body": {
+      "$ref": "#/$defs/body"
+    },
+    "body_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "body",
+    "body_sha256"
+  ],
+  "type": "object"
+}

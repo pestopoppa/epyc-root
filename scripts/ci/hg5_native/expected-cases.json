@@ -1,5 +1,5 @@
 {
-  "app_pin": "974cb4017791a5d500269fd44f7d9903528e1d5d",
+  "app_pin": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
   "ast_definitions": [
     {
       "class": "TestServerConfig",
@@ -1919,11 +1919,83 @@
       "module": "tests.native.test_hg5_request_event_native",
       "param_dimensions": [],
       "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_default_off_even_valid_labels_do_not_activate_writer",
+      "function": "test_default_off_even_valid_labels_do_not_activate_writer",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_without_projection_exact_v1_envelope_shape_preserved",
+      "function": "test_without_projection_exact_v1_envelope_shape_preserved",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_valid_explicit_declaration_is_bound_before_window",
+      "function": "test_valid_explicit_declaration_is_bound_before_window",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_later_context_environment_change_does_not_relabel_capture",
+      "function": "test_later_context_environment_change_does_not_relabel_capture",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_missing_category_direction_protocol_each_refuse_before_write",
+      "function": "test_missing_category_direction_protocol_each_refuse_before_write",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_invalid_category_and_direction_are_not_guessed",
+      "function": "test_invalid_category_and_direction_are_not_guessed",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_protocol_is_exact_explicit_citation_or_explicit_empty",
+      "function": "test_protocol_is_exact_explicit_citation_or_explicit_empty",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_duplicate_source_context_and_unstable_declaration_types_refuse",
+      "function": "test_duplicate_source_context_and_unstable_declaration_types_refuse",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "class": "LabelControls",
+      "definition": "LabelControls.test_v2_labels_require_full_source_owned_identity",
+      "function": "test_v2_labels_require_full_source_owned_identity",
+      "module": "tests.native.test_hg5_request_event_labels_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
     }
   ],
-  "ast_derived_expected_junit_case_count": 240,
-  "ast_test_definition_count": 205,
-  "case_count_note": "Actual private APP974cb whole8modules205definitions yield240 prospective source-control identities: accepted TD122+HG87 preserved plus31 unrun TAP cases. Original native JUnit alone proves actual cases/statuses.",
+  "ast_derived_expected_junit_case_count": 249,
+  "ast_test_definition_count": 214,
+  "case_count_note": "Prospective249 = unchanged originalTD122+HG87+TAP31 plus9 new explicit native-label declaration controls.214 actual definitions across9 whole modules; no native result claimed.",
   "case_identities": [
     {
       "classname": "tests.unit.test_llama_server.TestServerConfig",
@@ -3737,6 +3809,69 @@
       "name": "test_actual_API_upstream_failure_is_outside_completed_post_answer_scope",
       "parameters": {},
       "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_default_off_even_valid_labels_do_not_activate_writer",
+      "name": "test_default_off_even_valid_labels_do_not_activate_writer",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_without_projection_exact_v1_envelope_shape_preserved",
+      "name": "test_without_projection_exact_v1_envelope_shape_preserved",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_valid_explicit_declaration_is_bound_before_window",
+      "name": "test_valid_explicit_declaration_is_bound_before_window",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_later_context_environment_change_does_not_relabel_capture",
+      "name": "test_later_context_environment_change_does_not_relabel_capture",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_missing_category_direction_protocol_each_refuse_before_write",
+      "name": "test_missing_category_direction_protocol_each_refuse_before_write",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_invalid_category_and_direction_are_not_guessed",
+      "name": "test_invalid_category_and_direction_are_not_guessed",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_protocol_is_exact_explicit_citation_or_explicit_empty",
+      "name": "test_protocol_is_exact_explicit_citation_or_explicit_empty",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_duplicate_source_context_and_unstable_declaration_types_refuse",
+      "name": "test_duplicate_source_context_and_unstable_declaration_types_refuse",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_labels_native.LabelControls",
+      "definition": "LabelControls.test_v2_labels_require_full_source_owned_identity",
+      "name": "test_v2_labels_require_full_source_owned_identity",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_labels_native.py"
     }
   ],
   "identity_conformance": "duplicate-free identity multiset; original JUnit ordering diagnostic only",
@@ -4065,6 +4200,13 @@
   "schema": "private.hg5.native.expected_cases.v1",
   "status": "STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION",
   "test_file_source_records": {
+    "tests/native/test_hg5_request_event_labels_native.py": {
+      "blob": "a399709978ed4861f3ca17b0cb4ecbd5830c615e",
+      "bytes": 4891,
+      "mode": "100644",
+      "path": "tests/native/test_hg5_request_event_labels_native.py",
+      "sha256": "62596be5f78eb513299f4c2fb5de17703ca3f1d132aacf1b732b9fef606f9e5f"
+    },
     "tests/native/test_hg5_request_event_native.py": {
       "blob": "72ba14ab8c93217d330847b461a1d17613cbead2",
       "bytes": 22831,
@@ -4075,14 +4217,14 @@
     "tests/unit/test_inference_mixin.py": {
       "blob": "dffd7a3c75ee18e4df5fcce48c26dd7ecfdd780b",
       "bytes": 55190,
-      "mode": "100755",
+      "mode": "100644",
       "path": "tests/unit/test_inference_mixin.py",
       "sha256": "58ee4ca42099704170babeadc511eb9bc2330de0b711c013eed8d52248170a5c"
     },
     "tests/unit/test_llama_server.py": {
       "blob": "815b052f346663afd71f2010a95c8bf4868bfe81",
       "bytes": 50045,
-      "mode": "100755",
+      "mode": "100644",
       "path": "tests/unit/test_llama_server.py",
       "sha256": "fd31b957ac13d381ee268f69835a37d29fe13b1ef59f6ee231141d5294ffdf38"
     },
@@ -4130,6 +4272,7 @@
     "tests/unit/test_stages.py",
     "tests/unit/test_v1_escalation.py",
     "tests/unit/test_v1_escalation_off_golden.py",
-    "tests/native/test_hg5_request_event_native.py"
+    "tests/native/test_hg5_request_event_native.py",
+    "tests/native/test_hg5_request_event_labels_native.py"
   ]
 }

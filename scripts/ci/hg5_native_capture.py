@@ -8,10 +8,10 @@ RESULT=Path(os.environ['RUNNER_TEMP'])/'hg5-native'/ 'result'
 APP=Path(os.environ['GITHUB_WORKSPACE'])/'app'
 ROOT=Path(os.environ['GITHUB_WORKSPACE'])/'recipe'
 CARRIER=Path(os.environ['GITHUB_WORKSPACE'])/'carrier'
-APP_PIN='974cb4017791a5d500269fd44f7d9903528e1d5d'
-ROOT_PIN='152fb52cd0489b8756a69999c38e7d0e0afa9488'
+APP_PIN='352d4208931a6cf1ee21363fce390f6ae26bb81f'
+ROOT_PIN='11649e2a2245407b4bf5a1d66bd993901654e5ac'
 CARRIER_PIN='4c0c653baf1654c8c25c66433cf39c8faefd8e52'
-TESTS=['tests/unit/test_llama_server.py', 'tests/unit/test_inference_mixin.py', 'tests/unit/test_typed_decisions_call_recorder.py', 'tests/unit/test_openai_compat_default_golden.py', 'tests/unit/test_stages.py', 'tests/unit/test_v1_escalation.py', 'tests/unit/test_v1_escalation_off_golden.py', 'tests/native/test_hg5_request_event_native.py']
+TESTS=['tests/unit/test_llama_server.py', 'tests/unit/test_inference_mixin.py', 'tests/unit/test_typed_decisions_call_recorder.py', 'tests/unit/test_openai_compat_default_golden.py', 'tests/unit/test_stages.py', 'tests/unit/test_v1_escalation.py', 'tests/unit/test_v1_escalation_off_golden.py', 'tests/native/test_hg5_request_event_native.py', 'tests/native/test_hg5_request_event_labels_native.py']
 RECIPE_DATA=RECIPE/'scripts/ci/hg5_native'
 
 def digest(data): return hashlib.sha256(data).hexdigest()
@@ -127,7 +127,7 @@ def main():
         req=raw(RECIPE_DATA/'requirements-linux-py311.txt')
         if sm['status']!='PRIVATE_UNEXECUTED_RECIPE_DRAFT' or cm['status']!='STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION': raise RuntimeError('draft input status mismatch')
         if sm['app']['commit']!=APP_PIN or sm['root_context']['commit']!=ROOT_PIN or sm['native_carrier']['commit']!=CARRIER_PIN: raise RuntimeError('reviewed pins mismatch')
-        if cm['ast_test_definition_count']!=205 or cm['ast_derived_expected_junit_case_count']!=240 or len(cm['case_identities'])!=240: raise RuntimeError('static identity proposal malformed')
+        if cm['ast_test_definition_count']!=214 or cm['ast_derived_expected_junit_case_count']!=249 or len(cm['case_identities'])!=249: raise RuntimeError('static identity proposal malformed')
         derived_cases=verify_ast_manifest(cm)
         if sm['dependency_lock']['requirements_sha256']!=digest(req) or sm['dependency_lock']['package_count']!=64 or sm['dependency_lock']['wheel_hash_count']!=905: raise RuntimeError('dependency lock closure differs from static review')
         if sm['test_identity']['case_manifest_sha256']!=digest(raw(RECIPE_DATA/'expected-cases.json')): raise RuntimeError('case manifest hash differs from source map')
@@ -171,7 +171,7 @@ def main():
         for p in source_paths: carrier_argv += ['--read-path',str(p)]
         for test in TESTS: carrier_argv += ['--select',test]
         carrier_argv += ['--',*test_command]
-        request={'carrier_argv':carrier_argv,'pytest_argv':test_command,'cwd':str(APP),'env_controls':{k:env[k] for k in ('CI','ORCHESTRATOR_MOCK_MODE','ORCHESTRATOR_PATHS_LLAMA_CPP_BIN','ORCHESTRATOR_PATHS_LLAMA_MTMD','ORCHESTRATOR_PATHS_LLAMA_SERVER','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTEST_ADDOPTS','PYTEST_PLUGINS','PYTHONDONTWRITEBYTECODE','PYTHONHASHSEED','PYTHONNOUSERSITE')},'kernel_path_fixtures':kernel_fixtures,'selection':TESTS,'source_before_capture':before,'repositories':{'app':APP_PIN,'root_recipe_event':os.environ.get('GITHUB_SHA'),'enrolled_root_context':ROOT_PIN,'carrier':CARRIER_PIN},'ast_definition_count':205,'proposed_junit_identities':240,'native_case_count_claim':None}
+        request={'carrier_argv':carrier_argv,'pytest_argv':test_command,'cwd':str(APP),'env_controls':{k:env[k] for k in ('CI','ORCHESTRATOR_MOCK_MODE','ORCHESTRATOR_PATHS_LLAMA_CPP_BIN','ORCHESTRATOR_PATHS_LLAMA_MTMD','ORCHESTRATOR_PATHS_LLAMA_SERVER','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTEST_ADDOPTS','PYTEST_PLUGINS','PYTHONDONTWRITEBYTECODE','PYTHONHASHSEED','PYTHONNOUSERSITE')},'kernel_path_fixtures':kernel_fixtures,'selection':TESTS,'source_before_capture':before,'repositories':{'app':APP_PIN,'root_recipe_event':os.environ.get('GITHUB_SHA'),'enrolled_root_context':ROOT_PIN,'carrier':CARRIER_PIN},'ast_definition_count':214,'proposed_junit_identities':249,'native_case_count_claim':None}
         write_json(RESULT/'execution-request.json',request)
         typed_result_before_capture=typed_tree(RESULT)
         write_json(RESULT/'pre-capture-custody.json',{'phase':'immediately_before_original_native_capture','source_snapshot':before,'execution_request_sha256':digest(raw(RESULT/'execution-request.json')),'typed_result_tree_before_this_custody_record':typed_result_before_capture,'status_included':True,'self_excluded':True})
@@ -209,7 +209,7 @@ def main():
         if not source_stable: raise RuntimeError('pinned source changed across native capture or grade')
         if junit_error is not None or not exact_multiset: raise RuntimeError('original JUnit absent, duplicated, or differs from the duplicate-free canonical case multiset; native value preserved')
         if run.returncode!=0 or native_record.get('fixture_execution_conformant') is not True: raise RuntimeError('carrier command or native receipt reports nonconformance; native value preserved')
-        if junit_counts!={'collected':240,'passed':240,'failure':0,'error':0,'skipped':0}: raise RuntimeError('original JUnit did not report exactly 240 passed cases: '+repr(junit_counts))
+        if junit_counts!={'collected':249,'passed':249,'failure':0,'error':0,'skipped':0}: raise RuntimeError('original JUnit did not report exactly 249 passed cases: '+repr(junit_counts))
         if not source_stable or before!=source_after_grade or result_before_grade!=result_after_grade: raise RuntimeError('source/result custody changed across capture or grade')
         for name,repo in [('APP',APP),('ROOT',ROOT),('CARRIER',CARRIER)]:
             if git(repo,'status','--porcelain','--untracked-files=all'): raise RuntimeError(name+' checkout changed during native capture or grade')
