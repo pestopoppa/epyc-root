@@ -1,13 +1,13 @@
 {
   "app": {
-    "commit": "daca4a46b3110de2fcacde0fc1a9e2d74769516d",
+    "commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
     "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed. Plus both exact golden JSON fixtures. Includes immutable historical goldens and both versioned public62 current-stream contract fixtures. Plus exact version2 declaration schema JSON and native label controls; refresh all original rows from actualdaca source, including acceptedMF helperf50.",
-    "parent": "a4cc85eb774c066f30adc7b91aa26a40bbcc9036",
+    "parent": "daca4a46b3110de2fcacde0fc1a9e2d74769516d",
     "parents": [
-      "a4cc85eb774c066f30adc7b91aa26a40bbcc9036"
+      "daca4a46b3110de2fcacde0fc1a9e2d74769516d"
     ],
     "repository": "pestopoppa/epyc-orchestrator",
-    "tree": "9e43f2f975b7614d625221887a9682aec83548ff"
+    "tree": "65cc1287e77cd17f9aaa409ed12ab3a9bcb8eb8d"
   },
   "app_source_config_envelope": {
     "file_count": 2222,
@@ -8665,11 +8665,11 @@
         "sha256": "c7c7059f82c2bb74195b455e772445c33b10af921eafbc42c17c3133cee3e695"
       },
       {
-        "blob": "9fdb1a2c619a6f1473fcfc42db85bd842cf39c78",
-        "bytes": 4915,
+        "blob": "a399709978ed4861f3ca17b0cb4ecbd5830c615e",
+        "bytes": 4891,
         "mode": "100644",
         "path": "tests/native/test_hg5_request_event_labels_native.py",
-        "sha256": "15f2dc2be9ee5f33dcb7f259c60e6e03e1b526fb21a1c8da0f1a55e1dd560d06"
+        "sha256": "62596be5f78eb513299f4c2fb5de17703ca3f1d132aacf1b732b9fef606f9e5f"
       },
       {
         "blob": "72ba14ab8c93217d330847b461a1d17613cbead2",
@@ -17064,7 +17064,7 @@
   "test_identity": {
     "ast_definition_count": 214,
     "ast_derived_expected_junit_identities": 249,
-    "case_manifest_sha256": "422ee7d31081d193f0f8e4809618bae2fc2b1305dd988aa57259abc65369cc5d",
+    "case_manifest_sha256": "4b2a4b5f72fa71b2ab50a51d608bb678ea86c020198f8cfb869e2aed1ed02e82",
     "conftests": [
       "tests/conftest.py",
       "tests/unit/conftest.py"

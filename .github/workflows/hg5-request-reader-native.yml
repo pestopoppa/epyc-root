@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
-      APP_SOURCE_PIN: daca4a46b3110de2fcacde0fc1a9e2d74769516d
+      APP_SOURCE_PIN: 352d4208931a6cf1ee21363fce390f6ae26bb81f
       HG5_WRITER_SOURCE: ${{ github.workspace }}/app/src/runtime/hg5_request_event.py
       UFH13_RESEARCH_PIN: 1bace97dc655ab5896291b4571781e53b821d9a3
       UFH13_RESEARCH_ROOT: ${{ github.workspace }}/ufh13-research

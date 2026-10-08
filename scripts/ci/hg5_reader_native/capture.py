@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 HERE=Path(__file__).resolve().parent
 CARRIER_PIN='4c0c653baf1654c8c25c66433cf39c8faefd8e52'
 UFH13_PIN='1bace97dc655ab5896291b4571781e53b821d9a3'
-APP_PIN='daca4a46b3110de2fcacde0fc1a9e2d74769516d'
+APP_PIN='352d4208931a6cf1ee21363fce390f6ae26bb81f'
 WRITER_SHA='a69a6c3cc0386582a98a97918dea77d8a4640e857098e42c69bba3d1455ec489'
 CONTEXT_PIN='11649e2a2245407b4bf5a1d66bd993901654e5ac'
 CARRIER_READS=('scripts/ci/native_conformance.py','scripts/vidya/adapters/ci_conformance.py',

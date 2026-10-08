@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      APP_PIN: daca4a46b3110de2fcacde0fc1a9e2d74769516d
+      APP_PIN: 352d4208931a6cf1ee21363fce390f6ae26bb81f
       ROOT_CONTEXT_PIN: 11649e2a2245407b4bf5a1d66bd993901654e5ac
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       HG5_RUNNER_CONTEXT: ubuntu-24.04-cpython-3.11

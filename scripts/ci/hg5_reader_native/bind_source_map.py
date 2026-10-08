@@ -2,12 +2,12 @@
 import hashlib, json, os, stat, subprocess, tempfile
 from pathlib import Path
 BASE = "11649e2a2245407b4bf5a1d66bd993901654e5ac"
-SOURCE_PIN = "11649e2a2245407b4bf5a1d66bd993901654e5ac"
+SOURCE_PIN = "31c5e6230afa33468efa46300e51dda7a2e73c3d"
 WORKSPACE = Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)
 ROOT = WORKSPACE / "recipe"
 RESEARCH_PIN = "1bace97dc655ab5896291b4571781e53b821d9a3"
 RESEARCH = WORKSPACE / "ufh13-research"
-APP_PIN = "daca4a46b3110de2fcacde0fc1a9e2d74769516d"
+APP_PIN = "352d4208931a6cf1ee21363fce390f6ae26bb81f"
 APP = WORKSPACE / "app"
 OUT = Path(os.environ["RUNNER_TEMP"]) / "hg5-reader-native"
 MAP = ROOT / "scripts/ci/hg5_reader_native/source-map.json"
@@ -69,7 +69,7 @@ def main():
         if (got, size) != (row.get("sha256"), row.get("size")):
             raise RuntimeError("ROOT source bytes do not match prepared readset: " + rel)
     data["root_source_commit"] = event
-    data["root_source_commit_binding"] = "GITHUB_SHA == ROOT HEAD; exact 11649e2a2245407b4bf5a1d66bd993901654e5ac base and 11649e2a2245407b4bf5a1d66bd993901654e5ac implementation ancestors; all declared pre-run source bytes verified, including exact UFH13 Research producer"
+    data["root_source_commit_binding"] = "GITHUB_SHA == ROOT HEAD; exact 11649e2a2245407b4bf5a1d66bd993901654e5ac base and 31c5e6230afa33468efa46300e51dda7a2e73c3d implementation ancestors; all declared pre-run source bytes verified, including exact UFH13 Research producer"
     data["source_map_prebind_sha256"] = hashlib.sha256(raw).hexdigest()
     payload = json.dumps(data, indent=2, sort_keys=True).encode() + b"\n"
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
