@@ -1,5 +1,14 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
+## 2026-10-08 00:05 UTC — final harness PASS published; current GPU install and foreground DRY pass
+
+Final run `consolidated-20261007T233132Z-r10` passed: focused740 tests plus25 subtests in188.26s; full5,281 tests plus284 subtests,11 skipped andtwo xfailed in1,313.86s. Original full/native/driver/tool waits are0, cleanup is verified and all470 captured generations are absent. ROOT independently reopened the26 acceptance references, original JUnit740/5,294 cases with zero failures/errors, all140 physical/committed sources, unchanged runner4, reader120 and native22. `runtime-gate-prepared-r10/ROOT_R10_FINAL_SOURCE_AND_RUNTIME_ACCEPTED.json` SHA256 `fd9043db427a2f2d611e55d6635cbb1b4100d7e44bdfaf9f7c3f91998c1503e3` records the actual PASS. Prior negative runs remain negative; the interrupted149-control attempt had seven F markers without terminal traces, not seven retained failure diagnoses.
+
+The validated candidate `bdb52d951da9a96cc5d922813cf88390b807d419` was published to research main with original serialized-push0 and verified remote ancestry. ROOT then applied the exact reviewed R12 GPU assets, preserving the original R8 ten-file baseline. Guards passed before/after installation. Actual foreground DRY completed original launcher/tool0 at00:02:05Z, with unchanged assets and current b0ba fresh-store preview; the historical champion bundle remained unchanged. `gpu-coordination-finish/generations/r12/ROOT_R12_ACTUAL_INSTALL_AND_DRY_ACCEPTED.json` SHA256 `52fa5afb25d83e245d9a39684fcc3017c2e684e97affc6bc86d824f2629ead42` binds the original evidence. Real DS41 all16 FA masks and70-file corpus publication to both CPU stores are already complete. Champion b0ba and the unpromoted +16.157% placement-recipe scope are unchanged; neither validation nor DRY claims production gain.
+
+CPU retirement/relaunch/300-second ownership proof and current monitoring are the next executable boundary. Fresh device2431 free-space samples00:02:18/00:02:56 remain below the unchanged LIVE100GiB floor, latest deficit915,357,696B. ROOT delivered the actual full/publication/DRY completion to the original capacity owner's existing native session at00:04:37Z, original ownappend/nativequeue/supervisor0 and samecorr8. Own cold committed materializations are being audited for reversible sparse recovery. This is a storage admission constraint, not unfinished harness validation. LIVE GPU additionally requires the genuine serving-owner park/restore window: production :8083 remains occupied and BRIEF forbids this session parking it. No owner grant or LIVE outcome is fabricated.
+
+
 ## 2026-10-07 23:35 UTC — six affected modules pass149; final source140 combined run launched
 
 All149 tests in the six affected modules passed in195.85 seconds, including actual installed synthetic CPU-profile children, the hostile foreign-checkout import regression, roster/control scheduling and existing retention refusal/reclaim controls. Original native/pytest/tool waits were0, source unchanged, all205 captured generations absent and two strict empty censuses completed while the original q1 build claim remained held. The diagnostic plugin persisted447 original setup/call/teardown reports with zero failures and never changed outcomes. ROOT accepted13 raw receipts at `full-failure-fixture-bootstrap-r1/native-diagnostic-r2/ROOT_BOOTSTRAP_RETENTION_DIAGNOSTIC_R2_RUNTIME_ACCEPTED.json` (`27ff24ce`). The earlier interrupted control original1/pytest-15 and seven unretained failing traces remain negative, with no retroactive explanation or relabeling.
@@ -4156,12 +4165,12 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     `"keep_candidate"` vs `"kept"` after the R23-44 keep-gate change (`run.py:5876`, needs an owner
     call, not a mechanical fix), plus 1 ordering flake in `test_unified_worker.py`. The full-suite
     rerun (`pytest autokernel/loop -q`, ~5000+ tests) was not completed this session.
-  - [ ] Full-suite rerun of `autokernel/loop` on origin/main (post-`58c86506`) for a clean count.
-  - [ ] Validate the existing CPU/GPU keep and pruning paths against original kernel-coverage
+  - [x] Full-suite rerun of `autokernel/loop` on origin/main (post-`58c86506`) for a clean count. Final bdb52d951 published; original full5,281 passed,11 skipped,two xfailed,284 subtests andzero failures (ROOT acceptance fd9043db).
+  - [x] Validate the existing CPU/GPU keep and pruning paths against original kernel-coverage
     controls. Research `906bb7b5` repairs the shared fake binary's symbol fixture while retaining
     the real coverage/source gate; symbol-loss controls require `keep_candidate`, no promotion
-    and no branch move. Focused consumer checks are queued; this is not an operator decision.
-  - [ ] Triage clusters 2, 3, 5, 6 (3 and 5 flagged lane-affecting) plus the ~62-item long tail —
+    and no branch move. Original native consumer checks and the final full gate passed; ROOT acceptance fd9043db retains the original outcomes.
+  - [x] Triage clusters 2, 3, 5, 6 (3 and 5 flagged lane-affecting) plus the ~62-item long tail —
     `/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md`.
   - [ ] Give `serial_run`/`run.py` a pause or yield that lands at measurement granularity (one case,
     not one batch — a batch is ≈3.4h). 2026-10-07 03:03Z: a control-endpoint pause for an EC GPU
