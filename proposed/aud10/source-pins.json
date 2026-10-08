@@ -1,0 +1,20 @@
+{
+  "schema": "private.aud10.offhost-three-source-pins.v1",
+  "files": [
+    {
+      "path": "payload/scripts/hooks/check_git_clean_untracked.py",
+      "bytes": 16608,
+      "sha256": "af315224e6464a5ee6e5c7ab9892eb25464e44920c9c804454242fb272d4372e"
+    },
+    {
+      "path": "payload/scripts/hooks/test_check_git_clean_untracked.py",
+      "bytes": 8115,
+      "sha256": "2f059e3cce07e0de3de7d3e67b3ac6f2e4416c9165116da05d600d4c41e2a138"
+    },
+    {
+      "path": "payload/scripts/hooks/shell_scan.py",
+      "bytes": 5432,
+      "sha256": "922e696eaabfc20ef0474d18ab9d237d846d9785b930b86c125bca34d89ee07e"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+name: M12f proposed candidate fixtures
+on:
+  push:
+    branches: [codex/m12f-candidate-fixtures-20261008]
+permissions:
+  contents: read
+jobs:
+  proposal-fixtures:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Verify copied candidate hashes
+        run: python proposed/m12f/verify-source-pins.py
+      - name: Install exact pytest closure
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: --no-deps -r proposed/m12f/requirements.txt
+      - name: Run only copied candidate fixtures
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+        run: |
+          mkdir -p original
+          export EPYC_ROOT="$GITHUB_WORKSPACE/proposed/m12f/payload/root"
+          export PYTHONPATH="$GITHUB_WORKSPACE/proposed/m12f/payload/research/scripts/benchmark:$GITHUB_WORKSPACE/proposed/m12f/payload/research/scripts/benchmark/dataset_adapters:$EPYC_ROOT/scripts/vidya"
+          python proposed/m12f/capture-proposal-runtime.py original
+          python proposed/m12f/run-fixtures.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: m12f-proposal-fixture-originals
+          path: original/

@@ -1,0 +1,55 @@
+name: AUD10 control-flow proposal fixtures
+on:
+  push:
+    branches: [codex/m12f-candidate-fixtures-20261008]
+permissions:
+  contents: read
+jobs:
+  fake-only-controls:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Initialize original capture directory
+        run: mkdir -p proposed/aud10/originals
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Verify exact copied candidate source pins
+        working-directory: proposed/aud10
+        run: |
+          set +e
+          python verify-source-pins.py > originals/pin-verifier.stdout 2> originals/pin-verifier.stderr
+          status=$?
+          printf '%s\n' "$status" > originals/pin-verifier.exit
+          exit "$status"
+      - name: Install exact six-package pytest closure
+        working-directory: proposed/aud10
+        run: |
+          set +e
+          python -m pip install --require-hashes --only-binary=:all: --no-deps -r requirements.txt > originals/pip-install.stdout 2> originals/pip-install.stderr
+          status=$?
+          printf '%s\n' "$status" > originals/pip-install.exit
+          exit "$status"
+      - name: Record exact runner context and run fake-only controls
+        working-directory: proposed/aud10
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+          AUD10_BASETEMP: ${{ runner.temp }}/aud10-pytest-basetemp
+        run: |
+          mkdir -p originals
+          python --version > originals/python-version.stdout 2> originals/python-version.stderr
+          python -m pytest --version > originals/pytest-version.stdout 2> originals/pytest-version.stderr
+          python -c 'import json,os; keys=("RUNNER_OS","RUNNER_ARCH","GITHUB_SHA","GITHUB_REF","GITHUB_WORKFLOW","PYTHONDONTWRITEBYTECODE","PYTEST_DISABLE_PLUGIN_AUTOLOAD"); print(json.dumps({k:os.environ.get(k) for k in keys},sort_keys=True))' > originals/environment.json
+          python -c 'import json,os; print(json.dumps(["python","-m","pytest","-p","no:cacheprovider","payload/scripts/hooks/test_check_git_clean_untracked.py","--basetemp",os.environ["AUD10_BASETEMP"],"--junitxml","originals/junit.xml"]))' > originals/argv.json
+          set +e
+          python -m pytest -p no:cacheprovider payload/scripts/hooks/test_check_git_clean_untracked.py --basetemp "$AUD10_BASETEMP" --junitxml originals/junit.xml > originals/stdout 2> originals/stderr
+          status=$?
+          printf '%s\n' "$status" > originals/exit
+          exit "$status"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: aud10-control-flow-proposal-originals
+          path: proposed/aud10/originals/
+          if-no-files-found: warn
