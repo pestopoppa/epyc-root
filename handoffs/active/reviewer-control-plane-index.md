@@ -12,7 +12,7 @@
 |----|-------|---------|-------------|------|
 | REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | GC-1a/2a/3a — run the DeepSeek-V4.1 claim-grade reviewer gates after its sparse-attention cap settles | INF-77 |
 | REV-03 | reviewer calibration accounting | [reviewer-calibration-accounting.md](reviewer-calibration-accounting.md) | RC-10 — specify candidate-distribution adapter preserving EV-15b/c semantics; RC-8 live baseline remains corpus-gated | — |
-| REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | Publish and validate opt-in HG5 source controls; retain EV-13b and judge-stable quality gates | UFH-01 |
+| REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | Implement prospective HG5 request-event writer/reader; retain owner runtime and quality gates | UFH-01 |
 | REV-06 | reviewer latency and sampling budget | [reviewer-latency-and-sampling-budget.md](reviewer-latency-and-sampling-budget.md) | LB-1 — Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing | — |
 | REV-07 | reviewer model ablations | [reviewer-model-ablations.md](reviewer-model-ablations.md) | RM-2 — finish the anchor arms: A4g hot-expert offload (needs skew profile + GLM repair hypothesis) and the Ref external judge | REV-02 |
 | REV-09 | reviewer typed artifacts | [reviewer-typed-artifacts.md](reviewer-typed-artifacts.md) | RA-13a — run the N=20 blind read-back pilot after the existing operator gate | — |

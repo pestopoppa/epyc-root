@@ -1,0 +1,46 @@
+{
+  "schema": "epyc.ni08.hg5.original_acceptance_transport.v1",
+  "run_id": 37721932296,
+  "attempt": 1,
+  "APP_main": "76624a91d72aefce9778d64701ed0f687585eb0a",
+  "ROOT_original_source": "e54175dc09579fa3be0f25655fee6472a85572b4",
+  "records": [
+    {
+      "original_name": "HG5-76624-MAIN-original-five-file-private-commit-acceptance.json",
+      "original_private_locator": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/HG5-76624-MAIN-original-five-file-private-commit-acceptance.json",
+      "original_sha256": "c54df7679bad30caf9077221f68dab1523cc2f7aae7f8641061390e98058dc88",
+      "transport_file": "HG5-76624-MAIN-original-five-file-private-commit-acceptance.json.b64",
+      "transport_sha256": "c6f0daebfe8300d65c024a9dac52a1dabe15c8c5c735ed824a8d520c840ca3af"
+    },
+    {
+      "original_name": "HG5-e541-MAIN-original-four-file-ROOT-private-commit-acceptance.json",
+      "original_private_locator": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/HG5-e541-MAIN-original-four-file-ROOT-private-commit-acceptance.json",
+      "original_sha256": "52c4e5acf4b1eb4dacc6cb623c37a1761074cf25eb87d181bdcaf85f3937f3f4",
+      "transport_file": "HG5-e541-MAIN-original-four-file-ROOT-private-commit-acceptance.json.b64",
+      "transport_sha256": "c1bbc2b3f014b34c136afe8b073ce49bc9eb6ec9c2f8cce6f9c22aaa44c2e8ca"
+    },
+    {
+      "original_name": "HG5-76624-e541-MAIN-original-source-first-publication-acceptance.json",
+      "original_private_locator": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/HG5-76624-e541-MAIN-original-source-first-publication-acceptance.json",
+      "original_sha256": "130ae77bce846e79397154483cd98c51c7fc0145dc80c4e983e2954c99681bc0",
+      "transport_file": "HG5-76624-e541-MAIN-original-source-first-publication-acceptance.json.b64",
+      "transport_sha256": "c803353298422b40130e5a084546ead84a6aed5285de2395ba30e91d6f320799"
+    },
+    {
+      "original_name": "HG5-e541-MAIN-original-native87-acceptance.json",
+      "original_private_locator": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/HG5-e541-MAIN-original-native87-acceptance.json",
+      "original_sha256": "3f928e7ba89d3856dc079fc7ab5d1ed78ddbba63302472a755935f8c15627aec",
+      "transport_file": "HG5-e541-MAIN-original-native87-acceptance.json.b64",
+      "transport_sha256": "552b8689b3bab5d20eeb64bb13b3c64f38636fb2bb9e4f30e0e76ea32dea4c73"
+    },
+    {
+      "original_name": "HG5-76624-MAIN-original-APP-main-promotion-acceptance.json",
+      "original_private_locator": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/HG5-76624-MAIN-original-APP-main-promotion-acceptance.json",
+      "original_sha256": "98df111ab58db95c95978937dc2f1944b02ca14b5a4589b1d84cba2a1a9abde8",
+      "transport_file": "HG5-76624-MAIN-original-APP-main-promotion-acceptance.json.b64",
+      "transport_sha256": "e2df8824496f60edd9c6b27d3b6c0565932905173f23f3cae95ac0f78c5eaa37"
+    }
+  ],
+  "raw_native_custody": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/hg5-e541-original-native-GH-custody-20261008",
+  "scope": "Exact original MAIN acceptances; transport is ungraded custody, no reconstructed claim tuple."
+}

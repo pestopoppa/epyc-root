@@ -1,0 +1,7 @@
+# HG5 force-mode source conformance
+
+APP main `76624a91d72aefce9778d64701ed0f687585eb0a` publishes the bounded default-off force-mode source and strict current streaming fixtures. [Original run37721932296](https://github.com/pestopoppa/epyc-root/actions/runs/37721932296), attempt1/push at ROOTe54175dc, passed all87 exact whole-module cases, with no failures/errors/skips. MAIN independently verified original ZIP CRC and all2,243 extracted members, all2,229 native input hashes, the receipt seal, original JUnit identity multiset, and source/result stability across the unchanged shared Judged/Located grade. Earlier NULL/FALSE originals are preserved.
+
+MAIN also verified58 original APP commit commands,52 original ROOT commit commands,119 source-first publication commands and126 APP main-promotion commands. Publication used normal hooks, nonforce pushes and stable44-byte leases through release and unlink. Five original ROOT recipe files are applied byte-for-byte to MAIN ownership. No inference, runtime reload, activation or model-quality result was produced. Parent HG5/H3 and future request-event writer/reader remain open.
+
+The adjacent base64 files preserve exact original MAIN acceptance bytes and hashes; the manifest records immutable private raw-custody locators. This transport adds no new grading rule or historical tuple. One source child completed;87 cases are controls rather than87 tasks.
