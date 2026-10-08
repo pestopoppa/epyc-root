@@ -15,7 +15,8 @@ jobs:
       - name: Verify copied candidate hashes
         run: python proposed/m12f/verify-source-pins.py
       - name: Install exact pytest closure
-        run: python -m pip install --require-hashes --only-binary=:all: --no-deps -r proposed/m12f/requirements.txt
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: --no-deps -r proposed/m12f/requirements.txt
       - name: Run only copied candidate fixtures
         env:
           PYTHONDONTWRITEBYTECODE: '1'
