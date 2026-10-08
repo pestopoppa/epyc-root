@@ -1,0 +1,17 @@
+{
+  "research_commit": "daa1855aee005c0da53398ea2a102a3436b2fb6a",
+  "files": [
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/tulving_episodic_adapter.py",
+      "sha256": "ff1ccc2a10c39d66a79d56d68111cf097880c7ca12d76977e43f658b68f1dff9",
+      "size": 44488
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/test_m12h_ast_isolated.py",
+      "sha256": "e56642c6df703f39abc5bccc9ee9f7f0cd6b13b28df64162f5226df74506ea66",
+      "size": 3392
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+name: M12h native graph profiler source controls
+on:
+  push:
+    branches: [codex/m12h-native-source-20261008]
+permissions:
+  contents: read
+jobs:
+  graph-profiler-source-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ROOT_CONTEXT_PIN: 82dc0a8f0e4c9359a6733dd0241ba9caea94f785
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      RESEARCH_PIN: daa1855aee005c0da53398ea2a102a3436b2fb6a
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Initialize preserved original envelope
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/m12h-native/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/m12h-native/status.json"
+      - name: Checkout exact ROOT recipe and adapter proposal
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout unchanged original CI carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact Research source proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_PIN }}
+          path: research
+          persist-credentials: false
+      - name: Set up exact Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install existing minimal locked native-test environment
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/m12h-native/venv"
+          "$RUNNER_TEMP/m12h-native/venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: -r recipe/scripts/ci/m12h_native/requirements.txt 2>&1 | tee "$RUNNER_TEMP/m12h-native/result/dependency-install.log"
+      - name: Capture all 8 whole-module synthetic controls once
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/m12h-native/venv/bin/python" -I recipe/scripts/ci/m12h_native/capture.py
+      - name: Retain original verdict JUnit errors and source custody
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m12h-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/m12h-native/result/
+            ${{ runner.temp }}/m12h-native/source-readset.json
+            ${{ runner.temp }}/m12h-native/status.json
+          if-no-files-found: error

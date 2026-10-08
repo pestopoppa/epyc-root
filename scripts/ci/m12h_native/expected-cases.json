@@ -1,0 +1,34 @@
+[
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_full_match_retained_with_low_judge"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_partial_match_not_completed_by_high_judge"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_no_semantic_matches_invented"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_none_judge_identical_to_no_judge"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_empty_ground_truth"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_reversed_response_not_order_claim"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_duplicate_prediction_does_not_fill_missing_match"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_m12h_ast_isolated.JudgeMatchControls",
+    "name": "test_judge_called_once_with_native_arguments"
+  }
+]
