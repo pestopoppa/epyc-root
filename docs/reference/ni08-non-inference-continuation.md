@@ -575,3 +575,10 @@ The accepted dashboard snapshot at `2026-10-07T23:54:52Z` predates both peer com
 M-12g and its existing-carrier belief-source capture are complete: Research main `72832ef6` gates explicit SRS comparison before output/capture and reports populated bins/counts while preserving score arithmetic. The original 32 controls at ROOT596 passed with exact native identities and complete declared custody. [MAIN evidence](../../artifacts/ni08/tulving-srs-workflow-controls-20261008/README.md). Running tally210 =137 existing closures+73scoped children; validation cases are not tasks.
 
 Current next work: finish HG5 corrective original validation/source publication, publish the accepted EVL runbook blob, and carry out M12i owned model-free replay with prospective execution custody. M12f metric construction and the D9/R7/R8 choices remain separate human decisions. The whole non-inference backlog is not exhausted. Periodic full wrap-ups follow the operator's instruction and include wiki/index checks and normal GitHub publication.
+
+
+## HG5 source closure and new proposal-fixture wiring — 212 completions
+
+[HG5 source/native custody](../../artifacts/ni08/hg5-native-labels-reader-source-20261008/README.md) closes two source children after public ROOT e6f6 integration; original APP249 and ROOT84 controls cover the pre-capture declarations and strict reader/Source/CLI path. Tally212=137 existing closures+75 scoped children. Runtime/H3/quality parents remain open.
+
+The exact [M12f metric proposal](../../artifacts/operator/decisions/M12f-EPYC-v3-20261008/README.md) and [AUD10 hook proposal](../../artifacts/operator/decisions/D9-AUD10-clean-only-20261008/README.md) are preserved on main with original hosted63/26 controls; canonical behavior remains pending the bounded human decisions. Their ordinary past outcomes have no retrofitted tuple. VB-PROPOSAL-FIXTURE-CAPTURE prospectively wires future events into the existing native CI carrier and shared grade. M12i replay awaits physical CPU-region release, not inference, and corrected S05 source artifacts continue. No whole-backlog exhaustion claim.

@@ -1,0 +1,18 @@
+{
+  "APP_main": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+  "ROOT_main": "567d624c02cc5d1668fcb9b1f87a7bb331956ef0",
+  "accepted": true,
+  "all_raw_argv_streams_exits_verified": true,
+  "commit": "ecc5726bb454dd2a9af09847920bf2a6bd7b59d1",
+  "journal_sha256": "bd6af8b2878f9d9c24d92a6cc482f9f0026583196501350346568719ce4c80e7",
+  "mains_unchanged": true,
+  "native_capture_performed": false,
+  "normal_two_ROOT_caps_three_equal44_release_unlink_verified": true,
+  "old_original_FALSE_and_NULLs_preserved": true,
+  "old_original_NULLs_preserved": true,
+  "one_original_ROOT_only_source_push": true,
+  "original_commands": 179,
+  "receipt_sha256": "e157f3fd326ac8a3897c37441e9ddff104fb62b50a26581dbab26afe622d6614",
+  "reviewer": "MAIN",
+  "schema": "private.HG5.MAIN.original_ROOT_only_source_publication_acceptance.v1"
+}

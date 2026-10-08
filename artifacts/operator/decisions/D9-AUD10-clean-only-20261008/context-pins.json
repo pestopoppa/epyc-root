@@ -1,0 +1,20 @@
+{
+  "Research_base": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+  "ROOT_metric_base": "59c5dc5bee3b91adca180397c1f867049a1ac44e",
+  "ROOT_settings_base": "567d624c02cc5d1668fcb9b1f87a7bb331956ef0",
+  "ROOT_settings_sha256": "f993ebfdb1f3bd1df8e50e7fcb236c033e483915db2a2245cc91eedee4aecbad",
+  "source_commit": "46305499e450c8a3c7088f434c3631a3aae1d62f",
+  "originals": {
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175390-artifact-11548953321.zip": "9a3ab7cfd78035145c77b4b6f5675e519b9e64b0cf5d8a2d8fa2f65b093a43c1",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175390-artifact-11548953321.zip-extracted/junit.xml": "f380edb57937fc0b8e8186488252cc0f7833c34f7757ae63b3e8a2d9b735f34a",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175390-artifact-11548953321.zip-extracted/runtime.json": "74a1867f809172a25fa797427bb75f1b4887a3258924538f3e64c5dcc4483774",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175390-artifact-11548953321.zip-extracted/test-receipt.json": "869c8d23e122ab6caaffce32132c6ac63d1e18e517bc759249ebcb13e30a6b9c",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175390-logs.zip": "25fe1796496df4353df978431a230524747ad38422b1f13a6364402490b89e60",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175542-artifact-11549747122.zip": "2ed7fdec53eacc8d8943b2557fc72098baf98a79eaf6a0c92695ee26df4f22d4",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175542-artifact-11549747122.zip-extracted/argv.json": "5c70d3b07a9aa8f83efb892aaa4887a18066399065785d3fa6741bbbdb874c87",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175542-artifact-11549747122.zip-extracted/environment.json": "c6759c39278eca72fbb3403bbcfe84d488fe874d5e470dfc2ba529916a318e1a",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175542-artifact-11549747122.zip-extracted/junit.xml": "5e2e28517c49ff367fd98191881060097ed179cd0c06b78722d775ad8a6b26fe",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/37775175542-logs.zip": "4cbfc36a1444c915e94d7350a5c6818222bb6db6bec27643569ce15ffa1ae695",
+    "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals/results.json": "70ae5e1098b40206b21282342cd7f92da9b1c7441b7a88fe006277d38600206b"
+  }
+}

@@ -122,8 +122,11 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
 
 ## Open Questions
 
-- Does the served-judge path at `judge_port: 8082` honour `response_format json_object` reliably?
-  `judge_rubric` returns 0.0 on any JSON decode error — see CJ-10.
+- Does the currently resolved served judge reliably honor the requested nugget output schema
+  during its owner-controlled inference window? Current local parsing records unusable output as
+  typed, unjudged failure, not0.0; the historical upstream `judge_rubric` hazard belongs to CJ-10.
+  [MAIN current-source clarification](../../artifacts/ni08/cme-judge-current-source-20261008/README.md).
+  CJ-10 upstream transcription/provenance comparison remains separately tracked.
 - ~~Is BEAM's licence compatible with staging under `/mnt/raid0/llm/data/eval/`?~~ **Resolved 2026-09-15:**
   data CC BY-SA 4.0 (HF dataset card `license: cc-by-sa-4.0`, `Mohammadta/BEAM` sha `3205395e`),
   code MIT (`github.com/mohammadtavakoli78/BEAM` LICENSE). Local staging for evaluation is

@@ -1,0 +1,26 @@
+{
+  "accepted": true,
+  "artifact_zip_sha256": "6f22639d526cbcad1b6e106c7f6af0b479380d89d710fc3964be626665d9994d",
+  "attempt": 1,
+  "cases": 84,
+  "classification": "FALSE",
+  "commit": "446df4478fef203e5d5ae17fda9ff211b465cf85",
+  "errors_skips": 0,
+  "failure": 1,
+  "failure_preserves_SC17_future_guard": true,
+  "junit_sha256": "00df9a0e6fafdb438dd1a21cbc07687dd66afb6feec79f314a872d66160d535e",
+  "native_true": false,
+  "no_old_rerun_or_rewrite": true,
+  "original_before_after_equal": true,
+  "original_receipt_seal": "09ec8b45f1690edd95fb6f3b9cb8aa7f3637cb1d6df2e18312f8fa1e68aae735",
+  "original_shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "passed": 83,
+  "readset_hashes_verified": 133,
+  "reviewer": "MAIN",
+  "run": 37770487785,
+  "safe_unique_CRC_members": 145,
+  "schema": "private.HG5.MAIN.original_ROOT84_FALSE_acceptance.v1"
+}

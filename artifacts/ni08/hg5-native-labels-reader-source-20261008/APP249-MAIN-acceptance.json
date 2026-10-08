@@ -1,0 +1,32 @@
+{
+  "schema": "private.HG5.MAIN.original_APP249_native_acceptance.v1",
+  "accepted": true,
+  "reviewer": "MAIN",
+  "native_true": true,
+  "cases": 249,
+  "failures_errors_skips": 0,
+  "run": 37766751410,
+  "attempt": 1,
+  "source_commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+  "recipe_event_commit": "03c1423105042179c14c62f3e754de4d2df18715",
+  "artifact_zip_sha256": "6b82b1e002a1470e3c297852af5b79f843b8f7bda904e1bd849aceff10d9de84",
+  "original_junit_sha256": "8177e40c8ff11ebb9040b8fca554cb74bdcaecdc8cc866b5c8dcd4628ff242c2",
+  "readsets_verified": 2234,
+  "regular_APP_Git_blobs_verified": 2221,
+  "opaque_symlink_not_followed": true,
+  "receipt_seal_verified": true,
+  "original_source_result_custody_verified": true,
+  "existing_shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "measurement_id": "ci-fixture:aec76878db7721b5eca424df913f976dd6ea6f970370ef57b6adf580eec9fed2",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "ROOT84_original_is_NULL_and_not_accepted_here": true,
+  "prior_NULLs_preserved": true
+}

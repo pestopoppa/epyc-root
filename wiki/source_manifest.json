@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T11:37:39Z",
+  "last_compile": "2026-10-08T13:21:17Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T11:37:39Z",
+  "scan_time": "2026-10-08T13:21:17Z",
   "schema_version": 1,
-  "source_set_hash": "5596acbae4bdf228fca5221daee434046f5e6e1b7f02bbb7ef24453feef6c3bf",
+  "source_set_hash": "d01baaad5380b8e8d0a465fe3c53d27b6c407c787e9ec6256b56964720fa5b93",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -295,10 +295,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e67a1f8ac3196f9a5bd5c138465d38f2bd5619d59b0d2355ea317db23befad85",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "cff4809ed02812e9feede06ce9ddcc9b400ecbcb21d0860551e222b241af8e45",
+      "modified": "2026-10-08T12:47:47Z",
       "path": "handoffs/active/conversational-memory-eval-instrument.md",
-      "size": 10985,
+      "size": 11293,
       "title": "Conversational / Episodic Memory Eval Instruments \u2014 BEAM + Tulving adapters",
       "type": "handoff-active"
     },
@@ -927,8 +927,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "192c9479647cdf26ea68af4a52dff0cc43d3d73ee2409dd9bfecf7d33e7aac60",
-      "modified": "2026-10-08T10:57:01Z",
+      "content_hash": "bccb86f21641f8985f14b4a717ccc9fff4a97b7eb9854940a63b84d06c5b0f11",
+      "modified": "2026-10-08T12:38:14Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 164720,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "53541aaef03b5a420453169399a7308f11ef656699df0153fa6a6d383ac17c50",
-      "modified": "2026-10-08T11:23:09Z",
+      "content_hash": "da048055163870886b39e1229cecf1400afbd8fb00a9636939516022d1005713",
+      "modified": "2026-10-08T13:16:09Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 407812,
+      "size": 410059,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b40357717cd6b181ce81ee327460877878153034ddb42afdde409496b3af4a3e",
-      "modified": "2026-10-08T11:23:09Z",
+      "content_hash": "eba95a3d8743dfe6b21e9c5971d9f04d19b0554249690e3a9efa784dc50bd4f3",
+      "modified": "2026-10-08T12:47:47Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 32873,
+      "size": 35462,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10399,10 +10399,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "8cb16d3b9cea407d0bfcb5808b9db9d6b80a781158e2adbf5aa5a85a61f80d7e",
-      "modified": "2026-10-08T10:57:01Z",
+      "content_hash": "fc1fca683273bab2008fb22968eeb897777ad84d54bb8b4c1c4daed1335d8a6a",
+      "modified": "2026-10-08T12:38:14Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 90157,
+      "size": 91235,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

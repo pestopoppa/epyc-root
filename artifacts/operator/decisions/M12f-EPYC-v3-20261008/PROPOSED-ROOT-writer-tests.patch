@@ -1,0 +1,46 @@
+--- a/scripts/vidya/adapters/tulving_episodic_capture.py
++++ b/scripts/vidya/adapters/tulving_episodic_capture.py
+@@ -343,6 +343,10 @@
+             f"summary.scorer_version must be >= {MIN_SCORER_VERSION} (post-M-12e); got "
+             f"{scorer_version!r}. A pre-M-12e score is a different quantity under the same "
+             "name and must never be projected as this metric.")
++    if scorer_version != MIN_SCORER_VERSION or summary.get("cas_definition") not in (None, "v2_native"):
++        raise CaptureError(
++            "SC67 admits only scorer v2 native CAS; a new scorer/CAS definition requires "
++            "separate human protocol admission")
+     if summary.get("gold_binding") != GOLD_BINDING:
+         raise CaptureError(
+             f"summary.gold_binding is {summary.get('gold_binding')!r}, not {GOLD_BINDING!r}: "
+--- /dev/null
++++ b/tests/unit/test_m12f_capture_admission.py
+@@ -0,0 +1,30 @@
++"""Pure temporary-fixture direct-library admission boundaries."""
++import importlib.util
++from pathlib import Path
++import pytest
++
++_spec = importlib.util.spec_from_file_location("m12f_capture_candidate", Path(__file__).with_name("tulving_episodic_capture.py"))
++capture = importlib.util.module_from_spec(_spec)
++_spec.loader.exec_module(capture)
++
++@pytest.mark.parametrize("version,definition", [(3,"epyc_v3_gt_ge2_partial_zero"),(3,None),(2,"unknown"),(2,"epyc_v3_gt_ge2_partial_zero"),(4,"v2_native")])
++def test_direct_writer_refuses_unadmitted_cas_without_sidecar(tmp_path, version, definition):
++    scored = tmp_path / "fake-scored.json"
++    scored.write_text("{}")
++    summary = {"scorer_version": version}
++    if definition is not None:
++        summary["cas_definition"] = definition
++    with pytest.raises(capture.CaptureError, match="separate human protocol admission"):
++        capture.write_belief_measurements(scored, summary=summary, run_id="fake", producer="fixture", arm="none", variant="Udefault_Sdefault_seed0", chapters=20)
++    assert list(tmp_path.iterdir()) == [scored]
++
++@pytest.mark.parametrize("definition", [None,"v2_native"])
++def test_v2_reaches_existing_gold_binding_guard(tmp_path, definition):
++    scored = tmp_path / "fake-scored.json"
++    scored.write_text("{}")
++    summary = {"scorer_version": 2}
++    if definition is not None:
++        summary["cas_definition"] = definition
++    with pytest.raises(capture.CaptureError, match="gold_binding"):
++        capture.write_belief_measurements(scored, summary=summary, run_id="fake", producer="fixture", arm="none", variant="Udefault_Sdefault_seed0", chapters=20)
++    assert list(tmp_path.iterdir()) == [scored]

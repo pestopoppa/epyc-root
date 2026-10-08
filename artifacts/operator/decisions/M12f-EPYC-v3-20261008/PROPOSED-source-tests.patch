@@ -1,0 +1,244 @@
+--- a/scripts/benchmark/score_tulving_run.py
++++ b/scripts/benchmark/score_tulving_run.py
+@@ -42,6 +42,7 @@
+
+ import argparse
+ import json
++import math
+ from pathlib import Path
+ from typing import Any
+
+@@ -76,6 +77,49 @@
+ #:      tau fails closed unless the matched set covers the full ground truth,
+ #:      bins keyed on matching-event count (``nb_events``).
+ SCORER_VERSION = 2
++# PROPOSED M12f definition: human metric-contract review is required before applying.
++CAS_V2 = "v2_native"
++CAS_V3 = "epyc_v3_gt_ge2_partial_zero"
++PROPOSED_CAS_SCORER_VERSION = 3
++
++
++def versioned_epyc_cas(latest_results: list[dict], chronological_results: list[dict]) -> dict:
++    """EPYC variant, not paper-equivalent: eligible incomplete retrieval stays zero tau."""
++    eligible = []
++    excluded = {0: 0, 1: 0}
++    for row in chronological_results:
++        n = row.get("nb_gt")
++        if type(n) is not int or n < 0:
++            raise ValueError("versioned CAS requires a native nonnegative gold-item count")
++        if n < 2:
++            excluded[n] += 1
++        else:
++            if type(row.get("tau_full_coverage")) is not bool:
++                raise ValueError("versioned CAS requires explicit native coverage status")
++            value = row.get("kendall_tau") if row["tau_full_coverage"] else 0.0
++            if type(value) not in (int, float) or not math.isfinite(value) or not -1 <= value <= 1:
++                raise ValueError("invalid native Kendall tau")
++            eligible.append(value)
++    latest = [row["f1"] for row in latest_results]
++    if any(type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1 for v in latest):
++        raise ValueError("invalid native latest-state F1")
++    latest_mean = sum(latest) / len(latest) if latest else None
++    order_mean = sum(eligible) / len(eligible) if eligible else None
++    status = ("undefined_no_eligible_ordering" if order_mean is None else
++              "undefined_no_latest" if latest_mean is None else "defined")
++    return {
++        "cas_definition": CAS_V3,
++        "chronological_awareness_score": ((latest_mean + order_mean) / 2
++                                           if status == "defined" else None),
++        "cas_status": status,
++        "latest_state_score": latest_mean,
++        "chronological_order_score": order_mean,
++        "chronological_eligible_questions": len(eligible),
++        "chronological_excluded_zero_item_questions": excluded[0],
++        "chronological_excluded_single_item_questions": excluded[1],
++        "chronological_eligible_partial_coverage": sum(
++            row["nb_gt"] >= 2 and not row["tau_full_coverage"] for row in chronological_results),
++    }
+
+ #: How ground truth is bound to result rows. The metric semantics are unchanged from
+ #: scorer v2 (the stored June run re-scores identically); what changed is which rows the
+@@ -332,13 +376,15 @@
+
+ def score_result_payload(payload: dict[str, Any], prompt_index: dict[str, dict[str, Any]],
+                          *, chapters: int | None = None,
+-                         variant: str | None = None) -> dict[str, Any]:
++                         variant: str | None = None, cas_definition: str = CAS_V2) -> dict[str, Any]:
+     """Score one result payload against ``prompt_index``, the gold of ONE chapter set.
+
+     ``prompt_index`` is normally a :class:`GoldIndex`, which carries its own chapter set,
+     variant and book. A plain dict must be given ``chapters`` explicitly. Raises
+     :class:`GoldBindingError`, listing the offending rows, when any row cannot be bound.
+     """
++    if cas_definition not in (CAS_V2, CAS_V3):
++        raise ValueError("unknown CAS definition")
+     gold_chapters = getattr(prompt_index, "chapters", None)
+     if chapters is not None and gold_chapters is not None and int(chapters) != gold_chapters:
+         raise GoldBindingError(
+@@ -493,6 +539,9 @@
+         "avg_tokens_per_second": avg_tps,
+         "by_retrieval_type": by_retrieval,
+     }
++    if cas_definition == CAS_V3:
++        summary.update(versioned_epyc_cas(latest_inputs, chronological_inputs))
++        summary["scorer_version"] = PROPOSED_CAS_SCORER_VERSION
+     return {
+         "summary": summary,
+         "missing_ground_truth_ids": missing_ground_truth,
+@@ -505,6 +554,8 @@
+
+ def render_markdown(scored: dict[str, Any], result_path: Path) -> str:
+     summary = scored["summary"]
++    cas = summary["chronological_awareness_score"]
++    cas_label = f"{cas:.4f}" if cas is not None else "undefined (composite suppressed)"
+     lines = [
+         "# Tulving Episodic Run Score",
+         "",
+@@ -525,11 +576,21 @@
+         f" (over {summary.get('simple_recall_questions', 0)}"
+         f" `get={SIMPLE_RECALL_GET_STYLE}` questions,"
+         f" bin basis `{summary.get('simple_recall_bin_basis')}`)",
+-        f"- Chronological Awareness Score: {summary['chronological_awareness_score']:.4f}",
++        f"- Chronological Awareness Score: {cas_label}",
+         f"- Chronological questions failed closed for partial coverage: "
+         f"{summary.get('chronological_partial_coverage', 0)}"
+         f" / {summary.get('chronological_questions', 0)}",
+     ]
++    if summary.get("cas_definition") == CAS_V3:
++        lines.extend([
++            f"- CAS definition: `{CAS_V3}` (EPYC variant; not paper-equivalent)",
++            f"- CAS status: {summary['cas_status']}; latest-state leg: {summary['latest_state_score']}; "
++            f"ordering leg: {summary['chronological_order_score']}",
++            f"- Ordering population: {summary['chronological_eligible_questions']} eligible; "
++            f"{summary['chronological_excluded_zero_item_questions']} empty and "
++            f"{summary['chronological_excluded_single_item_questions']} singleton excluded; "
++            f"{summary['chronological_eligible_partial_coverage']} eligible partial-coverage zero tau",
++        ])
+     bins = summary.get("simple_recall_bins", {})
+     populated = [label for label, bucket in bins.items() if bucket.get("count", 0)]
+     lines.append(f"- Populated SRS bins: {', '.join(populated) or 'none'}")
+@@ -601,6 +662,8 @@
+     parser.add_argument("--compare-srs-to", type=Path, default=None,
+                         help="Refuse SRS comparison unless an existing scored JSON has the same "
+                              "scorer, gold binding, bin basis and populated bins")
++    parser.add_argument("--cas-definition", choices=(CAS_V2, CAS_V3), default=CAS_V2,
++                        help="Native v2 default; separately versioned EPYC ordering population")
+     belief = parser.add_argument_group(
+         "belief kernel (SC67)",
+         "Emit the producer-authored claim-tuple sidecar beside --out-json. Requires the arm "
+@@ -616,6 +679,8 @@
+     belief.add_argument("--category", default="CANDIDATE",
+                         choices=("OPTIMUM", "BASELINE", "CANDIDATE"))
+     args = parser.parse_args()
++    if args.cas_definition == CAS_V3 and args.belief_measurements:
++        raise SystemExit("versioned CAS is not admitted by the existing SC67 protocol")
+
+     payload = _load_json(args.result)
+     try:
+@@ -625,7 +690,9 @@
+             raise GoldBindingError(
+                 f"--variant {args.variant} disagrees with the rows' {recorded_variant}")
+         variant = args.variant or recorded_variant or _DEFAULT_VARIANT
+-        scored = score_result_payload(payload, build_prompt_index(chapters, variant))
++        gold = build_prompt_index(chapters, variant)
++        scored = (score_result_payload(payload, gold) if args.cas_definition == CAS_V2 else
++                  score_result_payload(payload, gold, cas_definition=CAS_V3))
+         if args.compare_srs_to:
+             reference = _load_json(args.compare_srs_to)
+             require_comparable_srs(scored["summary"], reference.get("summary", {}))
+--- a/scripts/benchmark/test_score_tulving_run.py
++++ b/scripts/benchmark/test_score_tulving_run.py
+@@ -551,3 +551,93 @@
+         assert json.loads(out.read_text()) == scored
+         assert "Populated SRS bins:" in md.read_text()
+         assert "Cross-book SRS comparison requires" in md.read_text()
++
++
++# PROPOSED M12f controls; no source application or native event authorized by preparation.
++def test_versioned_cas_excludes_short_gold_and_keeps_partial_retrieval_zero():
++    from score_tulving_run import versioned_epyc_cas
++    rows = [{"nb_gt": 0}, {"nb_gt": 1},
++            {"nb_gt": 2, "tau_full_coverage": True, "kendall_tau": 1.0},
++            {"nb_gt": 3, "tau_full_coverage": False, "kendall_tau": 1.0}]
++    result = versioned_epyc_cas([{"f1": 1.0}], rows)
++    assert result["chronological_order_score"] == 0.5
++    assert result["chronological_awareness_score"] == 0.75
++    assert result["chronological_eligible_questions"] == 2
++    assert result["chronological_excluded_zero_item_questions"] == 1
++    assert result["chronological_excluded_single_item_questions"] == 1
++    assert result["chronological_eligible_partial_coverage"] == 1
++
++
++@pytest.mark.parametrize("rows", [[], [{"nb_gt": 0}], [{"nb_gt": 1}], [{"nb_gt": 0}, {"nb_gt": 1}]])
++def test_versioned_cas_no_eligible_order_suppresses_composite_keeps_latest_separate(rows):
++    from score_tulving_run import versioned_epyc_cas
++    result = versioned_epyc_cas([{"f1": 0.8}], rows)
++    assert result["chronological_order_score"] is None
++    assert result["chronological_awareness_score"] is None
++    assert result["latest_state_score"] == 0.8
++    assert result["cas_status"] == "undefined_no_eligible_ordering"
++
++
++def test_versioned_cas_no_latest_leg_is_undefined_and_no_silent_renormalization():
++    from score_tulving_run import versioned_epyc_cas
++    result = versioned_epyc_cas([], [{"nb_gt": 2, "tau_full_coverage": True, "kendall_tau": -1.0}])
++    assert result["chronological_order_score"] == -1.0
++    assert result["latest_state_score"] is None
++    assert result["chronological_awareness_score"] is None
++    assert result["cas_status"] == "undefined_no_latest"
++
++
++@pytest.mark.parametrize("count", [True, -1, None, 2.0])
++def test_versioned_cas_refuses_non_native_gold_denominator(count):
++    from score_tulving_run import versioned_epyc_cas
++    with pytest.raises(ValueError, match="gold-item count"):
++        versioned_epyc_cas([], [{"nb_gt": count}])
++
++
++def test_versioned_payload_preserves_default_v2_and_refuses_cross_version_srs():
++    from score_tulving_run import CAS_V2, CAS_V3
++    from tulving_srs_comparison import require_comparable_srs
++    payload, prompts = _m12e_fixture()
++    native = _score(payload, prompts)
++    explicit = score_result_payload(payload, _gold(prompts, 20), cas_definition=CAS_V2)
++    proposed = score_result_payload(payload, _gold(prompts, 20), cas_definition=CAS_V3)
++    assert native == explicit
++    assert native["summary"]["scorer_version"] == 2
++    assert proposed["summary"]["scorer_version"] == 3
++    assert proposed["per_question"] == native["per_question"]
++    for key in ("simple_recall_score", "simple_recall_questions", "simple_recall_bins", "gold_binding", "row_binding"):
++        assert proposed["summary"][key] == native["summary"][key]
++    with pytest.raises(ValueError, match="scorer version 2"):
++        require_comparable_srs(native["summary"], proposed["summary"])
++
++
++def test_versioned_cas_sc67_refusal_precedes_gold_outputs_and_writer(tmp_path, monkeypatch):
++    from score_tulving_run import CAS_V3
++    monkeypatch.setattr("sys.argv", ["score_tulving_run.py", str(tmp_path / "absent-raw.json"),
++        "--cas-definition", CAS_V3, "--belief-measurements", "--arm", "none", "--out-json", str(tmp_path / "out.json")])
++    monkeypatch.setattr(score_tulving_run, "build_prompt_index", lambda *a: pytest.fail("gold must not load"))
++    with pytest.raises(SystemExit, match="not admitted"):
++        score_tulving_run.main()
++    assert not (tmp_path / "out.json").exists()
++    assert not (tmp_path / "belief_measurements.jsonl").exists()
++
++
++@pytest.mark.parametrize("coverage", [None, 1, "true"])
++def test_versioned_cas_requires_native_boolean_coverage(coverage):
++    from score_tulving_run import versioned_epyc_cas
++    with pytest.raises(ValueError, match="coverage"):
++        versioned_epyc_cas([], [{"nb_gt": 2, "tau_full_coverage": coverage}])
++
++
++@pytest.mark.parametrize("tau", [True, float("nan"), float("inf"), -1.1, 1.1])
++def test_versioned_cas_refuses_invalid_full_coverage_tau(tau):
++    from score_tulving_run import versioned_epyc_cas
++    with pytest.raises(ValueError, match="Kendall"):
++        versioned_epyc_cas([], [{"nb_gt": 2, "tau_full_coverage": True, "kendall_tau": tau}])
++
++
++@pytest.mark.parametrize("f1", [True, float("nan"), -0.1, 1.1])
++def test_versioned_cas_refuses_invalid_latest_f1(f1):
++    from score_tulving_run import versioned_epyc_cas
++    with pytest.raises(ValueError, match="F1"):
++        versioned_epyc_cas([{"f1": f1}], [])

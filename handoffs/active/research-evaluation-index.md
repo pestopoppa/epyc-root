@@ -51,8 +51,8 @@
 | EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | Source-review remaining deterministic tool contracts; retain live DTAP and scoring 2a-iv isolation gates | — |
 | EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | VB-HG5-TAP-PROJECTION-LABELS-WRITE — capture corrected native labels; keep real quality runs separate | EVL-50 |
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 — quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | — |
-| EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-04 — refresh the E5 Stage-B readiness verification (14 days stale), then S-05's corrected re-measurement grid | INF-06, INF-07, RTG-46 |
-| EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-3 — carry the BEAM harness-defect note on every BEAM number quoted outside the SC68 tuple | EVL-10 |
+| EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-05 — freeze and dry-plan the corrected remaining E5 manifests, including full-machine/interleaved Qwen shapes | INF-06, INF-07, RTG-46 |
+| EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | Resolve the served-judge output-schema reliability question at the owner’s inference boundary; route upstream provenance to CJ-10 | EVL-10 |
 
 ## Cross-domain
 

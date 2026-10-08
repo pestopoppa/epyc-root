@@ -1,0 +1,20 @@
+{
+  "accepted": true,
+  "all_raw_argv_stream_hashes_and_zero_exits_verified": true,
+  "canonical_apply_push_inference_or_grade": false,
+  "commit": "e6f6c0048ed79d77524b542c91501ef37d4ba660",
+  "exact25_source_blobs_preserved": true,
+  "journal_sha256": "b651caae062de62959317dfbf10de7873f38621a7563548ae0a6ddbd161c82ce",
+  "normal_cap_three_equal44_release_unlink_verified": true,
+  "outside25_inherits_HG5_bb038": true,
+  "parents": [
+    "bb038cdfcefd1c17ed2a4e1df7546c423b9f7282",
+    "46305499e450c8a3c7088f434c3631a3aae1d62f"
+  ],
+  "public_main": "567d624c02cc5d1668fcb9b1f87a7bb331956ef0",
+  "raw_commands": 228,
+  "receipt_sha256": "4fe25b1a1255b063c17e6a2ed1d9d149d56b034614c43b83b0c1e756ab24c365",
+  "reviewer": "MAIN",
+  "schema": "private.MAIN.proposed_only_ROOT25.integration_acceptance.v1",
+  "tree": "ce09767aed085ea15bf06ed2a74e20b87500f638"
+}

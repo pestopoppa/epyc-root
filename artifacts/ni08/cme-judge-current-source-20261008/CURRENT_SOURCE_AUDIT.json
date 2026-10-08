@@ -1,0 +1,59 @@
+{
+  "status": "SOURCE_AUDIT_ONLY_NO_EXECUTION",
+  "sources": [
+    {
+      "repo": "APP",
+      "commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+      "path": "scripts/benchmark/debug_scorer.py",
+      "sha256": "e1b79e69dec755365d8bb69e2a8accb8e3ec747f4212e5bc2393561937d039fd",
+      "bytes": 101730,
+      "judge_rubric_defined": false
+    },
+    {
+      "repo": "Research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/debug_scorer.py",
+      "sha256": "88ace99c6392c36ea8cb1ed94e04b1eecabcfe878e45f65967b1fe3fff0bd3b1",
+      "bytes": 4030,
+      "judge_rubric_defined": false
+    },
+    {
+      "repo": "Research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/beam_scoring.py",
+      "sha256": "1cab0cbe3f84f7e3a499000ef9874abbb57dc190e8974030e9ea8acd04f91d50",
+      "bytes": 15418,
+      "judge_rubric_defined": false
+    },
+    {
+      "repo": "Research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/judge_beam_run.py",
+      "sha256": "b4940c9411f1772752c88dda04167f8924da8f1c6f1e40974484b28defa2b98c",
+      "bytes": 10354,
+      "judge_rubric_defined": false
+    },
+    {
+      "repo": "Research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/test_beam_adapter.py",
+      "sha256": "4fe29e3b10fcd1caf8808cb368ec46a0c45c3b0518d61f19866a2055eecd17f8",
+      "bytes": 22292,
+      "judge_rubric_defined": false
+    }
+  ],
+  "finding": "Current local BEAM path already raises NuggetVerdictError and records malformed replies as unjudged; historical upstream judge_rubric zeroing is not current local code.",
+  "caller_contract": {
+    "served_judge": "Research judge_beam_run.py67-79 wraps APP ScoringUnavailableError as JudgeUnavailable",
+    "judge_run": "129-141 catches NuggetVerdictError into reason=unparseable_verdict without nugget_verdicts; separate unjudged list",
+    "parser": "Research beam_scoring.py181-215 typed refusal; correct0/0.5/1 preserved"
+  },
+  "needed_work": {
+    "CJ10": "Canonical upstream prompt transcription/diff task remains open; current question-anchored local prompt is already present, but exact upstream three-delta provenance comparison was not proved by this audit.",
+    "CME_open_question": "Stale local parse-to-zero assertion should be replaced by current typed-unjudged contract, with live transport schema reliability explicitly owner-window compute-gated.",
+    "operator_decision": "None required to correct stale source description; live judge calls require runtime owner scheduling and inference authorization."
+  },
+  "source_patch_needed": false,
+  "tests_run": false,
+  "canonical_writes": false
+}

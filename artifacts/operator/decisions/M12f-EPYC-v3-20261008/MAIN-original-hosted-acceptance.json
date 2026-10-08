@@ -1,0 +1,26 @@
+{
+  "accepted": true,
+  "canonical_metric_hook_apply_inference_or_grade": false,
+  "capture_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12f-YAML-corrected-two-original-hosted-watcher-20261008/originals",
+  "commit": "46305499e450c8a3c7088f434c3631a3aae1d62f",
+  "old_NULL_and_prior_AUD10_TRUE_preserved": true,
+  "outcomes": [
+    {
+      "JUnit_sha256": "f380edb57937fc0b8e8186488252cc0f7833c34f7757ae63b3e8a2d9b735f34a",
+      "cases": 63,
+      "failures_errors_skips": 0,
+      "run": "37775175390",
+      "zip_sha256": "9a3ab7cfd78035145c77b4b6f5675e519b9e64b0cf5d8a2d8fa2f65b093a43c1"
+    },
+    {
+      "JUnit_sha256": "5e2e28517c49ff367fd98191881060097ed179cd0c06b78722d775ad8a6b26fe",
+      "cases": 26,
+      "failures_errors_skips": 0,
+      "run": "37775175542",
+      "zip_sha256": "2ed7fdec53eacc8d8943b2557fc72098baf98a79eaf6a0c92695ee26df4f22d4"
+    }
+  ],
+  "reviewer": "MAIN",
+  "schema": "private.MAIN.original_hosted_proposal_outcomes.v1",
+  "source_publication_acceptance": "M12f-YAML-463054-MAIN-original-correction-publication-acceptance.json"
+}

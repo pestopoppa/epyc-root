@@ -1,0 +1,17 @@
+{
+  "ROOT84_not_accepted_or_run": true,
+  "ROOT_main_unchanged": "59c5dc5bee3b91adca180397c1f867049a1ac44e",
+  "accepted": true,
+  "all_raw_argv_streams_exits_verified": true,
+  "commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+  "journal_sha256": "4b2eff3ed8c14217fe69c0456228f993b88fac09bab451e87aa3c07849baf4c1",
+  "main_preimage": "a4cc85eb774c066f30adc7b91aa26a40bbcc9036",
+  "native_capture_performed": false,
+  "normal_two_caps_three_equal44_release_unlink_verified": true,
+  "one_normal_APP_main_FF": true,
+  "original_commands": 160,
+  "receipt_sha256": "4d7fa1483152497d356229cb154c6a396a9328f554c46972e96e8b357259bccb",
+  "reviewer": "MAIN",
+  "runtime_activation_performed": false,
+  "schema": "private.HG5.MAIN.original_APP249_main_FF_acceptance.v1"
+}

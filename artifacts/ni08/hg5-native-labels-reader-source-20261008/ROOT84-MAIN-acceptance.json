@@ -1,0 +1,23 @@
+{
+  "accepted": true,
+  "artifact_zip_sha256": "71909fe6cbab6b355ffcaa475d20c278a160cfec6c4c740f07f6429250c03ea8",
+  "attempt": 1,
+  "cases": 84,
+  "commit": "ecc5726bb454dd2a9af09847920bf2a6bd7b59d1",
+  "exact_case_identity_multiset_matches_original84": true,
+  "failures_errors_skips": 0,
+  "junit_sha256": "adac28f13ee545fafc5e02057092f3e26a535ebacd339695586feeb36001733f",
+  "native_true": true,
+  "no_APP249_retest_or_old_rerun": true,
+  "original_before_after_equal": true,
+  "original_receipt_seal": "abec57b15d046f5a6d73bd539ad0954ea5ecf4a915611a5a56bf8c12f7e53be7",
+  "original_shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "readset_hashes_verified": 133,
+  "reviewer": "MAIN",
+  "run": 37772789271,
+  "safe_unique_CRC_members": 145,
+  "schema": "private.HG5.MAIN.original_ROOT84_TRUE_acceptance.v1"
+}

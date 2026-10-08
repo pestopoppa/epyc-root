@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "all_raw_argv_streams_exits_verified": true,
+  "commit": "bb038cdfcefd1c17ed2a4e1df7546c423b9f7282",
+  "exact18_source_blobs_preserved": true,
+  "journal_sha256": "864c71ccbb1d8cd98ba062a0cdb8f323ae0cc854422e613927cbf8948d3ad369",
+  "normal_cap_three_equal44_release_unlink_verified": true,
+  "normal_raw_commands": 150,
+  "outside18_inherits_MAIN567": true,
+  "parents": [
+    "567d624c02cc5d1668fcb9b1f87a7bb331956ef0",
+    "ecc5726bb454dd2a9af09847920bf2a6bd7b59d1"
+  ],
+  "push_runtime_activation_or_native_capture": false,
+  "receipt_sha256": "eed8979c0197b664a60ddc0ecd02c9bf6bfe3e6ec47d110f7c69d1b435bb45bc",
+  "reviewer": "MAIN",
+  "schema": "private.MAIN.HG5.ROOT18.integration_acceptance.v1",
+  "tree": "12c86fc1cf83632e7b988c27bed407952a2f45ce"
+}
