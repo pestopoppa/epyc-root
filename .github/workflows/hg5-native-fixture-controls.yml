@@ -1,7 +1,7 @@
 name: HG5 force-escalation whole-module source controls
 on:
   push:
-    branches: [codex/hg5-native-20261008]
+    branches: [codex/hg5-v2-native-labels-source-20261008]
 permissions:
   contents: read
 jobs:
@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      APP_PIN: 974cb4017791a5d500269fd44f7d9903528e1d5d
-      ROOT_CONTEXT_PIN: 152fb52cd0489b8756a69999c38e7d0e0afa9488
+      APP_PIN: daca4a46b3110de2fcacde0fc1a9e2d74769516d
+      ROOT_CONTEXT_PIN: 11649e2a2245407b4bf5a1d66bd993901654e5ac
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       HG5_RUNNER_CONTEXT: ubuntu-24.04-cpython-3.11
-      HG5_EXECUTION_CONTEXT: eight-whole-test-modules-existing-mocks-no-inference
+      HG5_EXECUTION_CONTEXT: nine-whole-test-modules-existing-mocks-no-inference
       ORCHESTRATOR_MOCK_MODE: '1'
       CI: 'true'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'

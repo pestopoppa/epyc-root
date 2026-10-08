@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hg5.request_intervention.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "body",
+    "body_sha256"
+  ],
+  "properties": {
+    "body_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "body": {
+      "$ref": "#/$defs/body"
+    }
+  },
+  "$defs": {
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calls",
+        "prompt_tokens",
+        "completion_tokens",
+        "prompt_ms",
+        "generation_ms"
+      ],
+      "properties": {
+        "calls": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "prompt_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "completion_tokens": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "prompt_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "generation_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trigger",
+        "initial_role",
+        "target_role",
+        "outcome",
+        "call_status",
+        "before",
+        "after",
+        "delta"
+      ],
+      "properties": {
+        "trigger": {
+          "enum": [
+            "quality_escalation",
+            "caller_forced"
+          ]
+        },
+        "initial_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "enum": [
+            "adopted",
+            "not_adopted",
+            "failed"
+          ]
+        },
+        "call_status": {
+          "enum": [
+            "unknown",
+            "not_called",
+            "called"
+          ]
+        },
+        "before": {
+          "$ref": "#/$defs/counters"
+        },
+        "after": {
+          "$ref": "#/$defs/counters"
+        },
+        "delta": {
+          "$ref": "#/$defs/counters"
+        }
+      }
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "event_id",
+        "request_id_sha256",
+        "window",
+        "source",
+        "runtime_origin",
+        "requested_mode",
+        "feature_enabled",
+        "eligible",
+        "plan_enabled",
+        "disabled_reason",
+        "stage",
+        "initial_role",
+        "final_role",
+        "requested_target_role",
+        "steps",
+        "request_counters_at_capture",
+        "failure",
+        "claim_scope"
+      ],
+      "properties": {
+        "schema": {
+          "const": "hg5.request_intervention.v1"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "request_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start_utc_ns",
+            "end_utc_ns",
+            "start_monotonic_ns",
+            "end_monotonic_ns"
+          ],
+          "properties": {
+            "start_utc_ns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_utc_ns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "start_monotonic_ns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_monotonic_ns": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "origin",
+            "commit",
+            "tree",
+            "producer_sha256"
+          ],
+          "properties": {
+            "origin": {
+              "enum": [
+                "unknown",
+                "source_authored_run_context"
+              ]
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "tree": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "producer_sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "runtime_origin": {
+          "const": "unknown"
+        },
+        "requested_mode": {
+          "enum": [
+            "auto",
+            "off",
+            "architect_general",
+            "force_architect_general"
+          ]
+        },
+        "feature_enabled": {
+          "type": "boolean"
+        },
+        "eligible": {
+          "type": "boolean"
+        },
+        "plan_enabled": {
+          "type": "boolean"
+        },
+        "disabled_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "stage": {
+          "enum": [
+            null,
+            "direct",
+            "repl"
+          ]
+        },
+        "initial_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "final_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requested_target_role": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "request_counters_at_capture": {
+          "$ref": "#/$defs/counters"
+        },
+        "failure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "exception_type",
+            "message"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "reported",
+                "none",
+                "request_failed"
+              ]
+            },
+            "exception_type": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 240
+            }
+          }
+        },
+        "claim_scope": {
+          "const": "intervention_and_actual_counter_facts_only"
+        }
+      }
+    }
+  }
+}

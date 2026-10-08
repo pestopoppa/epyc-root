@@ -546,6 +546,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
+    "hg5-request-event",
     "graph-profiler-measurement",
     "odl-unlimited-ocr-run",
     "dtap-timeout-report",

@@ -92,6 +92,9 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("hg5-request-event", "hg5_request_event", _files("*.json"),
+           task="VB-HG5-TAP-READ",
+           note="owned sealed completed post-answer request events only; nullable metrics decline; no default/runtime/correctness"),
     Source("graph-profiler-measurement", "graph_profile_measurement", _files("*.json"),
            natives="native_rows_file", task="SC55-READ",
            note="explicit SC55 closed capture envelope; no historical backfill or default corpus"),
