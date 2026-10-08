@@ -547,6 +547,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
     "graph-profiler-measurement",
+    "odl-unlimited-ocr-run",
     "dtap-timeout-report",
     "pii-staged-gate",
     "ci-fixture-conformance",
@@ -558,6 +559,7 @@ _FILE_SOURCES = (
     "exl3-measurement", "exl3-verifier",
     "research-screen",
     "kv-quant-27b-v10-measurement", "embedder-placement-gate", "gfx90a-static-register",
+    "qwen4exp-quality-measurement",
     "evidence-durability",
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
     "chat-template-ab", "occ1", "tale-budget", "review-f1", "opencode-shell",
