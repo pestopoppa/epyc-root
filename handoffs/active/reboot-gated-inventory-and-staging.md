@@ -300,11 +300,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
       the **eight** settings the gates actually check (§10), not the three named here. Boot persistence
       installed on the HOST and verified (7/7). 39 fake-root mutation tests + 7 live mutation assertions,
       all counted and exit-gated. **See §10 — the "no `/etc/sysctl.d` entry" premise was also wrong.**
-- [ ] **S-04 — Refresh the E5 Stage-B readiness verification; it is 14 days stale.** The "45/45
-      manifests dry-run clean, all 5 GGUFs present" record is dated **2026-07-29**, and
-      `E5_STAGE_B_RUNBOOK.md` still pins `production-consolidated-v8 @ 67a433bf4` in its preflight table
-      — that check now fails against v9. GGUF presence re-verified 2026-08-12 (139 manifests → 4 distinct
-      paths, all resolve). Update the kernel pin, re-dry-run, and re-record with today's date.
+- [ ] **S-04 — Capture contemporaneous E5 Stage-B readiness before future execution.** The July staging record is historical. Research `main` publishes the current v10 dry-only runbook at `3caaf22fa853daab5c5ae055ca46b67809e2c938`; the already closed `VB-EVL49-S04-V10-DRY-PLAN` records three model-free planning controls. Before a future run, bind current host readiness, exclusive-window admission, CPU kernel-store alias/binary/version/linkage and the model/input identities required by that run. Dry planning does not establish these facts. Actual E5 measurements remain with their inference-window task.
 - [ ] **S-05 — Generate the corrected E5 re-measurement grid** per the RE-MEASURE row's five binding
       requirements (full-machine `0-95` + `interleave=all` added for `qwen36_q8_0` and
       `qwen3_next_80b`; explicit `--interleave` or a declared defect-replication control on every

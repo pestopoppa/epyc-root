@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 178,
+    "docs": 179,
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T11:04:18Z",
+  "last_compile": "2026-10-08T11:37:39Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T11:04:18Z",
+  "scan_time": "2026-10-08T11:37:39Z",
   "schema_version": 1,
-  "source_set_hash": "35c879fe60d548f9c3285172fb9c3937c72e392b020d100006128a2ecd423474",
+  "source_set_hash": "5596acbae4bdf228fca5221daee434046f5e6e1b7f02bbb7ef24453feef6c3bf",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -1087,10 +1087,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "74238fdd0670e9ed5fb5bbf15658fd83112d8c91a9a573dd78006521010a0d1f",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "2053a4e41f51e5d56bb955c324134140c3a9befaea8b6f5d7dd6a5820eda3d95",
+      "modified": "2026-10-08T11:31:30Z",
       "path": "handoffs/active/reboot-gated-inventory-and-staging.md",
-      "size": 60181,
+      "size": 60296,
       "title": "Reboot-Gated Inventory & Pre-Reboot Staging",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e521bc3fb05742d72cc56f5ef79b64c53780a37678880d2bca9ee34d76339d0b",
-      "modified": "2026-10-08T10:53:42Z",
+      "content_hash": "53541aaef03b5a420453169399a7308f11ef656699df0153fa6a6d383ac17c50",
+      "modified": "2026-10-08T11:23:09Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 406624,
+      "size": 407812,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2d42e5d3f8b898ed2782dccdaa1dfd3bb6986aa6663ca371b1dfaeb0a8df86ec",
-      "modified": "2026-10-08T10:53:42Z",
+      "content_hash": "b40357717cd6b181ce81ee327460877878153034ddb42afdde409496b3af4a3e",
+      "modified": "2026-10-08T11:23:09Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 31008,
+      "size": 32873,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10535,6 +10535,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "27865c6360889f116728bce5a42f047b17af204f6dcbcef8408209ffa114b365",
+      "modified": "2026-10-08T11:23:09Z",
+      "path": "docs/reference/tulving-historical-offline-replay-custody-m12i.md",
+      "size": 4401,
+      "title": "Tulving historical offline replay custody (M12i)",
+      "type": "docs"
+    },
+    {
       "content_hash": "b21678b4cee29f6fa65680ca34c2070713fb3818b321015aca02928cbf777f34",
       "modified": "2026-10-08T10:06:46Z",
       "path": "docs/reference/tulving-offline-scoring-dependency-correction-2026-10-08.md",
@@ -10855,7 +10863,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1355,
+  "total_new": 1356,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
