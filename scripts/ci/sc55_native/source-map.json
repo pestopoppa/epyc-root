@@ -1,7 +1,7 @@
 {
   "schema": "private.sc55.native_source_map.v1",
   "root_context": "ab53a8e9322ae430007a2131f2d425d1641ee05c",
-  "research_source": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c",
+  "research_source": "c7229b461bdf06e82e12f721aad35bbd81c4dced",
   "unchanged_carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
   "files": [
     {
@@ -86,56 +86,56 @@
       "path": "scripts/kernel_rnd/autokernel/loop/graph_profile_capture.py",
       "sha256": "a30ce214a9d33f8a8994d0e6064854f1fa0259df389000e7783d584e042fe05f",
       "size": 17558,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "scripts/kernel_rnd/autokernel/loop/graph_profile_reader.py",
       "sha256": "70ab69e831c45a7344657dc267d1bdb82b7305677612b545ed7b1d118ea94b14",
       "size": 12939,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "scripts/kernel_rnd/autokernel/loop/test_graph_profile_capture.py",
-      "sha256": "e05b57bf318e9a7fef946eb887684038e8d59d7e75de273cba41fa1645a06e46",
-      "size": 14622,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "sha256": "d151e08d039e2571675cd0fe03e6cfe5f12426f1178ea1751d7e2e083805fe43",
+      "size": 14326,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "scripts/kernel_rnd/autokernel/loop/test_graph_profile_reader.py",
-      "sha256": "e6c60400bf87fc510a81b295802956f0fd016fbd2f93a4f035b23d9c25e9003f",
-      "size": 7211,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "sha256": "bb0dfebf18673a19570d9bfc669274d9cbdbe117b1985584f7d8228907b95f17",
+      "size": 7107,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "scripts/kernel_rnd/autokernel/loop/GRAPH_PROFILE_CAPTURE.md",
       "sha256": "0a0d3d3ac292bf6006a050cb494cd12cb808f2f88649411e584a5375f37658cc",
       "size": 5446,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "scripts/kernel_rnd/autokernel/loop/__init__.py",
       "sha256": "a004ca9cd70d052369046a8c5bc6981316a4c9c4182724035e3a6a007994a992",
       "size": 477,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "scripts/kernel_rnd/autokernel/__init__.py",
       "sha256": "b94859500275b1c19c6ec12cb357f2dd0f44ccd118fc95dc6ecfbb358ae37543",
       "size": 792,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "research",
       "path": "CLAUDE.md",
       "sha256": "c2bfac21c4f9cf6ebaeb3cbf1f816e6822ee4926da2eb61a8f580568858fe2d1",
       "size": 6065,
-      "commit": "fc026dd76da665c52cfbf2feba80c4aa7fbff38c"
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
     },
     {
       "repo": "recipe",
@@ -146,8 +146,9 @@
     {
       "repo": "recipe",
       "path": "tests/test_graph_profile_measurement.py",
-      "sha256": "d2417a50c720312c9a492eb250ee2eafd35872ab18c15cc2797eff1827980498",
-      "size": 4217
+      "sha256": "5ed50343a34539fc98782f78b3e4b7972a0221b511f3015e51f1f421e17543b1",
+      "size": 4247,
+      "commit": "recipe@github.sha"
     }
   ],
   "native_semantics": "synthetic fixture execution only; no measurement warrant"

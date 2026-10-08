@@ -1,5 +1,6 @@
 """Prospective ROOT shared-measurement projection controls; no custom grade rule."""
 import unittest
+import claim_tuple
 from pathlib import Path
 from unittest.mock import patch
 from scripts.vidya.adapters import graph_profile_measurement as adapter
@@ -49,7 +50,7 @@ class NativeRoundtripTests(unittest.TestCase):
         self.assertTrue(result.attestation_verified)
         self.assertEqual(result.attestation_locator,self.raw['pernode'])
         self.assertEqual(result.protocol_id,'');self.assertFalse(result.extra['protocol_id_present'])
-        self.assertNotEqual(result.grade()[0],'Witnessed')
+        self.assertNotEqual(claim_tuple.grade(result)[0],'Witnessed')
 
     def test_pinned_decoder_source_does_not_accept_a_private_replacement(self):
         replacement=self.root/'scripts/kernel_rnd/autokernel/loop';replacement.mkdir(parents=True)

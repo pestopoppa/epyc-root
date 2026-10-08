@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 HERE=Path(__file__).resolve().parent
 CARRIER_PIN='4c0c653baf1654c8c25c66433cf39c8faefd8e52'
 CONTEXT_PIN='ab53a8e9322ae430007a2131f2d425d1641ee05c'
-RESEARCH_PIN='fc026dd76da665c52cfbf2feba80c4aa7fbff38c'
+RESEARCH_PIN='c7229b461bdf06e82e12f721aad35bbd81c4dced'
 CARRIER_READS=('scripts/ci/native_conformance.py','scripts/vidya/adapters/ci_conformance.py',
  'scripts/vidya/claim_tuple.py','scripts/vidya/lattice.py','scripts/vidya/frames.py','scripts/vidya/canonical.py')
 PACKAGES={'colorama':'0.4.6','iniconfig':'2.3.0','packaging':'26.0','pluggy':'1.6.0','Pygments':'2.20.0','pytest':'9.0.3'}
@@ -48,7 +48,15 @@ def main():
   for selection in ('research:scripts/kernel_rnd/autokernel/loop/test_graph_profile_capture.py','research:scripts/kernel_rnd/autokernel/loop/test_graph_profile_reader.py','recipe:tests/test_graph_profile_measurement.py'):producer+=['--select',selection]
   env=dict(os.environ,PYTEST_DISABLE_PLUGIN_AUTOLOAD='1',PYTHONDONTWRITEBYTECODE='1',PYTHONHASHSEED='0');env.pop('PYTHONPATH',None)
   rc=subprocess.call(producer+['--',sys.executable,'-I',str(HERE/'bootstrap.py'),str(junit)],cwd=recipe,env=env)
-  receipt=json.loads((native/'receipt.json').read_text());summary=receipt['summary'];counts=summary['counts']
+  receipt=json.loads((native/'receipt.json').read_text());summary=receipt['summary']
+  if summary is None:
+   if before!=hashes(paths):raise RuntimeError('source/readset changed during event')
+   once(result/'ungraded-null.json',{'fixture_execution_conformant':receipt['fixture_execution_conformant'],
+    'diagnostic':receipt.get('diagnostic'),'native_summary':None,'shared_grade':None,'reason':'native summary unavailable; no tuple or grade projected'})
+   state.update(state='ungraded_null',exit_code=rc or 1,fixture_execution_conformant=receipt['fixture_execution_conformant'],
+    diagnostic=receipt.get('diagnostic'),native_summary=None,shared_grade=None,source_readset_unchanged=True)
+   return state['exit_code']
+  counts=summary['counts']
   expected=Counter((case['classname'],case['name']) for case in cases)
   actual=Counter((case['classname'],case['name']) for case in summary['cases'])
   xml=Counter((case.get('classname',''),case.get('name','')) for case in ET.parse(junit).getroot().iter('testcase'))
