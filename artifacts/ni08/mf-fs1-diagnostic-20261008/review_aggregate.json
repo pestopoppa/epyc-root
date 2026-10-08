@@ -1,0 +1,509 @@
+{
+  "analysis_report": "mf_fs1_actual_report_20261008.json",
+  "analysis_report_bytes": 43616,
+  "analysis_report_sha256": "6e335ea1dbeec6a9826c1e57b0450e7c6cf8e6456a19d6dd8857dc40e8ca0a25",
+  "app_commit": "62ee3ba69eed64d8f17268a18b39c131aea90760",
+  "by_known_task_arm_t2_t5": {
+    "t2_add_and_use|off": {
+      "arm": "off",
+      "eligible": 8,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 3,
+            "true": 1,
+            "unknown": 4
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 7
+          },
+          "repeated_open_activity": {
+            "false": 8,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 5,
+            "true": 3,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t2_add_and_use",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 8,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t2_add_and_use|on": {
+      "arm": "on",
+      "eligible": 5,
+      "signals_by_terminal": {
+        "forced_error": {
+          "loop_halt_observed": {
+            "false": 0,
+            "true": 0,
+            "unknown": 3
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 0,
+            "unknown": 3
+          },
+          "repeated_open_activity": {
+            "false": 3,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 3,
+            "true": 0,
+            "unknown": 0
+          }
+        },
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 1
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 1
+          },
+          "repeated_open_activity": {
+            "false": 2,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 2,
+            "true": 0,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t2_add_and_use",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 3,
+        "forced_max_turns": 2,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t3_method_and_caller|off": {
+      "arm": "off",
+      "eligible": 8,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 3,
+            "true": 1,
+            "unknown": 4
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 7
+          },
+          "repeated_open_activity": {
+            "false": 8,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 8,
+            "true": 0,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t3_method_and_caller",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 8,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t3_method_and_caller|on": {
+      "arm": "on",
+      "eligible": 5,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 4
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 4
+          },
+          "repeated_open_activity": {
+            "false": 5,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 5,
+            "true": 0,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t3_method_and_caller",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 5,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t4_rename_module|off": {
+      "arm": "off",
+      "eligible": 7,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 3,
+            "true": 1,
+            "unknown": 3
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 6
+          },
+          "repeated_open_activity": {
+            "false": 7,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 5,
+            "true": 2,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t4_rename_module",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 7,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t4_rename_module|on": {
+      "arm": "on",
+      "eligible": 5,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 4
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 4
+          },
+          "repeated_open_activity": {
+            "false": 2,
+            "true": 3,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 5,
+            "true": 0,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t4_rename_module",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 5,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t5_bugfix|off": {
+      "arm": "off",
+      "eligible": 6,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 2,
+            "true": 1,
+            "unknown": 3
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 5
+          },
+          "repeated_open_activity": {
+            "false": 6,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 6,
+            "true": 0,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t5_bugfix",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 6,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    },
+    "t5_bugfix|on": {
+      "arm": "on",
+      "eligible": 3,
+      "signals_by_terminal": {
+        "forced_max_turns": {
+          "loop_halt_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 2
+          },
+          "loop_repeat_count_observed": {
+            "false": 0,
+            "true": 1,
+            "unknown": 2
+          },
+          "repeated_open_activity": {
+            "false": 3,
+            "true": 0,
+            "unknown": 0
+          },
+          "write_signal_observed": {
+            "false": 3,
+            "true": 0,
+            "unknown": 0
+          }
+        }
+      },
+      "task": "t5_bugfix",
+      "terminal": {
+        "ambiguous_terminal_unknown": 0,
+        "forced_error": 0,
+        "forced_max_turns": 3,
+        "non_forced": 0,
+        "other_terminal_unknown": 0
+      },
+      "trace_missing_or_invalid": 0
+    }
+  },
+  "capture_manifest_note": "Its original unknown_task_arm_group_count used the narrower t2-t5 target set and counts two known out-of-scope groups; corrected expected-label audit above finds zero unexpected labels. Original manifest is preserved unchanged.",
+  "classification_basis": "Native terminal markers only; observed signals are multi-label and non-causal. Repeated calls_open at >=2 ordered turns means read activity only. Unsupported cause remains unknown.",
+  "companion_sha256": "07ea632b3756e7ee572bc1a71db2c44d2c1fc86896b61e80e0f2e416ff71df53",
+  "delta_from_prior_reference": 0,
+  "eligibility_counters": {
+    "ambiguous_terminal_unknown": 0,
+    "duplicate_result_identities_excluded": 0,
+    "forced_error": 3,
+    "forced_max_turns": 44,
+    "invalid_run_directories_excluded": 3,
+    "malformed_required_rows_excluded": 0,
+    "malformed_trace_reference_rows_excluded": 0,
+    "missing_trace_reference": 0,
+    "non_directory_source_entries_excluded": 5,
+    "non_forced": 15,
+    "non_real_rows_excluded": 30,
+    "non_regular_results_excluded": 0,
+    "other_terminal_unknown": 0,
+    "real_rows_eligible": 62,
+    "result_rows_parsed": 92,
+    "results_files_discovered": 10,
+    "results_files_read": 10,
+    "results_malformed_json_lines": 0,
+    "results_nonobject_json_lines": 0,
+    "results_stat_errors": 0,
+    "source_directories_without_results": 0,
+    "source_directory_read_errors": 0,
+    "source_entry_stat_errors": 0,
+    "trace_empty": 0,
+    "trace_files_read": 62,
+    "trace_invalid_or_missing": 0,
+    "trace_invalid_order_or_fields": 0,
+    "trace_malformed_json_lines": 0,
+    "trace_missing": 0,
+    "trace_nonobject_json_lines": 0,
+    "trace_valid": 62
+  },
+  "eligible_real_trajectories": 62,
+  "eligible_t2_t5": 47,
+  "enrollment_receipt_sha256": "1af4ca0ff1ec4d78de7114dbd990c732becf176ee9f2269f8862660e3d46f738",
+  "exit_code": 0,
+  "known_task_arm_groups_outside_t2_t5_scope": 2,
+  "limitations": [
+    "Trace booleans are observed signals, not successful native tool outcomes.",
+    "Loop-halt injection does not establish stop causation.",
+    "The current emitter digest pins the source schema, not the origin/version of legacy May 2026 input traces.",
+    "The emitter stores raw_output truncated to 4,000 chars and extracted_code truncated to 2,000 chars; this analyzer ignores both.",
+    "calls_open and calls_file_write_safe are substring flags, not verified tool calls or successful outcomes.",
+    "Repeated open activity is not thrash or a cause.",
+    "A write signal does not establish successful edit execution or edit failure.",
+    "No grading rule, ClaimTuple, historical backfill, capability claim, or inference effect claim."
+  ],
+  "prior_reference_count": 62,
+  "raw_capture_manifest_original_sha256": "05f32b5aa4f24165a01a168239335920bf21634967b58f32954f6286ab580c96",
+  "readset_bytes": 290005,
+  "readset_entries": 72,
+  "readset_sha256": "6f7c27110d244710964631ba83e469a6042c8eb4f530954a0d0d7b38f8c918d2",
+  "schema": "mf_fs1_actual_review_aggregate.v1",
+  "stderr_bytes": 0,
+  "t2_t5": {
+    "eligible": 47,
+    "signals_by_terminal": {
+      "ambiguous_terminal_unknown": {
+        "loop_halt_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "loop_repeat_count_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "repeated_open_activity": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "write_signal_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        }
+      },
+      "forced_error": {
+        "loop_halt_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 3
+        },
+        "loop_repeat_count_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 3
+        },
+        "repeated_open_activity": {
+          "false": 3,
+          "true": 0,
+          "unknown": 0
+        },
+        "write_signal_observed": {
+          "false": 3,
+          "true": 0,
+          "unknown": 0
+        }
+      },
+      "forced_max_turns": {
+        "loop_halt_observed": {
+          "false": 11,
+          "true": 8,
+          "unknown": 25
+        },
+        "loop_repeat_count_observed": {
+          "false": 0,
+          "true": 8,
+          "unknown": 36
+        },
+        "repeated_open_activity": {
+          "false": 41,
+          "true": 3,
+          "unknown": 0
+        },
+        "write_signal_observed": {
+          "false": 39,
+          "true": 5,
+          "unknown": 0
+        }
+      },
+      "non_forced": {
+        "loop_halt_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "loop_repeat_count_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "repeated_open_activity": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "write_signal_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        }
+      },
+      "other_terminal_unknown": {
+        "loop_halt_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "loop_repeat_count_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "repeated_open_activity": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        },
+        "write_signal_observed": {
+          "false": 0,
+          "true": 0,
+          "unknown": 0
+        }
+      }
+    },
+    "terminal": {
+      "ambiguous_terminal_unknown": 0,
+      "forced_error": 3,
+      "forced_max_turns": 44,
+      "non_forced": 0,
+      "other_terminal_unknown": 0
+    },
+    "trace_missing_or_invalid": 0
+  },
+  "unexpected_task_arm_group_count": 0
+}

@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "original_sha256": "15def970ae46043e5e444867b8cc0ba0269cc2e77f16f9f761c0cbba7c2a0d42",
+      "path": "SC55-7bb-MAIN-original-native43-acceptance.json.b64",
+      "sha256": "8b9d07c2f0f6eb485d2cf073f279897ec3baa4a634d280ba90cf2497612d5628"
+    },
+    {
+      "original_sha256": "cab228b4ebb99132f5dce19b0f9007498d4065633358f2ae2a15f18cc40c2565",
+      "path": "SC55-c722-MAIN-original-Research-main-promotion-acceptance.json.b64",
+      "sha256": "25a0ce694e4f6b521a73b01a3b6666f2316b6fb8b338b1c50b61bab1a9466442"
+    },
+    {
+      "path": "README.md",
+      "sha256": "fd3e5840a3202d42c9a1a5f75f8f4721ec1c3829994ec18407befe1667df961d"
+    }
+  ],
+  "schema": "ni08.lossless_transport.v1"
+}

@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T01:04:11Z",
+  "last_compile": "2026-10-08T02:25:18Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T01:04:11Z",
+  "scan_time": "2026-10-08T02:25:18Z",
   "schema_version": 1,
-  "source_set_hash": "39fc144569a7503fa11e55b6b30d751fd9ad7a0c4d5b27e5f6c591b31edfbd08",
+  "source_set_hash": "4f419c46f60081557fac9882cdf597c81cae640caf9f73eb6419918476fe793c",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -903,10 +903,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4379f7676e9e46fcb69b6596d4666176274d795e9c4621b4a3cbad128ab2ed24",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "828e1bb4fba4a04b499c785a3ce4feb5dd77a82407989164ff075db04ab48006",
+      "modified": "2026-10-08T01:56:23Z",
       "path": "handoffs/active/multi-file-coding-completion-capability.md",
-      "size": 29743,
+      "size": 30196,
       "title": "Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7d9c816376cee9800e28ec53814ab5607fd54e2cfb58a6a3f74cc7df3d1e2395",
-      "modified": "2026-10-08T00:43:35Z",
+      "content_hash": "015242359c406f5932365cc5318e144fe74d92a7e90f25462c98328d1ea39335",
+      "modified": "2026-10-08T02:13:27Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 150625,
+      "size": 152603,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bb434b317aa475f3954a2ff7fbdec760b9ab0aa453d718f18bedac84f4d4e4f6",
-      "modified": "2026-10-08T00:43:35Z",
+      "content_hash": "6f04cbd30cb6782843f2252088298eea1542aa843f78407abb219e061ddef5ac",
+      "modified": "2026-10-08T02:13:27Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 390444,
+      "size": 391587,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "a7dd818fdcca589271600e3ae73465dcb1b02f88da9fed0470b8a3a0793dd5c2",
-      "modified": "2026-10-08T00:43:35Z",
+      "content_hash": "2c44557b4e5171dd500690a6fec6aa553401211ae9b03a4054966f2a4cc80dfd",
+      "modified": "2026-10-08T02:13:27Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 3263,
+      "size": 7894,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10399,10 +10399,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "2742336e2c2b00f1662799b44c1e53e4de5b521ed84612705a117c9699f9348a",
-      "modified": "2026-10-08T00:43:35Z",
+      "content_hash": "0fb62d378a90732225cabb5bb49f3b0d0906bd44911dd74b450331df506c2248",
+      "modified": "2026-10-08T02:13:27Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 85049,
+      "size": 87027,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },

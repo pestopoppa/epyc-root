@@ -1,0 +1,155 @@
+{
+  "schema": "private.sc55.native_source_map.v1",
+  "root_context": "ab53a8e9322ae430007a2131f2d425d1641ee05c",
+  "research_source": "c7229b461bdf06e82e12f721aad35bbd81c4dced",
+  "unchanged_carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "files": [
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/claim_tuple.py",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/canonical.py",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size": 5909,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/lattice.py",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+      "size": 8539,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/frames.py",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size": 10240,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "tests/__init__.py",
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528",
+      "size": 833,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "CLAUDE.md",
+      "sha256": "5451a74ddd6ba776ded5389d7f5f1579feaf8c0cd59bebf8d78031416a597dfe",
+      "size": 21507,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "MEASUREMENT.md",
+      "sha256": "8012422fa40a871e2d668904ee9c84fb449a1e25aff2d155a1249146e07d311a",
+      "size": 48466,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "agents/shared/MEASUREMENT_POLICY.md",
+      "sha256": "2a2d6c246191d0bb3d09e272582dfbe3bccca6e803ae24f95b5d01ed038b6068",
+      "size": 14242,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "sha256": "2dfdef1dc69711011c8e50edb4b3430209034da5f685cc44ce18ee839b52eeaa",
+      "size": 389518,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/adapters/README.md",
+      "sha256": "024d3beca52b27f1cb114d7cd61e6b9e8c7a589a0d77691e32b3e0cc1e7048ab",
+      "size": 281943,
+      "commit": "ab53a8e9322ae430007a2131f2d425d1641ee05c"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/loop/graph_profile_capture.py",
+      "sha256": "a30ce214a9d33f8a8994d0e6064854f1fa0259df389000e7783d584e042fe05f",
+      "size": 17558,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/loop/graph_profile_reader.py",
+      "sha256": "70ab69e831c45a7344657dc267d1bdb82b7305677612b545ed7b1d118ea94b14",
+      "size": 12939,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/loop/test_graph_profile_capture.py",
+      "sha256": "d151e08d039e2571675cd0fe03e6cfe5f12426f1178ea1751d7e2e083805fe43",
+      "size": 14326,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/loop/test_graph_profile_reader.py",
+      "sha256": "bb0dfebf18673a19570d9bfc669274d9cbdbe117b1985584f7d8228907b95f17",
+      "size": 7107,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/loop/GRAPH_PROFILE_CAPTURE.md",
+      "sha256": "0a0d3d3ac292bf6006a050cb494cd12cb808f2f88649411e584a5375f37658cc",
+      "size": 5446,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/loop/__init__.py",
+      "sha256": "a004ca9cd70d052369046a8c5bc6981316a4c9c4182724035e3a6a007994a992",
+      "size": 477,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/kernel_rnd/autokernel/__init__.py",
+      "sha256": "b94859500275b1c19c6ec12cb357f2dd0f44ccd118fc95dc6ecfbb358ae37543",
+      "size": 792,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "research",
+      "path": "CLAUDE.md",
+      "sha256": "c2bfac21c4f9cf6ebaeb3cbf1f816e6822ee4926da2eb61a8f580568858fe2d1",
+      "size": 6065,
+      "commit": "c7229b461bdf06e82e12f721aad35bbd81c4dced"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/adapters/graph_profile_measurement.py",
+      "sha256": "9addeef9e54949b21e93bf981055469ba9648ee5edc1b21933e6900452478d97",
+      "size": 5577
+    },
+    {
+      "repo": "recipe",
+      "path": "tests/test_graph_profile_measurement.py",
+      "sha256": "5ed50343a34539fc98782f78b3e4b7972a0221b511f3015e51f1f421e17543b1",
+      "size": 4247,
+      "commit": "recipe@github.sha"
+    }
+  ],
+  "native_semantics": "synthetic fixture execution only; no measurement warrant"
+}

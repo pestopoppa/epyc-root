@@ -545,3 +545,16 @@ MAIN accepted four further reversible sparse operations on OWN cold views. Each 
 The accepted dashboard snapshot at `2026-10-07T23:54:52Z` predates both peer commits: active plus blocked had **3,693 of 6,108 checkboxes checked (60.5%), with 2,415 unchecked and 12 cards lacking checklists**; all columns had 6,317 of 9,810 checked (64.4%). Card counts were 182 active, 7 blocked, 211 completed and 120 archived. These are dashboard checkbox counts, including inference and gated work, rather than the NI08 completion denominator. API health was `ok` with disclosed non-gating attention; optional idle producers can be absent by design.
 
 [Compact original acceptance custody](../../artifacts/ni08/periodic-full-governance-20261008/README.md) preserves byte-exact records through lossless transport. Whole-backlog exhaustion, native/runtime acceptance and production changes are not claimed.
+
+## Accepted MF-FS-1 existing-trace diagnostic — 2026-10-08
+
+[MAIN original analysis and custody](../../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md) closes existing MF-FS-1 and its prospectively enrolled VB-MFFS1-DOC-DEPS companion.72 private input snapshots and three source snapshots are independently verified;62 real trajectories match the old reference. On t2–t5,44 cap stops and3 errors account for all47 traces. Substring flags do not establish causal loop/read/edit reasons; unknown remains unknown. No raw corpus/code or trajectory IDs are published. MF-VBS-2 inference remeasurement remains open. Source review surfaces missing extraction/truncation/native-completion fields for adjacent MF-NDG-1/MF-RR-1 rates, and prospective instrumentation preparation continues.
+
+**NI08 now185 scoped completions =118 existing checkbox closures +67 completed scoped children.** These are two bounded task closures, not62 completions for trajectories or47 for forced stops. TD29/HG5/SC55 native/source tasks remain open; no whole-backlog exhaustion is claimed.
+
+
+### 2026-10-08 SC55 capture-time source completion
+
+[Accepted source contract](../../artifacts/ni08/sc55-source-contract-20261008/README.md) closes the existing SC55-WRITE child: all43 original native controls passed, original custody was independently verified, and the five Research files are promoted to main c722. MAIN applied the original eight ROOT source/recipe files pending this wrap-up. SC55-READ stays open because review uncovered a normal-ingest reachability gap; its strict seal-path wrapper, Source registration and CLI choice are being implemented without another grading rule. No live measurement, runtime activation, historical provenance backfill or parent closure is claimed.
+
+**NI08 now186 scoped completions =118 existing checkbox closures +68 completed scoped children.** This adds one source task, not43 completions for controls. The remaining ungated source/native work continues.

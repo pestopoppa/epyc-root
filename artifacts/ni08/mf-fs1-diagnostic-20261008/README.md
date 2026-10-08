@@ -1,0 +1,13 @@
+# MF-FS-1: original forced-stop diagnostic
+
+MAIN accepted the original bounded analysis and independently reopened all72 private input snapshots (290,005bytes), three source snapshots and the aggregate calculations without importing the classifier. The original process returned0 with empty stderr. Exact source and eligibility match APP62ee3ba:62 real trajectories,30 non-real excluded,10 result files,62 valid traces, no malformed/duplicate/missing/ambiguous eligible records. The read-set digest is `6f7c27110d244710964631ba83e469a6042c8eb4f530954a0d0d7b38f8c918d2`.
+
+For t2–t5,47 trajectories comprise44 max-turn caps and3 forced errors, with zero voluntary stops. Allthree errors occur in t2's on arm. Across these47, loop-halt flags are8 true/11 false/28 unknown, repeat-counter recording8 observed/39 unknown, repeated-open activity3 true/44 false, and write flags5 true/42 false. The aggregate retains per-task/arm counts.
+
+These are terminal-marker categories and non-causal substring signals. They do not establish loop-guard causation, read thrash, edit failure or the three error subcauses. Current emitter hashes do not attest the origin of legacy May traces. Raw output/code is truncated at4,000/2,000 characters; those excerpts were not inspected or published. Missing cause remains unknown. No new model inference, capability/quality/performance result, MF-VBS-2 efficacy evidence, ClaimTuple or grading rule follows.
+
+Existing MF-FS-1 closes its existing-trace diagnostic, and VB-MFFS1-DOC-DEPS closes its prospectively enrolled original dependency custody. MF-VBS-2 still needs live BEP remeasurement. Newly surfaced MF-NDG-1/MF-RR-1 rates require extraction/completion metadata absent from these old traces; prospective source instrumentation is being prepared under their existing task identities.
+
+The classifier and five synthetic controls are retained here for reproducibility. Source pins and byte limits fail closed. Actual full report, raw process argv/streams/exit and create-once private source/input snapshots remain under `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/mf-fs1-private-20261008/` (KEEP). Raw trace/code snapshots and trajectory identifiers stay private. The unchanged first supplemental capture manifest mislabels two known t1 groups as unknown under its t2–t5-only allowlist; the separate accepted aggregate corrects that label audit without changing the original.
+
+[Independent MAIN acceptance, lossless base64](MAIN-original-acceptance.json.b64) is document dependency evidence, ungraded. [Aggregate](review_aggregate.json) contains no raw excerpts or per-trajectory identifiers. [Classifier](mf_fs1_classify.py) and [synthetic controls](test_synthetic.py) are source artifacts, not an inference runner.

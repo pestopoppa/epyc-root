@@ -1,0 +1,174 @@
+[
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_roundtrip_and_exclusive_seal"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_required_provenance_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_unknown_and_inconsistent_pre"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_during_drift_thread_unavailable_and_window"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_closure_and_mutation_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_raw_symlink_refusal"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_missing_compiled_knob_refusal"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_duplicate_pre_field_refusal"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_known_semantics_refuse_unknown_and_arbitrary_text"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_pre_byte_identity_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_pre_missing_compiled_string_even_matching_digest"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_gated_outputs_and_presence_zero_threads"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_absent_table_and_mm_cannot_claim_available"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_separate_table_file_contract"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_native_numeric_gate_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_path_device_and_inode_both_bound"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_finalize_has_no_temporary_phase_write"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_historical_window_cannot_be_backfilled_now"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_actual_writer_timestamps_and_future_window_refusal"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_during_owner_observation_cannot_be_in_writer_future"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_measurement_metadata_required_no_unknown_labels"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_native_metric_identity_direction_units_and_basis_refuse"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_missing_gradable_metadata_stays_explicit_absent"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_capture.CaptureTests",
+    "name": "test_recorded_measurement_date_must_match_capture_start"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_valid_native_roundtrip_thread_zero_unavailable"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_node_header_exact_19_not_old_alias"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_node_identity_eval_numeric_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_path_exact_header_duplicate_and_nonfinite_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_raw_digest_and_size_refusal"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_opaque_graph_receipt_refuses_invention"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_structural_edges_unknown_or_unbound_refuse"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_run_phase_graph_and_filter_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_node_cardinality_and_native_metadata_refusals"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_carrier_unknown_and_phase_clock_refuse"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_source_grammar_unknown_refuses"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_native_label_selector_absent_refuses"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_unavailable_thread_label_never_projects_zero"
+  },
+  {
+    "classname": "research.scripts.kernel_rnd.autokernel.loop.test_graph_profile_reader.ReaderTests",
+    "name": "test_sealed_native_date_cannot_label_another_year"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.MeasurementProjectionTests",
+    "name": "test_null_native_labels_emit_no_tuple"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.MeasurementProjectionTests",
+    "name": "test_original_reopened_attestation_identity_carried"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.MeasurementProjectionTests",
+    "name": "test_missing_label_identity_and_reader_refusal_propagate"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.NativeRoundtripTests",
+    "name": "test_actual_writer_reader_and_root_tuple_roundtrip"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.NativeRoundtripTests",
+    "name": "test_pinned_decoder_source_does_not_accept_a_private_replacement"
+  }
+]

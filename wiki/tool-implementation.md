@@ -1711,3 +1711,10 @@ Sources: [HG5 owning task](../handoffs/active/reviewer-escalation-and-human-gate
 HG5's exact five-file opt-in force source commit and four-module recipe are reviewed; its 87 prospective identities are unexecuted. Publication and original mocked controls remain the next source boundary. TD29's original off-host attempt at recipe `278545e` stopped during conftest import because FastAPI was absent: exit 4, NULL receipt and no JUnit results. Its correction expands the existing lock selection to 64 packages and all 905 wheel hashes, preserving the 119 definitions and 122 prospective identities. Source review, dependency preparation and a failed setup each retain their own meaning; none closes a source task or proves runtime behavior.
 
 Sources: [MAIN source checkpoint](../docs/reference/ni08-non-inference-continuation.md#periodic-full-checkpoint--2026-10-08-reviewed-source-and-capacity-boundaries), [original acceptance custody](../artifacts/ni08/periodic-full-governance-20261008/README.md), [daily progress](../progress/2026-10/2026-10-08-codex-ni-main.md).
+
+
+### SC55 source-owned graph-profiler provenance — 2026-10-08
+
+The Research capture contract records immutable pre/during-run facts and seals original artifacts after closure. It binds source/binary/compiled knobs, graph identity, thread/filter/IQK/window/evaluation semantics and native metric labels. The strict reader refuses malformed, ambiguous or changed custody; missing labels never become invented tuples. Original offhost source controls passed43/43 and the five Research files were promoted to main c722. The measurement parent still needs an owner-controlled fresh capture. ROOT projection uses the shared measurement ladder; normal CLI ingestion remains open until the reviewed seal-file wrapper and dispatcher wiring pass their controls.
+
+Sources: [accepted source contract](../artifacts/ni08/sc55-source-contract-20261008/README.md), [SC55 tasks](../handoffs/active/vidya-belief-substrate-program.md), [source-table enrollment](../scripts/vidya/adapters/README.md).

@@ -3858,3 +3858,10 @@ SC55's reviewed initial writer binds contemporaneous source, binary, knob, graph
 TD29's original setup NULL is preserved without a successful-test claim. NI08 stays at 183 completed items, with zero new closures at this checkpoint; the dashboard's larger checkbox denominator includes inference and gated work.
 
 Sources: [source enrollment](../scripts/vidya/adapters/README.md), [SC55 tasks](../handoffs/active/vidya-belief-substrate-program.md), [current checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md), [original acceptance custody](../artifacts/ni08/periodic-full-governance-20261008/README.md).
+
+
+### MF-FS-1 forced-stop diagnosis — 2026-10-08
+
+The bounded 2026-05-27 BEP corpus contains62 real trajectories. Tasks t2–t5 account for47 terminal outcomes:44 harness turn-cap stops and3 errors, with no voluntary stops. These categories describe how the harness ended; they do not explain loop-guard, read-thrash, edit-failure or error causation. Repeated-open, write, loop-halt and repeat-count fields are observations. The legacy bytes do not bind their producer revision, and missing native completion metadata and clipped outputs remain unknown. This is a descriptive finding for the captured roles/models/tasks/arms/date, not a live inference or model-quality result. MAIN independently rebound all72 inputs and recomputed the aggregate from retained originals.
+
+Sources: [diagnostic custody](../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md), [MF-FS-1 scope](../handoffs/active/multi-file-coding-completion-capability.md), [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md), [source-table boundary](../scripts/vidya/adapters/README.md).

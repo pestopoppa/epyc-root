@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "bytes": 1769,
+      "path": "MAIN-original-acceptance.json.b64",
+      "sha256": "2a9ba6779aaf4a86947ff80f01bc3b23fe977efa82fff711ad5cf412e87ed4ef"
+    },
+    {
+      "bytes": 2768,
+      "path": "README.md",
+      "sha256": "fa6f5bfca4f162effb56c6f37bd03e1a472c30d8c5ec22365dcaa4df65430186"
+    },
+    {
+      "bytes": 24412,
+      "path": "mf_fs1_classify.py",
+      "sha256": "07ea632b3756e7ee572bc1a71db2c44d2c1fc86896b61e80e0f2e416ff71df53"
+    },
+    {
+      "bytes": 13864,
+      "path": "review_aggregate.json",
+      "sha256": "853cf3b78476697714c4e2762b8131bf5dd0f1b9f05bcc1d1df3edc27541da6a"
+    },
+    {
+      "bytes": 8093,
+      "path": "test_synthetic.py",
+      "sha256": "481c39dad86c50d248465331345af6b7fe68335ca1011952a628f58bec15365f"
+    }
+  ],
+  "private_raw_corpus_published": false,
+  "schema": "ni08.mffs1.public_artifact_transport.v1"
+}
