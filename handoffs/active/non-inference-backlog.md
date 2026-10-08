@@ -858,3 +858,9 @@ MAIN completed two existing audit checkboxes after accepting the [bounded taxono
 ### 2026-10-08 RTG-48 A-4/A-6 accepted source boundary
 
 MAIN completed two existing audit tasks after accepting the source cost/deletion crosswalk and structural role recommendation. Settled R-16 dispatch authority, detect-only fleet_watch, owner receipts and human-only measurement policy remain unchanged. The existing document custody family captures exact dependencies, not an extra task. NI08 now196 scoped completions =123 existing checkbox closures +73 completed scoped children. No runtime validation or invented numeric overhead.
+
+### 2026-10-08 RTG48 A7–A9 accepted source findings
+
+MAIN accepted the [durability, landed-remediation and thread-provenance audit](../../docs/reviews/rtg48-a7-a9-source-review-2026-10-08.md), verified23 pre-edit source dependencies and10 historical commits, and applied the two comment/docstring-only cadence corrections. Exactly three existing audit tasks close. The already-completed document-custody family extends to A7–A9 without another child. **NI08 now199 scoped completions =126 existing checkbox closures +73 completed scoped children.** New HG5 version2-label enrollment, M12/MF/SC54 source preparation and individual native cases remain excluded from this count; non-inference implementation continues.
+
+**FULL199 publication scope:** RTG48 A7/A8/A9 audits are accepted; the two supervisor/test cadence comments are retained as a separate D9-gated proposal, not published source changes. [Concrete decision package](../../artifacts/operator/decisions/D9-RTG48-COMMENTS-20261008/README.md). Existing D9 acknowledgement is the only decision for that item; documentation and independent source integrations continue.

@@ -504,19 +504,19 @@ The `Mech` column is the role's first pass at that and is a claim under review, 
     primitive"*. Direct evidence for the affirmative: the prompt-driven shape was **never forced by
     the harness** — it was chosen, and can be unchosen. `intake-1325#record`.
   - ✅ 2026-10-08 — MAIN recommends structural division of authority plus mechanisms at existing choke points: console judgment/integration, already-authorized daemon dispatch, detect-only fleet_watch, owner measurement receipts and auditor grading. Human measurement-policy amendment boundary remains unchanged. [Bounded architecture recommendation](../../docs/reviews/rtg48-a4-a6-source-review-2026-10-08.md); no runtime validation claimed.
-- [ ] **A-7 — Rule on the durability gap, which gates this entire table.** The operator writes to no
+- [x] **A-7 — Rule on the durability gap, which gates this entire table.** The operator writes to no
       bus file; the corrections that matter most exist only in conversation; the bus was wiped at
       08:20Z. **Half the recurrence counts in this file are the coordinator's own tally of its own
       errors**, which is the least trustworthy possible source. Is a durable correction ledger the fix
       (`RESOLUTION-LEDGER-20260812.md` §6 is a working prototype — assess whether it survived the
       day), or does that just add a file nobody reads?
-- [ ] **A-8 — Audit the remediations, not just the failures.** **Five** fixes for items in this table
+- [x] **A-8 — Audit the remediations, not just the failures.** **Five** fixes for items in this table
       are uncommitted (`fleet_watch.sh`, `observer_guard.sh`, `observer_registry.json`,
       `tmux_adapter.py` +484/−48, `bus_supervisor.sh` +311/−52), and one carries a factual error
       inherited from the bug report it fixes (F-24's "~10s", wrong in both the script comment and the
       test docstring). A remediation left uncommitted in a five-writer tree reproduces RC-5 while
       claiming to close RC-2.
-- [ ] **A-9 — Rule on the attribution method, and re-audit anything that used it.** The claim *"the
+- [x] **A-9 — Rule on the attribution method, and re-audit anything that used it.** The claim *"the
       coordinator did this on its own thread"* was built on the `Co-Authored-By: Claude Opus 5 (1M
       context)` trailer, and **the trailer identifies the committing thread, not the author** — the
       role's own guardrail puts integration on the main thread, and two records show that trailer on
@@ -1495,3 +1495,11 @@ Investigation on pickup (13:08Z, this session) found:
 - [x] **AUD11-F08-SOURCE — close the production nudge-rate refusal test gap without altering the live adapter.** Test actual cmd_nudge with explicitly injected configuration/probe and dry-run positive controls; preserve separate per-agent/bystander probe assertions. Bounded GitHub-hosted AST deletion of the actual interval conditional must make the recent-nudge control fail while elapsed-positive survives. No real tmux, bus writes, host process/probe or protected runtime-source merge. Parent AUD-11 remains open for its other mechanism claims.
 
 2026-10-07 MAIN accepts AUD11-F08-SOURCE after original2/2 and exact predicate-disable sensitivity, complete original/source custody; [bounded acceptance](../../artifacts/ni08/aud11-f08-source-20261007/README.md). The live adapter and parent AUD-11 other mechanisms remain unchanged.
+
+### 2026-10-08 MAIN A7–A9 source audit and correction
+
+✅ 2026-10-08 — [Durability/remediation/thread provenance findings](../../docs/reviews/rtg48-a7-a9-source-review-2026-10-08.md) answer the three existing audit tasks. The resolution ledger has a later Aug.16 correction; typed correction output still requires a retained outbox and committed wrap-up. All five historically uncommitted fixes subsequently landed. MAIN applied only the supervisor comment/test-docstring cadence correction (two cited reports42s apart in74s; heartbeat age is not recurrence cadence), with executable bodies unchanged. Selected transcript-derived thread/path records narrow the blanket attribution refusal, while commit trailers and self-reports do not authenticate every author; original production fleet_watch author remains unknown. Historical quotes and R-17 disposition are retained. [Original dependencies and applied-operation custody](../../artifacts/ni08/rtg48-a7-a9-source-review-20261008/README.md) extend the existing DOC-DEPS family, adding no extra task.
+
+**2026-10-08 protected comment correction boundary:** the two cadence comment changes were reviewed and applied privately, then MAIN restored our two owned files to the published preimages before committing this checkpoint. Existing D9 requires operator acknowledgement for any `scripts/coordination/**` merge, including comments. The accepted A-8 historical-source audit is complete; the separate factual source correction remains proposed and does not close by prose.
+
+- [ ] **RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 acknowledgement.** [Decision package](../../artifacts/operator/decisions/D9-RTG48-COMMENTS-20261008/README.md), exact patch SHA-256 `9c191746a397e3bd2bbbc47f37adf6cd661390836fce56ff6847527bd86e345f`. Only supervisor/test comments change; executable behavior is identical. No tests, activation or runtime work.

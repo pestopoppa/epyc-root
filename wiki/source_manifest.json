@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 176,
+    "docs": 177,
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T07:04:44Z",
+  "last_compile": "2026-10-08T08:19:52Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T07:04:44Z",
+  "scan_time": "2026-10-08T08:19:52Z",
   "schema_version": 1,
-  "source_set_hash": "88456c0a60aff61f6c9852e0f55bdea91ef5c717450d8e6f3de3b427306d1956",
+  "source_set_hash": "8b338065dcc2c994f750690028491db8ca137b1c67d9bf60203bf484075d732a",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -303,10 +303,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3c2bb1434098f4d48515588249e0c071b1dce7e03eb98561d37da78d10e335a6",
-      "modified": "2026-10-08T06:36:15Z",
+      "content_hash": "6cc96e3e9ba760971fd285bfafbe874eaf18f01cbd2ba2dcdfb3eee8fa6f0c36",
+      "modified": "2026-10-08T08:15:07Z",
       "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
-      "size": 146495,
+      "size": 148432,
       "title": "Coordinator role \u2014 failure modes, root causes, and the refactor",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bc3478feb7ee1dfc8c123e21103c32647f277601530a7167e99ef047659c6640",
-      "modified": "2026-10-08T06:36:15Z",
+      "content_hash": "7231637a613db98bedbdbeeb1934ee956a4b1b7aaf1f82a9aab7a6984cab80c7",
+      "modified": "2026-10-08T08:15:07Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 160104,
+      "size": 161236,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5f9c0c4f311699c86bf76b6dc579b8af20c2ba7013b2cb6550199d7106de6661",
-      "modified": "2026-10-08T06:36:15Z",
+      "content_hash": "0907ca3f61957d3270cb2fdaa52d05658c4371f534affd21c846c26ab37de360",
+      "modified": "2026-10-08T07:54:10Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 401746,
+      "size": 403535,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "92aabba9e3df374cfe68de8122579c69db368824dde6d4091a765e43d3415f25",
-      "modified": "2026-10-08T06:36:15Z",
+      "content_hash": "288969cdf6f2e69e5bf587fa0ba84cb41daa2b6dd0f724d132723af7c62b9bcd",
+      "modified": "2026-10-08T08:15:07Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 21784,
+      "size": 25230,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10791,6 +10791,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "7b6bd2f8c497b00ad3ed46e29cc5ba13fe4be19ea1f3acb697f8b05a54e4bf2b",
+      "modified": "2026-10-08T08:15:07Z",
+      "path": "docs/reviews/rtg48-a7-a9-source-review-2026-10-08.md",
+      "size": 7787,
+      "title": "RTG-48 durability, remediation and thread provenance \u2014 2026-10-08",
+      "type": "docs"
+    },
+    {
       "content_hash": "86ab5d67161923ea00b90a4fe9089f7343a9df6dbbc429b40090a8aa7933323f",
       "modified": "2026-10-07T21:10:41Z",
       "path": "docs/reviews/rtg48-mech-column-audit-2026-08-23.md",
@@ -10839,7 +10847,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1353,
+  "total_new": 1354,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -1,0 +1,157 @@
+{
+  "record_type": "source_custody_manifest",
+  "grade": null,
+  "claim_tuple": null,
+  "scope": "MAIN-accepted A7-A9 bounded source audit and applied comment-only corrections; existing DOC-DEPS custody family, no new completed child.",
+  "captured_at": "2026-10-08",
+  "source_root": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/root-worktree",
+  "source_head": "11f38bd0c3824f4180d2f605e16a0d8b2b4d6526",
+  "working_tree_scope": "Inspected canonical paths were clean at pinned HEAD; no canonical path was edited, staged, or committed.",
+  "sources": [
+    {
+      "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+      "sha256": "3c2bb1434098f4d48515588249e0c071b1dce7e03eb98561d37da78d10e335a6"
+    },
+    {
+      "path": "docs/reviews/rtg48-a3-a5-source-review-2026-10-08.md",
+      "sha256": "e2c88770e514b01d8c8f8c290f1015384bcfbb8f15ce4f664ef3bee203064b60"
+    },
+    {
+      "path": "docs/reviews/rtg48-a4-a6-source-review-2026-10-08.md",
+      "sha256": "3827e7ed9151dda0b7a5ba4dc975b5df9a079e85ab0a91063911dd8ebfd9f4fa"
+    },
+    {
+      "path": "docs/reviews/rtg48-a2-counterexample-2026-10-08.md",
+      "sha256": "bb76d277f56b7d7114388718a98bb9604a644da691aadb2d8b0aba19d7a44152"
+    },
+    {
+      "path": "artifacts/ni08/rtg48-a3-a5-source-review-20261008/README.md",
+      "sha256": "7f7e1454ebcfaacd01403e3527558a08964b34214e1a888a45d082ae41cf6c27"
+    },
+    {
+      "path": "artifacts/ni08/rtg48-a3-a5-source-review-20261008/manifest.json",
+      "sha256": "3f126a8bb174e265cc4bf0c0b6d8b229c34eafd7661574cced7e597a4a8c2758"
+    },
+    {
+      "path": "artifacts/ni08/rtg48-a4-a6-source-review-20261008/README.md",
+      "sha256": "51ebebc6724f8759dc1e05c36e02acb0b0953054cdc14aec35548d7116742c39"
+    },
+    {
+      "path": "artifacts/ni08/rtg48-a4-a6-source-review-20261008/manifest.json",
+      "sha256": "979e3d29c9440f85d31057a94964e9e73a75380c181da43ce41f9bf3064fff6e"
+    },
+    {
+      "path": "artifacts/operator/RESOLUTION-LEDGER-20260812.md",
+      "sha256": "945fab6899a3dbb24c7cb281f098397660280257603865006d118e900a47c0ee"
+    },
+    {
+      "path": "scripts/coordination/session_bus.py",
+      "sha256": "b782df0985e480f1a15bade167a4d7739db28112907b4fec6f01c82d2c8c4476"
+    },
+    {
+      "path": "coordination/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d"
+    },
+    {
+      "path": "coordination/session-bus/BUS_PROTOCOL.md",
+      "sha256": "244f39750f14def66a343abcd3cc2ca78f2dfa343a59262aaac24c94af97bc52"
+    },
+    {
+      "path": "scripts/utils/agent_log.sh",
+      "sha256": "73a42caa8c6e7f63c7b8e722ac62df27289421fe2008ec1da35d02ba691253b6"
+    },
+    {
+      "path": "scripts/utils/agent_log_read.sh",
+      "sha256": "f5fdc4e043c2fb675919b94c572e166815eee2d2313a963c9d65825f88bd1a32"
+    },
+    {
+      "path": "scripts/coordination/fanout_timing.py",
+      "sha256": "7a558d49665867ee22c9c715055f9cc103ddaca12b40ae2f2d50ea0873658fa8"
+    },
+    {
+      "path": "data/fanout_timing/claude.v2.jsonl",
+      "sha256": "230b78c98d5b6f7e38a5a25a038ce7f8aa372409190b9c046217330f1d5dcf1b"
+    },
+    {
+      "path": "data/fanout_timing/codex.v2.jsonl",
+      "sha256": "4f3f755727e7e2facccccd1bdee583f1a038a745a603385485a3ff2b47e2ede0"
+    },
+    {
+      "path": "scripts/coordination/tmux_adapter.py",
+      "sha256": "1bf31c290e050673044fc1550e5effe0cd132e677f0973458e74257dda054125"
+    },
+    {
+      "path": "scripts/coordination/fleet_watch.sh",
+      "sha256": "02b654269df000b8f2f624786df871ee89aaf925884d8fe939b4f1670b56f699"
+    },
+    {
+      "path": "scripts/coordination/observer_guard.sh",
+      "sha256": "a345ed59c3c7b51bc33d146e6b2ff4a1718bfe524da463dccf3b00fc66becd78"
+    },
+    {
+      "path": "scripts/coordination/observer_registry.json",
+      "sha256": "3116dee5c2ba05879d10d045f0a6318a9d822cc9849418bb90bb25e311c89057"
+    },
+    {
+      "path": "scripts/coordination/bus_supervisor.sh",
+      "sha256": "486645bf83094e6da25a8abcf3d153e1646823da87654c1512ae12afce261289"
+    },
+    {
+      "path": "scripts/coordination/tests/test_bus_supervisor.py",
+      "sha256": "68683bd1f50e91fc750f7a0ce60758a938c4b359d39246a879432be94a4d4ae3"
+    }
+  ],
+  "evidence": {
+    "A7": [
+      "Standalone resolution ledger commits: 1764471d040341871ec58db6f4421999fe613fa7 (creation), 6a2a513c3caf723cc94e15aeedd0f7392a3cfc27 (2026-08-12 correction), 38d49e9bcf6b7a9424c4ca14c817fff764c0f6f1 (2026-08-16 U-6 correction).",
+      "AUD-4 typed correction support at 9bed637f68d402244b5334947433a6229684f632; source inspection shows corrections command renders stdout from own outbox rows and does not persist wrap-up."
+    ],
+    "A8": [
+      "Later landing commits: fleet_watch 83f204cfdf1edc7142d84378af6a6204099d28e5; observer_guard and initial observer_registry ed38041d74748276cf6fab731dca61bc0cee98b2; registry later update 83f204cfdf1edc7142d84378af6a6204099d28e5; tmux_adapter b6ea86799ec39ae59689d6b7c8bb523cdb13085a; supervisor correction e57a10a676e29eb0bb08153f2c8b0eebb6804eb1 and later H-4 rewrite bc6dc77f79dea8eee61d07a6c637036b48f04e5c.",
+      "Accepted A-3/A-5 source review supports two cited C49 reports 42 seconds apart in a cited 74-second window; this does not substantiate every-10-second recurrence."
+    ],
+    "A9": [
+      "Committed v2 fanout summaries derive parent-child relations and mutating-tool paths from retained transcripts; selected thread IDs and paths are recorded in handoff-addendum.md.",
+      "These event records identify thread IDs and path events only; they do not establish human identity, source-time hashes, or attribution of every historical working-tree edit. Original production fleet_watch author remains unknown on available evidence."
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "handoff-addendum.md",
+      "purpose": "Proposed additive canonical handoff correction; MAIN applies."
+    },
+    {
+      "path": "handoff-additive.patch",
+      "purpose": "Patch preview against pinned baseline; MAIN applies after review."
+    },
+    {
+      "path": "bus-supervisor-cadence-correction.patch",
+      "purpose": "Proposed comment-only source corrections; no code behavior changes."
+    },
+    {
+      "path": "handoff-baseline-11f.md",
+      "purpose": "Read-only pinned source baseline."
+    },
+    {
+      "path": "handoff-candidate.md",
+      "purpose": "Baseline plus proposed addendum for review."
+    }
+  ],
+  "limitations": [
+    "No runtime observation, import, model/kernel invocation, inference, population denominator, recurrence-rate estimate, human identity attribution, canonical edit, stage, or commit.",
+    "Historical source comments are preserved in the original baseline; proposed corrections are additive and do not alter original records."
+  ],
+  "MAIN_reviewed": true,
+  "review_document": "docs/reviews/rtg48-a7-a9-source-review-2026-10-08.md",
+  "review_document_sha256": "2d4c907fb3f1f2205c9f6bf552514ef72803c53a4989f09b5a4ed0ba706d8e04",
+  "original_private_manifest_sha256": "ca9187ba4591e4ede863b37ad346aa36a6e1f7f2bec5f9f77569d3abfdbcd1da",
+  "original_approved_operation_receipt": {
+    "sha256": "65867e5caf8360347643be299eda3200c76c052eb162f0059c82d8d24cf66b03",
+    "bytes_base64": "ewogICJzY2hlbWEiOiAicnRnNDgtYXBwcm92ZWQtY29tbWVudC1vbmx5LW9wZXJhdGlvbi1yZWNlaXB0L3YxIiwKICAiY2FwdHVyZWRfdXRjIjogIjIwMjYtMTAtMDhUMDc6NDc6MDMuMDcxMjg4KzAwOjAwIiwKICAiYXBwcm92YWxfYm91bmRhcnkiOiAiTUFJTiBleHBsaWNpdGx5IGFwcHJvdmVkIGFwcGx5aW5nIHBhdGNoIFNIQS0yNTYgOWMxOTE3NDZhMzk3ZTNiZDJiYmJjNDdmMzdhZGY2Y2Q2NjEzOTA4MzZmY2U1NmZmNjg0NzUyN2JkODZlMzQ1ZiB0byB0aGVzZSB0d28gZXhhY3QgZmlsZXMgb25seS4iLAogICJyZXBvc2l0b3J5X3BhdGgiOiAiL21udC9yYWlkMC9sbG0vdG1wL25pMDhfcmVtYWluaW5nX2JhY2tsb2dfc2NyZWVuLTIwMjYxMDA3L2V2bDQyLXRhc2std3JhcC1wcml2YXRlLTIwMjYxMDA3L3Jvb3Qtd29ya3RyZWUiLAogICJoZWFkX2JlZm9yZV9hbmRfYWZ0ZXIiOiAiMTFmMzhiZDBjMzgyNGY0MTgwZDJmNjA1ZTE2YTBkOGIyYjRkNjUyNiIsCiAgInBhdGNoX3BhdGgiOiAiL21udC9yYWlkMC9sbG0vdG1wL25pMDhfcmVtYWluaW5nX2JhY2tsb2dfc2NyZWVuLTIwMjYxMDA3L3J0ZzQ4LWE3LWE5LXByb3ZlbmFuY2UtUFJFUC0yMDI2MTAwOC9idXMtc3VwZXJ2aXNvci1jYWRlbmNlLWNvcnJlY3Rpb24ucGF0Y2giLAogICJwYXRjaF9zaGEyNTYiOiAiOWMxOTE3NDZhMzk3ZTNiZDJiYmJjNDdmMzdhZGY2Y2Q2NjEzOTA4MzZmY2U1NmZmNjg0NzUyN2JkODZlMzQ1ZiIsCiAgInByZWltYWdlX21hdGNoZXNfMTFmIjogdHJ1ZSwKICAicHJlaW1hZ2VzIjogewogICAgInNjcmlwdHMvY29vcmRpbmF0aW9uL2J1c19zdXBlcnZpc29yLnNoIjogewogICAgICAic2hhMjU2IjogIjQ4NjY0NWJmODMwOTRlNmRhMjVhOGFiY2YzZDE1M2UxNjQ2ODIzZGE4NzY1NGMxNTEyYWUxMmFmY2UyNjEyODkiLAogICAgICAiYnl0ZXMiOiA1MTQyNwogICAgfSwKICAgICJzY3JpcHRzL2Nvb3JkaW5hdGlvbi90ZXN0cy90ZXN0X2J1c19zdXBlcnZpc29yLnB5IjogewogICAgICAic2hhMjU2IjogIjY4NjgzYmQxZjUwZTkxZmM3NTBmN2EwY2U2MDc1OGE5MzhjNGIzNTlkMzkyNDZhODc5NDMyYmU5NGE0ZDRhZTMiLAogICAgICAiYnl0ZXMiOiAyNzQ1MwogICAgfQogIH0sCiAgInBvc3RpbWFnZXMiOiB7CiAgICAic2NyaXB0cy9jb29yZGluYXRpb24vYnVzX3N1cGVydmlzb3Iuc2giOiB7CiAgICAgICJzaGEyNTYiOiAiMzgwZDVkMWVjOTUwOTNhNWRkYzU4MjQyMTQwMWFkMTUzNzVhMDUzMDk3YmYyYjRlOGZlNGJiODUwMDNhNzE1NiIsCiAgICAgICJieXRlcyI6IDUxNDk1CiAgICB9LAogICAgInNjcmlwdHMvY29vcmRpbmF0aW9uL3Rlc3RzL3Rlc3RfYnVzX3N1cGVydmlzb3IucHkiOiB7CiAgICAgICJzaGEyNTYiOiAiMjgyMWI4NzU2NzM1NzU4ZGYxNjRkMjM1OGRlMDJkNDEyMDJlOWRkMjZlYzZjZGMwMmYyZjMzOWUzMjZlOGFmNCIsCiAgICAgICJieXRlcyI6IDI3NTY0CiAgICB9CiAgfSwKICAiY2hhbmdlZF9wYXRocyI6IFsKICAgICJzY3JpcHRzL2Nvb3JkaW5hdGlvbi9idXNfc3VwZXJ2aXNvci5zaCIsCiAgICAic2NyaXB0cy9jb29yZGluYXRpb24vdGVzdHMvdGVzdF9idXNfc3VwZXJ2aXNvci5weSIKICBdLAogICJzY29wZWRfc3RhdHVzX2FmdGVyIjogIiBNIHNjcmlwdHMvY29vcmRpbmF0aW9uL2J1c19zdXBlcnZpc29yLnNoXG4gTSBzY3JpcHRzL2Nvb3JkaW5hdGlvbi90ZXN0cy90ZXN0X2J1c19zdXBlcnZpc29yLnB5XG4iLAogICJleGFjdF9kaWZmX2ZpbGUiOiAiZXhhY3QtZGlmZi5wYXRjaCIsCiAgImV4YWN0X2RpZmZfc2hhMjU2IjogImMxMzQ0ZmY1NDQ1OGM2OWIzZDBmYmZkYTc3ODc3YWFjNjI0M2QyMmE3ZjYwMzg1YjZiY2JlZDZiOGI3NzFjNTgiLAogICJ2ZXJpZmljYXRpb24iOiB7CiAgICAiZ2l0X2FwcGx5X2NoZWNrX2JlZm9yZV9hcHBseSI6ICJwYXNzZWQiLAogICAgImdpdF9kaWZmX2NoZWNrIjogInBhc3NlZCIsCiAgICAicHl0aG9uX2FzdF9ib2R5X3VuY2hhbmdlZF9leGNsdWRpbmdfbW9kdWxlX2RvY3N0cmluZyI6IHRydWUsCiAgICAic2hlbGxfbm9uY29tbWVudF9saW5lc191bmNoYW5nZWQiOiB0cnVlLAogICAgIm9ubHlfY29tbWVudF9vcl9kb2NzdHJpbmdfY2hhbmdlcyI6IHRydWUsCiAgICAidGVzdHNfb3JfcnVudGltZV9pbXBvcnRzIjogIm5vdCBydW4sIHBlciBpbnN0cnVjdGlvbiIKICB9LAogICJzdW1tYXJ5IjogIkNoYW5nZWQgb25seSBoaXN0b3JpY2FsIEM0OSBjYWRlbmNlIGNvbW1lbnRzL2RvY3N0cmluZzogdHdvIGNpdGVkIHJlcG9ydHMgNDJzIGFwYXJ0IHdpdGhpbiA3NHM7IGhlYXJ0YmVhdCBhZ2UgMTBzIGlzIG5vdCBhIHJlY3VycmVuY2UgY2FkZW5jZTsgdGVzdCBub3RlIG5vdyBpZGVudGlmaWVzIGl0cyBjb25maWd1cmVkIDhzIGJhY2tvZmYgcG9zaXRpdmUgY29udHJvbC4gTm8gcnVudGltZSwgdGVzdCwgaW1wb3J0LCBzdGFnZSwgY29tbWl0LCBpbmRleCwgb3IgaGFuZG9mZiBlZGl0LiIKfQo="
+  },
+  "original_exact_diff": {
+    "sha256": "c1344ff54458c69b3d0fbfda77877aac6243d22a7f60385b6bcbed6b8b771c58",
+    "bytes_base64": "ZGlmZiAtLWdpdCBhL3NjcmlwdHMvY29vcmRpbmF0aW9uL2J1c19zdXBlcnZpc29yLnNoIGIvc2NyaXB0cy9jb29yZGluYXRpb24vYnVzX3N1cGVydmlzb3Iuc2gKaW5kZXggNDFjZDc1NzNkLi5kMzIyMDIyYzQgMTAwNzU1Ci0tLSBhL3NjcmlwdHMvY29vcmRpbmF0aW9uL2J1c19zdXBlcnZpc29yLnNoCisrKyBiL3NjcmlwdHMvY29vcmRpbmF0aW9uL2J1c19zdXBlcnZpc29yLnNoCkBAIC05NSw4ICs5NSw5IEBAIFNVUF9QUk9WRU5BTkNFPSIke1NVUF9QSURGSUxFfS5wcm92ZW5hbmNlLmpzb24iICAgICAgIyBOSUIyLTgxIGRwX2F0dGVzdCByZWNvcmQKICMgZGFlbW9ucyB0aGlzIHN1cGVydmlzb3IgaGFkIHN0YXJ0ZWQgaXRzZWxmLiBBIHdhdGNoZG9nIHRoYXQgY2FuIHNlZSBub25lIGJ1dCBpdHMKICMgb3duIGNoaWxkcmVuIGlzIG5vdCBhIHdhdGNoZG9nLiBPYnNlcnZlZCAyMDI2LTA4LTEyVDEwOjM14oCTMTA6MzZaOiBwaWQgMzI1OTEwOCB3YXMKICMgYWxpdmUgYW5kIGl0cyBoZWFydGJlYXQgd2FzIEZSRVNIIHRoZSBlbnRpcmUgdGltZSwgd2hpbGUgdGhlIHN1cGVydmlzb3IgbG9nZ2VkCi0jIGB1bmhlYWx0aHkgKGhlYXJ0YmVhdCBhZ2UgMTBzLCBwaWRzICcnKSDigJQgcmVzdGFydGluZ2AgZXZlcnkgfjEwcyBhbmQgZXZlcnkKLSMgcmVsYXVuY2ggc2VsZi1leGl0ZWQgb24gdGhlIGRhZW1vbidzIGZsb2NrLiBQZXJmZWN0IGhlYWx0aCwgcGVybWFuZW50IHJlc3RhcnQgbG9vcC4KKyMgYHVuaGVhbHRoeSAoaGVhcnRiZWF0IGFnZSAxMHMsIHBpZHMgJycpIOKAlCByZXN0YXJ0aW5nYDsgdHdvIGNpdGVkIHJlcG9ydHMgd2VyZQorIyA0MnMgYXBhcnQgd2l0aGluIGEgNzRzIHdpbmRvdy4gRWFjaCByZWxhdW5jaCBzZWxmLWV4aXRlZCBvbiB0aGUgZGFlbW9uJ3MgZmxvY2suCisjIFRoZSAxMHMgaGVhcnRiZWF0IGFnZSBpcyBub3QgZXZpZGVuY2Ugb2YgYSAxMHMgcmVjdXJyZW5jZSBjYWRlbmNlLgogIwogIyBXaWRlbmluZyB0aGUgcmVnZXggd291bGQgaGF2ZSAiZml4ZWQiIHRoYXQgYW5kIGtlcHQgdGhlIHdvcnNlIGhhemFyZDogYHBncmVwIC1mYAogIyBpcyBhIHdpbGRjYXJkIG92ZXIgRVZFUlkgcHJvY2VzcyBvbiB0aGlzIHNoYXJlZCBob3N0IGFuZCBgc3RvcF93ZWRnZWRgIEtJTExTIHdoYXQKZGlmZiAtLWdpdCBhL3NjcmlwdHMvY29vcmRpbmF0aW9uL3Rlc3RzL3Rlc3RfYnVzX3N1cGVydmlzb3IucHkgYi9zY3JpcHRzL2Nvb3JkaW5hdGlvbi90ZXN0cy90ZXN0X2J1c19zdXBlcnZpc29yLnB5CmluZGV4IDljZGQwMDVlYS4uYjZhMjQyZTBhIDEwMDc1NQotLS0gYS9zY3JpcHRzL2Nvb3JkaW5hdGlvbi90ZXN0cy90ZXN0X2J1c19zdXBlcnZpc29yLnB5CisrKyBiL3NjcmlwdHMvY29vcmRpbmF0aW9uL3Rlc3RzL3Rlc3RfYnVzX3N1cGVydmlzb3IucHkKQEAgLTIwLDggKzIwLDkgQEAgQzQ5ICgyMDI2LTA4LTEyKSDigJQgVEhFIFdBVENIRE9HIENPVUxEIE5PVCBTRUUgVEhFIERBRU1PTi4gSGVhbHRoIHdhcwogbGF1bmNoIGlkaW9tLCBub3QgdGhlIGRhZW1vbidzIGlkZW50aXR5OiB0aGUgbGl2ZSBkYWVtb24gcnVucyBhcwogYDx2ZW52Pi9iaW4vcHl0aG9uIC4uLi9zZXNzaW9uX2J1c19jb29yZGluYXRvci5weSAtLWJ1cy1yb290IDxwYXRoPiBydW5gIGFuZAogYC0tYnVzLXJvb3QgPHBhdGg+YCBzaXRzIGJldHdlZW4gYC5weWAgYW5kIGBydW5gLiBTbyBhIGhlYWx0aHkgZGFlbW9uIHdpdGggYSBmcmVzaAotaGVhcnRiZWF0IHdhcyByZXBvcnRlZCBgcGlkcyAnJ2AsIGRlY2xhcmVkIGRlYWQsIGFuZCAicmVzdGFydGVkIiBldmVyeSB+MTBzCi1mb3JldmVyLCBlYWNoIHJlbGF1bmNoIHNlbGYtZXhpdGluZyBvbiB0aGUgZGFlbW9uJ3MgZmxvY2suIElkZW50aXR5IG5vdyBjb21lcyBmcm9tCitoZWFydGJlYXQgd2FzIHJlcG9ydGVkIGBwaWRzICcnYCwgZGVjbGFyZWQgZGVhZCwgYW5kIHRyaWdnZXJlZCByZXN0YXJ0IGF0dGVtcHRzOyB0aGUgdHdvIGNpdGVkCityZXBvcnRzIHdlcmUgNDJzIGFwYXJ0IHdpdGhpbiBhIDc0cyB3aW5kb3csIGVhY2ggcmVsYXVuY2ggc2VsZi1leGl0aW5nIG9uIHRoZSBkYWVtb24ncworZmxvY2suIFRoZSBzb3VyY2UncyAxMHMgaGVhcnRiZWF0IGFnZSBkb2VzIG5vdCBlc3RhYmxpc2ggYSAxMHMgcmVjdXJyZW5jZSBjYWRlbmNlLiBJZGVudGl0eSBub3cgY29tZXMgZnJvbQogdGhlIGhlYXJ0YmVhdCdzIG93biBwaWQsIHZlcmlmaWVkIGFnYWluc3QgL3Byb2MvPHBpZD4vY21kbGluZSwgaW4gVEhSRUUgc3RhdGVzIOKAlAogYWxpdmUgLyBkZWFkIC8gdW5rbm93bi4gYHVua25vd25gIG5ldmVyIGtpbGxzIGFuZCBuZXZlciBwYXNzZXMuCiAKQEAgLTQ0NSw4ICs0NDYsOCBAQCBkZWYgY2FzZV9lX25vX3JlbGF1bmNoX3N0b3JtKGg6IEhhcm5lc3MpIC0+IE5vbmU6CiAgICAgICAgICAgICBwcm9jLmtpbGwoKQogICAgICAgICAgICAgcHJvYy53YWl0KCkKICAgICBnb3QgPSBoLmxhdW5jaGVzKCkgLSBiZWZvcmUKLSAgICAjIDIycyBhdCB0aGUgb2xkIDEwcyBjYWRlbmNlIHdhcyA+PTIgYW5kIHVuYm91bmRlZC1ncm93aW5nIHdpdGggbm8gZ2l2ZS11cC4KLSAgICAjIEJvdW5kZWQgaGVyZTogTUFYX0JBQ0tPRkY9OCB3aXRoIE1BWF9SRVNUQVJUX0FUVEVNUFRTPTIgY2FwcyBpdCBuZWFyIDIyLzkuCisgICAgIyBQb3NpdGl2ZSBjb250cm9sOiB3aXRoIHRoaXMgdGVzdCdzIGNvbmZpZ3VyZWQgTUFYX0JBQ0tPRkY9OCBhbmQKKyAgICAjIE1BWF9SRVNUQVJUX0FUVEVNUFRTPTIsIDIycyBzaG91bGQgcmVtYWluIGJvdW5kZWQgKHJvdWdobHkgMjIvOSkuCiAgICAgY2hlY2soZ290IDw9IDQsIGYiZTI6IHtnb3R9IGxhdW5jaGVzIGluIDIycyBvZiBhIGZhaWxpbmcgZGFlbW9uIOKAlCBib3VuZGVkLCBub3QgYSBzdG9ybSIpCiAgICAgY2hlY2soIkdJVklORyBVUCIgaW4gaC5sb2dfdGV4dCgpLAogICAgICAgICAgICJlMjogdGhlIHN1cGVydmlzb3Igc2F5cyBsb3VkbHkgdGhhdCB0aGUgYnVzIGlzIHVud2F0Y2hlZCIpCg=="
+  },
+  "dependency_scope": "Source hashes are original pre-edit11f dependencies; comment postimages are separately recorded. No reconstructed runtime tuples or new grade."
+}
