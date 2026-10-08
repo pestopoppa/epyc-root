@@ -1,6 +1,6 @@
 """Private HG5 recipe draft. Hosted native run only after owner review and trigger."""
 from __future__ import annotations
-import ast, collections, hashlib, itertools, json, os, platform, subprocess, sys, time, xml.etree.ElementTree as ET
+import ast, collections, hashlib, itertools, json, os, platform, stat, subprocess, sys, time, xml.etree.ElementTree as ET
 from pathlib import Path
 
 RECIPE=Path(__file__).resolve().parents[2]
@@ -159,12 +159,16 @@ def main():
         boundary='original_native_execution'
         junit=RESULT/'original-junit.xml'; native_out=RESULT/'native'
         test_command=[sys.executable,'-m','pytest','-c','pyproject.toml','-o','addopts=','-p','no:cacheprovider','-p','asyncio','-q','--junitxml='+str(junit),*TESTS]
-        env=dict(os.environ); env.update({'PYTHONPATH':str(APP),'CI':'true','ORCHESTRATOR_MOCK_MODE':'1','PYTEST_DISABLE_PLUGIN_AUTOLOAD':'1','PYTEST_ADDOPTS':'','PYTEST_PLUGINS':'','PYTHONDONTWRITEBYTECODE':'1','PYTHONHASHSEED':'0','PYTHONNOUSERSITE':'1','PYTHONUNBUFFERED':'1'})
+        env=dict(os.environ); env.update({'PYTHONPATH':str(APP),'CI':'true','ORCHESTRATOR_MOCK_MODE':'1','ORCHESTRATOR_PATHS_LLAMA_CPP_BIN':os.environ['ORCHESTRATOR_PATHS_LLAMA_CPP_BIN'],'PYTEST_DISABLE_PLUGIN_AUTOLOAD':'1','PYTEST_ADDOPTS':'','PYTEST_PLUGINS':'','PYTHONDONTWRITEBYTECODE':'1','PYTHONHASHSEED':'0','PYTHONNOUSERSITE':'1','PYTHONUNBUFFERED':'1'})
+        kernel_path=Path(env['ORCHESTRATOR_PATHS_LLAMA_CPP_BIN'])
+        kernel_stat=kernel_path.lstat()
+        if kernel_path!=(Path(os.environ['RUNNER_TEMP'])/'hg5-native'/'empty-kernel-bin') or kernel_path.is_symlink() or not stat.S_ISDIR(kernel_stat.st_mode) or kernel_stat.st_uid!=os.geteuid() or stat.S_IMODE(kernel_stat.st_mode)!=0o700 or next(kernel_path.iterdir(),None) is not None:
+            raise RuntimeError('runner-temp kernel path override is not the owned, empty mode-0700 fixture directory')
         carrier_argv=[sys.executable,str(CARRIER/'scripts/ci/native_conformance.py'),'--cwd',str(APP),'--junit',str(junit),'--output',str(native_out),'--repo','app='+str(APP),'--repo','root_recipe='+str(ROOT),'--repo','carrier='+str(CARRIER)]
         for p in source_paths: carrier_argv += ['--read-path',str(p)]
         for test in TESTS: carrier_argv += ['--select',test]
         carrier_argv += ['--',*test_command]
-        request={'carrier_argv':carrier_argv,'pytest_argv':test_command,'cwd':str(APP),'env_controls':{k:env[k] for k in ('CI','ORCHESTRATOR_MOCK_MODE','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTEST_ADDOPTS','PYTEST_PLUGINS','PYTHONDONTWRITEBYTECODE','PYTHONHASHSEED','PYTHONNOUSERSITE')},'selection':TESTS,'source_before_capture':before,'repositories':{'app':APP_PIN,'root_recipe_event':os.environ.get('GITHUB_SHA'),'enrolled_root_context':ROOT_PIN,'carrier':CARRIER_PIN},'ast_definition_count':56,'proposed_junit_identities':87,'native_case_count_claim':None}
+        request={'carrier_argv':carrier_argv,'pytest_argv':test_command,'cwd':str(APP),'env_controls':{k:env[k] for k in ('CI','ORCHESTRATOR_MOCK_MODE','ORCHESTRATOR_PATHS_LLAMA_CPP_BIN','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTEST_ADDOPTS','PYTEST_PLUGINS','PYTHONDONTWRITEBYTECODE','PYTHONHASHSEED','PYTHONNOUSERSITE')},'kernel_path_fixture':{'path':str(kernel_path),'purpose':'empty runner-temp path prevents host kernel-store resolution; no server/model','checked_before_pytest':True,'empty':True,'owner_uid':kernel_stat.st_uid,'owner_gid':kernel_stat.st_gid,'mode':format(stat.S_IMODE(kernel_stat.st_mode),'04o'),'device':kernel_stat.st_dev,'inode':kernel_stat.st_ino},'selection':TESTS,'source_before_capture':before,'repositories':{'app':APP_PIN,'root_recipe_event':os.environ.get('GITHUB_SHA'),'enrolled_root_context':ROOT_PIN,'carrier':CARRIER_PIN},'ast_definition_count':56,'proposed_junit_identities':87,'native_case_count_claim':None}
         write_json(RESULT/'execution-request.json',request)
         typed_result_before_capture=typed_tree(RESULT)
         write_json(RESULT/'pre-capture-custody.json',{'phase':'immediately_before_original_native_capture','source_snapshot':before,'execution_request_sha256':digest(raw(RESULT/'execution-request.json')),'typed_result_tree_before_this_custody_record':typed_result_before_capture,'status_included':True,'self_excluded':True})
