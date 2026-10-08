@@ -1422,11 +1422,11 @@
   "status": "STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION",
   "test_file_source_records": {
     "tests/unit/test_openai_compat_default_golden.py": {
-      "blob": "d8e94a93e56fe25a2f2439c54277ec9f07fff289",
-      "bytes": 7778,
+      "blob": "1768752cda44ff7e08140f5606156fb1727678b5",
+      "bytes": 7071,
       "mode": "100644",
       "path": "tests/unit/test_openai_compat_default_golden.py",
-      "sha256": "76965c4f5481f194b5a097f02007272cc50fc43e8211fd071af3415b5e1709cd"
+      "sha256": "913e30e29684e3053c0f9a3749368bc3bd1704b2c9321663b1812197843fa120"
     },
     "tests/unit/test_stages.py": {
       "blob": "c15ef3961adad4c07f2fd59006f5484632e1ed41",
@@ -1443,11 +1443,11 @@
       "sha256": "6a2b1a183f60fcc62a2ac9446ead9df1043dfa6a7d8ad1c65d0dc0e44d6de114"
     },
     "tests/unit/test_v1_escalation_off_golden.py": {
-      "blob": "0ea9782121654b6fe6219bd4895534756bce8a4f",
-      "bytes": 6375,
+      "blob": "3ce4149e894eb3397cce1222e38999c8653dcab0",
+      "bytes": 6378,
       "mode": "100644",
       "path": "tests/unit/test_v1_escalation_off_golden.py",
-      "sha256": "d4ac5e8055528039d78e7719289bc57555ce8175ad38fe190157d6284cda1ccb"
+      "sha256": "8cc2ed736c4878c016c80bd97be8c29a60906f3df2b945f77df291a969fc727f"
     }
   }
 }

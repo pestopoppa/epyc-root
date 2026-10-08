@@ -1,15 +1,15 @@
 {
   "app": {
-    "commit": "c12c9c5e49e28fa69b5da30c646ecb967f616c58",
-    "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed. Plus both exact golden JSON fixtures.",
+    "commit": "76624a91d72aefce9778d64701ed0f687585eb0a",
+    "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed. Plus both exact golden JSON fixtures. Includes immutable historical goldens and both versioned public62 current-stream contract fixtures.",
     "parents": [
-      "62ee3ba69eed64d8f17268a18b39c131aea90760"
+      "c12c9c5e49e28fa69b5da30c646ecb967f616c58"
     ],
     "repository": "pestopoppa/epyc-orchestrator",
-    "tree": "a57029bfbb4fc716f20500b1c950e6010492055f"
+    "tree": "7050be8796124d90e0451c03a068abf2229ea0bb"
   },
   "app_source_config_envelope": {
-    "file_count": 2215,
+    "file_count": 2217,
     "files": [
       {
         "blob": "8e0520ffe821da7a34192e5f750cfd5d7f3045ab",
@@ -5227,11 +5227,11 @@
         "sha256": "00c8a87841d163ea6a0e1977a5cb99f8bc0ba7d7c81ddcc85006f433bd613381"
       },
       {
-        "blob": "d7b9ec1926835c116ce4651e7850e5d5dea68a43",
-        "bytes": 96239,
+        "blob": "803881c77961b8173a34ba0f5daeeeaf443764cf",
+        "bytes": 97330,
         "mode": "100644",
         "path": "src/api/routes/openai_compat.py",
-        "sha256": "04422cc3c1e6fb0428c67bcccbbbff4ce3e0a54c1f23f867e2f3766725588316"
+        "sha256": "52668158d24a73b91f588b50d5098e5cb36bfe46aa770619b7f824e28e576ed4"
       },
       {
         "blob": "531bade987e2ba6eefc6153928eb5d85de0ba463",
@@ -9042,11 +9042,25 @@
         "sha256": "a8ef2a3cc81f25a691d0edc36cb046c19d46f8c317fa21679ee7172dcf307725"
       },
       {
+        "blob": "a13e80a449b563a1f5211c8e107bebb351c174e4",
+        "bytes": 36190,
+        "mode": "100644",
+        "path": "tests/unit/fixtures/openai_compat_default_golden-public62-stream-contract.json",
+        "sha256": "3107d68263e2eaa393485c88e7be384b7043cda89c2923884f13b625f15a8ba7"
+      },
+      {
         "blob": "5765a89ec4fd92257ba43892500079c0fd35423e",
         "bytes": 40492,
         "mode": "100644",
         "path": "tests/unit/fixtures/openai_compat_default_golden.json",
         "sha256": "bab9ba0fc809cc5cd89e3206af348f1f9bfaa9a1613c984e630f23338bcd47a5"
+      },
+      {
+        "blob": "58b76c96290b029144f6baa22201251e16ecde40",
+        "bytes": 9070,
+        "mode": "100644",
+        "path": "tests/unit/fixtures/v1_escalation_off_golden-public62-stream-contract.json",
+        "sha256": "bf9d488d93025ad160ed3d8bcee6cd04b7ef344f07ba015b37d276315092c947"
       },
       {
         "blob": "07072dfb9a35e32742a8bb094ed87420107b07f2",
@@ -12892,11 +12906,11 @@
         "sha256": "1648a82e709de8c61e295da7c000f2251c03658a0acd2dee49268efd5afdc41b"
       },
       {
-        "blob": "d8e94a93e56fe25a2f2439c54277ec9f07fff289",
-        "bytes": 7778,
+        "blob": "1768752cda44ff7e08140f5606156fb1727678b5",
+        "bytes": 7071,
         "mode": "100644",
         "path": "tests/unit/test_openai_compat_default_golden.py",
-        "sha256": "76965c4f5481f194b5a097f02007272cc50fc43e8211fd071af3415b5e1709cd"
+        "sha256": "913e30e29684e3053c0f9a3749368bc3bd1704b2c9321663b1812197843fa120"
       },
       {
         "blob": "1725974edb99e2a60fc5132a1e14f01899ed3d05",
@@ -15328,11 +15342,11 @@
         "sha256": "6a2b1a183f60fcc62a2ac9446ead9df1043dfa6a7d8ad1c65d0dc0e44d6de114"
       },
       {
-        "blob": "0ea9782121654b6fe6219bd4895534756bce8a4f",
-        "bytes": 6375,
+        "blob": "3ce4149e894eb3397cce1222e38999c8653dcab0",
+        "bytes": 6378,
         "mode": "100644",
         "path": "tests/unit/test_v1_escalation_off_golden.py",
-        "sha256": "d4ac5e8055528039d78e7719289bc57555ce8175ad38fe190157d6284cda1ccb"
+        "sha256": "8cc2ed736c4878c016c80bd97be8c29a60906f3df2b945f77df291a969fc727f"
       },
       {
         "blob": "c1cbb11c406cb1023833488d4cefba8f79b173a2",
@@ -17014,7 +17028,7 @@
   "test_identity": {
     "ast_definition_count": 56,
     "ast_derived_expected_junit_identities": 87,
-    "case_manifest_sha256": "bc76d99fd46ab9d1a92e68d075a136b13560881ea547b029954cb1f34590c822",
+    "case_manifest_sha256": "c9a1dbc3298a36ae548186f71b4e34a56fee309145ec109c1e1eef8988632cd7",
     "conftests": [
       "tests/conftest.py",
       "tests/unit/conftest.py"
