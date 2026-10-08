@@ -21,6 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
 
+# Frame authority names the existing measurement source class; it grants no ratification.
+AUTHORITY = "measurement"
+
 ADAPTER_ID = "vidya.adapters.odl_model_gated/v1"
 SCHEMA = "epyc.odl_bench.unlimited_ocr_run/v1"
 PROTOCOL = "odl-bench/unlimited-ocr-model-gated/v1"

@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
+      UFH13_RESEARCH_PIN: 1bace97dc655ab5896291b4571781e53b821d9a3
+      UFH13_RESEARCH_ROOT: ${{ github.workspace }}/ufh13-research
       ROOT_CONTEXT_PIN: 82dc0a8f0e4c9359a6733dd0241ba9caea94f785
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
@@ -35,6 +37,15 @@ jobs:
           ref: ${{ env.ROOT_CARRIER_PIN }}
           path: carrier
           persist-credentials: false
+      - name: Checkout exact UFH13 fixture producer source only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.UFH13_RESEARCH_PIN }}
+          path: ufh13-research
+          persist-credentials: false
+          sparse-checkout: scripts/benchmark/thesis_ufh13/score.py
+          sparse-checkout-cone-mode: false
       - name: Bind null source-map commit to the exact event ROOT head
         run: |
           set -euo pipefail

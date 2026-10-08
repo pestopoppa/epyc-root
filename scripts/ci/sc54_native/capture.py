@@ -5,6 +5,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 HERE=Path(__file__).resolve().parent
 CARRIER_PIN='4c0c653baf1654c8c25c66433cf39c8faefd8e52'
+UFH13_PIN='1bace97dc655ab5896291b4571781e53b821d9a3'
 CONTEXT_PIN='82dc0a8f0e4c9359a6733dd0241ba9caea94f785'
 CARRIER_READS=('scripts/ci/native_conformance.py','scripts/vidya/adapters/ci_conformance.py',
  'scripts/vidya/claim_tuple.py','scripts/vidya/lattice.py','scripts/vidya/frames.py','scripts/vidya/canonical.py')
@@ -15,7 +16,7 @@ def once(path,obj):
  with open(path,'x') as stream:json.dump(obj,stream,sort_keys=True,indent=2);stream.write('\n')
 def hashes(paths):return {str(path.resolve()):sha(path.read_bytes()) for path in paths}
 def main():
- workspace=Path(os.environ['GITHUB_WORKSPACE']).resolve();recipe=workspace/'recipe';carrier=workspace/'carrier'
+ workspace=Path(os.environ['GITHUB_WORKSPACE']).resolve();recipe=workspace/'recipe';carrier=workspace/'carrier';research=workspace/'ufh13-research'
  bound_map=Path(os.environ['SC54_BOUND_SOURCE_MAP']).resolve(strict=True)
  if bound_map.is_symlink() or not bound_map.is_file():raise RuntimeError('bound source-map is not a regular file')
  run=Path(os.environ['RUNNER_TEMP'])/'sc54-quality-native';result=run/'result';result.mkdir(parents=True,exist_ok=True)
@@ -24,13 +25,14 @@ def main():
   pins={'recipe':git(recipe,'rev-parse','HEAD'),'carrier':git(carrier,'rev-parse','HEAD')}
   if pins!={'recipe':os.environ['GITHUB_SHA'],'carrier':CARRIER_PIN}:raise RuntimeError('checkout pin mismatch')
   subprocess.check_call(['git','-C',str(recipe),'merge-base','--is-ancestor',CONTEXT_PIN,pins['recipe']])
+  if git(research,'rev-parse','HEAD')!=UFH13_PIN or os.environ.get('UFH13_RESEARCH_ROOT')!=str(research):raise RuntimeError('UFH13 explicit checkout/env mismatch')
   manifest=json.loads(bound_map.read_text());cases=json.loads((HERE/'expected-cases.json').read_text())
   if manifest.get('root_source_commit')!=pins['recipe'] or manifest.get('root_context_base')!=CONTEXT_PIN:raise RuntimeError('bound source-map commit mismatch')
   if manifest.get('expected_case_rows')!=102 or len(cases)!=102:raise RuntimeError('prospective exact case inventory mismatch')
   if len({(c['classname'],c['name']) for c in cases})!=len(cases):raise RuntimeError('duplicate expected native case identity')
   paths=[HERE/'source-map.json',bound_map,HERE/'expected-cases.json',HERE/'bootstrap.py',HERE/'capture.py',HERE/'bind_source_map.py',HERE/'requirements.txt',recipe/'.github/workflows/sc54-quality-native.yml']
   for row in manifest['files']:
-   base={'recipe':recipe}[row['repo']];path=base/row['path']
+   base={'recipe':recipe,'ufh13-research':research}[row['repo']];path=base/row['path']
    raw=path.read_bytes()
    if sha(raw)!=row['sha256'] or len(raw)!=row['size']:raise RuntimeError('source closure changed: '+row['path'])
    paths.append(path)
@@ -47,7 +49,7 @@ def main():
   junit=result/'original-junit.xml';native=result/'native'
   if junit.exists() or native.exists():raise RuntimeError('refuse output reuse')
   producer=[sys.executable,str(carrier/'scripts/ci/native_conformance.py'),'--cwd',str(recipe),'--junit',str(junit),'--output',str(native),
-   '--repo','recipe='+str(recipe),'--repo','carrier='+str(carrier)]
+   '--repo','recipe='+str(recipe),'--repo','carrier='+str(carrier),'--repo','ufh13-research='+str(research)]
   for path in paths:producer+=['--read-path',str(path)]
   for selection in ('recipe:tests/vidya/test_sc54_qwen4exp_quality_adapter.py','recipe:tests/vidya/test_ingest_sources.py'):producer+=['--select',selection]
   env=dict(os.environ,PYTEST_DISABLE_PLUGIN_AUTOLOAD='1',PYTHONDONTWRITEBYTECODE='1',PYTHONHASHSEED='0');env.pop('PYTHONPATH',None)

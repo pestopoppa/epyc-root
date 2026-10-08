@@ -204,7 +204,7 @@ class SC54ProjectionControls(unittest.TestCase):
     def test_wrong_maps_inode_refuses(self):
         d,r,_,_=make_fixture(self);bad=copy.deepcopy(r);bad["loaded_shared_objects"][0]["mapping_observation"]["first"]["inode"]+=1;self.refuse_reason(bad,d,"maps identity not contemporaneous or mismatched")
     def test_missing_live_library_hash_refuses(self):
-        d,r,_,_=make_fixture(self);bad=copy.deepcopy(r);bad["loaded_shared_objects"][0].pop("live_identity_observation");self.refuse_reason(bad,d,"stable in-process identity sample count/basis missing or invalid")
+        d,r,_,_=make_fixture(self);bad=copy.deepcopy(r);bad["loaded_shared_objects"][0].pop("live_identity_observation");self.refuse_reason(bad,d,"shared object lacks stable in-process identity sample count/basis")
     def test_mapping_timestamp_outside_window_refuses(self):
         d,r,_,_=make_fixture(self);bad=copy.deepcopy(r);bad["loaded_shared_objects"][0]["mapping_observation"]["first"]["observed_at_utc"]="2026-10-08T00:02:00Z";self.refuse_reason(bad,d,"mapping observation outside measured process window")
     def test_live_hash_timestamp_outside_window_refuses(self):
@@ -241,7 +241,7 @@ class SC54ProjectionControls(unittest.TestCase):
     def test_nonfinite_value_refuses(self):
         d,r,_,_=make_fixture(self);bad=copy.deepcopy(r);bad["metrics"][0]["value"]=float("inf");p=d/"nonfinite.json";write_receipt(p,bad,allow_nan=True)
         with self.assertRaises(ValueError) as ctx:read_project(p,ClaimTuple)
-        self.assertIn("Out of range float values",str(ctx.exception))
+        self.assertIn("non-finite JSON constant: Infinity",str(ctx.exception))
     def test_mutated_library_digest_refuses(self):
         d,r,so,_=make_fixture(self);so.write_bytes(b"mutated");self.refuse_reason(copy.deepcopy(r),d,"captured identity no longer names the same bytes/inode")
 
@@ -418,7 +418,7 @@ class SC54NormalIngestControls(unittest.TestCase):
                         [receipt], as_of="2026-10-08T01:00:00Z", dry_run=True)
         self.assertEqual(report["rows_projected"], 0)
         self.assertEqual(len(report["refused"]), 1)
-        self.assertIn("changed during run", report["refused"][0]["reason"])
+        self.assertIn("captured identity no longer names the same bytes/inode", report["refused"][0]["reason"])
 
 class SC54FakeChildWrapperControl(unittest.TestCase):
     def test_wrapper_captures_model_free_fake_child(self):

@@ -5,6 +5,8 @@ BASE = "82dc0a8f0e4c9359a6733dd0241ba9caea94f785"
 SOURCE_PIN = "419f43a4b0b6e1ae39e5a4c21c339fef746485ff"
 WORKSPACE = Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)
 ROOT = WORKSPACE / "recipe"
+RESEARCH_PIN = "1bace97dc655ab5896291b4571781e53b821d9a3"
+RESEARCH = WORKSPACE / "ufh13-research"
 OUT = Path(os.environ["RUNNER_TEMP"]) / "sc54-quality-native"
 MAP = ROOT / "scripts/ci/sc54_native/source-map.json"
 DEST = OUT / "source-map.bound.json"
@@ -46,22 +48,24 @@ def main():
     data = json.loads(raw)
     if data.get("root_context_base") != BASE or data.get("root_source_commit") is not None:
         raise RuntimeError("source map is not the prepared null-commit contract")
+    if subprocess.check_output(["git", "-C", str(RESEARCH), "rev-parse", "HEAD"], text=True).strip() != RESEARCH_PIN:
+        raise RuntimeError("UFH13 Research checkout pin mismatch")
     rows = data.get("files")
     if not isinstance(rows, list) or not rows:
         raise RuntimeError("source map has no ROOT readset")
     seen = set()
     for row in rows:
-        if row.get("repo") != "recipe":
+        if row.get("repo") not in {"recipe", "ufh13-research"}:
             raise RuntimeError("unexpected non-ROOT source repository")
         rel = row.get("path")
-        if not isinstance(rel, str) or not rel or rel.startswith("/") or ".." in Path(rel).parts or rel in seen:
+        if not isinstance(rel, str) or not rel or rel.startswith("/") or ".." in Path(rel).parts or (row["repo"], rel) in seen:
             raise RuntimeError("unsafe or duplicate ROOT readset path")
-        seen.add(rel)
-        got, size = stable_sha(ROOT / rel)
+        seen.add((row["repo"], rel))
+        got, size = stable_sha({"recipe": ROOT, "ufh13-research": RESEARCH}[row["repo"]] / rel)
         if (got, size) != (row.get("sha256"), row.get("size")):
             raise RuntimeError("ROOT source bytes do not match prepared readset: " + rel)
     data["root_source_commit"] = event
-    data["root_source_commit_binding"] = "GITHUB_SHA == ROOT HEAD; exact 82dc0a8f0e4c9359a6733dd0241ba9caea94f785 base and 419f43a4b0b6e1ae39e5a4c21c339fef746485ff implementation ancestors; all 108 declared pre-run source bytes verified"
+    data["root_source_commit_binding"] = "GITHUB_SHA == ROOT HEAD; exact 82dc0a8f0e4c9359a6733dd0241ba9caea94f785 base and 419f43a4b0b6e1ae39e5a4c21c339fef746485ff implementation ancestors; all 109 declared pre-run source bytes verified, including exact UFH13 Research producer"
     data["source_map_prebind_sha256"] = hashlib.sha256(raw).hexdigest()
     payload = json.dumps(data, indent=2, sort_keys=True).encode() + b"\n"
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)

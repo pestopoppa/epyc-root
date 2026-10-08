@@ -6,9 +6,9 @@
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": ".github/workflows/sc54-quality-native.yml",
       "repo": "recipe",
-      "sha256": "6c615007dc1cf698f6726556fed231d3dd9065f41de2e5c621d1d85aa77f72f8",
-      "size": 2923,
-      "source_state": "exact_prepared_recipe_workflow"
+      "sha256": "696a1959960998e95a4526046344b0f2d50bfe8478b4aad0c8728559e5a606db",
+      "size": 3486,
+      "source_state": "exact_corrective_candidate"
     },
     {
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
@@ -246,9 +246,9 @@
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": "scripts/vidya/adapters/odl_model_gated.py",
       "repo": "recipe",
-      "sha256": "bb2ba32f736eb82f946aaa9c1fa6e9bb39a7285b1bd1924d48983dddf3afb64b",
-      "size": 17352,
-      "source_state": "exact_source_commit"
+      "sha256": "931ff2aef425fa84c709043cd791b3abc1154decdf49a60fa6ece6d1cee3ae5e",
+      "size": 17469,
+      "source_state": "exact_corrective_candidate"
     },
     {
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
@@ -283,11 +283,11 @@
       "source_state": "exact_source_commit"
     },
     {
-      "repo": "recipe",
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": "scripts/vidya/adapters/qwen4exp_quality_reader.py",
+      "repo": "recipe",
       "sha256": "172e046bc596f2d1afa12ac0617ea6b2737f0536fd7c443508c5a1c231ba3532",
       "size": 28512,
-      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "source_state": "exact_source_commit"
     },
     {
@@ -814,9 +814,9 @@
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
       "repo": "recipe",
-      "sha256": "c8be61162cb1e169381481fffa555aa0385a86079792bdbdcadca99635d96c68",
-      "size": 35898,
-      "source_state": "exact_source_commit"
+      "sha256": "5a198a78eb77ae183a369021bcf750035b95f93aeb92da3f00e05f1446065328",
+      "size": 35944,
+      "source_state": "exact_corrective_candidate"
     },
     {
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
@@ -865,14 +865,28 @@
       "sha256": "9b8ef4a917e5624821a4816a9b7d8408d97a65b1dd1b7e284a5b685a6ed4c065",
       "size": 6245,
       "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "1bace97dc655ab5896291b4571781e53b821d9a3",
+      "path": "scripts/benchmark/thesis_ufh13/score.py",
+      "repo": "ufh13-research",
+      "sha256": "544c1277d1eb00e9f685e40490385644573417f813a9989dacff83a7cdb4350f",
+      "size": 13792,
+      "source_state": "exact_pinned_fixture_producer"
     }
   ],
   "prospective_full_module_selections": [
     "recipe:tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
     "recipe:tests/vidya/test_ingest_sources.py"
   ],
-  "research_checkout": null,
+  "research_checkout": {
+    "commit": "1bace97dc655ab5896291b4571781e53b821d9a3",
+    "path": "ufh13-research",
+    "purpose": "AST-isolated UFH13 fixture producer, no Research project import",
+    "repo": "pestopoppa/epyc-inference-research"
+  },
   "root_context_base": "82dc0a8f0e4c9359a6733dd0241ba9caea94f785",
+  "root_implementation_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
   "root_source_commit": null,
   "root_source_commit_binding": "null until source-push event; binder verifies exact event head and every row",
   "schema": "private.sc54.native_source_map.v2",
@@ -902,6 +916,5 @@
     "selection_basis": "AST-resolved local imports and fixture helpers plus every literal Source.module in ingest_sources.SOURCES, because Source.load imports each adapter dynamically",
     "whole_module_selections": 2
   },
-  "unchanged_carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
-  "root_implementation_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff"
+  "unchanged_carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 }
