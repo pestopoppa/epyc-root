@@ -60,7 +60,7 @@ class ReaderControls(unittest.TestCase):
   changes=[lambda b:b['steps'][0]['delta'].update(calls=2),lambda b:b['steps'][0]['before'].update(calls=True),lambda b:b['request_counters_at_capture'].update(prompt_ms=-1),lambda b:b['steps'].append(dict(b['steps'][0])),lambda b:b['steps'][0].update(initial_role='other'),lambda b:b.update(final_role='frontdoor'),lambda b:b['steps'][0].update(call_status='not_called'),lambda b:b.update(requested_mode='auto'),lambda b:b.update(eligible=False),lambda b:b['failure'].update(message='raw diagnostic'),lambda b:b['source'].update(commit='a'*40),lambda b:b.update(runtime_origin='verified'),lambda b:b['window'].update(end_monotonic_ns=0)]
   # One whole test case, all named mutations asserted; no extra inferred case IDs.
   for n,change in enumerate(changes):
-   with self.subTest(native_mutation=n):self.refuses(self.mutate(self.event(),change))
+   self.refuses(self.mutate(self.event(),change))
  def test_native_mode_and_hardlink_custody_refuses(self):
   path=self.event();path.chmod(0o644);self.refuses(path);path.chmod(0o600);os.link(path,self.directory/'second.json');self.refuses(path)
  def test_native_terminal_and_parent_symlink_refuses(self):

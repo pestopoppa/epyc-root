@@ -14,6 +14,7 @@ PRODUCER_SHA256="994d581338b080bf28e9f587164f397720bd51f9befdfe3bdba6759164a409d
 PRODUCER_V2_SHA256="a69a6c3cc0386582a98a97918dea77d8a4640e857098e42c69bba3d1455ec489"
 SCHEMA_V2_SHA256="4e00cc2565cf50bf187f50714c8bd4281abfaaf56b63f23bce9cf7f4ddded600"
 PROJECTION_NAME="hg5-request-event"
+ADAPTER_ID="vidya.adapters.hg5_request_event/v1"
 AUTHORITY="measurement"
 METRICS={"calls":"calls","prompt_tokens":"tokens","completion_tokens":"tokens","prompt_ms":"ms","generation_ms":"ms"}
 def canonical(value):
