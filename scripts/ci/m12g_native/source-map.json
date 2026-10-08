@@ -1,0 +1,81 @@
+{
+  "research_parent": "daa1855aee005c0da53398ea2a102a3436b2fb6a",
+  "research_commit": "72832ef6eed7d0439be7853a23d23efb876d48b3",
+  "context_commit": "11649e2a2245407b4bf5a1d66bd993901654e5ac",
+  "enrollment_commit": "90f1787fae7bd571bf9c1d254bcad8cac8d691db",
+  "carrier_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "files": [
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/score_tulving_run.py",
+      "sha256": "f3bc4d076bbb0ab82203c8fa22c89f3543f94200b340126c2d0c3d7cd8548c4a",
+      "size": 32194
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/test_score_tulving_run.py",
+      "sha256": "de6be9257f4c754761fda2b5c75e6b1be2f756172af33faa1aa01ffb3d053db0",
+      "size": 21912
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/tulving_srs_comparison.py",
+      "sha256": "a6d79d8ad79a06e9c9fd5ed2e63f053d28d2c36b07d5f3f31d1c6ee6a09e4bdb",
+      "size": 1855
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/test_tulving_srs_comparison.py",
+      "sha256": "d1a32c66d80afe63a4eb90d9eac385e0c3e94d3819136c6a2d845c979031f707",
+      "size": 2380
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/tulving_episodic_adapter.py",
+      "sha256": "ff1ccc2a10c39d66a79d56d68111cf097880c7ca12d76977e43f658b68f1dff9",
+      "size": 44488
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/dataset_adapters.py",
+      "sha256": "0e170b23ec71ef688bf10ca0a7169a6ac29466979602502184819aa4b0abc210",
+      "size": 122856
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/belief_capture.py",
+      "sha256": "3e37624a5b0f427cfaaea5c21f7b1c33f8acc243bf2115766fe8c0a3e971b818",
+      "size": 4975
+    },
+    {
+      "repo": "research",
+      "path": "pyproject.toml",
+      "sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140",
+      "size": 1481
+    },
+    {
+      "repo": "research",
+      "path": "uv.lock",
+      "sha256": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d",
+      "size": 520883
+    },
+    {
+      "repo": "context",
+      "path": "scripts/vidya/adapters/tulving_episodic_capture.py",
+      "sha256": "a81608fba0756790566e8d515a2dc99d88e491f1c67f3c4363037726aba2246c",
+      "size": 23035
+    },
+    {
+      "repo": "enrollment",
+      "path": "scripts/vidya/adapters/README.md",
+      "sha256": "f502a4ffaebfc09c5e75b7e923940ac02a48de0abd0467ad78360cd494191de7",
+      "size": 292758
+    },
+    {
+      "repo": "enrollment",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "sha256": "8261f0a6cc9e576158a9a77b0b5d0c6672b519b6d287d1e99d6883b26dacaeb5",
+      "size": 405938
+    }
+  ]
+}

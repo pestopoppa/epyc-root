@@ -1,0 +1,20 @@
+{
+  "decision_grade": false,
+  "exact_original_cases": 32,
+  "original_JUnit_sha256": "ec37a3c44c26e19ba705769d599ddb0efb2328e192582c1d80c267214df1c87d",
+  "original_artifact": 11543595051,
+  "original_native_TRUE": true,
+  "original_readset_hashes_verified": 27,
+  "original_receipt_file_sha256": "8a87d83ce904aa2949ec64abd0a7d312133387dc4e31fbb5a901a9ca2282b251",
+  "original_receipt_seal": "2119807c221af58e81fcdf67b3e0c0c3b4b298f0aa52df59b0c48935d1d71ef9",
+  "original_result_body_hashes_preserved": true,
+  "original_shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "original_zip_sha256": "4f456d529255307ca846650114ad37951c79c4595d397f83690cf9b080f6fd32",
+  "run_id": 37763063057,
+  "schema": "private.M12g.MAIN.original_32_native_acceptance.v1",
+  "source_promotion_not_yet_performed": true,
+  "zeroskips_failures_errors": true
+}

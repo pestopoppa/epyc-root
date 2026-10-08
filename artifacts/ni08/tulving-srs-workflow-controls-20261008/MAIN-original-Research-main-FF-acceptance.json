@@ -1,0 +1,14 @@
+{
+  "schema": "private.M12g.MAIN.original_Research_FF_acceptance.v1",
+  "accepted": true,
+  "reviewer": "MAIN",
+  "commands": 53,
+  "result_sha256": "f586c9c7c7f15a1c97b5979ba9702a9793bb5c68f4276dab7f3124ae920f5814",
+  "journal_sha256": "905a0ea5c2106bd66a0ddc0478a17e34802c73d2c9446ce6822e018b7c2143be",
+  "commit": "72832ef6eed7d0439be7853a23d23efb876d48b3",
+  "parent": "daa1855aee005c0da53398ea2a102a3436b2fb6a",
+  "normal_nonforce_push_verified": true,
+  "normal_both_caps_three_equal44_release_unlink_verified": true,
+  "ROOT_main_unchanged": true,
+  "source_edits_or_inference": false
+}

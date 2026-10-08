@@ -1,0 +1,130 @@
+[
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_chronological_tau_perfect_and_reversed"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_score_result_payload_computes_composites"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_score_result_payload_tracks_missing_ground_truth"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_simple_recall_uses_only_the_recall_subset"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_pre_m12e_behaviour_would_have_differed"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_simple_recall_bins_on_matching_events_not_item_count"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_simple_recall_bin_basis_reports_the_fallback"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_tau_coverage_check_fails_closed_on_partial_set"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_tau_full_coverage_is_scored"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_tau_short_ground_truth_is_not_labelled_partial"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_partial_coverage_is_reported_not_silent"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_unknown_get_style_enters_no_subset"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_render_markdown_includes_key_metrics"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_render_markdown_reports_partial_tau_coverage"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_load_belief_capture_uses_epyc_root"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_load_belief_capture_refuses_when_epyc_root_is_unset"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_load_belief_capture_explains_a_missing_root"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_load_belief_capture_refuses_a_module_without_the_writer"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_belief_sidecar_round_trips_through_the_root_writer"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_root_writer_refuses_a_pre_m12e_summary"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_summary_counts_the_arm_of_each_stored_prompt"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_build_prompt_index_is_arm_independent"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_arm_that_disagrees_with_the_stored_prompts_is_refused"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_arm_without_recorded_prompts_is_refused"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_matching_arm_emits_through_main"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_cli_comparison_gate_precedes_outputs_and_capture[False]"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_score_tulving_run",
+    "name": "test_cli_comparison_gate_precedes_outputs_and_capture[True]"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+    "name": "test_matching_populated_bins_preserves_comparison_without_reweighting"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+    "name": "test_empty_six_plus_vs_populated_refuses"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+    "name": "test_old_scorer_mixed_missing_or_different_bin_basis_refuses"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+    "name": "test_unknown_missing_bins_and_empty_population_refuse"
+  },
+  {
+    "classname": "research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+    "name": "test_nonfinite_mean_bool_count_and_inconsistent_population_refuse"
+  }
+]

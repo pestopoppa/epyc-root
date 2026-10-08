@@ -529,7 +529,7 @@ failure caught in amber.
         structurally 0.0 — a CAS construction question, not a scorer bug
         (`scripts/benchmark/tulving_episodic_adapter.py:325` `compute_chronological_awareness_score`) (found
         2026-09-14, noninf sweep).
-  - [ ] **M-12g — stop comparing SRS across book sizes until the bin sets match**: bin `6+` is empty in the
+  - [x] **M-12g — stop comparing SRS across book sizes until the bin sets match**: ✅ 2026-10-08; bin `6+` is empty in the
         20ch set, so the 20ch SRS averages over four bins while the 200ch figure averages over five
         (`scripts/benchmark/tulving_episodic_adapter.py` `compute_simple_recall_score`) (found 2026-09-14,
         noninf sweep).
@@ -637,3 +637,5 @@ M-11a2b closes producer-to-store wiring only. MAIN source review found that `san
 - [x] **M11-WORK-CAP-SOURCE — refuse oversized forged truncation markers while preserving legitimate bounded-value idempotence.** Bound both prefix and marker representation; meaningful forged suffix, oversized decimal metadata, greater-than-scanner-limit synthetic credential and legitimate second-pass controls. Full actual memory-record/work-payload source verification through VB-M11-WORK-CAP-CONFORMANCE. Preserve objective text, existing item policy and sole redaction policy. No live memory, traffic prevalence or historical rewrite. ✅ 2026-10-07 — MAIN accepted [source and original41/41](../../artifacts/ni08/m11-work-cap-source-20261007/README.md).
 
 **M-12h complete, 2026-10-08:** [MAIN source/native acceptance](../../artifacts/ni08/sc54-mf-m12h-source-integration-20261008/README.md). Research main daa preserves deterministic counts/matches while a judge supplies scalar precision/recall/F1; match/result provenance is explicit. All eight original AST-isolated controls passed, including no-judge and low/high judge branches. Synthetic hooks exercise the actual source body without LLM calls. This fixes the source trap; it does not claim improved tau, semantic alignment, retrospective rescoring or instrument admission. M-12g/M-12i remain independent next work.
+
+**M-12g complete, 2026-10-08:** Research main `72832ef6` gates explicit SRS comparisons before output/capture and reports populated bins/counts without changing SRS/CAS arithmetic. The original 32 whole-module controls passed, including mismatched-bin refusal and valid comparison paths. [Evidence and limits](../../artifacts/ni08/tulving-srs-workflow-controls-20261008/README.md). Matching bins do not establish equal book difficulty. M-12f metric construction and M-12i prospective offline replay remain separate.

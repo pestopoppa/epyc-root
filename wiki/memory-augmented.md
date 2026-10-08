@@ -315,7 +315,7 @@ describe code that was never committed.
 
 - Does context-checkpoint prefix reuse actually fire on the champion for single-message M-12
   prompts? The smoke test is ready (`a6491b9e`) but waits on the deferred GPU window.
-- M-12f/g/i still block citing CAS or a cross-book SRS, though not running.
+- M-12f and M-12i retain CAS construction and prospective offline replay work. M-12g now gates explicit SRS comparisons by source/gold/bin compatibility; matching bins alone do not establish equal book difficulty.
 - UTM-M9, the no-memory control arm in the eval tower, remains an operator-gated trust-boundary ask.
 - The precedence rule is still undecided: does an explicit `x_*` override beat Hermes profile prose?
   (The dead `/v1` `recall()` half of this item is closed — see above.)
@@ -1259,3 +1259,7 @@ The [read-only MCP registrar](../artifacts/ni08/utm-b1-read-only-mcp-source-2026
 [Original31/31 and published APP source](../artifacts/ni08/cs16-18-success-acceptance-20261007/README.md) cover explicit normal/verbatim/display contracts, protected text before emission/persistence/TTS, typed retain/cancel choice and replacement-turn cleanup. [Corrected276/276](../artifacts/ni08/cs14-corrected-acceptance-20261007/README.md) restores the voice verifier after prospectively adding omitted import inputs; historical maps remain unchanged. Each review binds467Git+5generated inputs and484 authenticated original ZIP members. Synthetic source conformance supports these bounded implementations; real speech quality, audio realization and latency still need their own evidence.
 
 Source references: [conversation stack](../handoffs/active/conversation-stack.md), [native source consumers](../handoffs/active/vidya-belief-substrate-program.md), [NI08 published boundaries](../docs/reference/ni08-non-inference-continuation.md), [progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+
+### Tulving SRS comparison workflow controls — 2026-10-08
+
+Research main `72832ef6` supplies the opt-in `--compare-srs-to` gate before JSON, Markdown or fixture capture, and labels populated bins/counts. SRS/CAS arithmetic remains unchanged. The original whole-module CI passed all32 controls (27 scorer cases plus five helper cases), with zero failures, errors or skips. MAIN verified the original JUnit identity multiset, receipt seal, all27 carrier readsets and unchanged source snapshots. ROOT retains the exact six tested recipe blobs; its integration commit does not redefine the original event's source. [MAIN evidence and limits](../artifacts/ni08/tulving-srs-workflow-controls-20261008/README.md), [owning handoff](../handoffs/active/episodic-memory-integrity.md), and [dated progress](../progress/2026-10/2026-10-08-codex-ni-main.md). These are model-free source controls with the existing shared grade. M-12f human metric construction and M-12i prospective offline replay remain separate; no model-quality, protocol-ratification or historical tuple warrant follows.
