@@ -1,0 +1,1453 @@
+{
+  "ast_definitions": [
+    {
+      "class": null,
+      "definition": "test_flag_is_default_off_in_test_and_prod",
+      "function": "test_flag_is_default_off_in_test_and_prod",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_bad_x_escalation_value_is_422",
+      "function": "test_bad_x_escalation_value_is_422",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_a2_quality_escalation_to_architect_general_with_exact_telemetry",
+      "function": "test_a2_quality_escalation_to_architect_general_with_exact_telemetry",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_a2_pinned_quality_escalation_targets_architect_general_not_coder",
+      "function": "test_a2_pinned_quality_escalation_targets_architect_general_not_coder",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_auto_keeps_chat_targets_quality_escalation_goes_to_coder_escalation",
+      "function": "test_auto_keeps_chat_targets_quality_escalation_goes_to_coder_escalation",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_flag_on_and_key_absent_is_off_opt_in",
+      "function": "test_flag_on_and_key_absent_is_off_opt_in",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_explicit_auto_without_a_quality_issue_makes_no_escalation_call",
+      "function": "test_explicit_auto_without_a_quality_issue_makes_no_escalation_call",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_no_quality_issue_means_no_escalation_call",
+      "function": "test_no_quality_issue_means_no_escalation_call",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_tool_call_turn_is_never_escalated",
+      "function": "test_tool_call_turn_is_never_escalated",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_streaming_client_mode_streams_the_escalated_answer_and_usage",
+      "function": "test_streaming_client_mode_streams_the_escalated_answer_and_usage",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_reanswers_clean_direct_answer_once",
+      "function": "test_force_architect_general_reanswers_clean_direct_answer_once",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_runs_on_x_disable_repl_direct_stage",
+      "function": "test_force_architect_general_runs_on_x_disable_repl_direct_stage",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_stream_emits_only_final_answer_and_usage",
+      "function": "test_force_architect_general_stream_emits_only_final_answer_and_usage",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_request_respects_flag_off",
+      "function": "test_force_architect_general_request_respects_flag_off",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_empty_consultant_keeps_original_and_records_call",
+      "function": "test_force_architect_general_empty_consultant_keeps_original_and_records_call",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [
+        {
+          "ids": [
+            "",
+            " \\n\\t"
+          ],
+          "names": [
+            "consultant_answer"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              ""
+            ],
+            [
+              " \n\t"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_llm_exception_records_failed_attempt_and_falls_back",
+      "function": "test_force_architect_general_llm_exception_records_failed_attempt_and_falls_back",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_inband_error_reply_preserves_frontdoor",
+      "function": "test_force_architect_general_inband_error_reply_preserves_frontdoor",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [
+        {
+          "ids": [
+            "[ERROR: simulated timeout]",
+            " \\n[ERROR: simulated timeout]"
+          ],
+          "names": [
+            "consultant_answer"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "[ERROR: simulated timeout]"
+            ],
+            [
+              " \n[ERROR: simulated timeout]"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "function": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [
+        {
+          "ids": [
+            "default_repl-force_requires_direct_stage",
+            "tool_call-force_requires_completed_direct_answer",
+            "empty_answer-force_requires_completed_direct_answer",
+            "whitespace_answer-force_requires_completed_direct_answer",
+            "initial_error-force_requires_completed_direct_answer",
+            "leading_initial_error-force_requires_completed_direct_answer"
+          ],
+          "names": [
+            "case",
+            "disabled_reason"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "default_repl",
+              "force_requires_direct_stage"
+            ],
+            [
+              "tool_call",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "empty_answer",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "whitespace_answer",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "initial_error",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "leading_initial_error",
+              "force_requires_completed_direct_answer"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_force_architect_general_plan_keeps_flag_and_role_eligibility_guards",
+      "function": "test_force_architect_general_plan_keeps_flag_and_role_eligibility_guards",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_repl_mode_final_answer_gets_no_escalation_hook",
+      "function": "test_repl_mode_final_answer_gets_no_escalation_hook",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_disable_repl_gets_the_direct_chain",
+      "function": "test_disable_repl_gets_the_direct_chain",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "function": "test_disabled_paths_make_no_escalation_call",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [
+        {
+          "ids": [
+            "overrides0-x_escalation_off",
+            "overrides1-role_override",
+            "overrides2-role_override",
+            "overrides3-role_override",
+            "overrides4-not_frontdoor"
+          ],
+          "names": [
+            "overrides",
+            "reason"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              {
+                "x_escalation": "off"
+              },
+              "x_escalation_off"
+            ],
+            [
+              {
+                "x_escalation": "architect_general",
+                "x_force_role": "architect_general"
+              },
+              "role_override"
+            ],
+            [
+              {
+                "x_escalation": "architect_general",
+                "x_orchestrator_role": "architect_general"
+              },
+              "role_override"
+            ],
+            [
+              {
+                "x_escalation": "auto",
+                "x_force_model": "frontdoor"
+              },
+              "role_override"
+            ],
+            [
+              {
+                "model": "worker_general",
+                "x_escalation": "auto"
+              },
+              "not_frontdoor"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_flag_off_with_key_sent_records_flag_off_and_never_escalates",
+      "function": "test_flag_off_with_key_sent_records_flag_off_and_never_escalates",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_a1_off_serves_exactly_what_the_flag_off_route_serves",
+      "function": "test_a1_off_serves_exactly_what_the_flag_off_route_serves",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_hook_failure_is_recorded_and_serves_the_unescalated_answer",
+      "function": "test_hook_failure_is_recorded_and_serves_the_unescalated_answer",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_te2_escalation_reaches_the_registry_resolved_architect_general_server",
+      "function": "test_te2_escalation_reaches_the_registry_resolved_architect_general_server",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_emit_request_event_writes_only_when_the_tap_is_on",
+      "function": "test_emit_request_event_writes_only_when_the_tap_is_on",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_quality_escalate_default_target_is_unchanged_for_chat",
+      "function": "test_quality_escalate_default_target_is_unchanged_for_chat",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_plan_is_none_whenever_no_key_was_sent",
+      "function": "test_plan_is_none_whenever_no_key_was_sent",
+      "module": "tests.unit.test_v1_escalation",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "class": null,
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "function": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "module": "tests.unit.test_v1_escalation_off_golden",
+      "param_dimensions": [
+        {
+          "ids": [
+            "flag_off",
+            "flag_on_key_absent"
+          ],
+          "names": [
+            "client"
+          ],
+          "origin": "fixture",
+          "values": [
+            [
+              "flag_off"
+            ],
+            [
+              "flag_on_key_absent"
+            ]
+          ]
+        },
+        {
+          "ids": [
+            "client_nonstream_answer",
+            "client_nonstream_answer_no_routing",
+            "client_nonstream_tool_call",
+            "client_stream_answer_include_usage"
+          ],
+          "names": [
+            "name"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "client_nonstream_answer"
+            ],
+            [
+              "client_nonstream_answer_no_routing"
+            ],
+            [
+              "client_nonstream_tool_call"
+            ],
+            [
+              "client_stream_answer_include_usage"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "class": null,
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "function": "test_default_mode_matches_pre_client_mode_golden",
+      "module": "tests.unit.test_openai_compat_default_golden",
+      "param_dimensions": [
+        {
+          "ids": [
+            "v1_escalation_off",
+            "v1_escalation_on_key_absent"
+          ],
+          "names": [
+            "client"
+          ],
+          "origin": "fixture",
+          "values": [
+            [
+              "v1_escalation_off"
+            ],
+            [
+              "v1_escalation_on_key_absent"
+            ]
+          ]
+        },
+        {
+          "ids": [
+            "direct_nonstream_plain",
+            "direct_nonstream_tools",
+            "direct_stream_tools",
+            "direct_stream_tools_include_usage",
+            "repl_nonstream_tools",
+            "repl_stream_tools",
+            "repl_stream_tools_include_usage"
+          ],
+          "names": [
+            "name"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "direct_nonstream_plain"
+            ],
+            [
+              "direct_nonstream_tools"
+            ],
+            [
+              "direct_stream_tools"
+            ],
+            [
+              "direct_stream_tools_include_usage"
+            ],
+            [
+              "repl_nonstream_tools"
+            ],
+            [
+              "repl_stream_tools"
+            ],
+            [
+              "repl_stream_tools_include_usage"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "class": "TestExecuteMock",
+      "definition": "TestExecuteMock.test_returns_mock_response",
+      "function": "test_returns_mock_response",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestExecuteMock",
+      "definition": "TestExecuteMock.test_includes_context_info",
+      "function": "test_includes_context_info",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestExecuteMock",
+      "definition": "TestExecuteMock.test_logs_progress",
+      "function": "test_logs_progress",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_parses_valid_steps",
+      "function": "test_parses_valid_steps",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_adds_defaults",
+      "function": "test_adds_defaults",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_strips_markdown_fences",
+      "function": "test_strips_markdown_fences",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_handles_trailing_commas",
+      "function": "test_handles_trailing_commas",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_returns_empty_on_invalid_json",
+      "function": "test_returns_empty_on_invalid_json",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_returns_empty_on_non_list",
+      "function": "test_returns_empty_on_non_list",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_skips_invalid_steps",
+      "function": "test_skips_invalid_steps",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_rejects_steps_without_id",
+      "function": "test_rejects_steps_without_id",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_rejects_steps_without_action",
+      "function": "test_rejects_steps_without_action",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_timeout_gets_504",
+      "function": "test_timeout_gets_504",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_backend_failure_gets_502",
+      "function": "test_backend_failure_gets_502",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_generic_error_gets_500",
+      "function": "test_generic_error_gets_500",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_failed_prefix_gets_500",
+      "function": "test_failed_prefix_gets_500",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_clean_answer_no_annotation",
+      "function": "test_clean_answer_no_annotation",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_empty_answer_no_annotation",
+      "function": "test_empty_answer_no_annotation",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_none_answer_no_crash",
+      "function": "test_none_answer_no_crash",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_when_monitor_disabled",
+      "function": "test_passthrough_when_monitor_disabled",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_when_no_issue",
+      "function": "test_passthrough_when_no_issue",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_escalates_on_quality_issue",
+      "function": "test_escalates_on_quality_issue",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_returns_original_on_escalation_failure",
+      "function": "test_returns_original_on_escalation_failure",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_on_error_prefix",
+      "function": "test_passthrough_on_error_prefix",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_on_empty",
+      "function": "test_passthrough_on_empty",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    }
+  ],
+  "ast_derived_expected_junit_case_count": 87,
+  "ast_test_definition_count": 56,
+  "case_identities": [
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_flag_is_default_off_in_test_and_prod",
+      "name": "test_flag_is_default_off_in_test_and_prod",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_bad_x_escalation_value_is_422",
+      "name": "test_bad_x_escalation_value_is_422",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_a2_quality_escalation_to_architect_general_with_exact_telemetry",
+      "name": "test_a2_quality_escalation_to_architect_general_with_exact_telemetry",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_a2_pinned_quality_escalation_targets_architect_general_not_coder",
+      "name": "test_a2_pinned_quality_escalation_targets_architect_general_not_coder",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_auto_keeps_chat_targets_quality_escalation_goes_to_coder_escalation",
+      "name": "test_auto_keeps_chat_targets_quality_escalation_goes_to_coder_escalation",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_flag_on_and_key_absent_is_off_opt_in",
+      "name": "test_flag_on_and_key_absent_is_off_opt_in",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_explicit_auto_without_a_quality_issue_makes_no_escalation_call",
+      "name": "test_explicit_auto_without_a_quality_issue_makes_no_escalation_call",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_no_quality_issue_means_no_escalation_call",
+      "name": "test_no_quality_issue_means_no_escalation_call",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_tool_call_turn_is_never_escalated",
+      "name": "test_tool_call_turn_is_never_escalated",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_streaming_client_mode_streams_the_escalated_answer_and_usage",
+      "name": "test_streaming_client_mode_streams_the_escalated_answer_and_usage",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_reanswers_clean_direct_answer_once",
+      "name": "test_force_architect_general_reanswers_clean_direct_answer_once",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_runs_on_x_disable_repl_direct_stage",
+      "name": "test_force_architect_general_runs_on_x_disable_repl_direct_stage",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_stream_emits_only_final_answer_and_usage",
+      "name": "test_force_architect_general_stream_emits_only_final_answer_and_usage",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_request_respects_flag_off",
+      "name": "test_force_architect_general_request_respects_flag_off",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_empty_consultant_keeps_original_and_records_call",
+      "name": "test_force_architect_general_empty_consultant_keeps_original_and_records_call[]",
+      "parameters": {
+        "consultant_answer": ""
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_empty_consultant_keeps_original_and_records_call",
+      "name": "test_force_architect_general_empty_consultant_keeps_original_and_records_call[ \\n\\t]",
+      "parameters": {
+        "consultant_answer": " \n\t"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_llm_exception_records_failed_attempt_and_falls_back",
+      "name": "test_force_architect_general_llm_exception_records_failed_attempt_and_falls_back",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_inband_error_reply_preserves_frontdoor",
+      "name": "test_force_architect_general_inband_error_reply_preserves_frontdoor[[ERROR: simulated timeout]]",
+      "parameters": {
+        "consultant_answer": "[ERROR: simulated timeout]"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_inband_error_reply_preserves_frontdoor",
+      "name": "test_force_architect_general_inband_error_reply_preserves_frontdoor[ \\n[ERROR: simulated timeout]]",
+      "parameters": {
+        "consultant_answer": " \n[ERROR: simulated timeout]"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "name": "test_force_architect_general_never_runs_outside_a_completed_direct_answer[default_repl-force_requires_direct_stage]",
+      "parameters": {
+        "case": "default_repl",
+        "disabled_reason": "force_requires_direct_stage"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "name": "test_force_architect_general_never_runs_outside_a_completed_direct_answer[tool_call-force_requires_completed_direct_answer]",
+      "parameters": {
+        "case": "tool_call",
+        "disabled_reason": "force_requires_completed_direct_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "name": "test_force_architect_general_never_runs_outside_a_completed_direct_answer[empty_answer-force_requires_completed_direct_answer]",
+      "parameters": {
+        "case": "empty_answer",
+        "disabled_reason": "force_requires_completed_direct_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "name": "test_force_architect_general_never_runs_outside_a_completed_direct_answer[whitespace_answer-force_requires_completed_direct_answer]",
+      "parameters": {
+        "case": "whitespace_answer",
+        "disabled_reason": "force_requires_completed_direct_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "name": "test_force_architect_general_never_runs_outside_a_completed_direct_answer[initial_error-force_requires_completed_direct_answer]",
+      "parameters": {
+        "case": "initial_error",
+        "disabled_reason": "force_requires_completed_direct_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "name": "test_force_architect_general_never_runs_outside_a_completed_direct_answer[leading_initial_error-force_requires_completed_direct_answer]",
+      "parameters": {
+        "case": "leading_initial_error",
+        "disabled_reason": "force_requires_completed_direct_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_force_architect_general_plan_keeps_flag_and_role_eligibility_guards",
+      "name": "test_force_architect_general_plan_keeps_flag_and_role_eligibility_guards",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_repl_mode_final_answer_gets_no_escalation_hook",
+      "name": "test_repl_mode_final_answer_gets_no_escalation_hook",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_disable_repl_gets_the_direct_chain",
+      "name": "test_disable_repl_gets_the_direct_chain",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "name": "test_disabled_paths_make_no_escalation_call[overrides0-x_escalation_off]",
+      "parameters": {
+        "overrides": {
+          "x_escalation": "off"
+        },
+        "reason": "x_escalation_off"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "name": "test_disabled_paths_make_no_escalation_call[overrides1-role_override]",
+      "parameters": {
+        "overrides": {
+          "x_escalation": "architect_general",
+          "x_force_role": "architect_general"
+        },
+        "reason": "role_override"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "name": "test_disabled_paths_make_no_escalation_call[overrides2-role_override]",
+      "parameters": {
+        "overrides": {
+          "x_escalation": "architect_general",
+          "x_orchestrator_role": "architect_general"
+        },
+        "reason": "role_override"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "name": "test_disabled_paths_make_no_escalation_call[overrides3-role_override]",
+      "parameters": {
+        "overrides": {
+          "x_escalation": "auto",
+          "x_force_model": "frontdoor"
+        },
+        "reason": "role_override"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "name": "test_disabled_paths_make_no_escalation_call[overrides4-not_frontdoor]",
+      "parameters": {
+        "overrides": {
+          "model": "worker_general",
+          "x_escalation": "auto"
+        },
+        "reason": "not_frontdoor"
+      },
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_flag_off_with_key_sent_records_flag_off_and_never_escalates",
+      "name": "test_flag_off_with_key_sent_records_flag_off_and_never_escalates",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_a1_off_serves_exactly_what_the_flag_off_route_serves",
+      "name": "test_a1_off_serves_exactly_what_the_flag_off_route_serves",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_hook_failure_is_recorded_and_serves_the_unescalated_answer",
+      "name": "test_hook_failure_is_recorded_and_serves_the_unescalated_answer",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_te2_escalation_reaches_the_registry_resolved_architect_general_server",
+      "name": "test_te2_escalation_reaches_the_registry_resolved_architect_general_server",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_emit_request_event_writes_only_when_the_tap_is_on",
+      "name": "test_emit_request_event_writes_only_when_the_tap_is_on",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_quality_escalate_default_target_is_unchanged_for_chat",
+      "name": "test_quality_escalate_default_target_is_unchanged_for_chat",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation",
+      "definition": "test_plan_is_none_whenever_no_key_was_sent",
+      "name": "test_plan_is_none_whenever_no_key_was_sent",
+      "parameters": {},
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_off-client_nonstream_answer]",
+      "parameters": {
+        "client": "flag_off",
+        "name": "client_nonstream_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_off-client_nonstream_answer_no_routing]",
+      "parameters": {
+        "client": "flag_off",
+        "name": "client_nonstream_answer_no_routing"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_off-client_nonstream_tool_call]",
+      "parameters": {
+        "client": "flag_off",
+        "name": "client_nonstream_tool_call"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_off-client_stream_answer_include_usage]",
+      "parameters": {
+        "client": "flag_off",
+        "name": "client_stream_answer_include_usage"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_on_key_absent-client_nonstream_answer]",
+      "parameters": {
+        "client": "flag_on_key_absent",
+        "name": "client_nonstream_answer"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_on_key_absent-client_nonstream_answer_no_routing]",
+      "parameters": {
+        "client": "flag_on_key_absent",
+        "name": "client_nonstream_answer_no_routing"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_on_key_absent-client_nonstream_tool_call]",
+      "parameters": {
+        "client": "flag_on_key_absent",
+        "name": "client_nonstream_tool_call"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_v1_escalation_off_golden",
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "name": "test_client_mode_with_flag_off_matches_pre_te1_golden[flag_on_key_absent-client_stream_answer_include_usage]",
+      "parameters": {
+        "client": "flag_on_key_absent",
+        "name": "client_stream_answer_include_usage"
+      },
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_nonstream_plain]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_nonstream_plain"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "repl_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "repl_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "repl_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_nonstream_plain]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_nonstream_plain"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "repl_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "repl_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "repl_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestExecuteMock",
+      "definition": "TestExecuteMock.test_returns_mock_response",
+      "name": "test_returns_mock_response",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestExecuteMock",
+      "definition": "TestExecuteMock.test_includes_context_info",
+      "name": "test_includes_context_info",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestExecuteMock",
+      "definition": "TestExecuteMock.test_logs_progress",
+      "name": "test_logs_progress",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_parses_valid_steps",
+      "name": "test_parses_valid_steps",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_adds_defaults",
+      "name": "test_adds_defaults",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_strips_markdown_fences",
+      "name": "test_strips_markdown_fences",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_handles_trailing_commas",
+      "name": "test_handles_trailing_commas",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_returns_empty_on_invalid_json",
+      "name": "test_returns_empty_on_invalid_json",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_returns_empty_on_non_list",
+      "name": "test_returns_empty_on_non_list",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_skips_invalid_steps",
+      "name": "test_skips_invalid_steps",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_rejects_steps_without_id",
+      "name": "test_rejects_steps_without_id",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_rejects_steps_without_action",
+      "name": "test_rejects_steps_without_action",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_timeout_gets_504",
+      "name": "test_timeout_gets_504",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_backend_failure_gets_502",
+      "name": "test_backend_failure_gets_502",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_generic_error_gets_500",
+      "name": "test_generic_error_gets_500",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_failed_prefix_gets_500",
+      "name": "test_failed_prefix_gets_500",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_clean_answer_no_annotation",
+      "name": "test_clean_answer_no_annotation",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_empty_answer_no_annotation",
+      "name": "test_empty_answer_no_annotation",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestAnnotateError",
+      "definition": "TestAnnotateError.test_none_answer_no_crash",
+      "name": "test_none_answer_no_crash",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_when_monitor_disabled",
+      "name": "test_passthrough_when_monitor_disabled",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_when_no_issue",
+      "name": "test_passthrough_when_no_issue",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_escalates_on_quality_issue",
+      "name": "test_escalates_on_quality_issue",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_returns_original_on_escalation_failure",
+      "name": "test_returns_original_on_escalation_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_on_error_prefix",
+      "name": "test_passthrough_on_error_prefix",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_on_empty",
+      "name": "test_passthrough_on_empty",
+      "parameters": {},
+      "source_path": "tests/unit/test_stages.py"
+    }
+  ],
+  "identity_conformance": "duplicate-free identity multiset; original JUnit ordering diagnostic only",
+  "native_case_count_claim": null,
+  "schema": "private.hg5.native.expected_cases.v1",
+  "status": "STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION",
+  "test_file_source_records": {
+    "tests/unit/test_openai_compat_default_golden.py": {
+      "blob": "d8e94a93e56fe25a2f2439c54277ec9f07fff289",
+      "bytes": 7778,
+      "mode": "100644",
+      "path": "tests/unit/test_openai_compat_default_golden.py",
+      "sha256": "76965c4f5481f194b5a097f02007272cc50fc43e8211fd071af3415b5e1709cd"
+    },
+    "tests/unit/test_stages.py": {
+      "blob": "c15ef3961adad4c07f2fd59006f5484632e1ed41",
+      "bytes": 8311,
+      "mode": "100644",
+      "path": "tests/unit/test_stages.py",
+      "sha256": "0948216b9024e1e6787e8a91bf4cab3bcc8b41ebbf4d54877c0d32ec3e91d65b"
+    },
+    "tests/unit/test_v1_escalation.py": {
+      "blob": "4f96cd05454d44a734353fb0489cfcb1bc859b3a",
+      "bytes": 37133,
+      "mode": "100644",
+      "path": "tests/unit/test_v1_escalation.py",
+      "sha256": "6a2b1a183f60fcc62a2ac9446ead9df1043dfa6a7d8ad1c65d0dc0e44d6de114"
+    },
+    "tests/unit/test_v1_escalation_off_golden.py": {
+      "blob": "0ea9782121654b6fe6219bd4895534756bce8a4f",
+      "bytes": 6375,
+      "mode": "100644",
+      "path": "tests/unit/test_v1_escalation_off_golden.py",
+      "sha256": "d4ac5e8055528039d78e7719289bc57555ce8175ad38fe190157d6284cda1ccb"
+    }
+  }
+}
