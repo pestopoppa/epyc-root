@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T05:21:40Z",
+  "last_compile": "2026-10-08T05:52:00Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T05:21:40Z",
+  "scan_time": "2026-10-08T05:52:00Z",
   "schema_version": 1,
-  "source_set_hash": "d15f39430a25741a794e4a7edb9baa0a595e0878fe98cb2b5e3ab2e572e0318c",
+  "source_set_hash": "32a036c7f5695d366b0760acdaa2b256eed1d7854c0e6bc9897390238849db55",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cecf2813a7c114643973da2a78f9ca38965931f8f8a8fd78856ab32ca1ba9d10",
-      "modified": "2026-10-08T04:58:24Z",
+      "content_hash": "d557942431c0a0665ebb99668fb25769a1e09dc87f3e6b8828518fb1bd215402",
+      "modified": "2026-10-08T05:33:26Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 156117,
+      "size": 157340,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1383,10 +1383,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0b22d7e8b876cf4a8c3863e9ae0e9e83ec6b427f29f55186b8bd03d02b30963f",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "32e70cee13179b1b404ed5231c09550ae21251e276ac9d96379fc71a4809cfde",
+      "modified": "2026-10-08T05:33:26Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 83262,
+      "size": 84603,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ca3184abdbd4a4d34a5d4ad41ac5d6c5c18232e91d6f10cb7815adc129fb3b87",
-      "modified": "2026-10-08T05:01:54Z",
+      "content_hash": "054424ec889934ba980e3b526ada09b1392ac031f2b1e0a1b9c66bfc56dfbd78",
+      "modified": "2026-10-08T05:33:26Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 396066,
+      "size": 397455,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "42ae24e8f16bf4dfaed1b2ac31e763190ae4db2cbaca3b00caff1f648c641adc",
-      "modified": "2026-10-08T04:58:24Z",
+      "content_hash": "5c1b784efa311be68a31ecde0745c6474f1440d6a2e7b12e1515fec23371ffb6",
+      "modified": "2026-10-08T05:34:04Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 15478,
+      "size": 18111,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },

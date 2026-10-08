@@ -3893,3 +3893,9 @@ MAIN separately accepted a narrowed prospective HG5 request-event source contrac
 The accepted dashboard snapshot at 2026-10-08 04:30 UTC reports 6,325/9,812 checked tasks (64.5%) and 3,701/6,110 active-plus-blocked checked (60.6%). Its 180 prose marker chips remain separate from checkboxes. These fleet counts include inference and gated work and do not establish non-inference backlog exhaustion.
 
 Sources: [SC54 and ingestion enrollment](../handoffs/active/vidya-belief-substrate-program.md), [NI08 continuation](../handoffs/active/non-inference-backlog.md), [adapter source registry](../scripts/vidya/adapters/README.md), [MAIN checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md).
+
+### TD-29 current-source controls and scope tally — 2026-10-08
+
+MAIN accepted the original ROOT `11f1b00` source recipe and hosted run `37729628899` attempt 1: all 209 cases passed across seven whole mocked modules, including TD122 plus the unchanged HG87 controls. The paired TD-29.M0a.S0 and VB source rows close as one bounded source child, bringing NI08 to 189 scoped completions (118 existing checkbox closures plus 71 completed scoped children); the two checkbox transitions are not two task completions, and 209 test cases are not task completions. TD-29.M0a, TD-29.M4, and the inference/three-arm sidecar gates remain open. The accepted result does not establish runtime behavior, model quality, inference or performance.
+
+Sources: [original acceptance and custody](../artifacts/ni08/td29-current-source209-acceptance-20261008/README.md) · [TD-29 source task](../handoffs/active/typed-decision-plane.md) · [belief companion](../handoffs/active/vidya-belief-substrate-program.md) · [NI08 scope record](../handoffs/active/non-inference-backlog.md) · [current progress record](../progress/2026-10/2026-10-08-codex-ni-main.md).
