@@ -12,6 +12,22 @@
       "path": "scripts/benchmark/test_m12h_ast_isolated.py",
       "sha256": "e56642c6df703f39abc5bccc9ee9f7f0cd6b13b28df64162f5226df74506ea66",
       "size": 3392
+    },
+    {
+      "repo": "enrollment",
+      "path": "scripts/vidya/adapters/README.md",
+      "commit": "11f38bd0c3824f4180d2f605e16a0d8b2b4d6526",
+      "sha256": "2c51084e2fd48f50cabf8abd045116ac2efc359f26fb2aff66b1f7207040e3b0",
+      "size": 290120
+    },
+    {
+      "repo": "enrollment",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "commit": "11f38bd0c3824f4180d2f605e16a0d8b2b4d6526",
+      "sha256": "5f9c0c4f311699c86bf76b6dc579b8af20c2ba7013b2cb6550199d7106de6661",
+      "size": 401746
     }
-  ]
+  ],
+  "enrollment_commit": "11f38bd0c3824f4180d2f605e16a0d8b2b4d6526",
+  "enrollment_is_implementation_ancestor_claim": false
 }

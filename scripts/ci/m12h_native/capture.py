@@ -5,6 +5,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 HERE=Path(__file__).resolve().parent
 CARRIER_PIN='4c0c653baf1654c8c25c66433cf39c8faefd8e52'
+ENROLLMENT_PIN='11f38bd0c3824f4180d2f605e16a0d8b2b4d6526'
 CONTEXT_PIN='82dc0a8f0e4c9359a6733dd0241ba9caea94f785'
 RESEARCH_PIN='daa1855aee005c0da53398ea2a102a3436b2fb6a'
 CARRIER_READS=('scripts/ci/native_conformance.py','scripts/vidya/adapters/ci_conformance.py',
@@ -16,17 +17,18 @@ def once(path,obj):
  with open(path,'x') as stream:json.dump(obj,stream,sort_keys=True,indent=2);stream.write('\n')
 def hashes(paths):return {str(path.resolve()):sha(path.read_bytes()) for path in paths}
 def main():
- workspace=Path(os.environ['GITHUB_WORKSPACE']).resolve();recipe=workspace/'recipe';carrier=workspace/'carrier';research=workspace/'research'
+ workspace=Path(os.environ['GITHUB_WORKSPACE']).resolve();recipe=workspace/'recipe';carrier=workspace/'carrier';research=workspace/'research';enrollment=workspace/'enrollment'
  run=Path(os.environ['RUNNER_TEMP'])/'m12h-native';result=run/'result';result.mkdir(parents=True,exist_ok=True)
  status=run/'status.json';state={'state':'preflight','exit_code':None,'control_count':8,'no_models_or_inference':True}
  try:
-  pins={'recipe':git(recipe,'rev-parse','HEAD'),'carrier':git(carrier,'rev-parse','HEAD'),'research':git(research,'rev-parse','HEAD')}
-  if pins!={'recipe':os.environ['GITHUB_SHA'],'carrier':CARRIER_PIN,'research':RESEARCH_PIN}:raise RuntimeError('checkout pin mismatch')
+  pins={'recipe':git(recipe,'rev-parse','HEAD'),'carrier':git(carrier,'rev-parse','HEAD'),'research':git(research,'rev-parse','HEAD'),'enrollment':git(enrollment,'rev-parse','HEAD')}
+  if pins!={'recipe':os.environ['GITHUB_SHA'],'carrier':CARRIER_PIN,'research':RESEARCH_PIN,'enrollment':ENROLLMENT_PIN}:raise RuntimeError('checkout pin mismatch')
   subprocess.check_call(['git','-C',str(recipe),'merge-base','--is-ancestor',CONTEXT_PIN,pins['recipe']])
   manifest=json.loads((HERE/'source-map.json').read_text());cases=json.loads((HERE/'expected-cases.json').read_text())
+  if manifest.get('enrollment_commit')!=ENROLLMENT_PIN:raise RuntimeError('published enrollment pin mismatch')
   paths=[HERE/'source-map.json',HERE/'expected-cases.json',HERE/'bootstrap.py',HERE/'capture.py',HERE/'requirements.txt',recipe/'.github/workflows/m12h-native.yml']
   for row in manifest['files']:
-   base={'recipe':recipe,'research':research}[row['repo']];path=base/row['path']
+   base={'recipe':recipe,'research':research,'enrollment':enrollment}[row['repo']];path=base/row['path']
    raw=path.read_bytes()
    if sha(raw)!=row['sha256'] or len(raw)!=row['size']:raise RuntimeError('source closure changed: '+row['path'])
    paths.append(path)
@@ -43,7 +45,7 @@ def main():
   junit=result/'original-junit.xml';native=result/'native'
   if junit.exists() or native.exists():raise RuntimeError('refuse output reuse')
   producer=[sys.executable,str(carrier/'scripts/ci/native_conformance.py'),'--cwd',str(recipe),'--junit',str(junit),'--output',str(native),
-   '--repo','recipe='+str(recipe),'--repo','research='+str(research),'--repo','carrier='+str(carrier)]
+   '--repo','recipe='+str(recipe),'--repo','research='+str(research),'--repo','carrier='+str(carrier),'--repo','enrollment='+str(enrollment)]
   for path in paths:producer+=['--read-path',str(path)]
   for selection in ('research:scripts/benchmark/test_m12h_ast_isolated.py',):producer+=['--select',selection]
   env=dict(os.environ,PYTEST_DISABLE_PLUGIN_AUTOLOAD='1',PYTHONDONTWRITEBYTECODE='1',PYTHONHASHSEED='0');env.pop('PYTHONPATH',None)

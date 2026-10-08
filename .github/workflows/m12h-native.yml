@@ -1,14 +1,15 @@
-name: M12h native graph profiler source controls
+name: M12h judge-match source controls
 on:
   push:
     branches: [codex/m12h-native-source-20261008]
 permissions:
   contents: read
 jobs:
-  graph-profiler-source-controls:
+  judge-match-source-controls:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
+      ENROLLMENT_PIN: 11f38bd0c3824f4180d2f605e16a0d8b2b4d6526
       ROOT_CONTEXT_PIN: 82dc0a8f0e4c9359a6733dd0241ba9caea94f785
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       RESEARCH_PIN: daa1855aee005c0da53398ea2a102a3436b2fb6a
@@ -23,28 +24,39 @@ jobs:
           mkdir -p "$RUNNER_TEMP/m12h-native/result"
           printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/m12h-native/status.json"
       - name: Checkout exact ROOT recipe and adapter proposal
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           ref: ${{ github.sha }}
           path: recipe
           fetch-depth: 0
           persist-credentials: false
       - name: Checkout unchanged original CI carrier
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: pestopoppa/epyc-root
           ref: ${{ env.ROOT_CARRIER_PIN }}
           path: carrier
           persist-credentials: false
       - name: Checkout exact Research source proposal
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: pestopoppa/epyc-inference-research
           ref: ${{ env.RESEARCH_PIN }}
           path: research
           persist-credentials: false
+      - name: Checkout published named M12 enrollment independently
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ENROLLMENT_PIN }}
+          path: enrollment
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/vidya/adapters/README.md
+            handoffs/active/vidya-belief-substrate-program.md
+          sparse-checkout-cone-mode: false
       - name: Set up exact Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.13.15'
       - name: Install existing minimal locked native-test environment
@@ -58,7 +70,7 @@ jobs:
           "$RUNNER_TEMP/m12h-native/venv/bin/python" -I recipe/scripts/ci/m12h_native/capture.py
       - name: Retain original verdict JUnit errors and source custody
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: m12h-native-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
