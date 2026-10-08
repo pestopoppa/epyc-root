@@ -116,7 +116,7 @@ def main():
         if sm['app']['commit']!=APP_PIN or sm['root_context']['commit']!=ROOT_PIN or sm['native_carrier']['commit']!=CARRIER_PIN: raise RuntimeError('reviewed pins mismatch')
         if cm['ast_test_definition_count']!=119 or cm['ast_derived_expected_junit_case_count']!=122 or len(cm['case_identities'])!=122: raise RuntimeError('static identity proposal malformed')
         derived_cases=verify_ast_manifest(cm)
-        if sm['dependency_lock']['requirements_sha256']!=digest(req) or sm['dependency_lock']['package_count']!=25 or sm['dependency_lock']['wheel_hash_count']!=260: raise RuntimeError('dependency lock closure differs from static review')
+        if sm['dependency_lock']['requirements_sha256']!=digest(req) or sm['dependency_lock']['package_count']!=64 or sm['dependency_lock']['wheel_hash_count']!=905: raise RuntimeError('dependency lock closure differs from static review')
         if sm['test_identity']['case_manifest_sha256']!=digest(raw(RECIPE_DATA/'expected-cases.json')): raise RuntimeError('case manifest hash differs from source map')
         if git(APP,'rev-parse','HEAD')!=APP_PIN or git(APP,'rev-list','--parents','-n','1',APP_PIN).split()!=[APP_PIN,*sm['app']['parents']] or git(APP,'rev-parse',APP_PIN+'^{tree}')!=sm['app']['tree']: raise RuntimeError('APP pin, complete parent list, or tree differs')
         if git(ROOT,'rev-parse','HEAD')!=os.environ.get('GITHUB_SHA'): raise RuntimeError('ROOT recipe event pin differs from workflow SHA')
