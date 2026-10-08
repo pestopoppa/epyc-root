@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 173,
+    "docs": 176,
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T05:52:00Z",
+  "last_compile": "2026-10-08T07:04:44Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T05:52:00Z",
+  "scan_time": "2026-10-08T07:04:44Z",
   "schema_version": 1,
-  "source_set_hash": "32a036c7f5695d366b0760acdaa2b256eed1d7854c0e6bc9897390238849db55",
+  "source_set_hash": "88456c0a60aff61f6c9852e0f55bdea91ef5c717450d8e6f3de3b427306d1956",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -303,10 +303,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "61e00b8f9a0bd1aae0a4319d98ba80e785ba4438854b4f7d9451419c8c59e74b",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "3c2bb1434098f4d48515588249e0c071b1dce7e03eb98561d37da78d10e335a6",
+      "modified": "2026-10-08T06:36:15Z",
       "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
-      "size": 143398,
+      "size": 146495,
       "title": "Coordinator role \u2014 failure modes, root causes, and the refactor",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d557942431c0a0665ebb99668fb25769a1e09dc87f3e6b8828518fb1bd215402",
-      "modified": "2026-10-08T05:33:26Z",
+      "content_hash": "bc3478feb7ee1dfc8c123e21103c32647f277601530a7167e99ef047659c6640",
+      "modified": "2026-10-08T06:36:15Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 157340,
+      "size": 160104,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "054424ec889934ba980e3b526ada09b1392ac031f2b1e0a1b9c66bfc56dfbd78",
-      "modified": "2026-10-08T05:33:26Z",
+      "content_hash": "5f9c0c4f311699c86bf76b6dc579b8af20c2ba7013b2cb6550199d7106de6661",
+      "modified": "2026-10-08T06:36:15Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 397455,
+      "size": 401746,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "5c1b784efa311be68a31ecde0745c6474f1440d6a2e7b12e1515fec23371ffb6",
-      "modified": "2026-10-08T05:34:04Z",
+      "content_hash": "92aabba9e3df374cfe68de8122579c69db368824dde6d4091a765e43d3415f25",
+      "modified": "2026-10-08T06:36:15Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 18111,
+      "size": 21784,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10767,6 +10767,30 @@
       "type": "docs"
     },
     {
+      "content_hash": "bb76d277f56b7d7114388718a98bb9604a644da691aadb2d8b0aba19d7a44152",
+      "modified": "2026-10-08T06:57:53Z",
+      "path": "docs/reviews/rtg48-a2-counterexample-2026-10-08.md",
+      "size": 6502,
+      "title": "RTG-48 A-2 \u2014 Falsifiable adjudication of RC-1",
+      "type": "docs"
+    },
+    {
+      "content_hash": "e2c88770e514b01d8c8f8c290f1015384bcfbb8f15ce4f664ef3bee203064b60",
+      "modified": "2026-10-08T06:33:55Z",
+      "path": "docs/reviews/rtg48-a3-a5-source-review-2026-10-08.md",
+      "size": 10404,
+      "title": "RTG-48 A-3 / A-5 source review \u2014 MAIN accepted 2026-10-08",
+      "type": "docs"
+    },
+    {
+      "content_hash": "3827e7ed9151dda0b7a5ba4dc975b5df9a079e85ab0a91063911dd8ebfd9f4fa",
+      "modified": "2026-10-08T06:36:15Z",
+      "path": "docs/reviews/rtg48-a4-a6-source-review-2026-10-08.md",
+      "size": 13124,
+      "title": "RTG-48 A4 \u2014 current-state mechanism/cost/deletion crosswalk (MAIN accepted 2026-10-08)",
+      "type": "docs"
+    },
+    {
       "content_hash": "86ab5d67161923ea00b90a4fe9089f7343a9df6dbbc429b40090a8aa7933323f",
       "modified": "2026-10-07T21:10:41Z",
       "path": "docs/reviews/rtg48-mech-column-audit-2026-08-23.md",
@@ -10815,7 +10839,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1350,
+  "total_new": 1353,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

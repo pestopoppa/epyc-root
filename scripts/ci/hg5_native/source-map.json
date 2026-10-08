@@ -1,15 +1,16 @@
 {
   "app": {
-    "commit": "76624a91d72aefce9778d64701ed0f687585eb0a",
+    "commit": "974cb4017791a5d500269fd44f7d9903528e1d5d",
     "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed. Plus both exact golden JSON fixtures. Includes immutable historical goldens and both versioned public62 current-stream contract fixtures.",
+    "parent": "eadb959172fbc433da41aaf069c1bcf20c6ce98f",
     "parents": [
-      "c12c9c5e49e28fa69b5da30c646ecb967f616c58"
+      "eadb959172fbc433da41aaf069c1bcf20c6ce98f"
     ],
     "repository": "pestopoppa/epyc-orchestrator",
-    "tree": "7050be8796124d90e0451c03a068abf2229ea0bb"
+    "tree": "809ec3aa77a12e577643664e0405e9529428c885"
   },
   "app_source_config_envelope": {
-    "file_count": 2217,
+    "file_count": 2220,
     "files": [
       {
         "blob": "8e0520ffe821da7a34192e5f750cfd5d7f3045ab",
@@ -5227,11 +5228,11 @@
         "sha256": "00c8a87841d163ea6a0e1977a5cb99f8bc0ba7d7c81ddcc85006f433bd613381"
       },
       {
-        "blob": "803881c77961b8173a34ba0f5daeeeaf443764cf",
-        "bytes": 97330,
+        "blob": "f095de62dbb50bb8cd4f1940ee191a778ac546d0",
+        "bytes": 97436,
         "mode": "100644",
         "path": "src/api/routes/openai_compat.py",
-        "sha256": "52668158d24a73b91f588b50d5098e5cb36bfe46aa770619b7f824e28e576ed4"
+        "sha256": "0354de78cb04b63fa81213c1b108eed96f1ce72a4355ca21a87818c1527926e0"
       },
       {
         "blob": "531bade987e2ba6eefc6153928eb5d85de0ba463",
@@ -5269,11 +5270,11 @@
         "sha256": "a210c5c4e5ac0df94cbd659ec3e7cc712d710b86d4d2acfa005babd2aec2fbf7"
       },
       {
-        "blob": "287a5b69493553c20f3c35cb93e323125670d6a1",
-        "bytes": 17160,
+        "blob": "355a9e0952b315f31935624f6e9910398d5e5784",
+        "bytes": 21182,
         "mode": "100644",
         "path": "src/api/routes/v1_escalation.py",
-        "sha256": "e0db66a3008ef44fcbdb3c6542b81c6620d2a0d8264776d0201f4ce9600c5845"
+        "sha256": "9bcaa07061d86a06c73cc3f38cd9adc9ec617fef227e075033cee70ce04b4bf3"
       },
       {
         "blob": "bf892863db52b38999db3d6e8c683cbc2866dcb2",
@@ -5521,11 +5522,11 @@
         "sha256": "4b0abf5adbcbf0d0b796db18336d6f9401c2d7418ed9c408edccb576f12c3dff"
       },
       {
-        "blob": "7da3954de8dad4bec4418c195d85a3d9d1ebede1",
-        "bytes": 89260,
+        "blob": "cf3af41d8eaa27fee19e42af6855687b5f72e88e",
+        "bytes": 90332,
         "mode": "100644",
         "path": "src/backends/llama_server.py",
-        "sha256": "c5ac10bc9cd55d033cc776f2fd0caea6e65de82d1865e09e476fe57112fbd5ab"
+        "sha256": "52a6d1e0294a028af191e570baa4df485dbb98c8ec482fb2f57df6484474d6db"
       },
       {
         "blob": "e09b17402c489f532e3330011dbe529a904f6bfe",
@@ -6319,11 +6320,11 @@
         "sha256": "6dbadee264d151bc145872679bf3a349ba1b9e5fd9c73c1b8d63953480b11cce"
       },
       {
-        "blob": "9c634a0d4abcc495d66c347eb1aee420c988588c",
-        "bytes": 31243,
+        "blob": "df97effbeefbce7fcc05f3c5eccf497e357dedf9",
+        "bytes": 31520,
         "mode": "100644",
         "path": "src/inference/model_server.py",
-        "sha256": "d968d7af47a9904c15ee0cd5009b78abebc2e9e2d9c280a0707650880d1d1df9"
+        "sha256": "ce980da2a1e03971795b53c1c0a68c5068d4e417dbdd4705a92b5fe124e54ddc"
       },
       {
         "blob": "39c6764e3a90252473db3f874eba26f6ff23d937",
@@ -6396,11 +6397,11 @@
         "sha256": "94794e6c2cd20de3775a8dd085b01a2e60feca366989856bef784e40135f7017"
       },
       {
-        "blob": "50a6922aad02e745f4d4dd55a947f6d957b22661",
-        "bytes": 89652,
+        "blob": "20f77bbc029d37f4347406d2fe2d16b6eb93556f",
+        "bytes": 92059,
         "mode": "100644",
         "path": "src/llm_primitives/inference.py",
-        "sha256": "cb4f1e465ba8ab5c4db0eb16d82a478972058555a61adfcc5c7e4e3d8330c466"
+        "sha256": "d8b7aa202f87cd8d4cebd575b90468b74edc9f7e9f77424b173c50af823c5171"
       },
       {
         "blob": "44ca255bbc98616b0ea68496c2e783d21b98ee86",
@@ -7334,6 +7335,13 @@
         "sha256": "bebc88c2d0ed1076c3fbb0903c22e4e686d67b9cb6deb90593303f4543eedd5d"
       },
       {
+        "blob": "8652a53eb494afbfa59ae005281892f20e778993",
+        "bytes": 7298,
+        "mode": "100644",
+        "path": "src/runtime/hg5_request_event.py",
+        "sha256": "994d581338b080bf28e9f587164f397720bd51f9befdfe3bdba6759164a409df"
+      },
+      {
         "blob": "cf283ebfb928f4217f5eb6b29f649cbc57225197",
         "bytes": 19552,
         "mode": "100644",
@@ -7402,6 +7410,13 @@
         "mode": "100644",
         "path": "src/runtime/routing_stage_timing.py",
         "sha256": "40439c760e819398aab9584be19fd68dadfcfc9add45bdead071fa48c26611a9"
+      },
+      {
+        "blob": "9b7d4000e24f4eb4322308d4295ffa1deace79b5",
+        "bytes": 6980,
+        "mode": "100644",
+        "path": "src/runtime/schemas/hg5-request-intervention-v1.json",
+        "sha256": "d1a0b46d1df1e7de6a0af43a3c328b7ca635e6422fce0bbfda679544c3115868"
       },
       {
         "blob": "f4ccd57f9e6969c8ce723fe0b4e90d40a4b43306",
@@ -8048,11 +8063,11 @@
         "sha256": "8a825132e08e01458d3621ff867d9e501789fc23bceba9319ae549c8198b358c"
       },
       {
-        "blob": "371c7857970d275c57fcca3ca582b96bc468f2c5",
-        "bytes": 6185,
+        "blob": "c80137398c80538c77c44061e0299c53fd42ff8c",
+        "bytes": 7288,
         "mode": "100644",
         "path": "src/typed_decisions/call_recorder.py",
-        "sha256": "5349ebc4b00b667a975d486d9cb1912315e0873d31fe53fec71390defa350a46"
+        "sha256": "c0abbdc9b2de2c725a30850d843b8f0364312c355a372ede160ef9659d7662cd"
       },
       {
         "blob": "4264354fbc32a9cdb027aa540f185e6315efbf33",
@@ -8641,6 +8656,13 @@
         "mode": "100644",
         "path": "tests/integration/test_ufh14_b1_graph.py",
         "sha256": "c7c7059f82c2bb74195b455e772445c33b10af921eafbc42c17c3133cee3e695"
+      },
+      {
+        "blob": "72ba14ab8c93217d330847b461a1d17613cbead2",
+        "bytes": 22831,
+        "mode": "100644",
+        "path": "tests/native/test_hg5_request_event_native.py",
+        "sha256": "c77d4853f2e578dd1e087cde90efa3172361ca7f7d4ced9c017e70c27aaeff75"
       },
       {
         "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -11898,11 +11920,11 @@
         "sha256": "3121c8c56798874b63585f1c811286f5ba7ac8077cfea37a78f2a238938a9156"
       },
       {
-        "blob": "31cb7dd43b4d8095c285c8f92d227dce9c377d08",
-        "bytes": 51705,
+        "blob": "dffd7a3c75ee18e4df5fcce48c26dd7ecfdd780b",
+        "bytes": 55190,
         "mode": "100755",
         "path": "tests/unit/test_inference_mixin.py",
-        "sha256": "d9ecca08274051276a02881da62c711a2cd273446bddca0a41631d515576704d"
+        "sha256": "58ee4ca42099704170babeadc511eb9bc2330de0b711c013eed8d52248170a5c"
       },
       {
         "blob": "2088154a56b42ba82ea0a59311949fa113d7f85e",
@@ -12346,11 +12368,11 @@
         "sha256": "ace89c07a16df9c2dfc817d80135f69eea3d0508df6765f735f670eac56ff370"
       },
       {
-        "blob": "6f2c99ae37d7de712fac5a7dc46a687a2ba59377",
-        "bytes": 47194,
+        "blob": "815b052f346663afd71f2010a95c8bf4868bfe81",
+        "bytes": 50045,
         "mode": "100755",
         "path": "tests/unit/test_llama_server.py",
-        "sha256": "56dfd7457effc253eb5877599cca1312dfb26b78d747ad5933b4abcbd1de14c3"
+        "sha256": "fd31b957ac13d381ee268f69835a37d29fe13b1ef59f6ee231141d5294ffdf38"
       },
       {
         "blob": "822f5ad4386ca1adfeb39966e34a75dd9e825d7c",
@@ -15216,11 +15238,11 @@
         "sha256": "880b75f7a722942dcd84ed955f2cde0d1535f34c1559a568864e8956ba939789"
       },
       {
-        "blob": "dfee6e43191d44c2868da9b9f02676d9416c0374",
-        "bytes": 6093,
+        "blob": "8a335d11898e27b2660f0da03ea044db07536825",
+        "bytes": 8558,
         "mode": "100644",
         "path": "tests/unit/test_typed_decisions_call_recorder.py",
-        "sha256": "0d10c8a0cee4f58e2ddc8ba5e9dada332f22a7b11a7ae70094110429b33e79dd"
+        "sha256": "19dab77f5d10dc77bb038eb5d5ba7d544d334c035fc13bc4d15c79ea85536237"
       },
       {
         "blob": "98e2127bb861872c620a8f032d287e900f80ce98",
@@ -17015,20 +17037,18 @@
   },
   "schema": "private.hg5.native.source_map.v1",
   "static_evidence": {
-    "host_tests_or_project_imports": false,
-    "source_only": true,
-    "test_selection": [
-      "tests/unit/test_v1_escalation.py",
-      "tests/unit/test_v1_escalation_off_golden.py",
-      "tests/unit/test_openai_compat_default_golden.py",
-      "tests/unit/test_stages.py"
-    ]
+    "TAP_additional_cases_unrun": 31,
+    "current209_original_accepted_base": "eadb959172fbc433da41aaf069c1bcf20c6ce98f",
+    "definitions": 205,
+    "no_native_claim": true,
+    "prospective_cases": 240,
+    "whole_modules": 8
   },
   "status": "PRIVATE_UNEXECUTED_RECIPE_DRAFT",
   "test_identity": {
-    "ast_definition_count": 56,
-    "ast_derived_expected_junit_identities": 87,
-    "case_manifest_sha256": "c9a1dbc3298a36ae548186f71b4e34a56fee309145ec109c1e1eef8988632cd7",
+    "ast_definition_count": 205,
+    "ast_derived_expected_junit_identities": 240,
+    "case_manifest_sha256": "477cb60072e58a69b64a40d923825570786904ba41c4501403b91de1cdf5726c",
     "conftests": [
       "tests/conftest.py",
       "tests/unit/conftest.py"

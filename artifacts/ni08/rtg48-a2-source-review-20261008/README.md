@@ -1,0 +1,3 @@
+# RTG-48 A-2 source custody
+
+MAIN accepted the [bounded adjudication](../../../docs/reviews/rtg48-a2-counterexample-2026-10-08.md) after comparing the original Git commit reports, current supervisor/test source and A-1 audit. The [manifest](manifest.json) preserves exact source identities and original commit-body bytes as ungraded document dependencies. F-24 is a wrong-mechanism case; the reported F-38 recurrence is an active-but-incorrect predicate. Historical counts remain attributed reports because the original incident log windows are unavailable. These selected cases do not establish predictive population rates or context-decay causality. No runtime, test, inference, new ClaimTuple or grading rule is claimed.

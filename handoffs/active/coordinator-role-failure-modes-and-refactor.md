@@ -105,7 +105,7 @@ cursors, and the entire pre-08:20:31Z advisory history. The surviving coordinato
 | F-20 | **Invented a fleet-wide `lanes:[none]` restriction the roster never imposed.** `config.yaml` gives `mainA` `[cpu, none]` and `mainB` `[gpu, none]`. It came from task briefs asserting a constraint **without citing the line it derives from** — a second source of truth by construction | `progress/…-12.md:3523-3525`; roster at `RESOLUTION-LEDGER` O-2 | caught at wrap-up | `RECALL` |
 | F-21 | **Broadcast a false premise fleet-wide** — *"uncommitted work does not survive a reboot"* — and drove flush urgency with it all night. `/workspace`, the scratch dir and the agent-memory dir are all `/dev/md127`, one persistent RAID | COR-9; `progress/…-12.md:2179-2187`, `:1605-1606`, `:3539-3541`. **It changed behaviour**: it is the stated reason `mainC` committed another agent's work | `mainA`, by measuring; coordinator retracted to the same five agents in the same channel | `RECALL` |
 | F-22 | **Dispatched by `file.md:LINE` as though a line number were an identity — against its own written warning.** `BACKLOG-DISPATCH-QUEUE.md:90-92`: *"**Operating rule for the coordinator: line numbers are a hint, task text is the identity.** … match on the description, not the line."* Measured rot: *"22 of its 201 references (10%) no longer pointed at a checkbox the same day it was written — **12 of them from ordinary fleet edits in about three hours**"* (`backlog_row_check.py:10-15`); whole-queue rot 34.5% (`progress/2026-08-11.md:668-675`) | `mainC`, `inbox/coordinator-agent.jsonl:104`, 10:50:56Z — **two catches in one batch**: (1) *"You cited `numa-topology-cutover-resume-20260730.md:327` … `:327` is a DIFFERENT row - `P1-7. vision_escalation has a PHANTOM 5-port fleet`. … **So the work is real and the citation is not.**"* (2) *"`autopilot-continuous-optimization.md:2152` screened ANCHOR ROT … **Cause is me: I inserted rows into that file this morning** … Re-anchored BY TEXT to `:2183`."* Nine dispatch messages carried line-keyed refs (`outbox` lines 33, 34, 36, 37, 39, 40, 41, 42, 43) | `mainC` — a peer, **not the operator**. Coordinator pledged 10:52:06Z: *"Every future dispatch from me carries the TASK TEXT as primary and the line only as a hint. … if my pointer disagrees with the text, the TEXT wins"* | `MECH` — `backlog_row_check.py --ref` exists and is **not on the dispatch path** |
-| F-23 | **Sent identical prompts to the `auditor` and to `mainA`** | **CONTRADICTED AS STATED — see Corrections §5.** Every byte-identical auditor/mainA payload is a deliberate **5–6-recipient fleet broadcast** (standing instruction 08:22Z; commit freeze 09:35Z; freeze lift 09:38Z) or a daemon relay. No two-agent batch exists. **What survives:** at 10:48:00Z a 4-way batch carried a byte-identical 559-char `standing` block to the auditor — *"An idle main is a coordination failure"*, a **main**-shaped rule — alongside three **execution** assignments (integrate a branch, resolve a divergence, vendor a scorer). The roster already flags the tension: `config.yaml` calls the auditor *"**READ-ONLY** auditor"* while C-OWN gives it code ownership (`MAIN-GOALS.md:485-489`) | none found in any artifact | `RECALL` |
+| F-23 | **Sent identical prompts to the `auditor` and to `mainA`** | **CONTRADICTED AS STATED — see Corrections §5.** Every byte-identical auditor/mainA payload is a deliberate **5–6-recipient fleet broadcast** (standing instruction 08:22Z; commit freeze 09:35Z; freeze lift 09:38Z) or a daemon relay. No two-agent batch exists. **What survives:** at 10:48:00Z a 4-way batch carried a byte-identical 559-char `standing` block to the auditor — *"An idle main is a coordination failure"*, a **main**-shaped rule — alongside three **execution** assignments (integrate a branch, resolve a divergence, vendor a scorer). The roster already flags the tension: `config.yaml` calls the auditor *"**READ-ONLY** auditor"* while C-OWN gives it code ownership (`MAIN-GOALS.md:485-489`), a premise subsequently resolved by R-19/AUD-16. **2026-10-08 A-5: historical dispatch fact only; authority violation or harm is not established.** | none found in any artifact | `RECALL` |
 | F-24 | **Started `bus_supervisor.sh` without verifying it could see its target.** Root cause, from the fix's own comment: `DAEMON_PATTERN='session_bus_coordinator\.py run'` fed to `pgrep -f` **encoded the supervisor's own launch idiom, not the daemon's identity** — the live daemon runs `… .py --bus-root <path> run`, so the pattern matched only daemons this supervisor had started. *"**A watchdog that can see none but its own children is not a watchdog.**"* (`bus_supervisor.sh:63-74`) | `logs/bus_supervisor.out`: `10:35:55Z supervisor started` → `10:35:55Z unhealthy (heartbeat age 10s, pids '') — restarting` (same second — **no pre-flight check that it could resolve its target**) → `10:36:27Z daemon did NOT become healthy within 30s` → `backing off 10s` → `10:36:37Z unhealthy (heartbeat age 6s, pids '')` → `backing off 20s`. **The daemon was healthy throughout**: pid 3259108, alive since 09:20:34Z, heartbeat 10s then 6s against `STALE_AFTER=150`, epoch monotonic and never reset. Each relaunch died on the singleton: *"another instance holds the lock; exiting"* | caught in-thread; **not on the bus at all** | `MECH-UC` — fix + mutation harness (`M1_pattern_adjacency`…`M4_no_storm_bound`) + regression suite, all **uncommitted** |
 | F-25 | **Dispatch reported as utilisation, three times in one hour.** *"Compute has two takers"* when only **messages had been sent** | `RESOLUTION-LEDGER` COR-3 | caught in-conversation | `RECALL` |
 | F-26 | **A `llama-server` at 0.1 %CPU reported as a running measurement.** It was a **69-second config probe** | `RESOLUTION-LEDGER` COR-5. Same instrument error as F-02 | caught in-conversation; **no surviving artifact** | `RECALL` |
@@ -250,8 +250,7 @@ operative"*.
 
 **The failure that remains is real and is a different one**: the fix is **uncommitted**, and it was
 done on the coordinator's own thread (F-16's class), so it neither survives the session nor was
-reviewed. *Surfaced-not-fixed* is the wrong charge; *fixed on the wrong thread and never landed* is
-the right one.
+reviewed. The 2026-10-08 A-5 ruling narrows this to **implemented but uncommitted/unreviewed at that historical snapshot**. C51/C55 subsequently landed, and general thread authorship is not independently established; *fixed on the wrong thread and never landed* is not an accurate present-tense substitution.
 
 ---
 
@@ -296,6 +295,8 @@ Two consequences the evidence forces:
 > **Which of these rules can be given a mechanism, and what is the enforcement point for the ones
 > that cannot?**
 
+2026-10-08 A-4 correction: the following 03e17111 example is superseded as wrong-trade proof by AUD-10; its checkout/shell-framing defects motivated the revert. The cost example is e08fe836, and F-24 remains a mechanism-defect example.
+
 **(b) A mechanism is not automatically approvable, and a mechanism can be wrong.** `03e17111` built a
 precision-targeted destructive-revert guard after the failure fired twice in one night, with 12/12
 tests and live-fire verification — and the operator reverted it (`3d8800e6`). Separately, F-24's own
@@ -307,10 +308,12 @@ cost something at every call site, and they can be built wrong. Every proposal b
 Members: **F-01, F-02, F-03, F-05, F-06, F-09, F-24, F-25, F-26, F-27, F-28** — eleven of
 thirty-two, the largest group, and the one with the worst recurrence record.
 
+2026-10-08 membership clarification: the eleven-member line above defines the original RC-2 selection. F-04/F-08/F-20 in the sub-shape examples are cross-group illustrations, not silent additions to that selection. RC-2…RC-7 are provisional overlapping control-point lenses under RC-1, not independent statistical clusters; the original F-01…F-32 set is distinct from later cases. [MAIN grouping review](../../docs/reviews/rtg48-a3-a5-source-review-2026-10-08.md).
+
 Not one failed loudly; not one was caught by a metric. The shared shape is a **real number, honestly
 obtained, that cannot support the sentence it was put in.**
 
-| Sub-shape | Instances | The tell |
+| Sub-shape | Examples (may cross RC membership) | The tell |
 |---|---|---|
 | Correct number, wrong scope, quoted as the whole | F-01 | the scope is not in the sentence |
 | Instantaneous sample used as a rate | F-02, F-26 | a duty cycle derived from something with no duration |
@@ -460,26 +463,30 @@ The `Mech` column is the role's first pass at that and is a claim under review, 
       All 6 `MECH-UC` upgraded to MECH (landed + tested: fleet_watch `83f204cf`→P3-3, C51/C55/H-1/H-2,
       bus_supervisor H-4 SHA predicate). 27 tests in `tests/coordination/test_mech_column_audit.py`;
       analysis in `docs/reviews/rtg48-mech-column-audit-2026-08-23.md`.
-- [ ] **A-2 — Adjudicate RC-1, falsifiably.** If RC-1 is right, failures on mechanised rules should be
+- [x] **A-2 — Adjudicate RC-1, falsifiably.** ✅ 2026-10-08 If RC-1 is right, failures on mechanised rules should be
       near zero and failures on un-mechanised rules should be common. The tables above claim that
       pattern holds (six rules held, all mechanised; five violated, none mechanised). **Test it by
       hunting the refutation**: find a rule that had a mechanism and was violated anyway. F-24 is a
       candidate — decide whether it refutes RC-1 or is a distinct "wrong mechanism" class.
-- [ ] **A-3 — Test the groupings for over-fitting.** Seven groups over thirty-two failures is close to
+      MAIN accepted the [source adjudication](../../docs/reviews/rtg48-a2-counterexample-2026-10-08.md): F-24 is a wrong mechanism; the historically reported F-38 recurrence is an active incorrect predicate. Mechanism presence alone does not establish protection. Missing denominators and comparable observation streams prevent the aggregate rate prediction from being estimated. [Exact ungraded source custody](../../artifacts/ni08/rtg48-a2-source-review-20261008/README.md) preserves the historical-report limits.
+- [x] **A-3 — Test the groupings for over-fitting.** Seven groups over thirty-two failures is close to
       narration. Which of RC-2…RC-7 collapse? RC-4 (no loop) and RC-5 (wrong work on the thread) are
       asserted to be distinct because their fixes differ — a watcher versus a dispatch discipline.
       Challenge that.
-- [ ] **A-4 — Apply a delete-lens.** Project memory: *"adversarial lenses only ADD mechanism; add a
+      ✅ 2026-10-08 — MAIN retains six distinguishable, overlapping control-point lenses under RC-1. Cross-group examples are labelled; no causal validation or population-rate claim. [Source review](../../docs/reviews/rtg48-a3-a5-source-review-2026-10-08.md).
+- [x] **A-4 — Apply a delete-lens.** Project memory: *"adversarial lenses only ADD mechanism; add a
       delete-lens or the panel over-builds."* For every mechanism proposed below: what does it cost at
       every call site, and what existing rule or file does it let us **delete**? `03e17111` →
       `3d8800e6` is the standing proof that a well-built, well-tested guard can still be the wrong
       trade.
-- [ ] **A-5 — Rule on the eight corrections above.** Especially §2 (two mains or three), §5 (whether
+      ✅ 2026-10-08 — MAIN accepted the [current-source per-mechanism cost/deletion crosswalk](../../docs/reviews/rtg48-a4-a6-source-review-2026-10-08.md): distinguish landed subtraction, recurring structured-input/boundary checks and additive candidates. The old wrong-trade premise is withdrawn; AUD-10 documents defects and the clean-only conditional, while e08fe836 records workflow friction. No invented numerical overhead. Separate operator choices do not block this audit.
+- [x] **A-5 — Rule on the eight corrections above.** Especially §2 (two mains or three), §5 (whether
       F-23 should survive at all in its re-scoped form), §6 (whether "already false when sent" is a
       materially different charge from "became false"), and the *"harder than warranted"* section —
       is *fixed on the wrong thread and never landed* a fair substitution for *surfaced not fixed*,
       or is it the role grading its own paper?
-- [ ] **A-6 — Answer the question the role cannot answer about itself:** is the coordinator
+      ✅ 2026-10-08 — MAIN adjudicated all eight corrections and the additional substitution question in the [bounded ruling table](../../docs/reviews/rtg48-a3-a5-source-review-2026-10-08.md). Unknown actors stay unknown, the resolved roster premise cannot establish F-23 authority violation, counts stay withdrawn, and F-10 was implemented but uncommitted/unreviewed at the historical snapshot and subsequently landed.
+- [x] **A-6 — Answer the question the role cannot answer about itself:** is the coordinator
       recoverable by adding mechanisms, or is the **prompt-driven, single-threaded, message-only**
       shape (RC-3 + RC-4 + RC-5 together) the defect — in which case the refactor is structural and
       the mechanism list is a distraction? Recommend one.
@@ -496,8 +503,7 @@ The `Mech` column is the role's first pass at that and is a claim under review, 
     mechanism must therefore be costed as *"wire to an existing harness primitive"*, not as *"build a
     primitive"*. Direct evidence for the affirmative: the prompt-driven shape was **never forced by
     the harness** — it was chosen, and can be unchosen. `intake-1325#record`.
-  - *A-6 remains unticked: the above is evidence, not the answer. The recommendation this row asks
-    for is still owed.*
+  - ✅ 2026-10-08 — MAIN recommends structural division of authority plus mechanisms at existing choke points: console judgment/integration, already-authorized daemon dispatch, detect-only fleet_watch, owner measurement receipts and auditor grading. Human measurement-policy amendment boundary remains unchanged. [Bounded architecture recommendation](../../docs/reviews/rtg48-a4-a6-source-review-2026-10-08.md); no runtime validation claimed.
 - [ ] **A-7 — Rule on the durability gap, which gates this entire table.** The operator writes to no
       bus file; the corrections that matter most exist only in conversation; the bus was wiped at
       08:20Z. **Half the recurrence counts in this file are the coordinator's own tally of its own

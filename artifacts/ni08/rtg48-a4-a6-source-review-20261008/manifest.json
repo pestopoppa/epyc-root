@@ -1,0 +1,75 @@
+{
+  "scope": "A4/A6 source-only preparation; no canonical writes",
+  "worktree": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl42-task-wrap-private-20261007/root-worktree",
+  "branch": "codex/ni08-evl180-task-wrap-20261007",
+  "head": "c2fd4e35caa0259a6bf01c5a6920422111257bba",
+  "sources": [
+    {
+      "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
+      "sha256": "4f0f47ee0b5dcb7dc6f347159d7057b0896d0a0d1323b9617a00cf7b0985a3bf",
+      "head_blob": "0373efb6218a43797c1a7aeb423cf2c5eb8f9e5e",
+      "mode": "100644",
+      "status": "pre-existing MAIN modification (A2 patch); includes A4/A6 and R-16 task text"
+    },
+    {
+      "path": "docs/reviews/coordinator-role-audit-20260812.md",
+      "sha256": "abeeddbd830830b438640e7f8a5c00c4bea8246f6ecfc992fba1090c839d54d8",
+      "head_blob": "b0d9baf1592954bcfc134fc3b1da3cc1315736cb",
+      "mode": "100644",
+      "status": "clean; historical stand-in review and AUD-10 record"
+    },
+    {
+      "path": "agents/coordinator-agent.md",
+      "sha256": "f613044d90394bab7e1fa43c38c54ee2fc3b184275f49362c82640ce8940ab15",
+      "head_blob": "b68034f93433adc8dbda875e456a26f0e2b71213",
+      "mode": "100644",
+      "status": "clean"
+    },
+    {
+      "path": "agents/shared/MEASUREMENT_POLICY.md",
+      "sha256": "2a2d6c246191d0bb3d09e272582dfbe3bccca6e803ae24f95b5d01ed038b6068",
+      "head_blob": "ba0ab4f0ae0f139b09de5c236b24825e710fc04d",
+      "mode": "100644",
+      "status": "clean"
+    },
+    {
+      "path": "agents/shared/OPERATING_CONSTRAINTS.md",
+      "sha256": "42de1dc069b83360ce94656196d4b6d9b3728641000ccf1b077b325bdd900483",
+      "head_blob": "6210371844aff6435435ca62340d30f89254b0a0",
+      "mode": "100644",
+      "status": "clean"
+    },
+    {
+      "path": "agents/shared/SESSION_LIFECYCLE.md",
+      "sha256": "b11f636e51045f058d1b4b1ce3189e75904332b51680441ad281619fafd79ad6",
+      "head_blob": "6cc2c3f52c6323cabedf755f7b54ccc8e0c1f5e8",
+      "mode": "100644",
+      "status": "clean"
+    },
+    {
+      "path": "coordination/session-bus/BUS_PROTOCOL.md",
+      "sha256": "244f39750f14def66a343abcd3cc2ca78f2dfa343a59262aaac24c94af97bc52",
+      "head_blob": "a7ae404d9c4c9dfbcff62eaf1e1fc5a2b6524715",
+      "mode": "100644",
+      "status": "clean"
+    }
+  ],
+  "exact_task_identity": {
+    "A4": "Apply a delete-lens. For every mechanism proposed below: what does it cost at every call site, and what existing rule or file does it let us delete? It cites 03e17111 -> 3d8800e6 as standing proof, now contradicted by AUD-10's own historical correction.",
+    "A6": "Answer whether coordinator is recoverable by adding mechanisms or whether prompt-driven, single-threaded, message-only shape is the defect; recommend one. R-16 already has settled operator authorization for daemon dispatch; fleet_watch remains detect-only."
+  },
+  "limitations": [
+    "No runtime or performance claims",
+    "No new rates",
+    "No tests/imports/reloads/inference",
+    "No actor census",
+    "No canonical edits",
+    "No GitNexus or shared-index mutation"
+  ],
+  "schema": "epyc.ungraded_document_dependency_custody.v1",
+  "state": "MAIN accepted bounded A-4/A-6 source review",
+  "grade": null,
+  "new_claim_tuple": false,
+  "runtime_authentication": false,
+  "accepted_review_sha256": "3827e7ed9151dda0b7a5ba4dc975b5df9a079e85ab0a91063911dd8ebfd9f4fa"
+}
