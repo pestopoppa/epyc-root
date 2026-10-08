@@ -32,6 +32,14 @@ jobs:
           test "$(stat -c '%u:%a' "$RUNNER_TEMP/td29-native/empty-kernel-bin")" = "$(id -u):700"
           test -z "$(find "$RUNNER_TEMP/td29-native/empty-kernel-bin" -mindepth 1 -maxdepth 1 -print -quit)"
           printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$RUNNER_TEMP/td29-native/empty-kernel-bin" >> "$GITHUB_ENV"
+          mkdir -m 700 "$RUNNER_TEMP/td29-native/empty-llama-mtmd-path"
+          test "$(stat -c '%u:%a' "$RUNNER_TEMP/td29-native/empty-llama-mtmd-path")" = "$(id -u):700"
+          test -z "$(find "$RUNNER_TEMP/td29-native/empty-llama-mtmd-path" -mindepth 1 -maxdepth 1 -print -quit)"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$RUNNER_TEMP/td29-native/empty-llama-mtmd-path" >> "$GITHUB_ENV"
+          mkdir -m 700 "$RUNNER_TEMP/td29-native/empty-llama-server-path"
+          test "$(stat -c '%u:%a' "$RUNNER_TEMP/td29-native/empty-llama-server-path")" = "$(id -u):700"
+          test -z "$(find "$RUNNER_TEMP/td29-native/empty-llama-server-path" -mindepth 1 -maxdepth 1 -print -quit)"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$RUNNER_TEMP/td29-native/empty-llama-server-path" >> "$GITHUB_ENV"
           printf '{"state":"setup_pending","capture_started":false,"native_receipt_state":"no_receipt","native_metric_value":null,"proposition_invented":false}\n' > "$RUNNER_TEMP/td29-native/result/status.json"
       - name: Checkout exact ROOT recipe and prospective enrollment context
         id: root_checkout
