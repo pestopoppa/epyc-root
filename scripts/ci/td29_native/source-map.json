@@ -1,17 +1,26 @@
 {
   "app": {
-    "commit": "130a394e38a5b0cf1b199e33c267070dc7087bd6",
+    "commit": "eadb959172fbc433da41aaf069c1bcf20c6ce98f",
+    "delta_vs_public_main_paths": [
+      "src/backends/llama_server.py",
+      "src/inference/model_server.py",
+      "src/llm_primitives/inference.py",
+      "src/typed_decisions/call_recorder.py",
+      "tests/unit/test_inference_mixin.py",
+      "tests/unit/test_llama_server.py",
+      "tests/unit/test_typed_decisions_call_recorder.py"
+    ],
     "envelope_population": "All tracked .py files; every tracked file under config/; all tracked .toml/.ini/.cfg/.yaml/.yml; requirements*.txt and explicit Python, pytest and dependency lock manifests. Symlinks are bound by Git blob/mode/link text and not followed.",
-    "parent": "0b8dbf2d318ec20174bec1e17d413dd2979145b8",
+    "parent": "5e6b6473b3b1e49c2bc62fa6bc95e2b49becd4bc",
     "parents": [
-      "0b8dbf2d318ec20174bec1e17d413dd2979145b8",
-      "62ee3ba69eed64d8f17268a18b39c131aea90760"
+      "5e6b6473b3b1e49c2bc62fa6bc95e2b49becd4bc",
+      "76624a91d72aefce9778d64701ed0f687585eb0a"
     ],
     "repository": "pestopoppa/epyc-orchestrator",
-    "tree": "f2fb78730f73e95386226f1c28cb853e2ccf71fa"
+    "tree": "0fc2594d2e0ae945bdc940fdc069d5631007c20a"
   },
   "app_source_config_envelope": {
-    "file_count": 2213,
+    "file_count": 2217,
     "files": [
       {
         "blob": "8e0520ffe821da7a34192e5f750cfd5d7f3045ab",
@@ -368,8 +377,7 @@
         "bytes": 72,
         "mode": "120000",
         "path": "orchestration/model_registry_full.yaml",
-        "sha256": "4bb5aa6e3d07c55864f2b3a92364dc85388d741df3c52690d78e821e09707537",
-        "symlink_target": "/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml"
+        "sha256": "4bb5aa6e3d07c55864f2b3a92364dc85388d741df3c52690d78e821e09707537"
       },
       {
         "blob": "4d9429a94854fb57cb195a94e66c0c03c083e542",
@@ -4936,11 +4944,11 @@
         "sha256": "ffa10598c4dc1aebf2f2a18cf2b8479a1774cae0b23bb95744018631a333d013"
       },
       {
-        "blob": "6cd01a03666b07e689c5a10908974f34025c58e0",
-        "bytes": 22444,
+        "blob": "15beb17ce0d15d557e6cfb8c1710a1581fbb64b8",
+        "bytes": 22370,
         "mode": "100644",
         "path": "src/api/models/openai.py",
-        "sha256": "169b0076450a508b7f41ccd29ccdbaf9691a06d2bc8b7b7d13eefca4f3d78221"
+        "sha256": "3f1609700beee73a8b8d6c2f5ed2030f020cd5eac6c3debdd582750c61cc1b47"
       },
       {
         "blob": "b7cc9ef144b8bc02c6dd51808dfbdc723d72535b",
@@ -5083,11 +5091,11 @@
         "sha256": "af7eaf7232e1dc8b1a24c082372b9537ede9bfe2a1ffb6142fad6e02bea23785"
       },
       {
-        "blob": "8dfee56d0d6d40b609d50b86f706f0105b0c574c",
-        "bytes": 15322,
+        "blob": "7c26e4196ffad9268c88e79b3f3c1c053c0cc07e",
+        "bytes": 15668,
         "mode": "100644",
         "path": "src/api/routes/chat_pipeline/stages.py",
-        "sha256": "a36e8249e72c54a928ef481ab67861f899c6d8963cbe84abc95d96849bc11fb8"
+        "sha256": "8ab52d22208a8b836b646f601157478d2aa2070efb87edb3f1a72f4f85642e85"
       },
       {
         "blob": "acdbae81c25fa3d117c7565b8afd59073f526e47",
@@ -5230,11 +5238,11 @@
         "sha256": "00c8a87841d163ea6a0e1977a5cb99f8bc0ba7d7c81ddcc85006f433bd613381"
       },
       {
-        "blob": "484cb118fadfb18aa6c1a8fa66268c62720a59a2",
-        "bytes": 95731,
+        "blob": "803881c77961b8173a34ba0f5daeeeaf443764cf",
+        "bytes": 97330,
         "mode": "100644",
         "path": "src/api/routes/openai_compat.py",
-        "sha256": "fe06f20ad8646bb2d41c79ba8bcb9be6cc49e7dc1765b52aee9091e45a3e7df1"
+        "sha256": "52668158d24a73b91f588b50d5098e5cb36bfe46aa770619b7f824e28e576ed4"
       },
       {
         "blob": "531bade987e2ba6eefc6153928eb5d85de0ba463",
@@ -5272,11 +5280,11 @@
         "sha256": "a210c5c4e5ac0df94cbd659ec3e7cc712d710b86d4d2acfa005babd2aec2fbf7"
       },
       {
-        "blob": "483736cc6eef266eac00f488cf03d947bbf8cc0a",
-        "bytes": 16013,
+        "blob": "287a5b69493553c20f3c35cb93e323125670d6a1",
+        "bytes": 17160,
         "mode": "100644",
         "path": "src/api/routes/v1_escalation.py",
-        "sha256": "2bbd6a720adfb2da67b3925b4e0f6c4a36db2f3f79ec9fa8e0c15b756771d908"
+        "sha256": "e0db66a3008ef44fcbdb3c6542b81c6620d2a0d8264776d0201f4ce9600c5845"
       },
       {
         "blob": "bf892863db52b38999db3d6e8c683cbc2866dcb2",
@@ -6399,11 +6407,11 @@
         "sha256": "94794e6c2cd20de3775a8dd085b01a2e60feca366989856bef784e40135f7017"
       },
       {
-        "blob": "701bde5e3d674bee646c3f7ace85cd0c4e71f492",
-        "bytes": 91110,
+        "blob": "20f77bbc029d37f4347406d2fe2d16b6eb93556f",
+        "bytes": 92059,
         "mode": "100644",
         "path": "src/llm_primitives/inference.py",
-        "sha256": "5b5de021c63682757747b21713518b3ca0f6ca2b7b5cec8b4d540da087dc8bc1"
+        "sha256": "d8b7aa202f87cd8d4cebd575b90468b74edc9f7e9f77424b173c50af823c5171"
       },
       {
         "blob": "44ca255bbc98616b0ea68496c2e783d21b98ee86",
@@ -9043,6 +9051,34 @@
         "mode": "100644",
         "path": "tests/unit/contention_gate_fixture.py",
         "sha256": "a8ef2a3cc81f25a691d0edc36cb046c19d46f8c317fa21679ee7172dcf307725"
+      },
+      {
+        "blob": "a13e80a449b563a1f5211c8e107bebb351c174e4",
+        "bytes": 36190,
+        "mode": "100644",
+        "path": "tests/unit/fixtures/openai_compat_default_golden-public62-stream-contract.json",
+        "sha256": "3107d68263e2eaa393485c88e7be384b7043cda89c2923884f13b625f15a8ba7"
+      },
+      {
+        "blob": "5765a89ec4fd92257ba43892500079c0fd35423e",
+        "bytes": 40492,
+        "mode": "100644",
+        "path": "tests/unit/fixtures/openai_compat_default_golden.json",
+        "sha256": "bab9ba0fc809cc5cd89e3206af348f1f9bfaa9a1613c984e630f23338bcd47a5"
+      },
+      {
+        "blob": "58b76c96290b029144f6baa22201251e16ecde40",
+        "bytes": 9070,
+        "mode": "100644",
+        "path": "tests/unit/fixtures/v1_escalation_off_golden-public62-stream-contract.json",
+        "sha256": "bf9d488d93025ad160ed3d8bcee6cd04b7ef344f07ba015b37d276315092c947"
+      },
+      {
+        "blob": "07072dfb9a35e32742a8bb094ed87420107b07f2",
+        "bytes": 28055,
+        "mode": "100644",
+        "path": "tests/unit/fixtures/v1_escalation_off_golden.json",
+        "sha256": "b15ab0d171a1472f12dcc6b8cd1402bde6cd321e75d93edc5c91eb4e934760dd"
       },
       {
         "blob": "2095b9c32b6d885f46fe5d046a85cdb2004d5ef7",
@@ -12321,11 +12357,11 @@
         "sha256": "ace89c07a16df9c2dfc817d80135f69eea3d0508df6765f735f670eac56ff370"
       },
       {
-        "blob": "3b560b52d4e15932a58d4096d7a97a06b81a5263",
-        "bytes": 49825,
+        "blob": "815b052f346663afd71f2010a95c8bf4868bfe81",
+        "bytes": 50045,
         "mode": "100755",
         "path": "tests/unit/test_llama_server.py",
-        "sha256": "deebda35aa989d04add370eb0965e932247833ad1835942ecc21c9032bec78f2"
+        "sha256": "fd31b957ac13d381ee268f69835a37d29fe13b1ef59f6ee231141d5294ffdf38"
       },
       {
         "blob": "822f5ad4386ca1adfeb39966e34a75dd9e825d7c",
@@ -12881,11 +12917,11 @@
         "sha256": "1648a82e709de8c61e295da7c000f2251c03658a0acd2dee49268efd5afdc41b"
       },
       {
-        "blob": "d8e94a93e56fe25a2f2439c54277ec9f07fff289",
-        "bytes": 7778,
+        "blob": "1768752cda44ff7e08140f5606156fb1727678b5",
+        "bytes": 7071,
         "mode": "100644",
         "path": "tests/unit/test_openai_compat_default_golden.py",
-        "sha256": "76965c4f5481f194b5a097f02007272cc50fc43e8211fd071af3415b5e1709cd"
+        "sha256": "913e30e29684e3053c0f9a3749368bc3bd1704b2c9321663b1812197843fa120"
       },
       {
         "blob": "1725974edb99e2a60fc5132a1e14f01899ed3d05",
@@ -15310,18 +15346,18 @@
         "sha256": "83143554ca831529616a4179ca771a34d39eab17b5dbce85ea336dd619ca1ca3"
       },
       {
-        "blob": "f64d1037efff6be1516f6e807b4b29c7b5257818",
-        "bytes": 26361,
+        "blob": "4f96cd05454d44a734353fb0489cfcb1bc859b3a",
+        "bytes": 37133,
         "mode": "100644",
         "path": "tests/unit/test_v1_escalation.py",
-        "sha256": "5bf697bdd673b90619ff559d3ca7c53a0086c8d7240a20dc57362d590034e998"
+        "sha256": "6a2b1a183f60fcc62a2ac9446ead9df1043dfa6a7d8ad1c65d0dc0e44d6de114"
       },
       {
-        "blob": "0ea9782121654b6fe6219bd4895534756bce8a4f",
-        "bytes": 6375,
+        "blob": "3ce4149e894eb3397cce1222e38999c8653dcab0",
+        "bytes": 6378,
         "mode": "100644",
         "path": "tests/unit/test_v1_escalation_off_golden.py",
-        "sha256": "d4ac5e8055528039d78e7719289bc57555ce8175ad38fe190157d6284cda1ccb"
+        "sha256": "8cc2ed736c4878c016c80bd97be8c29a60906f3df2b945f77df291a969fc727f"
       },
       {
         "blob": "c1cbb11c406cb1023833488d4cefba8f79b173a2",
@@ -16955,82 +16991,92 @@
   },
   "schema": "private.td29.native.source_map.v1",
   "static_evidence": {
-    "additional_local_module_count": 11,
-    "additional_local_modules": [
-      {
-        "bytes": 41209,
-        "path": "orchestration/repl_memory/progress_logger.py",
-        "sha256": "dfaddbcc78e45b87d086969ecb85a4740decb7c8c1356079c72c185093342575"
-      },
-      {
-        "bytes": 7591,
-        "path": "scripts/server/fleet_markers.py",
-        "sha256": "8ef8df7703252f41f52c2f9033e941d28d4fea7017d220a7e3dc617e1a2aec68"
-      },
-      {
-        "bytes": 25404,
-        "path": "scripts/server/gpu_shadow_lane.py",
-        "sha256": "fb6eb0c2ac4d17c979b60f3e2a513fff7aac31cedb89f4cefdcbd7c3b5c77616"
-      },
-      {
-        "bytes": 7174,
-        "path": "scripts/server/realized_fleet.py",
-        "sha256": "9099aa115a22799ba2446bf2082e0d7ebb360a0df5f57aac654b6286c1ea9a31"
-      },
-      {
-        "bytes": 17439,
-        "path": "scripts/server/runtime_facts_manifest.py",
-        "sha256": "e2bfec7bb580fac727ca184b2dd4d56bd487e443e89d4720cc037743ab1dc374"
-      },
-      {
-        "bytes": 8107,
-        "path": "scripts/server/stack_log_banner.py",
-        "sha256": "70daa945b70e0d74962016aac85c21fda4c56e4c44d02fa6621cc5cdcf2d2ef5"
-      },
-      {
-        "bytes": 92602,
-        "path": "scripts/server/stack_manifest.py",
-        "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610"
-      },
-      {
-        "bytes": 31762,
-        "path": "scripts/server/stack_numa.py",
-        "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32"
-      },
-      {
-        "bytes": 1061,
-        "path": "scripts/server/stack_numa_mode.py",
-        "sha256": "e17e1c7260dda722b5e1f555e5fc92204a4e8d93a397a7128a0ed76c057afe63"
-      },
-      {
-        "bytes": 4774,
-        "path": "scripts/server/stack_paths.py",
-        "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5"
-      },
-      {
-        "bytes": 9374,
-        "path": "scripts/server/stack_processes.py",
-        "sha256": "e9ac8d7951fb6a11664c1d69e71050dfd44ed51ae3e215858ffd698198459812"
-      }
-    ],
-    "backend_remote_methods_mocked": 32,
-    "host_inference_calls": false,
-    "prior_report_sha256": "797265cdf7281c59748321d4d62d3d7562c8bae1c4e9c4aaa12b2d3877a0700d",
-    "src_import_edges": 227,
-    "src_module_count": 93
+    "historical_TD_static_review": {
+      "additional_local_module_count": 11,
+      "additional_local_modules": [
+        {
+          "bytes": 41209,
+          "path": "orchestration/repl_memory/progress_logger.py",
+          "sha256": "dfaddbcc78e45b87d086969ecb85a4740decb7c8c1356079c72c185093342575"
+        },
+        {
+          "bytes": 7591,
+          "path": "scripts/server/fleet_markers.py",
+          "sha256": "8ef8df7703252f41f52c2f9033e941d28d4fea7017d220a7e3dc617e1a2aec68"
+        },
+        {
+          "bytes": 25404,
+          "path": "scripts/server/gpu_shadow_lane.py",
+          "sha256": "fb6eb0c2ac4d17c979b60f3e2a513fff7aac31cedb89f4cefdcbd7c3b5c77616"
+        },
+        {
+          "bytes": 7174,
+          "path": "scripts/server/realized_fleet.py",
+          "sha256": "9099aa115a22799ba2446bf2082e0d7ebb360a0df5f57aac654b6286c1ea9a31"
+        },
+        {
+          "bytes": 17439,
+          "path": "scripts/server/runtime_facts_manifest.py",
+          "sha256": "e2bfec7bb580fac727ca184b2dd4d56bd487e443e89d4720cc037743ab1dc374"
+        },
+        {
+          "bytes": 8107,
+          "path": "scripts/server/stack_log_banner.py",
+          "sha256": "70daa945b70e0d74962016aac85c21fda4c56e4c44d02fa6621cc5cdcf2d2ef5"
+        },
+        {
+          "bytes": 92602,
+          "path": "scripts/server/stack_manifest.py",
+          "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610"
+        },
+        {
+          "bytes": 31762,
+          "path": "scripts/server/stack_numa.py",
+          "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32"
+        },
+        {
+          "bytes": 1061,
+          "path": "scripts/server/stack_numa_mode.py",
+          "sha256": "e17e1c7260dda722b5e1f555e5fc92204a4e8d93a397a7128a0ed76c057afe63"
+        },
+        {
+          "bytes": 4774,
+          "path": "scripts/server/stack_paths.py",
+          "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5"
+        },
+        {
+          "bytes": 9374,
+          "path": "scripts/server/stack_processes.py",
+          "sha256": "e9ac8d7951fb6a11664c1d69e71050dfd44ed51ae3e215858ffd698198459812"
+        }
+      ],
+      "backend_remote_methods_mocked": 32,
+      "host_inference_calls": false,
+      "prior_report_sha256": "797265cdf7281c59748321d4d62d3d7562c8bae1c4e9c4aaa12b2d3877a0700d",
+      "src_import_edges": 227,
+      "src_module_count": 93
+    },
+    "integrated_source_control_review": {
+      "HG_cases": 87,
+      "TD_cases": 122,
+      "definitions": 175,
+      "new_source_composition_requires_original_native": true,
+      "prospective_only": true,
+      "whole_module_count": 7
+    }
   },
   "status": "PRIVATE_UNEXECUTED_RECIPE_DRAFT",
   "test_identity": {
-    "ast_definition_count": 119,
-    "ast_derived_expected_junit_identities": 122,
+    "ast_definition_count": 175,
+    "ast_derived_expected_junit_identities": 209,
     "case_manifest_path": "scripts/ci/td29_native/expected-cases.json",
-    "case_manifest_sha256": "b00a4dece0b66f3a2b631e64fd6d717e2c2114345e98443d10d6c302cf91118f",
+    "case_manifest_sha256": "2bfe574ce89cdc46404dcc17d8d3d2d855cc0c0a5a288320777a8c2ebacfffdd",
     "conftests": [
       "tests/conftest.py",
       "tests/unit/conftest.py"
     ],
     "native_case_claim": null,
-    "ordered_original_definition_nodeids_sha256": "96863095e343a3b7cbe49be3df048ea83f5146cafb6e92af782aea3108caff64",
+    "ordered_original_definition_nodeids_sha256": "0996e57d5b2e3ccf55ee70fdb641ab7dad1b71ada4d6b2de330c62394b35b4c2",
     "project_config": "pyproject.toml",
     "required_legacy_nodeids": [
       "tests/unit/test_llama_server.py::TestEarlyStopTiming::test_early_stop_produces_timing",

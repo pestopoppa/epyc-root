@@ -8,10 +8,10 @@ RESULT=Path(os.environ['RUNNER_TEMP'])/'td29-native'/ 'result'
 APP=Path(os.environ['GITHUB_WORKSPACE'])/'app'
 ROOT=Path(os.environ['GITHUB_WORKSPACE'])/'recipe'
 CARRIER=Path(os.environ['GITHUB_WORKSPACE'])/'carrier'
-APP_PIN='130a394e38a5b0cf1b199e33c267070dc7087bd6'
+APP_PIN='eadb959172fbc433da41aaf069c1bcf20c6ce98f'
 ROOT_PIN='c986a107fde2c6e7cd6bd8e05ff7cf7243207034'
 CARRIER_PIN='4c0c653baf1654c8c25c66433cf39c8faefd8e52'
-TESTS=['tests/unit/test_llama_server.py','tests/unit/test_inference_mixin.py','tests/unit/test_typed_decisions_call_recorder.py']
+TESTS=['tests/unit/test_llama_server.py', 'tests/unit/test_inference_mixin.py', 'tests/unit/test_typed_decisions_call_recorder.py', 'tests/unit/test_openai_compat_default_golden.py', 'tests/unit/test_stages.py', 'tests/unit/test_v1_escalation.py', 'tests/unit/test_v1_escalation_off_golden.py']
 RECIPE_DATA=RECIPE/'scripts/ci/td29_native'
 
 def digest(data): return hashlib.sha256(data).hexdigest()
@@ -37,57 +37,78 @@ def app_source_path(relative): return APP/relative
 def identity_payload(rows):
     interpreter_fields={'definition_ast_sha256','body_ast_sha256'}
     return [{key:value for key,value in row.items() if key not in interpreter_fields} for row in rows]
+def inventory(path,source):
+    """Portable names/literal parameters only; source identity is pinned by raw Git blobs."""
+    tree=ast.parse(source.decode('utf-8'),filename=path);module=path[:-3].replace('/','.');definitions=[];cases=[]
+    case_keys={};fixtures={}
+    for top in tree.body:
+        if isinstance(top,(ast.Assign,ast.AnnAssign)):
+            targets=top.targets if isinstance(top,ast.Assign) else [top.target]
+            if any(isinstance(t,ast.Name) and t.id=='CASES' for t in targets):
+                if not isinstance(top.value,ast.Dict):raise RuntimeError('CASES must be literal dict')
+                case_keys['CASES']=sorted(ast.literal_eval(key) for key in top.value.keys)
+        if isinstance(top,(ast.FunctionDef,ast.AsyncFunctionDef)):
+            for dec in top.decorator_list:
+                if isinstance(dec,ast.Call) and ast.unparse(dec.func).endswith('fixture'):
+                    params=next((k.value for k in dec.keywords if k.arg=='params'),None)
+                    if params is not None:
+                        if any(k.arg=='ids' for k in dec.keywords):raise RuntimeError('explicit fixture IDs require reviewed derivation')
+                        fixtures[top.name]=ast.literal_eval(params)
+    def param_id(value,name,index):
+        if isinstance(value,str):return value.encode('unicode_escape').decode('ascii')
+        if value is None or isinstance(value,(int,float,bool)):return str(value)
+        if isinstance(value,dict):return name+str(index)
+        raise RuntimeError('unreviewed parameter ID type')
+    for top in tree.body:
+        if isinstance(top,ast.ClassDef):cls=top.name;sequence=top.body
+        elif isinstance(top,(ast.FunctionDef,ast.AsyncFunctionDef)):cls=None;sequence=[top]
+        else:continue
+        for fn in sequence:
+            if not isinstance(fn,(ast.FunctionDef,ast.AsyncFunctionDef)) or not fn.name.startswith('test_'):continue
+            dims=[]
+            # Fixture parameters precede function parameters in the pytest callspec.
+            for arg in fn.args.args:
+                if arg.arg in fixtures:
+                    values=fixtures[arg.arg];dims.append({'names':[arg.arg],'values':[[v] for v in values],'ids':[param_id(v,arg.arg,i) for i,v in enumerate(values)],'origin':'fixture'})
+            for dec in reversed(fn.decorator_list):
+                if isinstance(dec,ast.Call) and ast.unparse(dec.func).endswith('parametrize'):
+                    if len(dec.args)!=2 or dec.keywords:raise RuntimeError('unreviewed parametrization options')
+                    names=ast.literal_eval(dec.args[0]);names=[n.strip() for n in names.split(',')] if isinstance(names,str) else list(names)
+                    expr=dec.args[1]
+                    if isinstance(expr,ast.Call) and isinstance(expr.func,ast.Name) and expr.func.id=='sorted' and len(expr.args)==1 and isinstance(expr.args[0],ast.Name):values=case_keys[expr.args[0].id]
+                    else:values=ast.literal_eval(expr)
+                    rows=[[v] if len(names)==1 else list(v) for v in values]
+                    if any(len(row)!=len(names) for row in rows):raise RuntimeError('parameter arity')
+                    ids=['-'.join(param_id(v,n,i) for n,v in zip(names,row)) for i,row in enumerate(rows)]
+                    if len(set(ids))!=len(ids):raise RuntimeError('parameter ID collision')
+                    dims.append({'names':names,'values':rows,'ids':ids,'origin':'parametrize'})
+            definition=(cls+'.' if cls else '')+fn.name
+            definitions.append({'source_path':path,'definition':definition,'module':module,'class':cls,'function':fn.name,'param_dimensions':dims})
+            products=itertools.product(*(range(len(dim['values'])) for dim in dims)) if dims else [()]
+            for indexes in products:
+                parameters={};parts=[]
+                for dim,i in zip(dims,indexes):parameters.update(zip(dim['names'],dim['values'][i]));parts.append(dim['ids'][i])
+                cases.append({'classname':module+('.'+cls if cls else ''),'name':fn.name+('['+'-'.join(parts)+']' if dims else ''),'source_path':path,'definition':definition,'parameters':parameters})
+    identities=[(r['classname'],r['name']) for r in cases]
+    if len(set(identities))!=len(identities):raise RuntimeError('duplicate derived identities')
+    return definitions,cases
+
 def verify_ast_manifest(manifest):
-    definitions=[]; derived=[]
+    definitions=[];derived=[]
     for path in TESTS:
-        source_record=manifest['test_file_source_records'][path]
-        source_bytes=raw(APP/path)
-        if len(source_bytes)!=source_record['bytes'] or digest(source_bytes)!=source_record['sha256']:
-            raise RuntimeError('pinned test-module raw source bytes differ: '+path)
-        tree_row=git(APP,'ls-tree','-r','-l',APP_PIN,'--',path)
-        parts=tree_row.split('\t',1); meta=parts[0].split() if parts else []
-        if len(parts)!=2 or parts[1]!=path or len(meta)!=4 or (meta[0],meta[1],meta[2],int(meta[3]))!=(source_record['mode'],'blob',source_record['blob'],source_record['bytes']):
-            raise RuntimeError('pinned test-module Git mode/blob/size differs: '+path)
-        # AST dump spelling changes across CPython minors; full raw bytes and Git blob pin source identity.
-        # AST parsing below derives names/parameters only; version-specific AST digests are review metadata.
-        parsed=ast.parse(source_bytes.decode('utf-8'),filename=path)
-        module=path[:-3].replace('/','.')
-        for top in parsed.body:
-            if isinstance(top,ast.ClassDef): cls=top.name; sequence=top.body
-            elif isinstance(top,(ast.FunctionDef,ast.AsyncFunctionDef)): cls=None; sequence=[top]
-            else: continue
-            for fn in sequence:
-                if not isinstance(fn,(ast.FunctionDef,ast.AsyncFunctionDef)) or not fn.name.startswith('test_'): continue
-                dims=[]
-                for dec in reversed(fn.decorator_list):
-                    if isinstance(dec,ast.Call) and ast.unparse(dec.func).endswith('parametrize'):
-                        names=ast.literal_eval(dec.args[0]); names=[names] if isinstance(names,str) else list(names)
-                        raw_values=ast.literal_eval(dec.args[1]); values=[[v] if len(names)==1 else list(v) for v in raw_values]
-                        if any(len(row)!=len(names) for row in values): raise RuntimeError('parameter arity differs from static manifest')
-                        dims.append({'names':names,'values':values})
-                definition=((cls+'.') if cls else '')+fn.name
-                row={'source_path':path,'definition':definition,'previous_function_sha256':next((old['previous_function_sha256'] for old in manifest['original_119_ast_definitions'] if old['source_path']==path and old['definition']==definition),None),'module':module,'class':cls,'function':fn.name,'param_dimensions':dims}
-                definitions.append(row)
-                products=itertools.product(*(dim['values'] for dim in dims)) if dims else [()]
-                for product in products:
-                    params={}; parts=[]
-                    for dim,values in zip(dims,product):
-                        for value in values:
-                            if not isinstance(value,str): raise RuntimeError('this static ID rule is restricted to literal string parameters')
-                        params.update(zip(dim['names'],values)); parts.extend(str(value) for value in values)
-                    case={'classname':module+('.'+cls if cls else ''),'name':fn.name+('['+'-'.join(parts)+']' if dims else ''),'source_path':path,'definition':definition,'parameters':params,'previous_function_sha256':row['previous_function_sha256']}
-                    derived.append(case)
-    if len(definitions)!=119 or identity_payload(definitions)!=identity_payload(manifest['original_119_ast_definitions']):
-        raise RuntimeError('AST definition inventory or portable test identities differ from pinned manifest')
-    if len(derived)!=122 or identity_payload(derived)!=identity_payload(manifest['case_identities']):
-        raise RuntimeError('literal AST parameter expansion differs from pinned canonical case identities')
-    identity_pairs=[(row['classname'],row['name']) for row in derived]
-    if len(set(identity_pairs))!=len(identity_pairs): raise RuntimeError('static case manifest contains duplicate identities')
+        r=manifest['test_file_source_records'][path];b=raw(APP/path)
+        if len(b)!=r['bytes'] or digest(b)!=r['sha256'] or hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()!=r['blob']:
+            raise RuntimeError('pinned raw Git test source differs: '+path)
+        ds,cs=inventory(path,b);definitions+=ds;derived+=cs
+    if definitions!=manifest['ast_definitions'] or derived!=manifest['case_identities']:
+        raise RuntimeError('portable AST names/parameter inventory differs')
+    pairs=[(r['classname'],r['name']) for r in derived]
+    if len(set(pairs))!=len(pairs):raise RuntimeError('duplicate expected JUnit identity')
+    pairs=set(pairs)
     for nodeid in manifest['required_legacy_nodeids']:
-        source_path,tail=nodeid.split('::',1); expected_path=source_path[:-3].replace('/','.')
-        cls_name,fn_name=tail.rsplit('::',1) if '::' in tail else ('',tail)
-        classname=expected_path+('.'+cls_name if cls_name else '')
-        if (classname,fn_name) not in identity_pairs: raise RuntimeError('legacy source-control identity missing from canonical manifest: '+nodeid)
+        source_path,tail=nodeid.split('::',1);module=source_path[:-3].replace('/','.')
+        cls,fn=tail.rsplit('::',1) if '::' in tail else ('',tail)
+        if (module+('.'+cls if cls else ''),fn) not in pairs:raise RuntimeError('legacy TD source-control identity missing')
     return derived
 def source_snapshot(paths): return {str(p):digest(raw(p)) for p in paths}
 def write_json(path,obj):
@@ -114,7 +135,7 @@ def main():
         req=raw(RECIPE_DATA/'requirements-linux-py311.txt')
         if sm['status']!='PRIVATE_UNEXECUTED_RECIPE_DRAFT' or cm['status']!='STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION': raise RuntimeError('draft input status mismatch')
         if sm['app']['commit']!=APP_PIN or sm['root_context']['commit']!=ROOT_PIN or sm['native_carrier']['commit']!=CARRIER_PIN: raise RuntimeError('reviewed pins mismatch')
-        if cm['ast_test_definition_count']!=119 or cm['ast_derived_expected_junit_case_count']!=122 or len(cm['case_identities'])!=122: raise RuntimeError('static identity proposal malformed')
+        if cm['ast_test_definition_count']!=175 or cm['ast_derived_expected_junit_case_count']!=209 or len(cm['case_identities'])!=209: raise RuntimeError('static identity proposal malformed')
         derived_cases=verify_ast_manifest(cm)
         if sm['dependency_lock']['requirements_sha256']!=digest(req) or sm['dependency_lock']['package_count']!=64 or sm['dependency_lock']['wheel_hash_count']!=905: raise RuntimeError('dependency lock closure differs from static review')
         if sm['test_identity']['case_manifest_sha256']!=digest(raw(RECIPE_DATA/'expected-cases.json')): raise RuntimeError('case manifest hash differs from source map')
@@ -158,7 +179,7 @@ def main():
         for p in source_paths: carrier_argv += ['--read-path',str(p)]
         for test in TESTS: carrier_argv += ['--select',test]
         carrier_argv += ['--',*test_command]
-        request={'carrier_argv':carrier_argv,'pytest_argv':test_command,'cwd':str(APP),'env_controls':{k:env[k] for k in ('CI','ORCHESTRATOR_MOCK_MODE','ORCHESTRATOR_PATHS_LLAMA_CPP_BIN','ORCHESTRATOR_PATHS_LLAMA_MTMD','ORCHESTRATOR_PATHS_LLAMA_SERVER','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTEST_ADDOPTS','PYTEST_PLUGINS','PYTHONDONTWRITEBYTECODE','PYTHONHASHSEED','PYTHONNOUSERSITE')},'kernel_path_fixtures':kernel_fixtures,'selection':TESTS,'source_before_capture':before,'repositories':{'app':APP_PIN,'root_recipe_event':os.environ.get('GITHUB_SHA'),'enrolled_root_context':ROOT_PIN,'carrier':CARRIER_PIN},'ast_definition_count':119,'proposed_junit_identities':122,'native_case_count_claim':None}
+        request={'carrier_argv':carrier_argv,'pytest_argv':test_command,'cwd':str(APP),'env_controls':{k:env[k] for k in ('CI','ORCHESTRATOR_MOCK_MODE','ORCHESTRATOR_PATHS_LLAMA_CPP_BIN','ORCHESTRATOR_PATHS_LLAMA_MTMD','ORCHESTRATOR_PATHS_LLAMA_SERVER','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTEST_ADDOPTS','PYTEST_PLUGINS','PYTHONDONTWRITEBYTECODE','PYTHONHASHSEED','PYTHONNOUSERSITE')},'kernel_path_fixtures':kernel_fixtures,'selection':TESTS,'source_before_capture':before,'repositories':{'app':APP_PIN,'root_recipe_event':os.environ.get('GITHUB_SHA'),'enrolled_root_context':ROOT_PIN,'carrier':CARRIER_PIN},'ast_definition_count':175,'proposed_junit_identities':209,'native_case_count_claim':None}
         write_json(RESULT/'execution-request.json',request)
         typed_result_before_capture=typed_tree(RESULT)
         write_json(RESULT/'pre-capture-custody.json',{'phase':'immediately_before_original_native_capture','source_snapshot':before,'execution_request_sha256':digest(raw(RESULT/'execution-request.json')),'typed_result_tree_before_this_custody_record':typed_result_before_capture,'status_included':True,'self_excluded':True})
@@ -196,7 +217,7 @@ def main():
         if not source_stable: raise RuntimeError('pinned source changed across native capture or grade')
         if junit_error is not None or not exact_multiset: raise RuntimeError('original JUnit absent, duplicated, or differs from the duplicate-free canonical case multiset; native value preserved')
         if run.returncode!=0 or native_record.get('fixture_execution_conformant') is not True: raise RuntimeError('carrier command or native receipt reports nonconformance; native value preserved')
-        if junit_counts!={'collected':122,'passed':122,'failure':0,'error':0,'skipped':0}: raise RuntimeError('original JUnit did not report exactly 122 passed cases: '+repr(junit_counts))
+        if junit_counts!={'collected':209,'passed':209,'failure':0,'error':0,'skipped':0}: raise RuntimeError('original JUnit did not report exactly 209 passed cases: '+repr(junit_counts))
         if not source_stable or before!=source_after_grade or result_before_grade!=result_after_grade: raise RuntimeError('source/result custody changed across capture or grade')
         for name,repo in [('APP',APP),('ROOT',ROOT),('CARRIER',CARRIER)]:
             if git(repo,'status','--porcelain','--untracked-files=all'): raise RuntimeError(name+' checkout changed during native capture or grade')

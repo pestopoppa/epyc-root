@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      APP_PIN: 130a394e38a5b0cf1b199e33c267070dc7087bd6
+      APP_PIN: eadb959172fbc433da41aaf069c1bcf20c6ce98f
       ROOT_CONTEXT_PIN: c986a107fde2c6e7cd6bd8e05ff7cf7243207034
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       TD29_RUNNER_CONTEXT: ubuntu-24.04-cpython-3.11
-      TD29_EXECUTION_CONTEXT: three-whole-test-modules-existing-mocks-no-inference
+      TD29_EXECUTION_CONTEXT: seven-whole-test-modules-existing-mocks-no-inference
       ORCHESTRATOR_MOCK_MODE: '1'
       CI: 'true'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
