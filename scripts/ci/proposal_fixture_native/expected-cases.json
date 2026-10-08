@@ -1,0 +1,362 @@
+{
+  "m12f": [
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_chronological_tau_perfect_and_reversed"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_score_result_payload_computes_composites"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_score_result_payload_tracks_missing_ground_truth"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_simple_recall_uses_only_the_recall_subset"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_pre_m12e_behaviour_would_have_differed"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_simple_recall_bins_on_matching_events_not_item_count"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_simple_recall_bin_basis_reports_the_fallback"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_tau_coverage_check_fails_closed_on_partial_set"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_tau_full_coverage_is_scored"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_tau_short_ground_truth_is_not_labelled_partial"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_partial_coverage_is_reported_not_silent"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_unknown_get_style_enters_no_subset"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_render_markdown_includes_key_metrics"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_render_markdown_reports_partial_tau_coverage"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_load_belief_capture_uses_epyc_root"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_load_belief_capture_refuses_when_epyc_root_is_unset"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_load_belief_capture_explains_a_missing_root"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_load_belief_capture_refuses_a_module_without_the_writer"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_belief_sidecar_round_trips_through_the_root_writer"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_root_writer_refuses_a_pre_m12e_summary"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_summary_counts_the_arm_of_each_stored_prompt"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_build_prompt_index_is_arm_independent"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_arm_that_disagrees_with_the_stored_prompts_is_refused"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_arm_without_recorded_prompts_is_refused"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_matching_arm_emits_through_main"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_cli_comparison_gate_precedes_outputs_and_capture[False]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_cli_comparison_gate_precedes_outputs_and_capture[True]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_excludes_short_gold_and_keeps_partial_retrieval_zero"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_no_eligible_order_suppresses_composite_keeps_latest_separate[rows0]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_no_eligible_order_suppresses_composite_keeps_latest_separate[rows1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_no_eligible_order_suppresses_composite_keeps_latest_separate[rows2]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_no_eligible_order_suppresses_composite_keeps_latest_separate[rows3]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_no_latest_leg_is_undefined_and_no_silent_renormalization"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_non_native_gold_denominator[True]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_non_native_gold_denominator[-1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_non_native_gold_denominator[None]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_non_native_gold_denominator[2.0]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_payload_preserves_default_v2_and_refuses_cross_version_srs"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_sc67_refusal_precedes_gold_outputs_and_writer"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_requires_native_boolean_coverage[None]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_requires_native_boolean_coverage[1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_requires_native_boolean_coverage[true]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_full_coverage_tau[True]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_full_coverage_tau[nan]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_full_coverage_tau[inf]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_full_coverage_tau[-1.1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_full_coverage_tau[1.1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_latest_f1[True]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_latest_f1[nan]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_latest_f1[-0.1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_score_tulving_run",
+      "name": "test_versioned_cas_refuses_invalid_latest_f1[1.1]"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+      "name": "test_empty_six_plus_vs_populated_refuses"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+      "name": "test_matching_populated_bins_preserves_comparison_without_reweighting"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+      "name": "test_nonfinite_mean_bool_count_and_inconsistent_population_refuse"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+      "name": "test_old_scorer_mixed_missing_or_different_bin_basis_refuses"
+    },
+    {
+      "classname": "proposed.m12f.payload.research.scripts.benchmark.test_tulving_srs_comparison.SRSComparisonControls",
+      "name": "test_unknown_missing_bins_and_empty_population_refuse"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_direct_writer_refuses_unadmitted_cas_without_sidecar[3-epyc_v3_gt_ge2_partial_zero]"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_direct_writer_refuses_unadmitted_cas_without_sidecar[3-None]"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_direct_writer_refuses_unadmitted_cas_without_sidecar[2-unknown]"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_direct_writer_refuses_unadmitted_cas_without_sidecar[2-epyc_v3_gt_ge2_partial_zero]"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_direct_writer_refuses_unadmitted_cas_without_sidecar[4-v2_native]"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_v2_reaches_existing_gold_binding_guard[None]"
+    },
+    {
+      "classname": "proposed.m12f.payload.candidate-ROOT.test_m12f_capture_admission",
+      "name": "test_v2_reaches_existing_gold_binding_guard[v2_native]"
+    }
+  ],
+  "aud10": [
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_clean_tree_with_force_allows"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_untracked_file_blocks"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_ignored_file_blocks_under_x"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_ignored_only_x_uppercase_blocks_only_ignored"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_dry_run_never_queries_status"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_dash_c_repo_is_the_status_target"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_quoted_documentation_is_not_invocation"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_heredoc_and_comment_documentation_are_not_invocations"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_wrapper_is_ambiguous_and_refused"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_bash_c_payload_is_scanned_recursively"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_command_substitution_is_scanned_recursively"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_backtick_substitution_is_scanned_recursively"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_eval_payload_is_scanned_recursively"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_dynamic_command_name_fails_closed"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_compound_cd_then_clean_refuses_before_status"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_status_failure_fails_closed"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_force_required_true_allows_unforced_clean_without_status_query"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_require_force_false_makes_unforced_clean_subject_to_guard"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_clean_directory_without_d_is_not_removed"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_newline_is_shell_command_boundary"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_main_uses_validated_payload_cwd_instead_of_process_cwd"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_main_refuses_invalid_relative_payload_cwd_before_git_probe"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_control_flow_or_negation_clean_refuses_before_status[if true; then git clean -fd; fi]"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_control_flow_or_negation_clean_refuses_before_status[for p in .; do git clean -fd; done]"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_control_flow_or_negation_clean_refuses_before_status[! git clean -fd]"
+    },
+    {
+      "classname": "proposed.aud10.payload.scripts.hooks.test_check_git_clean_untracked",
+      "name": "test_newline_control_flow_clean_refuses_before_status"
+    }
+  ]
+}

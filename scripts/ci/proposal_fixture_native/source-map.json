@@ -1,0 +1,173 @@
+{
+  "source_base": "e6f6c0048ed79d77524b542c91501ef37d4ba660",
+  "carrier_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "enrollment_commit": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+  "files": [
+    {
+      "repo": "recipe",
+      "path": "proposed/aud10/payload/scripts/hooks/check_git_clean_untracked.py",
+      "sha256": "af315224e6464a5ee6e5c7ab9892eb25464e44920c9c804454242fb272d4372e",
+      "size": 16608
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/aud10/payload/scripts/hooks/shell_scan.py",
+      "sha256": "922e696eaabfc20ef0474d18ab9d237d846d9785b930b86c125bca34d89ee07e",
+      "size": 5432
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/aud10/payload/scripts/hooks/test_check_git_clean_untracked.py",
+      "sha256": "2f059e3cce07e0de3de7d3e67b3ac6f2e4416c9165116da05d600d4c41e2a138",
+      "size": 8115
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/aud10/requirements.txt",
+      "sha256": "9619ade5463bd8659b273d90c6772169945ca46f635a8a96766801cf60cc3b22",
+      "size": 692
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/aud10/source-pins.json",
+      "sha256": "7d5e6ad7e309c9e8efb87f78cc39bb1c3a25610a4fdc53b5088df1bc618daedc",
+      "size": 624
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/aud10/verify-source-pins.py",
+      "sha256": "53760260acd9947ec7644498f9b7a43592f2983118724946c727cc38bcc0764b",
+      "size": 537
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/capture-proposal-runtime.py",
+      "sha256": "918a84734ea32e6d442c14671bb7c184cd57269f3aaebcd5115b3776af2c57d4",
+      "size": 938
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/candidate-ROOT/test_m12f_capture_admission.py",
+      "sha256": "78bfcfeb41816961a8d7ff69b8858cba54961f819e32450dbdfee0373ff9e399",
+      "size": 1677
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/candidate-ROOT/tulving_episodic_capture.py",
+      "sha256": "94dd9b52b9317282da473969c1a75475d63881ed992154eb2bede5ead71f2f61",
+      "size": 23308
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/pyproject.toml",
+      "sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140",
+      "size": 1481
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/belief_capture.py",
+      "sha256": "3e37624a5b0f427cfaaea5c21f7b1c33f8acc243bf2115766fe8c0a3e971b818",
+      "size": 4975
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/dataset_adapters.py",
+      "sha256": "0e170b23ec71ef688bf10ca0a7169a6ac29466979602502184819aa4b0abc210",
+      "size": 122856
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/score_tulving_run.py",
+      "sha256": "4525f601366ccdcc7bcd323f757db9e41d2bd379d648875b0f44f60f54922eda",
+      "size": 36076
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/test_score_tulving_run.py",
+      "sha256": "55f964a220caa621b3ee157ba932658061076ceb83a74805f63556dae6e45e01",
+      "size": 26584
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/test_tulving_srs_comparison.py",
+      "sha256": "d1a32c66d80afe63a4eb90d9eac385e0c3e94d3819136c6a2d845c979031f707",
+      "size": 2380
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/tulving_episodic_adapter.py",
+      "sha256": "ff1ccc2a10c39d66a79d56d68111cf097880c7ca12d76977e43f658b68f1dff9",
+      "size": 44488
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/scripts/benchmark/tulving_srs_comparison.py",
+      "sha256": "a6d79d8ad79a06e9c9fd5ed2e63f053d28d2c36b07d5f3f31d1c6ee6a09e4bdb",
+      "size": 1855
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/research/uv.lock",
+      "sha256": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d",
+      "size": 520883
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/payload/root/scripts/vidya/adapters/tulving_episodic_capture.py",
+      "sha256": "94dd9b52b9317282da473969c1a75475d63881ed992154eb2bede5ead71f2f61",
+      "size": 23308
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/requirements.txt",
+      "sha256": "9619ade5463bd8659b273d90c6772169945ca46f635a8a96766801cf60cc3b22",
+      "size": 692
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/run-fixtures.py",
+      "sha256": "1c555a727d3512e81a1b3b3fcac480d2cbf17441971515307669dae669df1a57",
+      "size": 1130
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/source-pins.json",
+      "sha256": "00ebc7a90e35a45109267dbf5ef64a42e94be9c9036b5cd47a740bef13ff0572",
+      "size": 1895
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/m12f/verify-source-pins.py",
+      "sha256": "cd0e3f683e0a7e7e747b1b988e177d59460e25b0281cd94ff8487017d7592b62",
+      "size": 225
+    },
+    {
+      "repo": "enrollment",
+      "path": "scripts/vidya/adapters/README.md",
+      "sha256": "3fd2ae47d1d944b12e6b09973ed77a6a5711f54184692b2980b847eb12c0006a",
+      "size": 294629
+    },
+    {
+      "repo": "enrollment",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "sha256": "da048055163870886b39e1229cecf1400afbd8fb00a9636939516022d1005713",
+      "size": 410059
+    }
+  ],
+  "suites": {
+    "m12f": {
+      "count": 63,
+      "tests": [
+        "proposed/m12f/payload/research/scripts/benchmark/test_score_tulving_run.py",
+        "proposed/m12f/payload/research/scripts/benchmark/test_tulving_srs_comparison.py",
+        "proposed/m12f/payload/candidate-ROOT/test_m12f_capture_admission.py"
+      ]
+    },
+    "aud10": {
+      "count": 26,
+      "tests": [
+        "proposed/aud10/payload/scripts/hooks/test_check_git_clean_untracked.py"
+      ]
+    }
+  }
+}
