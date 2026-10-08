@@ -1,0 +1,77 @@
+name: EVL49 S05 original corrected roster source successor
+on:
+  push:
+    branches: [codex/evl49-s05-source-native-20261008]
+    paths:
+      - proposed/evl49-s05/**
+      - .github/workflows/evl49-s05-source-native.yml
+permissions:
+  contents: read
+jobs:
+  s05-source-native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ENROLLMENT_PIN: 84c441145cca9b088dfe7b9687e01b9e03156f75
+      APP_PIN: 352d4208931a6cf1ee21363fce390f6ae26bb81f
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ENROLLMENT_PIN }}
+          path: enrollment
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 3caaf22fa853daab5c5ae055ca46b67809e2c938
+          path: research
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Isolated locked dependency closure and immutable era hydration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/s05-venv"
+          "$RUNNER_TEMP/s05-venv/bin/python" -m pip install --only-binary=:all: --require-hashes -r enrollment/scripts/ci/vb_rtg23w9_native_requirements.txt
+          sudo mkdir -p /mnt/raid0/llm/epyc-orchestrator/orchestration
+          sudo cp app/orchestration/instrument_eras.yaml /mnt/raid0/llm/epyc-orchestrator/orchestration/instrument_eras.yaml
+      - name: Fresh original native source capture
+        shell: bash
+        env:
+          S05_RESEARCH: ${{ github.workspace }}/research
+          EPYC_RESEARCH_ROOT: ${{ github.workspace }}/research
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/s05-venv/bin/python" -B recipe/proposed/evl49-s05/capture_s05_native.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: evl49-s05-original-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/s05-native-result
+            recipe/s05-generated
+          if-no-files-found: error
+          retention-days: 30
