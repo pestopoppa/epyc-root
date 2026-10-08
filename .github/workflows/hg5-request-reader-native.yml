@@ -1,7 +1,7 @@
 name: HG5 strict native-label reader source controls
 on:
   push:
-    branches: [codex/hg5-v2-native-labels-source-20261008]
+    branches: [codex/hg5-v2-reader-closure-source-20261008]
 permissions:
   contents: read
 jobs:

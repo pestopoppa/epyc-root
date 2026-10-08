@@ -32,8 +32,8 @@
       "base_commit": "11649e2a2245407b4bf5a1d66bd993901654e5ac",
       "path": ".github/workflows/hg5-request-reader-native.yml",
       "repo": "recipe",
-      "sha256": "4edf9e1cddfaa1895454f5374d4794fe458fa3b550769642a04c3f0fea68df65",
-      "size": 4187,
+      "sha256": "3799eb068c08f3d942c64f65fefe09901b9fcdcc3fa59120d1e9c18fce04b591",
+      "size": 4188,
       "source_state": "exact_reviewed_candidate"
     },
     {
