@@ -533,7 +533,7 @@ failure caught in amber.
         20ch set, so the 20ch SRS averages over four bins while the 200ch figure averages over five
         (`scripts/benchmark/tulving_episodic_adapter.py` `compute_simple_recall_score`) (found 2026-09-14,
         noninf sweep).
-  - [ ] **M-12h — close the judge-path tau trap before any LLM judge is wired**: `_llm_judge_fallback_hook` is
+  - [x] **M-12h — close the judge-path tau trap before any LLM judge is wired**: `_llm_judge_fallback_hook` is
         dead in the deterministic path but `compute_f1_for_result` still branches on it and returns
         `matched_gt_items: []` when a judge fires, silently giving every judged question zero tau coverage
         (`scripts/benchmark/tulving_episodic_adapter.py:685-710`) (found 2026-09-14, noninf sweep).
@@ -634,3 +634,5 @@ M-15, and M-16; do not reopen the reseed unless a new evidence-backed integrity 
 M-11a2b closes producer-to-store wiring only. MAIN source review found that `sanitize_work_text` trusts any suffix marker for the same cap, even after an oversized prefix. This allows an untrusted marker to bypass the nominal bound and the post-truncation redaction pass. Redaction remains the existing default-on, fail-open policy; no privacy guarantee is asserted.
 
 - [x] **M11-WORK-CAP-SOURCE — refuse oversized forged truncation markers while preserving legitimate bounded-value idempotence.** Bound both prefix and marker representation; meaningful forged suffix, oversized decimal metadata, greater-than-scanner-limit synthetic credential and legitimate second-pass controls. Full actual memory-record/work-payload source verification through VB-M11-WORK-CAP-CONFORMANCE. Preserve objective text, existing item policy and sole redaction policy. No live memory, traffic prevalence or historical rewrite. ✅ 2026-10-07 — MAIN accepted [source and original41/41](../../artifacts/ni08/m11-work-cap-source-20261007/README.md).
+
+**M-12h complete, 2026-10-08:** [MAIN source/native acceptance](../../artifacts/ni08/sc54-mf-m12h-source-integration-20261008/README.md). Research main daa preserves deterministic counts/matches while a judge supplies scalar precision/recall/F1; match/result provenance is explicit. All eight original AST-isolated controls passed, including no-judge and low/high judge branches. Synthetic hooks exercise the actual source body without LLM calls. This fixes the source trap; it does not claim improved tau, semantic alignment, retrospective rescoring or instrument admission. M-12g/M-12i remain independent next work.

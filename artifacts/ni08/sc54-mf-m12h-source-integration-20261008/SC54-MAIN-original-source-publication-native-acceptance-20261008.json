@@ -1,0 +1,31 @@
+{
+  "schema": "private.MAIN.original_source_publication_and_native_acceptance.v1",
+  "reviewer": "MAIN",
+  "accepted": true,
+  "scope": "SC54",
+  "original_run_id": 37746358105,
+  "run_attempt": 1,
+  "event": "push",
+  "head_sha": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+  "publication_commands": 69,
+  "normal_owned_pushes": 1,
+  "lease_count": 2,
+  "journal_sha256": "d6aaf86d96a9d2469482556e1b616afd46a5769db148156967863ac4162e94e3",
+  "publication_receipt_sha256": "596f897eaaa1a5a5fc29c67f41345422425edce0bb6f55bd76d61df60bbbddd9",
+  "zip_sha256": "3573ee416fb45bc64f80a1ff478e5fed9f62739e920da4f13ded5adbe5cbdba3",
+  "unique_safe_CRC_members": 137,
+  "native_readset_paths": 125,
+  "git_blob_verified_inputs": 121,
+  "exact_control_count": 102,
+  "native_true": true,
+  "receipt_sha256": "f445c9353161b4c90c0fecc25632fc5c9b989f04ae40f869a4dff9a2b3a9cff4",
+  "unsigned_receipt_seal": "9f97e5f132168235b3b06526db40d1c7a7f1b56c05c2beaf8e44b3cb27345b5e",
+  "junit_sha256": "916317c9dfd9255581344c1df3dbcf9766d3e5970f7385e1e1be03da26a4fe14",
+  "shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "prior_false_originals_unchanged": true,
+  "no_inference": true,
+  "no_main_promotion": true
+}

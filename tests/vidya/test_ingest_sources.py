@@ -263,6 +263,13 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # Immutable native writer roundtrip and registered CLI dispatch:
         # test_evidence_durability_adapter.py.
         "evidence-durability",
+        # Dedicated full native-ingest contract: tests/test_graph_profile_measurement.py.
+        "graph-profiler-measurement",
+        # Dedicated ODL identity, refusal and CLI controls: tests/vidya/test_odl_model_gated.py.
+        "odl-unlimited-ocr-run",
+        # Prospective SC54 receipt writer, pinned reader and shared-ladder adapter:
+        # test_sc54_qwen4exp_quality_adapter.py; no historical backfill.
+        "qwen4exp-quality-measurement",
         # The reports bind cross-repository producer/input bytes; the dedicated
         # adapter tests exercise producer-shaped native envelopes and shared-grade CLI dispatch.
         "verify-before-stop-measurement", "eval-suite-discriminability"}

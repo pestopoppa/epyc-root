@@ -1,0 +1,235 @@
+{
+  "reviewer": "MAIN",
+  "accepted": true,
+  "base": "fb2777db3e10af5d424ef7e7ed500ec4e73fd8ba",
+  "paths": [
+    {
+      "path": ".github/workflows/sc54-quality-native.yml",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "696a1959960998e95a4526046344b0f2d50bfe8478b4aad0c8728559e5a606db",
+      "bytes": 3486
+    },
+    {
+      "path": "scripts/ci/sc54_native/bind_source_map.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "b9a1298db70393c26131f62cea36d3c5687b67d7ae5c601b10fd0c7a6ffb25b0",
+      "bytes": 4478
+    },
+    {
+      "path": "scripts/ci/sc54_native/bootstrap.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "9e4e7c0387cb61f6dc46118ce7027a753771dd3aefa635779343938c46a3b839",
+      "bytes": 967
+    },
+    {
+      "path": "scripts/ci/sc54_native/capture.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "c995cffbcc778e93a50ce2eeb70cc33b9b83acb4065f9bee87a2dd80735691e0",
+      "bytes": 7650
+    },
+    {
+      "path": "scripts/ci/sc54_native/expected-cases.json",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "1c24eee6ee6258fcf4b2f39abe71a55e680db76012835957ae1b6de33f434c66",
+      "bytes": 15359
+    },
+    {
+      "path": "scripts/ci/sc54_native/requirements.txt",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "253bf0b432bb81cc0c5c2df7ca8953e5fd7818f27be50935fa6ede43972920d0",
+      "bytes": 791
+    },
+    {
+      "path": "scripts/ci/sc54_native/source-map.json",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "8b310977c38e97b74e2b176c714613aacd0d8c6a6dca627d26e2fbf13fa06b35",
+      "bytes": 35868
+    },
+    {
+      "path": "scripts/vidya/adapters/odl_model_gated.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": "bb2ba32f736eb82f946aaa9c1fa6e9bb39a7285b1bd1924d48983dddf3afb64b",
+      "after_sha256": "931ff2aef425fa84c709043cd791b3abc1154decdf49a60fa6ece6d1cee3ae5e",
+      "bytes": 17469
+    },
+    {
+      "path": "scripts/vidya/adapters/qwen4exp_quality.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "ad9fb1d6bba5872d77565b319807bbbb40653be35ec5eda6c686ebeb1ef5903b",
+      "bytes": 6545
+    },
+    {
+      "path": "scripts/vidya/adapters/qwen4exp_quality_reader.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "172e046bc596f2d1afa12ac0617ea6b2737f0536fd7c443508c5a1c231ba3532",
+      "bytes": 28512
+    },
+    {
+      "path": "scripts/vidya/cli.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": "a0feb9b5feaa59519a03bf378241d589d38837bb42a10919334afdceae0066b2",
+      "after_sha256": "995d0e61f5a17c8597dbe3b4517eab87c8adffd59124f510bc2ef3f7ecf1bd07",
+      "bytes": 39126
+    },
+    {
+      "path": "scripts/vidya/ingest_sources.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": "2b8e1c825cee67c133e4b763bade76b193c63fe0e622f88a840bc7965657eee1",
+      "after_sha256": "b623cbdcbb6cdf2e960439fa53b9bdc8ceb9115e2cc2544452f23cbc7850789a",
+      "bytes": 26419
+    },
+    {
+      "path": "scripts/vidya/qwen4exp_quality_capture.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "99422b081ca30cc9e57f521ade018a3a912cc21ed20debd4828a63e0bdca9faf",
+      "bytes": 42704
+    },
+    {
+      "path": "tests/vidya/test_ingest_sources.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": "3d312fd4fcffec85ea3653aa821c32c825ba84d035311c005c0e32b7c998a687",
+      "after_sha256": "d7f5c1e97d7c97cff0044c5008148175d1bcd512f3fa5ca092009374b477843d",
+      "bytes": 27020
+    },
+    {
+      "path": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
+      "source": "ec6b76c912a5e0c87b7cdd42d8a12dd826dace7a",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "80fa869d72e2cd8ca3a77c11e50dae9a953c0f58c87b364323a3aacb006891f1",
+      "bytes": 42750
+    },
+    {
+      "path": ".github/workflows/mf-trace-native.yml",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "32f6be1f42326238a44efe935595173e9c0c33d778a1b616a12d844d3c3f5d7b",
+      "bytes": 2761
+    },
+    {
+      "path": "scripts/ci/mf_trace_native/bootstrap.py",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "eb6e937178b8b55b88d504027ef6da3c5560350dcdd34a8c2eb81a574053aa5d",
+      "bytes": 772
+    },
+    {
+      "path": "scripts/ci/mf_trace_native/capture.py",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "4d9c84e0105f9368684976f77f417d042bc7802f257981fdaae6df2ee37aad3e",
+      "bytes": 6771
+    },
+    {
+      "path": "scripts/ci/mf_trace_native/expected-cases.json",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "224c62ba1e13261ba9af6f0b0358c4a2c191aa576af2b65337adeb737a3b3588",
+      "bytes": 572
+    },
+    {
+      "path": "scripts/ci/mf_trace_native/requirements.txt",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "9619ade5463bd8659b273d90c6772169945ca46f635a8a96766801cf60cc3b22",
+      "bytes": 692
+    },
+    {
+      "path": "scripts/ci/mf_trace_native/source-map.json",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "715d732a49ca4be5e57d735d8c2e4cdad9ea4b1fa358d34c20ec5b8be41a6422",
+      "bytes": 493
+    },
+    {
+      "path": "tests/test_mf_trace_contract.py",
+      "source": "4e3eef391497de81d929242554c1f57b052d9fdd",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "46695659990e2ce5efe7ee49dd646bdd196cb2b023662ac7b0ba0713328522cf",
+      "bytes": 14119
+    },
+    {
+      "path": ".github/workflows/m12h-native.yml",
+      "source": "cf3fbaf3d87017692a70e559c35da9fdaf16ad10",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "2eea673bf9e9ef74068196570393f956d0f19ad2e9c5883ce7d95900171ab52d",
+      "bytes": 3470
+    },
+    {
+      "path": "scripts/ci/m12h_native/bootstrap.py",
+      "source": "cf3fbaf3d87017692a70e559c35da9fdaf16ad10",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "fdc790fdb322bd8937cc2fadd287f395a430f7de1e52f410f581daabd302d070",
+      "bytes": 803
+    },
+    {
+      "path": "scripts/ci/m12h_native/capture.py",
+      "source": "cf3fbaf3d87017692a70e559c35da9fdaf16ad10",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "6072b47bdc87d78fd47afe2eefe4c10ede762366b9bc775dc319b2bb5789acf1",
+      "bytes": 7166
+    },
+    {
+      "path": "scripts/ci/m12h_native/expected-cases.json",
+      "source": "cf3fbaf3d87017692a70e559c35da9fdaf16ad10",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "831a356270bec4fbe78b3b1d33a4e90dcf698a7148cc8e8374c94dfbbfafe759",
+      "bytes": 1220
+    },
+    {
+      "path": "scripts/ci/m12h_native/requirements.txt",
+      "source": "cf3fbaf3d87017692a70e559c35da9fdaf16ad10",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "9619ade5463bd8659b273d90c6772169945ca46f635a8a96766801cf60cc3b22",
+      "bytes": 692
+    },
+    {
+      "path": "scripts/ci/m12h_native/source-map.json",
+      "source": "cf3fbaf3d87017692a70e559c35da9fdaf16ad10",
+      "git_mode": "100644",
+      "before_sha256": null,
+      "after_sha256": "ff3ce592e2d161e79a4f3f8020e13a02546bd557a7caff6160dc33e687ed2093",
+      "bytes": 1146
+    }
+  ],
+  "source_files": 28,
+  "no_project_imports_tests_or_inference": true,
+  "no_protected_source": true,
+  "original_branches_and_CI_custody_retained": true
+}

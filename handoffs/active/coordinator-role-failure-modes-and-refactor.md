@@ -559,7 +559,7 @@ Nothing is checked off without a commit hash or a receipt path.
 - [x] **R-5 — Adjudicate the two open cross-lane conflicts** (67 vs 72 changed paths; 9 vs 24
       worktrees). This is the coordinator's own job and it has been open since 08:31Z. Closes F-29.
       ✅ 2026-08-12 — adjudicated as UNADJUDICABLE and closed: neither 67 nor 72 reproduces at any ref (reconcile branch vs merge-base `921113ed` measures 190 today; lanes 195-198), and the 9-vs-24 pair dissolves — 9 = worktrees pinned at the v9 freeze commit, 24 = total registered. Both are correct answers to different questions.
-- [ ] **R-6 — Amend the wrap-up.** Five failures in this table are absent from
+- [x] **R-6 — Amend the wrap-up.** Five failures in this table are absent from
       `progress/2026-08/2026-08-12.md:3510-3541`, which was committed at 10:07:18Z and never updated —
       F-22's catch happened 43 minutes later. Closes F-32.
 - [ ] **R-7 — Renumber the second `C49`.** Second same-day collision after `C45`. The C-series is
@@ -1503,3 +1503,5 @@ Investigation on pickup (13:08Z, this session) found:
 **2026-10-08 protected comment correction boundary:** the two cadence comment changes were reviewed and applied privately, then MAIN restored our two owned files to the published preimages before committing this checkpoint. Existing D9 requires operator acknowledgement for any `scripts/coordination/**` merge, including comments. The accepted A-8 historical-source audit is complete; the separate factual source correction remains proposed and does not close by prose.
 
 - [ ] **RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 acknowledgement.** [Decision package](../../artifacts/operator/decisions/D9-RTG48-COMMENTS-20261008/README.md), exact patch SHA-256 `9c191746a397e3bd2bbbc47f37adf6cd661390836fce56ff6847527bd86e345f`. Only supervisor/test comments change; executable behavior is identical. No tests, activation or runtime work.
+
+**R-6 complete, 2026-10-08:** MAIN filed the additive five-finding amendment to the August12 progress report, preserving every prior byte and its original nine-correction cutoff. The later timestamped findings do not retrospectively become knowable at10:07Z. Existing source audit limits remain unchanged. ✅ 2026-10-08

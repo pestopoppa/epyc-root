@@ -1,0 +1,920 @@
+{
+  "expected_case_rows": 102,
+  "expected_case_rows_are_results": false,
+  "files": [
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": ".github/workflows/sc54-quality-native.yml",
+      "repo": "recipe",
+      "sha256": "696a1959960998e95a4526046344b0f2d50bfe8478b4aad0c8728559e5a606db",
+      "size": 3486,
+      "source_state": "exact_corrective_candidate"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "repo": "recipe",
+      "sha256": "ca3184abdbd4a4d34a5d4ad41ac5d6c5c18232e91d6f10cb7815adc129fb3b87",
+      "size": 396066,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/harness/session_gap_measure.py",
+      "repo": "recipe",
+      "sha256": "d8b1e6140c3de918e1335686cfd39a295a5f795fa5ecae5e7efb2a7de02d6eff",
+      "size": 17107,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "recipe",
+      "sha256": "481b74a995f038cf35bb5a9bb3a2c1f355d507bff0a598a191cefce36fc483e9",
+      "size": 286019,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "repo": "recipe",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/autokernel_actor_seat.py",
+      "repo": "recipe",
+      "sha256": "b1641f92bf9678c0ac2d9acb96d185b074bc916019e98a39fa75f9a47460657a",
+      "size": 12610,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/autopilot_journal.py",
+      "repo": "recipe",
+      "sha256": "1102acd59c66ef01cf3d4f87ee9f1ad7d9be670270f2fcef81333aa7da31a440",
+      "size": 20507,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/autopilot_reproposal_rate.py",
+      "repo": "recipe",
+      "sha256": "c24d934ff6eb3a8ca5acd13bc626dbda4ad2c5be47040f2c5111fee1e7d975f3",
+      "size": 11496,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/beam_memory.py",
+      "repo": "recipe",
+      "sha256": "5f92ec163981a7605aa797b028c904a08370e6c63414648b2af3e134ead731c5",
+      "size": 6132,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/chat_template_ab.py",
+      "repo": "recipe",
+      "sha256": "1fae02feaca92fb940cea26206eb480b6b803f0e4cd7fdf2e2d9a61058420a9d",
+      "size": 6863,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "recipe",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/contention_gate.py",
+      "repo": "recipe",
+      "sha256": "ea6051615cfadf45b3953d0b993402d53627317aa4ee93fec1d74737831232ff",
+      "size": 10378,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/contention_matrix.py",
+      "repo": "recipe",
+      "sha256": "dab30285de4e0db560a4efafb8e7552fb2ced47ab9946cc138a54a468050a405",
+      "size": 20427,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/contextbench_score.py",
+      "repo": "recipe",
+      "sha256": "b1aa6119edbc420aad611a86a74adfbeed31320631a73bbc5cdc80f858151ea0",
+      "size": 30845,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/dtap_timeout_report.py",
+      "repo": "recipe",
+      "sha256": "df391e072807a041d0c49b6710ed7bdfe0f7c7a2aa231ec97491576de651e3db",
+      "size": 18485,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/embedder_placement_gate.py",
+      "repo": "recipe",
+      "sha256": "58040f9b983e3d5f68d8d185201e818cd767564ab284a5ba847fa8cc36679118",
+      "size": 8202,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/eval_suite_discriminability.py",
+      "repo": "recipe",
+      "sha256": "55941937d92ec10e2255f9a9ea1014b8aa88204ee00bc77810a302b4dbbf14db",
+      "size": 19956,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/eval_tower_band.py",
+      "repo": "recipe",
+      "sha256": "b3de44dd2cbdd5c74ad3932f4c70954ec7601cb1f538f3436d423803e6eb5788",
+      "size": 29015,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/evidence_durability.py",
+      "repo": "recipe",
+      "sha256": "f5ffbff7cb8832ef7d1ce61164c8d98392c8326d0ad84e0efce9c9d6981789c3",
+      "size": 5791,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/exl3.py",
+      "repo": "recipe",
+      "sha256": "0005f64f429a8599df00c8ed5008f9c13edfd8d7e5e7846a3da70bc25bfe4777",
+      "size": 2471,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/fanout_outcome.py",
+      "repo": "recipe",
+      "sha256": "769d3ed25370efd1f0d0df8cc105622133433439660914986728fa391e3c339b",
+      "size": 33163,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/gfx90a_static_register.py",
+      "repo": "recipe",
+      "sha256": "cd82adc527398a1d4f571cc4df60410f0a87f311d9324267ce267c9e4c28d0d3",
+      "size": 9256,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/graph_profile_measurement.py",
+      "repo": "recipe",
+      "sha256": "dbde25efef833c88fda3e7e85caaca0adb01a02e1567da9e5512cf6b5a6d8cb0",
+      "size": 6532,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/inf70_serving_arm.py",
+      "repo": "recipe",
+      "sha256": "f5ecef34f36d1def29809ac96887e944ddc26db5cb3814a3c6b4984b9eed3081",
+      "size": 6940,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/kb_rag_query_length.py",
+      "repo": "recipe",
+      "sha256": "d06d51b78db2135d6eda6dab45846347352d0d65344197b8c5312b63b83e2aaa",
+      "size": 4798,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/kv_quant_27b_v10.py",
+      "repo": "recipe",
+      "sha256": "8d92a79dd3ef72dc873b8982e5164af06281a387bf3ef773473ace6faefb4470",
+      "size": 9549,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/managed_tooling_check.py",
+      "repo": "recipe",
+      "sha256": "a8a982263676845d3ba1015317ba78993188061e05a582da7149bb4720d21603",
+      "size": 21108,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/memento_lora.py",
+      "repo": "recipe",
+      "sha256": "c3666624231a85a72a166e14a022303c671e50450f95924452cc04027ef1e557",
+      "size": 11157,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/mhs_guard.py",
+      "repo": "recipe",
+      "sha256": "07c87ea6843f53430d5d5fc67529482fe9eed9011fb641b821acf2bd523e9821",
+      "size": 25817,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/occ1_optical_compression.py",
+      "repo": "recipe",
+      "sha256": "f85229ed2e5597103d438d77752fb147f98137704b0bfc99897742692809de31",
+      "size": 6552,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/odl_model_gated.py",
+      "repo": "recipe",
+      "sha256": "931ff2aef425fa84c709043cd791b3abc1154decdf49a60fa6ece6d1cee3ae5e",
+      "size": 17469,
+      "source_state": "exact_corrective_candidate"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/opencode_shell_run.py",
+      "repo": "recipe",
+      "sha256": "bdd3b258b67615bbb14d252bb6239dee410e88df8517d5a2852ff0bc8c4bc023",
+      "size": 5578,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/pareval.py",
+      "repo": "recipe",
+      "sha256": "9959ae8ef908e39032a73c152e9e18751cf417eb3e7829b6145fb82d1acc75bd",
+      "size": 33179,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/pii_staged_gate.py",
+      "repo": "recipe",
+      "sha256": "181fe9fee726d1dc0012207ec183904058dc3fe69e8bdecf136b9c04ba82504b",
+      "size": 2328,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/qwen4exp_quality.py",
+      "repo": "recipe",
+      "sha256": "ad9fb1d6bba5872d77565b319807bbbb40653be35ec5eda6c686ebeb1ef5903b",
+      "size": 6545,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/qwen4exp_quality_reader.py",
+      "repo": "recipe",
+      "sha256": "172e046bc596f2d1afa12ac0617ea6b2737f0536fd7c443508c5a1c231ba3532",
+      "size": 28512,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/research_screen.py",
+      "repo": "recipe",
+      "sha256": "4a77887165836a64c154644f674e13943c4cb61a586b4957d83d54e5c400f76c",
+      "size": 22090,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/research_sweeps.py",
+      "repo": "recipe",
+      "sha256": "bab6158c8b8e0cb313d5205adfe0d302bc65cf02f562d767011ae751cd0cbef6",
+      "size": 38438,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/review_f1.py",
+      "repo": "recipe",
+      "sha256": "f16228093a29f399d54d323433522787d805f44cfb4d9871f277f70fdc6bd978",
+      "size": 3743,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/reviewer_false_accept.py",
+      "repo": "recipe",
+      "sha256": "b19464bbe297b0ca6397b8e97ee250e0a6f2f0a1ca7137748dac2e929281cfb5",
+      "size": 10902,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/sealed_manifest.py",
+      "repo": "recipe",
+      "sha256": "ce1a948f7c778b5571c8ac9f3ab864496e3626a1a7c651cce58f4b144aa7900d",
+      "size": 12140,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/serving_call.py",
+      "repo": "recipe",
+      "sha256": "bfedf5115733150d627964b5a5ceb357cfd3b54fa1eb4c2d8dcf0b8ce777c2df",
+      "size": 25501,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/session_intercall_gap.py",
+      "repo": "recipe",
+      "sha256": "7a47a2a8ba909d9a20b31ce4ce7a83a3d31699f2582a7363914697496188f1f2",
+      "size": 8489,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/strategy_projection_report.py",
+      "repo": "recipe",
+      "sha256": "ef8e6c3234a66a4cd7d29d6711b4da41a1bb93095ced65e8e1dbd089b693c6e1",
+      "size": 26970,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/tale_budget.py",
+      "repo": "recipe",
+      "sha256": "b0dc02c4dd54b62ebf4e3a6bb6d9cf357df30acc1e3c26150e7c9b4b28d9c21e",
+      "size": 4800,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/tulving_episodic.py",
+      "repo": "recipe",
+      "sha256": "e5a148930ac956d529b0b8aea752dcb72f1bb61444c3634c29afd879d975af5a",
+      "size": 7313,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/typed_decisions_measurement.py",
+      "repo": "recipe",
+      "sha256": "37898446f5d0e8137ec012e1f2ea8a76c06ffc5048b47d2c22a14b4bd6c51e31",
+      "size": 54527,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/ufh13_thesis.py",
+      "repo": "recipe",
+      "sha256": "5172b8ed5bf187148b0aec83d480d301228de15677513cb7af2e2ddb1a3fa5fb",
+      "size": 18073,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/adapters/verify_before_stop.py",
+      "repo": "recipe",
+      "sha256": "31e54f1bd0531b3830338ced032ff6a62ac14ceb1c2ec2f9440d635e80960049",
+      "size": 12327,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/alias_candidates.py",
+      "repo": "recipe",
+      "sha256": "736f6a8dd1c0b8d31f283b96ea2632f10bcc67739c4016ca4eb9810dda221a6d",
+      "size": 18228,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "recipe",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size": 5909,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/checkpoint.py",
+      "repo": "recipe",
+      "sha256": "496fb200484f6d93c97690d1e85c07251eb394dce0c846e31ba4ff6e43b24456",
+      "size": 9185,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/citation_gate.py",
+      "repo": "recipe",
+      "sha256": "14bcad1be3ea81496abe7f92403eeb0a99b5f4d26ee55fe9d633ece5a78bb8e0",
+      "size": 15057,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "recipe",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/cli.py",
+      "repo": "recipe",
+      "sha256": "995d0e61f5a17c8597dbe3b4517eab87c8adffd59124f510bc2ef3f7ecf1bd07",
+      "size": 39126,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/correction_queue.py",
+      "repo": "recipe",
+      "sha256": "60bd2ef0045828c18bc4cde490cce96490b265a5bfeb6deb3bbc0aa4d0ff98a8",
+      "size": 16889,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/fold.py",
+      "repo": "recipe",
+      "sha256": "f22dfc750d55c6fbc01cc0b56847f5684417221af5b392e7da7a8d46b2ec2cab",
+      "size": 44566,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/frames.py",
+      "repo": "recipe",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size": 10240,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/gate.py",
+      "repo": "recipe",
+      "sha256": "01a87a9927d4553e2008bdeed7a04728515ba49a885082cfbc7bcfcb2cd91b6b",
+      "size": 18491,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/impact.py",
+      "repo": "recipe",
+      "sha256": "d457eece659fffb9015e4ab359f55285bb0410f571c9924fa1cbb664945ed800",
+      "size": 16732,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/ingest_sources.py",
+      "repo": "recipe",
+      "sha256": "b623cbdcbb6cdf2e960439fa53b9bdc8ceb9115e2cc2544452f23cbc7850789a",
+      "size": 26419,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/intake_assertion_kinds.py",
+      "repo": "recipe",
+      "sha256": "0615f1659fc60e9c46e33d3270f346ca39a399c7ec2b638b76436e255a63460f",
+      "size": 1878,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "recipe",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+      "size": 8539,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/ledger.py",
+      "repo": "recipe",
+      "sha256": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09",
+      "size": 14329,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/live_eval.py",
+      "repo": "recipe",
+      "sha256": "fc98470150b7407d90c400f16b736bb6a4df6ca884b6f57e4360b6ae35158a92",
+      "size": 16361,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/machine_anchor.py",
+      "repo": "recipe",
+      "sha256": "a2623ae5dcdb8c7a41ed73dc682eaba3f3770b92c8ed053139e1bfe68a0d2ae9",
+      "size": 16990,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/measurement_record.py",
+      "repo": "recipe",
+      "sha256": "3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945",
+      "size": 12425,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/projection.py",
+      "repo": "recipe",
+      "sha256": "1fa9e0621b186313d22395a09dceb305b8d19334b8543571dc45667e9debe681",
+      "size": 13132,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/qwen4exp_quality_capture.py",
+      "repo": "recipe",
+      "sha256": "99422b081ca30cc9e57f521ade018a3a912cc21ed20debd4828a63e0bdca9faf",
+      "size": 42704,
+      "source_state": "exact_live_window_race_correction_candidate"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/raw_anchor_store.py",
+      "repo": "recipe",
+      "sha256": "fc0661d60e68ed341754c3618661df80fad155f9890319819edbd59f557519ed",
+      "size": 14761,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/statement_binding.py",
+      "repo": "recipe",
+      "sha256": "d7611b9b89379547ab631d9ae41b9979f9fdb41f7aed6dfd3208cac9baf728dc",
+      "size": 8380,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "scripts/vidya/wiki_dependents.py",
+      "repo": "recipe",
+      "sha256": "023feb86f1bd8611ef405504fb9ff815578e0ceaf59376cc8281bdc745c208e2",
+      "size": 15129,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/test_graph_profile_measurement.py",
+      "repo": "recipe",
+      "sha256": "98231e0b31288e58002fa8078c23fd124fad42bcb35c004ca0cb12b8074ea532",
+      "size": 7366,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/fixtures/mhs_guard/orchestration/autopilot_journal.jsonl",
+      "repo": "recipe",
+      "sha256": "c686dd85a96401bbb3ec519e4f3e1832f50203ff0ce2d2e3859f3d1f27505bc6",
+      "size": 19502,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/fixtures/mhs_guard/orchestration/autopilot_rejected_mutations.jsonl",
+      "repo": "recipe",
+      "sha256": "b4bf468caa67a755d7411e7c25255272129d458f21c8a9687edb9856de79f38c",
+      "size": 4463,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/fixtures/vb_writers/autopilot_reproposal_rates.jsonl",
+      "repo": "recipe",
+      "sha256": "5db268783c093bcfe1dbab55404d36e4bb4e7b330d6088d4d06b4c1dd549fcf1",
+      "size": 11130,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/fixtures/vb_writers/autopilot_reproposal_rates.retrospective.jsonl",
+      "repo": "recipe",
+      "sha256": "e832deac857b7d9e07f989d4a786f2c77d4d7b05c530f4f8bb752516f910a0f0",
+      "size": 2700,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/fixtures/vb_writers/false_accept_runs.jsonl",
+      "repo": "recipe",
+      "sha256": "a5da1510503d2ec37eaa088d15aa8f77a45283d71c7b2018a30daec99f2f3901",
+      "size": 8626,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/fixtures/vb_writers/generate.py",
+      "repo": "recipe",
+      "sha256": "e781eb78c243af30f636f823150f5d973174534ac2b53a5e21ed6930c85c2d9b",
+      "size": 7859,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_autokernel_actor_seat_adapter.py",
+      "repo": "recipe",
+      "sha256": "40902bd8d3b3e7c39c1a91425b5262f2d24119bc58d963d490c84dca4dd7fecd",
+      "size": 23712,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_autopilot_journal_adapter.py",
+      "repo": "recipe",
+      "sha256": "f398c07348f1ae08c5417125a23e5e6076f31e10ada1d8fddef2d0c951fb3d7a",
+      "size": 34195,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_autopilot_reproposal_rate_adapter.py",
+      "repo": "recipe",
+      "sha256": "f05d971d0e0450fda113ab7637f3a66dea59566cf051e14e6a755e58a4b99b1d",
+      "size": 9862,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_beam_memory_adapter.py",
+      "repo": "recipe",
+      "sha256": "66e16bd0035425b02a80002fd01754409da4dcdfb4323fdb22b8634ef79c03f2",
+      "size": 15649,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_chat_template_ab_adapter.py",
+      "repo": "recipe",
+      "sha256": "6b9845a2a321715dc3c2e1e3e6370499944337d1d31b1806ae5e3241135add60",
+      "size": 10902,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_contention_gate_adapter.py",
+      "repo": "recipe",
+      "sha256": "69ffcf7541cd68daa6b9095d89ad72fdd827694f3d7ba3570edec5a0e678227c",
+      "size": 10561,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_contention_matrix_adapter.py",
+      "repo": "recipe",
+      "sha256": "a1c2f734e7bebc6b39cb4455aecd7fd885266bb909de90f84e2da5b2d55ceb94",
+      "size": 17783,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_eval_tower_band_adapter.py",
+      "repo": "recipe",
+      "sha256": "418d94e74e1ca6f2f9947cca53f0fd0029191aab7be454fd5a882174664de07a",
+      "size": 11998,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_fanout_outcome_adapter.py",
+      "repo": "recipe",
+      "sha256": "52356c94a3912ebc801227e9d1b4f8affc0e77d82217a4c47b7654c93dca5877",
+      "size": 22326,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_inf70_serving_arm_adapter.py",
+      "repo": "recipe",
+      "sha256": "fbfc771e43ca2086ea73f672d57f2da50cb8f06114830b8aa2a3d9ccb19daa36",
+      "size": 15531,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_ingest_sources.py",
+      "repo": "recipe",
+      "sha256": "d7f5c1e97d7c97cff0044c5008148175d1bcd512f3fa5ca092009374b477843d",
+      "size": 27020,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_kb_rag_query_length_adapter.py",
+      "repo": "recipe",
+      "sha256": "61e858a032da34369d5263cc748250c3a90f01c41b067637328f3e416a425443",
+      "size": 4970,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_memento_lora_adapter.py",
+      "repo": "recipe",
+      "sha256": "856df73332a653db16d78b3cce6258f6a73f00c34851e8719c2adc7cd599c332",
+      "size": 4654,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_mhs_guard_adapter.py",
+      "repo": "recipe",
+      "sha256": "28d14c85a9c319019a30702e8f21b0b3561ab5355a916c4a36083def7a3c3d23",
+      "size": 14825,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_occ1_optical_compression_adapter.py",
+      "repo": "recipe",
+      "sha256": "16027106dddaf4e08238e5194840265d3109314e395731625a131b151e633853",
+      "size": 11737,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_odl_model_gated.py",
+      "repo": "recipe",
+      "sha256": "a901525ce59838fe098c8369dacba3c393699479f888e3a58de89124ecf250d7",
+      "size": 7808,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_opencode_shell_run_adapter.py",
+      "repo": "recipe",
+      "sha256": "09518434339f735e973241bc2bbcd1c87fe55fec1cf16f14656aa5e769f32ba5",
+      "size": 13547,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_pareval_adapter.py",
+      "repo": "recipe",
+      "sha256": "594f8ad8525222248460f2b8819cfbe54fdd3a2ea820334414d25007cd00b756",
+      "size": 19756,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_research_screen_adapter.py",
+      "repo": "recipe",
+      "sha256": "0783c80543a46a98e2f5428dadbf2915370a1567562c69d8016b8661a4b27650",
+      "size": 12248,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_research_sweeps_adapter.py",
+      "repo": "recipe",
+      "sha256": "6408f67a021b44090e5b2c207ead49ba91a5991532ad585db137811f9a239383",
+      "size": 17148,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_review_f1_adapter.py",
+      "repo": "recipe",
+      "sha256": "af9152e3fbfc05299bd5f986862658f3524cd978e7ba2f4736798e32147bc81f",
+      "size": 4144,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_reviewer_false_accept_adapter.py",
+      "repo": "recipe",
+      "sha256": "57cc749166e00af982aa787a4606673a7ee08a6bbdbd0940fc9f99e637c060b8",
+      "size": 9827,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
+      "repo": "recipe",
+      "sha256": "80fa869d72e2cd8ca3a77c11e50dae9a953c0f58c87b364323a3aacb006891f1",
+      "size": 42750,
+      "source_state": "exact_actual_monitor_handshake_test_candidate"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_serving_call_adapter.py",
+      "repo": "recipe",
+      "sha256": "ffed4b74edd0e8ec37f9baacfd818c7faedb9ea502459c714e2a21f5efed5dd2",
+      "size": 15197,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_session_gap_adapter.py",
+      "repo": "recipe",
+      "sha256": "b9e3c76181b58d88ba6bb154a6d3d7ce3adbb5bd24cbb6aa3d5a7463f5699152",
+      "size": 9798,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_tale_budget_adapter.py",
+      "repo": "recipe",
+      "sha256": "e4d75886d13a3b025e193f696c343157ba7dc1a2cf2416dd457768b75d62c4d5",
+      "size": 7033,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_tulving_episodic_adapter.py",
+      "repo": "recipe",
+      "sha256": "a9ad7e1136864dd7ac6db03ff595097bb62e43c03b9f58c03e3608137c4f65fe",
+      "size": 14807,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/test_typed_decisions_measurement_adapter.py",
+      "repo": "recipe",
+      "sha256": "dceb5d1f649ee63eebbc4e3e91bc7b9f95a4d76ac2b8cc3c75ba22f7e41180ba",
+      "size": 48092,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+      "path": "tests/vidya/ufh13_thesis_fixtures.py",
+      "repo": "recipe",
+      "sha256": "9b8ef4a917e5624821a4816a9b7d8408d97a65b1dd1b7e284a5b685a6ed4c065",
+      "size": 6245,
+      "source_state": "exact_source_commit"
+    },
+    {
+      "base_commit": "1bace97dc655ab5896291b4571781e53b821d9a3",
+      "path": "scripts/benchmark/thesis_ufh13/score.py",
+      "repo": "ufh13-research",
+      "sha256": "544c1277d1eb00e9f685e40490385644573417f813a9989dacff83a7cdb4350f",
+      "size": 13792,
+      "source_state": "exact_pinned_fixture_producer"
+    }
+  ],
+  "prospective_full_module_selections": [
+    "recipe:tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
+    "recipe:tests/vidya/test_ingest_sources.py"
+  ],
+  "research_checkout": {
+    "commit": "1bace97dc655ab5896291b4571781e53b821d9a3",
+    "path": "ufh13-research",
+    "purpose": "AST-isolated UFH13 fixture producer, no Research project import",
+    "repo": "pestopoppa/epyc-inference-research"
+  },
+  "root_context_base": "82dc0a8f0e4c9359a6733dd0241ba9caea94f785",
+  "root_implementation_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
+  "root_source_commit": null,
+  "root_source_commit_binding": "null until source-push event; binder verifies exact event head and every row",
+  "schema": "private.sc54.native_source_map.v2",
+  "source_coverage": {
+    "dynamic_adapter_modules": 43,
+    "extra_governance_sources": [
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "scripts/vidya/adapters/README.md"
+    ],
+    "fixture_and_runtime_inputs": {
+      "mhs_guard_copied_files": [
+        "tests/vidya/fixtures/mhs_guard/orchestration/autopilot_journal.jsonl",
+        "tests/vidya/fixtures/mhs_guard/orchestration/autopilot_rejected_mutations.jsonl"
+      ],
+      "runtime_local_module": [
+        "scripts/harness/session_gap_measure.py"
+      ],
+      "vb_writer_fixture_origin": [
+        "tests/vidya/fixtures/vb_writers/generate.py"
+      ],
+      "vb_writers_read_files": [
+        "tests/vidya/fixtures/vb_writers/autopilot_reproposal_rates.jsonl",
+        "tests/vidya/fixtures/vb_writers/autopilot_reproposal_rates.retrospective.jsonl",
+        "tests/vidya/fixtures/vb_writers/false_accept_runs.jsonl"
+      ]
+    },
+    "selection_basis": "AST-resolved local imports and fixture helpers plus every literal Source.module in ingest_sources.SOURCES, because Source.load imports each adapter dynamically",
+    "whole_module_selections": 2
+  },
+  "unchanged_carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+}

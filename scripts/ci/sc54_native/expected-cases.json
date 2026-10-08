@@ -1,0 +1,410 @@
+[
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_plain_ppl_projection"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_streamed_large_model_projection"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_valid_paired_kld_projects_all_native_rows"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_paired_native_ppl_anchor_receipt_binds_kld_origin"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_valid_anchor_ppl_output_logits"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_writer_retains_only_bounded_endpoints_for_50000_maps_samples"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_writer_latches_identity_change_for_reader_refusal"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_long_window_monitor_receipt_is_bounded_and_counts_exact_samples"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_live_identity_change_is_preserved_and_refused"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_forged_compiled_knob_state_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_compiled_knob_near_match_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_missing_maps_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_deleted_maps_refuse"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_wrong_maps_inode_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_missing_live_library_hash_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_mapping_timestamp_outside_window_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_live_hash_timestamp_outside_window_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_timezone_and_order_refused"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_kld_missing_reference_model_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_kld_missing_anchor_provenance_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_kld_mismatched_anchor_logits_refuse"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_kld_mismatched_anchor_model_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_kld_wrong_base_argv_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_plain_ppl_with_kld_flag_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_kld_trailing_argument_after_mode_flag_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_duplicate_json_receipt_key_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_duplicate_json_declaration_key_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_changed_corpus_bytes_refuse"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_unknown_direction_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_missing_unit_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_nonfinite_value_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54ProjectionControls",
+    "name": "test_mutated_library_digest_refuses"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_reader_compiles_fd_verified_bytes_after_path_replacement"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_cached_reader_module_must_match_pinned_identity_and_functions"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_pinned_reader_refuses_final_symlink"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_run_and_arm_ids_cannot_escape_receipt_directory"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_output_preflight_refuses_existing_receipt_or_symlink_before_child"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_receipt_publish_refuses_existing_regular_file_and_symlink"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54PinnedReaderAndImmutableOutputControls",
+    "name": "test_native_log_create_refuses_existing_file_and_symlink"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54NormalIngestControls",
+    "name": "test_normal_ingest_projects_valid_native_receipt_through_shared_ladder"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54NormalIngestControls",
+    "name": "test_normal_ingest_refuses_mutated_native_identity"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_sc54_qwen4exp_quality_adapter.SC54FakeChildWrapperControl",
+    "name": "test_wrapper_captures_model_free_fake_child"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_wired_adapter_projects_through_a_registered_projection"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[ak-actor-seat]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[autopilot-journal]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[autopilot-reproposal-rate]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[beam]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[chat-template-ab]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[contention-gate]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[contention-matrix]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[eval-tower-band]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[fanout-outcome]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[inf70-arms]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[kb-rag-qlen]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[memento-lora]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[mhs-guard-ops]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[mhs-guard-verdicts]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[occ1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[opencode-shell]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[orchestrator-serving-call]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[pareval]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[research-screen]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[research-sweep-g1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[research-sweep-g234]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[review-f1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[reviewer-fa]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[session-intercall-gap]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[tale-budget]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[tulving]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[typed-decisions-measurement]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_source_ingests_a_fixture_end_to_end[ufh13-thesis-measurement]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_dry_run_appends_nothing"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_pre_hook_arm_is_declined_not_filled"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_foreign_report_is_refused_by_name"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_missing_path_is_reported_and_a_defaultless_source_needs_a_path"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_sealed_manifest_discovery_matches_its_own_walk"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_autopilot_journal_accepts_a_shard_file_and_declines_a_foreign_file"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_mhs_guard_verdicts_decline_without_a_hook_epoch"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_mhs_guard_rows_counts"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_limit_is_a_global_row_limit"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_every_dispatched_adapter_declares_its_authority"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_tale_budget_pre_hook_results_are_declined_and_foreign_sidecars_too"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_review_f1_mutated_summary_still_ingests_as_an_unverified_observation"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_repeat_at_a_new_timestamp_is_a_noop"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_duplicate_paths_append_each_claim_once"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices0]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices1]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices2]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_bundles_before_appending[indices3]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_accepts_new_claims_alongside_existing_ones"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_to_revive_retracted_evidence"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_dry_run_filters_without_writing"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_torn_tail_without_repairing_it"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_does_not_silently_apply_to_other_ingesters"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_default_repeat_ingestion_preserves_existing_behavior"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_counts_live_opposing_evidence"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_corrupt_chain_before_append"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_divergent_duplicate_identity"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_projected_bundles[indices0]"
+  },
+  {
+    "classname": "recipe.tests.vidya.test_ingest_sources",
+    "name": "test_only_new_refuses_partial_projected_bundles[indices1]"
+  }
+]

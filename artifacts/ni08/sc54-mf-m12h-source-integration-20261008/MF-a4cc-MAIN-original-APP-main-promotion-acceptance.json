@@ -1,0 +1,17 @@
+{
+  "schema": "private.MAIN.mf.original_APP_main_promotion_acceptance.v1",
+  "reviewer": "MAIN",
+  "accepted": true,
+  "source_main_preimage": "974cb4017791a5d500269fd44f7d9903528e1d5d",
+  "source_main_after": "a4cc85eb774c066f30adc7b91aa26a40bbcc9036",
+  "original_command_count": 123,
+  "normal_APP_main_push_count": 1,
+  "ROOT_pushes": 0,
+  "OWN_pushes": 0,
+  "original_journal_sha256": "f544283ab87b9098d5bd12edb9de76c478d2580814f29cba88a3bc12151d6328",
+  "original_receipt_sha256": "8cc5c7467c3abb20b1dde47cc016fc778547bda693e3dca50d85ce8ffc2325a6",
+  "two_normal_44_byte_leases_three_equal_snapshots_release_unlink_verified": true,
+  "source_sparse_full_index_and_foreign_state_preserved": true,
+  "no_inference": true,
+  "no_runtime_activation": true
+}

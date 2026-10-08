@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "repo": "app",
+      "path": "src/graph/helpers.py",
+      "sha256": "f50ff4a8f565e06cabe57fbf74e7009fa1a12fab68d7416ac17b4e87633491e8",
+      "size": 88438
+    },
+    {
+      "repo": "recipe",
+      "path": "tests/test_mf_trace_contract.py",
+      "sha256": "46695659990e2ce5efe7ee49dd646bdd196cb2b023662ac7b0ba0713328522cf",
+      "size": 14119
+    }
+  ],
+  "runtime_producer_revision": "unknown; source-only controls never establish loaded production revision"
+}

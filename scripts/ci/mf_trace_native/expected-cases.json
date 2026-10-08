@@ -1,0 +1,18 @@
+[
+  {
+    "classname": "recipe.tests.test_mf_trace_contract.TraceControls",
+    "name": "test_frozen_lexical_and_ordering_inventory"
+  },
+  {
+    "classname": "recipe.tests.test_mf_trace_contract.TraceControls",
+    "name": "test_default_off_and_exact_enable"
+  },
+  {
+    "classname": "recipe.tests.test_mf_trace_contract.TraceControls",
+    "name": "test_native_primary_retry_fields_and_unknown_provenance"
+  },
+  {
+    "classname": "recipe.tests.test_mf_trace_contract.TraceControls",
+    "name": "test_clipping_malformed_scalars_and_early_branch_unavailability"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "schema": "private.MAIN.m12h.original_Research_main_promotion_acceptance.v1",
+  "reviewer": "MAIN",
+  "accepted": true,
+  "old_main": "c7229b461bdf06e82e12f721aad35bbd81c4dced",
+  "new_main": "daa1855aee005c0da53398ea2a102a3436b2fb6a",
+  "original_commands": 104,
+  "one_normal_FF_push": true,
+  "ROOT_or_OWN_pushes": 0,
+  "normal_tokens_verified": true,
+  "original_journal_sha256": "62947c3956cbf0fc4dbe7a3976ba69ba2ad47f43cfba35505b8562eabb5921b9",
+  "original_receipt_sha256": "2f80adf55820ab4f52a71334c277285ab84e2f273bd86e7adf101316d7b8a0e8",
+  "previous_guard_refusal_retained": true,
+  "no_native_or_inference": true
+}
