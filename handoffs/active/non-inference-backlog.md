@@ -14,7 +14,7 @@
 
 ## Start here
 
-- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 186 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): 187 scoped tasks completed; LR8 and host receipt source published; newly unlocked context/source/design work continues. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
@@ -821,3 +821,10 @@ The accepted dashboard snapshot at `2026-10-07T23:54:52Z` predates both peer com
 [Accepted source contract](../../artifacts/ni08/sc55-source-contract-20261008/README.md) closes the existing SC55-WRITE child: all43 original native controls passed, original custody was independently verified, and the five Research files are promoted to main c722. MAIN applied the original eight ROOT source/recipe files pending this wrap-up. SC55-READ stays open because review uncovered a normal-ingest reachability gap; its strict seal-path wrapper, Source registration and CLI choice are being implemented without another grading rule. No live measurement, runtime activation, historical provenance backfill or parent closure is claimed.
 
 **NI08 now186 scoped completions =118 existing checkbox closures +68 completed scoped children.** This adds one source task, not43 completions for controls. The remaining ungated source/native work continues.
+
+
+### 2026-10-08 SC55 normal-ingest source completion after full186
+
+[Original48/48 source custody](../../artifacts/ni08/sc55-source-contract-20261008/README.md) closes the existing SC55-READ child. MAIN verified the exact original archive, all38 native input digests, receipt seal and JUnit identity multiset, then applied the eight tested ROOT successor files to the ownership tree. Ordinary file ingestion now observes the closed seal through the pinned native writer/reader, registers one measurement Source and exposes the CLI choice. Missing native labels decline without invention; altered custody refuses. The shared measurement ladder and historical unprojectability remain unchanged. Source publication follows at this task boundary. Owner-controlled fresh graph capture still gates the SC55 parent.
+
+**NI08 now187 scoped completions =118 existing checkbox closures +69 completed scoped children.** Original HG5/TD29 recipes now bootstrap successfully but returned FALSE (72/87 and119/122 respectively); their source/fixture fixes are being reviewed. Failed controls and new CI events do not add completed tasks. No inference, runtime activation, peer-session boundary crossing or whole-backlog exhaustion is claimed.

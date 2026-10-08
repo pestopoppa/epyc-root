@@ -558,3 +558,10 @@ The accepted dashboard snapshot at `2026-10-07T23:54:52Z` predates both peer com
 [Accepted source contract](../../artifacts/ni08/sc55-source-contract-20261008/README.md) closes the existing SC55-WRITE child: all43 original native controls passed, original custody was independently verified, and the five Research files are promoted to main c722. MAIN applied the original eight ROOT source/recipe files pending this wrap-up. SC55-READ stays open because review uncovered a normal-ingest reachability gap; its strict seal-path wrapper, Source registration and CLI choice are being implemented without another grading rule. No live measurement, runtime activation, historical provenance backfill or parent closure is claimed.
 
 **NI08 now186 scoped completions =118 existing checkbox closures +68 completed scoped children.** This adds one source task, not43 completions for controls. The remaining ungated source/native work continues.
+
+
+### 2026-10-08 SC55 normal-ingest source completion after full186
+
+[Original48/48 source custody](../../artifacts/ni08/sc55-source-contract-20261008/README.md) closes the existing SC55-READ child. MAIN verified the exact original archive, all38 native input digests, receipt seal and JUnit identity multiset, then applied the eight tested ROOT successor files to the ownership tree. Ordinary file ingestion now observes the closed seal through the pinned native writer/reader, registers one measurement Source and exposes the CLI choice. Missing native labels decline without invention; altered custody refuses. The shared measurement ladder and historical unprojectability remain unchanged. Source publication follows at this task boundary. Owner-controlled fresh graph capture still gates the SC55 parent.
+
+**NI08 now187 scoped completions =118 existing checkbox closures +69 completed scoped children.** Original HG5/TD29 recipes now bootstrap successfully but returned FALSE (72/87 and119/122 respectively); their source/fixture fixes are being reviewed. Failed controls and new CI events do not add completed tasks. No inference, runtime activation, peer-session boundary crossing or whole-backlog exhaustion is claimed.

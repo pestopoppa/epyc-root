@@ -36,3 +36,10 @@ Existing MF-FS-1 is now source-refined and prospectively enrolled before bounded
 **NI08 now186 scoped completions =118 existing checkbox closures +68 completed scoped children.** This adds one source task, not43 completions for controls. The remaining ungated source/native work continues.
 
 HG5 f8f927e8 and TD29 35bbcc82 are independently accepted private two-file recipe corrections, each all42 original commands verified (one expected absent-common-config exit1); ordinary hooks and stable44-byte token release/unlink. Both now isolate all three external kernel-path defaults with owned empty directories. Original failures remain NULL; no control pass or closure is inferred from these commits.
+
+
+### 2026-10-08 SC55 normal-ingest source completion after full186
+
+[Original48/48 source custody](../../artifacts/ni08/sc55-source-contract-20261008/README.md) closes the existing SC55-READ child. MAIN verified the exact original archive, all38 native input digests, receipt seal and JUnit identity multiset, then applied the eight tested ROOT successor files to the ownership tree. Ordinary file ingestion now observes the closed seal through the pinned native writer/reader, registers one measurement Source and exposes the CLI choice. Missing native labels decline without invention; altered custody refuses. The shared measurement ladder and historical unprojectability remain unchanged. Source publication follows at this task boundary. Owner-controlled fresh graph capture still gates the SC55 parent.
+
+**NI08 now187 scoped completions =118 existing checkbox closures +69 completed scoped children.** Original HG5/TD29 recipes now bootstrap successfully but returned FALSE (72/87 and119/122 respectively); their source/fixture fixes are being reviewed. Failed controls and new CI events do not add completed tasks. No inference, runtime activation, peer-session boundary crossing or whole-backlog exhaustion is claimed.

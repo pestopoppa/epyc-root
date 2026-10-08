@@ -92,6 +92,9 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("graph-profiler-measurement", "graph_profile_measurement", _files("*.json"),
+           natives="native_rows_file", task="SC55-READ",
+           note="explicit SC55 closed capture envelope; no historical backfill or default corpus"),
     Source("dtap-timeout-report", "dtap_timeout_report", _files("receipt.json"),
            project="project_dtap_timeout_report", task="VB-DTAP-TIMEOUT-REPORT-WIRE",
            report_path="public_locator",

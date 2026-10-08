@@ -7,3 +7,8 @@ Research publication was one ordinary nonforcing fast-forward of main from bdb52
 The writer binds contemporaneous source/binary/compiled-knob facts, raw artifacts, graph/thread/filter/IQK/window/eval semantics and recorded native measurement labels. The reader refuses malformed/ambiguous custody. Missing labels cannot be invented later; absent protocol leaves observations unable to gate decisions. Historical graph files remain unprojectable without their original write-side provenance. Owner-controlled fresh capture is still required to complete the SC55 measurement parent.
 
 The adjacent base64 acceptance files preserve MAIN's exact source custody reviews. Private raw captures remain retained at their original locators; no input corpus or private task IDs are published here.
+
+
+## Normal ingestion accepted after the full186 checkpoint
+
+Original source event [37717566135](https://github.com/pestopoppa/epyc-root/actions/runs/37717566135), attempt1/push at ROOTda281, passed48/48 whole-module controls: the original43 plus five strict normal-ingestion cases. MAIN independently verified every original ZIP member, all38 native input snapshots, the canonical receipt seal and exact raw JUnit case multiset. The strict wrapper observes the closed seal file through the pinned writer receipt and strict reader; normal `ingest_sources` registration and CLI choice reach the existing measurement projection. Symlinks, malformed seals and subsequent custody mutation refuse; absent native labels emit no tuple. ROOT8file successor source is applied to MAIN's ownership tree pending its next ordinary publication. Shared grading remains unchanged, and no live graph measurements, decision-gating protocol or SC55 parent completion is claimed.

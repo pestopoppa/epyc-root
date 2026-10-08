@@ -170,5 +170,25 @@
   {
     "classname": "recipe.tests.test_graph_profile_measurement.NativeRoundtripTests",
     "name": "test_pinned_decoder_source_does_not_accept_a_private_replacement"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.FileIngestTests",
+    "name": "test_normal_dispatcher_dry_run_projects_closed_file"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.FileIngestTests",
+    "name": "test_file_path_symlink_and_malformed_seal_refuse"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.FileIngestTests",
+    "name": "test_missing_native_labels_decline_without_invention"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.FileIngestTests",
+    "name": "test_mutation_after_file_observation_refuses_projection"
+  },
+  {
+    "classname": "recipe.tests.test_graph_profile_measurement.FileIngestTests",
+    "name": "test_normal_cli_choice_and_dispatcher_file_contract"
   }
 ]
