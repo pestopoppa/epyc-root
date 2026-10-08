@@ -480,10 +480,17 @@ class SC54FakeChildWrapperControl(unittest.TestCase):
         fake=d/"fake-perplexity";fake.write_text(textwrap.dedent("""\
             #!/usr/bin/env python3
             import mmap,os,sys,time
+            from pathlib import Path
             args=sys.argv[1:]
             so=args[args.index('--fixture-object')+1]
             fd=os.open(so,os.O_RDONLY);mapping=mmap.mmap(fd,0,access=mmap.ACCESS_READ)
-            time.sleep(0.25)
+            ready=Path(args[args.index('--fixture-ready')+1])
+            deadline=time.monotonic()+10
+            while not ready.exists():
+                if time.monotonic()>=deadline:
+                    print('fixture observer readiness deadline exceeded',file=sys.stderr)
+                    sys.exit(7)
+                time.sleep(0.01)
             print('calculating perplexity over 1 chunks, n_ctx=64, batch_size=64, n_seq=1')
             print('[1]2.5,')
             print('Final estimate: PPL = 2.5 +/- 0.1')
@@ -496,8 +503,69 @@ class SC54FakeChildWrapperControl(unittest.TestCase):
         spec={"schema":DECL_SCHEMA,"run_id":"fake-run","pair_id":"fake-pair","arm_id":"fake-arm","mode":"ppl","author":"offhost source fixture","issued_at_utc":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),"protocol_id":"synthetic-wrapper-control","metrics":{"Final estimate: PPL":{"unit":"perplexity","metric_direction":"lower_better","category":"CANDIDATE","metric":"perplexity"}}}
         sp=d/"metric-spec.json";sp.write_bytes(canonical(spec))
         argv=[sys.executable,str(ROOT/"scripts"/"vidya"/"qwen4exp_quality_capture.py"),"--run-id","fake-run","--pair-id","fake-pair","--arm-id","fake-arm","--mode","ppl","--source-revision","synthetic-only","--model-name","fixture","--quant","Q4","--protocol-id","synthetic-wrapper-control","--metric-spec",str(sp),"--model",str(model),"--corpus",str(corpus),"--ny","32","--out-dir",str(out),"--env","GGML_IQK=1","--",str(fake),"-m",str(model),"-f",str(corpus),"-c","64","--chunks","1","--fixture-object",str(so)]
-        result=subprocess.run(argv,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)
-        self.assertEqual(result.returncode,0,result.stderr.decode(errors="replace"))
+        ready=d/"actual-monitor-ready"
+        self.assertFalse(ready.exists())
+        driver=d/"writer-test-driver.py"
+        driver.write_text(textwrap.dedent("""\
+            import importlib.util,os,sys,threading,time
+            from pathlib import Path
+            writer_path,target,ready_path=sys.argv[1:4]
+            spec=importlib.util.spec_from_file_location('_sc54_actual_writer_handshake',writer_path)
+            writer=importlib.util.module_from_spec(spec);spec.loader.exec_module(writer)
+            actual_monitor=writer.monitor_maps
+            def observed_monitor(proc,seen,stop):
+                finished=threading.Event()
+                def observe():
+                    deadline=time.monotonic()+8
+                    while not finished.is_set() and time.monotonic()<deadline:
+                        samples=list(seen.items())
+                        target_slots=[slot for key,slot in samples if key[0]==target]
+                        complete=(target_slots and all(slot['mapping_sample_count']>=2 and
+                                  slot['live_hash_sample_count']>=1 for slot in target_slots) and
+                                  all(slot['live_hash_sample_count']>=1 and
+                                      slot['live_identity_error'] is None for _,slot in samples))
+                        if complete and not stop.is_set() and proc.poll() is None:
+                            fd=os.open(ready_path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+                            os.close(fd)
+                            return
+                        finished.wait(0.005)
+                observer=threading.Thread(target=observe,daemon=False);observer.start()
+                try:
+                    actual_monitor(proc,seen,stop)
+                finally:
+                    finished.set();observer.join(timeout=1)
+                    if observer.is_alive():raise RuntimeError('fixture observer did not terminate')
+            writer.monitor_maps=observed_monitor
+            sys.argv=[writer_path]+sys.argv[4:]
+            raise SystemExit(writer.main())
+        """))
+        argv=[sys.executable,str(driver),argv[1],str(so),str(ready)]+argv[2:]+["--fixture-ready",str(ready)]
+        driver_process=subprocess.Popen(argv,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        driver_pid=driver_process.pid
+        timed_out=False
+        try:
+            stdout,stderr=driver_process.communicate(timeout=20)
+        except subprocess.TimeoutExpired:
+            # This direct driver is the only PID owned by this test. Child has its own 10s deadline.
+            timed_out=True
+            driver_process.kill()
+            stdout,stderr=driver_process.communicate(timeout=5)
+        receipt=out/"fake-run.fake-arm.quality.json"
+        captured=json.loads(receipt.read_text()) if receipt.exists() else {}
+        reasons=captured.get("refusal_reasons",[])
+        counts=[{"path":str(row.get("path",""))[:1024],
+                 "maps":row.get("mapping_observation",{}).get("sample_count"),
+                 "hashes":row.get("live_identity_observation",{}).get("sample_count")}
+                for row in captured.get("loaded_shared_objects",[])[:20]]
+        diagnostic={"driver_pid":driver_pid,"timed_out":timed_out,"driver_returncode":driver_process.returncode,
+                    "stdout":stdout.decode(errors="replace")[:2048],"stderr":stderr.decode(errors="replace")[:8192],
+                    "receipt_path":str(receipt),"capture_status":str(captured.get("capture_status"))[:1024],
+                    "producer_exit_code":captured.get("exit_code"),"ready":ready.exists(),"sample_counts":counts,
+                    "refusal_reasons":[str(reason)[:1024] for reason in reasons[:20]],
+                    "refusal_reason_count":len(reasons)}
+        self.assertFalse(timed_out,json.dumps(diagnostic,sort_keys=True))
+        self.assertEqual(driver_process.returncode,0,json.dumps(diagnostic,sort_keys=True))
+        self.assertTrue(ready.exists())
         receipt=out/"fake-run.fake-arm.quality.json";rows=read_project(receipt,ClaimTuple)
         self.assertEqual(len(rows),1);self.assertIsInstance(rows[0],ClaimTuple)
         self.assertIsInstance(grade(rows[0]),tuple)

@@ -814,9 +814,9 @@
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
       "path": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py",
       "repo": "recipe",
-      "sha256": "cc7ff5803b2046e39523cb9b3e402d90b8c743aade62dbfa60f6063655fa764f",
-      "size": 38590,
-      "source_state": "exact_live_window_race_correction_candidate"
+      "sha256": "80fa869d72e2cd8ca3a77c11e50dae9a953c0f58c87b364323a3aacb006891f1",
+      "size": 42750,
+      "source_state": "exact_actual_monitor_handshake_test_candidate"
     },
     {
       "base_commit": "419f43a4b0b6e1ae39e5a4c21c339fef746485ff",
