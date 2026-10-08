@@ -1,0 +1,85 @@
+[
+  {
+    "venv": "Research",
+    "site_packages": "/workspace/repos/epyc-inference-research/.venv/lib/python3.13/site-packages",
+    "observed_UTC": "2026-10-08T09:46:00.255746+00:00",
+    "metadata": [
+      {
+        "name": "numpy",
+        "version": "2.4.6",
+        "path": "/workspace/repos/epyc-inference-research/.venv/lib/python3.13/site-packages/numpy-2.4.6.dist-info/METADATA",
+        "sha256": "b082c52ccbe3b880bae177c35171b52ed6c947f3ad71e3762f2723f60a411de0",
+        "bytes": 6608
+      },
+      {
+        "name": "pandas",
+        "version": "3.0.3",
+        "path": "/workspace/repos/epyc-inference-research/.venv/lib/python3.13/site-packages/pandas-3.0.3.dist-info/METADATA",
+        "sha256": "52942cad9bd7e6625ad46f983a55bef6cdd99da3822ddb19393d6d6972d1c40a",
+        "bytes": 79468
+      },
+      {
+        "name": "pyarrow",
+        "version": "25.0.1",
+        "path": "/workspace/repos/epyc-inference-research/.venv/lib/python3.13/site-packages/pyarrow-25.0.1.dist-info/METADATA",
+        "sha256": "12ed8d0988a6f7153fec923ee47b7fc1d6134463a86b1b89fa36f24c250163ff",
+        "bytes": 3031
+      },
+      {
+        "name": "python-dateutil",
+        "version": "2.9.0.post0",
+        "path": "/workspace/repos/epyc-inference-research/.venv/lib/python3.13/site-packages/python_dateutil-2.9.0.post0.dist-info/METADATA",
+        "sha256": "a9d436da322be808332f98d88325998e87cb693a678a9969feb4cfad729a6e93",
+        "bytes": 8354
+      },
+      {
+        "name": "six",
+        "version": "1.17.0",
+        "path": "/workspace/repos/epyc-inference-research/.venv/lib/python3.13/site-packages/six-1.17.0.dist-info/METADATA",
+        "sha256": "562042078c2752549f6d8a7c86dbc5dd708088a7be6d80672ec7b07100b72468",
+        "bytes": 1658
+      }
+    ],
+    "pandas_metadata_present": true,
+    "pyarrow_metadata_present": true,
+    "directory_inventory_sha256": "03b52d4814e22302262cbb481999d37dfe3803d64d81d8d8d66a253b20a00469"
+  },
+  {
+    "venv": "APP",
+    "site_packages": "/workspace/repos/epyc-orchestrator/.venv/lib/python3.11/site-packages",
+    "observed_UTC": "2026-10-08T09:46:00.303509+00:00",
+    "metadata": [
+      {
+        "name": "numpy",
+        "version": "2.4.4",
+        "path": "/workspace/repos/epyc-orchestrator/.venv/lib/python3.11/site-packages/numpy-2.4.4.dist-info/METADATA",
+        "sha256": "8f9e04338ffa930868a2d157ce44f6e4cb7ac524b968fb13d04187a6ac575282",
+        "bytes": 6608
+      },
+      {
+        "name": "pandas",
+        "version": "3.0.2",
+        "path": "/workspace/repos/epyc-orchestrator/.venv/lib/python3.11/site-packages/pandas-3.0.2.dist-info/METADATA",
+        "sha256": "455c6d9fca848660525501efe855e8e8e9c9e5bc86603f575c7fc2e7bb015c89",
+        "bytes": 79468
+      },
+      {
+        "name": "python-dateutil",
+        "version": "2.9.0.post0",
+        "path": "/workspace/repos/epyc-orchestrator/.venv/lib/python3.11/site-packages/python_dateutil-2.9.0.post0.dist-info/METADATA",
+        "sha256": "a9d436da322be808332f98d88325998e87cb693a678a9969feb4cfad729a6e93",
+        "bytes": 8354
+      },
+      {
+        "name": "six",
+        "version": "1.17.0",
+        "path": "/workspace/repos/epyc-orchestrator/.venv/lib/python3.11/site-packages/six-1.17.0.dist-info/METADATA",
+        "sha256": "562042078c2752549f6d8a7c86dbc5dd708088a7be6d80672ec7b07100b72468",
+        "bytes": 1658
+      }
+    ],
+    "pandas_metadata_present": true,
+    "pyarrow_metadata_present": false,
+    "directory_inventory_sha256": "6eaf7071870fe0096e0cd0db0b4857ab45661e46790c6938b8b3b62dd11664e0"
+  }
+]

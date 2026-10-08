@@ -1,0 +1,7 @@
+# Tulving offline scoring dependency correction (M12j)
+
+Metadata-only observation on 2026-10-08 at 09:46 UTC found Research `.venv` pandas 3.0.3 and pyarrow 25.0.1; APP `.venv` pandas 3.0.2 and no pyarrow distribution METADATA. The September statement that neither environment had pandas/pyarrow is historical and no longer describes Research. METADATA presence does not prove successful imports, native linkage or parquet scoring; none was invoked here.
+
+Public Research `daa1855aee005c0da53398ea2a102a3436b2fb6a` defines minimum bounds pandas >=3.0.0 and pyarrow >=24.0.0 in pyproject.toml. Its uv.lock resolves pandas 3.0.3 / pyarrow 24.0.0 for the reviewed Linux CPython 3.13 closure. Observed Research pyarrow 25.0.1 meets the minimum but differs from that lock. APP pyarrow absence does not establish Research scorer usability. A fresh replay must bind an owned dependency/runtime closure and original data instead of relying on either ambient `.venv`.
+
+This resolves M12j through its explicit dependency-claim correction alternative. No shared environment synchronization, installation or importability claim is needed for this factual correction. M12i's owned offline replay/protocol preparation continues independently. [Original dated metadata and MAIN review](../../artifacts/ni08/evl49-m12j-source-closure-20261008/README.md) are ordinary factual observations; no measurement tuple was authored.

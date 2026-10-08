@@ -1,0 +1,21 @@
+{
+  "app_pandas": "3.0.2",
+  "app_pyarrow_metadata_present": false,
+  "correction_not_scoring_validation": true,
+  "environment_mutation_performed": false,
+  "imports_or_native_linkage_checked": false,
+  "locked_pyarrow": "24.0.0",
+  "metadata_original_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/m12j-metadata-m12f-primary-source-PREP-20261008/native-package-metadata-observation.json",
+  "metadata_sha256": "a2404fe63fb84c56c79ef5ecffd6b9e0e2980656853309a475bf9b81c8617261",
+  "original_observation_utc": [
+    "2026-10-08T09:46:00.255746+00:00",
+    "2026-10-08T09:46:00.303509+00:00"
+  ],
+  "pyproject_sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140",
+  "rechecked_distribution_metadata_files": 9,
+  "research_pandas": "3.0.3",
+  "research_public_source": "daa1855aee005c0da53398ea2a102a3436b2fb6a",
+  "research_pyarrow": "25.0.1",
+  "schema": "private.M12j.MAIN.metadata_only_correction.v1",
+  "uv_lock_sha256": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d"
+}

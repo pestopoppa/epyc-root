@@ -542,10 +542,11 @@ failure caught in amber.
         rows, so the path is a protocol and never a back-filled tuple
         (`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`) (found 2026-09-14,
         noninf sweep).
-  - [ ] **M-12j — sync the repo venv or correct the dependency claim**: neither repo's `.venv` has
-        `pandas`/`pyarrow` even though `epyc-inference-research/pyproject.toml` pins both, so
-        `score_tulving_run.py` cannot run out of the repo venv as checked out
-        (`epyc-inference-research/pyproject.toml`) (found 2026-09-14, noninf sweep).
+  - [x] **M-12j — sync the repo venv or correct the dependency claim**: ✅ 2026-10-08; corrected the historical
+        dependency claim from the dated metadata observation; Research now has pandas 3.0.3 / pyarrow
+        25.0.1 METADATA, while APP has pandas 3.0.2 and no pyarrow METADATA. Minimum bounds differ from
+        exact uv.lock resolutions. No importability, native linkage or replay claim and no environment
+        modification. [Durable correction](../../docs/reference/tulving-offline-scoring-dependency-correction-2026-10-08.md). ✅ 2026-10-08
   - [ ] **M-12k — frontdoor answer-quality arm (filed 2026-09-26).** Beside the Tulving/BEAM instruments, run
         memory-on vs memory-off on the live frontdoor path over a frozen answer-quality suite (same prompts,
         same seeds; memory-off = routing without episodic lookups), reporting accuracy, latency and cost per

@@ -1,0 +1,14 @@
+{
+  "decision_grade": false,
+  "fixture_execution_conformant": true,
+  "old_events_preserved": true,
+  "original_cases": 3,
+  "original_generated_outputs": 16,
+  "original_readset": 77,
+  "receipt_file": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl49-s04-native-dry-capture-EXEC-PENDING-20261008-r3907-v5/native/receipt.json",
+  "receipt_file_sha256": "455d788528fbb75dac8cf2c781d6655d3a7be624b6a2262d17403f66df4dca21",
+  "receipt_seal": "4f9fb0fd05b40a29b693644c00134ea922a822998b2294cfcea9eda35587a6e5",
+  "schema": "private.EVL49.MAIN.original_v5_acceptance.v1",
+  "source_integration_accepted": false,
+  "unchanged_snapshot_paths": 75
+}

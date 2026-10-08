@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 177,
+    "docs": 178,
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-08T09:18:48Z",
+  "last_compile": "2026-10-08T10:15:50Z",
   "mode": "touch",
-  "scan_time": "2026-10-08T09:18:48Z",
+  "scan_time": "2026-10-08T10:15:50Z",
   "schema_version": 1,
-  "source_set_hash": "5be51c80a729d9bee30d7d2132013196150776006a271d331bc13c44ac3040c2",
+  "source_set_hash": "427a272840dd0925217a4d10bccb347fc697f550de4099e29262aba863264f68",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -431,10 +431,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7c6cf3bde59506c6e86ef4f214404ac51e6f898f1fbecaf69aad7066d8063c42",
-      "modified": "2026-10-08T08:40:49Z",
+      "content_hash": "8bdfcd0d23bbc4d5d71da451d3fe06959e369067dcb75d9e582ad9c17f108d6f",
+      "modified": "2026-10-08T10:10:53Z",
       "path": "handoffs/active/episodic-memory-integrity.md",
-      "size": 56473,
+      "size": 56680,
       "title": "Episodic Memory Integrity \u2014 2026-07-05 corruption, root cause and repair",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7891eb7770aa3b047ae3bf524c2233b422dfbcb18e6db5cd5f2a0a3d32976d84",
-      "modified": "2026-10-08T08:58:47Z",
+      "content_hash": "0aae785fe2b2eac9def56dd41e9cd591c57be4c4f98c1a4dca083f57dbe63ce8",
+      "modified": "2026-10-08T10:06:46Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 162683,
+      "size": 164002,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "90361c6faee6ddf5b616879a42cd6bb5190d9d0f42757f22c86fe7816eabac5d",
-      "modified": "2026-10-08T08:58:47Z",
+      "content_hash": "34a67304c40b7a6e001705604f85ba2dfe56b58be3db28c35be46788adaad23b",
+      "modified": "2026-10-08T10:10:23Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 405304,
+      "size": 406491,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,10 +9415,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c6c83ce2292080a9aabbe424a0f124f7e19b7b83a45e0c8c3c5bc9f1447ba84b",
-      "modified": "2026-10-08T08:58:47Z",
+      "content_hash": "5766f9ff5d8f51580dd705d0b44455d5479432f06157d2941d13f6ede2294524",
+      "modified": "2026-10-08T10:06:46Z",
       "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
-      "size": 26878,
+      "size": 29683,
       "title": "2026-10-08 \u2014 codex-ni-main",
       "type": "progress"
     },
@@ -10535,6 +10535,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "b21678b4cee29f6fa65680ca34c2070713fb3818b321015aca02928cbf777f34",
+      "modified": "2026-10-08T10:06:46Z",
+      "path": "docs/reference/tulving-offline-scoring-dependency-correction-2026-10-08.md",
+      "size": 1408,
+      "title": "Tulving offline scoring dependency correction (M12j)",
+      "type": "docs"
+    },
+    {
       "content_hash": "13aa626cbab50de366052c4dfff220d324a4e9aa1413a4e34fc90b07288c4254",
       "modified": "2026-10-07T21:10:41Z",
       "path": "docs/reference/typed-candidate-description-preparation.md",
@@ -10847,7 +10855,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1354,
+  "total_new": 1355,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
