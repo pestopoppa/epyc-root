@@ -1,5 +1,1250 @@
 {
+  "app_pin": "974cb4017791a5d500269fd44f7d9903528e1d5d",
   "ast_definitions": [
+    {
+      "class": "TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_defaults",
+      "function": "test_config_creation_with_defaults",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_overrides",
+      "function": "test_config_creation_with_overrides",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_calculation",
+      "function": "test_hit_rate_calculation",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_zero_requests",
+      "function": "test_hit_rate_zero_requests",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_rate",
+      "function": "test_token_savings_rate",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_zero_tokens",
+      "function": "test_token_savings_zero_tokens",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_config",
+      "function": "test_initialization_with_config",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_base_url",
+      "function": "test_initialization_with_base_url",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_minimal",
+      "function": "test_build_payload_minimal",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_with_stop_sequences",
+      "function": "test_build_payload_with_stop_sequences",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_cache_prompt_override",
+      "function": "test_build_payload_cache_prompt_override",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_role",
+      "function": "test_build_payload_temperature_from_role",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_generation_defaults",
+      "function": "test_build_payload_temperature_from_generation_defaults",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_explicit_temperature_overrides_registry",
+      "function": "test_build_payload_explicit_temperature_overrides_registry",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "function": "test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "function": "test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_omits_logit_probe_probs_when_disabled",
+      "function": "test_build_payload_omits_logit_probe_probs_when_disabled",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_honors_explicit_n_probs",
+      "function": "test_build_payload_honors_explicit_n_probs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_forwards_post_sampling_probs",
+      "function": "test_build_payload_forwards_post_sampling_probs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_success",
+      "function": "test_infer_success",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "function": "test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_returns_completion_probabilities_when_present",
+      "function": "test_infer_returns_completion_probabilities_when_present",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "function": "test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_empty_long_generation_is_failure",
+      "function": "test_infer_empty_long_generation_is_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_timeout",
+      "function": "test_infer_timeout",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_error",
+      "function": "test_infer_http_error",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_status_error_returns_structured_failure",
+      "function": "test_infer_http_status_error_returns_structured_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "function": "test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_read_timeout_covers_full_budget",
+      "function": "test_infer_stream_text_read_timeout_covers_full_budget",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_empty_long_generation_is_failure",
+      "function": "test_infer_stream_text_empty_long_generation_is_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "function": "test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_token_estimate_respects_request_cap",
+      "function": "test_chat_completions_stream_token_estimate_respects_request_cap",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_success",
+      "function": "test_health_check_success",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_failure",
+      "function": "test_health_check_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_rate_limiting",
+      "function": "test_health_check_rate_limiting",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots",
+      "function": "test_get_slots",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots_legacy_field_fallback",
+      "function": "test_get_slots_legacy_field_fallback",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_success",
+      "function": "test_save_slot_success",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_failure",
+      "function": "test_save_slot_failure",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_load_raises_error_on_unhealthy_server",
+      "function": "test_load_raises_error_on_unhealthy_server",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_unload_always_succeeds",
+      "function": "test_unload_always_succeeds",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestEarlyStopTiming",
+      "definition": "TestEarlyStopTiming.test_early_stop_produces_timing",
+      "function": "test_early_stop_produces_timing",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestCompletionStreamPrefillTimings",
+      "definition": "TestCompletionStreamPrefillTimings.test_stream_carries_server_prefill_counts_including_zero_cache",
+      "function": "test_stream_carries_server_prefill_counts_including_zero_cache",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_n_probs_translates_to_openai_logprobs_params",
+      "function": "test_n_probs_translates_to_openai_logprobs_params",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_post_sampling_probs_translates_to_openai_chat_params",
+      "function": "test_post_sampling_probs_translates_to_openai_chat_params",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_no_n_probs_leaves_payload_and_result_clean",
+      "function": "test_no_n_probs_leaves_payload_and_result_clean",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_non_streaming",
+      "function": "test_json_schema_becomes_response_format_non_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_streaming",
+      "function": "test_json_schema_becomes_response_format_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "function": "test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_non_streaming",
+      "function": "test_grammar_forwarded_non_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_streaming",
+      "function": "test_grammar_forwarded_streaming",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_and_grammar_both_forwarded_independently",
+      "function": "test_json_schema_and_grammar_both_forwarded_independently",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "function": "test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_json_schema_and_grammar_unchanged",
+      "function": "test_completion_lane_json_schema_and_grammar_unchanged",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": "TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_no_schema_unchanged",
+      "function": "test_completion_lane_no_schema_unchanged",
+      "module": "tests.unit.test_llama_server",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "class": null,
+      "definition": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "function": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "function": "test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_with_caching_backend",
+      "function": "test_real_call_with_caching_backend",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_gate_denial_has_typed_non_race_provenance",
+      "function": "test_gate_denial_has_typed_non_race_provenance",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_fallback_to_model_server",
+      "function": "test_real_call_fallback_to_model_server",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "function": "test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "function": "test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_no_backend_raises_error",
+      "function": "test_real_call_no_backend_raises_error",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_primary_url_strips_full_marker",
+      "function": "test_primary_url_strips_full_marker",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_success",
+      "function": "test_call_caching_backend_success",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_registry_role_config",
+      "function": "test_call_caching_backend_uses_registry_role_config",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_forwards_sampling_params",
+      "function": "test_call_caching_backend_forwards_sampling_params",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_sampling_cache_key_only_includes_explicit_params",
+      "function": "test_sampling_cache_key_only_includes_explicit_params",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "function": "test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "function": "test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_circuit_breaker_open",
+      "function": "test_call_caching_backend_circuit_breaker_open",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_inference_failure",
+      "function": "test_call_caching_backend_inference_failure",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_with_stop_sequences",
+      "function": "test_call_caching_backend_with_stop_sequences",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "function": "test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "function": "test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "function": "test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "function": "test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "function": "test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "function": "test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_parallel_execution",
+      "function": "test_real_batch_parallel_execution",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_handles_errors",
+      "function": "test_real_batch_handles_errors",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_no_backend_raises_error",
+      "function": "test_real_batch_no_backend_raises_error",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_with_model_server",
+      "function": "test_real_batch_with_model_server",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_json_schema_and_grammar",
+      "function": "test_real_batch_forwards_json_schema_and_grammar",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_schema_when_not_provided",
+      "function": "test_real_batch_omits_schema_when_not_provided",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_sequential_path_forwards_json_schema",
+      "function": "test_real_batch_sequential_path_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_n_tokens",
+      "function": "test_real_batch_forwards_n_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_n_tokens_when_not_provided",
+      "function": "test_real_batch_omits_n_tokens_when_not_provided",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_json_schema",
+      "function": "test_fallback_batch_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_omits_schema_when_not_provided",
+      "function": "test_fallback_batch_omits_schema_when_not_provided",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_n_tokens",
+      "function": "test_fallback_batch_forwards_n_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_routes_correctly",
+      "function": "test_worker_pool_batch_routes_correctly",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_on_error",
+      "function": "test_worker_pool_batch_fallback_on_error",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_json_schema",
+      "function": "test_worker_pool_batch_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_json_schema",
+      "function": "test_worker_pool_batch_fallback_forwards_json_schema",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "function": "test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_n_tokens",
+      "function": "test_worker_pool_batch_fallback_forwards_n_tokens",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_json_schema_present",
+      "function": "test_json_schema_present",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_grammar_present",
+      "function": "test_grammar_present",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_neither_present",
+      "function": "test_neither_present",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_schema_constrained_repetitive_stream_is_not_aborted",
+      "function": "test_schema_constrained_repetitive_stream_is_not_aborted",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_unconstrained_repetitive_stream_is_still_aborted",
+      "function": "test_unconstrained_repetitive_stream_is_still_aborted",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": null,
+      "definition": "test_native_enqueue_stamp_precedes_backend_admission",
+      "function": "test_native_enqueue_stamp_precedes_backend_admission",
+      "module": "tests.unit.test_inference_mixin",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_every_call_is_logged_and_summed",
+      "function": "test_every_call_is_logged_and_summed",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_absent_telemetry_is_none_not_zero",
+      "function": "test_absent_telemetry_is_none_not_zero",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_prompt_n_needs_both_prompt_and_cache",
+      "function": "test_prompt_n_needs_both_prompt_and_cache",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "function": "test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_malformed_direct_server_timings_remain_unknown",
+      "function": "test_malformed_direct_server_timings_remain_unknown",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "function": "test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_oversized_raw_integer_does_not_break_call_recording",
+      "function": "test_oversized_raw_integer_does_not_break_call_recording",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_wrapper_is_removed_and_class_method_restored",
+      "function": "test_wrapper_is_removed_and_class_method_restored",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_preexisting_instance_attribute_is_restored",
+      "function": "test_preexisting_instance_attribute_is_restored",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_raising_call_is_logged_and_propagates",
+      "function": "test_raising_call_is_logged_and_propagates",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_per_call_safe_getter_wins",
+      "function": "test_per_call_safe_getter_wins",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_object_without_llm_call_yields_empty_log",
+      "function": "test_object_without_llm_call_yields_empty_log",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_parses_role_url_pairs",
+      "function": "test_parses_role_url_pairs",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_empty_is_empty",
+      "function": "test_empty_is_empty",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "function": "test_malformed_items_are_rejected",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [
+        {
+          "ids": [
+            "frontdoor",
+            "=http://x",
+            "frontdoor=",
+            "frontdoor=127.0.0.1:8199"
+          ],
+          "names": [
+            "item"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "frontdoor"
+            ],
+            [
+              "=http://x"
+            ],
+            [
+              "frontdoor="
+            ],
+            [
+              "frontdoor=127.0.0.1:8199"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": "TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_conflicting_duplicate_is_rejected",
+      "function": "test_conflicting_duplicate_is_rejected",
+      "module": "tests.unit.test_typed_decisions_call_recorder",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "class": null,
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "function": "test_default_mode_matches_pre_client_mode_golden",
+      "module": "tests.unit.test_openai_compat_default_golden",
+      "param_dimensions": [
+        {
+          "ids": [
+            "v1_escalation_off",
+            "v1_escalation_on_key_absent"
+          ],
+          "names": [
+            "client"
+          ],
+          "origin": "fixture",
+          "values": [
+            [
+              "v1_escalation_off"
+            ],
+            [
+              "v1_escalation_on_key_absent"
+            ]
+          ]
+        },
+        {
+          "ids": [
+            "direct_nonstream_plain",
+            "direct_nonstream_tools",
+            "direct_stream_tools",
+            "direct_stream_tools_include_usage",
+            "repl_nonstream_tools",
+            "repl_stream_tools",
+            "repl_stream_tools_include_usage"
+          ],
+          "names": [
+            "name"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "direct_nonstream_plain"
+            ],
+            [
+              "direct_nonstream_tools"
+            ],
+            [
+              "direct_stream_tools"
+            ],
+            [
+              "direct_stream_tools_include_usage"
+            ],
+            [
+              "repl_nonstream_tools"
+            ],
+            [
+              "repl_stream_tools"
+            ],
+            [
+              "repl_stream_tools_include_usage"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "class": "TestExecuteMock",
+      "definition": "TestExecuteMock.test_returns_mock_response",
+      "function": "test_returns_mock_response",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestExecuteMock",
+      "definition": "TestExecuteMock.test_includes_context_info",
+      "function": "test_includes_context_info",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestExecuteMock",
+      "definition": "TestExecuteMock.test_logs_progress",
+      "function": "test_logs_progress",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_parses_valid_steps",
+      "function": "test_parses_valid_steps",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_adds_defaults",
+      "function": "test_adds_defaults",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_strips_markdown_fences",
+      "function": "test_strips_markdown_fences",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_handles_trailing_commas",
+      "function": "test_handles_trailing_commas",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_returns_empty_on_invalid_json",
+      "function": "test_returns_empty_on_invalid_json",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_returns_empty_on_non_list",
+      "function": "test_returns_empty_on_non_list",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_skips_invalid_steps",
+      "function": "test_skips_invalid_steps",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_rejects_steps_without_id",
+      "function": "test_rejects_steps_without_id",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestParsePlanSteps",
+      "definition": "TestParsePlanSteps.test_rejects_steps_without_action",
+      "function": "test_rejects_steps_without_action",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_timeout_gets_504",
+      "function": "test_timeout_gets_504",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_backend_failure_gets_502",
+      "function": "test_backend_failure_gets_502",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_generic_error_gets_500",
+      "function": "test_generic_error_gets_500",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_failed_prefix_gets_500",
+      "function": "test_failed_prefix_gets_500",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_clean_answer_no_annotation",
+      "function": "test_clean_answer_no_annotation",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_empty_answer_no_annotation",
+      "function": "test_empty_answer_no_annotation",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestAnnotateError",
+      "definition": "TestAnnotateError.test_none_answer_no_crash",
+      "function": "test_none_answer_no_crash",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_when_monitor_disabled",
+      "function": "test_passthrough_when_monitor_disabled",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_when_no_issue",
+      "function": "test_passthrough_when_no_issue",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_escalates_on_quality_issue",
+      "function": "test_escalates_on_quality_issue",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_returns_original_on_escalation_failure",
+      "function": "test_returns_original_on_escalation_failure",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_on_error_prefix",
+      "function": "test_passthrough_on_error_prefix",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
+    {
+      "class": "TestQualityEscalate",
+      "definition": "TestQualityEscalate.test_passthrough_on_empty",
+      "function": "test_passthrough_on_empty",
+      "module": "tests.unit.test_stages",
+      "param_dimensions": [],
+      "source_path": "tests/unit/test_stages.py"
+    },
     {
       "class": null,
       "definition": "test_flag_is_default_off_in_test_and_prod",
@@ -417,274 +1662,1446 @@
       "source_path": "tests/unit/test_v1_escalation_off_golden.py"
     },
     {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_default_off",
+      "function": "test_default_off",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_missing_counters_are_null",
+      "function": "test_missing_counters_are_null",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_invalid_types_nonfinite_negative_are_null",
+      "function": "test_invalid_types_nonfinite_negative_are_null",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_getter_failure_is_unknown",
+      "function": "test_getter_failure_is_unknown",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_known_zero_is_measured_zero",
+      "function": "test_known_zero_is_measured_zero",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_counter_reset_is_unknown",
+      "function": "test_counter_reset_is_unknown",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_actual_delta",
+      "function": "test_actual_delta",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_seal_and_private_immutable_custody",
+      "function": "test_seal_and_private_immutable_custody",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_unknown_source_and_runtime_not_fabricated",
+      "function": "test_unknown_source_and_runtime_not_fabricated",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_exact_source_authored_context",
+      "function": "test_exact_source_authored_context",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_wrong_producer_source_context_refuses",
+      "function": "test_wrong_producer_source_context_refuses",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_extra_source_context_refuses",
+      "function": "test_extra_source_context_refuses",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_non_private_directory_refuses",
+      "function": "test_non_private_directory_refuses",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_disabled_request_carries_eligibility_and_reason",
+      "function": "test_disabled_request_carries_eligibility_and_reason",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_failure_and_frontdoor_fallback_preserved",
+      "function": "test_failure_and_frontdoor_fallback_preserved",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_exception_failure_is_sealed_without_plan_error_text",
+      "function": "test_exception_failure_is_sealed_without_plan_error_text",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_forced_step_uses_actual_integer_and_timing_deltas",
+      "function": "test_forced_step_uses_actual_integer_and_timing_deltas",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_quality_failed_call_retains_actual_cost",
+      "function": "test_quality_failed_call_retains_actual_cost",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_no_call_is_distinct_from_unknown",
+      "function": "test_no_call_is_distinct_from_unknown",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_unknown_call_counter_does_not_fabricate_no_call",
+      "function": "test_unknown_call_counter_does_not_fabricate_no_call",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_zero_calls_do_not_erase_known_exception_outcome",
+      "function": "test_zero_calls_do_not_erase_known_exception_outcome",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "WriterControls",
+      "definition": "WriterControls.test_canonical_refuses_nonfinite",
+      "function": "test_canonical_refuses_nonfinite",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_quality_exception_seals_once_and_clears_capture",
+      "function": "test_actual_quality_exception_seals_once_and_clears_capture",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_force_failure_keeps_bounded_frontdoor_fallback",
+      "function": "test_actual_force_failure_keeps_bounded_frontdoor_fallback",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_disabled_wrapper_reaches_record_finalizer",
+      "function": "test_actual_disabled_wrapper_reaches_record_finalizer",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_stage_none_wrapper_reaches_record_finalizer",
+      "function": "test_actual_stage_none_wrapper_reaches_record_finalizer",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_emitter_exception_preserves_answer_and_legacy_receipt",
+      "function": "test_actual_emitter_exception_preserves_answer_and_legacy_receipt",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": "ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_success_then_metadata_render_does_not_attempt_again",
+      "function": "test_actual_success_then_metadata_render_does_not_attempt_again",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
       "class": null,
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "function": "test_default_mode_matches_pre_client_mode_golden",
-      "module": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_actual_API_success_and_stream_seal_one_event",
+      "function": "test_actual_API_success_and_stream_seal_one_event",
+      "module": "tests.native.test_hg5_request_event_native",
       "param_dimensions": [
         {
           "ids": [
-            "v1_escalation_off",
-            "v1_escalation_on_key_absent"
+            "False",
+            "True"
           ],
           "names": [
-            "client"
-          ],
-          "origin": "fixture",
-          "values": [
-            [
-              "v1_escalation_off"
-            ],
-            [
-              "v1_escalation_on_key_absent"
-            ]
-          ]
-        },
-        {
-          "ids": [
-            "direct_nonstream_plain",
-            "direct_nonstream_tools",
-            "direct_stream_tools",
-            "direct_stream_tools_include_usage",
-            "repl_nonstream_tools",
-            "repl_stream_tools",
-            "repl_stream_tools_include_usage"
-          ],
-          "names": [
-            "name"
+            "stream"
           ],
           "origin": "parametrize",
           "values": [
             [
-              "direct_nonstream_plain"
+              false
             ],
             [
-              "direct_nonstream_tools"
-            ],
-            [
-              "direct_stream_tools"
-            ],
-            [
-              "direct_stream_tools_include_usage"
-            ],
-            [
-              "repl_nonstream_tools"
-            ],
-            [
-              "repl_stream_tools"
-            ],
-            [
-              "repl_stream_tools_include_usage"
+              true
             ]
           ]
         }
       ],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "class": null,
+      "definition": "test_actual_API_upstream_failure_is_outside_completed_post_answer_scope",
+      "function": "test_actual_API_upstream_failure_is_outside_completed_post_answer_scope",
+      "module": "tests.native.test_hg5_request_event_native",
+      "param_dimensions": [],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    }
+  ],
+  "ast_derived_expected_junit_case_count": 240,
+  "ast_test_definition_count": 205,
+  "case_count_note": "Actual private APP974cb whole8modules205definitions yield240 prospective source-control identities: accepted TD122+HG87 preserved plus31 unrun TAP cases. Original native JUnit alone proves actual cases/statuses.",
+  "case_identities": [
+    {
+      "classname": "tests.unit.test_llama_server.TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_defaults",
+      "name": "test_config_creation_with_defaults",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestServerConfig",
+      "definition": "TestServerConfig.test_config_creation_with_overrides",
+      "name": "test_config_creation_with_overrides",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_calculation",
+      "name": "test_hit_rate_calculation",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_hit_rate_zero_requests",
+      "name": "test_hit_rate_zero_requests",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_rate",
+      "name": "test_token_savings_rate",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestCacheStats",
+      "definition": "TestCacheStats.test_token_savings_zero_tokens",
+      "name": "test_token_savings_zero_tokens",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_config",
+      "name": "test_initialization_with_config",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_initialization_with_base_url",
+      "name": "test_initialization_with_base_url",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_minimal",
+      "name": "test_build_payload_minimal",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_with_stop_sequences",
+      "name": "test_build_payload_with_stop_sequences",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_cache_prompt_override",
+      "name": "test_build_payload_cache_prompt_override",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_role",
+      "name": "test_build_payload_temperature_from_role",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_temperature_from_generation_defaults",
+      "name": "test_build_payload_temperature_from_generation_defaults",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_explicit_temperature_overrides_registry",
+      "name": "test_build_payload_explicit_temperature_overrides_registry",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "name": "test_build_payload_pins_sampling_seed_and_allows_request_override",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "name": "test_build_payload_adds_logit_probe_probs_for_frontdoor_only",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_omits_logit_probe_probs_when_disabled",
+      "name": "test_build_payload_omits_logit_probe_probs_when_disabled",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_honors_explicit_n_probs",
+      "name": "test_build_payload_honors_explicit_n_probs",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_build_payload_forwards_post_sampling_probs",
+      "name": "test_build_payload_forwards_post_sampling_probs",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_success",
+      "name": "test_infer_success",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "name": "test_infer_missing_or_malformed_raw_prefill_timings_stay_unknown",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_returns_completion_probabilities_when_present",
+      "name": "test_infer_returns_completion_probabilities_when_present",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "name": "test_infer_writes_logit_probe_for_frontdoor_completion_probs",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_empty_long_generation_is_failure",
+      "name": "test_infer_empty_long_generation_is_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_timeout",
+      "name": "test_infer_timeout",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_error",
+      "name": "test_infer_http_error",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_http_status_error_returns_structured_failure",
+      "name": "test_infer_http_status_error_returns_structured_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "name": "test_infer_stream_text_partial_timeout_sets_partial_flags",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_read_timeout_covers_full_budget",
+      "name": "test_infer_stream_text_read_timeout_covers_full_budget",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_infer_stream_text_empty_long_generation_is_failure",
+      "name": "test_infer_stream_text_empty_long_generation_is_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "name": "test_chat_completions_stream_forwards_registry_chat_template_kwargs",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_chat_completions_stream_token_estimate_respects_request_cap",
+      "name": "test_chat_completions_stream_token_estimate_respects_request_cap",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_success",
+      "name": "test_health_check_success",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_failure",
+      "name": "test_health_check_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_health_check_rate_limiting",
+      "name": "test_health_check_rate_limiting",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots",
+      "name": "test_get_slots",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_get_slots_legacy_field_fallback",
+      "name": "test_get_slots_legacy_field_fallback",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_success",
+      "name": "test_save_slot_success",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_save_slot_failure",
+      "name": "test_save_slot_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_load_raises_error_on_unhealthy_server",
+      "name": "test_load_raises_error_on_unhealthy_server",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestLlamaServerBackend",
+      "definition": "TestLlamaServerBackend.test_unload_always_succeeds",
+      "name": "test_unload_always_succeeds",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestEarlyStopTiming",
+      "definition": "TestEarlyStopTiming.test_early_stop_produces_timing",
+      "name": "test_early_stop_produces_timing",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestCompletionStreamPrefillTimings",
+      "definition": "TestCompletionStreamPrefillTimings.test_stream_carries_server_prefill_counts_including_zero_cache",
+      "name": "test_stream_carries_server_prefill_counts_including_zero_cache",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_n_probs_translates_to_openai_logprobs_params",
+      "name": "test_n_probs_translates_to_openai_logprobs_params",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_post_sampling_probs_translates_to_openai_chat_params",
+      "name": "test_post_sampling_probs_translates_to_openai_chat_params",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsLogprobs",
+      "definition": "TestChatCompletionsLogprobs.test_no_n_probs_leaves_payload_and_result_clean",
+      "name": "test_no_n_probs_leaves_payload_and_result_clean",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_non_streaming",
+      "name": "test_json_schema_becomes_response_format_non_streaming",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_becomes_response_format_streaming",
+      "name": "test_json_schema_becomes_response_format_streaming",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "name": "test_streaming_chat_payload_emits_text_and_assembles_whole_tool_calls",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_non_streaming",
+      "name": "test_grammar_forwarded_non_streaming",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_grammar_forwarded_streaming",
+      "name": "test_grammar_forwarded_streaming",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_json_schema_and_grammar_both_forwarded_independently",
+      "name": "test_json_schema_and_grammar_both_forwarded_independently",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "name": "test_no_schema_leaves_v1_payload_byte_identical_to_before",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_json_schema_and_grammar_unchanged",
+      "name": "test_completion_lane_json_schema_and_grammar_unchanged",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_llama_server.TestChatCompletionsSchemaForwarding",
+      "definition": "TestChatCompletionsSchemaForwarding.test_completion_lane_no_schema_unchanged",
+      "name": "test_completion_lane_no_schema_unchanged",
+      "parameters": {},
+      "source_path": "tests/unit/test_llama_server.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin",
+      "definition": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "name": "test_certified_native_batch_width_resolves_worker_registry_alias",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "name": "test_fallback_runtime_error_after_streamed_chunk_does_not_try_next_role",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_with_caching_backend",
+      "name": "test_real_call_with_caching_backend",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_gate_denial_has_typed_non_race_provenance",
+      "name": "test_gate_denial_has_typed_non_race_provenance",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_fallback_to_model_server",
+      "name": "test_real_call_fallback_to_model_server",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "name": "test_real_call_records_inference_meta_for_non_frontdoor_model_server",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "name": "test_raw_prefill_timings_reach_call_recorder_through_primitives",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestInferenceMixinRealCall",
+      "definition": "TestInferenceMixinRealCall.test_real_call_no_backend_raises_error",
+      "name": "test_real_call_no_backend_raises_error",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_primary_url_strips_full_marker",
+      "name": "test_primary_url_strips_full_marker",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_success",
+      "name": "test_call_caching_backend_success",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_registry_role_config",
+      "name": "test_call_caching_backend_uses_registry_role_config",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_forwards_sampling_params",
+      "name": "test_call_caching_backend_forwards_sampling_params",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_sampling_cache_key_only_includes_explicit_params",
+      "name": "test_sampling_cache_key_only_includes_explicit_params",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "name": "test_call_caching_backend_uses_concrete_url_for_full_speed_role",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "name": "test_call_caching_backend_records_inference_meta_for_non_frontdoor",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_circuit_breaker_open",
+      "name": "test_call_caching_backend_circuit_breaker_open",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_inference_failure",
+      "name": "test_call_caching_backend_inference_failure",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_with_stop_sequences",
+      "name": "test_call_caching_backend_with_stop_sequences",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "name": "test_call_caching_backend_locks_direct_single_instance_under_per_region",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "name": "test_call_caching_backend_does_not_double_lock_concurrency_aware_backend",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "name": "test_direct_full_eval_backend_joins_certified_native_batch_lease",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "name": "test_eval_batch_frontdoor_alias_locks_physical_half_lane",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "name": "test_shape_aware_concurrency_backend_defers_contention_gate_to_dispatch",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestCallCachingBackend",
+      "definition": "TestCallCachingBackend.test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "name": "test_real_call_with_n_probs_uses_batch_path_and_preserves_rows",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_parallel_execution",
+      "name": "test_real_batch_parallel_execution",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_handles_errors",
+      "name": "test_real_batch_handles_errors",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_no_backend_raises_error",
+      "name": "test_real_batch_no_backend_raises_error",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_with_model_server",
+      "name": "test_real_batch_with_model_server",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_json_schema_and_grammar",
+      "name": "test_real_batch_forwards_json_schema_and_grammar",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_schema_when_not_provided",
+      "name": "test_real_batch_omits_schema_when_not_provided",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_sequential_path_forwards_json_schema",
+      "name": "test_real_batch_sequential_path_forwards_json_schema",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_forwards_n_tokens",
+      "name": "test_real_batch_forwards_n_tokens",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRealBatch",
+      "definition": "TestRealBatch.test_real_batch_omits_n_tokens_when_not_provided",
+      "name": "test_real_batch_omits_n_tokens_when_not_provided",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_json_schema",
+      "name": "test_fallback_batch_forwards_json_schema",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_omits_schema_when_not_provided",
+      "name": "test_fallback_batch_omits_schema_when_not_provided",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestFallbackBatch",
+      "definition": "TestFallbackBatch.test_fallback_batch_forwards_n_tokens",
+      "name": "test_fallback_batch_forwards_n_tokens",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_routes_correctly",
+      "name": "test_worker_pool_batch_routes_correctly",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_on_error",
+      "name": "test_worker_pool_batch_fallback_on_error",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_json_schema",
+      "name": "test_worker_pool_batch_forwards_json_schema",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_json_schema",
+      "name": "test_worker_pool_batch_fallback_forwards_json_schema",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "name": "test_worker_pool_batch_forwards_n_tokens_as_max_tokens",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestWorkerPoolBatch",
+      "definition": "TestWorkerPoolBatch.test_worker_pool_batch_fallback_forwards_n_tokens",
+      "name": "test_worker_pool_batch_fallback_forwards_n_tokens",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_json_schema_present",
+      "name": "test_json_schema_present",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_grammar_present",
+      "name": "test_grammar_present",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestRequestIsGrammarConstrained",
+      "definition": "TestRequestIsGrammarConstrained.test_neither_present",
+      "name": "test_neither_present",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_schema_constrained_repetitive_stream_is_not_aborted",
+      "name": "test_schema_constrained_repetitive_stream_is_not_aborted",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin.TestStreamingRepetitionGuardSchemaExemption",
+      "definition": "TestStreamingRepetitionGuardSchemaExemption.test_unconstrained_repetitive_stream_is_still_aborted",
+      "name": "test_unconstrained_repetitive_stream_is_still_aborted",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_inference_mixin",
+      "definition": "test_native_enqueue_stamp_precedes_backend_admission",
+      "name": "test_native_enqueue_stamp_precedes_backend_admission",
+      "parameters": {},
+      "source_path": "tests/unit/test_inference_mixin.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_every_call_is_logged_and_summed",
+      "name": "test_every_call_is_logged_and_summed",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_absent_telemetry_is_none_not_zero",
+      "name": "test_absent_telemetry_is_none_not_zero",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_prompt_n_needs_both_prompt_and_cache",
+      "name": "test_prompt_n_needs_both_prompt_and_cache",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "name": "test_server_prefill_timings_are_used_verbatim_and_zero_is_known",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_malformed_direct_server_timings_remain_unknown",
+      "name": "test_malformed_direct_server_timings_remain_unknown",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "name": "test_partial_raw_counts_do_not_fall_back_to_legacy_fields",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_oversized_raw_integer_does_not_break_call_recording",
+      "name": "test_oversized_raw_integer_does_not_break_call_recording",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_wrapper_is_removed_and_class_method_restored",
+      "name": "test_wrapper_is_removed_and_class_method_restored",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_preexisting_instance_attribute_is_restored",
+      "name": "test_preexisting_instance_attribute_is_restored",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_raising_call_is_logged_and_propagates",
+      "name": "test_raising_call_is_logged_and_propagates",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_per_call_safe_getter_wins",
+      "name": "test_per_call_safe_getter_wins",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestRecordLlmCalls",
+      "definition": "TestRecordLlmCalls.test_object_without_llm_call_yields_empty_log",
+      "name": "test_object_without_llm_call_yields_empty_log",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_parses_role_url_pairs",
+      "name": "test_parses_role_url_pairs",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_empty_is_empty",
+      "name": "test_empty_is_empty",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "name": "test_malformed_items_are_rejected[frontdoor]",
+      "parameters": {
+        "item": "frontdoor"
+      },
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "name": "test_malformed_items_are_rejected[=http://x]",
+      "parameters": {
+        "item": "=http://x"
+      },
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "name": "test_malformed_items_are_rejected[frontdoor=]",
+      "parameters": {
+        "item": "frontdoor="
+      },
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "name": "test_malformed_items_are_rejected[frontdoor=127.0.0.1:8199]",
+      "parameters": {
+        "item": "frontdoor=127.0.0.1:8199"
+      },
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_typed_decisions_call_recorder.TestServerUrlOverrides",
+      "definition": "TestServerUrlOverrides.test_conflicting_duplicate_is_rejected",
+      "name": "test_conflicting_duplicate_is_rejected",
+      "parameters": {},
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_nonstream_plain]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_nonstream_plain"
+      },
       "source_path": "tests/unit/test_openai_compat_default_golden.py"
     },
     {
-      "class": "TestExecuteMock",
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "direct_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "repl_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "repl_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_off",
+        "name": "repl_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_nonstream_plain]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_nonstream_plain"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "direct_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_nonstream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "repl_nonstream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_stream_tools]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "repl_stream_tools"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_openai_compat_default_golden",
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_stream_tools_include_usage]",
+      "parameters": {
+        "client": "v1_escalation_on_key_absent",
+        "name": "repl_stream_tools_include_usage"
+      },
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "classname": "tests.unit.test_stages.TestExecuteMock",
       "definition": "TestExecuteMock.test_returns_mock_response",
-      "function": "test_returns_mock_response",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_returns_mock_response",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestExecuteMock",
+      "classname": "tests.unit.test_stages.TestExecuteMock",
       "definition": "TestExecuteMock.test_includes_context_info",
-      "function": "test_includes_context_info",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_includes_context_info",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestExecuteMock",
+      "classname": "tests.unit.test_stages.TestExecuteMock",
       "definition": "TestExecuteMock.test_logs_progress",
-      "function": "test_logs_progress",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_logs_progress",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_parses_valid_steps",
-      "function": "test_parses_valid_steps",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_parses_valid_steps",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_adds_defaults",
-      "function": "test_adds_defaults",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_adds_defaults",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_strips_markdown_fences",
-      "function": "test_strips_markdown_fences",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_strips_markdown_fences",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_handles_trailing_commas",
-      "function": "test_handles_trailing_commas",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_handles_trailing_commas",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_returns_empty_on_invalid_json",
-      "function": "test_returns_empty_on_invalid_json",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_returns_empty_on_invalid_json",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_returns_empty_on_non_list",
-      "function": "test_returns_empty_on_non_list",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_returns_empty_on_non_list",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_skips_invalid_steps",
-      "function": "test_skips_invalid_steps",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_skips_invalid_steps",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_rejects_steps_without_id",
-      "function": "test_rejects_steps_without_id",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_rejects_steps_without_id",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestParsePlanSteps",
+      "classname": "tests.unit.test_stages.TestParsePlanSteps",
       "definition": "TestParsePlanSteps.test_rejects_steps_without_action",
-      "function": "test_rejects_steps_without_action",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_rejects_steps_without_action",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_timeout_gets_504",
-      "function": "test_timeout_gets_504",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_timeout_gets_504",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_backend_failure_gets_502",
-      "function": "test_backend_failure_gets_502",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_backend_failure_gets_502",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_generic_error_gets_500",
-      "function": "test_generic_error_gets_500",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_generic_error_gets_500",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_failed_prefix_gets_500",
-      "function": "test_failed_prefix_gets_500",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_failed_prefix_gets_500",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_clean_answer_no_annotation",
-      "function": "test_clean_answer_no_annotation",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_clean_answer_no_annotation",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_empty_answer_no_annotation",
-      "function": "test_empty_answer_no_annotation",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_empty_answer_no_annotation",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestAnnotateError",
+      "classname": "tests.unit.test_stages.TestAnnotateError",
       "definition": "TestAnnotateError.test_none_answer_no_crash",
-      "function": "test_none_answer_no_crash",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_none_answer_no_crash",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestQualityEscalate",
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
       "definition": "TestQualityEscalate.test_passthrough_when_monitor_disabled",
-      "function": "test_passthrough_when_monitor_disabled",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_passthrough_when_monitor_disabled",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestQualityEscalate",
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
       "definition": "TestQualityEscalate.test_passthrough_when_no_issue",
-      "function": "test_passthrough_when_no_issue",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_passthrough_when_no_issue",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestQualityEscalate",
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
       "definition": "TestQualityEscalate.test_escalates_on_quality_issue",
-      "function": "test_escalates_on_quality_issue",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_escalates_on_quality_issue",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestQualityEscalate",
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
       "definition": "TestQualityEscalate.test_returns_original_on_escalation_failure",
-      "function": "test_returns_original_on_escalation_failure",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_returns_original_on_escalation_failure",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestQualityEscalate",
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
       "definition": "TestQualityEscalate.test_passthrough_on_error_prefix",
-      "function": "test_passthrough_on_error_prefix",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_passthrough_on_error_prefix",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
     },
     {
-      "class": "TestQualityEscalate",
+      "classname": "tests.unit.test_stages.TestQualityEscalate",
       "definition": "TestQualityEscalate.test_passthrough_on_empty",
-      "function": "test_passthrough_on_empty",
-      "module": "tests.unit.test_stages",
-      "param_dimensions": [],
+      "name": "test_passthrough_on_empty",
+      "parameters": {},
       "source_path": "tests/unit/test_stages.py"
-    }
-  ],
-  "ast_derived_expected_junit_case_count": 87,
-  "ast_test_definition_count": 56,
-  "case_identities": [
+    },
     {
       "classname": "tests.unit.test_v1_escalation",
       "definition": "test_flag_is_default_off_in_test_and_prod",
@@ -1101,326 +3518,574 @@
       "source_path": "tests/unit/test_v1_escalation_off_golden.py"
     },
     {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_nonstream_plain]",
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_default_off",
+      "name": "test_default_off",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_missing_counters_are_null",
+      "name": "test_missing_counters_are_null",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_invalid_types_nonfinite_negative_are_null",
+      "name": "test_invalid_types_nonfinite_negative_are_null",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_getter_failure_is_unknown",
+      "name": "test_getter_failure_is_unknown",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_known_zero_is_measured_zero",
+      "name": "test_known_zero_is_measured_zero",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_counter_reset_is_unknown",
+      "name": "test_counter_reset_is_unknown",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_actual_delta",
+      "name": "test_actual_delta",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_seal_and_private_immutable_custody",
+      "name": "test_seal_and_private_immutable_custody",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_unknown_source_and_runtime_not_fabricated",
+      "name": "test_unknown_source_and_runtime_not_fabricated",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_exact_source_authored_context",
+      "name": "test_exact_source_authored_context",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_wrong_producer_source_context_refuses",
+      "name": "test_wrong_producer_source_context_refuses",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_extra_source_context_refuses",
+      "name": "test_extra_source_context_refuses",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_non_private_directory_refuses",
+      "name": "test_non_private_directory_refuses",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_disabled_request_carries_eligibility_and_reason",
+      "name": "test_disabled_request_carries_eligibility_and_reason",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_failure_and_frontdoor_fallback_preserved",
+      "name": "test_failure_and_frontdoor_fallback_preserved",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_exception_failure_is_sealed_without_plan_error_text",
+      "name": "test_exception_failure_is_sealed_without_plan_error_text",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_forced_step_uses_actual_integer_and_timing_deltas",
+      "name": "test_forced_step_uses_actual_integer_and_timing_deltas",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_quality_failed_call_retains_actual_cost",
+      "name": "test_quality_failed_call_retains_actual_cost",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_no_call_is_distinct_from_unknown",
+      "name": "test_no_call_is_distinct_from_unknown",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_unknown_call_counter_does_not_fabricate_no_call",
+      "name": "test_unknown_call_counter_does_not_fabricate_no_call",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_zero_calls_do_not_erase_known_exception_outcome",
+      "name": "test_zero_calls_do_not_erase_known_exception_outcome",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.WriterControls",
+      "definition": "WriterControls.test_canonical_refuses_nonfinite",
+      "name": "test_canonical_refuses_nonfinite",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_quality_exception_seals_once_and_clears_capture",
+      "name": "test_actual_quality_exception_seals_once_and_clears_capture",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_force_failure_keeps_bounded_frontdoor_fallback",
+      "name": "test_actual_force_failure_keeps_bounded_frontdoor_fallback",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_disabled_wrapper_reaches_record_finalizer",
+      "name": "test_actual_disabled_wrapper_reaches_record_finalizer",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_stage_none_wrapper_reaches_record_finalizer",
+      "name": "test_actual_stage_none_wrapper_reaches_record_finalizer",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_emitter_exception_preserves_answer_and_legacy_receipt",
+      "name": "test_actual_emitter_exception_preserves_answer_and_legacy_receipt",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native.ActualSourceIntegrationControls",
+      "definition": "ActualSourceIntegrationControls.test_actual_success_then_metadata_render_does_not_attempt_again",
+      "name": "test_actual_success_then_metadata_render_does_not_attempt_again",
+      "parameters": {},
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    },
+    {
+      "classname": "tests.native.test_hg5_request_event_native",
+      "definition": "test_actual_API_success_and_stream_seal_one_event",
+      "name": "test_actual_API_success_and_stream_seal_one_event[False]",
       "parameters": {
-        "client": "v1_escalation_off",
-        "name": "direct_nonstream_plain"
+        "stream": false
       },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+      "source_path": "tests/native/test_hg5_request_event_native.py"
     },
     {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_nonstream_tools]",
+      "classname": "tests.native.test_hg5_request_event_native",
+      "definition": "test_actual_API_success_and_stream_seal_one_event",
+      "name": "test_actual_API_success_and_stream_seal_one_event[True]",
       "parameters": {
-        "client": "v1_escalation_off",
-        "name": "direct_nonstream_tools"
+        "stream": true
       },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+      "source_path": "tests/native/test_hg5_request_event_native.py"
     },
     {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_stream_tools]",
-      "parameters": {
-        "client": "v1_escalation_off",
-        "name": "direct_stream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-direct_stream_tools_include_usage]",
-      "parameters": {
-        "client": "v1_escalation_off",
-        "name": "direct_stream_tools_include_usage"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_nonstream_tools]",
-      "parameters": {
-        "client": "v1_escalation_off",
-        "name": "repl_nonstream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_stream_tools]",
-      "parameters": {
-        "client": "v1_escalation_off",
-        "name": "repl_stream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_off-repl_stream_tools_include_usage]",
-      "parameters": {
-        "client": "v1_escalation_off",
-        "name": "repl_stream_tools_include_usage"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_nonstream_plain]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "direct_nonstream_plain"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_nonstream_tools]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "direct_nonstream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_stream_tools]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "direct_stream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-direct_stream_tools_include_usage]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "direct_stream_tools_include_usage"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_nonstream_tools]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "repl_nonstream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_stream_tools]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "repl_stream_tools"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_openai_compat_default_golden",
-      "definition": "test_default_mode_matches_pre_client_mode_golden",
-      "name": "test_default_mode_matches_pre_client_mode_golden[v1_escalation_on_key_absent-repl_stream_tools_include_usage]",
-      "parameters": {
-        "client": "v1_escalation_on_key_absent",
-        "name": "repl_stream_tools_include_usage"
-      },
-      "source_path": "tests/unit/test_openai_compat_default_golden.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestExecuteMock",
-      "definition": "TestExecuteMock.test_returns_mock_response",
-      "name": "test_returns_mock_response",
+      "classname": "tests.native.test_hg5_request_event_native",
+      "definition": "test_actual_API_upstream_failure_is_outside_completed_post_answer_scope",
+      "name": "test_actual_API_upstream_failure_is_outside_completed_post_answer_scope",
       "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestExecuteMock",
-      "definition": "TestExecuteMock.test_includes_context_info",
-      "name": "test_includes_context_info",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestExecuteMock",
-      "definition": "TestExecuteMock.test_logs_progress",
-      "name": "test_logs_progress",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_parses_valid_steps",
-      "name": "test_parses_valid_steps",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_adds_defaults",
-      "name": "test_adds_defaults",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_strips_markdown_fences",
-      "name": "test_strips_markdown_fences",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_handles_trailing_commas",
-      "name": "test_handles_trailing_commas",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_returns_empty_on_invalid_json",
-      "name": "test_returns_empty_on_invalid_json",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_returns_empty_on_non_list",
-      "name": "test_returns_empty_on_non_list",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_skips_invalid_steps",
-      "name": "test_skips_invalid_steps",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_rejects_steps_without_id",
-      "name": "test_rejects_steps_without_id",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestParsePlanSteps",
-      "definition": "TestParsePlanSteps.test_rejects_steps_without_action",
-      "name": "test_rejects_steps_without_action",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_timeout_gets_504",
-      "name": "test_timeout_gets_504",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_backend_failure_gets_502",
-      "name": "test_backend_failure_gets_502",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_generic_error_gets_500",
-      "name": "test_generic_error_gets_500",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_failed_prefix_gets_500",
-      "name": "test_failed_prefix_gets_500",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_clean_answer_no_annotation",
-      "name": "test_clean_answer_no_annotation",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_empty_answer_no_annotation",
-      "name": "test_empty_answer_no_annotation",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestAnnotateError",
-      "definition": "TestAnnotateError.test_none_answer_no_crash",
-      "name": "test_none_answer_no_crash",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestQualityEscalate",
-      "definition": "TestQualityEscalate.test_passthrough_when_monitor_disabled",
-      "name": "test_passthrough_when_monitor_disabled",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestQualityEscalate",
-      "definition": "TestQualityEscalate.test_passthrough_when_no_issue",
-      "name": "test_passthrough_when_no_issue",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestQualityEscalate",
-      "definition": "TestQualityEscalate.test_escalates_on_quality_issue",
-      "name": "test_escalates_on_quality_issue",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestQualityEscalate",
-      "definition": "TestQualityEscalate.test_returns_original_on_escalation_failure",
-      "name": "test_returns_original_on_escalation_failure",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestQualityEscalate",
-      "definition": "TestQualityEscalate.test_passthrough_on_error_prefix",
-      "name": "test_passthrough_on_error_prefix",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
-    },
-    {
-      "classname": "tests.unit.test_stages.TestQualityEscalate",
-      "definition": "TestQualityEscalate.test_passthrough_on_empty",
-      "name": "test_passthrough_on_empty",
-      "parameters": {},
-      "source_path": "tests/unit/test_stages.py"
+      "source_path": "tests/native/test_hg5_request_event_native.py"
     }
   ],
   "identity_conformance": "duplicate-free identity multiset; original JUnit ordering diagnostic only",
   "native_case_count_claim": null,
+  "parameter_dimensions": [
+    {
+      "definition": "TestServerUrlOverrides.test_malformed_items_are_rejected",
+      "dimensions": [
+        {
+          "ids": [
+            "frontdoor",
+            "=http://x",
+            "frontdoor=",
+            "frontdoor=127.0.0.1:8199"
+          ],
+          "names": [
+            "item"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "frontdoor"
+            ],
+            [
+              "=http://x"
+            ],
+            [
+              "frontdoor="
+            ],
+            [
+              "frontdoor=127.0.0.1:8199"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_typed_decisions_call_recorder.py"
+    },
+    {
+      "definition": "test_default_mode_matches_pre_client_mode_golden",
+      "dimensions": [
+        {
+          "ids": [
+            "v1_escalation_off",
+            "v1_escalation_on_key_absent"
+          ],
+          "names": [
+            "client"
+          ],
+          "origin": "fixture",
+          "values": [
+            [
+              "v1_escalation_off"
+            ],
+            [
+              "v1_escalation_on_key_absent"
+            ]
+          ]
+        },
+        {
+          "ids": [
+            "direct_nonstream_plain",
+            "direct_nonstream_tools",
+            "direct_stream_tools",
+            "direct_stream_tools_include_usage",
+            "repl_nonstream_tools",
+            "repl_stream_tools",
+            "repl_stream_tools_include_usage"
+          ],
+          "names": [
+            "name"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "direct_nonstream_plain"
+            ],
+            [
+              "direct_nonstream_tools"
+            ],
+            [
+              "direct_stream_tools"
+            ],
+            [
+              "direct_stream_tools_include_usage"
+            ],
+            [
+              "repl_nonstream_tools"
+            ],
+            [
+              "repl_stream_tools"
+            ],
+            [
+              "repl_stream_tools_include_usage"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_openai_compat_default_golden.py"
+    },
+    {
+      "definition": "test_force_architect_general_empty_consultant_keeps_original_and_records_call",
+      "dimensions": [
+        {
+          "ids": [
+            "",
+            " \\n\\t"
+          ],
+          "names": [
+            "consultant_answer"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              ""
+            ],
+            [
+              " \n\t"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "definition": "test_force_architect_general_inband_error_reply_preserves_frontdoor",
+      "dimensions": [
+        {
+          "ids": [
+            "[ERROR: simulated timeout]",
+            " \\n[ERROR: simulated timeout]"
+          ],
+          "names": [
+            "consultant_answer"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "[ERROR: simulated timeout]"
+            ],
+            [
+              " \n[ERROR: simulated timeout]"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "definition": "test_force_architect_general_never_runs_outside_a_completed_direct_answer",
+      "dimensions": [
+        {
+          "ids": [
+            "default_repl-force_requires_direct_stage",
+            "tool_call-force_requires_completed_direct_answer",
+            "empty_answer-force_requires_completed_direct_answer",
+            "whitespace_answer-force_requires_completed_direct_answer",
+            "initial_error-force_requires_completed_direct_answer",
+            "leading_initial_error-force_requires_completed_direct_answer"
+          ],
+          "names": [
+            "case",
+            "disabled_reason"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "default_repl",
+              "force_requires_direct_stage"
+            ],
+            [
+              "tool_call",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "empty_answer",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "whitespace_answer",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "initial_error",
+              "force_requires_completed_direct_answer"
+            ],
+            [
+              "leading_initial_error",
+              "force_requires_completed_direct_answer"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "definition": "test_disabled_paths_make_no_escalation_call",
+      "dimensions": [
+        {
+          "ids": [
+            "overrides0-x_escalation_off",
+            "overrides1-role_override",
+            "overrides2-role_override",
+            "overrides3-role_override",
+            "overrides4-not_frontdoor"
+          ],
+          "names": [
+            "overrides",
+            "reason"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              {
+                "x_escalation": "off"
+              },
+              "x_escalation_off"
+            ],
+            [
+              {
+                "x_escalation": "architect_general",
+                "x_force_role": "architect_general"
+              },
+              "role_override"
+            ],
+            [
+              {
+                "x_escalation": "architect_general",
+                "x_orchestrator_role": "architect_general"
+              },
+              "role_override"
+            ],
+            [
+              {
+                "x_escalation": "auto",
+                "x_force_model": "frontdoor"
+              },
+              "role_override"
+            ],
+            [
+              {
+                "model": "worker_general",
+                "x_escalation": "auto"
+              },
+              "not_frontdoor"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation.py"
+    },
+    {
+      "definition": "test_client_mode_with_flag_off_matches_pre_te1_golden",
+      "dimensions": [
+        {
+          "ids": [
+            "flag_off",
+            "flag_on_key_absent"
+          ],
+          "names": [
+            "client"
+          ],
+          "origin": "fixture",
+          "values": [
+            [
+              "flag_off"
+            ],
+            [
+              "flag_on_key_absent"
+            ]
+          ]
+        },
+        {
+          "ids": [
+            "client_nonstream_answer",
+            "client_nonstream_answer_no_routing",
+            "client_nonstream_tool_call",
+            "client_stream_answer_include_usage"
+          ],
+          "names": [
+            "name"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              "client_nonstream_answer"
+            ],
+            [
+              "client_nonstream_answer_no_routing"
+            ],
+            [
+              "client_nonstream_tool_call"
+            ],
+            [
+              "client_stream_answer_include_usage"
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/unit/test_v1_escalation_off_golden.py"
+    },
+    {
+      "definition": "test_actual_API_success_and_stream_seal_one_event",
+      "dimensions": [
+        {
+          "ids": [
+            "False",
+            "True"
+          ],
+          "names": [
+            "stream"
+          ],
+          "origin": "parametrize",
+          "values": [
+            [
+              false
+            ],
+            [
+              true
+            ]
+          ]
+        }
+      ],
+      "source_path": "tests/native/test_hg5_request_event_native.py"
+    }
+  ],
   "schema": "private.hg5.native.expected_cases.v1",
   "status": "STATIC_PROPOSAL_AWAITING_JUNIT_CONFIRMATION",
   "test_file_source_records": {
+    "tests/native/test_hg5_request_event_native.py": {
+      "blob": "72ba14ab8c93217d330847b461a1d17613cbead2",
+      "bytes": 22831,
+      "mode": "100644",
+      "path": "tests/native/test_hg5_request_event_native.py",
+      "sha256": "c77d4853f2e578dd1e087cde90efa3172361ca7f7d4ced9c017e70c27aaeff75"
+    },
+    "tests/unit/test_inference_mixin.py": {
+      "blob": "dffd7a3c75ee18e4df5fcce48c26dd7ecfdd780b",
+      "bytes": 55190,
+      "mode": "100755",
+      "path": "tests/unit/test_inference_mixin.py",
+      "sha256": "58ee4ca42099704170babeadc511eb9bc2330de0b711c013eed8d52248170a5c"
+    },
+    "tests/unit/test_llama_server.py": {
+      "blob": "815b052f346663afd71f2010a95c8bf4868bfe81",
+      "bytes": 50045,
+      "mode": "100755",
+      "path": "tests/unit/test_llama_server.py",
+      "sha256": "fd31b957ac13d381ee268f69835a37d29fe13b1ef59f6ee231141d5294ffdf38"
+    },
     "tests/unit/test_openai_compat_default_golden.py": {
       "blob": "1768752cda44ff7e08140f5606156fb1727678b5",
       "bytes": 7071,
@@ -1434,6 +4099,13 @@
       "mode": "100644",
       "path": "tests/unit/test_stages.py",
       "sha256": "0948216b9024e1e6787e8a91bf4cab3bcc8b41ebbf4d54877c0d32ec3e91d65b"
+    },
+    "tests/unit/test_typed_decisions_call_recorder.py": {
+      "blob": "8a335d11898e27b2660f0da03ea044db07536825",
+      "bytes": 8558,
+      "mode": "100644",
+      "path": "tests/unit/test_typed_decisions_call_recorder.py",
+      "sha256": "19dab77f5d10dc77bb038eb5d5ba7d544d334c035fc13bc4d15c79ea85536237"
     },
     "tests/unit/test_v1_escalation.py": {
       "blob": "4f96cd05454d44a734353fb0489cfcb1bc859b3a",
@@ -1449,5 +4121,15 @@
       "path": "tests/unit/test_v1_escalation_off_golden.py",
       "sha256": "8cc2ed736c4878c016c80bd97be8c29a60906f3df2b945f77df291a969fc727f"
     }
-  }
+  },
+  "whole_module_selection": [
+    "tests/unit/test_llama_server.py",
+    "tests/unit/test_inference_mixin.py",
+    "tests/unit/test_typed_decisions_call_recorder.py",
+    "tests/unit/test_openai_compat_default_golden.py",
+    "tests/unit/test_stages.py",
+    "tests/unit/test_v1_escalation.py",
+    "tests/unit/test_v1_escalation_off_golden.py",
+    "tests/native/test_hg5_request_event_native.py"
+  ]
 }

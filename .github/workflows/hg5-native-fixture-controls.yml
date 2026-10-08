@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      APP_PIN: 76624a91d72aefce9778d64701ed0f687585eb0a
+      APP_PIN: 974cb4017791a5d500269fd44f7d9903528e1d5d
       ROOT_CONTEXT_PIN: 152fb52cd0489b8756a69999c38e7d0e0afa9488
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       HG5_RUNNER_CONTEXT: ubuntu-24.04-cpython-3.11
-      HG5_EXECUTION_CONTEXT: four-whole-test-modules-existing-mocks-no-inference
+      HG5_EXECUTION_CONTEXT: eight-whole-test-modules-existing-mocks-no-inference
       ORCHESTRATOR_MOCK_MODE: '1'
       CI: 'true'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
