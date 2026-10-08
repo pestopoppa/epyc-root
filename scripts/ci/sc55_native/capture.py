@@ -18,7 +18,7 @@ def hashes(paths):return {str(path.resolve()):sha(path.read_bytes()) for path in
 def main():
  workspace=Path(os.environ['GITHUB_WORKSPACE']).resolve();recipe=workspace/'recipe';carrier=workspace/'carrier';research=workspace/'research'
  run=Path(os.environ['RUNNER_TEMP'])/'sc55-native';result=run/'result';result.mkdir(parents=True,exist_ok=True)
- status=run/'status.json';state={'state':'preflight','exit_code':None,'control_count':43,'no_models_or_inference':True}
+ status=run/'status.json';state={'state':'preflight','exit_code':None,'control_count':48,'no_models_or_inference':True}
  try:
   pins={'recipe':git(recipe,'rev-parse','HEAD'),'carrier':git(carrier,'rev-parse','HEAD'),'research':git(research,'rev-parse','HEAD')}
   if pins!={'recipe':os.environ['GITHUB_SHA'],'carrier':CARRIER_PIN,'research':RESEARCH_PIN}:raise RuntimeError('checkout pin mismatch')
@@ -60,8 +60,8 @@ def main():
   expected=Counter((case['classname'],case['name']) for case in cases)
   actual=Counter((case['classname'],case['name']) for case in summary['cases'])
   xml=Counter((case.get('classname',''),case.get('name','')) for case in ET.parse(junit).getroot().iter('testcase'))
-  exact=expected==actual==xml and sum(expected.values())==43
-  conformant=rc==0 and exact and counts['collected']==43 and counts['executed']==43 and all(counts[key]==0 for key in ('skipped','failure','error')) and receipt['fixture_execution_conformant'] is True
+  exact=expected==actual==xml and sum(expected.values())==48
+  conformant=rc==0 and exact and counts['collected']==48 and counts['executed']==48 and all(counts[key]==0 for key in ('skipped','failure','error')) and receipt['fixture_execution_conformant'] is True
   if before!=hashes(paths):raise RuntimeError('source/readset changed during event')
   # Existing carrier adapter and shared grader only; immutable native originals stay untouched.
   native_before=hashes([p for p in result.rglob('*') if p.is_file()])

@@ -140,14 +140,29 @@
     {
       "repo": "recipe",
       "path": "scripts/vidya/adapters/graph_profile_measurement.py",
-      "sha256": "9addeef9e54949b21e93bf981055469ba9648ee5edc1b21933e6900452478d97",
-      "size": 5577
+      "sha256": "dbde25efef833c88fda3e7e85caaca0adb01a02e1567da9e5512cf6b5a6d8cb0",
+      "size": 6532,
+      "commit": "recipe@github.sha"
     },
     {
       "repo": "recipe",
       "path": "tests/test_graph_profile_measurement.py",
-      "sha256": "5ed50343a34539fc98782f78b3e4b7972a0221b511f3015e51f1f421e17543b1",
-      "size": 4247,
+      "sha256": "98231e0b31288e58002fa8078c23fd124fad42bcb35c004ca0cb12b8074ea532",
+      "size": 7366,
+      "commit": "recipe@github.sha"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/ingest_sources.py",
+      "sha256": "2b8e1c825cee67c133e4b763bade76b193c63fe0e622f88a840bc7965657eee1",
+      "size": 26123,
+      "commit": "recipe@github.sha"
+    },
+    {
+      "repo": "recipe",
+      "path": "scripts/vidya/cli.py",
+      "sha256": "a0feb9b5feaa59519a03bf378241d589d38837bb42a10919334afdceae0066b2",
+      "size": 39061,
       "commit": "recipe@github.sha"
     }
   ],

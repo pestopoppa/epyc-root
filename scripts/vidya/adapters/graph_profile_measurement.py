@@ -4,6 +4,8 @@ import hashlib,os,stat,sys,types
 from pathlib import Path
 
 PROJECTION_NAME='graph-profiler-measurement'
+ADAPTER_ID='vidya.adapters.graph_profile_measurement/v1'
+AUTHORITY='measurement'
 
 RESEARCH_ROOT=Path('/workspace/repos/epyc-inference-research')
 SOURCE_PINS={
@@ -29,7 +31,7 @@ def decoder_source(root,name,pin):
         return path,raw
     finally:os.close(fd)
 
-def decode(seal_ref):
+def decode(seal_ref, *, from_file=False):
     # Load only the two exact accepted files. No PYTHONPATH, private sibling tree or unchecked loader re-read.
     import uuid
     namespace='vidya_sc55_native_'+uuid.uuid4().hex
@@ -42,7 +44,11 @@ def decode(seal_ref):
             module.__file__=str(path);module.__package__=namespace
             owned[fullname]=module;sys.modules[fullname]=module;setattr(package,name,module)
             exec(compile(raw,str(path),'exec'),module.__dict__)
-        return owned[namespace+'.graph_profile_reader'].read(seal_ref)
+        if from_file:
+            # Observe only sealed-file custody here; all run labels remain writer-authored.
+            seal_ref=owned[namespace+'.graph_profile_capture'].receipt(Path(seal_ref).absolute())
+        captured=owned[namespace+'.graph_profile_reader'].read(seal_ref)
+        return (captured,seal_ref) if from_file else captured
     finally:
         for name,module in reversed(tuple(owned.items())):
             if sys.modules.get(name) is module:del sys.modules[name]
@@ -58,6 +64,16 @@ def label_complete(metadata, metric):
 def native_rows(seal_ref):
     try:capture=checked_decode(seal_ref)
     except ProjectionError:return ()
+    metadata=capture['measurement_metadata']
+    return tuple({'seal_ref':seal_ref,'measurement_id':metric['measurement_id']}
+            for metric in metadata['metrics'] if label_complete(metadata,metric))
+
+def native_rows_file(seal_path):
+    if not isinstance(seal_path,(str,Path)):
+        raise ProjectionError('SC55 file source requires a sealed-file path')
+    try:capture,seal_ref=decode(seal_path,from_file=True)
+    except (ValueError,TypeError,KeyError,OSError) as exc:
+        raise ProjectionError('SC55 sealed file custody or native provenance refused') from exc
     metadata=capture['measurement_metadata']
     return tuple({'seal_ref':seal_ref,'measurement_id':metric['measurement_id']}
             for metric in metadata['metrics'] if label_complete(metadata,metric))

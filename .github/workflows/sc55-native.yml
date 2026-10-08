@@ -52,7 +52,7 @@ jobs:
           set -euo pipefail
           python -m venv "$RUNNER_TEMP/sc55-native/venv"
           "$RUNNER_TEMP/sc55-native/venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: -r recipe/scripts/ci/sc55_native/requirements.txt 2>&1 | tee "$RUNNER_TEMP/sc55-native/result/dependency-install.log"
-      - name: Capture all 43 whole-module synthetic controls once
+      - name: Capture all 48 whole-module synthetic controls once
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/sc55-native/venv/bin/python" -I recipe/scripts/ci/sc55_native/capture.py

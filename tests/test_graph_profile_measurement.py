@@ -3,7 +3,7 @@ import unittest
 import claim_tuple
 from pathlib import Path
 from unittest.mock import patch
-from scripts.vidya.adapters import graph_profile_measurement as adapter
+from adapters import graph_profile_measurement as adapter
 
 class MeasurementProjectionTests(unittest.TestCase):
     def capture(self):
@@ -59,3 +59,51 @@ class NativeRoundtripTests(unittest.TestCase):
             self.assertEqual(adapter.native_rows({}),())
             with self.assertRaises(adapter.ProjectionError):
                 adapter.project({'seal_ref':{},'measurement_id':'synthetic-1'})
+
+class FileIngestTests(unittest.TestCase):
+    phases=reader_fixtures.ReaderTests.phases
+    write_native=reader_fixtures.ReaderTests.write_native
+    def setUp(self):reader_fixtures.ReaderTests.setUp(self)
+    def research_root(self):return Path(reader_fixtures.__file__).resolve().parents[4]
+    def test_normal_dispatcher_dry_run_projects_closed_file(self):
+        import ingest_sources
+        reader_fixtures.ReaderTests.seal_native(self)
+        with patch.object(adapter,'RESEARCH_ROOT',self.research_root()):
+            report=ingest_sources.ingest(None,adapter.PROJECTION_NAME,[self.seal],
+                as_of='2026-01-01T00:00:05Z',dry_run=True)
+        self.assertEqual(report['rows_projected'],1);self.assertGreater(report['frames_emitted'],0)
+        self.assertEqual(report['refused'],[]);self.assertEqual(report['declined'],[])
+        self.assertTrue(report['dry_run'])
+    def test_file_path_symlink_and_malformed_seal_refuse(self):
+        reader_fixtures.ReaderTests.seal_native(self)
+        link=self.root/'seal-link.json';link.symlink_to(self.seal)
+        malformed=self.root/'malformed.json';malformed.write_text('{}')
+        with patch.object(adapter,'RESEARCH_ROOT',self.research_root()):
+            for path in (link,malformed):
+                with self.assertRaises(adapter.ProjectionError):adapter.native_rows_file(path)
+    def test_missing_native_labels_decline_without_invention(self):
+        self.p['measurement_metadata']['date']=None
+        self.p['measurement_metadata']['metrics'][0]['attestation_role']=None
+        reader_fixtures.ReaderTests.seal_native(self)
+        with patch.object(adapter,'RESEARCH_ROOT',self.research_root()):
+            self.assertEqual(adapter.native_rows_file(self.seal),())
+    def test_mutation_after_file_observation_refuses_projection(self):
+        reader_fixtures.ReaderTests.seal_native(self)
+        with patch.object(adapter,'RESEARCH_ROOT',self.research_root()):
+            row=adapter.native_rows_file(self.seal)[0]
+            observed=row['seal_ref'];self.assertEqual(observed['inode'],self.seal.stat().st_ino)
+            self.assertEqual(observed['device'],self.seal.stat().st_dev)
+            self.seal.write_text('{}')
+            with self.assertRaises(adapter.ProjectionError):adapter.project(row)
+    def test_normal_cli_choice_and_dispatcher_file_contract(self):
+        import ast,ingest_sources
+        src=ingest_sources.SOURCES[adapter.PROJECTION_NAME]
+        self.assertEqual(src.module,'graph_profile_measurement')
+        self.assertEqual(src.natives,'native_rows_file');self.assertIsNone(src.default)
+        self.assertEqual(adapter.AUTHORITY,'measurement')
+        self.assertEqual(adapter.ADAPTER_ID,'vidya.adapters.graph_profile_measurement/v1')
+        cli_path=Path(ingest_sources.__file__).with_name('cli.py')
+        cli=ast.parse(cli_path.read_text())
+        choices=next(ast.literal_eval(node.value) for node in cli.body if isinstance(node,ast.Assign)
+            and any(isinstance(target,ast.Name) and target.id=='_FILE_SOURCES' for target in node.targets))
+        self.assertIn(adapter.PROJECTION_NAME,choices)
