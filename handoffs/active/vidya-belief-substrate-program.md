@@ -517,8 +517,8 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
 - [ ] **SC54 — wire the qwen4exp `llama-perplexity` / KLD quality gate as a measurement source, write side
       FIRST.** Filed 2026-09-04 by INF-70 the moment the gate was restored (C9: it returned `nan` on this model
       until a rebuild fixed it). This is the ONLY PPL/KL instrument for qwen4exp, so every quant-quality decision
-      on the model routes through it — B7's PLE-Q8_0 A/B is its first consumer and is running now. **Project, not
-      grade.** Four caveats are mandatory in every tuple and are the whole reason to wire the write side now:
+      on the model routes through it. B7's PLE-Q8_0 A/B was the first consumer and closed on 2026-09-04;
+      its pre-hook records remain historical and cannot become source-authored tuples. **Project, not grade.** Four caveats are mandatory in every tuple and are the whole reason to wire the write side now:
       `GGML_IQK` state (a real 2.2% systematic offset between kernel paths), determinism (the ± is corpus
       sampling, not run noise — two binaries reproduced to every digit, so overlapping bars are NOT agreement),
       Ny regime (perplexity runs Ny>=32, serving runs Ny=1 — a PPL observation says nothing about the serving
@@ -3044,3 +3044,5 @@ HG5's five-file source commit `c12c9c5` and five native recipe files are statica
 - [x] **VB-MFFS1-DOC-DEPS — preserve and review the original MF-FS-1 diagnostic input/source dependencies before canonical use.** MAIN prospectively enrolled2026-10-08: exact bounded classifier source, current APP producer/emitter pins, original private same-FD snapshots, sorted read-set and aggregate digests through existing VB-NI07-DOC-DEPS only. Legacy producer origin remains unattested; substring flags and marker categories do not establish causal stop reasons. No new adapter/class/ladder, historical tuple or inference/quality claim. Existing MF-FS-1 owns classification; no duplicate MF-FS source child.
 
 ✅2026-10-08 VB-MFFS1-DOC-DEPS: [MAIN source/input snapshot and independent aggregate acceptance](../../artifacts/ni08/mf-fs1-diagnostic-20261008/README.md).72 original inputs, three source snapshots, prospective enrollment before capture, no native grade or reconstructed legacy tuple.
+
+- [ ] **VB-MF-TURN-WRITE — implement and validate the prospective BEP turn scalar contract for MF-NDG-1/MF-RR-1.** MAIN reviewed the bounded APP62ee source candidate and frozen `announced_action.lex-v1` grammar on 2026-10-08. Preserve one default-off row per turn and existing raw-text limits; record post-extraction state before execution, primary/retry completion metadata separately, requested caps with unknown effective caps/token basis, and boolean/null lexical status with explicit ambiguity/truncation/retry exclusions. Producer path is not runtime revision attestation: keep runtime origin explicitly unknown until the owning harness authors contemporaneous custody. Validate source-first publication with the existing off-host native carrier and exact synthetic controls. This child covers instrumentation only; fresh owner-controlled inference traces, rate estimates, prompt changes and efficacy remain with the original MF parents. Existing shared ladder only; no historical backfill or new grading rule.

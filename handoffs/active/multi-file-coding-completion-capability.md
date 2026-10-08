@@ -312,3 +312,7 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 
 - [ ] **MF-NDG-1 — Announced-action nudge.** The empty/comment-only nudge (`helpers.py:383-386`, "Call FINAL now") steers a prose-announced action toward stopping. Measure how often empty-code turns announce an action, then reword to "execute it". `intake-1351#record`.
 - [ ] **MF-RR-1 — Reasoning-runaway repair.** When a turn hits the token cap with no code/tool call, retry with thinking disabled and a single-concise-action prompt (extends the one-shot conciseness retry at `helpers.py:969-997`). Measure the cutoff-without-code rate first. External: the largest single promoted step (+5/38 tasks) in a determinism-gated harness search. `intake-1355#02`.
+
+### MF-NDG-1 / MF-RR-1 source boundary — 2026-10-08
+
+MAIN reviewed the prospective BEP scalar writer and `announced_action.lex-v1` grammar against current APP62ee source. Legacy clipped trace text and path-only producer IDs cannot supply missing native token caps, completion reasons, extraction state or runtime source attestation. The instrumentation child is [VB-MF-TURN-WRITE](vidya-belief-substrate-program.md); source-first implementation and off-host synthetic controls proceed without inference. Keep these two original rate-before-behavior tasks open until an owning harness captures complete contemporaneous source envelopes and eligible denominators. A lexical commitment signal is neither intent nor successful execution; ambiguous/truncated/retry text stays unknown. No nudge/retry behavior change has been applied.
