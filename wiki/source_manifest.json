@@ -4,15 +4,15 @@
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
-    "progress": 642,
+    "progress": 644,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-07T23:42:55Z",
+  "last_compile": "2026-10-08T01:04:11Z",
   "mode": "touch",
-  "scan_time": "2026-10-07T23:42:55Z",
+  "scan_time": "2026-10-08T01:04:11Z",
   "schema_version": 1,
-  "source_set_hash": "75b67c9d7c29a50ea9894727fee2bf089d02d8c25948e9703f73026e29f9190d",
+  "source_set_hash": "39fc144569a7503fa11e55b6b30d751fd9ad7a0c4d5b27e5f6c591b31edfbd08",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "144c23864426ba8a9ea143e8a1e0bcf2bb91bab652ebb303fef9d2aa773d5003",
-      "modified": "2026-10-07T23:36:02Z",
+      "content_hash": "1520c0fd6ef7b22cd2027bc5acc4bf64e1ea6f59cdb08ff40c214913729114db",
+      "modified": "2026-10-08T00:41:02Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 428032,
+      "size": 435383,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -927,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "90f7cd23c38a1faa18947387feb2e014ef398cdcc2ef44527b4b2362ea531562",
-      "modified": "2026-10-07T23:35:21Z",
+      "content_hash": "7d9c816376cee9800e28ec53814ab5607fd54e2cfb58a6a3f74cc7df3d1e2395",
+      "modified": "2026-10-08T00:43:35Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 147392,
+      "size": 150625,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1407,10 +1407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2dfdef1dc69711011c8e50edb4b3430209034da5f685cc44ce18ee839b52eeaa",
-      "modified": "2026-10-07T23:37:36Z",
+      "content_hash": "bb434b317aa475f3954a2ff7fbdec760b9ab0aa453d718f18bedac84f4d4e4f6",
+      "modified": "2026-10-08T00:43:35Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 389518,
+      "size": 390444,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9415,6 +9415,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "a7dd818fdcca589271600e3ae73465dcb1b02f88da9fed0470b8a3a0793dd5c2",
+      "modified": "2026-10-08T00:43:35Z",
+      "path": "progress/2026-10/2026-10-08-codex-ni-main.md",
+      "size": 3263,
+      "title": "2026-10-08 \u2014 codex-ni-main",
+      "type": "progress"
+    },
+    {
+      "content_hash": "834421c084cc2e62de54acd19d1ef029284b3587212b6929ef3c41c418d335ec",
+      "modified": "2026-10-08T00:41:02Z",
+      "path": "progress/2026-10/2026-10-08.md",
+      "size": 7046,
+      "title": "2026-10-08",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-10-07T21:10:41Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -10383,10 +10399,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "894d61823b7cd9b19ff61792e803363bb21fe43ed0cb8b84ca3cde94be8ce754",
-      "modified": "2026-10-07T23:36:45Z",
+      "content_hash": "2742336e2c2b00f1662799b44c1e53e4de5b521ed84612705a117c9699f9348a",
+      "modified": "2026-10-08T00:43:35Z",
       "path": "docs/reference/ni08-non-inference-continuation.md",
-      "size": 81816,
+      "size": 85049,
       "title": "NI08 non-inference continuation \u2014 2026-10-06",
       "type": "docs"
     },
@@ -10799,7 +10815,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1348,
+  "total_new": 1350,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

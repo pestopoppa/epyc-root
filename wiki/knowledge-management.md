@@ -3849,3 +3849,12 @@ The completion tally remains183; accepted private commits, patches and operation
 SC55’s current native grammar supplies19 node columns andseven PATHROW columns, aggregate thread maxima/means/minima andwall_max_ev, rather than arbitrary per-thread vectors. Zero thread columns when profiling is disabled are unavailable evidence. Contemporaneous window, binary/compiled-knob proof, structural graph identity and IQK/eval semantics must be captured by the producer before the reader can project a new observation; historical TSVs cannot be repaired into warranted tuples on read.
 
 Sources: [VB source tasks](../handoffs/active/vidya-belief-substrate-program.md), [source registry](../scripts/vidya/adapters/README.md), [MAIN continuation](../docs/reference/ni08-non-inference-continuation.md), [dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+
+
+## Profiler write-side labels and NULL evidence — 2026-10-08
+
+SC55's reviewed initial writer binds contemporaneous source, binary, knob, graph and window provenance. Its static controls remain unexecuted. The remaining source work must record metric identity, category, direction, unit, native sample-count basis and explicit protocol/attestation availability before capture, then decode the exact 19-column node and seven-column path records. Disabled thread aggregates remain unavailable. The ordinary ROOT consumer must load the accepted reader explicitly; a private sibling import path is insufficient. Existing measurement grading supplies observation behavior when no protocol was recorded, and historical TSVs never acquire missing labels on read.
+
+TD29's original setup NULL is preserved without a successful-test claim. NI08 stays at 183 completed items, with zero new closures at this checkpoint; the dashboard's larger checkbox denominator includes inference and gated work.
+
+Sources: [source enrollment](../scripts/vidya/adapters/README.md), [SC55 tasks](../handoffs/active/vidya-belief-substrate-program.md), [current checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md), [original acceptance custody](../artifacts/ni08/periodic-full-governance-20261008/README.md).

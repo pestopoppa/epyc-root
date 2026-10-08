@@ -1704,3 +1704,10 @@ HG5’s bounded five-file force-mode patch has MAIN structural acceptance only. 
 TD29’s private current-tip APP130a and ROOT46e9 recipe commits are reviewed, with the ordinary installed ROOT hook passing. The original122-control off-host event and product publication are still pending in this cut. Package refusals preserve their original evidence and require corrected fresh MAIN-bound approval; they do not create a new operator decision. Source-only conformance never establishes runtime prefill speed or the parent’s three-arm sidecar evidence.
 
 Sources: [HG5 owning task](../handoffs/active/reviewer-escalation-and-human-gate-policy.md), [prospective fixture/source tasks](../handoffs/active/vidya-belief-substrate-program.md), [MAIN continuation](../docs/reference/ni08-non-inference-continuation.md), [dated progress](../progress/2026-10/2026-10-07-codex-ni08-continuation.md).
+
+
+## HG5 and TD29 source-control boundary — 2026-10-08
+
+HG5's exact five-file opt-in force source commit and four-module recipe are reviewed; its 87 prospective identities are unexecuted. Publication and original mocked controls remain the next source boundary. TD29's original off-host attempt at recipe `278545e` stopped during conftest import because FastAPI was absent: exit 4, NULL receipt and no JUnit results. Its correction expands the existing lock selection to 64 packages and all 905 wheel hashes, preserving the 119 definitions and 122 prospective identities. Source review, dependency preparation and a failed setup each retain their own meaning; none closes a source task or proves runtime behavior.
+
+Sources: [MAIN source checkpoint](../docs/reference/ni08-non-inference-continuation.md#periodic-full-checkpoint--2026-10-08-reviewed-source-and-capacity-boundaries), [original acceptance custody](../artifacts/ni08/periodic-full-governance-20261008/README.md), [daily progress](../progress/2026-10/2026-10-08-codex-ni-main.md).

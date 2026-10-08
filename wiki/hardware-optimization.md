@@ -6259,3 +6259,12 @@ The NI08 owner recovered duplicated checkout payloads through ten reversible spa
 The parallel AutoKernel owner preserved its original full11-failure result, then recorded149 affected controls passing at the corrected entrypoint/source140 candidate. Its fresh combined run remains pending in the checkpoint; no CPU activation, GPU installation or production action follows from source preparation or focused controls.
 
 Sources: [NI08 capacity acceptance](../artifacts/ni08/own-source-capacity-recovery-20261007/README.md), [current non-inference queue](../handoffs/active/non-inference-backlog.md), [AutoKernel owner checkpoint](../handoffs/active/autokernel-unified-surface-program.md), [dated progress](../progress/2026-10/2026-10-07.md).
+
+
+## Dated capacity and peer CPU activation — 2026-10-08
+
+MAIN accepted four additional OWN reversible sparse exclusions, conserving all source, evidence and full semantic indexes. The two original 00:14:01/00:14:17 UTC available-space samples exceeded the unchanged 100 GiB floor with a thin margin and remained below the separate 110.5 GB growth target. Shared-host free-space change is not exclusively attributed; our R10 growth task remains open.
+
+The parallel AutoKernel owner's published `ab53a8e` report records source `bdb52d9` active on both CPU lanes, its 300-second ownership proof and live read-only monitoring, following its final full-suite pass. Its later startup samples exceed the live floor, while its growth target remains unmet. Attribute these to that dated owner report: our source checkpoint does not independently accept those runtime observations. The GPU still requires an authorized serving-owner window; the report preserves unknown original waits and distinguishes monitor READY from final process exit.
+
+Sources: [MAIN capacity checkpoint](../progress/2026-10/2026-10-08-codex-ni-main.md), [compact original acceptance](../artifacts/ni08/periodic-full-governance-20261008/README.md), [AutoKernel owner report](../handoffs/active/autokernel-unified-surface-program.md), [peer daily progress](../progress/2026-10/2026-10-08.md).

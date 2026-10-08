@@ -1,0 +1,87 @@
+{
+  "encoding": "base64 one terminal LF; decoding reproduces exact original bytes",
+  "external_review_pins": [
+    {
+      "copied": false,
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-bf59-MAIN-dashboard-health-semantics-review.json",
+      "reason": "MAIN acceptance pin; five-wrapper scope held",
+      "sha256": "49b4f63a22fd855d554521a3656d2dcd4d1d9072d0be59c63fae06b6b1728287"
+    },
+    {
+      "bytes": 2048,
+      "copied": false,
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/TD29-2785-MAIN-publication-NULL-and-lock-successor-review.json",
+      "reason": "MAIN accepted source/publication/NULL review; five-wrapper scope remains unchanged",
+      "sha256": "c9acd84a9306742d1b8a469e905c5db1d8132011e6fb9a744cbd1f7cfeecb7c7"
+    }
+  ],
+  "large_originals": "Command journals, native archives, profiles, raw dashboard bodies and other large original custody remain at original private paths and are referenced by accepted hashes. No opaque token material.",
+  "opaque_token_bytes_included": false,
+  "proposed_public_artifact_dir": "artifacts/ni08/periodic-full-governance-20261008",
+  "raw_acceptance_copies_removed_from_prep": true,
+  "record_count": 5,
+  "records": [
+    {
+      "encoding": "base64, one terminal LF",
+      "original_bytes": 4022,
+      "original_mode": "0600",
+      "original_sha256": "8f5be46c3b0b1c1d63dda3d7b484da1454ac3648b6ab5c361c79c7f6867f8ecc",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/HG5-c12c-MAIN-original-private-source-commit-acceptance.json",
+      "public_candidate_path": "MAIN-acceptances/HG5-c12c-MAIN-original-private-source-commit-acceptance.json.b64",
+      "round_trip": "verified byte-exact",
+      "wrapper_bytes": 5365,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "88cd8b94b5ef58a21e035ae01378f0898e4c2ce441b79cfaab4186b71ad7b4c5"
+    },
+    {
+      "encoding": "base64, one terminal LF",
+      "original_bytes": 891,
+      "original_mode": "0600",
+      "original_sha256": "b4e968f01647eadd2a7efe47284205047a8d7adba8487e584173a6c5f057ac41",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/TD29-2785-MAIN-original-private-successor-commit-acceptance.json",
+      "public_candidate_path": "MAIN-acceptances/TD29-2785-MAIN-original-private-successor-commit-acceptance.json.b64",
+      "round_trip": "verified byte-exact",
+      "wrapper_bytes": 1189,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "35039de66b9b43ac0f38c93ffe9320d902556b8203d323b0b1e3bb3ad265a6b4"
+    },
+    {
+      "encoding": "base64, one terminal LF",
+      "original_bytes": 2240,
+      "original_mode": "0600",
+      "original_sha256": "c5d74e3520e25f6dc1d866069baa6ab4f98ad1f49214c95a2a0a9fa9523e4e9d",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/SC55-WRITE-MAIN-static-source-contract-acceptance.json",
+      "public_candidate_path": "MAIN-acceptances/SC55-WRITE-MAIN-static-source-contract-acceptance.json.b64",
+      "round_trip": "verified byte-exact",
+      "wrapper_bytes": 2989,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "0c9be88721a9c03b4ff941de79518b3ed9ae0863b2a5191df4cbcd4693a68527"
+    },
+    {
+      "encoding": "base64, one terminal LF",
+      "original_bytes": 2132,
+      "original_mode": "0600",
+      "original_sha256": "4f2b7b3d1b30a7b4ae4bc4722bff8e51c7063978039958104ec298cbe329af06",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/R10-Inf48-four-V4-MAIN-original-apply-and-samples-acceptance.json",
+      "public_candidate_path": "MAIN-acceptances/R10-Inf48-four-V4-MAIN-original-apply-and-samples-acceptance.json.b64",
+      "round_trip": "verified byte-exact",
+      "wrapper_bytes": 2845,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "3270eea8757a098502cec274ecb48211573c9c8c1913262234b5b04201ed4cb7"
+    },
+    {
+      "encoding": "base64, one terminal LF",
+      "original_bytes": 1396,
+      "original_mode": "0600",
+      "original_sha256": "b6c0e7838a9d5de4f08da1c8b08fe30fc320fdfeca4c4eb645a114255ca1742a",
+      "private_original_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/FULL183-bf59-MAIN-dashboard-capture-acceptance.json",
+      "public_candidate_path": "MAIN-acceptances/FULL183-bf59-MAIN-dashboard-capture-acceptance.json.b64",
+      "round_trip": "verified byte-exact",
+      "wrapper_bytes": 1865,
+      "wrapper_mode": "0644",
+      "wrapper_sha256": "ef0639e80e74fdb06f84494dba0a3139642008326fd735975c7aa68dfcdc759a"
+    }
+  ],
+  "schema": "private.periodic_full_20261008_lossless_transport.v1",
+  "status": "PREPARATION_ONLY_NOT_FOR_PUBLICATION"
+}

@@ -1,0 +1,5 @@
+# Periodic full checkpoint — 2026-10-08
+
+This package preserves five original MAIN acceptance records as lossless base64 transport, one terminal LF. `transport-manifest.json` records each original and wrapper digest, length and private original locator; decoding reproduces the original bytes. The large journals, native ZIP/readsets, source profiles and raw dashboard responses remain at their original private custody paths. No operation token bytes are included.
+
+The records accept bounded source commits, source-contract review, reversible OWN sparse operations and a dated dashboard snapshot. They do not certify a native test pass, runtime activation, inference quality, performance or backlog exhaustion. Two further MAIN reviews are externally pinned in the manifest: dashboard health semantics and the TD29 original publication/setup NULL plus lock correction. NI08 remains 183 completions; this checkpoint adds zero closures. Peer AutoKernel work remains separately owned. No pruning, archival, compaction or scratch deletion is selected.
