@@ -112,7 +112,9 @@ class ReaderControls(unittest.TestCase):
   self.refuses(self.mutate(self.v2_event(),lambda b:b.update(runtime_origin='verified')))
  def test_v2_actual_cli_records_native_labelled_counter_rows(self):
   import cli,contextlib,io
+  from datetime import datetime,timezone
   from ledger import Ledger
   path=self.v2_event();ledger=self.directory/'v2-ledger.jsonl';capture=io.StringIO()
-  with contextlib.redirect_stdout(capture):rc=cli.main(['--ledger',str(ledger),'--json','ingest','hg5-request-event','--path',str(path),'--as-of','2099-01-01T00:00:00Z'])
+  as_of=datetime.now(timezone.utc).isoformat()
+  with contextlib.redirect_stdout(capture):rc=cli.main(['--ledger',str(ledger),'--json','ingest','hg5-request-event','--path',str(path),'--as-of',as_of])
   self.assertEqual(rc,0);report=json.loads(capture.getvalue());self.assertEqual(report['refused'],[]);self.assertEqual(report['rows_projected'],5);self.assertEqual(report['frames_emitted'],15);self.assertEqual(len(list(Ledger(ledger).read_all())),15)

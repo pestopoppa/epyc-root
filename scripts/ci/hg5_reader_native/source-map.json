@@ -648,8 +648,8 @@
       "base_commit": "11649e2a2245407b4bf5a1d66bd993901654e5ac",
       "path": "tests/test_hg5_request_event_reader.py",
       "repo": "recipe",
-      "sha256": "da678f859668fa3940cfb1e9c055f3f89cc6b1a0157a0afffd6727a896896812",
-      "size": 12340,
+      "sha256": "2114f1f95e153e2741ef9b43ee4531f91fd70bd9ed0f48070c5f3a79a12552ef",
+      "size": 12411,
       "source_state": "exact_reviewed_candidate"
     },
     {
