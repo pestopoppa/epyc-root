@@ -34,14 +34,23 @@ def typed_tree(root):
             else: raise RuntimeError('special result artifact: '+rel)
     return rows
 def app_source_path(relative): return APP/relative
-def ast_hash(node): return digest(ast.dump(node,include_attributes=False).encode())
-def body_hash(node): return ast_hash(ast.Module(body=node.body,type_ignores=[]))
+def identity_payload(rows):
+    interpreter_fields={'definition_ast_sha256','body_ast_sha256'}
+    return [{key:value for key,value in row.items() if key not in interpreter_fields} for row in rows]
 def verify_ast_manifest(manifest):
     definitions=[]; derived=[]
     for path in TESTS:
-        parsed=ast.parse(raw(APP/path).decode('utf-8'),filename=path)
         source_record=manifest['test_file_source_records'][path]
-        if ast_hash(parsed)!=source_record['ast_sha256']: raise RuntimeError('pinned test-module AST hash mismatch: '+path)
+        source_bytes=raw(APP/path)
+        if len(source_bytes)!=source_record['bytes'] or digest(source_bytes)!=source_record['sha256']:
+            raise RuntimeError('pinned test-module raw source bytes differ: '+path)
+        tree_row=git(APP,'ls-tree','-r','-l',APP_PIN,'--',path)
+        parts=tree_row.split('\t',1); meta=parts[0].split() if parts else []
+        if len(parts)!=2 or parts[1]!=path or len(meta)!=4 or (meta[0],meta[1],meta[2],int(meta[3]))!=(source_record['mode'],'blob',source_record['blob'],source_record['bytes']):
+            raise RuntimeError('pinned test-module Git mode/blob/size differs: '+path)
+        # AST dump spelling changes across CPython minors; full raw bytes and Git blob pin source identity.
+        # AST parsing below derives names/parameters only; version-specific AST digests are review metadata.
+        parsed=ast.parse(source_bytes.decode('utf-8'),filename=path)
         module=path[:-3].replace('/','.')
         for top in parsed.body:
             if isinstance(top,ast.ClassDef): cls=top.name; sequence=top.body
@@ -57,7 +66,7 @@ def verify_ast_manifest(manifest):
                         if any(len(row)!=len(names) for row in values): raise RuntimeError('parameter arity differs from static manifest')
                         dims.append({'names':names,'values':values})
                 definition=((cls+'.') if cls else '')+fn.name
-                row={'source_path':path,'definition':definition,'definition_ast_sha256':ast_hash(fn),'body_ast_sha256':body_hash(fn),'previous_function_sha256':next((old['previous_function_sha256'] for old in manifest['original_119_ast_definitions'] if old['source_path']==path and old['definition']==definition),None),'module':module,'class':cls,'function':fn.name,'param_dimensions':dims}
+                row={'source_path':path,'definition':definition,'previous_function_sha256':next((old['previous_function_sha256'] for old in manifest['original_119_ast_definitions'] if old['source_path']==path and old['definition']==definition),None),'module':module,'class':cls,'function':fn.name,'param_dimensions':dims}
                 definitions.append(row)
                 products=itertools.product(*(dim['values'] for dim in dims)) if dims else [()]
                 for product in products:
@@ -66,12 +75,12 @@ def verify_ast_manifest(manifest):
                         for value in values:
                             if not isinstance(value,str): raise RuntimeError('this static ID rule is restricted to literal string parameters')
                         params.update(zip(dim['names'],values)); parts.extend(str(value) for value in values)
-                    case={'classname':module+('.'+cls if cls else ''),'name':fn.name+('['+'-'.join(parts)+']' if dims else ''),'source_path':path,'definition':definition,'parameters':params,'definition_ast_sha256':ast_hash(fn),'body_ast_sha256':body_hash(fn),'previous_function_sha256':row['previous_function_sha256']}
+                    case={'classname':module+('.'+cls if cls else ''),'name':fn.name+('['+'-'.join(parts)+']' if dims else ''),'source_path':path,'definition':definition,'parameters':params,'previous_function_sha256':row['previous_function_sha256']}
                     derived.append(case)
-    if len(definitions)!=119 or definitions!=manifest['original_119_ast_definitions']:
-        raise RuntimeError('AST definition inventory or exact function/body hashes differ from pinned manifest')
-    if len(derived)!=122 or derived!=manifest['case_identities']:
-        raise RuntimeError('literal AST parameter expansion differs from pinned canonical case manifest')
+    if len(definitions)!=119 or identity_payload(definitions)!=identity_payload(manifest['original_119_ast_definitions']):
+        raise RuntimeError('AST definition inventory or portable test identities differ from pinned manifest')
+    if len(derived)!=122 or identity_payload(derived)!=identity_payload(manifest['case_identities']):
+        raise RuntimeError('literal AST parameter expansion differs from pinned canonical case identities')
     identity_pairs=[(row['classname'],row['name']) for row in derived]
     if len(set(identity_pairs))!=len(identity_pairs): raise RuntimeError('static case manifest contains duplicate identities')
     for nodeid in manifest['required_legacy_nodeids']:
