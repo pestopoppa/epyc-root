@@ -1,0 +1,1068 @@
+#!/usr/bin/env python3
+"""P3b: Tulving Episodic Memory benchmark adapter + deterministic F1 scorer.
+
+Source: "Episodic Memories Generation and Evaluation Benchmark for LLMs"
+  arXiv 2501.13121, ICLR 2025.  GitHub: ahstat/episodic-memory-benchmark.
+  Data:  https://doi.org/10.6084/m9.figshare.28244480
+
+Dataset structure (after Figshare download + extraction):
+  data/
+    Udefault_Sdefault_seed0/          ← default benchmark (20-ch short, 200-ch long)
+    UdefaultOrdered_Sdefault_seed0/   ← ordered ablation
+    Unews_Snews_seed1/                ← world-news style
+    Uscifi_Sscifi_seed2/              ← sci-fi style
+
+  Inside each variant:
+    books/<model_dir>/                ← the generated book narrative
+    df_qa_<nchs>chapters_*.parquet   ← QA pairs (pandas DataFrame)
+       Columns: question, correct_answer, retrieval_type, get, cue,
+                cue_completed, chapter, date, location, entity, content, ...
+
+Suite registration: "tulving_episodic"
+
+Manual download step (≈150 MB zip):
+    python -c "
+    import requests, zipfile, io
+    url = 'https://ndownloader.figshare.com/files/51825077'
+    r = requests.get(url, stream=True)
+    dest = '/mnt/raid0/llm/data/eval/tulving_episodic/'
+    import pathlib; pathlib.Path(dest).mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+        z.extractall(dest)
+    print('Extracted to', dest)
+    "
+    # Or via wget:
+    # wget -P /mnt/raid0/llm/data/eval/tulving_episodic/ \\
+    #      https://ndownloader.figshare.com/files/51825077
+
+Metrics (per benchmark paper):
+  Simple Recall Score:
+    Computed over the SIMPLE RECALL SUBSET ONLY: rows with ``get == "all"``.
+    The ``latest`` and ``chronological`` rows are the Chronological Awareness
+    subset and must never enter Simple Recall.  Verified against the authors'
+    shipped per-question results: ``result_lenient_all_book_200.csv`` has
+    exactly 548 rows, and the 196-chapter ``df_qa.parquet`` has exactly 548
+    ``get == "all"`` rows out of 686 (the other 69 + 69 are latest and
+    chronological).  The "all" in that filename is the get style.
+
+    Group the subset by number of matching EVENTS (0, 1, 2, 3-5, 6+).
+    Average F1 within each group, then average across groups.
+    Group 0 checks hallucination (expected empty answer).
+
+    "Matching events" is ``n_chapters_correct_answer``, NOT the number of
+    ground-truth items: reproducing the authors' own
+    ``bins_items_correct_answer`` column matches 686/686 rows on
+    ``n_chapters_correct_answer`` and only 629/686 on
+    ``n_items_correct_answer`` (one item can be the answer for several
+    chapters).  It is carried as ``nb_events`` in the prompt metadata.
+
+  Chronological Awareness Score:
+    Average of: Latest State score (F1 on single-latest-value questions)
+                + Chronological Order score (Kendall tau on ordered-list
+                  questions).
+    The Kendall tau leg requires the FULL ordered ground-truth list to be
+    recovered; a partial match scores 0.0 (fail closed), because tau over a
+    predicted subset measures the ordering of whatever the model happened to
+    emit and so rewards emitting less.
+"""
+
+from __future__ import annotations
+
+import ast
+import json
+import re
+import string
+import unicodedata
+from pathlib import Path
+from typing import Optional
+
+# Allow standalone import outside the benchmarks package
+try:
+    from dataset_adapters import BaseAdapter
+except ImportError:
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent))
+    from dataset_adapters import BaseAdapter
+
+# ── Default local path ───────────────────────────────────────────────────────
+
+_DEFAULT_DATA_DIR = Path("/mnt/raid0/llm/data/eval/tulving_episodic")
+
+# Preferred variant: 20-chapter short default (10K tokens, ~456 QA pairs)
+_DEFAULT_VARIANT = "Udefault_Sdefault_seed0"
+
+# ── Chapter set (M-12 B1) ────────────────────────────────────────────────────
+#
+# The 20ch and 200ch books share ONE question-id space if the id carries only the
+# variant, the row's ``chapter`` (always -1) and the row index: all 456 20ch ids also
+# occur among the 686 200ch ids, with different questions behind them. The chapter
+# set is therefore an explicit, recorded parameter: it is chosen at construction (or
+# through ``$TULVING_CHAPTERS`` for the harness, whose ``get_adapter`` constructs with no
+# arguments), it is part of every question id, and it rides in each prompt's
+# ``provenance`` block, which ``run_benchmark`` copies into the result row. The scorer
+# refuses a row whose recorded set disagrees with the gold set it loaded.
+
+#: Harness surface for the chapter set. An explicit constructor argument wins.
+CHAPTERS_ENV = "TULVING_CHAPTERS"
+DEFAULT_CHAPTERS = 20
+#: The two book sizes the paper defines. ``_select_target_qa_files`` maps them onto the
+#: parquet directories on disk (20 -> the 19-chapter Claude book, 200 -> 196 chapters).
+#: Any other value would silently pick whichever book happens to be nearest.
+CHAPTER_SETS = (20, 200)
+#: Question id: ``tulving_<variant>_<N>ch_ch<chapter>_q<idx>``. The pre-B1 form lacked
+#: the ``<N>ch`` token; :func:`parse_question_id` reports those as ``chapters=None``.
+_QUESTION_ID = re.compile(
+    r"^tulving_(?P<variant>.+?)_(?:(?P<chapters>\d+)ch_)?ch(?P<chapter>-?\d+)_q(?P<idx>\d+)$")
+
+
+def chapter_set_label(chapters: int) -> str:
+    return f"{int(chapters)}ch"
+
+
+def resolve_chapters(chapters: Optional[int] = None) -> int:
+    """The chapter set to use: the argument, else ``$TULVING_CHAPTERS``, else 20."""
+    import os
+
+    raw = chapters if chapters is not None else (os.environ.get(CHAPTERS_ENV) or DEFAULT_CHAPTERS)
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        raise ValueError(f"chapters must be one of {CHAPTER_SETS}, got {raw!r}") from None
+    if isinstance(raw, bool) or value not in CHAPTER_SETS:
+        raise ValueError(f"chapters must be one of {CHAPTER_SETS}, got {raw!r}")
+    return value
+
+
+def question_id(variant: str, chapters: int, chapter: int, idx: int) -> str:
+    return f"tulving_{variant}_{chapter_set_label(chapters)}_ch{chapter:04d}_q{idx:04d}"
+
+
+def legacy_question_id(variant: str, chapter: int, idx: int) -> str:
+    """The pre-B1 id, which does not name the chapter set (run ``20260619_141212``)."""
+    return f"tulving_{variant}_ch{chapter:04d}_q{idx:04d}"
+
+
+def parse_question_id(qid: str) -> Optional[dict]:
+    """``{variant, chapters, chapter, idx}`` for a Tulving id, or None if it is not one.
+
+    ``chapters`` is None for a pre-B1 id, which never recorded its chapter set.
+    """
+    match = _QUESTION_ID.match(qid or "")
+    if not match:
+        return None
+    return {
+        "variant": match.group("variant"),
+        "chapters": int(match.group("chapters")) if match.group("chapters") else None,
+        "chapter": int(match.group("chapter")),
+        "idx": int(match.group("idx")),
+    }
+
+# ── Benchmark subset definitions (see the module docstring) ──────────────────
+
+#: ``get`` value of the Simple Recall subset.  Nothing else belongs in it.
+SIMPLE_RECALL_GET_STYLE = "all"
+#: ``get`` values of the two Chronological Awareness legs.
+LATEST_GET_STYLE = "latest"
+CHRONOLOGICAL_GET_STYLE = "chronological"
+
+# ── Context arms (CME-4 / M-12a) ─────────────────────────────────────────────
+#
+# ``run_benchmark.py`` never reads a prompt's ``"context"`` key, so each arm has to
+# be written into the prompt text itself. Every arm has its own header, which makes
+# the arm recoverable from the prompt the harness stores
+# (:func:`context_mode_of_prompt`). The scorer uses that to refuse a ``--arm`` that
+# does not match what the model was actually shown.
+
+CONTEXT_NONE = "none"
+CONTEXT_RETRIEVED = "retrieved"
+CONTEXT_FULL = "full"
+CONTEXT_MODES = (CONTEXT_NONE, CONTEXT_RETRIEVED, CONTEXT_FULL)
+#: Harness surface: ``get_adapter("tulving_episodic")`` constructs with no arguments,
+#: so the arm is chosen through this variable. An explicit constructor argument wins.
+CONTEXT_MODE_ENV = "TULVING_CONTEXT_MODE"
+RETRIEVAL_TOP_K_ENV = "TULVING_RETRIEVAL_TOP_K"
+DEFAULT_RETRIEVAL_TOP_K = 5
+FULL_BOOK_HEADER = "Book narrative:\n"
+RETRIEVED_HEADER = "Retrieved book excerpts:\n"
+_CONTEXT_SEPARATOR = "\n\n---\n\n"
+
+
+def full_book_prompt(book_text: str, question_block: str) -> str:
+    """The ``full`` arm's prompt: the whole book, a separator, then the question block."""
+    return FULL_BOOK_HEADER + book_text.strip() + _CONTEXT_SEPARATOR + question_block
+
+
+def context_mode_of_prompt(prompt: str) -> str:
+    """Which arm a stored prompt was built under, read from its header."""
+    if prompt.startswith(FULL_BOOK_HEADER):
+        return CONTEXT_FULL
+    if prompt.startswith(RETRIEVED_HEADER):
+        return CONTEXT_RETRIEVED
+    return CONTEXT_NONE
+
+
+_CHAPTER_HEADING = re.compile(r"^Chapter (\d+)\s*$", re.MULTILINE)
+
+
+def split_book_chapters(book_text: str) -> list[tuple[int, str]]:
+    """Split a Tulving ``book.json`` narrative into ``(chapter_number, text)`` pairs.
+
+    Each chapter keeps its own ``Chapter N`` heading. Raises ``ValueError`` when the
+    text has no chapter headings, because a retrieval arm over one undivided blob
+    would really be the full-book arm under another name.
+    """
+    matches = list(_CHAPTER_HEADING.finditer(book_text or ""))
+    if not matches:
+        raise ValueError("book text has no 'Chapter N' headings; cannot index chapters")
+    chapters = []
+    for i, match in enumerate(matches):
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(book_text)
+        chapters.append((int(match.group(1)), book_text[match.start():end].strip()))
+    return chapters
+
+# ── Deterministic F1 scorer ──────────────────────────────────────────────────
+
+
+def _normalise_token(text: str) -> str:
+    """Lowercase, strip punctuation, and collapse whitespace."""
+    # Unicode NFC normalisation
+    text = unicodedata.normalize("NFC", text)
+    text = text.lower()
+    # Remove punctuation (keep digits, letters, space)
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    # Collapse whitespace
+    text = " ".join(text.split())
+    return text
+
+
+def _tokenise(text: str) -> list[str]:
+    """Split normalised text into tokens."""
+    return _normalise_token(text).split()
+
+
+def _token_f1(prediction: str, ground_truth: str) -> float:
+    """Standard token-level F1 score (matches SQuAD / SimpleQA convention).
+
+    Covers ~95% of Tulving benchmark answer types:
+    dates ("Sep 22, 2026"), locations ("New York City"), entity names,
+    event content phrases.  Exact numeric matches are caught automatically
+    because digit tokens are preserved after punctuation stripping.
+    """
+    pred_tokens = _tokenise(prediction)
+    gt_tokens = _tokenise(ground_truth)
+
+    if not gt_tokens and not pred_tokens:
+        return 1.0
+    if not gt_tokens or not pred_tokens:
+        return 0.0
+
+    # Token-level intersection (bag of words, capped to min count)
+    from collections import Counter
+    pred_counts = Counter(pred_tokens)
+    gt_counts = Counter(gt_tokens)
+    common = sum((pred_counts & gt_counts).values())
+
+    precision = common / len(pred_tokens)
+    recall = common / len(gt_tokens)
+
+    if precision + recall == 0.0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)
+
+
+def _best_item_f1(pred_item: str, gt_list: list[str]) -> float:
+    """Return the maximum token-F1 between pred_item and any item in gt_list."""
+    if not gt_list:
+        return 0.0
+    return max(_token_f1(pred_item, gt) for gt in gt_list)
+
+
+def score_f1_list(
+    predicted_items: list[str],
+    ground_truth_items: list[str],
+    *,
+    threshold: float = 0.5,
+) -> dict:
+    """Compute set-level F1 for episodic-memory list answers.
+
+    Deterministic implementation covering:
+    - Dates:      "Sep 22, 2026", "March 14, 2024"
+    - Locations:  "New York City", "Paris"
+    - Entities:   "Jackson Ramos", "Emilia Hooks"
+    - Contents:   short event-description phrases
+
+    Returns a dict with keys:
+      precision, recall, f1, matched_gt_items, nb_pred, nb_gt
+
+    Args:
+        predicted_items: Model-extracted list of answer items.
+        ground_truth_items: Oracle list (from QA dataset).
+        threshold: Token-F1 threshold to count a predicted item as a match.
+    """
+    nb_gt = len(ground_truth_items)
+    nb_pred = len(predicted_items)
+
+    if nb_gt == 0 and nb_pred == 0:
+        return {
+            "precision": 1.0, "recall": 1.0, "f1": 1.0,
+            "matched_gt_items": [], "nb_pred": 0, "nb_gt": 0,
+        }
+    if nb_gt == 0:
+        # Predicted something when ground truth is empty → hallucination
+        return {
+            "precision": 0.0, "recall": 1.0, "f1": 0.0,
+            "matched_gt_items": [], "nb_pred": nb_pred, "nb_gt": 0,
+        }
+    if nb_pred == 0:
+        return {
+            "precision": 1.0, "recall": 0.0, "f1": 0.0,
+            "matched_gt_items": [], "nb_pred": 0, "nb_gt": nb_gt,
+        }
+
+    # Greedy matching: for each GT item, find the best-matching predicted item
+    # (capped to prevent over-counting the same prediction twice)
+    gt_matched_scores: list[float] = []
+    remaining_preds = list(predicted_items)
+    matched_gt: list[str] = []
+
+    for gt_item in ground_truth_items:
+        best_score = 0.0
+        best_idx = -1
+        for i, pred in enumerate(remaining_preds):
+            s = _token_f1(pred, gt_item)
+            if s > best_score:
+                best_score = s
+                best_idx = i
+        gt_matched_scores.append(best_score)
+        if best_score >= threshold and best_idx >= 0:
+            matched_gt.append(gt_item)
+            remaining_preds.pop(best_idx)
+
+    sum_scores = sum(gt_matched_scores)
+
+    # Lenient: cap nb_pred at nb_gt (matches paper's lenient policy)
+    nb_pred_lenient = min(nb_pred, nb_gt)
+
+    precision = sum_scores / nb_pred_lenient if nb_pred_lenient > 0 else 0.0
+    recall = sum_scores / nb_gt if nb_gt > 0 else 0.0
+
+    if precision + recall == 0.0:
+        f1 = 0.0
+    else:
+        f1 = 2 * precision * recall / (precision + recall)
+
+    return {
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+        "matched_gt_items": matched_gt,
+        "nb_pred": nb_pred,
+        "nb_gt": nb_gt,
+    }
+
+
+def _extract_list_from_response(response: str) -> list[str]:
+    """Parse a model response into a list of answer items.
+
+    Handles:
+    - Bullet lists:  "• Item\n- Item\n* Item"
+    - Numbered lists: "1. Item\n2. Item"
+    - Comma-separated: "A, B, C"
+    - One item per line (fallback)
+
+    Returns an empty list for explicit abstentions like "I don't know".
+    """
+    # Abstention patterns (also "None" which is the prompt-instructed abstention token)
+    abstention_re = re.compile(
+        r"(?is)(none|n/a|i don'?t know\.?|i'?m not sure\.?|"
+        r"i cannot (answer|determine).*|no information( available)?\.?|"
+        r"not mentioned\.?|not available\.?)"
+    )
+    if abstention_re.fullmatch(response.strip()):
+        return []
+
+    # Try bullet / numbered list first
+    bullet_re = re.compile(r"^[\s]*[-•*]\s*(.+)$", re.MULTILINE)
+    numbered_re = re.compile(r"^[\s]*\d+[.)]\s*(.+)$", re.MULTILINE)
+
+    bullets = bullet_re.findall(response)
+    numbered = numbered_re.findall(response)
+
+    if bullets:
+        items = [b.strip() for b in bullets if b.strip()]
+    elif numbered:
+        items = [n.strip() for n in numbered if n.strip()]
+    else:
+        # Try comma-separated (if the line has commas and ≤200 chars)
+        lines = [line.strip() for line in response.strip().split("\n") if line.strip()]
+        candidates = []
+        for line in lines:
+            if "," in line and len(line) < 200:
+                candidates.extend(p.strip() for p in line.split(",") if p.strip())
+        if candidates:
+            items = candidates
+        else:
+            # Last resort: one item per line
+            items = lines
+
+    return items
+
+
+def _llm_judge_fallback_hook(
+    predicted_items: list[str],
+    ground_truth_items: list[str],
+    retrieval_type: str,
+) -> Optional[float]:
+    """Optional LLM-judge fallback.  NOT CALLED in the deterministic scorer.
+
+    Override this function or pass a callable to TulvingEpisodicAdapter
+    if you want semantic matching beyond token-F1 (e.g., paraphrase matching
+    for "Event contents" retrieval type).
+
+    Returns None to indicate the deterministic scorer should be used.
+    """
+    return None
+
+
+# ── Composite score computation ──────────────────────────────────────────────
+
+
+SIMPLE_RECALL_BINS = ("0", "1", "2", "3-5", "6+")
+
+
+def simple_recall_bin(nb_events: int) -> str:
+    """Return the paper's five-bin label for a matching-event count."""
+    if nb_events == 0:
+        return "0"
+    if nb_events == 1:
+        return "1"
+    if nb_events == 2:
+        return "2"
+    if nb_events <= 5:
+        return "3-5"
+    return "6+"
+
+
+def simple_recall_bin_counts(per_question_results: list[dict]) -> dict[str, dict]:
+    """Per-bin count and mean F1, for reporting the five bins separately.
+
+    Bin 0 is the hallucination bin and is always reported, never dropped.
+    """
+    out: dict[str, dict] = {b: {"count": 0, "avg_f1": 0.0} for b in SIMPLE_RECALL_BINS}
+    for r in per_question_results:
+        bucket = out[simple_recall_bin(_bin_basis(r))]
+        bucket["count"] += 1
+        bucket["avg_f1"] += r.get("f1", 0.0)
+    for bucket in out.values():
+        if bucket["count"]:
+            bucket["avg_f1"] /= bucket["count"]
+    return out
+
+
+def _coerce_nb_events(raw) -> Optional[int]:
+    """Coerce ``n_chapters_correct_answer`` to an int, or None if unusable.
+
+    Returns None rather than 0 on a missing/garbage value: 0 is the
+    hallucination bin and inventing it would move a real question into it.
+    """
+    if raw is None or isinstance(raw, bool):
+        return None
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return value if value >= 0 else None
+
+
+def _bin_basis(row: dict) -> int:
+    """Matching-event count for one scored row.
+
+    ``nb_events`` (``n_chapters_correct_answer``) is the paper's basis and
+    reproduces the authors' own ``bins_items_correct_answer`` column exactly.
+    ``nb_gt`` is the documented fallback for rows produced before ``nb_events``
+    was carried; it disagrees on ~8% of rows, so callers that care record which
+    basis was used rather than assuming.
+    """
+    nb_events = row.get("nb_events")
+    if isinstance(nb_events, int) and nb_events >= 0:
+        return nb_events
+    return int(row.get("nb_gt", 0) or 0)
+
+
+def simple_recall_bin_basis(per_question_results: list[dict]) -> str:
+    """Report which basis :func:`_bin_basis` actually used across the subset."""
+    if not per_question_results:
+        return "none"
+    have = sum(
+        1 for r in per_question_results
+        if isinstance(r.get("nb_events"), int) and r["nb_events"] >= 0
+    )
+    if have == len(per_question_results):
+        return "nb_events"
+    if have == 0:
+        return "nb_gt_fallback"
+    return f"mixed({have}/{len(per_question_results)} nb_events)"
+
+
+def compute_simple_recall_score(per_question_results: list[dict]) -> float:
+    """Compute Simple Recall Score per paper methodology.
+
+    Groups questions by the number of matching events (0, 1, 2, 3-5, 6+),
+    averages F1 within each group, then averages groups.
+
+    **The caller must pass the Simple Recall subset only** — rows with
+    ``get_style == "all"``.  This function does not filter, because the
+    subset decision belongs where the rows are assembled; passing the whole
+    question set silently mixes the Chronological Awareness legs into the
+    headline (the M-12e defect).
+
+    Args:
+        per_question_results: List of dicts with keys:
+          - f1: float
+          - nb_events: int  (number of matching events; preferred)
+          - nb_gt: int      (number of ground truth items; fallback only)
+
+    Returns:
+        Simple Recall Score in [0, 1].
+    """
+    groups: dict[str, list[float]] = {b: [] for b in SIMPLE_RECALL_BINS}
+
+    for r in per_question_results:
+        groups[simple_recall_bin(_bin_basis(r))].append(r.get("f1", 0.0))
+
+    group_avgs = [
+        sum(vs) / len(vs)
+        for vs in groups.values()
+        if vs
+    ]
+    if not group_avgs:
+        return 0.0
+    return sum(group_avgs) / len(group_avgs)
+
+
+def compute_chronological_awareness_score(
+    latest_results: list[dict],
+    chronological_results: list[dict],
+) -> float:
+    """Compute Chronological Awareness Score per paper methodology.
+
+    Average of:
+      Latest State score:        mean F1 over 'latest' questions.
+      Chronological Order score: mean Kendall tau over 'chronological'
+                                 questions.  The tau of a question whose
+                                 matched set does not cover the FULL ordered
+                                 ground truth is 0.0 — the caller is
+                                 responsible for having failed it closed (see
+                                 ``score_tulving_run.chronological_tau``).
+
+    Args:
+        latest_results:       List of dicts with key 'f1'.
+        chronological_results: List of dicts with key 'kendall_tau' (float).
+
+    Returns:
+        Chronological Awareness Score ∈ [-1, 1] (typically ≥ 0 for a useful model).
+    """
+    latest_score = 0.0
+    if latest_results:
+        latest_score = sum(r.get("f1", 0.0) for r in latest_results) / len(latest_results)
+
+    chrono_score = 0.0
+    if chronological_results:
+        chrono_score = sum(r.get("kendall_tau", 0.0) for r in chronological_results) / len(chronological_results)
+
+    if not latest_results and not chronological_results:
+        return 0.0
+    if not latest_results:
+        return chrono_score
+    if not chronological_results:
+        return latest_score
+
+    return (latest_score + chrono_score) / 2.0
+
+
+# ── Dataset adapter ──────────────────────────────────────────────────────────
+
+
+class TulvingEpisodicAdapter(BaseAdapter):
+    """Episodic memory QA pairs from the Tulving Benchmark (arXiv 2501.13121).
+
+    Loads the pre-generated QA pairs from the Figshare dataset (after manual
+    extraction).  Each row is one question from the benchmark.
+
+    The default variant uses the 20-chapter short book (≈456 QA pairs, 10K
+    tokens) — appropriate for verifying adapter correctness without very large
+    context windows.  The 200-chapter variant (686 QA pairs, 100K tokens) is
+    the canonical long-context evaluation target.
+
+    Args:
+        data_dir: Root directory of the extracted Figshare data.
+        variant: Dataset variant subfolder (default: Udefault_Sdefault_seed0).
+        chapters: The chapter set, 20 (short) or 200 (long).  Defaults to
+                  ``$TULVING_CHAPTERS``, else 20.  It is part of every question id
+                  and of each prompt's ``provenance`` (M-12 B1), and a set with no
+                  matching QA parquet raises rather than loading another book.
+        llm_judge: Optional callable(predicted_items, gt_items, retrieval_type)
+                   → Optional[float].  If it returns a non-None float, that
+                   overrides the deterministic token-F1 for the given question.
+        context_mode: M-12a arm, one of ``"none"`` (no book text; the memory-off
+                   floor), ``"retrieved"`` (only the passages ``retriever``
+                   returns) or ``"full"`` (the whole book; the ceiling, and the
+                   historical behaviour).  Defaults to ``$TULVING_CONTEXT_MODE``,
+                   else ``"full"``.  Ground truth and metadata are identical
+                   across arms; only the prompt's context block differs.
+        retriever: For ``"retrieved"``: a callable
+                   ``(question, *, cue, top_k) -> list[str]`` of passages.  When
+                   omitted, the trace-FTS5 chapter retriever
+                   (``tulving_trace_retriever``) is built over the loaded book.
+                   If that surface cannot be imported, loading raises; the arm
+                   never silently degrades to ``none`` or ``full``.
+        retrieval_top_k: Passages per question for ``"retrieved"``.  Defaults to
+                   ``$TULVING_RETRIEVAL_TOP_K``, else 5.
+    """
+
+    suite_name = "tulving_episodic"
+    has_real_tiers = True
+
+    def __init__(
+        self,
+        data_dir: Optional[Path | str] = None,
+        variant: str = _DEFAULT_VARIANT,
+        chapters: Optional[int] = None,
+        llm_judge=None,
+        context_mode: Optional[str] = None,
+        retriever=None,
+        retrieval_top_k: Optional[int] = None,
+    ):
+        import os
+
+        self._data_dir = Path(data_dir) if data_dir else _DEFAULT_DATA_DIR
+        self._variant = variant
+        self._target_chapters = resolve_chapters(chapters)
+        #: Chapter count of the book actually loaded (19 or 196 for the default variant).
+        self.book_chapters: Optional[int] = None
+        self._book_sha16: Optional[str] = None
+        self._llm_judge = llm_judge or _llm_judge_fallback_hook
+        self._book_text: Optional[str] = None
+        mode = context_mode or os.environ.get(CONTEXT_MODE_ENV) or CONTEXT_FULL
+        if mode not in CONTEXT_MODES:
+            raise ValueError(
+                f"context_mode must be one of {CONTEXT_MODES}, got {mode!r}")
+        if retriever is not None and not callable(retriever):
+            raise TypeError("retriever must be callable")
+        top_k = retrieval_top_k
+        if top_k is None:
+            top_k = int(os.environ.get(RETRIEVAL_TOP_K_ENV) or DEFAULT_RETRIEVAL_TOP_K)
+        if top_k < 1:
+            raise ValueError("retrieval_top_k must be >= 1")
+        self.context_mode = mode
+        self._retriever = retriever
+        self._retrieval_top_k = top_k
+
+    # ── loading ─────────────────────────────────────────────────────────────
+
+    def _ensure_loaded(self):
+        if self._dataset is not None:
+            return
+
+        variant_dir = self._data_dir / self._variant
+        if not variant_dir.exists():
+            print(
+                f"  [adapter] TulvingEpisodic: data not found at {variant_dir}\n"
+                "  Manual download command:\n"
+                "    python -c \"\n"
+                "    import requests, zipfile, io, pathlib\n"
+                "    url = 'https://ndownloader.figshare.com/files/51825077'\n"
+                "    r = requests.get(url, stream=True)\n"
+                f"    dest = '{self._data_dir}'\n"
+                "    pathlib.Path(dest).mkdir(parents=True, exist_ok=True)\n"
+                "    with zipfile.ZipFile(io.BytesIO(r.content)) as z:\n"
+                "        z.extractall(dest)\n"
+                "    \""
+            )
+            self._dataset = []
+            return
+
+        rows = self._load_qa_from_variant(variant_dir)
+        if not rows:
+            # Try loading from JSON fallback
+            rows = self._load_from_json(variant_dir)
+
+        self._dataset = rows
+        if self.context_mode == CONTEXT_RETRIEVED and rows and self._retriever is None:
+            if not self._book_text:
+                raise RuntimeError(
+                    "context_mode='retrieved' needs the book text to index, and none was "
+                    f"found under {variant_dir}")
+            from tulving_trace_retriever import TraceFTSChapterRetriever
+
+            self._retriever = TraceFTSChapterRetriever(
+                self._book_text,
+                book_id=f"{self._variant}-{chapter_set_label(self._target_chapters)}")
+
+    def _load_qa_from_variant(self, variant_dir: Path) -> list[dict]:
+        """Load QA pairs from parquet files in the variant directory."""
+        # The Figshare extract stores chapter count in the parent directory
+        # (for example ``..._nbchapters_19_.../df_qa.parquet``), not in the
+        # parquet filename. Select the intended QA table only; debug/book
+        # parquet files must not expand the 20ch run into 100K/1M variants.
+        parquet_files = sorted(variant_dir.rglob("df_qa.parquet"))
+        if not parquet_files:
+            return []
+        target_files = self._select_target_qa_files(parquet_files)
+        if not target_files:
+            # M-12 B1: never fall back to "any parquet". That would load some other book
+            # under this chapter set's name.
+            raise RuntimeError(
+                f"TulvingEpisodicAdapter: no df_qa.parquet under {variant_dir} names its "
+                f"chapter count (nbchapters_N); refusing to guess the "
+                f"{chapter_set_label(self._target_chapters)} book")
+        self.book_chapters = self._chapter_count(target_files[0])
+        self._book_text = self._load_book_text(target_files[0].parent)
+        if self._book_text:
+            import hashlib
+
+            self._book_sha16 = hashlib.sha256(self._book_text.encode("utf-8")).hexdigest()[:16]
+
+        # M-12e-a: fail LOUDLY. This used to swallow a missing pandas/pyarrow (and
+        # every per-file read error) and return no rows, so a run in an environment
+        # without pyarrow scored every question as "missing ground truth" and wrote an
+        # all-zero summary that looked like a result.
+        try:
+            import pandas as pd
+        except ImportError as exc:
+            raise RuntimeError(
+                "TulvingEpisodicAdapter needs pandas + pyarrow to read "
+                f"{target_files[0]}; install them in this interpreter "
+                f"({exc})") from exc
+        dfs = []
+        for pf in target_files:
+            try:
+                dfs.append(pd.read_parquet(pf))
+            except Exception as exc:
+                raise RuntimeError(
+                    f"TulvingEpisodicAdapter could not read QA parquet {pf}: "
+                    f"{type(exc).__name__}: {exc}") from exc
+        df = pd.concat(dfs, ignore_index=True) if len(dfs) > 1 else dfs[0]
+        return df.to_dict(orient="records")
+
+    @staticmethod
+    def _chapter_count(path: Path) -> int | None:
+        match = re.search(r"nbchapters_(\d+)", str(path))
+        if not match:
+            return None
+        return int(match.group(1))
+
+    def _select_target_qa_files(self, parquet_files: list[Path]) -> list[Path]:
+        """Pick QA parquet files for the configured chapter target."""
+        if not parquet_files:
+            return []
+        chapter_count = self._chapter_count
+
+        by_chapter: dict[int, list[Path]] = {}
+        for path in parquet_files:
+            chapters = chapter_count(path)
+            if chapters is not None:
+                by_chapter.setdefault(chapters, []).append(path)
+        if not by_chapter:
+            return []
+
+        claude_files = [p for p in parquet_files if "model_claude" in str(p)]
+        if claude_files:
+            claude_by_chapter: dict[int, list[Path]] = {}
+            for path in claude_files:
+                chapters = chapter_count(path)
+                if chapters is not None:
+                    claude_by_chapter.setdefault(chapters, []).append(path)
+            if claude_by_chapter:
+                by_chapter = claude_by_chapter
+
+        # The nominal 20ch dataset is represented as 19 chapters for the
+        # Claude-generated default book and 20 for the GPT-4o variant. Prefer
+        # the closest lower-or-equal count to preserve the documented 456-QA
+        # default, then fall back to the closest absolute match.
+        lower_or_equal = [c for c in by_chapter if c <= self._target_chapters]
+        if lower_or_equal:
+            selected = max(lower_or_equal)
+        else:
+            selected = min(by_chapter, key=lambda c: abs(c - self._target_chapters))
+        return by_chapter[selected]
+
+    def _load_from_json(self, variant_dir: Path) -> list[dict]:
+        """Fallback: load QA from JSON files (exported via epbench io.export_list)."""
+        json_files = sorted(variant_dir.rglob("df_qa*.json"))
+        rows = []
+        for jf in json_files:
+            try:
+                data = json.loads(jf.read_text(encoding="utf-8"))
+                if isinstance(data, list):
+                    rows.extend(data)
+                elif isinstance(data, dict):
+                    rows.append(data)
+            except Exception:
+                pass
+        return rows
+
+    def _load_book_text(self, variant_dir: Path) -> Optional[str]:
+        """Load the full book narrative text (for context injection into prompts)."""
+        json_book = variant_dir / "book.json"
+        if json_book.exists():
+            try:
+                data = json.loads(json_book.read_text(encoding="utf-8"))
+                if isinstance(data, str):
+                    return data
+            except Exception:
+                pass
+        book_files = sorted(variant_dir.rglob("book*.txt")) + sorted(
+            variant_dir.rglob("*.txt")
+        )
+        if book_files:
+            return book_files[0].read_text(encoding="utf-8")
+        return None
+
+    # ── tier assignment ──────────────────────────────────────────────────────
+
+    def _get_tier_for_index(self, idx: int) -> int:
+        row = self._dataset[idx]
+        # Use number of ground truth items as difficulty proxy
+        nb_gt = self._nb_gt(row)
+        # T3: chronological ordering OR many items (≥6)
+        if row.get("get") == "chronological" or nb_gt >= 6:
+            return 3
+        # T1: zero-answer hallucination checks OR single-item latest-state
+        if nb_gt == 0 or (row.get("get") == "latest" and nb_gt <= 1):
+            return 1
+        return 2
+
+    @staticmethod
+    def _nb_gt(row: dict) -> int:
+        """Number of ground truth items for the row."""
+        return len(
+            TulvingEpisodicAdapter._parse_correct_answer(row.get("correct_answer", []))
+        )
+
+    @staticmethod
+    def _parse_correct_answer(raw) -> list[str]:
+        """Coerce correct_answer to a list of strings."""
+        if hasattr(raw, "tolist"):
+            raw = raw.tolist()
+        if isinstance(raw, list):
+            return [str(x) for x in raw if x is not None]
+        if isinstance(raw, str):
+            try:
+                parsed = json.loads(raw)
+                if isinstance(parsed, list):
+                    return [str(x) for x in parsed if x is not None]
+                return [str(parsed)]
+            except json.JSONDecodeError:
+                pass
+            try:
+                parsed = ast.literal_eval(raw)
+                if isinstance(parsed, list):
+                    return [str(x) for x in parsed if x is not None]
+                return [str(parsed)]
+            except (SyntaxError, ValueError):
+                return [raw] if raw else []
+        return []
+
+    # ── prompt construction ──────────────────────────────────────────────────
+
+    @staticmethod
+    def _coerce_nb_events(raw) -> Optional[int]:
+        return _coerce_nb_events(raw)
+
+    def _row_to_prompt(self, idx: int, row: dict) -> dict:
+        question = str(row.get("question", "")).strip()
+        correct_answer_raw = row.get("correct_answer", [])
+        ground_truth = self._parse_correct_answer(correct_answer_raw)
+        retrieval_type = str(row.get("retrieval_type", ""))
+        get_style = str(row.get("get", "all"))
+        cue = str(row.get("cue", ""))
+        chapter = int(row.get("chapter", -1)) if row.get("chapter") is not None else -1
+        nb_gt = len(ground_truth)
+        # Number of matching EVENTS — the paper's Simple Recall bin basis.
+        # Reproduces the authors' bins_items_correct_answer column 686/686.
+        nb_events = _coerce_nb_events(row.get("n_chapters_correct_answer"))
+
+        tier = self._get_tier_for_index(idx)
+
+        # Instruction suffix depends on retrieval type
+        if retrieval_type in ("Times",):
+            instruction = (
+                "List all dates/times. Format each as a separate line starting with '- '."
+                " If none, say 'None'."
+            )
+        elif retrieval_type in ("Spaces",):
+            instruction = (
+                "List all locations. Format each as a separate line starting with '- '."
+                " If none, say 'None'."
+            )
+        elif retrieval_type in ("Entities",):
+            instruction = (
+                "List all entity/person names. Format each as a separate line starting with '- '."
+                " If none, say 'None'."
+            )
+        elif retrieval_type in ("Event contents",):
+            instruction = (
+                "List all event descriptions. Format each as a separate line starting with '- '."
+                " If none, say 'None'."
+            )
+        else:
+            instruction = (
+                "Answer the question precisely. List items one per line starting with '- '."
+                " If none, say 'None'."
+            )
+
+        prompt = f"{question}\n\n{instruction}"
+        retrieved_chapters: Optional[int] = None
+        if self.context_mode == CONTEXT_FULL:
+            if self._book_text:
+                prompt = full_book_prompt(self._book_text, prompt)
+        elif self.context_mode == CONTEXT_RETRIEVED:
+            if self._retriever is None:
+                raise RuntimeError(
+                    "context_mode='retrieved' has no retriever; refusing to build a "
+                    "prompt that would silently be the memory-off arm")
+            passages = [
+                str(p).strip()
+                for p in self._retriever(question, cue=cue, top_k=self._retrieval_top_k)
+                if str(p).strip()
+            ]
+            retrieved_chapters = len(passages)
+            body = "\n\n".join(passages) if passages else "(no passages retrieved)"
+            prompt = RETRIEVED_HEADER + body + _CONTEXT_SEPARATOR + prompt
+        # CONTEXT_NONE: the bare question — the memory-off floor.
+
+        # Serialise expected as JSON for storage (we keep it as list in metadata)
+        expected_str = json.dumps(ground_truth)
+
+        return {
+            "id": question_id(self._variant, self._target_chapters, chapter, idx),
+            "suite": "tulving_episodic",
+            "prompt": prompt,
+            # INERT: run_benchmark.py never reads this key; the arm lives in the prompt.
+            "context": self._book_text if self.context_mode == CONTEXT_FULL else "",
+            "expected": expected_str,  # JSON-encoded list
+            "scoring": [],
+            "image_path": "",
+            "tier": tier,
+            "scoring_method": "f1_list",   # custom — handled by compute_f1_for_result()
+            "scoring_config": {
+                "normalize": True,
+                "threshold": 0.5,
+                "retrieval_type": retrieval_type,
+                "get_style": get_style,
+                "nb_gt": nb_gt,
+                "nb_events": nb_events,
+                "llm_judge_fallback": False,  # deterministic only
+            },
+            "metadata": {
+                "cue": cue,
+                "retrieval_type": retrieval_type,
+                "get_style": get_style,
+                "chapter": chapter,
+                "nb_gt": nb_gt,
+                "nb_events": nb_events,
+                "ground_truth_items": ground_truth,
+                "context_mode": self.context_mode,
+                "retrieved_passages": retrieved_chapters,
+                "chapters": self._target_chapters,
+                "legacy_id": legacy_question_id(self._variant, chapter, idx),
+            },
+            # M-12 B1: the run identity run_benchmark records verbatim in the result row.
+            "provenance": self.provenance(),
+        }
+
+    def provenance(self) -> dict:
+        """The dataset/arm identity of every prompt this adapter builds."""
+        record = {
+            "suite": self.suite_name,
+            "variant": self._variant,
+            "chapters": self._target_chapters,
+            "chapter_set": chapter_set_label(self._target_chapters),
+            "book_chapters": self.book_chapters,
+            "book_sha16": self._book_sha16,
+            "context_mode": self.context_mode,
+        }
+        if self.context_mode == CONTEXT_RETRIEVED:
+            record["retrieval_top_k"] = self._retrieval_top_k
+        return record
+
+    #: M-12 B3: explicit generation parameters for this suite (see ``suites.py``).
+    #: 1024 output tokens is >3x the longest gold answer (17 items, 317 chars in the 200ch
+    #: set); thinking is OFF so the budget is spent on the list, and temperature 0 makes
+    #: the arms comparable.
+    inference_params = {
+        "temperature": 0.0,
+        "max_tokens": 1024,
+        "enable_thinking": False,
+        "cache_prompt": True,
+        "timeout": 1800,
+    }
+
+    # ── scoring convenience method ───────────────────────────────────────────
+
+    @staticmethod
+    def compute_f1_for_result(
+        model_response: str,
+        prompt_dict: dict,
+        *,
+        llm_judge=None,
+    ) -> dict:
+        """Compute deterministic F1 for a single model response.
+
+        Args:
+            model_response: Raw text response from the model.
+            prompt_dict: The prompt dict returned by _row_to_prompt.
+            llm_judge: Optional callable(pred_items, gt_items, retrieval_type)
+                       → Optional[float].  If non-None return, overrides F1.
+                       Item matches remain deterministic; a scalar is not alignment.
+
+        Returns:
+            dict with keys: precision, recall, f1, nb_pred, nb_gt,
+                            matched_gt_items, get_style, retrieval_type.
+        """
+        meta = prompt_dict.get("metadata", {})
+        ground_truth = meta.get("ground_truth_items", [])
+        retrieval_type = meta.get("retrieval_type", "")
+        get_style = meta.get("get_style", "all")
+
+        predicted = _extract_list_from_response(model_response)
+
+        # Try LLM-judge fallback first (if provided)
+        if llm_judge is not None:
+            judge_score = llm_judge(predicted, ground_truth, retrieval_type)
+            if judge_score is not None:
+                # A scalar judge score supplies no item alignment. Preserve the
+                # deterministic matches for coverage; do not infer semantic matches
+                # or chronological order from the judge's aggregate score.
+                result = score_f1_list(predicted, ground_truth)
+                result.update({
+                    "precision": judge_score,
+                    "recall": judge_score,
+                    "f1": judge_score,
+                    "get_style": get_style,
+                    "retrieval_type": retrieval_type,
+                    "source": "llm_judge",
+                    "match_source": "deterministic",
+                })
+                return result
+
+        result = score_f1_list(predicted, ground_truth)
+        result["get_style"] = get_style
+        result["retrieval_type"] = retrieval_type
+        result["source"] = "deterministic"
+        return result
+
+
+if __name__ == "__main__":
+    adapter = TulvingEpisodicAdapter()
+    adapter._ensure_loaded()
+    total = adapter.total_available
+    print(f"TulvingEpisodicAdapter: {total} QA pairs loaded")
+    if total > 0:
+        samples = adapter.sample(n=3, seed=42)
+        for s in samples:
+            print(f"  id={s['id']}  tier={s['tier']}")
+            meta = s.get("metadata", {})
+            print(f"    cue={meta.get('cue')}  type={meta.get('retrieval_type')}")
+            print(f"    gt={meta.get('ground_truth_items')[:3]}")

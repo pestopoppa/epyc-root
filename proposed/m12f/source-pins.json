@@ -1,0 +1,18 @@
+{
+  "capture-proposal-runtime.py": "918a84734ea32e6d442c14671bb7c184cd57269f3aaebcd5115b3776af2c57d4",
+  "payload/candidate-ROOT/test_m12f_capture_admission.py": "78bfcfeb41816961a8d7ff69b8858cba54961f819e32450dbdfee0373ff9e399",
+  "payload/candidate-ROOT/tulving_episodic_capture.py": "94dd9b52b9317282da473969c1a75475d63881ed992154eb2bede5ead71f2f61",
+  "payload/research/pyproject.toml": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140",
+  "payload/research/scripts/benchmark/belief_capture.py": "3e37624a5b0f427cfaaea5c21f7b1c33f8acc243bf2115766fe8c0a3e971b818",
+  "payload/research/scripts/benchmark/dataset_adapters.py": "0e170b23ec71ef688bf10ca0a7169a6ac29466979602502184819aa4b0abc210",
+  "payload/research/scripts/benchmark/score_tulving_run.py": "4525f601366ccdcc7bcd323f757db9e41d2bd379d648875b0f44f60f54922eda",
+  "payload/research/scripts/benchmark/test_score_tulving_run.py": "55f964a220caa621b3ee157ba932658061076ceb83a74805f63556dae6e45e01",
+  "payload/research/scripts/benchmark/test_tulving_srs_comparison.py": "d1a32c66d80afe63a4eb90d9eac385e0c3e94d3819136c6a2d845c979031f707",
+  "payload/research/scripts/benchmark/tulving_episodic_adapter.py": "ff1ccc2a10c39d66a79d56d68111cf097880c7ca12d76977e43f658b68f1dff9",
+  "payload/research/scripts/benchmark/tulving_srs_comparison.py": "a6d79d8ad79a06e9c9fd5ed2e63f053d28d2c36b07d5f3f31d1c6ee6a09e4bdb",
+  "payload/research/uv.lock": "e83f418fae20b8585a3200f270ed25b3d621ebeb4c0fcae0ed19de60ed05302d",
+  "payload/root/scripts/vidya/adapters/tulving_episodic_capture.py": "94dd9b52b9317282da473969c1a75475d63881ed992154eb2bede5ead71f2f61",
+  "requirements.txt": "9619ade5463bd8659b273d90c6772169945ca46f635a8a96766801cf60cc3b22",
+  "run-fixtures.py": "1c555a727d3512e81a1b3b3fcac480d2cbf17441971515307669dae669df1a57",
+  "verify-source-pins.py": "cd0e3f683e0a7e7e747b1b988e177d59460e25b0281cd94ff8487017d7592b62"
+}
