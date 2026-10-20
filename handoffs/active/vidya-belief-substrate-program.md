@@ -2390,6 +2390,17 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let
   `claim_tuple.grade()` decide — one ladder, no new grading rule. Done when KPF-18's runner emits the record and the
   adapter projects it.
+  - Record (`epyc.kpf.run.v1`, one JSON per run, appended to a `belief_measurements.jsonl` by the runner): `binary_sha256`,
+    `argv` (full list; `--slot-fork-min-tokens`, `-b/-ub`, KV mode read back from the launch log), `arm` in
+    {`fork_off`,`fork_on`}, `prompt_set_sha256`, `equivalence` COUNTS vs the fresh-vs-fresh control floor, `ttft_ms`,
+    `prompt_tokens_processed`, `cache_n`/`n_fork_tokens`, `unique_cells_peak`, `decode_tok_s`, `window_id`,
+    `gpu_window_id`, `start_utc`/`end_utc`, `host`. Source class `measurement`; n=1 without a cited protocol grades
+    `Judged/Located`; no backfill. Unchanged ladder, no new rule.
+  - Done-when addendum: the adapter test projects a KPF-18 dry-run record (not a hand-written one) and the
+    source-table row (`KV prefix fork / cache-aware dispatch` in `scripts/vidya/adapters/README.md`) is amended to name the locator and the window ids.
+  - Producers (2026-10-20): the P1 branch is `experimental/kv-prefix-fork-p1r-20261020` (worktree
+    `/mnt/raid0/llm/worktrees/kv-prefix-fork-p1r-20261020`); the KPF-18 runner is
+    `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf18/kpf18_gate.py` (not yet run; emits the record above).
 
 ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4)
 
