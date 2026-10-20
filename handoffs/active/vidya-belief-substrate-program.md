@@ -1995,6 +1995,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
     progress JSONL `routing_decision` and `task_completed`/`task_failed` events, and it serves from 2026-09-30 04:52Z
     (API PID 1930724). Still owed: backend, index size and `instrument_class` on the producer, a ClaimTuple-shaped
     sidecar or strict reader, the adapter and a `cli.py ingest` verb. Source-table row updated.
+- [ ] **VB-UFH12-EMBSPEED — wire the write side of the embedder speed records** (`repl-embedding-retrieval.md` REPL-EMB-2.7 speed block; filed 2026-10-20). VB-UFH12-RETR covers recall, not timing. The pilot `artifacts/research/emb-speed-20261020/results.jsonl` is retrospective and contended (no claim tuple; peer load recorded only in `ctx0/ctx1`); the in-launch speed block must emit chunks/s, tokens/s, p50/p95, RSS and index-build time with model/revision/dtype/runtime identity, cpu-list, region-lock claim, loadavg/GPU/frequency context and the A/A noise floor in its unit, through the same writer as 2.4. The source-table row in `scripts/vidya/adapters/README.md` goes with it.
 - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
   REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
   corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
