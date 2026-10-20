@@ -1,6 +1,6 @@
 # Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback
 
-**Status**: ACTIVE. The vision was ratified by the operator on 2026-09-24 (below). Phase 0 is open and no build work has started. The operator does not need the build-out finished soon. This handoff records the end-state intent and the ordered route to it, so later work never has to re-derive the design.
+**Status**: ACTIVE. The vision was ratified by the operator on 2026-09-24 (below). **Update 2026-10-20: the second MI210 has ARRIVED but is not yet installed; Phase 2 becomes runnable on installation (see "Accumulated insights" and the pickup checklist below).** Phase 0 is open and no build work has started. The operator does not need the build-out finished soon. This handoff records the end-state intent and the ordered route to it, so later work never has to re-derive the design.
 **Created**: 2026-09-24 (operator vision-alignment session: an audit of the operator's draft, then decisions D1–D8 plus follow-ups)
 **Priority**: MEDIUM overall. The one near-term item is Phase 2 (the cascade moves onto the second MI210). It clears the measured CPU speech collapse without partitioning the CPU LLMs.
 **Categories**: speech, multimodal, inference_serving, orchestration, gpu, kernel_port
@@ -69,6 +69,50 @@ The interlocutor and the orchestrator split the work like this.
 | D10 | **A custom or cloned persona voice is nice to have, not mandatory.** It is a tie-break criterion in the bake-off. Any cloning obeys the default-deny guardrail carried below. |
 | D11 | **Latency hiding is a ladder, cheapest rung first:** native preamble, then streamed answer, then untrained mid-generation injection. KAME-style training of the front-end is a **gated research track**. |
 | D12 | **This handoff is the one home for speech.** It is the conversation-stack handoff that KVU-11 anticipated, and it absorbs the open speech items from `multimodal-pipeline.md`. |
+
+## Accumulated insights — 2026-10-20 (for Phase 2 / D1 when the second MI210 is installed)
+
+Added 2026-10-20 at the operator's request ("bake tonight's work into the handoff/vision so that we can pick it up when the time comes with our accumulated insights"). This section adds to the ratified Vision and D1–D8; it changes none of them and no task text. Every bullet points to the note, artifact or commit it came from.
+
+**Turn detection (CS-22, CS-47)**
+- CS-22's text calls semantic end-of-turn "optional" and names a silence threshold as the policy. The evidence below points toward a semantic-gated design (a probability or acoustic model decides complete vs incomplete, silence only gates it) as the candidate default. This is a design insight, not an edit to CS-22. Pointers: CS-47 findings (Smart Turn behind the Silero gate is the only arm that moved the false-cut rate); the Unmute reference, whose end-of-turn is a model pause head thresholded 0.6 / 0.4 rather than a silence timer (intake-2054#record); M10 (further end-of-turn models) in the durable triggers below.
+- CS-47 synthetic results (CS-47 accuracy-legs note, research `artifacts/cs47_turn_end_bakeoff_20261020/`): the incomplete clips carry 2.0 s of trailing silence, so every silence-gated or acoustic arm fires on nearly all of them (silence 1.000; Parakeet-EOU 0.972 to 1.000, including the no-fallback rows). Smart Turn discriminates a little (gate 0.6 theta 0.9: false-cut difference -0.333 vs the nearest-latency silence row, paired CI [-0.515, -0.181]) but selection-only extension to FPR <= 0.10 costs recall <= 0.017. Parakeet-EOU ties its matched silence row at 0.000 difference. No arm meets the 0.10 FPR budget on selection; no arm advances.
+- Adaptive-arm results: PENDING. No adaptive-timeout arm result is in the CS-47 notes on origin/main as of 2026-10-20; add it here when the addendum lands.
+- Only the `human_recorded` stratum can advance an arm, and it is EMPTY (CS-4 sets 2 and 5 are not recorded): `corpus.json` keeps `advance_eligible_strata = [human_recorded]` (CS-45 note; `docs/reference/speech/turn-taking-measurands.md` §0 rule 3). Recording it is the gating input for every turn-end decision.
+- Latency leg: staged, not run (`artifacts/cs47_turn_end_bakeoff_20261020/scripts/latency.sh`, CS-47 note). Signed latency in the accuracy legs is stream time of the first fire minus gold EOT with no compute lag added; model-only latency is separated from any wrapper gate (measurands §2.2).
+
+**Full-duplex / interlocutor (D1, M8)**
+- PersonaPlex / Moshi was marked BLOCKED only because llama.cpp lacks the Moshi architecture (`handoffs/archived/personaplex_voice_interface.md`, "Blocker" section). Under the operator's platform rule a missing port is a porting question, not a decline. It is English-only, so it fails the D2 language gate as a winner and can only be a full-duplex reference slot behind the CS-20 backend interface. The M8 trigger already scopes this (second MI210 installed, CS-5 harness exists, a reference requested for CS-8 or CS-28): PyTorch-ROCm offline smoke on one clip as a known-answer for the CS-48 scorers, plus a zero-compute ggml op-coverage note.
+- MiniCPM-o 4.5 full-duplex streaming was never tested (`handoffs/archived/minicpm-o-4_5-integration.md`: full-duplex listed as "test if supported", next step 4).
+- Full-Duplex-Bench v1 `pause_handling` is the existing instrument for the case where a user pauses mid-turn and the model must not take the floor (TOR lower-is-correct there; measurands §2.1). CS-48 carries the adapter.
+- The D1 bake-off (Step-Audio 2 mini vs Qwen3-Omni, CS-8) has not run. A native full-duplex or omni interlocutor does its own turn-taking, which is an alternative to the CS-22 controller policy. Measure it with the same instruments as the cascade: the CS-45 corpus and measurands, the CS-48 barge-in harness, and the same denominators, so the two policies are comparable.
+
+**Speech kernels**
+- Thread study (CS-45 qwen-tts thread-scaling follow-up, `artifacts/qwentts_threads_20261020/`): `ggml_barrier` (`ggml-cpu.c:575`) is a pure `_mm_pause` spin and qwen-tts builds a disposable pool per graph compute, so one descheduled thread stalls all N. On a quiet region 8 threads is about 4x faster than 1 (38.3 vs 94.4 ms/frame); with 8 spinners on 8 pinned cpus it reaches 9754 ms/frame. The trigger is core sharing, not thread count. Recommendation recorded there: N threads only on cores nothing else runs on, otherwise one thread per process.
+- Persistent-threadpool + yielding-barrier fix: IN PROGRESS, now committed on the experimental branches (`qwentts.cpp-experimental-threadpool-20261020` tip `b1a1ec7`, "pin ggml adaptive futex barrier (default on)"; `whisper.cpp-experimental-threadpool-20261020` tip `fa5321e4`, "adaptive futex barrier, default on"; read from the worktrees under `/mnt/raid0/llm/worktrees/*-threadpool-20261020` on 2026-10-20). Its correctness gate result (transcript identity vs production, ms/frame) is not recorded in this handoff or the manifest yet; manifest rows SP2-005 / SP2-006 still say uncommitted.
+- Speech champions exist on the forks: `champion/speech-qwentts` @ `2c1b5182e`, `champion/speech-qwentts-ggml` @ `b86f6602`, `champion/speech-whisper` @ `b30737922`. Release manifest and fold rules: [`docs/reference/kernel-manifests/speech-v2-manifest.md`](../../docs/reference/kernel-manifests/speech-v2-manifest.md).
+- The whisper WER anchor is 3.37% (63/1870, large-v3-turbo f16 MI210 greedy), not the 2.35% in the ratification receipt, which is the faster-whisper int8 CPU arm (manifest SP2-001 and "At risk of being dropped" item 3; `measurement/protocols/speech.md` Appendix S-A). The superseding receipt is human-only.
+
+**Instruments ready**
+- CS-45 v2 corpus at research `cb6b08fea`: 112 gate-passing main pairs plus 27 reserve, 278 clips each bound to a passing independent-gate result; consumer-tool fix `beeb3a352`. Lessons (CS-45 notes): QA must be a human ear plus an independent ASR, because QA that reuses the corpus's own build tools is circular (v1 failed 12 of 20 sampled pairs while its own QA marked every cut clean); and the verifier and the consumer tool must share one assembly function (`tt_corpus.assemble_row()`), cross-tested, or the verifier can pass on code the consumer rejects.
+- CS-48 barge-in harness: research `scripts/voice/barge_in/` (pushed @`10b1b591a`, final @`68db8b5c4`; 30 conformance tests, mutation cases refused). FDB v1.5 data fetched to `/mnt/raid0/llm/data/fdb-v1.5-20261020/`, 498 samples (200/100/100/98) loaded by `scenarios_from_fdb15`, not yet scored through the harness.
+- CS-46 Parakeet-EOU ONNX arm: fp32 encoder + fp32 decoder_joint is step-exact with the NeMo CPU streaming run on 20 of 20 clips; the int8 decoder_joint is excluded (false `<EOU>` on CTX_BC `tt1-p0081-b`).
+- CS-47 latency script: staged, not run (see Turn detection).
+
+**Placement and contention**
+- Speech on shared CPU cores collapses: the thread study above, and `docs/reference/speech/cpu-speech-contention-20260924.md` (the 2026-09-24 measurements behind option D and CS-12).
+- GPU host threads take CPU cores, so the second card's host lane affects the CPU timing floor: CS-7 requires recording the CPU-floor impact and feeds INF-22 P2-5j (`gpu-serving-tie-in-program.md`). No number is recorded here.
+- Scheduling rules: correctness work (builds, op tests, scoring, parity) can pair under build-role claims; timing work (any rate or latency comparison) needs an exclusive window. `agents/shared/OPERATING_CONSTRAINTS.md` → "Correctness work needs no quiet host; only timing does".
+
+### When the second MI210 is installed — pickup checklist
+
+Plain bullets, deliberately not checkboxes: the tasks they point to own the checkboxes.
+- Verify the device and ROCm: two gfx90a agents, NUMA node, PCIe link, measured H2D/D2H bandwidth, host-thread lane and CPU-floor impact (CS-7).
+- Phase 2: move whisper and qwentts onto the new card with a measured result, device-true registry and dashboard text, per-service `HIP_VISIBLE_DEVICES`, re-cut speech-VRAM reservation (CS-12; co-residency and CU-mask measurements in CS-9; CPU alternative in CS-11).
+- Run the D1 interlocutor bake-off on it, cascade measured on the same clips as the baseline (CS-5 harness, CS-8 gates). Include a full-duplex reference only if M8's trigger holds; measure native turn-taking with the CS-45 / CS-48 instruments.
+- Re-run the CS-47 latency leg (staged script) and CS-49 on the live cascade there (CS-21 services up in a window owned by the inference-owning session).
+- Record the `human_recorded` stratum (CS-4 sets 2 and 5): without it no CS-47 arm can advance and CS-22's policy stays the silence default.
+- Fold the persistent-threadpool / yielding-barrier fix into the speech champions once its correctness gate passes and its result is recorded; update `speech-v2-manifest.md` in the same commit (SP2-005, SP2-006).
 
 ## Facts that constrain the design (verified 2026-09-24)
 
