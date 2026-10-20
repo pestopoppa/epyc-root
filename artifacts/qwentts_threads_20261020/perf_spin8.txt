@@ -1,0 +1,25 @@
+    73.52%  libggml-cpu.so.0.17.0           [.] ggml_graph_compute_thread
+    24.80%  libggml-cpu.so.0.17.0           [.] ggml_compute_forward_mul_mat
+     0.38%  [unknown]                       [.] 0x00000000aff21710
+     0.25%  libggml-cpu.so.0.17.0           [.] ggml_vec_dot_q8_0_q8_0
+     0.24%  libggml-cpu.so.0.17.0           [.] ggml_vec_dot_f16
+     0.10%  libggml-cpu.so.0.17.0           [.] ggml_compute_forward_im2col
+     0.03%  libggml-cpu.so.0.17.0           [.] ggml_vec_dot_f32
+     0.03%  [unknown]                       [k] 0xffffffffa6149517
+     0.02%  [unknown]                       [k] 0xffffffffa60e7490
+     0.02%  libggml-cpu.so.0.17.0           [.] ggml_graph_compute_secondary_thread
+     0.01%  [unknown]                       [k] 0xffffffffa5e00ef0
+     0.01%  qwen-tts                        [.] qwen_load_ctw_f32(WeightCtx*, GGUFModel const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+     0.01%  [unknown]                       [k] 0xffffffffa72d75e7
+     0.01%  [unknown]                       [k] 0xffffffffa5e01248
+     0.01%  libggml-cpu.so.0.17.0           [.] ggml_compute_forward_dup
+     0.01%  [unknown]                       [k] 0xffffffffa62c427f
+     0.01%  [unknown]                       [k] 0xffffffffa623ad7b
+     0.01%  libggml-cpu.so.0.17.0           [.] ggml_compute_forward_add_non_quantized
+     0.01%  [unknown]                       [k] 0xffffffffa61f55c5
+     0.01%  [unknown]                       [k] 0xffffffffa613ab4b
+     0.01%  [unknown]                       [k] 0xffffffffa62ae2a8
+     0.01%  [unknown]                       [k] 0xffffffffa61f55c6
+     0.01%  [unknown]                       [k] 0xffffffffa62c2f4d
+     0.01%  [unknown]                       [k] 0xffffffffa6457396
+     0.01%  [unknown]                       [.] 0x00000000aff249a3
