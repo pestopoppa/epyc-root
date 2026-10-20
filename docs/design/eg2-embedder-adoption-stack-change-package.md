@@ -1,8 +1,8 @@
 # Stack-change package (DRAFT): EmbeddingGemma 2 BF16 @256 as the REPL embedder-pool model
 
-**Status:** DRAFT 2026-10-20. Stack-change phases 0-5 written down; **not signable**: no patch set exists, no gate has run, and two inputs from other builders are still pending (§6, §7). Nothing was applied, no server was started, no registry/manifest/topology yaml was edited, nothing ran on the stack. Reads were of files, lane worktrees and one GGUF header.
+**Status:** DRAFT 2026-10-20. Stack-change phases 0-5 written down; **not signable**: no patch set exists, no gate has run, the migration tool has five open gaps against this package's scope (§6, B-1 to B-5), and the retrain list is still a placeholder (§7). Nothing was applied, no server was started, no registry/manifest/topology yaml was edited, nothing ran on the stack. Reads were of files, lane worktrees and one GGUF header.
 **Owner:** REPL-EMB lane (UFH-12, [`repl-embedding-retrieval.md`](../../handoffs/active/repl-embedding-retrieval.md)); assembled into the v11 kernel-promotion ratification by the promotion session (`kernel-promotion` step 8 hands to `stack-change` phases 7-8).
-**Depends on:** [`llama-v11-manifest.md`](../reference/kernel-manifests/llama-v11-manifest.md) rows V11-043 (PEND) and V11-091 (SUPER); the REPL-EMB-2.2 operator decision of 2026-10-20; the `context_search.py` prefix commit (pending, another builder); `scripts/migration/reembed_stores_eg2.py` (pending, another builder); the "trained on BGE vectors" list (pending, another builder).
+**Depends on:** [`llama-v11-manifest.md`](../reference/kernel-manifests/llama-v11-manifest.md) rows V11-043 (PEND) and V11-091 (SUPER); the REPL-EMB-2.2 operator decision of 2026-10-20; the `context_search.py` prefix commit (pending, another builder); `scripts/migration/reembed_stores_eg2.py` (another builder; uncommitted work, reconciled in §6); the "trained on BGE vectors" list (another builder; pending, §7).
 **Created:** 2026-10-20
 **Scratch**: none (doc only)
 
@@ -143,7 +143,7 @@ Markers are `embeddinggemma-2` and `egemma2`, matched against `model_id`. **Coup
 4. `TaskEmbedder._generate_embedding_llama` shells out to `DEFAULT_EMBEDDING_BINARY = /mnt/raid0/llm/llama.cpp/build/bin/llama-embedding`, the in-tree v9 build the CLAUDE.md warning describes, which has no `gemma-embedding2`. It must resolve through `kernels/production/cpu/llama-embedding` (present today) with `--pooling mean`, or the fallback must be removed. The v11 candidate must keep `llama-embedding` in its binary set (the 2.6 build produced `llama-server` only; kernel-promotion step 3 binary-set parity covers this, G-B3).
 5. `EmbeddingConfig.embedding_dim`, `EmbedderPoolConfig.embedding_dim`, `hash_fallback_embedding(embedding_dim=1024)`, `FAISSEmbeddingStore(dim=1024)` (two defaults), `SkillBank(embedding_dim=1024)` and the literal at `src/api/services/memrl.py:641`: derive from one constant or from `embedding_model.json` (§6), never from a second literal. Hash fallbacks are write-refused and detectable today (`is_hash_fallback_embedding`); the dimension change must not make a 256-d hash vector look valid.
 
-**Stores' own text prefix (open).** `TaskEmbedder` embeds serialized task text with no prefix (symmetric task-to-task similarity). EG2 is asymmetric. The 2.2 eval measured retrieval, not the stores. A prefix choice has to be pinned at write and at query time, and recorded in the sidecar. Recommendation: `task: sentence similarity | query: ` on both sides (the model card's symmetric prompt). Not measured; U-4.
+**Stores' text prefix.** The migration tool fixes it: stored items `title: none | text: `, queries `task: search result | query: ` (the pair the seam above uses and the 2.2 run measured). This package adopts that convention rather than inventing a second one. What is missing is client side-awareness (§6 B-5); whether a retrieval prefix suits symmetric task-to-task lookups was not measured (U-4).
 
 ---
 
@@ -173,31 +173,40 @@ Markers are `embeddinggemma-2` and `egemma2`, matched against `model_id`. **Coup
 
 ## 6. Store migration and order of operations (d)
 
-**Tool (pending, another builder): `scripts/migration/reembed_stores_eg2.py`** (dry-run, copy-then-swap, rollback; never run on live stores). It did not exist in either lane worktree or in the shared orchestrator clone when this was drafted. This package states **requirements on it**; reconcile with its docstring and actual flags when it lands.
+**Tool: `scripts/migration/reembed_stores_eg2.py`** (another builder). It appeared in the orchestrator lane worktree while this package was being drafted: 2,317 lines, uncommitted, "written and tested on synthetic stores ONLY", never pointed at a live store, and its retrain-flags section was still the literal placeholder `@@RETRAIN_FLAGS@@`. This section is reconciled against its docstring, not against a run.
 
-**Stores found (live dir `orchestration/repl_memory/sessions`, file sizes only):**
+**What the tool does.**
 
-| store | files | size | rows (derived, not read) |
-|---|---|---|---|
-| episodic | `episodic.db` (text lives here), `embeddings.faiss`, `id_map.npy` | 539 MB, 264,249,389 B, 2.5 MB | ~64.5k vectors (264,249,389 / 4096 B per 1024-d row, flat index) |
-| session | `session_embeddings.npy` | 4,096,128 B | 1,000 x 1024 (this is `(4,096,128 - 128) / 4096`) |
-| skill | `skills.db`; `skill_embeddings.faiss` + `skill_id_map.npy` do not exist today (SkillBank flag off) | 90 KB | 0 vectors |
-| strategy | `strategy_store.py` (embedding persistence to be confirmed by the tool's author) | | |
+- Re-embeds from retained source TEXT into the benchmark arm `eg2-gguf-bf16-256` (identity from `repl_emb_arms.py` `ArmSpec`: model, revision, dtype, dim, prompt hash): 768-d output, leading 256 columns, L2. Stored items get `title: none | text: `; queries are to get `task: search result | query: ` (the same pair as the `context_search.py` seam, §4).
+- Unit of swap = the store **directory**. Managed files are copied and rewritten; everything else in the 22 GB directory is hard-linked; the old directory is only ever **renamed** to `<dir>.pre-eg2-<run_id>/`. All-or-nothing: one BLOCKED store blocks the run.
+- Commands: `plan` (read-only, sqlite `immutable=1`); `run` (dry by default); `run --apply --embed-url URL --out-dir O --assume-stopped`; `check-marker DIR`; `rollback --manifest M --assume-stopped` (or the recorded `rollback-<run_id>.sh`). It starts and stops **no** process. `--embed-url` is one harness-owned EG2 llama-server (`/v1/embeddings`). It refuses on live indicators even with the flag (sqlite `-wal`/`-shm`, held `flock`, any process holding or mapping a store file), refuses to start while any `<dir>.pre-eg2-*` exists, and never deletes one. Exit codes 0 ok, 2 refused, 3 BLOCKED, 4 validation failed (live untouched), 5 swap failed (reverted), 6 rollback verification failed.
+- Marker `embedding_model.json` per migrated directory: `model, revision, dim, dtype, prompt_hash, arm_id, native_dim, normalise, doc_prompt, runtime, digest, run_id, migrated_utc, migrated_from`. A directory **without** it is a legacy BGE-1024 store. `verify_store_marker(dir, expected_dim, expected_identity)` is the consumer-side check.
+- Rollback restores the pre-swap directory. **Writes made to the EG2 store after the swap are not restored**; it refuses if the EG2 files diverged from the manifest unless `--allow-diverged`.
 
-The directory is 22 GB, mostly `pre-reseed` / `pre-repair` backups. `reembedded.npz` (1.98 GB) is an old BGE output, not a live store.
+**Stores found (live dir `orchestration/repl_memory/sessions`, file sizes by stat only):**
 
-**Requirements on the tool and its sidecar.**
+| store | files | size | source text to re-embed | by the tool's own rules |
+|---|---|---|---|---|
+| episodic | `episodic.db`, `embeddings.faiss`, `id_map.npy` | 539 MB, 264,249,389 B, 2.5 MB | `memories.context` JSON via the shipped `embedding_text()` | READY in principle; ~64.5k vectors (264,249,389 / 4096 B per 1024-d row; derived, not read) |
+| skills | `skills.db` (90 KB); no `skill_embeddings.faiss` / `skill_id_map.npy` on disk (SkillBank flag off) | | `skill_embedding_text` | empty |
+| sessions | `sessions.db` (102 KB), `session_embeddings.npy` 4,096,128 B = 1,000 x 1024 (`(4,096,128 - 128) / 4096`) | | **none retained**: the `embeddings` table keeps `(id, session_id, content_type)` only; `store_embedding` has definitions (`src/session/protocol.py:469,787`) and no caller | **BLOCKED, which blocks the whole run** |
+| strategy | separate directory `orchestration/repl_memory/strategies/`: `strategy_embeddings.faiss` 5,849,133 B (~1,428 vectors, derived), `strategy_id_map.npy`, `strategies.db` 2.4 MB | | in `strategies.db` (to confirm) | **not covered**: the tool blocks a unit with a co-located strategy index; the live layout keeps it in its own directory, so the tool never sees it |
 
-1. Dry-run on a **copy** of the live files, before the signature (gate G-S): row counts per store, token-length distribution of the stored texts against the 2048 slot, projected wall time, a sample of re-embedded vectors against a fresh request through the production client path (cosine >= 0.99999; the P6 analogue), and **similarity-score drift**: percentiles of top-k cosines for ~500 sampled queries, BGE vs EG2. Retrieval thresholds were calibrated on BGE (`episodic_memory.retrieval.min_similarity: 0.3`, `confidence_threshold: 0.6` in the master registry; further code-side thresholds are for the owner to enumerate) and **will not carry over** (U-5).
-2. Sidecar `embedding_model.json`, written per store dir at swap time. Fields the package needs: `model_id`, GGUF `sha256`, `native_dim`, `served_dim`, `pooling`, `normalise`, `truncation`, `prefix_query`, `prefix_document`, `source_model` (what the store held before), `written_at`, and the tool's `.pre-eg2` path. Actual schema: pending.
-3. Absent sidecar means legacy BGE-1024. This is what makes the `.pre-eg2` copies and a rollback self-consistent without editing them.
-4. Copy-then-swap under the store's own writer lock (`.episodic_faiss.lock`, the lock `reseed_episodic_store.py` and `repair_*` take), ids and row order preserved, `episodic.db` untouched except for any model-tag column the tool adds.
-5. The apply step re-embeds through the **same truncation + prefix code path** the live pool uses, from v11 EG2 servers launched with the production recipe argv.
-6. A rollback subcommand that restores `.pre-eg2` and handles rows written after the swap (re-embed them with BGE from `episodic.db`, or export them); otherwise rollback drops them.
+`reembedded.npz` (1.98 GB) in the directory is an old BGE output, not a live store. The directory is mostly `pre-reseed` / `pre-repair` backups.
 
-**Consumers that must read `embedding_model.json` and refuse a mismatch (no silent hash vector, no silent re-creation).** Confirmed by reading code: `FAISSEmbeddingStore` (`faiss_store.py`, dim defaults at `:98` and `:553`), `EpisodicStore`, `SkillBank` (`skill_embeddings.faiss`, `skill_id_map.npy`) and its constructor call at `src/api/services/memrl.py:641`, `SQLiteSessionStore` (`src/session/sqlite_store.py`, `session_embeddings.npy`; today `_load_embeddings` unlinks a mismatched file, and the refuse-and-keep `SessionEmbeddingsRefused` fix is in the lane worktree, uncommitted), and the writers `TaskEmbedder` and `ParallelEmbedderClient`. Name-grep candidates, owner to confirm: `retriever.py`, `strategy_store.py`, `seed_loader.py`, `replay/*`, `scripts/maintenance/{repair_episodic_embeddings,backfill_skill_embeddings,reseed_episodic_store,verify_episodic_reseed_cosine,check_episodic_integrity}.py`, `scripts/memory/{backfill_faiss_embeddings,migrate_to_faiss,q_scorer_runner,seed_*}.py`, `scripts/graph_router/reembed_episodic_store.py` (hardcodes the BGE path and an in-tree `llama.cpp/build/bin/llama-server`). **Direct pool readers that bypass the stores** and would silently pull full-size EG2 vectors from 8090-8095: `scripts/graph_router/embed_soft_label_dataset.py` (it does guard `!= 1024`) and `scripts/calibration/build_irt_prompt_embeddings.py`. Checked and **not** pool consumers: `src/retrieval/kb_rag.py` (its own ONNX encoder and stored-width check).
+**Gaps that must close before the signature** (owner: the tool's author unless stated; each is a mismatch between this package's scope and the tool's):
 
-**Order of operations.** One maintenance window inside the v11 full-stack apply, run by the session that owns the inference. The stack is going down anyway for the kernel cut, which stops every writer for free; autopilot stops first (CLAUDE.md "Full stack: stop autopilot first").
+1. **B-1 sessions.** `session_embeddings.npy` has no source text, so the tool reports BLOCKED and the run cannot apply. Fix in the tool: an explicit, manifest-recorded archive-only mode (the file travels into `.pre-eg2`, is not carried forward, the sessions store recreates an empty 256-d file; rollback hashes it back). No production writer of these vectors was found; whether anything reads the 1,000 existing ones is for the owner to confirm (U-11). Cannot be solved by re-embedding: the text is gone.
+2. **B-2 strategy store.** 1024-d, its own directory, used by autopilot (a rewind purges it), outside the tool. Needs a second unit (`--strategy-dir`) with the same marker, or a documented rebuild. Left alone it stays BGE-1024 while the pool answers 256-d, and `FAISSEmbeddingStore._load` reads `index.d` without comparing it to `self.dim`, so the mismatch surfaces only at the first `add()` or `search()`.
+3. **B-3 identity key.** The marker identifies the target by benchmark ArmSpec fields (`arm_id`, `digest`, `prompt_hash`); the live pool reports `model_id` = the GGUF basename. Consumers need one comparison key: add `model_file` and `gguf_sha256` to the marker, or have consumers compare `arm_id` + `digest` against a constant derived from the same ArmSpec.
+4. **B-4 consumers do not read the marker.** The tool says so ("NO consumer reads the marker today"). The change belongs to the orchestrator change set (§5) with hermetic tests: open a 256-d store at dim 1024 and the reverse, both refuse with the migration named, store bytes untouched.
+5. **B-5 side-aware embedding.** `TaskEmbedder` has one path for stored text and for lookups, no prefix. The stores will hold document-prefixed vectors, so lookups must carry the query prefix: a `side` argument through `embed_text` / `embed_task_ir` / the other `embed_*` helpers and `ParallelEmbedderClient`. The tool's own warning applies: a query embedded without its prefix against prefixed documents is a different, worse retrieval that nobody will see as an error.
+
+**Consumers (the tool's CONSUMERS block, reported there and not edited; read from code here).** `faiss_store.py` `FAISSEmbeddingStore(dim=1024)` and `NumpyEmbeddingStore(dim=1024)`; `episodic_store.py` `EpisodicStore(embedding_dim=1024)`; `skill_bank.py` `SkillBank(embedding_dim=1024)`; `src/api/services/memrl.py:641` literal; `src/session/sqlite_store.py` `SQLiteSessionStore` (`_load_embeddings` unlinks a mismatched file at HEAD; the refuse-and-keep `SessionEmbeddingsRefused` fix is in the lane worktree, uncommitted); `strategy_store.py`; `embedder.py`, `parallel_embedder.py`, `src/embedding_pool/policy.py` (§4). Added by this package, name-grep candidates for the owner to confirm: `retriever.py`, `seed_loader.py`, `replay/*`, `scripts/maintenance/{repair_episodic_embeddings,backfill_skill_embeddings,reseed_episodic_store,verify_episodic_reseed_cosine,check_episodic_integrity}.py`, `scripts/memory/{backfill_faiss_embeddings,migrate_to_faiss,q_scorer_runner,seed_*}.py`, `scripts/graph_router/reembed_episodic_store.py` (hardcodes the BGE path and an in-tree `llama.cpp/build/bin/llama-server`). **Direct pool readers that bypass the stores** and would pull full-size EG2 vectors from 8090-8095: `scripts/graph_router/embed_soft_label_dataset.py` (it does guard `!= 1024`) and `scripts/calibration/build_irt_prompt_embeddings.py`. Checked and **not** pool consumers: `src/retrieval/kb_rag.py` (its own ONNX encoder and stored-width check).
+
+**Dry-run content required for G-S** (beyond the tool's `plan`): token-length distribution of the stored texts against the 2048 slot; a sample of re-embedded vectors against a fresh request through the production client path (cosine >= 0.99999, the P6 analogue); and **similarity-score drift**: percentiles of top-k cosines for ~500 sampled queries, BGE vs EG2. Retrieval thresholds were calibrated on BGE (`episodic_memory.retrieval.min_similarity: 0.3`, `confidence_threshold: 0.6` in the master registry; code-side thresholds are for the owner to enumerate) and will not carry over (U-5).
+
+**Order of operations.** One maintenance window inside the v11 full-stack apply, run by the session that owns the inference. The stack is going down anyway for the kernel cut, which stops every writer; autopilot stops first (CLAUDE.md "Full stack: stop autopilot first"). **The writers (API, autopilot) are held down until the fleet proof and G-1 pass**, because rollback drops post-swap writes: the most likely rollback trigger (G-1) is decided while the post-swap write set is still empty.
 
 ```
 A  before the signature (no real tree touched; harness-owned servers on non-production ports under region claims)
@@ -207,21 +216,27 @@ A  before the signature (no real tree touched; harness-owned servers on non-prod
    A4 EG2 pool G1/G2/throughput on a quiet host, harness EG2 servers co-pinned   G-1, G-2, G-T1, G-M
       to the declared cpusets (idle BGE servers release their OMP teams after 10 ms, so co-pinning
       should not interfere; the A/A spread in G-1 would show it if it does)
-   A5 migration dry-run on a copy of the stores                                  G-S
+   A5 tool `plan` on the live store dirs (read-only) + a full `run --apply`
+      rehearsal on a COPY against a harness-owned EG2 server                    G-S
    A6 preflight on the lane trees (stack_change_pipeline check)                  §9
 B  OPERATOR SIGNS (inside the v11 kernel-promotion ratification)                 N-1
 C  apply
    C0 stack-change-pending set (phase apply)
    C1 read-only preconditions: region claims clear, bench claim empty on 136-183, no autopilot dispatch
-   C2 stop autopilot, then stop the stack; verify from /proc that nothing holds the store files
-   C3 snapshot every store file to .pre-eg2 (sha256 manifest)
-   C4 kernel cut (kernel-promotion step 7)
-   C5 merge lanes; stack_change_pipeline update --numa-mode both; check --run-promotion-gate
-   C6 copy embeddinggemma-2-BF16.gguf into models root; verify sha256
-   C7 migration apply (tool launches v11 EG2 servers from the production argv; stack is down, so the
-      full machine is free); writes embedding_model.json per store
-   C8 start --numa-mode both; stack-change-pending set --phase bring-up
-   C9 serving proof (§11), post-apply G1/G2/G3, then stack-change-pending clear; start autopilot
+   C2 stop autopilot, then the stack. Every writer down (the tool's step 0: API workers, autopilot,
+      q-scorer / Q-update loops, skill-distillation and seeding jobs, REPL sessions, maintenance scripts)
+   C3 kernel cut (kernel-promotion step 7)
+   C4 merge lanes; stack_change_pipeline update --numa-mode both; check --run-promotion-gate
+   C5 copy embeddinggemma-2-BF16.gguf into the models root; verify sha256
+   C6 migration: the session starts ONE harness-owned EG2 llama-server from the v11 store binary on a
+      non-production port, production recipe argv with more threads (the stack is down, the machine
+      is free), captures its PID; tool `plan`, then `run --apply --embed-url ... --assume-stopped`;
+      `check-marker` on each directory; stop that server by its PID and verify it is dead
+   C7 bring up the llama-server fleet and the embedders ONLY (start --only <roles>, which by code
+      read skips the API and the aux services); HOLD the API and autopilot; speech services for
+      G-3 are started on their own; stack-change-pending set --phase bring-up
+   C8 serving proof P1-P4, P7 (G-1, G-2, G-3)                                   rollback here loses nothing
+   C9 start the API, then autopilot; P5, P6; stack-change-pending clear
 ```
 
 An API-only variant (`reload orchestrator` plus a store lock) is possible but not recommended: the API holds in-memory FAISS handles and is itself a writer.
@@ -230,7 +245,7 @@ An API-only variant (`reload orchestrator` plus a store lock) is possible but no
 
 ## 7. Things trained on or calibrated to BGE vectors (e): owned follow-ups
 
-The other builder's list is **pending**; once it exists it is referenced from the docstring of `scripts/migration/reembed_stores_eg2.py`. Candidates found by reading code in this lane (not the owner's list):
+The other builder's list is **pending**: it is to live in the docstring of `scripts/migration/reembed_stores_eg2.py`, where the section was still the literal placeholder `@@RETRAIN_FLAGS@@` when read. Reference that report by path once it is filled. Candidates found by reading code in this lane (not the owner's list):
 
 - `scripts/graph_router/irt_scorer.py` (+ `build_irt_prompt_embeddings.py`): a ridge regressor from 1024-d BGE embeddings to IRT item scores, built from the pool directly.
 - Soft-label router dataset: `embed_soft_label_dataset.py` writes `[1024 BGE(prompt) | 5 task_type | 1 norm_ctx_len | 1 has_images]`; `train_graph_router.py` and the MLP router consume it.
@@ -258,7 +273,7 @@ Pre-registered here, proposed for signing. Unit and direction are stated. Nothin
 | **G-2** (G2) pool scaling | whole pool / one port, texts/s | ratio, higher = better | >= 4.0 (BGE: 4.96) | pending |
 | **G-3** (G3) speech | STT RTF, TTS first packet with the pool saturated, frontdoor idle, **warm-up discard pre-registered** | RTF lower = better; ms lower = better | STT RTF <= 0.40, TTS first packet <= 500 ms | pending |
 | **G-M** memory | `VmRSS` per instance, log `compute buffer size`, page locality on the declared node | GiB lower = better; % higher = better | <= 1.1 GiB per instance, >= 95% resident on the node (BGE: 97.8-98.9%) | pending; replaces §3's estimate |
-| **G-S** migration dry-run | §6 item 1 | cosine; count | rows in = rows out; sample cosine >= 0.99999 | pending (tool pending) |
+| **G-S** migration rehearsal | tool `plan` on the live dirs plus a full `run --apply` on a copy (§6, A5), with the dry-run content listed in §6 | cosine; counts | exit 0; rows in = rows out; sample cosine >= 0.99999 against the production client path; B-1 to B-5 closed | pending (tool never run on any store) |
 | **G-X** signature | one operator signature on the v11 ratification | | | N-1 |
 
 **Reference numbers, with their labels (nothing here is a speed claim):**
@@ -304,14 +319,14 @@ If the stack is already up for a reason other than the v11 cut, the embedder-onl
 - **P2** `/props` reports `n_ctx` 8192 (2048 per slot); one 2,000-token input returns a vector (BGE: rejected above 512).
 - **P3** real embeddings through the **production client path**: 256-d, unit norm, finite, and cosine >= 0.999 against the saved ST FP32 reference vectors in `parity/probe45` for the same 45 questions.
 - **P4** a context.search index build on a real bundle reports `mode: hybrid`, `embedder_model` = `embeddinggemma-2-BF16.gguf`, no `model_mismatch`.
-- **P5** every store dir has `embedding_model.json`; every consumer in §6 starts, reads it, and a deliberately mismatched dummy is refused with the store untouched.
-- **P6** `orchestrator_stack.py status`: 6/6 embedders, no attestation drift; no new hash-fallback rows from the window (`repair_episodic_embeddings.py` diagnose).
-- **P7** G-1, G-2, G-3 `--label post`, bands as in §8.
+- **P5** (after C9, API up) every store dir has `embedding_model.json` (`check-marker`); every consumer in §6 starts and reads it; a deliberately mismatched dummy is refused with its bytes untouched.
+- **P6** (after C9) `orchestrator_stack.py status`: 6/6 embedders, no attestation drift; no new hash-fallback rows from the window (`repair_episodic_embeddings.py` diagnose).
+- **P7** (C8, API still down) G-1, G-2, G-3 `--label post`, bands as in §8.
 
 ## 12. Rollback (f)
 
 - **Pool recipe:** `git revert` the orchestrator and research patches (the v10 BGE pool recipe is the committed pre-change `embedding.pool_recipe`: `context_tokens: 2048, threads: 4, slots: 4, pooling: cls, flash_attn: true, no_mmap: true`, model `bge-large-en-v1.5-f16.gguf`), then `update` and `reload embedders`. BGE weights and the BGE registry row are never touched, so nothing needs re-downloading.
-- **Stores:** `.pre-eg2` copies are retained (deleting them is the operator's separate confirmed action). Restore via the tool's rollback subcommand, which must also deal with rows written after the swap (§6 item 6). An absent sidecar restores the legacy BGE meaning.
+- **Stores:** `<dir>.pre-eg2-<run_id>/` is retained (deleting it is the operator's separate confirmed action; the tool never does, and refuses a new run while one exists). Restore with `rollback --manifest M --assume-stopped` or the recorded `rollback-<run_id>.sh`; the EG2 directory is kept as `<dir>.eg2-rolledback-<run_id>/`. **Writes made after the swap are not restored** (`--allow-diverged` to proceed), which is why the writers stay down until C8 passes. An absent marker restores the legacy BGE meaning.
 - **Coupling:** v10 cannot load `gemma-embedding2`. A kernel rollback to the v9/v10 anchor therefore **forces** the pool and store rollback in the same step; the reverse is independent (the BGE pool runs on v11). Order a full rollback as stores, then pool, then kernel.
 - **EG2 GGUF stays on disk.** The GPU embedder, Granite, and the `repl_embedding_pool` flag are unaffected.
 - **Triggers:** any ROLLBACK cell in §8; P1-P6 failing after one retry; G-1 below 0.86 on any port after apply.
@@ -327,7 +342,7 @@ If the stack is already up for a reason other than the v11 cut, the embedder-onl
 ## 14. Not in this change (h), and the not-measured ledger
 
 - **MI210 GPU timing** (HIP, Vulkan) stays in the frozen REPL-EMB-0.3 package. The GPU embedder, the B+D saturation-guard policy (REPL-EMB-1.4) and any flag flip are not here.
-- **Not measured:** EG2 llama-server throughput and latency uncontended; EG2 G1; memory per instance; parity above 459 tokens; recall at 3,200-char chunks; behaviour of the oversize path; the EG2 argv the 2.2 EG2 arms ran on (the deviation file records only the BGE server recipes); `flash_attn` resolution on CPU; the stores' retrieval quality and similarity thresholds on EG2.
+- **Not measured:** EG2 llama-server throughput and latency uncontended; EG2 G1; memory per instance; parity above 459 tokens; recall at 3,200-char chunks; behaviour of the oversize path; the EG2 argv the 2.2 EG2 arms ran on (the deviation file records only the BGE server recipes); `flash_attn` resolution on CPU; the stores' retrieval quality and similarity thresholds on EG2; the migration tool on any live store.
 - **Belief-kernel wiring (prepared; the owning session applies):** G-1/G-2/G-3 ride the existing `embedder_placement_capture` writer (VB-UFH12-PLACEMENT); G-C1 rides the 2.2 harness writer (VB-UFH12-RETR); G-P1/G-P2 and G-T1 need a write side confirmed (`repl_emb_parity_gate.py` has none that I found). If absent, add a row to `scripts/vidya/adapters/README.md` and a task in `vidya-belief-substrate-program.md` before the first gate runs.
 - **Index:** no row proposed. This is a design package under `docs/design/`, not a handoff; `handoffs/active/` would fail `index_state.py --check` (ORPHAN) without a row. If the REPL-EMB owner wants a pointer, the UFH-12 row's next action can name this file; row edits are the owning session's.
 
@@ -338,10 +353,12 @@ If the stack is already up for a reason other than the v11 cut, the embedder-onl
 | U-1 | Whether 3,200-char chunks hold recall | G-C1 |
 | U-2 | EG2 as-served throughput; the true `INDEX_ASSUMED_TEXTS_PER_S` | G-T1 |
 | U-3 | EG2 decode interference on frontdoor halves | G-1 |
-| U-4 | The stores' text prefix for symmetric task similarity (recommended `task: sentence similarity \| query: `) | migration dry-run neighbour-overlap + the tool's sidecar |
+| U-4 | Whether the retrieval prefix pair suits symmetric task-to-task store lookups (alternative on the model card: `task: sentence similarity \| query: ` both sides) | G-S neighbour-overlap, BGE vs EG2 top-k on ~500 stored queries |
 | U-5 | Retrieval thresholds on EG2 cosines | dry-run similarity percentiles; owner recalibrates before the swap |
 | U-6 | Parity above 459 tokens | G-P2 |
-| U-7 | Migration tool schema, flags, run time (~64.5k episodic rows) | tool lands; G-S |
+| U-7 | Migration run time (~64.5k episodic rows; EG2 server throughput unmeasured) | G-S rehearsal |
 | U-8 | The retrain / recalibration list | other builder's report |
-| U-9 | Whether `strategy_store.py` persists embeddings | tool author |
+| U-9 | Where the strategy store's source text lives (`strategies.db`?) and whether autopilot rebuilds it | B-2 owner |
 | U-10 | Digit-heavy and base64 content density under the Gemma tokenizer (worst measured 1.73 chars/token is from one corpus) | G-C1 `/tokenize` pass over the frozen corpus |
+| U-11 | Whether anything reads the 1,000 existing `session_embeddings.npy` vectors (no writer found) | B-1 owner |
+| U-12 | How to start whisper/tts for G-3 while the API is held: `start --only <roles>` includes the matching HOT/WARM entries (embedders are entries with `embedding: True`), prints "Skipping orchestrator API (--only mode)" and skips the aux services (`stack_commands.py` ~1642, ~1861, ~1903), so speech needs its own start; `reload whisper` / `reload tts` on a stopped service is unverified | owner of the apply window reads `stack_commands.py` reload path before C7 |
