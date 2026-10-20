@@ -2243,6 +2243,13 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   (2) the probe's `acc_peak` ≤ 238 is for the named prompts on the architect only. Grade via `claim_tuple.grade()`;
   no new ladder. Row PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and
   an adapter projects the harness summaries.
+- [ ] **VB-DF2-REPLAY — write side for CPU-only DF2 n-gram replays (DF2-14, DF2-19)** (filed 2026-10-20, agent df2-19;
+  CLAUDE.md *Belief Kernel*). No adapter row exists for these replays, and none is written here.
+  - Source: `epyc-root` `artifacts/research/df2-19-20261020/` (`results.json` carries the outcomes, chosen gates, seed count and corpus sizes;
+    `provenance.json` carries the dataset/tokenizer/COUNT pins and file sha256s; `positions.csv.gz` is the per-position raw table).
+  - Caution: token-level n-gram predictability under a Dolma2 retokenization proxy and a fitted overlap model, not drafter acceptance;
+    per-position DFlash2 acceptance is not on the wire. Two prompt groups only; the DF2-14 numbers (320 turns / 630k) are not re-checkable.
+  - Done when an adapter projects the arm hit rates and the holdout simulated gains with the pinned inputs as the locator.
 - [ ] **VB-V11FA — write side for the v11 FA routing A/B slot and the DF2-9 model probe** (filed 2026-10-04,
   workspace-ec, CLAUDE.md *Belief Kernel*).
   - Producers: `gpu_slot_v11fa.sh` → `slot-<ts>/summary.txt` and `perf_table.tsv` (µs per FA op × layout × rows ×
