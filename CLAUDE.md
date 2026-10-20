@@ -52,6 +52,8 @@ Coupling edges: `.claude/dependency-map.json`.
 3. **Validate no regressions** vs production (GPU + CPU).
 4. **Deploy** as a NEW production version. The candidate must be the FULL build (fresh production + all new features) validated as a whole — never reconciled via cherry-picks at promotion time; bench numbers come from the full candidate binary. Promotion checklist includes baking the project agent-file overlay (`docs/reference/agent-config/llama-tree-overlay/`) into the candidate so the new production tree ships freeze-aware agent files.
 
+Champion contents and promotion presence gates: [`docs/reference/kernel-manifests/`](docs/reference/kernel-manifests/README.md).
+
 ## Working-tree identity
 
 **Single source of truth**: `/workspace/repos/<name>` is a symlink to `/mnt/raid0/llm/<name>` (`/mnt/raid0/llm/llama.cpp` for `epyc-llama`) — parallel sessions on either path share one clone, branch, and staging area. Identity check: `stat -c %i /workspace/repos/<name>/.git` equals the target's. `scripts/clone-repos.sh` (idempotent, `DRY_RUN=1` to preview) creates/repairs the symlinks and backs up divergent clones — if the two paths ever show divergent commits, push unique commits from both sides first, then re-run it.
