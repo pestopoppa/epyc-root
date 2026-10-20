@@ -274035,8 +274035,7 @@
     main against source; anchors added.
 
 
-    2026-10-20 second reader (independent agents, two batches): mechanical re-find 136/136 (134 dive anchors + 2 of the 4
-    main-added anchors re-found on recheck; hashes recomputed); support yes 23 / partial 28 / no 1. Disagreements: claim 21
+    2026-10-20 second reader (independent agents, two batches): mechanical re-find 138/138 (134 dive anchors + 4 main-added anchors; hashes recomputed); support yes 23 / partial 28 / no 1. Disagreements: claim 21
     answered no -> main verified source and OVERTURNED the victim clause (corrected in place); claim 3 partial (ZOS default)
     -> main verified and corrected in place; claim 1 partial (per-position temperature) -> main verified mtp/dflash.py:L62-L64
     (temperature tuple indexed by step) and kept the claim (reader wrong); claim 9 partial (first-token logits through the

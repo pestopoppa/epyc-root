@@ -142,7 +142,7 @@
         "patches": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/",
         "ledger": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/LEDGER.jsonl",
         "second_reader": {
-          "anchors_refound": "302/302",
+          "anchors_refound": "304/304 (300 dive anchors + 4 main-added)",
           "support": {
             "yes": 110,
             "partial": 38,
@@ -293,11 +293,17 @@
       "ledger_rows": 149,
       "ledger_file": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/LEDGER.jsonl",
       "second_reader_totals": {
-        "anchors_refound": "516/516 (plus 4 main-added anchors)",
+        "anchors_refound": "516/516 (512 dive anchors + 4 main-added on intake-2116)",
         "yes": 191,
         "partial": 46,
         "no": 4,
         "no_resolved": "intake-2116 c21 overturned+corrected by main; intake-2133 c2-c4 rotated anchors re-indexed by main"
+      },
+      "stage3_draft": {
+        "plan": "/mnt/raid0/llm/tmp/intake-deepinfer-stage3/PLAN.md",
+        "payload": "/mnt/raid0/llm/tmp/intake-deepinfer-stage3/payload.json",
+        "session_copy": "/mnt/raid0/llm/tmp/intake-deepinfer-stage3/session-stage3-copy.json",
+        "status": "DRAFT, not presented, not approved; validator --plan-file exit 0"
       }
     }
   },
