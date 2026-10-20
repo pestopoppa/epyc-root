@@ -279249,3 +279249,1004 @@
     2026-10-20 second reader (independent agent): re-find 28/28; support yes 13 / partial 0 / no 0 (claims 9 and 11 compare
     with the DeepInfer Q&A outside their anchors; unchecked part noted). Main dropped a malformed bare-list depends_on [intake-2116]:
     the post is the Q&A''s parent text, so its claims do not rest on intake-2116''s.'
+- id: intake-2137
+  arxiv_id: '2601.04426'
+  url: https://arxiv.org/abs/2601.04426
+  source_type: paper
+  title: 'XGrammar-2: Dynamic and Efficient Structured Generation Engine for Agentic LLMs'
+  categories:
+  - inference_serving
+  - tool_implementation
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2132
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - (full author list not extracted from the saved text; Tianqi Chen, CMU/NVIDIA, is the corresponding author)
+  key_claims:
+  - 'TAGDISPATCH (intra-request dynamism): a first-class EBNF-compatible construct parameterised by tag->sub-grammar pairs
+    plus stop strings. Decoding alternates between a ''dispatching'' mode (free-form text accepted while an Aho-Corasick DFA
+    matches all registered tags at once) and a ''dispatched'' mode (the matched tag''s sub-grammar constrains output, then
+    control returns to dispatching). This is the free-then-constrained / tag-triggered pattern for tool calls and Harmony
+    channels. Encoding the same thing in plain EBNF blows up: 100 tags -> 952 AC states / 1902 transitions / EBNF size 6612,
+    compile 15483.5 ms vs 2002.1 ms for TagDispatch (Table 2; 5 tags 1008.6 vs 191.4 ms).'
+  - 'CROSS-GRAMMAR CACHE + JIT (inter-request dynamism): hierarchical structural hashing of FSMs (bottom-up over the rule-reference
+    graph, cycles handled by provisional hash plus refinement) lets token-mask caches be reused across requests whose tool
+    sets differ. Table 1 (1908-tool BFCL pool, 100 requests): whole-structure reuse 99.0% static vs 0% dynamic; substructure
+    reuse 99.1% static vs 25.2% / 79.9% / 95.6% dynamic for 10 / 100 / 500 tools. JIT builds mask-cache entries lazily on
+    first visit (compile overlapped with prefill, per-state mask build overlapped with decode); Table 4 on JSONSchemaBench
+    (units not recoverable from the extracted text): baseline 4960.04 preprocessing / 45.50 mask-gen -> +JIT 612.07 / 722.47
+    (8.1x less preprocessing, 15.9x MORE mask time) -> +cross-grammar 534.80 / 333.75 -> +repetition compression 5.37 / 126.49.'
+  - 'MASK COST AND COMPILE COST (vendor-reported, authors'' benchmarks, single-thread mask engines, AMD EPYC 9654 for the
+    mask-only experiments): on CONFETTI-derived Llama tool-calling and Harmony formats, XGrammar-2 compiles in ~10 ms vs >1000
+    ms for XGrammar; llguidance costs ~250 us/token (Harmony) and >1000 us/token (Llama format); XGrammar-2 cache hit rates
+    71.43% (Llama format) / 47.21% (Harmony). Absolute XGrammar-2 per-token values are only in Figures 8/9 (images, not readable
+    from the saved text). Abstract headline: over 6x faster compilation.'
+  - 'END-TO-END OVERHEAD (vendor-reported; SGLang 0.5.3.post3, RTX 5090 + Xeon 8470Q, BFCL-v3): XGrammar-2 end-to-end function-calling
+    latency ~7x lower than XGrammar and within 6% of unconstrained. Output tokens/s (Table 3), XGrammar vs XGrammar-2: Llama-3.1-8B
+    83/96 (batch 1), 525/920 (16), 738/1938 (128); Qwen3-0.6B 462/599, 1712/4287, 3021/9475. Table 3 has no unconstrained
+    row, so ''near-zero overhead'' rests on the Figure 10 / 6% sentence. llguidance was excluded from throughput because in
+    their SGLang integration it gave empty outputs on Qwen3-0.6B and language drift on Llama-3.1-8B.'
+  - 'QUALITY (vendor-reported, BFCL-v3, App. I Table 6): correct-call rate / schema-valid rate without vs with XGrammar-2:
+    Llama-3.2-1B 6.07/22.07 -> 32.84/100; 3B 33.12/40.70 -> 77.75/100; 8B 59.48/66.95 -> 80.93/100; 70B 45.60/51.94 -> 86.41/100.
+    Schema validity is guaranteed by construction; the accuracy gain comes from removing malformed calls, and the paper claims
+    Llama-3.2-3B with grammar beats unconstrained 70B on BFCL. Llama family only and the unconstrained baselines are weak,
+    so do not transfer the gain to tool-trained Qwen3.x models.'
+  - 'SPECULATIVE DECODING: the paper contains NO speculative-decoding, rollback or jump-forward content (zero hits for those
+    terms in the full text). The contribution is orthogonal to the speculative-verify interaction analysed for intake-2132;
+    trigger-switching state (AC state + sub-grammar position) would need the same per-accepted-token advance that llama.cpp
+    already performs.'
+  - 'ENGINE LINEAGE: parsing backend moves from XGrammar''s pushdown automaton to an Earley parser, with the adaptive accepted/rejected/context-dependent
+    token-mask cache built only over ''scannable'' Earley states; integrated into SGLang and vLLM per the authors. Baselines
+    are XGrammar, llguidance and Outlines only; llama.cpp is not benchmarked, so no number in this paper describes llama.cpp.'
+  techniques:
+  - TagDispatch (Aho-Corasick tag matching, free text then sub-grammar)
+  - Cross-grammar cache via hierarchical FSM structural hashing
+  - JIT compilation of the adaptive token mask cache overlapped with prefill and decode
+  - Earley-parser adaptive token mask cache over scannable states
+  - Repetition state compression for JSON-schema min/max constraints
+  reported_results:
+  - 'vendor-reported (authors; AMD EPYC 9654 single-thread mask engines, CONFETTI-derived formats): compile ~10 ms vs >1000
+    ms XGrammar; llguidance ~250 us/token Harmony, >1000 us/token Llama format; cache hit 71.43% / 47.21%.'
+  - 'vendor-reported (authors; SGLang 0.5.3.post3, RTX 5090 + Xeon 8470Q, BFCL-v3): ~7x lower end-to-end latency than XGrammar,
+    within 6% of unconstrained; Llama-3.1-8B tok/s XGrammar vs XGrammar-2 = 83/96 (b1), 525/920 (b16), 738/1938 (b128).'
+  - 'vendor-reported ablation (JSONSchemaBench, EPYC 9654): JIT 8.1x less preprocessing but 15.9x more mask-gen time; with
+    cross-grammar cache and repetition compression preprocessing 4960 -> 5.37, mask-gen 45.5 -> 126.5 (units not recoverable
+    from extracted text).'
+  - 'vendor-reported (BFCL-v3, Llama family): schema-valid rate -> 100%; correct-call rate Llama-3.2-3B 33.12 -> 77.75, 3.1-8B
+    59.48 -> 80.93.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2132
+  recommended_actions:
+  - Fold into the intake-2132 grammar-cost measurement (XGRAMMAR-A1); no build. llama.cpp already has lazy trigger grammars;
+    the new parts (Earley, JIT, cross-grammar cache) target large dynamic tool sets which we do not run.
+  credibility_score: 6
+  contradicting_evidence:
+  - All numbers are authored by the XGrammar team against their own v0.1.19 baseline; llama.cpp is not benchmarked. Table
+    3 lacks an unconstrained row. Mask-only results use single-thread engines on a server CPU, so a CPU-resident-forward overlap
+    window is not tested.
+  referenced_arxiv_ids:
+  - '2411.15100'
+  - '2506.01859'
+  - '2501.10868'
+  - '2507.16768'
+  notes: 'READ_DEPTH FULL for text: arXiv v4 HTML saved to /mnt/raid0/llm/tmp/dive-deepinfer-xgrammar2/paper.html (sha256
+    90fffdb5bc06219e...), converted to paper.txt and read in full (sections 1-6, appendices A-J). Algorithm bodies and Table
+    7 formulas are math-stripped; Figures 6-12 are images and unread, so absolute XGrammar-2 per-token microsecond values
+    are not available. No code executed, repo not cloned. EPYC side @ dd3d9721c: src/llama-grammar.cpp:L377-L392 (trigger_pattern::find
+    via std::regex), L1199-L1297 (lazy init), L1342 (apply_impl skips while awaiting_trigger), L1387-L1424 (accept_token:
+    trigger token match or regex over the growing trigger_buffer, then replays buffered pieces into the grammar); common/sampling.cpp:L214-L262
+    (trigger types), L447 (lazy grammar suppressed while reasoning budget active); common/chat.cpp:L1086/L1247/L1413/L1514
+    (lazy for tool_choice=auto, eager for required or response_format). Orchestrator @ 62ee3ba6: src/backends/llama_server.py:L1470
+    forwards json_schema/grammar onto /v1/chat/completions; first tool-required turn uses GBNF (intake-2132 notes, helpers.py:L1097-L1104).
+    Lane search of handoffs/active, handoffs/completed and wiki for grammar cost / lazy grammar / tool-call latency found
+    NO measured grammar-cost problem: grammar hits are a quality issue (answer-only grammar suppresses reasoning, inference-batch-loop.md:L30-L33;
+    re4-protocol-redesign.md), an inert-CLI note (gpu-acceleration-path.md:L566) and the standing pointer gpu-acceleration-path.md:L72.
+    Unmeasured caveat: the regex trigger search re-scans the whole trigger_buffer on every token while awaiting (quadratic
+    in free-text length, std::regex); plausibly small for short pre-tool text.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+  reader_should_conclude: 'Cite for: TagDispatch free-then-constrained semantics, the finding that dynamic tool sets defeat
+    whole-grammar caches (0% reuse) while substructure reuse rises with tool count, and the JIT trade (cheaper compile, costlier
+    mask). Do NOT cite as evidence about llama.cpp speed (not benchmarked), spec-decoding compatibility (absent) or CPU-forward
+    overhead (GPU-overlap only). llama.cpp already implements the trigger pattern (lazy grammar) and no grammar-cost problem
+    is measured in our lane, so the only action is to fold eager-vs-lazy mode into the intake-2132 measurement.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 ¶3
+    quote: Decoding starts in the dispatching mode, where the engine accepts ordinary text while continuously matching registered
+      tags.
+    quote_sha256: 99ff4dfb70330edef18747518b336dc543a3682e863ec590e6711aed9377a463
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 ¶4
+    quote: we use an Aho–Corasick automaton (AC automaton) (Aho and Corasick, 1975) to match multiple tags simultaneously
+    quote_sha256: 0aa899d6d6800b150782d7f141ab7274297040e7b34bf8a4472bddc06b54813c
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 1 caption
+    quote: Dynamic workloads fail to reuse the full structure, but can effectively reuse substructures.
+    quote_sha256: 1dd25e24f6d9d84cfb6c0f0a82bc25e3472f761cb8ecf222d421a78b7fc99d7f
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.5 ¶3
+    quote: compilation is overlapped with prefilling and influences the time to the first token
+    quote_sha256: a9f4c4c0ad3bc1a028126dac378063319d50c2d0b0fa3473dcc23a2f670cc11e
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 ¶4
+    quote: XGrammar-2 has a compilation time of about 10 ms, while XGrammar needs more than 1000 ms to compile
+    quote_sha256: 1085130203e7027bdd5fe1741c8e5c39456d17a2abedadc9b96ee607f027d604
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 ¶4
+    quote: llguidance has about 250 us per-token overhead with OpenAI Harmony Response Format and a more than 1000 us per-token
+      overhead with Llama’s Tool Calling Format
+    quote_sha256: 66520c336cd5f70e444f4414a5e25e2afe88129682d3678acb15d6537c941683
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.3 ¶3
+    quote: the gap between the result of XGrammar-2 and the result without constraints is no more than 6%
+    quote_sha256: 55952e514ba238037c4aa76d74de8e0037730ef32d6b644f193e7f152c8f7638
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.3 ¶1
+    quote: it results in empty outputs for Qwen3-0.6B and induces language drift from pure English to other languages in Llama3.1-8B
+    quote_sha256: 1a661620c3d6b96f1923e4093109b74faa069f200b3b9dabab92cb09044df2d9
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: App. I ¶3
+    quote: XGrammar-2 enables Llama-3.2-3B to outperform an unconstrained Llama-3.1-70B baseline on BFCL
+    quote_sha256: 960a8193414047640e957ad459ece550e3fc424855d042cec574cf487070f29b
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: §3.4 ¶1
+    quote: we build a new adaptive cache mechanism on top of the Earley parser
+    quote_sha256: c72a43a118fcebde881bdde5c6ca54c0c3a2b0e04596d2270c45fa773f3b5674
+    source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  - claim_index: 1
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  - claim_index: 2
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  - claim_index: 3
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  - claim_index: 4
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  - claim_index: 5
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  - claim_index: 6
+    effect: unaffected
+    note: New entry; claims verified against saved v4 text.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 3, Stage-2b): ingested and dived in one pass; settled that XGrammar-2 has no spec-decoding
+    content, does not benchmark llama.cpp, that llama.cpp already has lazy trigger grammars, and that JIT raises mask-gen
+    time 15.9x while cutting preprocessing 8.1x.
+
+
+    2026-10-20 second reader (independent agent): re-find 10/10; support yes 6 / partial 1 / no 0. Partial carried to Stage
+    3 as an anchor gap: claim 1''s structural-hashing mechanism and Table 4 figures are not in its quotes. Main dropped a
+    malformed bare-list depends_on [intake-2132]: counterfactual test fails (XGrammar-2''s claims rest on its own paper).'
+- id: intake-2138
+  arxiv_id: '2606.04101'
+  url: https://arxiv.org/abs/2606.04101
+  source_type: paper
+  title: 'UltraEP: Unleash MoE Training and Inference on Rack-Scale Nodes with Near-Optimal Load Balancing'
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2134
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Xinming Wei
+  - Chao Jin
+  - Tuo Dai
+  - Yinmin Zhong
+  - Shan Yu
+  - Chengxu Yang
+  - Bingyang Wu
+  - Zili Zhang
+  - Jing Mai
+  - Qianchao Zhu
+  - Zhouyang Li
+  - Yuliang Liu
+  - Guojie Luo
+  key_claims:
+  - 'Scope is exact-load, per-microbatch, per-layer balancing for TRAINING and SERVING PREFILL on rack-scale nodes (64-GPU
+    scale-up domains, EP64/EP40). Decode is explicitly NOT a target: the authors state compute-side imbalance in memory-bound
+    decode is largely diluted by memory access latency, and raising decode batch conflicts with TPOT SLOs. Evaluation covers
+    prefill TTFT/RPS only; no decode number exists in the paper.'
+  - 'Planning input is the CURRENT post-gating load, not a history window. Each rank reuses the notify-dispatch routing-metadata
+    exchange to get the global load matrix, then every rank deterministically computes the identical replication+reroute plan
+    with no extra sync; plan solving and weight replication sit on the critical path between gating and token dispatch. Contrast:
+    EPLB-style deployments reuse recent routing history and rebalance periodically (the paper''s baseline interval: every
+    50 prefill steps / every 3 global batches).'
+  - 'Algorithm (quota-driven planner, replication-only; main experts are never moved): binary-search the smallest per-rank
+    load threshold tau between the target rank load (balancing coefficient 1.01) and the initial max rank load; for each tau
+    run a greedy feasibility oracle that visits overloaded ranks by descending excess and their experts by descending load,
+    moving as much load as fits to the admissible rank with the largest slack, subject to a per-rank redundant-slot budget,
+    no duplicate expert on one rank, and a minimum useful quota per new replica (1024 tokens). Accepted transfers create a
+    replica AND its quota; a replica exists only if it carries >= 1024 tokens. Reroute then fills quotas locally first and
+    splits the residual proportionally; tokens go to the first instance whose cumulative quota covers them.'
+  - 'Cost of planning: solved ON DEVICE in a single cooperative thread block of one SM (warp-parallel probes, shared-memory
+    state). In the paper''s simulations averaged over MoE/EP/redundancy settings solving time is 0.111 ms (UltraEP) vs 0.153
+    ms (EPLB) per layer-plan, i.e. -27.4%; replica count 45 vs 107 (-57.9% redundant slots); result imbalance 1.03 vs 1.19.
+    Weight replication adds a per-layer transfer on the critical path (relay-tree fan-out holds ~0.28 ms for hot experts;
+    3.1-5.5x faster than torch.distributed/DeepEP-based transfer). Redundant slots reuse one buffer across layers (Qwen3-235B:
+    3.3 GB -> 36 MB weight per slot per rank).'
+  - 'Headline numbers (vendor/authors, 106B-671B bf16 on 64-GPU racks, 128-256 GPUs): 94.3% of force-balanced ideal averaged
+    over training+prefill (94.6% training, 93.9% prefill), 1.49x over no balancing, residual imbalance 1.30-4.01 -> 1.01-1.04;
+    prefill 1.56x vs SGLang and 1.29x vs history-based EPLB; training +42% vs Megatron-LM against +20% for history-EPLB, +12%
+    LPLB, +29% EPLB with exact load; UltraEP beats exact-load EPLB by 5-24% in prefill.'
+  - 'The authors measure that history-based balancing is stale on frontier MoEs: hot experts drift between consecutive batches
+    even within one domain, and on recorded loads (EP=64) EPLB with a 50-batch prefill interval ''can even worsen imbalance'',
+    creating new stragglers. Their EPLB-with-exact-load ablation (EPLB placement + round-robin reroute, same transport) lands
+    between history-EPLB and UltraEP in training (+29% vs +20% vs +42%), separating a prediction-lag loss from a planning-objective
+    loss.'
+  - 'Quota floor and replication-only design are scale-dependent: the argument that reordering main experts is not worth it
+    rests on large-EP leaving only 2-4 main experts per rank; the 1024-token quota floor presumes thousands of tokens per
+    layer-step. Neither premise holds for single-socket CPU decode at 1-4 tokens per step (6 selected experts of 384 for DS41,
+    one token each), so the planner cannot be carried over to decode as-is; its prefill-like regime (chunked prefill, T in
+    the thousands) is the only one it speaks to.'
+  techniques:
+  - Exact post-gating load balancing per microbatch and layer (replaces periodic history-based rebalancing)
+  - Quota-driven joint replication+reroute via threshold binary search with a greedy feasibility oracle
+  - Replica admission floor (minimum useful quota) so replicas only exist when they carry load
+  - Replication-only layout with cross-layer reuse of redundant-expert buffers
+  - Locality-first reroute with cumulative-quota token assignment
+  - Persistent tile streaming and relay-tree fan-out for expert weight replication
+  reported_results:
+  - 'vendor-reported (authors, public-cloud 64-GPU racks, bf16, serving prefill within one rack EP64/EP40, training 128-256
+    GPUs): UltraEP reaches 94.3% of force-balanced ideal averaged over training and prefill; 1.49x over no balancing; final
+    inter-rank imbalance 1.01-1.04 vs 1.30-4.01 before.'
+  - 'vendor-reported, serving prefill (Qwen3-235B EP64, GLM4.7-358B EP40; STEM and Mixed domains; Poisson arrivals): 1.56x
+    throughput vs SGLang, 1.29x vs history-based EPLB (interval 50 prefill steps), 5-24% over EPLB with exact load; 90-97%
+    of ideal. Comparison replays a recorded SGLang routing trace for identical load.'
+  - 'vendor-reported, training (3 models, resume at global batch 3500, 20 batches): +42% UltraEP, +29% exact-load EPLB, +20%
+    history EPLB (interval 3 batches), +12% LPLB over Megatron-LM; production RefMoE-288B EP32 sustains >92% of ideal, +9.6%
+    over no balancing.'
+  - 'vendor-reported simulation (power-law synthetic skew, varied MoE/EP/redundancy): result imbalance 1.03 vs 1.19 (EPLB),
+    solving time 0.111 vs 0.153 ms, redundant slots 45 vs 107, max fan-out 6.8 vs 8.5; EPLB reaches imbalance up to 1.4 under
+    tight replica budget where UltraEP stays below 1.1.'
+  - No decode measurements, no CPU measurements, no AMD measurements, no quantised-weight measurements exist in the paper;
+    every number is a bf16 NVIDIA-rack figure. The eval models are Qwen3-235B-A22B, GLM4.5-106B, GLM4.7-358B, DeepSeek-V3
+    (none is DS41).
+  cross_references:
+    chapters: []
+    handoffs:
+    - moe-routing-tap-and-locality-measurement.md
+    - large-moe-expert-parallelism.md
+    - deepseek-v41-flash-evaluation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-2134
+    - intake-2135
+    - intake-1336
+    intake_entry_notes:
+    - 'intake-2134 (deepseek-ai/EPLB: the history-based planner UltraEP measures against and replaces; this paper is the evidence
+      on EPLB staleness)'
+    - 'intake-2135 (DeepEP: NEW-deepep patch notes lb_prefetch_weights, the NVLink weight-push counterpart; UltraEP cites
+      DeepEP as its token-dispatch baseline)'
+    - intake-1336 (EPLB-adjacent routing-locality entry cited by the EPLB patch)
+  recommended_actions:
+  - 'RT-6 amend: add an ORACLE exact-load arm (zero-lag per-step quota planning, replication budget priced in copy bytes)
+    beside the history-window policies, so the replay separates prediction-lag loss from placement loss; decode-only T in
+    {1,3} is expected to show no headroom and that is the point'
+  - 'RT-6 amend: add a prefill-chunk regime row (T in the thousands) because that is the only regime the paper speaks to'
+  - 'Knowledge-only: cite for the claim that history-window EPLB is stale on non-stationary load, not for any decode or CPU
+    number'
+  credibility_score: 3
+  contradicting_evidence:
+  - Authors report the staleness result on their own recorded loads with a fixed 50-step EPLB interval; a shorter interval
+    or a better predictor is not tested (EPLB itself leaves prediction out of scope). Not independently reproduced. Contradiction
+    search not run (no network search beyond arXiv/GitHub metadata).
+  referenced_arxiv_ids: []
+  notes: 'Fetched arxiv.org/abs/2606.04101 (title confirmed, v1 2 Jun 2026, latest v3 18 Jun 2026); saved https://arxiv.org/html/2606.04101v3
+    to /mnt/raid0/llm/tmp/dive-deepinfer-ultraep/paper.html (369,420 bytes) and a tag-stripped text at clean.txt (derived
+    by python html.parser; math symbols such as the multiplication sign are dropped in clean.txt, so ratio quotes were chosen
+    to avoid them; the raw HTML confirms the ratios e.g. 1.56 x and 1.29 x). READ: whole paper text §1-§9 incl. Algorithm
+    1 listing (pseudo-code line bodies lost to math stripping; algorithm taken from §5 prose), Table 1-3 (Table 3 columns
+    partly lost; the 107/45 and 8.5/6.8 pairs and ms values are in the clean text, the column labels for the two count columns
+    are inferred from §8.5 prose: redundant slots consumed and max fan-out), §8 figures NOT viewed (Fig 4/6/11/12/15/16 images).
+    NOT READ: references list beyond LPLB/EPLB/DeepEP URLs, §6 data-plane prose beyond the headline relay numbers, GitHub
+    implementation. The paper symbol for EPLB with exact load is a superscript plus (confirmed in raw HTML as EPLB + +); the
+    training sentence lists it as the third EPLB-named entry. Implementation repo Dots-Infra/UltraEP exists (GitHub API: pushed_at
+    2026-10-15) and was not read.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+  reader_should_conclude: 'Cite for: (a) exact post-gating planning is the alternative to history-window planning, and the
+    authors measured the history window failing on non-stationary load in PREFILL and TRAINING; (b) the quota-driven threshold-search
+    algorithm and its admission floor; (c) a solve time of 0.1 ms per layer on one GPU SM. Do NOT cite for any decode claim
+    (the authors exclude decode), for any CPU/AMD/MXFP4 number, or as evidence that per-step planning helps at 1-4 tokens
+    per step: the quota floor of 1024 tokens and replication-only argument assume large token batches. Do not carry 1.56x/1.29x/94.3%
+    as EPYC expectations. It does change RT-6: add an oracle exact-load arm.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3 Serving Prefill ¶1
+    quote: For memory-bound decode, we discover that the impact of compute-side imbalance is largely diluted by memory access
+      latency.
+    quote_sha256: 3e477fff4db060e5b8c494ed1d776d7232fa654a1e3650c9f7eb5f1f6e90f945
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: UltraEP, the first exact-load, real-time balancer for large-EP MoE training and serving prefill on rack-scale nodes
+      (RSNs).
+    quote_sha256: dd31501da27e65fd8bd49daaf5060a67a0e99c3c905fd30650f563dd5a24a577
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.2 Forward ¶1
+    quote: Given this exact load, every rank deterministically computes an identical replication and reroute plan with no
+      extra synchronization.
+    quote_sha256: b32b59996a28e7c83de40ac5afcf5f8fbca1dd30cb1170c467e08276e5b22b59
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.2 Forward ¶2
+    quote: As a result, planning and weight replication both stay on the critical path.
+    quote_sha256: 2beba14e8aa6c6724462a5616e1efb3e1c34d703ed196f26af8d2005cc3b347d
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §8.1 Baselines
+    quote: We use 50 prefill steps and 3 global batches as the rebalancing frequency for serving and training, respectively.
+    quote_sha256: 85f5dd87b471922b29cf89763dc013ee4cb308453107839f0342a72ef1ce2811
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5.1 Quota Construction
+    quote: UltraEP binary-searches between the target rank load and the initial maximum rank load, and runs a greedy feasibility
+      oracle for each probe.
+    quote_sha256: 46a5a0a0ce3aa778e151b87aa42a6af51e3e4dcd7ce2f0a2156300b3cd41534c
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.1 Replication Only
+    quote: UltraEP adopts replication-only balancing.
+    quote_sha256: 91de756fbfaf833969acb33934c8ecab0634a9c140cb7639aca2c654555a5653
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table 1 notation
+    quote: Minimum useful quota of a newly created replica (set to 1024 in this work).
+    quote_sha256: 496e5dda9d43ee8212ec1f5d1cd2b41dcdf3a8bfbc64daf6ba0997ddd3527d4b
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table 1 notation
+    quote: Target balancing coefficient (set to 1.01 in this work).
+    quote_sha256: e66fcc5c2b3f46e34a581c1c0d5337355a7a9862250e97140c86c8d174062254
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5.3 GPU-Native Solving
+    quote: With one cooperative thread block on a single streaming multiprocessor (SM), it stages the load matrix and placement
+      state in shared memory
+    quote_sha256: de860e1ea2a88772a3ad35ff218a988c9aca38a6100128d0ac8906bda10bf160
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §8.5 Balancing Quality
+    quote: At the same time, UltraEP saves solving latency by 27.4 %, consumes 57.9 % fewer redundant slots, and reduces token
+      traffic by 3.9 % with locality.
+    quote_sha256: 5ff6611f5f547407bf6d960804eba8ffacc29850000505f9b5eb9f649f312ef8
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.1 Cross-Layer Buffer Reuse
+    quote: this reduces a single redundant slot from 3.3 GB weights and 6.6 GB gradients to 36 MB and 72 MB per rank
+    quote_sha256: c19008ba695c9de87b10f93b7884a8d626dde024b06ca9b6f8eac28b4b91d1d2
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Abstract
+    quote: reducing the final inter-rank imbalance from 1.30–4.01 to 1.01–1.04
+    quote_sha256: 817db39a3dcc0dc09e26847f03d0dc0bc346dc89ca659a6ee3ecfa9f1d4489a7
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §8.2 Training
+    quote: EPLB, LPLB, EPLB, and UltraEP improve throughput by 20 %, 12 %, 29 %, and 42 % over Megatron-LM, respectively.
+    quote_sha256: 04c997242e15243e3a4bfaad5536c74ba6ce9c7741f0b5b6ace9aefa2201b912
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §3 Limitations of History-Based Balancing
+    quote: When the realized load deviates from the statistics used to derive the expert layout, EPLB can even worsen imbalance,
+      creating spikes and new stragglers.
+    quote_sha256: 4638e297942213b1a0ff82177166855aac76c0943b5bb70bb31605319de6d229
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §3 Serving Prefill
+    quote: Even within a single domain, the hot experts drift from one batch to the next
+    quote_sha256: 860f9b45412c222cef24bf0d94d84ca079a3fd0ceb3e95dfaf62d7aa20432041
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §8.1 Baselines
+    quote: to isolate the benefit of our exact-load quota solving, we replace UltraEP’s planning with standard EPLB and round-robin
+      reroute while keeping the communication mechanism unchanged.
+    quote_sha256: 73f3566106277536b48b7644696f234e990ce8dfe4be963958063d014a1245fa
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: §4.1 Replication Only
+    quote: This reordering-free design is effective because large-EP reduces the number of local main experts per rank (often
+      two or four).
+    quote_sha256: 4fb9b9bd98da22ac78e1658e4e72f6e94ec9edd2afddf78a1ba6489a4a537a6c
+    source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  - claim_index: 1
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  - claim_index: 2
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  - claim_index: 3
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  - claim_index: 4
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  - claim_index: 5
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  - claim_index: 6
+    effect: unaffected
+    note: New entry; claims written from the saved paper text.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 3, Stage-2b): ingested and dived in one pass; settled that UltraEP plans from current
+    post-gating load (not a history window), is replication-only with a threshold-search quota planner at ~0.11 ms per layer
+    on one GPU SM, targets prefill/training and explicitly excludes decode, and that its own ablation separates prediction-lag
+    from planning-objective loss.
+
+
+    2026-10-20 second reader (independent agent): re-find 18/18; support yes 5 / partial 2 / no 0. Partials carried to Stage
+    3 as anchor gaps (claims 3 and 4: planner timing/replica counts and the §8.2 prefill serving ratios are in the paper but
+    not in the quotes); no contradiction.'
+- id: intake-2139
+  arxiv_id: null
+  url: https://github.com/MoonshotAI/MoonEP
+  source_type: repo
+  title: MoonshotAI/MoonEP - perfectly balanced expert-parallel communication via dynamic redundant experts (online planning
+    kernel + weight prefetch)
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2135
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Yutian Chen
+  - Cong Li
+  - Yucheng Wang
+  - Ming Wei
+  key_claims:
+  - MoonEP is an expert-parallel communication library that makes every rank receive exactly S x K tokens (fixed capacity
+    NvS_capacity = S*K) by planning a small number of redundant experts ONLINE from the CURRENT router outputs on every layer
+    call and prefetching their weights before expert compute. There is no history, moving average or predictor anywhere in
+    the code (grep for history/predict/moving average/stale finds only an unrelated scratch comment).
+  - 'How the ''hot'' set is found: there is no hot-expert detector or threshold. Each rank contributes its per-expert token
+    counts (tokens_per_expert, [E]); the planning kernel gathers all ranks'' counts, computes per-home-group (rank) token
+    totals, and runs a greedy rebalancer: repeatedly take the group with the largest surplus over the capacity S*K and the
+    group with the largest deficit, and move min(deficit) tokens from surplus to deficit (one pass fills the receiver to capacity).
+    Then, per home group, tokens to be shifted are allocated to the owner''s experts largest-remaining first. Which experts
+    get replicated is therefore whatever carries the shifted token mass this step.'
+  - 'How weights are moved: after planning, every destination rank holds epn = E/R prefetch slots (a process-global pool shared
+    by all layers); each rank pushes its own local expert weights into the prefetch slots of peers that were assigned tokens
+    for them (experts_to_copy table: all experts with a positive count that are not local, compacted by global expert id).
+    The copy is a persistent warp-specialised TMA kernel (one producer warp, six store warps, 128x128 or 128x256 tiles, up
+    to 6 stages) over NVLink with a trailing cross-rank barrier; packed MXFP4 (uint8 weights plus scale tensors) is supported
+    alongside bf16. Constructive planner invariant: a destination rank receives tokens from at most one remote home group,
+    so epn slots always suffice.'
+  - 'Overheads: the README states planning is ''negligible'' and that the plotted comparison already includes MoonEP''s planning
+    and prefetch kernels, but gives no numbers in text; the only quantitative results are two bar charts (comm time vs DeepEP
+    v2 across router imbalance maxvio, and end-to-end training iteration time) on 8 H20 GPUs at EP=8, which were NOT viewed.
+    Planning runs as ONE cooperative-grid kernel with software grid barriers and a cross-rank barrier; the rebalancing loops
+    in the Phase B/C section sit under an ''if rank == 0'' branch (planning.py L584; how the result reaches the other ranks
+    was not read). Memory overhead stated in the README is epn expert weights per projection in total, not per layer; training
+    adds fp32 gradient reduce buffers.'
+  - 'Hardware and scope: NVIDIA only (NVLink peer-to-peer writes, TMA, multimem, CuTe DSL); a Zhenwu PPU port is listed as
+    coming. Built for training (gradient reduce back to home ranks) and forward dispatch; S is tokens per rank per microbatch,
+    assumed large enough that S*K capacity is meaningful. Prompt/decode small-batch behaviour is not discussed.'
+  techniques:
+  - Online per-layer planning of dynamic redundant experts from exact token counts (greedy surplus-to-deficit rank balancing,
+    strict S*K capacity)
+  - Owner-push weight prefetch into a process-global slot pool shared across layers (epn slots)
+  - Persistent warp-specialised TMA copy kernel with packed MXFP4 weight and scale support
+  - Static-shape zero-copy dispatch/combine (fixed S*K buffers, no per-layer host sync)
+  reported_results:
+  - 'vendor-reported, NOT READ: two bar charts (figure/comm_vs_deepep.png, figure/e2e_vs_deepep.png) on H20, EP=8, sweeping
+    router imbalance maxvio = max_e(T_e / mean T) - 1; the README text asserts MoonEP comm time is flat in maxvio and below
+    DeepEP v2, and that total dispatch (including planning and prefetch kernels) is on par with DeepEP v2''s dispatch alone
+    and better under imbalance. No number is in the text and the images were not viewed.'
+  - No planning latency, prefetch bandwidth or per-layer overhead number exists in text. benchmarks/bench_prefetch.py would
+    print worst-rank latency and GB/s but was not run (no compute rule).
+  - No decode, CPU, AMD or small-batch measurement exists in the source.
+  cross_references:
+    chapters: []
+    handoffs:
+    - moe-routing-tap-and-locality-measurement.md
+    - large-moe-expert-parallelism.md
+    - deepseek-v41-flash-evaluation.md
+    - gpu-acceleration-path.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-2135
+    - intake-2134
+    intake_entry_notes:
+    - 'intake-2135 (DeepEP: MoonEP names it as the inspiration; NEW-deepep patch notes lb_prefetch_weights as DeepEP''s own
+      redundant-expert push, which this wave did not read in source)'
+    - 'intake-2134 (EPLB: history-based planner that MoonEP replaces with exact-load planning)'
+  recommended_actions:
+  - 'Knowledge-only for RT-7: the per-step dynamic prefetch design does not fit a PCIe-attached accelerator at decode (see
+    UE/MO ledger arithmetic); the slow-adaptive cache is the RT-7 hit-rate curve'
+  - 'Port-map note for CAFE-7: MXFP4 uint8 weight+scale prefetch layout is a ready reference for a gfx90a expert-slot pool'
+  - 'Operator-review candidate: a prefill-only dynamic residency experiment on the MI210 once DS41-T7 prices tokens-per-expert
+    break-even'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'git clone --depth 1 https://github.com/MoonshotAI/MoonEP to /mnt/raid0/llm/tmp/dive-deepinfer-moonep/src; HEAD d86fda40329de4002e0cade6817df7b4b5512ee5.
+    READ: README.md (217 lines, all text; the two PNGs not viewed), moonep/planning.py L1-L300 and L560-L850 (Phase A/B/C
+    and the Phase-D expert-to-copy selection; remaining Phase D writeback L850-L1100 and the host-side wrapper L1100-L1280
+    skimmed via grep only), moonep/prefetch.py L1-L120 header and grep of the owner/barrier logic (kernel body not read),
+    moonep/api.py L255-L290 and the prefetch_weight docstring. NOT READ: dispatch.py, combine.py, grad_reduce.py, dispatch_epilogue.py,
+    combine_prologue.py, inter_rank_sync.py, _common.py, csrc/, tests/, benchmarks/ (bench_prefetch only grepped), figures.
+    Nothing built or run. README acknowledgements name UltraEP (github.com/Dots-Infra/UltraEP), DeepEP, AcclEP and an arXiv
+    id labelled Echo (2603.07685); that id resolves on arxiv.org/abs to a different title (Scalable Training of Mixture-of-Experts
+    Models with Megatron Core), so it is NOT listed as a surfaced source.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+  reader_should_conclude: 'Cite for the design: exact-load per-layer planning with a strict per-rank token capacity, owner-push
+    prefetch of redundant experts into a layer-shared slot pool, MXFP4-capable. Do NOT cite for any speed, overhead or balance
+    number (none in text; charts unviewed), for hot-expert detection (there is none: it is a rank-level greedy over current
+    counts), or as a decode design. For EPYC the transferable pieces are the slot-pool layout and the "replicate only what
+    the shifted token mass needs" rule; the per-step PCIe fetch itself loses at T=1-4 (0.65 ms to fetch an 18.8 MB expert
+    at 28.9 GB/s vs ~0.11 ms to read it from DRAM on the CPU).'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L7 @ d86fda4
+    quote: A small number of redundant experts is planned online from the current router outputs and prefetched before expert
+      computation; their gradients are reduced back to their home ranks in the backward pass.
+    quote_sha256: 8298bdfd246fc9a8d62a2258a21db63afa2a2d68cadc60ea86cbe6f0032a4c0c
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: moonep/api.py:L265 @ d86fda4
+    quote: NvS_capacity = S * K
+    quote_sha256: ae5225c33560d39e9f51a4bee619e16eab4ca4e1a02cbd6dc3652fb5e9296738
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: moonep/planning.py:L655 @ d86fda4
+    quote: 'if k < R: balance[j] = group_tokens[k] - CAP'
+    quote_sha256: 24b1a1a478f36de6bc5cfccf587583588da0fdcfef653d78c642691ea0d6ebbb
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: moonep/planning.py:L663 @ d86fda4
+    quote: 'if surplus <= 0 or deficit >= 0:'
+    quote_sha256: 84570941ca9674ed3595566689c4381f53d46b7c46f271824ff16ddff87e5cb1
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: moonep/planning.py:L667 @ d86fda4
+    quote: '# shortfall; refill deficit_rank back to CAP in one shot.'
+    quote_sha256: a602000fff49d35f7f6f500d6157d2ec582b0d18a536f61e5c39bff02060378d
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: moonep/planning.py:L818-L819 @ d86fda4
+    quote: '# With epn slots every remote expert fits. Compact all positive'
+    quote_sha256: 0c8c28da2f24010da40a8d00836c72120be22ecb2ba2495e7e5295e88485c52e
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: moonep/planning.py:L830 @ d86fda4
+    quote: selected = (cnt > 0) & (
+    quote_sha256: 7381eded49b451c2c8bdfa75d82bc35cf243899d705d3339737b31eb7c2517b3
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L58 @ d86fda4
+    quote: The planner moves experts from at most one remote home group to each destination rank, so these slots cover every
+      remote expert segment.
+    quote_sha256: 5232907284ea5c624fa1ac60cb909b4f3d4be96ce2192276bbd1ffe5268eef6c
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: moonep/api.py:L879 @ d86fda4
+    quote: bf16 for unquantized experts, uint8 for packed MXFP4.
+    quote_sha256: f23c920211c98fb6cfc36f8067b52a4a0aec228b5149ebfc68a17fcc2d863687
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: moonep/prefetch.py:L40-L45 @ d86fda4
+    quote: Persistent multi-tensor 2D TMA local-expert prefetch push.
+    quote_sha256: ffbcaa5ad4da06791bffeaa9da0a93b6b1907a974fd0ea56b4903fad86927d8a
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L56 @ d86fda4
+    quote: Each rank's prefetch pool is process-global and shared by all layers, so the extra physical cost is `epn` expert
+      weights per projection in total, not per layer.
+    quote_sha256: 5ebd28ed8cc62ddb0c90e61bac530b341561b48eb08e751567649ec1258c9638
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L13 @ d86fda4
+    quote: 'Both benchmarks run on H20 with EP=8, sweeping the router imbalance:'
+    quote_sha256: ea388a4bd4e634bfe6bda834b3691ccb557a757c84e68e0dbf279513dceb0627
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: moonep/planning.py:L584 @ d86fda4
+    quote: 'if rank == 0:'
+    quote_sha256: 3f76d2781e84fc5e979e0ae30408f9f3319e926b4c0cdfe76ed98ddc2733b0e4
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L33 @ d86fda4
+    quote: '- NVIDIA GPU'
+    quote_sha256: 72bd3f0ec934e92e49799fa93aae9ba41007b3d9946e956c339e662a254ece94
+    source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: New entry; claims written from the saved source.
+  - claim_index: 1
+    effect: unaffected
+    note: New entry; claims written from the saved source.
+  - claim_index: 2
+    effect: unaffected
+    note: New entry; claims written from the saved source.
+  - claim_index: 3
+    effect: unaffected
+    note: New entry; claims written from the saved source.
+  - claim_index: 4
+    effect: unaffected
+    note: New entry; claims written from the saved source.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 3, Stage-2b): ingested and dived in one pass; settled that MoonEP has no history or
+    hot-expert detector (exact current counts, rank-level greedy rebalancing to capacity S*K), moves weights by owner-push
+    TMA copies into epn layer-shared prefetch slots (MXFP4 supported), and publishes no overhead numbers in text.
+
+
+    2026-10-20 second reader (independent agent): re-find 14/14; support yes 5 / partial 0 / no 0; the reader re-checked the
+    two negative claims (no history/predictor) by grep; corrections applied: none required.'
+- id: intake-2140
+  arxiv_id: null
+  url: https://github.com/ROCm/mori
+  source_type: repo
+  title: 'ROCm/mori - MORI: AMD GPU+RDMA communication framework (MORI-EP dispatch/combine, MORI-IO KV transfer, SHMEM, UMBP
+    tiered KV pool)'
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2135
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - AMD ROCm
+  key_claims:
+  - 'Scope: MORI (Modular RDMA Interface, ROCm/mori, MIT) is an RDMA+GPU communication framework with four libraries: MORI-EP
+    (MoE dispatch/combine, intra- and inter-node), MORI-IO (p2p transfer for KV cache, backends RDMA / XGMI / TCP), MORI-CCL
+    (collectives, plus an SDMA all-gather) and MORI-UMBP (tiered DRAM/HBM/SSD KV pool with a distributed master), all on an
+    OpenSHMEM-style symmetric-memory layer (MORI-SHMEM). It is the AMD counterpart of DeepEP (the DeepEP README names it as
+    the ROCm backend).'
+  - 'Supported hardware as stated: GPUs MI308X, MI300X, MI325X, MI355X are supported for EP/IO/SHMEM and MI450X is under development;
+    NICs Pollara (AMD AINIC), ConnectX-7 and Thor2 are supported. gfx90a / MI210 / MI250 is NOT supported and not mentioned
+    anywhere in the tree (0 hits for MI210, MI250 or gfx90a). The architecture allow-list is hard-coded in three places: setup.py
+    _supported_arch_list = [gfx942, gfx950, gfx1250], cmake MORI_SUPPORTED_ARCHS = gfx942;gfx950, and the JIT toolchain; an
+    unsupported local GPU is simply skipped by the detector and the build falls back to a fat binary for the supported list,
+    so on MI210 the package would build but carry no gfx90a code. README prerequisite is ROCm >= 6.4 (our host is ROCm 6.2).
+    Verdict on the platform question: the shipped binary is unusable on MI210 as-is; this is a port, not a decline (see ledger).'
+  - 'Hot paths are RDMA-NIC- or XGMI-peer-centric: EP dispatch/combine kernels run on symmetric memory across >= 2 GPUs (tests
+    are EP8/EP16/EP32; tuned configs exist from ep2 upward and are tuned for gfx942/gfx950), inter-node uses GPU-initiated
+    RDMA (IBGDA) through a vendor direct-verbs library (libionic / libmlx5 / libbnxt_re). Source comments tie behavior to
+    gfx942 (hipMemSetAccess failure after several separate VMM allocations) and the FP4 paths require gfx950 OCP FP4 instructions.
+    None of this applies to a single MI210 with no peer GPU and no RDMA NIC; EP has no single-GPU-plus-host mode.'
+  - 'Reported EP numbers (vendor-reported, README): DeepSeek-V3 config, 4096 tokens x 7168 hidden x top-8, FP8 dispatch +
+    BF16 combine, bandwidth per GPU: MI300X + CX7 EP8 dispatch 307 GB/s / combine 330 GB/s over XGMI; EP16-V1 171 / 219 GB/s
+    over XGMI and 52 / 67 GB/s over RDMA; MI355X + AINIC EP8 345 / 420 GB/s. Low-latency (128 tokens): MI300X EP8 dispatch
+    35 us (134 GB/s), combine 47 us (204 GB/s); EP16-V1-LL 76 / 122 us. EP32 rows on MI300X are flagged by the README itself
+    as stale (previous kernel version). These are 8-GPU XGMI-mesh numbers, not a single-GPU or PCIe number.'
+  - 'MORI-IO vendor-reported number: GPU Direct RDMA READ, pairwise, 128 consecutive transfers, 1 GPU, MI300X + Thor2, reaches
+    48.4 GB/s peak at 1 MiB messages and 36 us floor latency for 8-byte messages; labelled by the README as a preview benchmark.
+    IO API has MemoryLocationType = {Unknown, CPU, GPU} so host memory is a first-class registered buffer, and the XGMI backend
+    moves data with hipMemcpyAsync / hipMemcpyPeerAsync over per-transfer streams and events (it is a DMA-engine copy, not
+    a GPU-initiated read).'
+  - 'The usable intra-node host-memory component is in MORI-UMBP''s local tier, not in EP/IO/SHMEM: DRAMTier registers the
+    host tier with hipHostRegister(Mapped|Portable) in pieces (default 1 GiB, async registration above 2 GiB), obtains a per-device
+    alias with hipHostGetDevicePointer, and a HIP gather kernel (GatherFragmentsKernel: flat grid, up to 8 blocks per fragment,
+    16-byte uint4 loads) copies KV fragments from the host-mapped tier into device buffers GPU-initiated; pageable regions
+    fall back to hipMemcpy. The kernel and registration code use only portable HIP runtime calls (no gfx942 intrinsics, no
+    RDMA), so they are the one piece that ports to gfx90a with no hardware change. Host tier can be split per NUMA node (UMBP_DRAM_NUMA_NODE,
+    MPOL_BIND/PREFERRED, parallel prefault up to 16 workers).'
+  - 'UMBP NUMA-tier measurement (vendor-reported, one MI355X two-socket 8-GPU node, DeepSeek-V4-Pro TP8 in SGLang): splitting
+    a 512 GiB-740 GB DRAM KV tier across both NUMA nodes changed serving throughput by <= 1% (+0.2% at concurrency 128 with
+    hugetlb, STRICT, 3600 s) and TTFT p50 by -0.4%; exposed tier load wait was about 1.3% of forward time either way; startup
+    of a 740 GB tier fell from 36-274 s to 10-90 s. Replicating shared keys on both nodes cost -10.9% throughput (25% more
+    recomputed prefill). Reading: tier reads overlap compute at these points, so DRAM-tier placement is a startup/capacity
+    lever, not a decode lever.'
+  - 'Maturity and adoption (README news, vendor-reported, not independently checked here): MORI-EP/IO integrated into SGLang
+    and vLLM (Jan 2026), used for AMD WideEP/PD disaggregation in InferenceX v2, ByteDance Triton-distributed EP backend,
+    Alibaba RTP-LLM primary EP library on AMD (May 2026), SDMA AllGather in DeepSpeed ZeRO-3 (up to 10% end-to-end, vendor-reported),
+    Kimi/Moonshot UMBP serving (July 2026). Installation is pip (amd_mori) with kernels JIT-compiled on first use via hipcc
+    into ~/.mori/jit.'
+  techniques:
+  - Symmetric-memory EP dispatch/combine with XGMI intra-node and IBGDA inter-node paths
+  - 'MORI-IO engine: RDMA/XGMI/TCP backends with CPU and GPU memory registration, batched read/write sessions'
+  - Host DRAM KV tier registered hipHostRegister(Mapped|Portable) with per-NUMA split and parallel prefault
+  - GPU-initiated gather of host-mapped KV fragments (uint4 vector copy, flat grid)
+  - SDMA copy-engine all-gather (offloads collective traffic to DMA engines)
+  reported_results:
+  - 'VENDOR-REPORTED (README): MI300X+CX7 EP8 dispatch 307 GB/s, combine 330 GB/s (XGMI), 4096 tokens x 7168 hidden x top-8,
+    FP8 dispatch + BF16 combine; MI355X+AINIC EP8 345/420 GB/s; EP16-V1 RDMA 52/67 GB/s (MI300X). EP32 MI300X rows self-declared
+    stale.'
+  - 'VENDOR-REPORTED: low-latency 128 tokens, MI300X EP8 dispatch 35 us / combine 47 us; EP16-V1-LL 76 / 122 us.'
+  - 'VENDOR-REPORTED preview: MORI-IO GPU Direct RDMA READ, 1 GPU, MI300X + Thor2, 48.4 GB/s peak at 1 MiB, 36 us at 8 B.'
+  - 'VENDOR-REPORTED: UMBP NUMA-split DRAM tier on one MI355X 2-socket node, DeepSeek-V4-Pro TP8: <=1% throughput change,
+    TTFT p50 -0.4% at concurrency 128; shared-key replication -10.9% throughput.'
+  - No MI210 / gfx90a number exists anywhere in the source.
+  cross_references:
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - heterogeneous-slot-fabric-residency.md
+    - kv-unified-stack-rollout.md
+    - large-moe-expert-parallelism.md
+    intake:
+    - intake-2135
+  recommended_actions:
+  - 'HSF-MORI-1: host-pinned KV tier prototype from UMBP pattern (gfx90a port), gated on a full-attention resident'
+  - 'DS41-T7b: monitor, reuse the mapped-host gather kernel if an engram layer lands on MI210'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Cloned ROCm/mori @ 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b. READ: README.md (all 363 lines), setup.py arch/ROCm
+    detection, cmake/MoriDetectDevice.cmake (head), docs/MORI-IO-GUIDE.md (transport and config sections), docs/MORI-SHMEM-GUIDE.md
+    (P2P and env sections), docs/MORI-UMBP-SINGLE-NODE-GUIDE.md (head), src/umbp/doc/numa-tier-placement.md (all), design-standalone-process-mode.md
+    (intro), design-backend-agnostic-refactor.md (skim), src/umbp/local/tiers/host_registration.cpp and device_gather.hip
+    (kernel and registration), src/umbp/common/device_copy.cpp, src/io/xgmi/backend_impl.hpp and backend_impl.cpp (copy calls
+    only), dispatch_combine.hpp comment at L369, grep of whole tree for gfx90a/MI210/MI250 (0 hits). NOT READ: EP dispatch/combine
+    kernel bodies, RDMA/IBGDA transport code, cco, collective, IR, JIT v2 internals, UMBP distributed master/peer code, PD-benchmark
+    and EP-benchmark docs. No code was built or run.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+  reader_should_conclude: 'Cite MORI for: (1) AMD-side proof that EP dispatch/combine and KV transfer exist as open ROCm libraries,
+    MI300/MI355 + RDMA-NIC class only; (2) the UMBP host-tier recipe (hipHostRegister Mapped|Portable pieces + portable HIP
+    gather kernel + NUMA-split arenas) as the one directly portable component for MI210. Do NOT cite it as running on MI210/ROCm
+    6.2 (it does not; allow-list is gfx942/gfx950, ROCm >= 6.4), and do not carry its GB/s as EPYC numbers (8-GPU XGMI mesh,
+    vendor-reported). EP is moot for one MI210; revisit only with a second MI210 plus a serving-engine EP consumer.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L23 @ 37cdd8e
+    quote: MORI-EP** (MoE dispatch & combine kernels), **MORI-IO** (p2p communication for KVCache transfer), and **MORI-CCL**
+      (collective communication)
+    quote_sha256: 5e4e9081aba2aade15f733e4499b3df918f50bb0ed08b869d0aeb06bb57b9c57
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L172-L176 @ 37cdd8e
+    quote: '| MI308X | ✅ | ✅ | ✅ |'
+    quote_sha256: a46d99207ab6f3394a50825a104af951d415de16d6e2be2b045dae26ea179b98
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: setup.py:L45 @ 37cdd8e
+    quote: _supported_arch_list = ["gfx942", "gfx950", "gfx1250"]
+    quote_sha256: 702111786b2ee8fe01b922940c00339cce0cd00944d0ca2d0aa53eff0de9bee9
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: cmake/MoriDetectDevice.cmake:L22 @ 37cdd8e
+    quote: set(_MORI_SUPPORTED_ARCHS "gfx942;gfx950")
+    quote_sha256: 7d95aae8f4a038fdecfc149526f96fee9d97e4c065e75d79fbd970e99f2fb3eb
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L195 @ 37cdd8e
+    quote: ROCm >= 6.4 (hipcc needed at runtime for JIT kernel compilation, not at install time)
+    quote_sha256: 8ac6e3b52ae92d00aaae74943c0c8c7d535d49146933f0c4d47cd63dd9756319
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: include/mori/ops/dispatch_combine/dispatch_combine.hpp:L369 @ 37cdd8e
+    quote: gfx942/ROCm fails hipMemSetAccess after a few *separate* VMM
+    quote_sha256: 0fc2a224cc722725f39e17b0b81718175240dbf329051b30f8e2f72060bf7444
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L53 @ 37cdd8e
+    quote: '**Bandwidth** (4096 tokens, 7168 hidden, top-8 experts, FP8 dispatch + BF16 combine)'
+    quote_sha256: 097b330f9d7e4c7460074debe29afdc0df12782f15890c6d85489e38d0ecf9fe
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: docs/MORI-IO-GUIDE.md:L44 @ 37cdd8e
+    quote: 'Supported transports: RDMA, XGMI, TCP.'
+    quote_sha256: c4342cacd0c16f46cfae1709471ea44c536eb13a53c7ba7ae253e0653ae38483
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: src/io/xgmi/backend_impl.cpp:L233 @ 37cdd8e
+    quote: err = hipMemcpyPeerAsync(dst, dstDevice, src, srcDevice, size, stream);
+    quote_sha256: c5dec613d4bb5fbd83d4ccf867847c48e24b4141cd5560f6fb3cf9d4f072206b
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: src/umbp/local/tiers/host_registration.cpp:L126-L128 @ 37cdd8e
+    quote: hipHostRegisterMapped so a kernel can dereference it directly.
+    quote_sha256: f1b3acefa977c0e4806c5cf23dd8b5bf43069282a5f8287490094c07fef6c83f
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: src/umbp/local/tiers/device_gather.hip:L69 @ 37cdd8e
+    quote: for (size_t i = index; i < count; i += stride) dst_vector[i] = src_vector[i];
+    quote_sha256: da5a5735b04226fad75be2c53486698935ff3ead4b7aee28e53323d3e0c9869b
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: src/umbp/doc/numa-tier-placement.md:L101 @ 37cdd8e
+    quote: Placement does not change serving throughput at these points.
+    quote_sha256: 4611bf1edd575d4cf55bc17845859ebda87e0ff8007ca159f3e21271d62d5239
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: README.md:L195 @ 37cdd8e
+    quote: hipcc needed at runtime for JIT kernel compilation
+    quote_sha256: 8a88af07773a0a6b654f520db534f30a87a1eb9d113692e3cf83a59b03c4dbfd
+    source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  - claim_index: 1
+    effect: unaffected
+    note: 'Directly settles the DeepEP-dive pointer: MORI is the AMD counterpart but gfx942/gfx950-class only.'
+  - claim_index: 2
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  - claim_index: 3
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  - claim_index: 4
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  - claim_index: 5
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  - claim_index: 6
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  - claim_index: 7
+    effect: unaffected
+    note: first-read in Stage-2b; no Stage-1 claim to correct
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 3, Stage-2b): ingested and dived in one pass; settled that MORI excludes gfx90a/MI210
+    and needs ROCm >= 6.4 (port, not drop-in), that EP/SHMEM/IO need peers or NICs, and that the single-GPU-plus-host component
+    is UMBP local DRAM tier whose gather kernel is portable HIP.
+
+
+    2026-10-20 second reader (independent agent): re-find 13/13; support yes 3 / partial 5 / no 0. Partials carried to Stage
+    3 as anchor gaps (claims 0, 2, 4, 5, 7: README-table and news specifics not quoted; claim 0''s ''DeepEP README names MORI''
+    rests on the DeepEP tree, intake-2135). The reader confirmed by grep that the tree has no MI210/MI250/gfx90a mention (claim
+    1).'
