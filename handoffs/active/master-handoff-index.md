@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-KPF19-2 | Carry the prefix fork's `pinned` checkpoint flag in slot files (v2 appendix, diverges from upstream #26004 layout) or accept that restored junctions come back unpinned. [KPF-19.2](kv-prefix-fork-and-paged-attention.md) | workspace-f8 | 2026-10-20 |
 | OP-M12F | Choose prospective EPYC v3 ordering eligibility (recommend gold≥2, partial retrieval zero) or retain v2. [Concrete metric/source package](../../artifacts/operator/decisions/M12f-EPYC-v3-20261008/README.md); SC67 protocol admission remains separate. | [episodic-memory-integrity.md](episodic-memory-integrity.md) M-12f | 2026-10-08 |
 | OP-AUD10 | Approve the tested clean-only Bash hook and name its live steward (recommend codex-ni-main), name another steward, or retain current settings. [Exact D9 package](../../artifacts/operator/decisions/D9-AUD10-clean-only-20261008/README.md). | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) AUD-10 | 2026-10-08 |
 | OP-LR11-LR13 | Ratify bounded additive close-time inventory and subagent scratch/records rules, or retain current policy. [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md); recommendation A, typed human terminal signature required. | [non-inference-backlog.md](non-inference-backlog.md) LR-11 / LR-13 | 2026-10-07 |
@@ -118,7 +119,7 @@ nobody is moving.
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 43 | 491 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 51 | 560 | 18 | 2026-07-29 |
+| routing-and-optimization | 51 | 562 | 18 | 2026-07-29 |
 | user-facing-harness | 13 | 104 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
