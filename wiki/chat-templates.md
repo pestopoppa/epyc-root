@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -17,6 +17,34 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Compiled Update — 2026-10-20 (wrap-up sweep 2): control-token injection and DS41 renderer parity are probe-first tasks
+
+**Confidence: inferred.** Both items are unchecked tasks from the 2026-10-20 DeepInfer intake (operator-approved); nothing has been probed yet.
+
+### Key findings
+
+- **Control-token spelling in user text may become the control token (`CT-12`).** At the pinned experimental commit the server flattens the rendered chat parts into one string and tokenizes it with special-token parsing on, so user, tool or retrieved text that spells a control token could tokenize as that token. This is a prompt-injection surface that the community-template analysis (CT-3) already flagged for frog and sharp templates, now at the tokenizer. Plan: (1) probe each lineup family on an experimental server with `/tokenize` and a chat request whose user text is the literal spelling, comparing token ids and usage `prompt_tokens`; (2) only if open, choose between a champion-branch patch (tokenize input parts without special parsing) and an orchestrator-side neutraliser; (3) A/B against the template goldens before any fold. Source: intake-2118#record.
+- **DS41 needs token-id parity against two official renderers (`DS41-T3.3`).** The 1017 release's `encoding/encoding.py` differs from the September copy (tool-result-only user turns no longer start a turn), and the separate `deepseek-recipe` renderer differs again: a second reader found it drops reasoning on non-prefix assistant turns where `encoding.py` keeps it. The task renders the five goldens plus tool, thinking, effort, mid-system and reasoning-retention cases, tokenizes with the DS41 vocabulary, and diffs against the served `/apply-template` plus `/tokenize`, reporting the first divergence per case and which oracle disagrees. Host-side only, no inference. Sources: intake-2118#record, intake-2121#record.
+- **Vendor sampling is part of the template contract.** `DS41-W7.1` records the 1017 card's sampling (temperature 1.0, top_p 1.0) as the recipe's recommended sampling, so every DS41 quality or A/B harness sends it explicitly or records the deviation. It lands with the weight cutover, not before the shards are complete.
+
+### Decisions and rationale
+
+- The oracle for DS41 rendering is the official first-party code; the recipe repo is treated as a second statement, not authority, because the two disagree.
+
+### Open questions
+
+- Which lineup families are actually open to control-token injection under the current server path?
+- Which of the two DeepSeek renderers matches the 1017 weights' training format where they disagree?
+
+### Related
+
+[speculative-decoding](speculative-decoding.md), [quantization](quantization.md).
+
+### Source References
+
+- [Qwen chat-template evaluation](../handoffs/active/qwen-chat-template-evaluation.md) — CT-12 and the CT-3 injection analysis.
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-T3.3 and DS41-W7.1.
 
 ## Compiled Update — 2026-09-17: every CT-series mmlu_pro cell is under-scored
 

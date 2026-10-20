@@ -2,7 +2,25 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-25 (OAB-9 paired context placement result); 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**:  2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-25 (OAB-9 paired context placement result); 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+
+## Compiled Update — 2026-10-20 (wrap-up sweep 2): context-management — pointers beat summaries, but only grep has proven it
+
+**Confidence: verified** for the offline recall numbers and the landed flag-expiry behavior (both scoped below); **inferred** for the design consequences.
+
+- **Search over spilled context returns pointers.** The REPL retrieval design holds four invariants: results are `(source, line range, score, snippet)` only; reads still go through `get`/`peek` so pull accounting and print caps hold; no hash-vector fallback (degrade to lexical and label it); one index per embedding model. `context.search` landed 2026-10-01 as a per-request opt-in arm (default off, requires `context_bundle`, byte-identical output when off, separate `context_pulls.search` accounting). The synchronous spill summary (a 512-token worker call, estimated ~12 s on the CPU frontdoor) is still in place; replacing it (REPL-EMB-3.1/3.2) is open and waits on the retrieval decision.
+- **The offline evaluation makes grep the baseline to beat.** On the primary set (n = 346; floors n >= 120 and trace >= 75 met) the lexical baseline is grep at recall@5 0.538, ahead of BM25 at 0.451. Hybrids with the incumbent BGE-large arm fell below grep, and Granite hybrid was +0.055 (CI above zero but under the pre-registered 0.10 margin), so the registered kill rule fails: default behavior does not change. Only the extension arm EmbeddingGemma 2 clears the margin (details in [search-retrieval](search-retrieval.md)). Lesson for context tooling: a dense retriever must be measured against grep over the actual spill/bundle distribution, not assumed to improve on it.
+- **Distribution caveats govern how far this transfers.** The trace stratum was agent code/doc navigation plus synthetic spills written by LLMs (their queries share vocabulary with the source span, which flatters lexical arms); the primary set drops rows that name the answer verbatim, which lifted lexical recall by about 21 points when included. No persisted real REPL spill traces exist yet; REPL-EMB-2.8 re-runs the frozen rule once >= 75 accrue.
+- **Experiment-arm flags now expire.** A runtime `POST /config` enable used to persist in `orchestration/runtime_flags.json` across restarts and reboots, so `repl_embedding_pool` came back ON after a host reboot against its OFF default. The fix (REPL-EMB-4.5, CI-passed fixtures) gives enables a six-hour default expiry or explicit UTC expiry; an expired record loads as the spec baseline without rewriting the file. After any restart still check `/config/attest`.
+- **Voice contexts carry typed disposition.** Accepted source scopes: explicit normal/verbatim/display response fields with exact protected-value buffering (missing strings fail before emission or persistence) and a typed retain/cancel disposition for an active turn. These are synthetic-control acceptances only: no phrase-accuracy, latency or live-service claim.
+
+Open: spill-summary replacement (3.1/3.2), the real-trace re-check (2.8), live voice acceptance.
+
+### Source References (2026-10-20 sweep 2, context-management)
+
+- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — invariants, 2.1 rule, 2.2 result, 4.1/4.5.
+- [Conversation stack](../handoffs/active/conversation-stack.md) — CS16/CS18 voice payload and disposition sources.
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — retrieval-eval write side that records the run.
 
 ## Latest source review — 2026-10-07
 
@@ -35,6 +53,9 @@ DCP now verifies a bound file-body hash again before rendering FULL, SLICES or C
 
 ## Source References
 
+- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
 - [DCP handoff](../handoffs/active/delegation-context-preassembly.md)
 - [Progressive folding](../handoffs/active/context-folding-progressive.md)
 - [HarnessFactory comparison](../docs/reference/harnessfactory-source-comparison-20261006.md)
@@ -877,7 +898,7 @@ Five papers occupying distinct cells in a (training-required, representation-typ
 
 **@jun_song (Super-Tune) X-post** (intake-542) — Korean practitioner direction-setting signal: after testing most viral X "speed tricks", only SFT-duplicate-suppression + Adaptive Thinking verified as quality-preserving at 100k+ context. @ZenMagnets reply: spec-dec hurts high-concurrency throughput. Both signals partially corroborated by academic papers (CGR + ECHO) but with caveats: bimodal brittleness for adaptive thinking; scheduler-level fixes recover spec-dec at concurrency.
 
-**Sources**: 60 native document references (source review 2026-10-07)
+**Sources**: 60 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
 
 ## Context PRE-assembly: the *assemble* side, vs folding's *evict* side (Repo Prompt, 2026-05-25)
 
