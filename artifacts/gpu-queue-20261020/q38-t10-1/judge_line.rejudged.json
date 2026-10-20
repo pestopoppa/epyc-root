@@ -1,0 +1,29 @@
+{
+ "verdict": "PASS",
+ "rejudged_from": "/mnt/raid0/llm/tmp/gpu-staged-20261020/runs/q38t101-20261020T223154Z",
+ "original_verdict": "VOID_GUARDS",
+ "n": 20,
+ "aa": {
+  "identical_count": 20,
+  "n": 20
+ },
+ "i_nmax0_vs_off": {
+  "identical_count": 20,
+  "n": 20
+ },
+ "iii_nmax0_concurrent_vs_off": {
+  "identical_count": 20,
+  "n": 20
+ },
+ "iv_spec_default_vs_off": {
+  "identical_count": 19,
+  "n": 20
+ },
+ "guards_ok": true,
+ "guard_i_all_draft_n_zero": true,
+ "guard_iii_fg_draft_n_zero": true,
+ "guard_spec_live_default_draft_n_total": 1343,
+ "guard_iii_prompts_with_overlapping_speculating_bg": 20,
+ "guard_iii_bg_errors": [],
+ "pids_dead": true
+}

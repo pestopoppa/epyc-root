@@ -1,0 +1,1 @@
+{"verdict": "VOID_GUARDS", "status": "COMPLETE", "aa": {"identical_count": 20, "n": 20}, "i_vs_off": {"identical_count": 20, "n": 20}, "iii_vs_off": {"identical_count": 20, "n": 20}, "iv_default_vs_off": {"identical_count": 19, "n": 20}, "guards_ok": false, "vram_peak_gib": 48.53, "pids_dead": true, "error": null}

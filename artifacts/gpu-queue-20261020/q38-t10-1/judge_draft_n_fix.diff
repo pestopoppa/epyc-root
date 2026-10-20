@@ -1,0 +1,10 @@
+284c284,286
+<                 s['guard_i_all_draft_n_zero'] = all((r['draft_n'] == 0) for r in arms['i_nmax0'])           # None != 0: an unreported draft_n is NOT proof the flag worked
+---
+>                 # draft_n guard: llama-server OMITS timings.draft_n when nothing was drafted (tools/server/server-task.cpp:261 `if (draft_n > 0) { base["draft_n"] = ...}`;
+>                 # upstream asserts it at tools/server/tests/unit/test_speculative.py:104 `"draft_n" not in res_disabled.body["timings"]`). So a missing draft_n means ZERO drafts.
+>                 s['guard_i_all_draft_n_zero'] = all(((r['draft_n'] or 0) == 0) for r in arms['i_nmax0'])
+289c291
+<                 s['guard_iii_fg_draft_n_zero'] = all((r['draft_n'] == 0) for r in r3)
+---
+>                 s['guard_iii_fg_draft_n_zero'] = all(((r['draft_n'] or 0) == 0) for r in r3)   # missing draft_n == 0 drafts (see comment above)

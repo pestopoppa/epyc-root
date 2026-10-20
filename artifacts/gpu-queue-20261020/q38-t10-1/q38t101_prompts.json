@@ -1,0 +1,22 @@
+[
+ {"id":"fmt_json","fmt":"json","prompt":"Return ONLY a JSON object with keys name (string), year (integer) and tags (array of exactly 3 strings) describing the Rust programming language. No prose, no code fence."},
+ {"id":"fmt_csv","fmt":"csv","prompt":"Output ONLY a CSV with header planet,diameter_km and one row for each of the first five planets from the Sun. No prose, no code fence."},
+ {"id":"fmt_yaml","fmt":"yaml","prompt":"Output ONLY YAML with exactly the keys host, port and debug for a local development web server listening on port 8080. No prose, no code fence."},
+ {"id":"fmt_answer","fmt":"answer","prompt":"Compute 37 * 43 - 119. Reply with exactly one line of the form ANSWER: <integer> and nothing else."},
+ {"id":"q01","prompt":"What is the capital of Australia? Answer in one sentence."},
+ {"id":"q02","prompt":"Explain in two sentences why the sky is blue."},
+ {"id":"q03","prompt":"Write a Python function that returns the n-th Fibonacci number iteratively. Code only."},
+ {"id":"q04","prompt":"List the first eight prime numbers separated by commas."},
+ {"id":"q05","prompt":"Translate to French: The library closes at nine in the evening."},
+ {"id":"q06","prompt":"A train travels 150 km in 2.5 hours. What is its average speed in km/h? Show the calculation briefly."},
+ {"id":"q07","prompt":"Give three synonyms for the word 'rapid'."},
+ {"id":"q08","prompt":"What does the HTTP status code 404 mean? One sentence."},
+ {"id":"q09","prompt":"Write a SQL query that selects the ten most recent rows from a table named events ordered by created_at."},
+ {"id":"q10","prompt":"Summarize the plot of Romeo and Juliet in three sentences."},
+ {"id":"q11","prompt":"What is the derivative of x^3 * sin(x)? Give the result and the rule used."},
+ {"id":"q12","prompt":"Name the four fundamental forces of nature with a six-word description of each."},
+ {"id":"q13","prompt":"Convert 72 degrees Fahrenheit to Celsius, rounded to one decimal place."},
+ {"id":"q14","prompt":"Write a haiku about autumn rain."},
+ {"id":"q15","prompt":"What is the time complexity of binary search and why?"},
+ {"id":"q16","prompt":"Write a regular expression that matches a US ZIP code with an optional +4 extension, and explain it in one sentence."}
+]
