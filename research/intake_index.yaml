@@ -266002,8 +266002,197 @@
   expanded_from: null
   credibility_score: null
   contradicting_evidence: null
-  source_revision: "vllm-project/vllm PR #46384, state MERGED 2026-07-12T05:37:52Z, merge commit 481e481be786c1ca3229e26aa34c15ffd22375af, head 4918bbed3a462f39c85af232c6e4f52040573c3d; PR body and file list read via gh 2026-10-20; diff NOT read"
-  verification: stage1-unverified
+  source_revision: 'vllm-project/vllm PR #46384 merge commit 481e481be786c1ca3229e26aa34c15ffd22375af (sha7 481e481); all 21 changed files'' diff read plus full text at the commit of single_type_kv_cache_manager.py, kv_cache_coordinator.py, block_pool.py, kv_cache_manager.py, kv_cache_utils.py, sched/scheduler.py, worker/utils.py, worker/gpu/model_runner.py, tests/v1/core/prefix_cache/test_partial_prefix_cache_hits.py; tests/test_deferred_block_free.py and mooncake files not read (list in notes)'
+  verification: dive-verified
+  read_depth: 'FULL'
+  claim_anchors:
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/config/cache.py:L56-L66 @ 481e481'
+      quote: "    prefix_match_unit: int | None = Field(default=None, gt=0)\n    \"\"\"The finest token boundary (in tokens) a prefix-cache hit can land on.\n\n    Prefix-cache keys are computed every `prefix_match_unit` tokens. It can\n    be set finer than the physical KV cache block sizes (e.g. 32 vs a\n    1024-token hybrid-model block) as long as every KV cache group's\n    `block_size` is divisible by it, enabling cache hits at boundaries\n    inside a physical block. It controls matching granularity only, not how\n    often states are stored.\n\n    This equals to the `hash_block_size` used throughout the KV cache code."
+      quote_sha256: '8984828e2c247be70dc09a8e3aeabd3398e926b391cc92b347b80ffb9e7322f3'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_utils.py:L679-L689 @ 481e481'
+      quote: "    requested = cache_config.prefix_match_unit\n    hash_block_size = (\n        requested if requested is not None else math.gcd(*group_block_sizes)\n    )\n    if any(bs % hash_block_size != 0 for bs in group_block_sizes):\n        raise ValueError(\n            f\"Invalid prefix_match_unit={hash_block_size}; all KV cache group \"\n            f\"block sizes must be divisible by prefix_match_unit. \"\n            f\"Got group block sizes={group_block_sizes}.\"\n        )\n    return scheduler_block_size, hash_block_size"
+      quote_sha256: 'b95788b99cd2aa5b7771fd9fbc8e57a64ecc60b8dc8cf8217db9ef46c0f19284'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 1
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_coordinator.py:L680-L684 @ 481e481'
+      quote: "        Find the longest cache hit using an iterative fixed-point algorithm.\n\n        Each attention type either accepts the current candidate length or\n        reduces it. If any type reduces the length, restart checks over all\n        types. This converges because length monotonically decreases and is"
+      quote_sha256: '8bb55cd52b5ad065df19c431c4140cd0b4d8f619d9ee6b33127f7420a8893cba'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 1
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_coordinator.py:L726-L730 @ 481e481'
+      quote: "                    # Full attention is downward-closed: we only need to look\n                    # up cached blocks once; on subsequent iterations just trim\n                    # to the (reduced) current hit length.\n                    curr_hit_length = min(\n                        curr_hit_length, hit_length_by_group[first_group_id]"
+      quote_sha256: '4f8c3358af609f6f36413c3b8028f5ea90c1eb7644276afd6461e021620de949'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 1
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_coordinator.py:L737-L743 @ 481e481'
+      quote: "                # Eagle matches one extra drop unit (one hash unit for\n                # fine-grained managers, else one cache block) and then drops\n                # it, landing back at the candidate length. No margin for\n                # mamba: its finder never drops (draft models have no mamba\n                # layers), so the hit would grow past the candidate.\n                if drop_eagle_block and not isinstance(spec, MambaSpec):\n                    eagle_margin = ("
+      quote_sha256: '24c4a07691a34d18a70d1ad1f9c340c16aceb1fcd1c6908d566af85ceab2329c'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/sched/scheduler.py:L403-L419 @ 481e481'
+      quote: "            elif self.mamba_partial_cache_hit:\n                # Prefill of the final partial block: stop once at the\n                # prompt's last hash boundary so the mamba partial tail entry\n                # can be registered.\n                tail_boundary = (\n                    request.num_prompt_tokens\n                    // self.hash_block_size\n                    * self.hash_block_size\n                )\n                if (\n                    num_computed_tokens\n                    < tail_boundary\n                    < num_computed_tokens_after_sched\n                    and tail_boundary < request.num_prompt_tokens\n                    and tail_boundary > last_cache_position\n                ):\n                    num_new_tokens = tail_boundary - num_computed_tokens"
+      quote_sha256: 'fe134c7b17411959d3b130c2f624842a6140392228f7b0f123f9719e0b1bd5c2'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L1633-L1667 @ 481e481'
+      quote: "    def _cache_partial_tail_block(\n        self,\n        request: Request,\n        num_tokens: int,\n    ) -> BlockHashWithGroupId | None:\n        hash_block_size = self.block_pool.hash_block_size\n        if self.block_size == hash_block_size:\n            return None\n        if num_tokens % self.block_size == 0:\n            return None\n        if num_tokens % hash_block_size != 0:\n            return None\n        latest_prompt_hash_boundary = (\n            request.num_prompt_tokens // hash_block_size\n        ) * hash_block_size\n        if num_tokens != latest_prompt_hash_boundary:\n            return None\n\n        block_idx = num_tokens // self.block_size\n        blocks = self.req_to_blocks[request.request_id]\n        if block_idx >= len(blocks):\n            return None\n        source_block = blocks[block_idx]\n        if source_block.is_null:\n            return None\n\n        partial_hash = self.block_pool.cache_partial_block(\n            request=request,\n            block=source_block,\n            num_tokens=num_tokens,\n            kv_cache_group_id=self.kv_cache_group_id,\n            block_size=self.block_size,\n        )\n        if partial_hash is not None:\n            self._partial_hit_reqs[request.request_id] = (block_idx, source_block)"
+      quote_sha256: '697f9cf67741ee1448e7d25018b2a59b487ed40f93e0bf3c4ff0e96649fbd5c8'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 3
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L338-L348 @ 481e481'
+      quote: "        cow_blocks: list[KVCacheBlock] = []\n        if request_id in self._partial_hit_reqs:\n            # Partial hit: redirect the shared tail to a private CoW block.\n            # Replacing in place keeps the length-based allocation below\n            # correct; the extra block was reserved by\n            # get_num_blocks_to_allocate.\n            block_idx, source_block = self._partial_hit_reqs.pop(request_id)\n            cow_block = self.block_pool.get_new_blocks(1)[0]\n            self._apply_cow(request_id, block_idx, source_block, cow_block)\n            self.new_block_ids.append(cow_block.block_id)\n            cow_blocks.append(cow_block)"
+      quote_sha256: '6fe533b5fffaef2c63a14ef89153d5942985ef17660e03dd163c94ab24a98833'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 3
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L1566-L1576 @ 481e481'
+      quote: "                    cow_block = new_blocks[0]\n                    new_blocks = new_blocks[1:]\n                    if blocks_allocated:\n                        # The worker block table of a running request is\n                        # append-only, so the request must stay on\n                        # source_block. Move the cache entry to cow_block\n                        # instead; the queued copy fills it before forward\n                        # overwrites source_block.\n                        assert req_blocks[block_idx] is source_block\n                        self.block_pool.move_block_hashes(source_block, cow_block)\n                        self._pending_cow_copies.append((source_block, cow_block))"
+      quote_sha256: '43b3e71fad22fcf273107261686315f304fddc619f94668fc5369713a80d4f71'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 3
+      kind: 'line-range'
+      locator: 'vllm/v1/core/block_pool.py:L629-L645 @ 481e481'
+      quote: "    def move_block_hashes(\n        self,\n        src_block: KVCacheBlock,\n        dst_block: KVCacheBlock,\n    ) -> None:\n        \"\"\"Re-point ``src_block``'s prefix-cache entries to ``dst_block``.\n\n        Used when the request owning ``src_block`` keeps writing into it\n        : the prefix cache holds a private copy (``dst_block``)\n        under the same hashes instead. Entries stay live; no events emitted.\n        \"\"\"\n        assert dst_block.block_hash is None\n        assert dst_block.block_id not in self.cached_block_hashes_by_block\n        num_tokens = src_block.block_hash_num_tokens\n        for block_hash in self._remove_cached_block_hashes(src_block):\n            # `num_tokens` only applies to the first (primary) insertion.\n            self._insert_block_hash(block_hash, dst_block, num_tokens=num_tokens)"
+      quote_sha256: '54deafc3bea2e07bbf3fecd369bff044fd5583a59c41102577fbc6438b6d6a8f'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 3
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L1526-L1529 @ 481e481'
+      quote: "                elif prev_block_len > 0:\n                    # When a new request hits the prefix cache, the last block\n                    # saves the hit state.\n                    self.last_state_block_idx[request_id] = prev_block_len - 1"
+      quote_sha256: '3ed589edc79b2ccbc41453e3dbee2014a812432befc058b01cf8ae96cd58b5e8'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 3
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L1382-L1384 @ 481e481'
+      quote: "            # The block allocated in the previous step is used to copy Mamba states\n            # into the block allocated in the current step; the earlier block is\n            # no longer needed and should be freed here."
+      quote_sha256: 'd0cf7e5f5bf8604f081dea2bad102748d7f326c2b44365f52cba1b07c2199bcb'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 1
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L527-L529 @ 481e481'
+      quote: "        If eagle is enabled, drop the last matched block to force recompute the\n        last block to get the required hidden states for eagle drafting head.\n        Need to be customized for each attention type."
+      quote_sha256: 'de4138639ddfaa2d274a3a190ec036571a49a0d6ba04a49629e3c6f4c4df9430'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_manager.py:L670-L685 @ 481e481'
+      quote: "    def take_kv_cache_block_copies(\n        self,\n    ) -> tuple[list[KVCacheBlockCopy], list[KVCacheBlock]]:\n        \"\"\"Drain pending copies and return their retained endpoints.\"\"\"\n        pending_copies: list[tuple[KVCacheBlock, KVCacheBlock]] = []\n        for mgr in self.coordinator.single_type_managers:\n            pending_copies.extend(mgr.take_pending_cow_copies())\n        copies = [\n            KVCacheBlockCopy(\n                src_block_id=source_block.block_id,\n                dst_block_id=cow_block.block_id,\n            )\n            for source_block, cow_block in pending_copies\n        ]\n        retained_blocks = [block for pair in pending_copies for block in pair]\n        return copies, retained_blocks"
+      quote_sha256: '39d440853a4cf93cdb5db70726b9183f16ca90b670a371d1008fb823fd4ce4a8'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/core/sched/scheduler.py:L1123-L1131 @ 481e481'
+      quote: "        kv_cache_block_copies, cow_retained_blocks = (\n            self.kv_cache_manager.take_kv_cache_block_copies()\n        )\n        if kv_cache_block_copies:\n            # The copies run with this step's execution; the first non-empty\n            # step at or after it gets seq `sched_step_seq + 1` (0-token steps\n            # do not advance the seq), and its completion implies the copies\n            # have run.\n            self._free_cow_retained_blocks(cow_retained_blocks, self.sched_step_seq + 1)"
+      quote_sha256: 'ef09b323fe82eef8dd65e0c5e24ed3b4c00fa3b9f4e5d639c31d1df09e536586'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/core/sched/scheduler.py:L2198-L2207 @ 481e481'
+      quote: "    def _free_cow_retained_blocks(\n        self, blocks: list[KVCacheBlock], fence_seq: int\n    ) -> None:\n        \"\"\"Release CoW copy retentions, deferring their return to the block\n        pool while the step that runs the copy may still be in flight.\n        \"\"\"\n        if not self.defer_block_free or fence_seq <= self.processed_step_seq:\n            self.kv_cache_manager.block_pool.free_blocks(blocks)\n            return\n        self.deferred_frees.append((fence_seq, blocks[::-1]))"
+      quote_sha256: '242b1e0089273ec50a8a002c43fcc3d34e1779ee88230fc57311f4234a64a872'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/worker/utils.py:L573-L577 @ 481e481'
+      quote: "        # Block-major backing storage: block i owns the contiguous byte range\n        # [i * page_size, (i + 1) * page_size).\n        assert blocks.numel() % num_blocks == 0\n        blocks = blocks.view(num_blocks, -1)\n        blocks[dst_indices] = blocks[src_indices]"
+      quote_sha256: '8695d6025ba04c4138061fdd1b0fb1aa3ec78e2e4c16e5d1e9c228b903324b2d'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/worker/gpu/model_runner.py:L841-L848 @ 481e481'
+      quote: "        # Apply copy-on-write block copies for partial prefix-cache hits, after\n        # zeroing new blocks and before the forward pass reads them.\n        if scheduler_output.kv_cache_block_copies:\n            copy_kv_cache_blocks_inplace(\n                self.kv_caches,\n                self.kv_cache_config.num_blocks,\n                scheduler_output.kv_cache_block_copies,\n            )"
+      quote_sha256: 'db3f3a0d483459c7ebca58d95e7f698bfa8357834797c7edb295f9163e63699f'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/core/sched/scheduler.py:L150-L152 @ 481e481'
+      quote: "            multiple_inflight_batches = self.vllm_config.max_concurrent_batches > 1\n            if multiple_inflight_batches and kv_transfer_config.is_kv_consumer:\n                self.defer_block_free = True"
+      quote_sha256: '32e3a757a0e6ea8441d7800503a8644a8736bb78407e7ecb8a0dc00366c2a667'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 4
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L385-L389 @ 481e481'
+      quote: "        Both copy endpoints stay retained until the copy has run on the worker,\n        so a same-step free cannot recycle them: ``source_block`` keeps its\n        hit-ref, ``cow_block`` takes an extra ref beyond the one handed to the\n        request.\n        \"\"\""
+      quote_sha256: '6ba161af1aa7e068cff2ce76025cad0079ea3d55ce958577a710929e8e254244'
+      source_revision: 'vllm-project/vllm@481e481'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 5
+      kind: 'heading-and-hash'
+      locator: 'PR #46384 body, ''It e2e works now'' block (gh pr view 46384 --json body, 2026-10-20)'
+      quote: "\"first_latency_sec\": 0.3047793720033951, \"second_latency_sec\": 0.09551339800236747\n\nw/o partial cache hit\n\"first_latency_sec\": 0.2865299719851464, \"second_latency_sec\": 0.13373498094733804"
+      quote_sha256: '0cdb67d459efb6bcb4ed9759449cbc8f034e1e5601252a78f9c50bf68eb7ba1a'
+      source_revision: 'vllm-project/vllm PR #46384 body @ merge 481e481'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 1
+      kind: 'heading-and-hash'
+      locator: 'PR #52371 body (OPEN, tests-only), section 1 ''The EAGLE drop costs a whole block, not one hash unit'' [SECONDARY: third-party bug report, not code]'
+      quote: '`prefix_match_unit` exists so the drop costs one hash unit rather than one cache block. It does that for full attention, but not for the reconciled hit: mamba is capped at the attention candidate (44) and its state exists only at 16/32/48, so its lookup falls back to 32.'
+      quote_sha256: 'f32813462beb15f0cc526a48ff5f759e523f4d5ad69fe456cf6cdde8f0aa053d'
+      source_revision: 'vllm-project/vllm PR #52371 body read via gh 2026-10-20'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      kind: 'heading-and-hash'
+      locator: 'PR #52371 body (OPEN), section 3 ''The same drop, when the shared prefix ends before the producer''s prompt'' [SECONDARY]'
+      quote: 'a check-point at the producer''s prompt **tail** cannot serve this shape, because 40 — and 36, one hash unit below it — are both over the private suffix.'
+      quote_sha256: 'f319a34b6b14cdd63f34c68743f8f9ab7d7ed05d73121b239e9febad4e4bb8c3'
+      source_revision: 'vllm-project/vllm PR #52371 body read via gh 2026-10-20'
+      verified_by: 'research-intake/stage2'
+  claim_corrections:
+    - claim_index: 0
+      effect: 'narrowed'
+      note: 'prefix_match_unit is not a new concept: CacheConfig.hash_block_size already existed (config/cache.py:55 @ 481e481^1) and #46384 RENAMES it to prefix_match_unit (config/cache.py:L56-L66 @ 481e481: ''This equals to the `hash_block_size` used throughout the KV cache code'') and adds the --prefix-match-unit CLI flag (engine/arg_utils.py:1199). Divide-every-group + GCD default CONFIRMED (kv_cache_utils.py:L679-L689) but only for >1 KV group with prefix caching/connector on and no non-align mamba group; otherwise it silently falls back to the scheduler block size. Partial hits additionally need a mamba ''align'' group with block_size > hash unit (coordinator:L579-L585). Later #58021 (merged) makes a single group REJECT a mismatched unit. Under align geometry where attention block == mamba block, GCD == block, so partial hits need the explicit flag (per #53945 body, secondary).'
+    - claim_index: 1
+      effect: 'narrowed'
+      note: 'Convergence loop CONFIRMED verbatim (coordinator:L680-L684 ''iterative fixed-point algorithm''; full-attention ''downward-closed'' trim without re-lookup L726-L730). EAGLE ''drops one match unit instead of one block'' is TRUE ONLY for non-Mamba groups with fine-grained managers (eagle_margin = hash_block_size iff enable_partial_hash_hits and manager supports fine lookup, L737-L743); Mamba gets NO margin and never drops. Consequence pinned by third party (#52371 sec.1, open): the RECONCILED hit still falls to the Mamba block grid (48 -> 44 attention, mamba only has 16/32/48 -> joint 32). So ''EAGLE costs one unit'' does not hold for the hybrid joint hit at merge; mitigation (#53945) is opt-in, default off.'
+    - claim_index: 2
+      effect: 'narrowed'
+      note: 'Rule read exactly: ONE extra Mamba state per request, registered by MambaManager._cache_partial_tail_block only when (a) block_size > hash_block_size, (b) num_tokens % block_size != 0, (c) num_tokens % hash_block_size == 0, (d) num_tokens == floor(num_prompt_tokens/hash)*hash, (e) block not null (single_type:L1633-L1667); scheduler adds the stop only when mamba_partial_cache_hit and tail_boundary > last_cache_position and < num_prompt_tokens (scheduler:L403-L419). Dense per-BLOCK states still exist (cache_blocks), so ''does not retain every intermediate state inside the block'' is CONFIRMED. NARROWED: a tail-only checkpoint serves only the ''shared prefix == producer prompt'' shape; for ''shared system prompt + private suffix'' the tail state is over tokens nobody shares and the joint hit is 0 (#52371 sec.3). Upstream''s own fix (#53945) adds a SECOND checkpoint at request.shared_prefix_boundary (the junction), opt-in via --enable-mamba-fine-grained-prefix-cache, default off. Stage-1 note equating the rule with KPF-15 is therefore incomplete: KPF-15''s explicit junction (checkpoint_at) is the later-upstream design, not the merged one.'
+    - claim_index: 3
+      effect: 'unaffected'
+      note: 'Both CoW paths CONFIRMED in code. New request: allocate_new_blocks pops _partial_hit_reqs, takes a fresh block, _apply_cow replaces req_blocks[block_idx] (single_type:L338-L348, L376-L396). Running aligned-Mamba owner: ''The worker block table of a running request is append-only, so the request must stay on source_block. Move the cache entry to cow_block'' -> block_pool.move_block_hashes + queued (source, cow) copy (L1566-L1576, block_pool:L629-L645, no events emitted). Detail added: in the owner path the CACHE gets the copy, so the published state is a snapshot made before the owner''s forward overwrites it.'
+    - claim_index: 4
+      effect: 'narrowed'
+      note: 'Queueing/ordering CONFIRMED: copies drained at end of schedule() (scheduler:L1123-L1131), applied after zeroing and before forward (gpu/model_runner.py:L841-L848; worker utils.py:L573-L577 copies whole block-major pages, attention and mamba tensors alike). NARROWED: the ''deferred-free queue'' is gated by defer_block_free, True only for a KV-CONSUMER connector with max_concurrent_batches > 1 (scheduler:L150-L152). Otherwise _free_cow_retained_blocks frees both endpoints immediately at end of schedule() (L2204-L2206) and safety rests on (i) refcounts held for the rest of that schedule() call and (ii) in-order execution of later steps. The deferral exists to order against unordered connector loads, not against ordinary async scheduling.'
+    - claim_index: 5
+      effect: 'unaffected'
+      note: 'Numbers match PR body verbatim (0.0955 s vs 0.1337 s second request; first request 0.305 vs 0.287 s, i.e. first request got slower). Single run, own report, FP8 35B-A3B at --prefix-match-unit 16, no variance: still not a performance claim we may cite.'
+  depends_on:
+    - entry: 'intake-2062'
+      claim_index: 0
+      why: '#46384 ''builds on the partial prefix-cache primitives from #45939'' (PR body): the hash views (BlockHashListWithBlockSize end-hash selection), block_hash_num_tokens and cache_partial_block/_remove_cached_block_hashes used by cache_partial/move_block_hashes all come from #45939. If 2062''s alias-lifecycle claims were retracted, 2061 claims 0, 2, 3 would have to change.'
+  dive_corrections: |-
+    2026-10-20 (Stage-2 dive, read from disk at 481e481). Q1 recurrent state COPIED vs SHARED: PARTIAL, by path. Partial hit on a new request: whole-block page COPIED source->private block by the worker (allocate_new_blocks/_apply_cow queue it, copy_kv_cache_blocks_inplace executes it before forward). Running aligned-Mamba owner: the cache entry is moved to a COPY (move_block_hashes + queued copy) and the owner keeps its block. Block-aligned Mamba hit (no partial): NOT copied by this PR; the hit block is shared by reference ('When a new request hits the prefix cache, the last block saves the hit state', single_type:L1527-L1530) and the model kernel reads it (kernel side not in these PRs: NOT-FOUND-IN-SOURCE). Q2 lifetime: both endpoints retained via refcount until end of the schedule() call; deferred past the copy step only when defer_block_free (KV-consumer connector + >1 in-flight batch); claim 4 narrowed. Q3 granularity: claims 0-2 narrowed (rename not new; EAGLE one-unit only for non-Mamba; tail-only checkpoint misses the system-prompt+private-suffix shape, fixed upstream later by a junction checkpoint, opt-in). Q4: #46384 contains no MTP-specific recurrent/draft state handling: the draft model has no mamba layers (coordinator:L737-L743) and the drafter's attention KV is rebuilt by dropping one hash unit (single_type:L527 'drop the last matched block to force recompute... hidden states for eagle drafting head'); computed-token counts untouched. A within-PR regression test (test_hybrid_partial_hit_with_eagle_stays_within_group_blocks) shows the first draft crashed CoW with block_idx >= len(req_blocks). Q5 later fixes: see LEDGER.md dive-surfaced list; MTP+align+partial hits was the defect-rich area (poisoning #45477/#47861 -> #51113; #52419; #53945; #54713; #58368 regression; #59759 spec scratch block published as checkpoint; #60533). Declined/not-read: tests/v1/core/test_deferred_block_free.py, mooncake store coordinator files. Survey kv-serving-survey-REPORT.md:116 stands (take_pending_cow_copies exists) and line 143 misattributes the flag to #45939.
+    2026-10-20 second reader (independent agent): re-find 22/23 exact (1 whitespace-normalized); support yes 17 / partial 6 / no 0; disagreements carried to the Stage-3 plan: intake-2061#1.4, intake-2061#3.10, intake-2061#1.12, intake-2061#4.18, intake-2061#1.21, intake-2061#2.22
   handoffs_updated: []
   handoffs_created: []
   notes: "Retrieved 2026-10-20 via gh pr view (body + file list only; code not read).  Survey cross-reference: kv-serving-survey 2026-10-04 section 2.1 already cites #46384 for take_pending_cow_copies and #45939 for prefix-match-unit; NOT covered by the survey: the hit-length convergence rule, the two CoW paths (private-destination vs cache-owned-destination), deferred-free lifetime fencing, and the single-tail-checkpoint rule. Design pointers for our fork (hypotheses, unverified): our recurrent half cannot share a block the way attention KV can, so the vLLM 'copy the recurrent state from the shared block into a private one' step corresponds to our checkpoint restore (KPF-13); the tail-only checkpoint rule corresponds to the explicit junction checkpoint (KPF-15). Whether vLLM shares versus copies recurrent state is settled only for the CoW-on-hit case here; running-request behaviour needs the code. Test files listed include tests/v1/core/prefix_cache/test_partial_prefix_cache_hits.py and test_deferred_block_free.py (not read). Read depth DIGEST-equivalent: PR description only."
@@ -266048,8 +266237,69 @@
   expanded_from: intake-2061
   credibility_score: null
   contradicting_evidence: null
-  source_revision: "vllm-project/vllm PR #45939, state MERGED 2026-06-22T06:43:10Z, merge commit 6bc6f2d86d7800f878a4a13495b51a6e3b728c37, head 32ee4016f39d74ed4890f2be192100ef3912944f; body + file list read via gh 2026-10-20; diff not read"
-  verification: stage1-unverified
+  source_revision: 'vllm-project/vllm PR #45939 merge commit 6bc6f2d86d7800f878a4a13495b51a6e3b728c37 (sha7 6bc6f2d); full diff of block_pool.py and kv_cache_utils.py plus full text at the commit; tests/v1/core/prefix_cache/test_partial_prefix_cache_primitives.py not read'
+  verification: dive-verified
+  read_depth: 'FULL'
+  claim_anchors:
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_utils.py:L2145-L2160 @ 6bc6f2d'
+      quote: "class BlockHashListWithBlockSize:\n    \"\"\"\n    Convert block-hash granularity from `hash_block_size` to `target_block_size`.\n    Used when KV cache groups have different block sizes: `hash_block_size`\n    is the size used to compute the original `block_hashes`; `target_block_size`\n    is the group's actual block size.\n\n    Currently, only scaling up by an integer factor is supported (i.e.,\n    `target_block_size` is a multiple of `hash_block_size`). Conversion is\n    performed lazily on access for efficiency. Each `hash_block_size` hash is\n    already chained over its entire prefix, so the hash at the last\n    `hash_block_size` boundary of a `target_block_size` block uniquely\n    fingerprints that block's prefix; we use it directly.\n\n    Example (`hash_block_size` = 16, `target_block_size` = 32):\n    the second 16-size hash already covers tokens 0-31, so it is the 32-size"
+      quote_sha256: 'aa2e8a945b2ee9e824007234e0071efb18b243bf8fb5e4f73db6b31db0ba87d2'
+      source_revision: 'vllm-project/vllm@6bc6f2d'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 1
+      kind: 'line-range'
+      locator: 'vllm/v1/core/block_pool.py:L293-L300 @ 6bc6f2d'
+      quote: "            if blk.block_hash is not None:\n                # The only valid case where a \"new full block\" already has a\n                # hash is partial->full promotion of the same cache block.\n                assert (\n                    blk.block_hash_num_tokens is not None\n                    and blk.block_hash_num_tokens < num_hash_tokens\n                )\n                removed_hashes = self._remove_cached_block_hashes(blk)"
+      quote_sha256: 'a786b30e7f0d4506a24aa94762e155da7dc3fbf620f7d12c0a3a812aa63965e4'
+      source_revision: 'vllm-project/vllm@6bc6f2d'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 1
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_utils.py:L128-L130 @ 6bc6f2d'
+      quote: "    # Number of prefix tokens covered by _block_hash. For full blocks this is\n    # the full block boundary; partial aliases can end inside a cache block.\n    _block_hash_num_tokens: int | None = None"
+      quote_sha256: '9623328675756fc3276957da03ea4c3a41b9a3dc25548d3a6d2b3e41d04367cc'
+      source_revision: 'vllm-project/vllm@6bc6f2d'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/block_pool.py:L373-L377 @ 6bc6f2d'
+      quote: "        The partial entry is lookup metadata owned by ``block``. If ``block``\n        has no primary hash, the key becomes its primary hash. If the block\n        already has a primary hash, the partial entry is tracked in\n        ``cached_block_hashes_by_block`` so eviction, reset, and promotion can\n        remove every hash key that points to the block."
+      quote_sha256: 'aef5c07804b14e9220d51ea51e0d52c12eb640ee21aaede1194743f8a4dace37'
+      source_revision: 'vllm-project/vllm@6bc6f2d'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/block_pool.py:L589-L590 @ 6bc6f2d'
+      quote: "        evicted_hashes = self._remove_cached_block_hashes(block)\n        if not evicted_hashes:"
+      quote_sha256: '5605dd49b7d5703afbedd50d3dc782cbd303b8177d409960dadbf33a94b9a1f0'
+      source_revision: 'vllm-project/vllm@6bc6f2d'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/block_pool.py:L676-L676 @ 6bc6f2d'
+      quote: "        self.cached_block_hashes_by_block.clear()"
+      quote_sha256: 'e66ab430147e9db29754a7ccafaeb4c53ecf1136e70b031d2a179454ee41442e'
+      source_revision: 'vllm-project/vllm@6bc6f2d'
+      verified_by: 'research-intake/stage2 (human-read from disk clone)'
+  claim_corrections:
+    - claim_index: 0
+      effect: 'narrowed'
+      note: 'BlockHashListWithBlockSize and the chained fine-grained hasher PRE-DATE #45939 (class present at 6bc6f2d^1 kv_cache_utils.py:2126). What #45939 changed: _get_value_at went from concatenating the group of fine hashes (BlockHash(b''''.join(...))) to selecting the last fine hash of the block (self.block_hashes[(idx + 1) * scale_factor - 1], kv_cache_utils.py:L2145-L2160 docstring @ 6bc6f2d), which is what makes a partial key identical to the later full-block key. ''Rather than recomputing'' should read ''rather than concatenating''. The hasher parameter was renamed block_size -> hash_block_size.'
+    - claim_index: 1
+      effect: 'unaffected'
+      note: 'KVCacheBlock._block_hash_num_tokens added (kv_cache_utils.py:L128-L130 @ 6bc6f2d); promotion path asserts blk.block_hash_num_tokens < num_hash_tokens and first removes every old key via _remove_cached_block_hashes (block_pool.py:L293-L300), so no second live key survives. cache_partial_block likewise drops a shorter existing key before inserting a longer one.'
+    - claim_index: 2
+      effect: 'unaffected'
+      note: 'Confirmed: partial entries are ''lookup metadata owned by block'' tracked in cached_block_hashes_by_block (block_pool.py:L373-L377); eviction via _maybe_evict_cached_block calls _remove_cached_block_hashes which pops primary + all aliases (L589-L590); reset_prefix_cache clears the reverse map (L676). Nuance worth carrying: free_blocks does NOT drop aliases, the block simply becomes evictable while keys stay live; keys die only when get_new_blocks reallocates it. Our analogue: a checkpoint outliving its slot''s liveness is by design, but reuse must purge.'
+    - claim_index: 3
+      effect: 'unaffected'
+      note: 'Confirmed from the PR file list: block_pool.py, kv_cache_utils.py and three test files only; no cache.py, arg_utils.py, scheduler or worker file (gh pr view 45939 --json files). Correction to the survey: kv-serving-survey-REPORT.md:143 credits #45939 with the --prefix-match-unit flag; the flag and config rename are in #46384.'
+  depends_on: []
+  dive_corrections: |-
+    2026-10-20 (Stage-2 dive, read from disk at 6bc6f2d). Claim 0 narrowed (BlockHashListWithBlockSize pre-existed; PR switched concatenation to end-hash selection). Claims 1-3 confirmed with line anchors. Refcount/alias lifecycle: a block is the only refcounted object; aliases live in BlockPool.cached_block_hashes_by_block and die on eviction-by-reallocation, reset or promotion, never on ref_cnt reaching 0 (free_blocks leaves keys live). Survey misattribution: --prefix-match-unit flag is #46384 not #45939.
+    2026-10-20 second reader (independent agent): re-find 6/6 exact; support yes 6 / partial 0 / no 0; disagreements carried to the Stage-3 plan: none
   handoffs_updated: []
   handoffs_created: []
   notes: "[1/N] predecessor found by name in the body of intake-2061 (#45939 is cited there as the source of the primitives). Retrieved 2026-10-20.  Survey cross-reference: survey section 2.1 cites #45939 only as the origin of --prefix-match-unit; the alias-map/refcount lifecycle (a block is the refcounted resource, aliases are metadata) is NOT covered by the survey and is the part most relevant to KPF refcount/lifetime questions. Our analogue: slot-level checkpoints are the 'aliases', cells are the refcounted resource."
@@ -266091,8 +266341,153 @@
   expanded_from: null
   credibility_score: null
   contradicting_evidence: null
-  source_revision: "vllm-project/vllm PR #45845, state MERGED 2026-06-23T02:51:12Z, merge commit 430a95ae3aecedfc8b568ad0d540477bf2fb4344, head 1dd93f51bc7c19f7806d8989748a8129bf466c26; body + file list read via gh 2026-10-20; diff not read"
-  verification: stage1-unverified
+  source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+  verification: dive-verified
+  read_depth: 'PARTIAL'
+  claim_anchors:
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'pr.diff: MambaManager.reachable_block_mask docstring (hunk @@ -1018,6 +1018,60 @@ of single_type_kv_cache_manager.py); pr.diff line 110'
+      quote: 'keep one state per ``retention_interval``-sized segment'
+      quote_sha256: '23b7d0ec67c7d60545d4be61ada2dafad6083a497b5967407e5eb2d67d659513'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      kind: 'heading-and-hash'
+      locator: 'PR body, **Change.** paragraph'
+      quote: 'keep one cached state per `retention_interval`-sized segment (plus the latest replay boundary) instead of one per block.'
+      quote_sha256: 'aef16204274a331f4e8460d30af5d2434aa5f0978d80058a26d7e6a2949dbfa3'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:1051 @ 430a95a (MambaManager.reachable_block_mask)'
+      quote: 'segment_tokens = None if retention_interval == 0 else retention_interval'
+      quote_sha256: 'f5dbc0a6b16bec085aeecc83186d24a5152f3971148eae952d4f6c73adf6a13e'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_coordinator.py:125 @ 430a95a (read site)'
+      quote: 'self.retention_interval = envs.VLLM_PREFIX_CACHE_RETENTION_INTERVAL'
+      quote_sha256: 'c8da8562eda95ae7f51b1221b3ad5cffb265103d339b030a926c3057d4aff241'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:1283 @ 430a95a (MambaManager.cache_blocks comment)'
+      quote: 'the intermediate state snapshots carry'
+      quote_sha256: '5134722d44b8e51ace25acf68403918aaa7c5e5b58342ad55e7fa87bbfe66a78'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'pr.diff: tests/v1/core/test_prefix_caching.py hunk @@ -3905,3 +3905,41 @@ (test_mamba_reachable_block_mask_sparsifies_retention); pr.diff line 44'
+      quote: 'assert retained(64) == {3, 7, 11, 14, 15}'
+      quote_sha256: 'e3450a80dbd8d146e9d78d6d3458adbd5c3e62f5e2acc2af76bbbca3f09b7982'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      kind: 'line-range'
+      locator: 'vllm/envs.py:1056 @ 430a95a (env description; NOT updated by PR, see dive_corrections)'
+      quote: 'Applies to sliding-window attention for now but not yet Mamba/linear attention.'
+      quote_sha256: '64b51345f4d9b9ff251a77220e63adfc972835edc68ec8fb52eca33dcb7ea38d'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'documentation-state anchor, not a mechanism anchor'
+    - claim_index: 1
+      kind: 'heading-and-hash'
+      locator: 'PR body, **Background.** paragraph (author-asserted; no artifact in PR)'
+      quote: 'the Mamba snapshots occupy ~80% of the blocks'
+      quote_sha256: '7ef18db284aad5b847fa508cc66349ade51aaa56caa90368a78256a402ce1710'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'figure is author-stated in the body; not reproduced by the diff or tests'
+    - claim_index: 1
+      kind: 'heading-and-hash'
+      locator: 'PR body, **Background.** paragraph (author-asserted)'
+      quote: 'while larger block sizes (256/512) are unaffected'
+      quote_sha256: '9751cb6f7a9e8ae225f029064cc61f6ec2c66432d323b55cd0f93124d8bb68d8'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'author-stated, test setting per body'
+    - claim_index: 1
+      kind: 'heading-and-hash'
+      locator: 'PR comment IC_kwDOI7xefs8AAAABGmaL0w (Dao007forever, 2026-06-18)'
+      quote: 'in decode, we snapshot every block size still.'
+      quote_sha256: '756f604838b8dc8eb0824c97a9ff4ae4eb68e66fcb1f114ca12cefcc4dc75636'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'author clarification: prefill snapshots per chunk end, decode per block'
+    - claim_index: 2
+      kind: 'heading-and-hash'
+      locator: 'PR body, **Change.** paragraph'
+      quote: 'at most `retention_interval` tokens coarser'
+      quote_sha256: '878ffd40da1af5b8dcf2ea0a26a3794adea2d166e84d01f0976bd33982cb1570'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:1040 @ 430a95a (default: returns None = dense)'
+      quote: 'if retention_interval is None or alignment_tokens is None:'
+      quote_sha256: '972944eae8e7e862171f790c644144d39d830f1970c5a0c38a3ce864c0162e2c'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:1053 @ 430a95a (spacing is floor(interval/block_size) blocks)'
+      quote: 'per_segment = segment_tokens // block_size'
+      quote_sha256: 'fb841337a41de7eea4ac89cf8f30aa4d6d2c246041910e3130b1e9790a09db00'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      kind: 'line-range'
+      locator: 'vllm/v1/core/kv_cache_coordinator.py:53 @ 430a95a (validator checks scheduler_block_size, not block_size)'
+      quote: 'if retention_interval < 0 or retention_interval % scheduler_block_size != 0:'
+      quote_sha256: '33b3bf197672ca87a46525b8091fb5001f091b7eeba8b3350f574a61d8bee81c'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 3
+      kind: 'heading-and-hash'
+      locator: 'PR body, ## Test Plan'
+      quote: 'E2E: Kimi-Linear-48B-A3B-Instruct (`block_size` 512, TP4, multi-turn prefix-on, 50 prompts × 60 turns)'
+      quote_sha256: 'cde63c3c4736d568f9149e447a730d02ce83810e33dab1b33c8c4ea31f9c62ce'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'E2E config; body states block_size 512 is in the regime described as unaffected'
+    - claim_index: 3
+      kind: 'heading-and-hash'
+      locator: 'PR body, ## Test Result (ends here; no values follow)'
+      quote: 'E2E: validated on Kimi-Linear-48B-A3B-Instruct with the config above; with `VLLM_PREFIX_CACHE_RETENTION_INTERVAL=2048`'
+      quote_sha256: 'ab2a39300d253f2f820c5a1eee78f3cbcb1c384e27e3f861d8dc45b53253b4fc'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'no E2E values present in body or comments'
+    - claim_index: 3
+      kind: 'heading-and-hash'
+      locator: 'PR body, ## Test Result (CPU unit tests)'
+      quote: 'including the new `test_mamba_reachable_block_mask_sparsifies_retention` — **10 passed**.'
+      quote_sha256: '70059c0907962eb5e1a0cb5aa302aee3df15bf38559ef618fd3eaf501cd9ffe7'
+      source_revision: '430a95ae3aecedfc8b568ad0d540477bf2fb4344'
+      verified_by: 'research-intake/stage2'
+      cost_note: 'only numeric test result in PR'
+  claim_corrections:
+    - claim_index: 0
+      effect: 'unaffected'
+      note: 'Mechanism CONFIRMED on the diff and merged source: env var read in kv_cache_coordinator.py, sparse mask in MambaManager.reachable_block_mask, default None = dense. Stale env description (vllm/envs.py) and stale base docstring are documentation defects, not mechanism defects.'
+    - claim_index: 1
+      effect: 'narrowed'
+      note: 'The ~80% figure at block_size 128 and the unaffected 256/512 claim are author-asserted in the PR body with no artifact; they are NOT evidence in the PR.'
+    - claim_index: 2
+      effect: 'narrowed'
+      note: 'Resume bound (at most interval tokens coarser) and default-dense CONFIRMED by code; the "costing negligible extra prefill" cost is NOT-FOUND-IN-SOURCE (no measurement in body, comments or tests). Spacing is floor(interval/block_size)*block_size, not interval, when interval is not a multiple of block_size.'
+    - claim_index: 3
+      effect: 'narrowed'
+      note: 'Evidence type is accurate (10 CPU unit passes; E2E with no numbers). The Stage-1 premise that the PR body truncates before the numbers is OVERTURNED: the full body (gh JSON) contains no E2E values.'
+  depends_on: []
+  dive_corrections: |-
+    2026-10-20 Stage-2 dive (research-intake, read_depth PARTIAL). Read in full: PR body, diff, all six comments (gh JSON), pr.diff. Read at merge 430a95a in named sections: single_type_kv_cache_manager.py, kv_cache_coordinator.py, envs.py. (1) Mechanism CONFIRMED. (2) OVERTURNED premise: the PR body has NO end-to-end numbers; the only figures are the author-asserted ~80% of blocks at block_size 128 and 10 passed CPU unit tests. The E2E (Kimi-Linear-48B-A3B-Instruct, block_size 512, interval 2048) is described as "validated ... with the config above" with no values. (3) The E2E block_size 512 is the regime the body itself describes as unaffected ("while larger block sizes (256/512) are unaffected"), so the E2E cannot be evidence for the benefit it is cited for. (4) Spacing: per_segment = segment_tokens // block_size and per_segment <= 1 returns None (dense); the validator checks only interval % scheduler_block_size, so interval 768 at block_size 512 is silently dense and 1280 gives 1024-token spacing. (5) Merged vllm/envs.py still reads "Applies to sliding-window attention for now but not yet Mamba/linear attention."; reviewer request (comment IC_kwDOI7xefs8AAAABGYYP0g) not applied in this PR. (6) Merged base cache_blocks docstring still reads "Only SWA acts on it." (7) depends_on: none. The PR builds on #43447 (merged, sliding-window predecessor) which is not an intake entry; not a claim dependency for this entry. (8) Trade-off numbers for KVU-12 memory sizing are NOT in the source; only the ratio floor(interval/block_size) and the resume bound are derivable.
+    2026-10-20 second reader (independent agent): re-find 17/17 exact; support yes 14 / partial 3 / no 0; disagreements carried to the Stage-3 plan: intake-2063#0.4, intake-2063#0.6, intake-2063#2.13
   handoffs_updated: []
   handoffs_created: []
   notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (it names no retention interval). Directly relevant to checkpoint-density policy: our per-slot checkpoints are large and the survey's lesson is snapshots at branch points, not a dense grid; this PR is the vLLM answer for the dense-grid case. Note the PR was written with AI assistance (stated in its body). Relevant to KVU-12 np x ctx memory arithmetic: snapshot count per context is the cost knob."
@@ -266224,8 +266619,69 @@
   expanded_from: null
   credibility_score: null
   contradicting_evidence: null
-  source_revision: "https://docs.vllm.ai/en/latest/features/automatic_prefix_caching.html retrieved 2026-10-20 via WebFetch (digest); a search snippet indicated v0.30 docs name the flag differently (--enable-mamba-fine-grained-prefix-cache), unverified"
-  verification: stage1-unverified
+  source_revision: 'docs page curled 2026-10-20 (apc.html, read from disk) + vllm/vllm @ b272cff368b3a0c733859ab308f7123291cf1489 (2026-10-20 16:31 UTC)'
+  verification: dive-verified
+  read_depth: 'FULL'
+  claim_anchors:
+    - claim_index: 0
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L824 @ b272cff'
+      quote: '# Eagle needs the tokens right before the generation point recomputed:'
+      quote_sha256: '0ae5b2c19824b5796b2f56a596ed291d71b74089ffdb76ded4d08bdf9269a54c'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 1
+      locator: 'vllm/v1/core/kv_cache_utils.py:L891 @ b272cff'
+      quote: 'hash_block_size = requested if requested is not None else math.gcd(*hashing_sizes)'
+      quote_sha256: 'dcb18690eaa7029d7b6818636ac33a071853e61d9ce9259a6f20b9cc45e54c50'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 1
+      locator: 'vllm/v1/core/kv_cache_utils.py:L895 @ b272cff'
+      quote: '"KV cache group block sizes must be divisible by prefix_match_unit. "'
+      quote_sha256: 'cdb0252f9dba1131cb2a686b7b19e157fc4892717adf4dcacb56d010c1384a8b'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 2
+      locator: 'vllm/v1/core/kv_cache_manager.py:L188 @ b272cff'
+      quote: 'and bool(self.coordinator.eagle_group_ids)'
+      quote_sha256: '90a061cd36bae403bc6fd6a61640fbb8b056a2f0748fbcb2d5dc463e2116544c'
+      verified_by: 'research-intake/stage2'
+      verdict: 'PARTIAL'
+    - claim_index: 2
+      locator: 'vllm/v1/core/kv_cache_manager.py:L190 @ b272cff'
+      quote: 'and self.coordinator.num_reprefillable_tokens == 0'
+      quote_sha256: 'f05e1b25557df5b2079430b7db4eb5c9d220772577cf54b9ad25f8670c139964'
+      verified_by: 'research-intake/stage2'
+      verdict: 'PARTIAL'
+    - claim_index: 3
+      locator: 'vllm/engine/arg_utils.py:L462 @ b272cff'
+      quote: '"--mamba-cache-mode is deprecated and will be removed in v0.33.0. "'
+      quote_sha256: '65781db653ae811a2726a3dc2e34fa37d9baf0c02267272742e8160a8b92090f'
+      verified_by: 'research-intake/stage2'
+      verdict: 'OVERTURNED'
+    - claim_index: 3
+      locator: 'vllm/engine/arg_utils.py:L1429 @ b272cff'
+      quote: '"--enable-mamba-shared-prefix-checkpoint",'
+      quote_sha256: '1ec794293f80328a5984f2663f54e228f03b0a2a8a3c54a73622945ffece3aca'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+  claim_corrections:
+    - claim_index: 0
+      effect: 'narrowed'
+      note: 'Docs sentence is a simplification. Code also checkpoints the PROMPT TAIL at a hash boundary (get_mamba_prefill_checkpoint_position, kv_cache_interface.py:1154-1166) whenever prefix_match_unit < Mamba block; only mid-prompt/junction states are confined to the block grid.'
+    - claim_index: 1
+      effect: 'unaffected'
+      note: 'kv_cache_utils.py:891-899 divisibility error and 902-919 per-state-compression error match the docs; default = GCD at :891. "64" is docs-only advice, no code default.'
+    - claim_index: 2
+      effect: 'narrowed'
+      note: 'All four conditions are real, but enforcement is silent narrowing, not an error: kv_cache_manager.py:186-191 ANDs flag with eagle_group_ids, enable_partial_hash_hits, num_reprefillable_tokens==0 and just leaves the feature off. The EAGLE condition is MECHANISM-driven (EAGLE/MTP hits drop one hash unit, single_type_kv_cache_manager.py:824-831), not a state-validity requirement; multi-module MTP exclusion is an implementation limit (kv_cache_manager.py:182-185).'
+    - claim_index: 3
+      effect: 'unaffected'
+      note: 'Flag name resolved: current code name is --enable-mamba-shared-prefix-checkpoint (arg_utils.py:1429); previous name --enable-mamba-fine-grained-prefix-cache was renamed in 49ee12d74 (#57382, 2026-09-20), so the v0.30 docs name is a pre-rename name. No "mamba_fine_grained" symbol remains in vllm/ or tests/. SIDE FINDING against the survey (kv-serving-survey-REPORT.md:140-141): "requires align mode" is stale - --mamba-cache-mode is deprecated, no effect (arg_utils.py:461-464), mode "all" removed (#60043).'
+  depends_on: []
+  dive_corrections: |-
+    2026-10-20 Docs verified against code @ b272cff. Names match current code (enable_mamba_shared_prefix_checkpoint, prefix_match_unit); the older fine-grained name is a rename (49ee12d74). Conditions are enforced by silent narrowing. Survey section 2.1 corrections: (a) "requires align mode" stale, --mamba-cache-mode deprecated/no effect; (b) #47861 is CLOSED NOT MERGED (title "Fix MTP prefix cache correctness for hybrid Mamba models"), not "fixed" by that PR - the landed fixes are #53945 (junction checkpoint, merged 2026-09-08) and #58368 (prompt-tail hits with MTP, merged 2026-09-24); (c) #53504 is CLOSED, survey says open. Declined/recommended dive-surfaced sources: see LEDGER.md.
+    2026-10-20 second reader (independent agent): re-find 7/7 exact; support yes 2 / partial 3 / no 2; disagreements carried to the Stage-3 plan: intake-2066#0.0, intake-2066#2.3, intake-2066#2.4, intake-2066#3.5, intake-2066#3.6
   handoffs_updated: []
   handoffs_created: []
   notes: "Retrieved 2026-10-20 via WebFetch (DIGEST).  Survey cross-reference: Mostly covered: survey section 2.1 quotes --enable-mamba-shared-prefix-checkpoint and --prefix-match-unit. NOT covered: the explicit statement that the junction checkpoint is gated on EAGLE/MTP on the Mamba group, which is the key spec-decode coupling question for our KPF-15 junction checkpoint with DFlash2/MTP; rank low-medium, worth a one-pass read of the source gate. The mamba-cache-mode option is NOT on this page as fetched; do not cite its values from here."
@@ -266310,8 +266766,116 @@
   expanded_from: null
   credibility_score: null
   contradicting_evidence: null
-  source_revision: "ggml-org/llama.cpp PR #22929, MERGED 2026-05-25T05:56:19Z, merge commit e2ef8fe42ccef597bfeab901dd6e39589613b71e, head 556d36b06049181fc034aa14c725678898604c1b; body + file list read via gh 2026-10-20"
-  verification: stage1-unverified
+  source_revision: 'ggml-org/llama.cpp PR #22929 merge e2ef8fe42ccef597bfeab901dd6e39589613b71e (head 556d36b06049181fc034aa14c725678898604c1b); v10 ffc1bac82eeca6f9099e1ccd9ba49703c460a115; champion ak/champion/llama-cpp-ffc1bac82eec = e33229348635731cad66dba8d121854024b6f5d2; KPF branch experimental/kv-prefix-fork-p1r-20261020 = a1f0c8cf9bd7102415a72577474f307b8ba94db9'
+  verification: dive-verified
+  read_depth: 'PARTIAL'
+  claim_anchors:
+    - claim_index: 1
+      anchor_id: 'A01'
+      kind: 'line-range'
+      locator: 'PR #22929 body, Overview list line 10'
+      quote: 'avoid periodic mid-prompt checkpoints when that position is known'
+      quote_sha256: 'f5b11ac0f7759fd268a8e3b428d178faeb9868e78ab5a7d236936ba00c86f3eb'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      anchor_id: 'A02'
+      kind: 'line-range'
+      locator: 'PR #22929 body, Overview list line 9'
+      quote: 'create a context checkpoint before the latest user input'
+      quote_sha256: '4b666786b0c15a62210a9c85adad3acc0628a249b197dfc8ea9bbd99ebb3e083'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      anchor_id: 'A03'
+      kind: 'line-range'
+      locator: 'PR #22929 body, Overview list line 7'
+      quote: 'find the prompt token position before the latest user message'
+      quote_sha256: '824073ae651b2d2d1ed15a6a1f55fc0415f9f393082a97e3b6e68e8bb32ea5ea'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      anchor_id: 'A04'
+      kind: 'line-range'
+      locator: 'PR #22929 body, Additional information line 15'
+      quote: 'This is another chapter in my journey toward fixing `forcing full prompt re-processing due to lack of cache data`'
+      quote_sha256: '9a92529c7ee4e52e000be420da73eacecf90368191339aa05fa7f5d1b9a3acd1'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      anchor_id: 'A05'
+      kind: 'line-range'
+      locator: 'PR #22929 body, Additional information line 46'
+      quote: '`preserve_thinking` really helps, without it, the prompt history changes, so there is always some reprocessing'
+      quote_sha256: 'b90a5bf671c34478eb18949d28ccb36c438000ccc6208029c3fb1dadfd1fd524'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 3
+      anchor_id: 'A06'
+      kind: 'line-range'
+      locator: 'PR #22929 body, example command line 31'
+      quote: '--ctx-checkpoints 24'
+      quote_sha256: 'af9659ea52ca55fd5425fb29b20826cb0971d5096c8f8fa3546d68626e7e96d3'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 3
+      anchor_id: 'A07'
+      kind: 'line-range'
+      locator: 'PR #22929 body, example command line 43'
+      quote: '--checkpoint-min-step 256'
+      quote_sha256: '32ee2aa1d60307aa104caff0c85ed2a4b37c34d989700f931753ec285e639bee'
+      source_revision: 'ggml-org/llama.cpp PR #22929 body (gh pr view, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 2
+      anchor_id: 'A13'
+      kind: 'line-range'
+      locator: 'PR #22929 comment by ZacharyReis, 2026-05-26 (counter-evidence) line 1932'
+      quote: '## Regression: SWA model (Gemma 4) loses all checkpoint cache hits after this PR'
+      quote_sha256: '973f3a624559eb6dcfc303f98640481ce6256b4de00182e676dbcc9fac661bc8'
+      source_revision: 'ggml-org/llama.cpp PR #22929 comments (gh pr view, read 2026-10-20)'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 1
+      anchor_id: 'A14'
+      kind: 'line-range'
+      locator: 'pr.diff tools/server/server-context.cpp hunk @ e2ef8fe42 (batch split) line 835'
+      quote: 'if (n_before_user_known &&'
+      quote_sha256: 'f6df152e937d1b43d848c503561745311235b7b1cbe5d3083853477083f6c46b'
+      source_revision: 'ggml-org/llama.cpp PR #22929 diff (gh pr diff, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 1
+      anchor_id: 'A15'
+      kind: 'line-range'
+      locator: 'pr.diff tools/server/server-context.cpp hunk @ e2ef8fe42 (spacing gate) line 920'
+      quote: 'do_checkpoint = do_checkpoint && (slot.prompt.checkpoints.empty() || n_tokens_start > slot.prompt.checkpoints.back().n_tokens + params_base.checkpoint_min_step);'
+      quote_sha256: '1f6c8a0c32c76ff5676dd0b928ddfb293c15e9380f1ac6598d4b10f181df7ba5'
+      source_revision: 'ggml-org/llama.cpp PR #22929 diff (gh pr diff, read 2026-10-20); merge e2ef8fe42ccef597bfeab901dd6e39589613b71e'
+      verified_by: 'research-intake/stage2'
+    - claim_index: 0
+      anchor_id: 'A16'
+      kind: 'line-range'
+      locator: 'server-context.cpp ~L3772 (champion) line 3772'
+      quote: '// break at the last user message, or at user messages at least min step past the last checkpoint'
+      quote_sha256: '7d4022e6d777bbfe3cbd36ee50c74396796296281e132a3207b7d18bde33b8f0'
+      source_revision: 'ak/champion/llama-cpp-ffc1bac82eec = e33229348635731cad66dba8d121854024b6f5d2 : tools/server/server-context.cpp'
+      verified_by: 'research-intake/stage2'
+  claim_corrections:
+    - claim_index: 0
+      effect: 'unaffected'
+      note: 'Placement, batch split at the last user message and checkpoint-before-user are CONFIRMED in the merge diff (A02, A03, A14) and in champion L3772 (A16). The autoparser-side extraction of message_spans from chat templates was NOT read (see read_depth_notes); this part is not dive-verified.'
+    - claim_index: 1
+      effect: 'unaffected'
+      note: 'CONFIRMED: when the user-message position is unknown, mid-prompt checkpoints are skipped (A01, A15). Multimodal mapping via process_mtmd_prompt is in prompt_get_n_before_user (merge diff), not separately quoted. Counter-evidence exists for workloads that change the static prefix (A13), but that does not overturn the mechanism.'
+    - claim_index: 2
+      effect: 'narrowed'
+      note: 'Narrow to: the author states the goal (A04, A05). The PR body contains no measurement of reprocessing. PR comments report regressions (A13: SWA model loses all checkpoint hits; a 2026-06-19 comment says a client that changes the static system prompt trashes the cache). The goal is the author''s, not a verified outcome.'
+    - claim_index: 3
+      effect: 'unaffected'
+      note: 'CONFIRMED: the example command uses --ctx-checkpoints 24 (A06) and --checkpoint-min-step 256 (A07). The PR body has no benchmark numbers (only model version and sampler parameters).'
+  depends_on: []
+  dive_corrections: |-
+    2026-10-20 intake-2068 Stage-2 dive. (1) The entry's key_claims do not name a bug; the PR body frames the change as a step toward fixing 'forcing full prompt re-processing' (A04). (2) The secondary-source claim that --checkpoint-every-n-tokens was removed here is CONFIRMED (A08). (3) The Stage-1 'operator-review candidate' (confirm v10 carries this placement logic) is RESOLVED: v10 carries it. Adoption of #22929 is not new work. (4) Found a pin gap on the KPF branch: the same-slot divergence erase (A21, A22) does not check pinned, so a pinned junction checkpoint with pos_max > pos_next is erased. KPF-15's claim is limited to create_checkpoint's erase loops (A24), so it is not contradicted, but the gap is undocumented. (5) Champion spacing gate (A17) has no last-user-message exemption; the KPF branch adds one (A23). (6) Handoff line references in 'What already exists in our tree' match v10 ffc1bac82 (create_checkpoint at L2365, pre_decode at L2984, user-start placement at L3641-3679 in v10), so they are accurate for v10 and not for the champion. The champion has moved them (create_checkpoint L2396, pre_decode L3105, user-start placement L3772-3864). Any citation must name its tree.
+    2026-10-20 Verdict summary: CONFIRMED on the mechanism and ancestry; PARTIAL on the goal (narrowed); one dive-surfaced gap on the KPF branch (pin vs divergence erase).
+    2026-10-20 second reader (independent agent): re-find 11/11 exact; support yes 9 / partial 1 / no 1; disagreements carried to the Stage-3 plan: A13, A15
   handoffs_updated: []
   handoffs_created: []
   notes: "Retrieved 2026-10-20.  Survey cross-reference: survey section 2.4 mentions checkpoints 'created at user-message boundaries (#24176) and near the end of the prompt'; #22929 itself (and the span-extraction mechanism) is NOT cited by the survey. Relevance: this is the checkpoint-placement policy a cross-slot fork's junction checkpoint (KPF-15 checkpoint_at) has to coexist with. Rank low-medium."
@@ -266441,8 +267005,78 @@
   expanded_from: intake-2061
   credibility_score: null
   contradicting_evidence: null
-  source_revision: "vllm-project/vllm issue #45702 (RFC), state CLOSED (closed_at 2026-06-15T13:18:59Z per API); body + comments read via gh api 2026-10-20 (comments truncated at ~800-1500 chars each)"
-  verification: stage1-unverified
+  source_revision: 'RFC issue #45702 body + all 23 comments read from disk via gh api (last comment 2026-07-03); code vllm/vllm @ b272cff368b3a0c733859ab308f7123291cf1489'
+  verification: dive-verified
+  read_depth: 'FULL'
+  claim_anchors:
+    - claim_index: 3
+      locator: 'vllm/config/cache.py:L207 @ b272cff'
+      quote: 'inside a physical block. It controls matching granularity only, not how'
+      quote_sha256: '4b6c171ceda31e61b87606c64ed0af75a2dbba6442239f850e41b41086e16a15'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 3
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L2088 @ b272cff'
+      quote: '# to the prompt chunk being computed -- during decode the target is the'
+      quote_sha256: 'b40c4a22d073cefed420476173f99c7d51fed465823041e3082befb3f74856f6'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 1
+      locator: 'vllm/v1/core/single_type_kv_cache_manager.py:L1704 @ b272cff'
+      quote: '# Mamba can''t rely on blocks generated by other requests in the current step'
+      quote_sha256: '4965458907ef2334069e20f0ccd0d19ff3bd24154b8228bfe742b2f1103ca0bc'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 0
+      locator: 'rfc.txt:L99 (/mnt/raid0/llm/tmp/dive-2071/rfc.txt, gh api dump 2026-10-20)'
+      quote: 'Partial cache entries are only created for the tail of a request. vLLM still computes'
+      quote_sha256: 'ffa3c57e21d74764126ebc6628285adab73c30bb0dd3fbe0019b895210058f7d'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 3
+      locator: 'rfc.txt:L392 (/mnt/raid0/llm/tmp/dive-2071/rfc.txt, gh api dump 2026-10-20)'
+      quote: 'yes, partial/finer-grained prefix-cache hit is more like a workaround before we decide how to refactor'
+      quote_sha256: 'b42fdc3b9faa40a7c28a31f938bcfa8df8c061afd925e75bb24402304f6b75dc'
+      verified_by: 'research-intake/stage2'
+      verdict: 'CONFIRMED'
+    - claim_index: 1
+      locator: 'rfc.txt:L332 (/mnt/raid0/llm/tmp/dive-2071/rfc.txt, gh api dump 2026-10-20)'
+      quote: 'I have a local branch that implements this and have not found a blocker so far.'
+      quote_sha256: '2c22900df851c8cd581a337f18322043393bb32302a55960e25157b0bf3ee9e3'
+      verified_by: 'research-intake/stage2'
+      verdict: 'PARTIAL'
+    - claim_index: 1
+      locator: 'rfc.txt:L320 (/mnt/raid0/llm/tmp/dive-2071/rfc.txt, gh api dump 2026-10-20)'
+      quote: 'After offline discussion, I understand this to mean 1-token-granularity prefix-cache matching. That is out of scope'
+      quote_sha256: 'a4059dcacacac79e09b023a35ff60a9dd1aeff14f148d05fc02ee71cbd505f1d'
+      verified_by: 'research-intake/stage2'
+      verdict: 'PARTIAL'
+  claim_corrections:
+    - claim_index: 0
+      effect: 'narrowed'
+      note: 'RFC text confirmed (rfc.txt:L99) and shipped as #45939/#46384 (merged), but the flag was renamed --hash-block-size -> --prefix-match-unit (config/cache.py:200-211, "equals the hash_block_size used throughout"). "At most one partial alias" no longer the whole story: the shared-prefix junction checkpoint (#53945) adds a second registered position (single_type_kv_cache_manager.py:2086-2095).'
+    - claim_index: 1
+      effect: 'narrowed'
+      note: 'Worst-case lookup (~64 probes) and whole-block copy are as recorded. The async-scheduling/spec-decode question was NOT resolved in the RFC: the only answer is "I have a local branch that implements this and have not found a blocker so far" (rfc.txt:L332) with no design. In code, the interaction is handled by construction: partial checkpoints are prompt-bounded (single_type_kv_cache_manager.py:2086-2090), lookahead blocks are not allocated in align mode (:1727), other-request same-step states are not reusable (:1704-1708), and the open scheduler-split-vs-backend-metadata question ended as BOTH (scheduler.py:540-575 use_internal_checkpoint). Same-step reuse stayed "recompute/defer", depth-1 reuse (heheda12345) not adopted.'
+    - claim_index: 2
+      effect: 'unaffected'
+      note: '#46251 is still an open draft (gh api 2026-10-20). The +32%/2.7x remains an unreplicated own claim; not independently verified here, no replication found in thread (halfrost/albertw7711 offered benchmarks, none posted).'
+    - claim_index: 3
+      effect: 'unaffected'
+      note: 'Confirmed: tail-only checkpoint at request boundary (rfc.txt:L99, L392 "workaround"), "zero-cache-miss-token" explicitly out of scope (rfc.txt:L320). Code: prefix_match_unit "controls matching granularity only, not how often states are stored" (config/cache.py:207-208).'
+    - claim_index: 4
+      effect: 'unaffected'
+      note: 'Unreviewed community proposal; vLLM instead shipped block-level CoW (_pending_cow_copies, single_type_kv_cache_manager.py:147-148), not a DAG. PoC is a PyTorch toy, not run here.'
+  depends_on:
+    - entry: 'intake-2066'
+      claim_index: 0
+      why: 'the shipped realisation of the partial-hit + junction checkpoint is documented by 2066; verification of both rests on the same code revision'
+    - entry: 'intake-2066'
+      claim_index: 2
+      why: 'the shipped realisation of the partial-hit + junction checkpoint is documented by 2066; verification of both rests on the same code revision'
+  dive_corrections: |-
+    2026-10-20 RFC outcome vs code @ b272cff: partial hits + tail checkpoint shipped (#45939, #46384, #49502); spec-decode/async question answered only by assertion in the RFC, resolved structurally in code; granularity flag renamed to --prefix-match-unit; competing allocation-decoupling #46251 still open draft. Junction checkpoint for EAGLE/MTP (#53945) is the later, separate mechanism and is what intake-2066 documents.
+    2026-10-20 second reader (independent agent): re-find 7/7 exact; support yes 1 / partial 3 / no 3; disagreements carried to the Stage-3 plan: intake-2071#3.7, intake-2071#3.8, intake-2071#1.9, intake-2071#3.11, intake-2071#1.12, intake-2071#1.13
   handoffs_updated: []
   handoffs_created: []
   notes: "Expansion from intake-2061 / intake-2062 bodies, which cite RFC #45702; retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (RFC never cited). Most useful for us as the design-alternatives record: it names the async-scheduling/spec-decode interaction as an open question (relevant to MTP/DFlash2 and our KPF design) and the memory-vs-hit-rate argument for tail-only checkpoints. Comments only partially read."
