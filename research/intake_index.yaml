@@ -270721,3 +270721,1376 @@
     2026-10-20 second reader (independent agent): re-find 17/17; support yes 13 / partial 4 / no 0; disagreements carried to the Stage-3 plan: idx 0, idx 1, idx 2
 
     '
+- arxiv_id: null
+  source_type: repo
+  ingested_date: '2026-10-20'
+  discovered_via: expansion
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections: []
+  id: intake-2103
+  url: https://github.com/ggml-org/llama.cpp/pull/30574
+  title: 'server: save the draft state in the slot file (llama.cpp PR #30574, MERGED 2026-10-15; fixes issue #28619)'
+  authors:
+  - ServeurpersoCom (PR author)
+  expanded_from: intake-2095
+  categories:
+  - inference_serving
+  - kv_cache
+  - speculative_decoding
+  - context_management
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  key_claims:
+  - A slot restored from --slot-save-path regained target-model memory but not draft-model memory, so speculative decoding restarted with an empty draft and accepted fewer tokens; the merged change appends the draft context and the speculative state to the slot file after the checkpoint appendix and restores them.
+  - The appendix is tagged (magic 'SDFT', version 1) and written after the llama state payload and the checkpoint appendix; on load a draft block that does not match the draft context is dropped and the draft starts empty, and old slot files restore unchanged.
+  - Save fails the whole request ('incomplete draft state') when the append cannot be completed; restore first clears the draft sequence, so a file without a draft block restores a cold draft exactly as before.
+  - 'Author-reported effect on the turn after save, erase, restore: draft acceptance 37% on master vs 49% with the PR for Qwen3.8-27B with draft-mtp (equal to a never-saved slot), and 38% vs 100% for a model used as its own draft. One setup each, author-reported, not measured on our hardware.'
+  - The PR adds test_slot_restore_draft_state (draft-simple only), asserting that draft_n and draft_n_accepted after restore equal those of an unsaved twin slot.
+  techniques:
+  - slot-file draft appendix (SDFT)
+  - llama_state_seq_get/set_data_ext on ctx_dft
+  - common_speculative_get_state/set_state in slot file
+  reported_results:
+  - 'PR body: "Qwen3.8-27B with draft-mtp: 37% on master, 49% with this PR, same as a slot that was never saved" (author, single setup).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2104
+    - intake-2107
+    - intake-1292
+  contradicting_evidence: null
+  source_revision: 'ggml-org/llama.cpp PR #30574 (MERGED 2026-10-15T13:24:20Z, mergeCommit ea736c1d5c1d2cd0489abe788bc3a1859af5dc0b), body+2 comments+8.8 KB diff read FULL from disk 2026-10-20. NOT PRESENT in v10 (ffc1bac82), ak/champion/llama-cpp-ffc1bac82eec or experimental/kv-prefix-fork-p1r-20261020 (a1f0c8cf9): merge commit ea736c1d is not in the local object store, and v10 server-context.cpp has no save_slot_draft/SLOT_DRAFT_MAGIC (git grep, 0 files). Applies on top of #26004 (checkpoint appendix, also absent from v10) and #30514; it is a follow-up to #30514.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - anchor_id: A01
+    claim_index: 0
+    kind: line-range
+    locator: 'PR #30574 body, Overview paragraph 1'
+    quote: A slot restored with --slot-save-path gets back the main model memory but not the draft model memory
+    quote_sha256: 6ef1f67200d704ebadac90e2f077199e853c612e01d5d7843f289ae198cf7e03
+    source_revision: 'ggml-org/llama.cpp PR #30574 (MERGED 2026-10-15T13:24:20Z, mergeCommit ea736c1d5c1d2cd0489abe788bc3a1859af5dc0b), body+2 comments+8.8 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A02
+    claim_index: 1
+    kind: line-range
+    locator: 'PR #30574 diff, tools/server/server-context.cpp, hunk +2734 (constants and comment)'
+    quote: the llama state payload holds the target context only
+    quote_sha256: 1f112fbc3905c6c0342f7fe22e1bb4257710632032eb60433419a5b4035c8ad7
+    source_revision: 'ggml-org/llama.cpp PR #30574 (MERGED 2026-10-15T13:24:20Z, mergeCommit ea736c1d5c1d2cd0489abe788bc3a1859af5dc0b), body+2 comments+8.8 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A03
+    claim_index: 2
+    kind: line-range
+    locator: 'PR #30574 diff, tools/server/server-context.cpp, SLOT_SAVE hunk'
+    quote: 'Unable to save slot: incomplete draft state'
+    quote_sha256: e9c6d60667a5b698b7f75a8da6dead5db9a9172b444a30ea6dd320adcfbf8959
+    source_revision: 'ggml-org/llama.cpp PR #30574 (MERGED 2026-10-15T13:24:20Z, mergeCommit ea736c1d5c1d2cd0489abe788bc3a1859af5dc0b), body+2 comments+8.8 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A04
+    claim_index: 3
+    kind: line-range
+    locator: 'PR #30574 body, Additional information'
+    quote: 'Qwen3.8-27B with draft-mtp: 37% on master, 49% with this PR, same as a slot that was never saved'
+    quote_sha256: a46a838f8c814aba313551a7e09cb0183c3f23634607c220de1d28f63119bde4
+    source_revision: 'ggml-org/llama.cpp PR #30574 (MERGED 2026-10-15T13:24:20Z, mergeCommit ea736c1d5c1d2cd0489abe788bc3a1859af5dc0b), body+2 comments+8.8 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A05
+    claim_index: 4
+    kind: line-range
+    locator: 'PR #30574 diff, tools/server/tests/unit/test_slot_save.py'
+    quote: assert timings[0]["draft_n_accepted"] == timings[1]["draft_n_accepted"]
+    quote_sha256: 4f131bb3221f321e41c5408f5c3af931db57c774e63c33900e4a0835aaec6746
+    source_revision: 'ggml-org/llama.cpp PR #30574 (MERGED 2026-10-15T13:24:20Z, mergeCommit ea736c1d5c1d2cd0489abe788bc3a1859af5dc0b), body+2 comments+8.8 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  depends_on: []
+  dive_corrections: '2026-10-20 STAGE-2b (wave 5a). OVERTURNS the surfacing ledger: dive-w4a LEDGER described #30574 as ''Gemma 4 slot restore test that found #30580''. It is not: #30574 is the PR ''server: save the draft state in the slot file'', which fixes issue #28619 and is a follow-up to #30514 (PR body). It is the exact merged fix for the gap the KPF/context-bank work names (v10 slot save covers ctx_tgt only). Also narrows ''follow-up promised in #30514 thread'' (w4a, on #28619): the follow-up that landed is this PR, authored by a different person than the reporter.
+
+    2026-10-20 second reader (independent agent): re-find 5/5; support yes 2 / partial 3 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: unanchored: C2 restore-clears-draft, C3 38%/100%
+
+    '
+  notes: 'Retrieved 2026-10-20. FULL read. Not read: the other files touched by #30514/#26004 (named, not fetched). Scope limit the diff itself shows: the saved draft block is ctx_dft memory plus the common_speculative per-impl state (get_state exists on eagle3, per #24593; DFlash2 has no get_state in our fork, see dive-w4a ledger), so for DFlash2 only the ctx_dft half applies. The test uses draft-simple, not draft-mtp, so the MTP effect is the author''s PR-body number only. Quarantine: PR text and comments treated as data.'
+  recommended_actions:
+  - 'Operator-review candidate: absorb at the next fresh-production pull (never patch v10), after #26004 and #30514 which it stacks on. Before absorbing, a CPU probe: save/erase/restore an MTP slot on our fork and compare draft_n_accepted with an unsaved twin.'
+- arxiv_id: null
+  source_type: repo
+  ingested_date: '2026-10-20'
+  discovered_via: expansion
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections: []
+  id: intake-2104
+  url: https://github.com/ggml-org/llama.cpp/issues/28619
+  title: 'Misc. bug: /slots save/restore never persists the draft-model context (ctx_dft) on speculative-decoding deployments (llama.cpp issue #28619, closed 2026-10-15 by PR #30574)'
+  authors:
+  - dgabehar (issue reporter)
+  expanded_from: intake-2093
+  categories:
+  - inference_serving
+  - kv_cache
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  credibility_score: 4
+  verdict: already_integrated
+  key_claims:
+  - POST /slots/{id}?action=save|restore persists only ctx_tgt; the draft context ctx_dft is never captured or restored on --model-draft / --spec-type deployments, and this predates the report (not a regression).
+  - 'Restore reports success either way, so the failure is silent: the draft starts cold after every restore unless a checkpoint (which carries its own data_dft) happens to cover the request.'
+  - The reporter's reproduction used Qwen3.8-27B with an MTP draft (draft-mtp, n-max 2, q4_0 KV, 262144 ctx) on a Vulkan/AMD-APU deployment and offered a fix via llama_state_seq_get_size_ext/get_data_ext/set_data_ext stored as a companion .dft file.
+  - 'The issue was closed completed on 2026-10-15 by PR #30574 (which implements it as an appendix in the same file, not a companion file).'
+  techniques:
+  - ctx_dft capture on slot save
+  reported_results:
+  - No measurements in the issue body; reproduction is qualitative (inspect the save file, restore, observe empty draft KV).
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2103
+  contradicting_evidence: null
+  source_revision: 'ggml-org/llama.cpp issue #28619 (closed, completed 2026-10-15T13:24:21Z, 0 comments), read FULL from disk 2026-10-20 (28619.issue.json); filed against commit 0f3a71be15af836d277c9f918adfafb45732677e. The gap is PRESENT in v10, the champion branch and the fork (no draft block in the slot file); the fix is #30574, absent from all three.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - anchor_id: A01
+    claim_index: 0
+    kind: line-range
+    locator: 'issue #28619 body, Problem description paragraph 1'
+    quote: only persists `ctx_tgt`
+    quote_sha256: 7c409d382e7b4e817117f8bfe26c97d51fb7c7a93181db3cf9b0984283d15b18
+    source_revision: 'ggml-org/llama.cpp issue #28619 (closed, completed 2026-10-15T13:24:21Z, 0 comments), read FULL from disk 2026-10-20 (28619.issue.json); filed against commit 0f3a71be15af836d277c9f918adfafb45732677e'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A02
+    claim_index: 1
+    kind: line-range
+    locator: 'issue #28619 body, Problem description paragraph 3'
+    quote: Not directly observable as a crash or an error
+    quote_sha256: da61868ab119dc7aef5c2b7efcfcd4f7fafe41c04c55c7d37c9403d4314f250f
+    source_revision: 'ggml-org/llama.cpp issue #28619 (closed, completed 2026-10-15T13:24:21Z, 0 comments), read FULL from disk 2026-10-20 (28619.issue.json); filed against commit 0f3a71be15af836d277c9f918adfafb45732677e'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A03
+    claim_index: 2
+    kind: line-range
+    locator: 'issue #28619 body, Command line block'
+    quote: --spec-type draft-mtp
+    quote_sha256: f690ae946d0d74773f95b849de0e722961041c57d45dcff2a3435ee500c2092d
+    source_revision: 'ggml-org/llama.cpp issue #28619 (closed, completed 2026-10-15T13:24:21Z, 0 comments), read FULL from disk 2026-10-20 (28619.issue.json); filed against commit 0f3a71be15af836d277c9f918adfafb45732677e'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A04
+    claim_index: 3
+    kind: line-range
+    locator: 'issue #28619 body, First bad commit'
+    quote: Not a regression
+    quote_sha256: 3ffbd5b828b5ee23a297ef35d4b09151706cf80df488fb3d836464bcad28cedc
+    source_revision: 'ggml-org/llama.cpp issue #28619 (closed, completed 2026-10-15T13:24:21Z, 0 comments), read FULL from disk 2026-10-20 (28619.issue.json); filed against commit 0f3a71be15af836d277c9f918adfafb45732677e'
+    verified_by: research-intake/stage2b-w5a
+  depends_on: []
+  dive_corrections: '2026-10-20 STAGE-2b (wave 5a). Resolved as an ISSUE (closed, state_reason completed), not a PR. dive-w4a LEDGER called it ''slot file never saves draft context; follow-up promised in #30514 thread'': confirmed in substance, and now fixed upstream by #30574 (merged 2026-10-15), so the ''ingest in a later pass'' recommendation reduces to a pointer to intake-2103; this entry is a confirming filing, no new mechanism.
+
+    2026-10-20 second reader (independent agent): re-find 4/4; support yes 2 / partial 2 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: none listed
+
+    '
+  notes: 'Retrieved 2026-10-20. FULL read; the issue has zero comments (the ''comment on #26004'' it cites was not fetched; #26004 is intake-2096). Reporter is a user with a production Vulkan/AMD-APU deployment; the claim is mechanism-level and consistent with the merged diff of #30574 (A02 there).'
+  recommended_actions:
+  - 'None separate: tracked via intake-2103.'
+- arxiv_id: null
+  source_type: repo
+  ingested_date: '2026-10-20'
+  discovered_via: expansion
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections: []
+  id: intake-2105
+  url: https://github.com/ggml-org/llama.cpp/pull/26640
+  title: 'server : support slot save/restore with media inputs (llama.cpp PR #26640, MERGED 2026-08-12)'
+  authors:
+  - CHIPMUNK-T0T (PR author)
+  expanded_from: intake-2096
+  categories:
+  - inference_serving
+  - kv_cache
+  - multimodal
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  verdict: not_applicable
+  key_claims:
+  - Before this PR, saving a slot that held media inputs was rejected with HTTP 501, because the slot file stored only the KV state and a plain token list, not the media positions and mtmd chunk state.
+  - The merged change stores the whole server_tokens object (tokens, media start positions, serialized media chunks) as one versioned packed payload behind a LLAMA_TOKEN_NULL marker; the same packed format is used for text-only slots too, so a new-format file cannot be restored by an older server, while old files still restore.
+  - 'It depends on mtmd_input_chunk_save/load from PR #26645 and extends llama_state_seq_load_file with a size query (tokens_out == nullptr) because the packed payload can exceed n_ctx.'
+  - 'Author-reported effect (Qwen3.5-2B Q8_0, RTX 4070, one image prompt of 3316 tokens, median of 3): restore plus same-image prompt 21.82 ms vs 292.38 ms cold (13.4x); a different image does not reuse the restored prefix.'
+  - 'Stated limits: media slot files need the same model/mmproj; for SWA models prefix reuse after restore requires --swa-full; slot erase stays unsupported for media slots.'
+  techniques:
+  - packed server_tokens serialization
+  - mtmd chunk save/load in slot file
+  - size-query load
+  reported_results:
+  - 'PR body: "restore + same image prompt processing: **21.82 ms**" (author, one GPU/model).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2096
+    - intake-2103
+  contradicting_evidence: null
+  source_revision: 'ggml-org/llama.cpp PR #26640 (MERGED 2026-08-12T10:20:28Z, mergeCommit 5d9e5ac30e469d44c0a5a52556de0ead03aaa5b0), body+11 comments+37 KB diff read FULL from disk 2026-10-20. Merge commit 5d9e5ac3 IS in the local object store and is NOT an ancestor of v10 (ffc1bac82), ak/champion/llama-cpp-ffc1bac82eec or experimental/kv-prefix-fork-p1r-20261020 (git merge-base --is-ancestor rc=1 on all three); v10 server-context.cpp still has check_slot_no_media at the SLOT_SAVE handler and no mtmd_input_chunk_save (0 files).'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - anchor_id: A01
+    claim_index: 0
+    kind: line-range
+    locator: 'PR #26640 body, Overview paragraph 1'
+    quote: saving such a slot is currently rejected with HTTP 501
+    quote_sha256: 950b22ed46668c071d4a70dec8d5674efd4859a4351d054492581e18eca2c7b6
+    source_revision: 'ggml-org/llama.cpp PR #26640 (MERGED 2026-08-12T10:20:28Z, mergeCommit 5d9e5ac30e469d44c0a5a52556de0ead03aaa5b0), body+11 comments+37 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A02
+    claim_index: 1
+    kind: line-range
+    locator: 'PR #26640 body, Backward compatibility'
+    quote: restoring a new-format slot file on an older server is not supported
+    quote_sha256: 3240784b1ee82e2739866fdb12587eb8a6f4bd5808e8e638bb5dd04a54422222
+    source_revision: 'ggml-org/llama.cpp PR #26640 (MERGED 2026-08-12T10:20:28Z, mergeCommit 5d9e5ac30e469d44c0a5a52556de0ead03aaa5b0), body+11 comments+37 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A03
+    claim_index: 2
+    kind: line-range
+    locator: 'PR #26640 body, Slot restore'
+    quote: Serialized media chunks can make the packed payload larger than the slot's `n_ctx`.
+    quote_sha256: 27ea6682e068453510924891a3259fea9c929c7d1cf785fcd737d589f2ba89d8
+    source_revision: 'ggml-org/llama.cpp PR #26640 (MERGED 2026-08-12T10:20:28Z, mergeCommit 5d9e5ac30e469d44c0a5a52556de0ead03aaa5b0), body+11 comments+37 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A04
+    claim_index: 3
+    kind: line-range
+    locator: 'PR #26640 body, Benchmark'
+    quote: 'restore + same image prompt processing: **21.82 ms**'
+    quote_sha256: 4a60fe6f612ae129b1c22be7c3ac272a97ab446101ab79dcbf32be8a3b9dbe11
+    source_revision: 'ggml-org/llama.cpp PR #26640 (MERGED 2026-08-12T10:20:28Z, mergeCommit 5d9e5ac30e469d44c0a5a52556de0ead03aaa5b0), body+11 comments+37 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A05
+    claim_index: 4
+    kind: line-range
+    locator: 'PR #26640 body, Additional information'
+    quote: For SWA models, prefix reuse after restore requires `--swa-full`.
+    quote_sha256: b342a836dce20ae958db08c241546a3f06d223d1b4cd054b80b8d2254c515e89
+    source_revision: 'ggml-org/llama.cpp PR #26640 (MERGED 2026-08-12T10:20:28Z, mergeCommit 5d9e5ac30e469d44c0a5a52556de0ead03aaa5b0), body+11 comments+37 KB diff read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  depends_on: []
+  dive_corrections: '2026-10-20 STAGE-2b (wave 5a). Resolves the merge status dive-w4b left as NOT-FOUND-IN-SOURCE: MERGED 2026-08-12 (5d9e5ac3), absent from v10 and the fork. Bearing on the context bank: none for text-only banks except one hazard. The PR changes the on-disk slot file format for ALL slots (packed server_tokens behind a LLAMA_TOKEN_NULL marker), so a bank written by a post-#26640 server is unreadable by v10; a bank written by v10 stays readable after. Pull direction matters: banks built on v10 are forward-safe, banks built on a v11 candidate that contains #26640 are not rollback-safe to v10/v9.
+
+    2026-10-20 second reader (independent agent): re-find 5/5; support yes 2 / partial 3 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: unanchored: C3 cold 292.38 ms, C4 erase unsupported
+
+    '
+  notes: 'Retrieved 2026-10-20. FULL read of body, all 11 comments and the 37 KB diff; merge-base check done against the real sha. Relevance low: our frontdoor/worker roles are text-only for the np x ctx study, and the media path is only a format-compatibility hazard. Quarantine: PR text is data.'
+  recommended_actions:
+  - 'Operator-review candidate: no port. Record the file-format-break hazard in the v11 pull-fresh checklist so a context bank written on v11 is not expected to restore on v10 rollback.'
+- arxiv_id: null
+  source_type: repo
+  ingested_date: '2026-10-20'
+  discovered_via: expansion
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections: []
+  id: intake-2106
+  url: https://github.com/ggml-org/llama.cpp/issues/22384
+  title: 'server: fix context checkpoint restore for hybrid/recurrent models (DeltaNet/Mamba) (llama.cpp issue #22384, closed 2026-04-26, maintainer rejected the proposed fix)'
+  authors:
+  - Tongas (issue author)
+  expanded_from: intake-2096
+  categories:
+  - inference_serving
+  - kv_cache
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  verdict: superseded
+  key_claims:
+  - 'The issue reports that Qwen3.5/3.6-27B (Gated DeltaNet hybrids) re-process the full prompt on every conversation turn (about 12K tokens, ~11 s at turn 2), blamed on two server-context.cpp conditions: a pos_min-based checkpoint search that always fails for recurrent state, and a 64-token minimum for creating a checkpoint.'
+  - 'The maintainer (ggerganov) closed it as ''incorrect'' and ''nothing to fix in llama-server'', attributing the re-processing to the model''s thinking-trace handling (enable preserve_thinking); the author replied that full re-processing persisted with preserve_thinking=true and checkpoints: 0 at turn 1.'
+  - The proposed patch (spiritbuun/buun-llama-cpp#26) was never merged upstream through this issue; the reported gain (12,146 tokens re-processed to 31, 115 ms) is one RTX 3090 setup, author-reported.
+  - 'In our v10 tree the checkpoint lookup is different code from what the issue quotes: a pos_max > pos_next rejection ([TAG_CHECKPOINTS_FIX_POS_MIN]) and a ''cur.pos_min < pos_min_thold || cur.pos_min == 0'' accept rule at server-context.cpp:3458-3462, and checkpoint creation is gated by ctx_tgt_seq_rm_type (FULL/RS) plus near_prompt_end / is_last_user_message rather than the 64-token floor; so the issue''s patch does not apply to or describe v10.'
+  techniques:
+  - hybrid-model checkpoint search by pos_max
+  - lower checkpoint floor for recurrent models
+  reported_results:
+  - 'Issue body: Turn 2 prefill (12K context) "12,146 tokens re-processed (~11s)" before vs "31 new tokens only (115ms)" after (author, RTX 3090, Qwen3.6-27B Q4_K_M).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2096
+  contradicting_evidence:
+  - 'Maintainer comment (ggerganov, 2026-04-26): the fix is incorrect and nothing needs fixing in llama-server (preserve_thinking); counter-comment by the author says it still re-processes with preserve_thinking=true. Unresolved in the thread; the issue was closed completed without a linked PR.'
+  source_revision: 'ggml-org/llama.cpp issue #22384 (closed completed 2026-04-26T06:59:32Z; an ISSUE, not a PR), body + 2 comments read FULL from disk 2026-10-20. Compared read-only against ffc1bac82:tools/server/server-context.cpp lines 3440-3470 and 3566-3580 and 3712-3724.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - anchor_id: A01
+    claim_index: 0
+    kind: line-range
+    locator: 'issue #22384 body, Root cause'
+    quote: but for recurrent models `pos_min` always equals the full sequence length
+    quote_sha256: 273d6b6e85640db93808de0774d5703993e8f78038b694b393a91195075e1353
+    source_revision: 'ggml-org/llama.cpp issue #22384 (closed completed 2026-04-26T06:59:32Z; an ISSUE, not a PR), body + 2 comments read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A02
+    claim_index: 1
+    kind: line-range
+    locator: 'issue #22384 comment by ggerganov 2026-04-26T07:27:04Z'
+    quote: The fix is incorrect. There is nothing to fix in `llama-server`.
+    quote_sha256: 425463145e1d886ca7215858b38a201883368ebcf1374a68fcc10c0b75b553d9
+    source_revision: 'ggml-org/llama.cpp issue #22384 (closed completed 2026-04-26T06:59:32Z; an ISSUE, not a PR), body + 2 comments read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A03
+    claim_index: 1
+    kind: line-range
+    locator: 'issue #22384 comment by Tongas 2026-04-26T07:34:17Z'
+    quote: 'Turn 2: "forcing full prompt re-processing" → 75 tokens processed'
+    quote_sha256: cc389c713474e71aacc7569689dd18b2ad0527d9d056844b70e3cfbac083b25b
+    source_revision: 'ggml-org/llama.cpp issue #22384 (closed completed 2026-04-26T06:59:32Z; an ISSUE, not a PR), body + 2 comments read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A04
+    claim_index: 2
+    kind: line-range
+    locator: 'issue #22384 body, Performance impact table'
+    quote: 31 new tokens only (115ms)
+    quote_sha256: b16ad753224f1fc682b0bf3d053f05daaef8ffbc5ae4bc091800be8224791e48
+    source_revision: 'ggml-org/llama.cpp issue #22384 (closed completed 2026-04-26T06:59:32Z; an ISSUE, not a PR), body + 2 comments read FULL from disk 2026-10-20'
+    verified_by: research-intake/stage2b-w5a
+  depends_on: []
+  dive_corrections: '2026-10-20 STAGE-2b (wave 5a). Corrects the surfacing description in dive-w4b LEDGER (''checkpoint lookup for recurrent models in a live slot''): the issue title is ''server: fix context checkpoint restore for hybrid/recurrent models (DeltaNet/Mamba)'', it is an ISSUE, and the proposed fix was rejected by the maintainer with no merged PR. Answers the ledger''s open question ''whether it is in v10'': NO, and not needed as stated, because v10''s checkpoint search was rewritten (pos_max guard + pos_min==0 accept rule). Does NOT overturn HYBRID-PREFIX-REUSE''s own finding that v10 creates checkpoints only near the prompt end: that finding is from our run, and is the real constraint; this issue only confirms the failure mode (''forcing full prompt re-processing'') exists upstream for hybrids and that upstream''s answer was ''checkpoint timing / thinking handling'', not a lookup bug.
+
+    2026-10-20 second reader (independent agent): re-find 4/4; support yes 4 / partial 0 / no 0; corrections applied: removed unsupported "closed within 20 min of the follow-up" (issue 22384 closed_at 06:59:32Z precedes follow-up comments 07:23-07:34); remaining disagreements carried to the Stage-3 plan: C3/C4 v10 code lines 3458-3462 verified but 64-token floor unverified
+
+    '
+  notes: 'Retrieved 2026-10-20. FULL read of body and both comments. The linked fork patch (spiritbuun/buun-llama-cpp#26) was NOT fetched. Credibility 2: a single-user report with an unresolved maintainer disagreement, and a number that is one setup. I did not run anything to decide who is right about preserve_thinking; for us the controlling evidence is our own HYBRID-PREFIX-REUSE measurements on Qwen3.8-27B.'
+  recommended_actions:
+  - 'None: prior art and a failure-mode label. HYBRID-PREFIX-REUSE (a) already measures prompt_n per turn with and without a boundary request.'
+- arxiv_id: null
+  source_type: repo
+  ingested_date: '2026-10-20'
+  discovered_via: expansion
+  referenced_arxiv_ids: []
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections: []
+  id: intake-2107
+  url: https://github.com/ggml-org/llama.cpp/pull/24593
+  title: 'spec: support eagle3 for qwen3.5 & 3.6 (llama.cpp PR #24593, MERGED 2026-06-19)'
+  authors:
+  - ruixiang63 (PR author)
+  expanded_from: intake-2093
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - ssm_hybrid
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: already_integrated
+  key_claims:
+  - Adds draft-eagle3 support for third-party EAGLE3 drafters of Qwen3.5/3.6 (Ex0bit/Qwen3.6-27B-PRISM-EAGLE3, BLR2/Qwen3.5-9B-Eagle3-ShareGPT); touches qwen35.cpp, qwen35moe.cpp, common/speculative.* and server-context.cpp.
+  - Introduces the virtual get_state/set_state hooks on the speculative impl and common_speculative_get_state/set_state, and stores the draft's speculative state in each context checkpoint (data_spec), saved at checkpoint creation and restored with the checkpoint.
+  - 'Author-reported SpeedBench on DGX Spark, Qwen3.6-27B Q4_K_M, concurrency 1, 2 samples per category: overall 12.56 tok/s baseline vs 22.31 tok/s with EAGLE3 (accept rate 0.5015 overall).'
+  - 'Comment threads report problems the author could not reproduce: a user saw 15-17 tok/s vs 27 baseline on a Tesla V100 and a crash on the second turn after a checkpoint restore, and a 2xMI50 user hit a GGML_ASSERT with -sm tensor (works with -sm layer).'
+  - 'The merged get_state/set_state plumbing is the reason checkpoints (and, via #26004/#30574, slot files) can carry drafter-impl state; it is present in v10.'
+  techniques:
+  - EAGLE3 drafter for Qwen3.5/3.6
+  - data_spec in context checkpoint
+  - common_speculative_get_state/set_state
+  reported_results:
+  - 'PR body SpeedBench table: overall avg_pred_t/s 12.56 (baseline) vs 22.31 (EAGLE3), accept_rate 0.5015, DGX Spark, 22 samples (author).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2103
+  contradicting_evidence:
+  - 'Comment thread: gelim (Tesla V100) reports 15-17 tok/s vs 27 baseline and a crash after checkpoint restore on turn 2; author answered it could not reproduce and that patching only qwen35.cpp is insufficient. Not adjudicated here.'
+  source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread. PRESENT in v10, the champion branch and the fork: b14e3fb9 is an ancestor of all three (merge-base --is-ancestor rc=0), and v10 common/speculative.cpp:179-180 defines the get_state/set_state virtuals and :3291/:3305 the common_speculative_* wrappers.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - anchor_id: A01
+    claim_index: 0
+    kind: line-range
+    locator: 'PR #24593 body, Overview'
+    quote: Support third-party eagle3 draft models for Qwen3.5 & 3.6
+    quote_sha256: 643f7ad7efd4f099c38469f19071d808aca3023a65d7f132552ea90cb6e19688
+    source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A02
+    claim_index: 1
+    kind: line-range
+    locator: 'PR #24593 diff, tools/server/server-context.cpp hunk @@ -2157'
+    quote: // stash the draft's speculative state with the checkpoint
+    quote_sha256: 13b611b7d018ea94696042529394bda84b4bd7c4898647f223389d21dc3c74aa
+    source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A03
+    claim_index: 1
+    kind: line-range
+    locator: 'PR #24593 diff, common/speculative.cpp, base class'
+    quote: virtual bool get_state(llama_seq_id /*seq_id*/, std::vector<uint8_t> & /*data*/) const { return false; }
+    quote_sha256: 43045550302120ae9e16844742bf74e7b10c9a24b726f50d6817c7bfc4871be2
+    source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A04
+    claim_index: 2
+    kind: line-range
+    locator: 'PR #24593 body, SpeedBench table with EAGLE3'
+    quote: overall        22       183.16          22.31         14.894s      0.5015
+    quote_sha256: 4e6d636ba90689946ac792a4f3ba16b29b1e3c6b4ef6cd9e70a7147469ac54c7
+    source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A05
+    claim_index: 3
+    kind: line-range
+    locator: 'PR #24593 comment by a Tesla V100 user (second comment batch, after gelim 2026-06-14)'
+    quote: 'if writing something as second turn, this crash occurs:'
+    quote_sha256: 174daa0315b9e3e4965658b58c7944abb99d200ae82b408c6e430198aaa572be
+    source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread'
+    verified_by: research-intake/stage2b-w5a
+  - anchor_id: A06
+    claim_index: 3
+    kind: line-range
+    locator: 'PR #24593 same comment, log excerpt following the second-turn crash line (restored checkpoint, then llama_decode failed to decode)'
+    quote: restored context checkpoint (pos_min = 10, pos_max = 10, n_tokens = 11, n_past = 11, size = 149.665 MiB)
+    quote_sha256: c22fc8774210f89988831ac6d5e2953c9a461b623350834194a4189d96be5a1e
+    source_revision: 'ggml-org/llama.cpp PR #24593 (MERGED 2026-06-19T10:08:50Z, mergeCommit b14e3fb90ca8c760f4254ddc9aa7845ebbdb2edf), body, comments and 8.8 KB diff read from disk 2026-10-20; comments read for the first 15 of the thread'
+    verified_by: research-intake/stage2b-w5a
+  depends_on: []
+  dive_corrections: '2026-10-20 STAGE-2b (wave 5a). Corrects the surfacing label in dive-w4a LEDGER: ''#24593 (EAGLE3 get/set_state motivation)'' is CONFIRMED as to the code (the PR is where the get_state/set_state hooks and data_spec-in-checkpoint come from) but the PR is titled and primarily about EAGLE3 support for Qwen3.5/3.6, not a state-persistence change. It is already in v10, so the w4a ''low priority, context only'' recommendation stands as ''already integrated; no action''. Not read: the last part of the 30-comment thread beyond the first 15 comments, and the qwen35.cpp / qwen35moe.cpp model hunks beyond the file list.
+
+    2026-10-20 second reader (independent agent): re-find 5/5; support yes 4 / partial 1 / no 0; corrections applied: re-anchored C3 to the verbatim second-turn crash line and added the restored-checkpoint log line (A05, A06); remaining disagreements carried to the Stage-3 plan: C4 v10 get/set_state present, unanchored
+
+    '
+  notes: 'Retrieved 2026-10-20. PARTIAL: body, diff and the first 15 of the comments read from disk; the model-file hunks and later comments not analysed. Gain numbers are the author''s two-samples-per-category table, not a rigorous benchmark and not ours. Relevance to us: EAGLE3 is a candidate drafter family for Qwen3.5/3.6 targets, not our MTP/DFlash2 path; recorded because it explains where the drafter-state-in-checkpoint plumbing comes from. Quarantine: PR text and comments are data.'
+  recommended_actions:
+  - 'None: already integrated.'
+- id: intake-2108
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/53479
+  source_type: repo
+  title: '[Bugfix][V1] Mamba align: materialize a state at every boundary and drop the speculative one-block back-off (vLLM PR #53479)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2100
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - kamb-code (PR author)
+  - jschmied (GB10 reproduction, review)
+  key_claims:
+  - Mamba align-mode states are materialized only at chunk ends, so a sibling sharing less than the single deep mid-prompt chunk end gets zero reuse; the PR stops a chunk at every block boundary whose state retention will hash, so a reusable state exists wherever a lookup can find one.
+  - The speculative one-block back-off (last_cache_position -= block_size under use_eagle) was sized for 16-token attention blocks; with 544-2,128-token align blocks it forfeits one whole reusable block for eagle/eagle3/mtp/dflash/dspark. The code removes it.
+  - 'Default-install measurement (CPU harness, retention 0, 7,292-token prompt): first hit moves from request 3 (4,800) to request 2 (4,800); a GB10 rig run by a third party on build b99d152 reported the same two cells (request 3 to request 2 for 7,292 and 6,400 prompts).'
+  - 'The PR body states its current branch is superseded and should not be reviewed as the intended final change; the author will rebuild after #54076 and #54713 merge.'
+  techniques:
+  - retention-aware chunk boundary stops for align-mode Mamba state
+  - EAGLE reachable-boundary retention (eagle_reach_margin)
+  - speculative back-off removal
+  reported_results:
+  - 'CPU scheduler+manager harness, retention 0, 3-send identical-prompt protocol: 7,292-token prompt first hit on send 2 (4,800) vs send 3 base; 6,400-token aligned prompt first hit on send 2 (3,200) vs send 3 base (author harness, one setup).'
+  - 'GB10 rig (third-party, comment 2026-08-25): 7,292 base request 3 4,800 vs branch request 2 4,800; 6,400 base request 3 3,200 vs branch request 2 3,200. Block size 1,600 on that rig.'
+  - Author-reported worst-case cost +33 ms per extra boundary step on a 0.8B --enforce-eager setup (not re-measured).
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2062
+    - intake-2064
+  verification: dive-overturned
+  read_depth: PARTIAL
+  source_revision: 'vllm-project/vllm PR #53479, state OPEN (draft), head b99d152af44e765c181150a2d473daddd2c9d3ab; body + 18 comments + PR diff read via gh 2026-10-20'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR body, section "Purpose" (Fix paragraph)
+    quote: a chunk stops at every block boundary whose state retention will hash, so a reusable state materializes wherever a lookup can find one
+    quote_sha256: 85398bd6225ace58b2784277dad1fa9ecf8e21d68e7fc4bd0492d8e1ea1464af
+    source_revision: 'vllm-project/vllm PR #53479 head b99d152 (OPEN draft; body and comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: vllm/v1/core/sched/scheduler.py @ b99d152 @@ -441,10 +450,38 @@ def _mamba_block_aligned_split(
+    quote: 'elif retention is None or retention <= block_size:'
+    quote_sha256: d37e75cf58f4eed396382b9dc65a0540b0b864a6ee8ce211e6817c6fdfda5bff
+    source_revision: 'vllm-project/vllm PR #53479 head b99d152 (OPEN draft; body and comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PR body, section "Purpose" item 2
+    quote: the whole speculative family (`eagle/eagle3/mtp/dflash/dspark`) gives up one entire block of reusable prefix
+    quote_sha256: f6e486b150c05b7e435a86acaf4d48473f5a334e6e63d49956f6563a6f63f758
+    source_revision: 'vllm-project/vllm PR #53479 head b99d152 (OPEN draft; body and comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/sched/scheduler.py @ b99d152, removed (-) line under "if self.use_eagle:" in hunk @@ -408,12 +418,11 @@ def _mamba_block_aligned_split(
+    quote: last_cache_position = max(last_cache_position - block_size, 0)
+    quote_sha256: 2373167d46ac63ff420fd79456ba8e727f5a4067b4d3ea10c8b6188e6482e841
+    source_revision: 'vllm-project/vllm PR #53479 head b99d152 (OPEN draft; body and comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PR comment by jschmied, 2026-08-25T03:35:30Z
+    quote: Ran `b99d152` on the GB10 rig. **Both predicted cells land.**
+    quote_sha256: c95833afe3721013e8e5441478cc38e2b000b4f7e5242932cc6d45d01c85368a
+    source_revision: 'vllm-project/vllm PR #53479 head b99d152 (OPEN draft; body and comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR body, first section (top of body)
+    quote: This PR is back in draft. Its current branch is superseded and should not be reviewed as the intended final change.
+    quote_sha256: 38cd15eda834c7eb66a30f14370bb10c8a1343ed8a6a4562ac24b603d094e3d9
+    source_revision: 'vllm-project/vllm PR #53479 head b99d152 (OPEN draft; body and comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Mechanism confirmed in code at b99d152 (scheduler.py boundary_stop/replay_boundary/eagle_reach stops). The PR title and first revision say "a state at every boundary"; the head applies retention-aware stops (none at retention 0), so the claim holds only for dense retention and for the kept boundaries otherwise.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Back-off removal confirmed: last_cache_position no longer subtracts block_size under use_eagle. Prior art #48815 (opt-in, mtp only) and #52244 named in the PR body; not re-read.'
+  - claim_index: 2
+    effect: unaffected
+    note: Third-party GB10 run in PR comments (not a code read) reproduces the two default-install cells. Block-size and tree details were corrected by the commenter (1,600 not 1,648). Dense-retention cells are harness-only.
+  - claim_index: 3
+    effect: overturned
+    note: 'As a landable change the PR is not final: body says superseded, draft, to be reworked after #54076/#54713; #54713 merged 2026-09-10 per a comment; #54076 status after that not read (NOT-FOUND-IN-SOURCE).'
+  dive_corrections: '2026-10-20 Stage-2b dive (wave 5). OVERTURNED as a deliverable: PR #53479 is OPEN, draft, and its own body and the author status comment (2026-09-03) say the branch is superseded and must not be reviewed as the intended final change; the author will refresh it only after #54076 and #54713 land. CONFIRMED in code at head b99d152: back-off removed (scheduler.py), retention-aware boundary stops (boundary_stop = 0 under retention 0, next block boundary under dense), EAGLE reachable state retained (manager _reachable_boundaries + coordinator eagle_reach_margin). The earlier title framing "at every boundary" is narrowed by the head. Hit matrix: author CPU harness plus one third-party GB10 run; no independent reproduction of the dense cells. Not merged; no landing claim is made. Prior art: #48815 (identified the back-off first, opt-in), #52244 (aligned-prompt zero). Read depth PARTIAL: PR diff hunks of production files read in full; test files and full source files not read.
+
+    2026-10-20 second reader (independent agent): re-find 6/6; support yes 5 / partial 1 / no 0; corrections applied: re-anchored the back-off claim to the removed (-) line "last_cache_position = max(last_cache_position - block_size, 0)"; remaining disagreements carried to the Stage-3 plan: none after re-anchor
+
+    '
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Dive-round wave 5, 2026-10-20. Read depth PARTIAL: read from disk via gh = PR JSON (body, comments, file list) and the PR diff. NOT read: the test-file hunks (tests/v1/core/test_mamba_align_chunk_split.py and others), full files beyond diff context, and any repo clone at b99d152. Harness numbers are author-reported. Relevance to us: the EAGLE/MTP reach margin is the analogue of our checkpoint position vs the MTP draft drop (KPF-17 case candidates in LEDGER.md); the vLLM mechanism itself is block-hash based and does not transfer as code.'
+  recommended_actions:
+  - Do not adopt the diff; the PR is superseded. Use its reach-margin argument as the basis of a KPF-18 identical-resend row (LEDGER A-1/A-2).
+  - 'Track #54076 and the author refresh; re-dive the refreshed head only if it is re-opened on current main.'
+- id: intake-2109
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/47782
+  source_type: repo
+  title: '[Core] Preserve Marconi caching with selective hybrid cache retention (vLLM PR #47782)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2061
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - njhill (PR author)
+  - ivanium (review)
+  key_claims:
+  - Extends shared-prefix boundary caching (Marconi-style) to sparse retention-interval caching for both Mamba states and sliding-window attention, so a retention interval of 0 keeps a pinned junction.
+  - 'get_computed_blocks now returns a shared_prefix_boundary: the junction where a sparse-retention group has not cached a prefix that a longer single group has, pinned so the retention mask does not drop it.'
+  - reachable_block_mask takes an explicit list of reachable boundaries (replay boundary num_prompt_tokens-1 and any shared-prefix junction) and keeps the need-block tail at each.
+  - Author claims retention interval 0 is optimal for long-context and agent-session caching; no benchmark for this claim is in the PR body (NOT-FOUND-IN-SOURCE).
+  techniques:
+  - shared-prefix junction pinning under sparse retention
+  - reachable-boundary tail retention mask
+  reported_results:
+  - 'NOT-FOUND-IN-SOURCE: no numeric result in PR body or comments.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2062
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: 'vllm-project/vllm PR #47782, MERGED 2026-07-13 at merge commit 8ac8375270c1c86b0a8eaba7e738908a9a7303e1 (head ce68e7be5; body and 5 comments read 2026-10-20)'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR body, first paragraph
+    quote: This PR extends the shared prefix boundary caching to the retention-interval sparse caching added in https://github.com/vllm-project/vllm/pull/43447 and https://github.com/vllm-project/vllm/pull/45845 for both mamba states and SWA.
+    quote_sha256: 57af4526509818cbc2ff1fdb92d4f453f27a487a950e1dc1cb81952b6b4f21b5
+    source_revision: 'vllm-project/vllm PR #47782, MERGED 2026-07-13 at merge commit 8ac8375270c1c86b0a8eaba7e738908a9a7303e1 (head ce68e7be5; body and 5 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/kv_cache_manager.py, get_computed_blocks return (added line, diff L1296)
+    quote: return blocks, num_new_computed_tokens, shared_prefix_boundary
+    quote_sha256: 5e820c68fd677c07f16d8b6443b1395604968e2b9dea7b2c1dba2e4bafcab818
+    source_revision: 'vllm-project/vllm PR #47782, MERGED 2026-07-13 at merge commit 8ac8375270c1c86b0a8eaba7e738908a9a7303e1 (head ce68e7be5; body and 5 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: vllm/v1/core/single_type_kv_cache_manager.py diff hunk @@ -419,6 +419,13 @@ def cache_blocks(
+    quote: reachable_boundaries.append(request.shared_prefix_boundary)
+    quote_sha256: b3d26292be00b0743deb50669a30fb6db912981d76d0ac7d5de87817e542b33b
+    source_revision: 'vllm-project/vllm PR #47782, MERGED 2026-07-13 at merge commit 8ac8375270c1c86b0a8eaba7e738908a9a7303e1 (head ce68e7be5; body and 5 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR body, first paragraph (second sentence group)
+    quote: In particular it means we can set retention interval = 0 for optimal long-context/agent session caching and also benefit from implicitly cached system prompt.
+    quote_sha256: bb0451df8c507f165d17285153df3e90a3488f677841048bd686b3defe5a24a4
+    source_revision: 'vllm-project/vllm PR #47782, MERGED 2026-07-13 at merge commit 8ac8375270c1c86b0a8eaba7e738908a9a7303e1 (head ce68e7be5; body and 5 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Merged code: shared_prefix_boundary set in get_computed_blocks and consumed in cache_blocks (diff read).'
+  - claim_index: 1
+    effect: unaffected
+    note: get_computed_blocks returns the 3-tuple with shared_prefix_boundary = num_new_computed_tokens + num_uncached when num_uncached is non-zero, else 0.
+  - claim_index: 2
+    effect: unaffected
+    note: Sliding-window and Mamba reachable_block_mask now take reachable_boundaries; the replay and junction tails are retained under retention_interval not None.
+  - claim_index: 3
+    effect: narrowed
+    note: The "optimal" part is an author statement with no measurement in the PR; only the mechanism (interval 0 keeps the pinned junction) is verified.
+  dive_corrections: '2026-10-20 Stage-2b dive (wave 5). CONFIRMED in merged code at 8ac8375: junction pinning, 3-tuple return from get_computed_blocks, reachable-boundary tails. Title/evidence for this source was title-only in dive-2061 (S8); the body and diff are now read. NARROWED: the author claim that retention interval 0 is optimal is NOT-FOUND-IN-SOURCE for measurements. Merged 2026-07-13 after rebase onto #46384; a later companion fix is #62206 (intake-2111). Read depth PARTIAL: PR body, comments and diff hunks read; full source files not read.
+
+    2026-10-20 second reader (independent agent): re-find 4/4; support yes 2 / partial 2 / no 0; corrections applied: re-anchored idx1 to the get_computed_blocks return line; remaining disagreements carried to the Stage-3 plan: none listed beyond re-anchor
+
+    '
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Read depth PARTIAL (diff hunks and PR body from disk; no repo clone). Not read: tests/v1/core/test_prefix_caching.py (+330/-86) and the Mooncake coordinator hunk beyond the one-line mask change. The junction-pin mechanism is the vLLM counterpart of KPF-15 (junction checkpoint) in our fork; it is block-hash based, so only the policy transfers.'
+  recommended_actions:
+  - Feed LEDGER A-3 (trunk-then-private-suffix KPF-18 row) with this mechanism as the reference shape.
+- id: intake-2110
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/50897
+  source_type: repo
+  title: '[Core][Spec Decode] Add lookahead-aware prefix cache hashing for EAGLE-style draft models (vLLM PR #50897)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2061
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - ZJY0516 (PR author)
+  key_claims:
+  - EAGLE-family speculative decoding drops the last matched prefix-cache block because the drafter KV at that block end depends on the token after the block; lookahead block hashes put that token into the key so the block is reused only when proven equal.
+  - With lookahead hashing enabled, the scheduler sets use_eagle_block_drop to False, so the last-block drop, Mamba checkpoint back-off and replay-boundary shift are skipped; prefix hits reach floor((N-1)/B)*B as without spec decode.
+  - 'Draft-KV correctness is checked directly: right after the first hit step, the hit blocks KV is compared per position with a cold run; the negative control (stale lookahead token) gives max abs diff 7.55 (Qwen3-8B EAGLE3) and 14.53 (Qwen3.5-2B MTP) against 0.09-0.29 with the PR.'
+  - 'Known limitation: hybrid models lose the hit when a prompt diverges exactly at the producer last retained Mamba boundary, because the lookahead key falls back one unit where no state is kept.'
+  techniques:
+  - lookahead block hashes (block key extended with the next token)
+  - draft-KV equality check against cold prefill with negative control
+  reported_results:
+  - 'Author-reported, GB200, Qwen3.6-27B MTP k=4, prefix_repetition: hit rate 72.7% -> 85.0%, throughput 9.09 -> 12.43 req/s (not re-run).'
+  - 'Author-reported draft-KV max abs diff bf16: 0.09-0.14 (Qwen3-8B EAGLE3 k=3), 0.19 (Qwen3.5-2B MTP), 0.29 (Qwen3.5-4B MTP); negative control 7.55 and 14.53.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2062
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: 'vllm-project/vllm PR #50897, state OPEN (not merged; merge conflicts reported 2026-10-13), head 7f7139246af9793d0cfb2a1be60068a5fba5604c; body, 20 comments, diff read 2026-10-20'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR body, section "Claims" bullet 1
+    quote: Prefix-cache hits with EAGLE, EAGLE3, MTP, DFlash and DSpark reach `floor((N - 1) / B) * B`, the same as without speculative decoding, instead of one unit less.
+    quote_sha256: 6d48b91151a6b44c7ab789a76df4be065c5789731e22a5c486b8ad8ed48df964
+    source_revision: 'vllm-project/vllm PR #50897, state OPEN (not merged; merge conflicts reported 2026-10-13), head 7f7139246af9793d0cfb2a1be60068a5fba5604c; body, 20 comments, diff read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/sched/scheduler.py diff hunk @@ -321,6 +324,13 @@ def __init__(
+    quote: self.use_eagle_block_drop = False
+    quote_sha256: d8ed375fb453ce6695854d60c6da7a6d55925c62b47d387f6a156ea961996af3
+    source_revision: 'vllm-project/vllm PR #50897, state OPEN (not merged; merge conflicts reported 2026-10-13), head 7f7139246af9793d0cfb2a1be60068a5fba5604c; body, 20 comments, diff read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PR body, section "Validation" draft-KV table
+    quote: '| Qwen3-8B + EAGLE3 (k=3) | 0.09–0.14 | **7.55** |'
+    quote_sha256: 415aecf1e4759815904967bcd9012ad2c653dd1dc423927bb72f2d652d4fb24b
+    source_revision: 'vllm-project/vllm PR #50897, state OPEN (not merged; merge conflicts reported 2026-10-13), head 7f7139246af9793d0cfb2a1be60068a5fba5604c; body, 20 comments, diff read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR body, section "Limitations" bullet 3
+    quote: Hybrid models lose the hit when a prompt diverges exactly at the producer's last retained Mamba boundary.
+    quote_sha256: a9baf86e6a5f2882794810f20ac8da7a773fc889f0b21c719ab790f3658caed1
+    source_revision: 'vllm-project/vllm PR #50897, state OPEN (not merged; merge conflicts reported 2026-10-13), head 7f7139246af9793d0cfb2a1be60068a5fba5604c; body, 20 comments, diff read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PR body, section "Validation" draft-KV table, row 3 (upper end of 0.09-0.29 range)
+    quote: '| Qwen3.5-4B, MTP | 0.29 | — |'
+    quote_sha256: 53454a21bdfc1a6f8d90baaf40fe30c00fde837ef0733e986d843f7910cae544
+    source_revision: 'vllm-project/vllm PR #50897, state OPEN (not merged; merge conflicts reported 2026-10-13), head 7f7139246af9793d0cfb2a1be60068a5fba5604c; body, 20 comments, diff read 2026-10-20'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Mechanism verified in the diff (is_lookahead_block_hashing_enabled gate, scheduler clears use_eagle_block_drop). Hit-length table is author-run; the 1,088/544/1,088 reproducer is not re-run.
+  - claim_index: 1
+    effect: unaffected
+    note: Lookahead mode gated on use_eagle_block_drop, num_prefill_lookahead_tokens == 1, and prefix caching or a connector that supports it (kv_cache_utils.py diff).
+  - claim_index: 2
+    effect: unaffected
+    note: Draft-KV numbers are author-reported; the check itself is described in full (in-process engine, per-position compare). Not re-run.
+  - claim_index: 3
+    effect: unaffected
+    note: Limitation is stated by the author and matches the design (lookahead key falls back one unit where no Mamba state is kept).
+  dive_corrections: '2026-10-20 Stage-2b dive (wave 5). CONFIRMED in the PR diff at head 7f71392: lookahead gating (is_lookahead_block_hashing_enabled), request block hasher with lookahead token, scheduler clears use_eagle_block_drop, lookahead-aware session truncation. NOT MERGED (OPEN, conflicts through 2026-10-13); nothing here is landed upstream. Author-reported E2E and draft-KV numbers are not reproduced. Declined within this PR: connector-specific parts (Mooncake store, Nixl, Offloading) are out of our path. Read depth PARTIAL: PR body, comments and production-code hunks read; the 40+ test files not read.
+
+    2026-10-20 second reader (independent agent): re-find 4/4; support yes 3 / partial 1 / no 0; corrections applied: range 0.09-0.29 now anchored by the Qwen3.5-4B MTP 0.29 table row (added anchor); remaining disagreements carried to the Stage-3 plan: none after range anchor
+
+    '
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Read depth PARTIAL (PR JSON and diff from disk; no repo clone). The draft-KV compare-against-cold design is the transferable part for KPF-17 (checkpoint correctness). Our fork has no hashed prefix blocks; the key-extension idea transfers only as a restore-time check.
+  recommended_actions:
+  - Use the compare-to-cold plus negative-control design as KPF-17 case (LEDGER A-4).
+  - Monitor merge state; re-read only if merged.
+- id: intake-2111
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/62206
+  source_type: repo
+  title: '[Bugfix][Core] Keep the EAGLE-reachable SWA tail at a shared-prefix junction (vLLM PR #62206)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2061
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - JaredforReal (PR author)
+  - ivanium (CI)
+  key_claims:
+  - Under sparse retention, a sibling that shares only a prefix got no prefix-cache hit when the drafter groups are sliding-window and the full-attention groups are not EAGLE groups, because the junction pin kept the sliding-window tail one block too high.
+  - 'Fix: under EAGLE, cache_blocks registers both the junction J and J minus one block as reachable boundaries, so the SWA hit can verify one block below the junction.'
+  - 'Unit test: test_swa_shared_prefix_reuse_under_zero_retention with a use_eagle case fails on main (0 instead of 48 hit tokens) and passes with the fix (author-run).'
+  - 'Step-5-Preview with MTP (4x GB300, author-run): GSM8K shared 565-token prefix goes from 0 hit tokens to 544 per request from request 3 on; 544 is the deepest hit an EAGLE lookup can verify.'
+  techniques:
+  - junction-minus-one-block reachable boundary under EAGLE
+  - per-group EAGLE flags (drafter SWA groups only)
+  reported_results:
+  - 'Author-reported: full GSM8K (1,319 q, MTP k=3, Mooncake Store on): local prefix-cache hit tokens 0 -> 737,520 of 839,793 (87.8%); accuracy 0.933 -> 0.935.'
+  - 'Author-reported unit test: 620 passed, 2 errors (GPU/model-dependent) on CPU.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2109
+  verification: dive-verified
+  read_depth: PARTIAL
+  source_revision: 'vllm-project/vllm PR #62206, MERGED 2026-10-19 at merge commit a608b6e6e05f4b309f77981f010e93c2caa1c677 (head bbc8745372e00776cf3ebab9f24a3bf11a184cd8; body and 7 comments read 2026-10-20)'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR body, section "Claims" bullet 1
+    quote: Under sparse retention, a sibling request that shares only a prefix now gets a prefix-cache hit when the drafter's groups are sliding-window and the full-attention groups are not EAGLE groups.
+    quote_sha256: 2099e98032373194060a262693bb945f1eb3b37a617c5bb62f33c9b5428f5cf2
+    source_revision: 'vllm-project/vllm PR #62206, MERGED 2026-10-19 at merge commit a608b6e6e05f4b309f77981f010e93c2caa1c677 (head bbc8745372e00776cf3ebab9f24a3bf11a184cd8; body and 7 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/single_type_kv_cache_manager.py diff hunk @@ -510,6 +510,13 @@ def cache_blocks(
+    quote: request.shared_prefix_boundary - self.block_size
+    quote_sha256: 311e2dc8fc615c5733f0820e55e8db4141d6e87c27bb977e204e731f6c225593
+    source_revision: 'vllm-project/vllm PR #62206, MERGED 2026-10-19 at merge commit a608b6e6e05f4b309f77981f010e93c2caa1c677 (head bbc8745372e00776cf3ebab9f24a3bf11a184cd8; body and 7 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PR body, section "Validation" unit test paragraph
+    quote: It fails on main (0 instead of 48 hit tokens) and passes with the fix.
+    quote_sha256: b590e528c46853104982fdd8abe363bade31c6aaf6ddca3a536d14eb99d34c71
+    source_revision: 'vllm-project/vllm PR #62206, MERGED 2026-10-19 at merge commit a608b6e6e05f4b309f77981f010e93c2caa1c677 (head bbc8745372e00776cf3ebab9f24a3bf11a184cd8; body and 7 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR body, section "Validation" end-to-end table
+    quote: '| MTP k=3, this PR | 0 | 0 | 544 each |'
+    quote_sha256: f18d46f27d8bf15dbbe17cd29a0ea00f96d5be1472ea0d73340420153e9affd0
+    source_revision: 'vllm-project/vllm PR #62206, MERGED 2026-10-19 at merge commit a608b6e6e05f4b309f77981f010e93c2caa1c677 (head bbc8745372e00776cf3ebab9f24a3bf11a184cd8; body and 7 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR body, section "Validation" end-to-end paragraph
+    quote: 544 is one block below the 560-token junction, which is the deepest hit an EAGLE lookup can verify.
+    quote_sha256: d084bdf687cd121ed216c7a12807c35f7080a6bba003cd9c45059f0ec80e7aa2
+    source_revision: 'vllm-project/vllm PR #62206, MERGED 2026-10-19 at merge commit a608b6e6e05f4b309f77981f010e93c2caa1c677 (head bbc8745372e00776cf3ebab9f24a3bf11a184cd8; body and 7 comments read 2026-10-20)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Diff confirms the EAGLE-only extra reachable boundary; the claim is the stated scope (per-group flags, Step5 MTP).
+  - claim_index: 1
+    effect: unaffected
+    note: cache_blocks appends shared_prefix_boundary - block_size under use_eagle (single_type_kv_cache_manager.py diff). Replay boundaries unchanged per PR body.
+  - claim_index: 2
+    effect: unaffected
+    note: Test diff read (parametrized use_eagle, expected = 3 blocks under EAGLE, 4 otherwise). Test NOT re-run here.
+  - claim_index: 3
+    effect: unaffected
+    note: E2E is author-run on a model not in our lineup; the 544 figure is the author argument that one block below the junction is the EAGLE-verifiable depth. Not reproduced.
+  dive_corrections: '2026-10-20 Stage-2b dive (wave 5). CONFIRMED in merged code at a608b6e (single_type_kv_cache_manager.py: EAGLE-only shared_prefix_boundary - block_size reachable boundary; test diff parametrized on use_eagle). Author-run E2E and GSM8K numbers are NOT independently reproduced; label as author-reported. Prerequisite: #47782 (intake-2109). Read depth PARTIAL.
+
+    2026-10-20 second reader (independent agent): re-find 5/5; support yes 5 / partial 0 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: none
+
+    '
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Read depth PARTIAL: PR JSON (body, comments, file list) and the full PR diff read from disk; test-suite not run; no repo clone. Our relevance is the drafter SWA window travelling in the checkpoint (kv-prefix-fork L243), i.e. the window one block below the junction must be retained for a sibling hit.'
+  recommended_actions:
+  - Feed LEDGER A-3 as the junction-minus-one-block expectation for the trunk-then-suffix KPF-18 row.
+- arxiv_id: null
+  source_type: repo
+  discovered_via: expansion
+  expanded_from: intake-2108
+  ingested_date: '2026-10-20'
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Mechanism confirmed in the diff; reachable only when a non-Mamba group has a smaller block. jschmied showed stock GB10 configs pad to equality; a hidden-state layer (800 vs 200) and knapcio GLM (1152 vs 2304) do reach it.
+  - claim_index: 1
+    effect: unaffected
+    note: Per-boundary stop is in the diff and was added on tomylin890's report; internal-checkpoint exemption reconciled on rebase.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Predicate present at head; #53505 report and jschmied flag-shaped measurement (4,800 to 6,400 cached tokens, MTP) are author/third-party reported.'
+  - claim_index: 3
+    effect: narrowed
+    note: Single deployment, labelled secondary by the PR itself; not reproduced.
+  - claim_index: 4
+    effect: unaffected
+    note: Summary of the thread as read; each sub-claim anchored.
+  referenced_arxiv_ids: []
+  read_depth: FULL
+  verification: dive-verified
+  contradicting_evidence: null
+  id: intake-2112
+  url: https://github.com/vllm-project/vllm/pull/54076
+  title: '[Bugfix][V1] Use the Mamba cache group''s block size for align-mode chunk splitting (vLLM PR #54076)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  verdict: adopt_patterns
+  credibility_score: null
+  authors:
+  - wickist (PR author)
+  - tomylin890, knapcio, jschmied, MaCoredroid (commenters)
+  key_claims:
+  - cache_config.block_size is the minimum over all KV groups, so a finer drafter or attention group drags the scheduler chunk grid below MambaSpec.block_size; the worker checkpoints recurrent state only where a chunk ends exactly on the Mamba grid, so on the finer grid no state (or a misplaced hash) is published. The fix derives the state grid once from the Mamba group spec and asserts single-valued.
+  - The fix also stops a chunk at every crossed state boundary (unconditional, even from an aligned start), because a chunk spanning k blocks leaves k-1 interior state slots null; internal-checkpoint chunks are exempt.
+  - 'Follow-up commit scopes the trailing-block prefix-cache drop to eagle/eagle3/mtp only: DFlash/DSpark draft from their own KV and never write target blocks, so the drop is wrong for them (use_eagle_preserves_target_kv_cache).'
+  - 'Author-reported production figure (secondary evidence, not CI): immediate re-ask of a 16,764-token prompt moved from 0 to 16,480 reused tokens, TTFT 8.18 s to 0.41 s, on a Qwen3.8-27B hybrid + DFlash drafter with attention block 1648, drafter block 816, Mamba block 1648.'
+  - 'Independent reproductions are mixed: tomylin890 (block 4 vs 1568) and knapcio (GLM-5.3-Flash + DFlash2, 1152 vs 2304, silently wrong warm output: warm-only phantom content 7/7 vs cold 0/9) report the defect; jschmied found the geometry unreachable on stock config for one model, then reproduced it via a hidden-state extraction layer (800 vs 200) but measured the patch as a no-op for hit count and output on that config; MaCoredroid''s Qwen3.8-27B-FP8 + DFlash2 k=7 arm gave 832/832 and did not reproduce the 816/1648 layout.'
+  techniques:
+  - mamba state grid derived from MambaSpec
+  - per-boundary chunk stops
+  - eagle-family-scoped trailing-block drop
+  reported_results:
+  - Author production E2E 0 to 16,480 reused tokens, TTFT 8.18 s to 0.41 s (author-reported, one deployment, not CI).
+  - 'knapcio GLM-5.3-Flash 4x GB10 TP4 (third-party, author-reported): mean |dlogprob| cold-vs-warm 0.25-0.36 stock vs 0.02-0.04 with split on the 2304 grid, prefix caching off 0.05-0.09.'
+  - 'jschmied 2026-09-23 (third-party), two separate runs: (i) hit-rate table, 2 arms (patched/unpatched) x 3 starts, hit counts byte-identical (q238 h0, h200, h200); (ii) output-equivalence run, temperature 0, 2 arms x 2 starts x 3 passes (= 12 passes), one output hash across all 12, cold pass identical to resumed passes. Single prompt shape and model; shows the failure does not manifest there.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    intake_entry_notes:
+    - intake-2108 (#53479, names this PR as its dependency)
+  recommended_actions:
+  - 'Operator-review candidate: KPF-17/18 case "checkpoint position derives from the recurrent-state cadence, not from the drafter or generic cell geometry" and a warm-vs-cold logprob compare, since needle retrieval did not detect the stale-state defect in the knapcio report.'
+  notes: 'Status OPEN, mergeable only after repeated rebases (mergify conflict 2026-09-08); never merged as of 2026-10-20. Not read: the linked write-up at github.com/knapcio/GLM-5.3-Flash-4x-DGX-Spark-TP4 and #53798/#53398. Maintainer review absent in the thread. Mechanism is scheduler-side vLLM block geometry; our llama.cpp fork has no min-over-groups block grid, so the transferable content is the invariant and the tests, not the patch. Re-encounter of #53479 dependency: intake-2108.'
+  reader_should_conclude: Cite the invariant (checkpoint cadence belongs to the recurrent state) and the DFlash-never-writes-target-blocks scoping; do not cite the 0 to 100 percent reuse or -95 percent TTFT as a reproduced result, and do not assume the 816/1648 geometry exists on a stock install (one of three independent attempts failed to produce it).
+  source_revision: 'vllm-project/vllm PR #54076, state OPEN (not merged), head b3fcf7c; body + 27 comments + diff read via gh 2026-10-20'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: PR body, Purpose ¶1
+    quote: '`cache_config.block_size` is the **minimum over all groups**'
+    quote_sha256: b49e7dd1c9491707f311419c2079e3cfb95337e6b1666ca492efbe823b386000
+    source_revision: 'PR #54076 body @ b3fcf7c'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: vllm/v1/core/sched/scheduler.py @ b3fcf7c, __init__ hunk
+    quote: self.mamba_state_block_size = (
+    quote_sha256: f61b3f4030dbde517cd216909f413dc6742d16551e4775834b65aa5567daa082
+    source_revision: 'PR #54076 diff @ b3fcf7c'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: comment wickist 2026-09-06 (rebase notes)
+    quote: '`0 if use_internal_checkpoint else next_block_boundary`'
+    quote_sha256: 92d7bef905589fd25949059695ec3cbd654cf53c2ce338aa822477cd07d80b92
+    source_revision: 'PR #54076 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PR body, Follow-up section
+    quote: DFlash/DSpark draft from their own KV cache and never write target blocks, so the volatile trailing-block drop must not apply to them
+    quote_sha256: 81cdd549557767d52df9fac0cfdd408bd4efc373baed666ba242156d1bd79378
+    source_revision: 'PR #54076 body @ b3fcf7c'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: vllm/config/speculative.py @ b3fcf7c, use_eagle_preserves_target_kv_cache
+    quote: return self.method in ("eagle", "eagle3", "mtp")
+    quote_sha256: bbae761d4211752fe296eb00e22c75472b3f8fd6d2bcde3cdc7e11fcfd773b9c
+    source_revision: 'PR #54076 diff @ b3fcf7c'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR body, E2E section
+    quote: External/secondary evidence — included here only as directional confirmation, not as CI-tested claims on this tree.
+    quote_sha256: 1984f7d8bbab8aff16628beb69b850c76a1e66ec3e351c2399f469e4ae40dc03
+    source_revision: 'PR #54076 body @ b3fcf7c'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: comment knapcio 2026-09-29
+    quote: 'the misaligned hash is published and served: the result is silently wrong output, not lost reuse.'
+    quote_sha256: ed40e780222ff0916306f39334a302b0ffb850ba9bd31c918d2ab2a672c3e7b8
+    source_revision: 'PR #54076 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: comment jschmied 2026-09-23
+    quote: '**So on this configuration the resume is already exact without the patch, and the patch perturbs'
+    quote_sha256: 1a1fd2d767e7fcfefb46e5e8d1d3b79de48281215730dfeec12fbaceff9c63db
+    source_revision: 'PR #54076 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: comment MaCoredroid 2026-09-21
+    quote: so it did not reproduce the PR body's 816/1648 geometry
+    quote_sha256: 487a2942b2ce2f18084b60b8c0aa2a9876559dd6622b2cca58d3d48874332a0b
+    source_revision: 'PR #54076 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 6): ledger D1 said "the Mamba state-grid correction that #53479 names as its prerequisite, status after 2026-09-10 not read". Read: still OPEN, unmerged, head b3fcf7c, last activity 2026-09-29. It also bundles an eagle-family scoping follow-up the ledger did not mention, which is the part that matters for a DFlash2 drafter. The 0 to 100 percent reuse figure is a single author-reported deployment; independent reproduction is mixed.
+
+    2026-10-20 second reader (independent agent): re-find 9/9; support yes 8 / partial 1 / no 0; corrections applied: reported_results rewritten to separate the 2x3-start hit-rate table from the 2x2x3 (=12) output-hash run; remaining disagreements carried to the Stage-3 plan: idx 0 (diff fragment partial)
+
+    '
+- arxiv_id: null
+  source_type: repo
+  discovered_via: expansion
+  expanded_from: intake-2111
+  ingested_date: '2026-10-20'
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Body and diff agree.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Ledger framing "SWA drafters" narrowed: group selection is by draft-layer ownership; the MLA+SWA-MLA drafter is one unit-test layout.'
+  - claim_index: 2
+    effect: unaffected
+    note: Fallback described in body; Gemma4 clause not separately diffed.
+  - claim_index: 3
+    effect: unaffected
+    note: Diff drops the "and bool(worker_layer_names)" clause.
+  - claim_index: 4
+    effect: narrowed
+    note: MTP on a 4B pure model only; DFlash-on-hybrid explicitly unrun. Author-reported.
+  referenced_arxiv_ids: []
+  read_depth: FULL
+  verification: dive-verified
+  contradicting_evidence: null
+  id: intake-2113
+  url: https://github.com/vllm-project/vllm/pull/61455
+  title: '[Core][Spec Decode] Replace EAGLE group heuristics with explicit draft-layer tags (vLLM PR #61455)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  verdict: adopt_patterns
+  credibility_score: null
+  authors:
+  - andakai (PR author, per mergify)
+  - ivanium (CI trigger)
+  key_claims:
+  - The planner no longer guesses which KV groups take the EAGLE last-block drop; speculators tag draft layers (is_draft_layer), runners copy it to KVCacheSpec.is_draft, and a group is flagged iff it holds a draft layer.
+  - DFlash/DSpark drafters on hybrid models no longer make every group take the drop, so Mamba groups keep prefix-cache reuse; a drafter spanning several groups gets all of them flagged. Sliding-window is a test shape (a DeepSeek-V4-like SWA-MLA drafter), not a special case in the code.
+  - Untagged runners keep a conservative "flag all" fallback, and a Gemma4 MTP drafter that shares target KV also falls to flag-all.
+  - 'Pipeline-parallel fix: the scheduler config no longer clears the flag for groups with no layers on worker 0.'
+  - 'Author-reported validation: Qwen3.5-4B MTP n=3 on one GB200 gives identical prefix hit rate (0.4409/0.5039), acceptance length (3.3065) and GSM8K-250 within noise vs main; the DFlash-on-hybrid case could not be run end to end.'
+  techniques:
+  - explicit per-layer draft ownership tag on the KV spec
+  - group flagging from tags
+  - compare=False spec field
+  reported_results:
+  - 'Author-reported single-run table, Qwen3.5-4B MTP on GB200: hit rate 0.4409/0.5039 on main, PR and repeat; GSM8K flexible-extract 0.760 / 0.764 / 0.752.'
+  - DFlash2-on-hybrid not run end to end (draft config rejected at startup on main and PR alike) per the author.
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - 'intake-2111 (#62206): the ledger called this its general rule; neither source mentions the other'
+  recommended_actions:
+  - 'Operator-review candidate: KPF-18 hit-count prediction must state, per drafter, whether the one-unit drop applies (MTP-style drafters that write into target KV: yes; DFlash2 with its own KV: expected no), and a test that an unidentified drafter must not silently disable fork reuse for the whole model.'
+  notes: 'MERGED 2026-10-17. Not read: #41640, #56026, #57032, #54360, #54713 (named in body, all outside the assignment). No text in the body, comments or diff references #62206, so the w5b ledger statement that this is "the general rule behind #62206" is not supported by this source. Failure path it removes is documented in issue #54094 comments of 2026-09-11 (flag-all disabled reuse for every group).'
+  reader_should_conclude: Cite the ownership-tag design and the flag-all failure mode; do not cite it as an SWA-specific rule, and do not cite the GB200 numbers as DFlash2 evidence (MTP only).
+  source_revision: 'vllm-project/vllm PR #61455, state MERGED 2026-10-17, merge commit c3de0b3 (head 693983d); body + comments + diff read via gh 2026-10-20'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR body, Overview
+    quote: so a group is flagged iff it holds a draft layer
+    quote_sha256: 24654ff8b9ae92832d6aa7f4a3b045481de7489998db2f227af590fee2f21aac
+    source_revision: 'PR #61455 body @ 693983d'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: vllm/v1/core/kv_cache_planning.py @ 693983d, get_kv_cache_configs hunk
+    quote: group.is_eagle_group = not draft_layer_names.isdisjoint(group.layer_names)
+    quote_sha256: 3f7521cf8a39ce8376b71be30927ca61239a029efa03bf78d4b49c721ff7985b
+    source_revision: 'PR #61455 diff @ 693983d'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PR body, Claims bullet 1
+    quote: DFlash / DSpark drafters on hybrid models no longer make every group take the drop, so Mamba groups keep their prefix-cache reuse
+    quote_sha256: aa7ba9c4cd152490c57e9db29c5c781d3f308b052e5d3a70294a0d0dec95a444
+    source_revision: 'PR #61455 body @ 693983d'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PR body, Claims bullet 5
+    quote: untagged runners keep the conservative "flag all" fallback
+    quote_sha256: 521f64548b79a8236227f4b2d2e96094d9b09f03987f2d25b6fbbf5ec0a346f4
+    source_revision: 'PR #61455 body @ 693983d'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: vllm/v1/core/kv_cache_planning.py @ 693983d, _project_kv_cache_groups_to_worker hunk
+    quote: is_eagle_group=group.is_eagle_group,
+    quote_sha256: d3e7730bf3980139cd52730b223412af4af140be5efb8f47af08216bcd9f4d13
+    source_revision: 'PR #61455 diff @ 693983d'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PR body, Validation
+    quote: The DFlash-on-hybrid case could not be run end to end
+    quote_sha256: a13016b03f9f105d93c5e011f3c538b5a274679cd5877aa78a6f0b8af225aa00
+    source_revision: 'PR #61455 body @ 693983d'
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 6): ledger D3 said "drafters with sliding-window layers flag only those groups; the general rule behind #62206". Read: the rule is "groups holding a draft-tagged layer", not SWA-specific (SWA-MLA appears only as a test shape), and no source text links it to #62206. Merged 2026-10-17, so it is landed upstream, not a proposal.
+
+    2026-10-20 second reader (independent agent): re-find 6/6; support yes 5 / partial 1 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: idx 4 (GB200 MTP numbers 0.4409/0.5039, 3.3065 in pr61455.json unanchored)
+
+    '
+- arxiv_id: null
+  source_type: repo
+  discovered_via: expansion
+  expanded_from: intake-2108
+  ingested_date: '2026-10-20'
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Diff shows deprecated env fallback.
+  - claim_index: 1
+    effect: unaffected
+    note: Body and diff agree.
+  - claim_index: 2
+    effect: unaffected
+    note: Cross-source claim; supported by intake-2115 anchors, not by this PR text.
+  - claim_index: 3
+    effect: unaffected
+    note: Stated as a comment; no data attached, so treat as a lead, not evidence.
+  referenced_arxiv_ids: []
+  read_depth: FULL
+  verification: dive-verified
+  contradicting_evidence: null
+  id: intake-2114
+  url: https://github.com/vllm-project/vllm/pull/52216
+  title: 'Promote `prefix_cache_retention_interval` to an argument and change the default to 0 (vLLM PR #52216)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  verdict: adopt_patterns
+  credibility_score: null
+  authors:
+  - PR author not captured in the fetched JSON (fields requested did not include author)
+  - tlrmchlsmth, hmellor (CI triggers)
+  - ZJY0516 (post-merge comment)
+  key_claims:
+  - The env var VLLM_PREFIX_CACHE_RETENTION_INTERVAL becomes the CacheConfig/EngineArgs argument prefix_cache_retention_interval, with the deprecated env still honored.
+  - Default changes from None (dense, every block cached) to 0, which retains only the latest replayable prompt boundary for SWA and SSM groups; positive N retains every N tokens. The stated reason is to avoid caching useless blocks, with Marconi-style retention still keeping the system prompt.
+  - 'Default 0 is the variable that zeroes identical-resend reuse in the issue #54094 DFlash2 + YaRN 1.04M reproduction: with dense None the same replay hit 1,038,240 tokens (TTFT 8.184 s) and with 0 it hit 0 (third-party, author-reported controlled comparison; see intake-2115).'
+  - A post-merge comment states the default let the Mamba prefix cache hit drop to 0 when using eagle; one sentence, no data.
+  techniques:
+  - latest-replayable-boundary retention
+  - sparse retention interval as a first-class config
+  reported_results:
+  - No performance figures in the PR body; tests only (test_prefix_caching.py, test_kv_cache_utils.py among 17 files).
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - intake-2109 (#47782, introduced retention semantics)
+    - 'intake-2115 (issue #54094, the failure under this default)'
+  recommended_actions:
+  - 'Operator-review candidate: KPF-17/18 must state the checkpoint retention policy in force (a single junction checkpoint is the analogue of retention 0) and include a dense-checkpoint control arm in the identical-resend case so the policy variable is isolated.'
+  notes: 'MERGED 2026-08-17. Author not captured (gh fields requested omitted author); PR body is two short paragraphs. Not read: #43447 (introduced the env var). Post-merge consequence evidence is in issue #54094, not here.'
+  reader_should_conclude: 'Cite the default change and its semantics (0 = latest replayable boundary only); cite the zero-reuse consequence only through the issue #54094 entry, labelled third-party single-setup.'
+  source_revision: 'vllm-project/vllm PR #52216, state MERGED 2026-08-17, merge commit 017e9f4 (head ecb968b); body + comments + diff read via gh 2026-10-20'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR body ¶2
+    quote: this PR upgrades it to an argument rather than an environment variable
+    quote_sha256: 566e242cdb26ca06fd54781ead744149e041c4ac913828c9521f6c58c6e26ad0
+    source_revision: 'PR #52216 body @ ecb968b'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PR body ¶3
+    quote: it now defaults to `0` rather than `None`, so that we avoid caching useless blocks
+    quote_sha256: 9c8fd5185f5ba998b1e419fe9090c1c43c71740ead81bb6aef606893db7bd48a
+    source_revision: 'PR #52216 body @ ecb968b'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PR body ¶1
+    quote: When setting this value to zero, vLLM retains only the latest replayable prompt boundary
+    quote_sha256: e49ca46c878b718767995143186d17317f07f2397e51753ba15412a605edadf9
+    source_revision: 'PR #52216 body @ ecb968b'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/config/cache.py @ ecb968b, _get_prefix_cache_retention_interval
+    quote: return 0 if env_value is None else int(env_value)
+    quote_sha256: d70e291ce350beb05c5c6bfc7d8977ecf67bec6c63d41ba81bdf93c432f9addf
+    source_revision: 'PR #52216 diff @ ecb968b'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: comment ZJY0516 2026-09-07
+    quote: This let mamba prefix cache hit to 0 when using eagle
+    quote_sha256: b5d288b04cca4afef6e2b9981dd96f5865b8922a022305e2d68ffad203359abc
+    source_revision: 'PR #52216 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  depends_on:
+  - entry: intake-2109
+    why: Retention semantics (latest replayable boundary) were introduced by the Marconi retention work this PR makes default.
+  dive_corrections: '2026-10-20 (wave 6): ledger D6 said "made retention interval 0 the default; the reason the default install differs from dense in 53479". CONFIRMED in diff (default_factory returns 0 when unset). Note the ledger could not know the consequence, which is documented in issue #54094 (zero identical-resend reuse under this default with a DFlash2 drafter).
+
+    2026-10-20 second reader (independent agent): re-find 5/5; support yes 4 / partial 1 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: idx 0 (deprecated-env clause, diff L524, unanchored); key_claim 2 (1,038,240 vs 0) anchored only in the issue #54094 entry
+
+    '
+- arxiv_id: null
+  source_type: repo
+  discovered_via: expansion
+  expanded_from: intake-2111
+  ingested_date: '2026-10-20'
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Reporter-run; single machine.
+  - claim_index: 1
+    effect: unaffected
+    note: Log excerpt reproduced in thread.
+  - claim_index: 2
+    effect: unaffected
+    note: Single controlled pair; maintainer thread accepted it.
+  - claim_index: 3
+    effect: narrowed
+    note: Port to an old base, patch hunks adapted by the reporter; not the PR head applied as is.
+  - claim_index: 4
+    effect: narrowed
+    note: 50k control only, not the 1.04M prompt; explicitly noted by the reporter.
+  - claim_index: 5
+    effect: unaffected
+    note: Absence statement scoped to the 21 comments read; searched for 62206, 61455 and 54713 text.
+  referenced_arxiv_ids: []
+  read_depth: FULL
+  verification: dive-verified
+  contradicting_evidence: null
+  id: intake-2115
+  url: https://github.com/vllm-project/vllm/issues/54094
+  title: '[Bug]: DFlash2 + YaRN identical 1.04M prompt gets zero prefix-cache reuse while target-only reuses ~1.039M tokens (vLLM issue #54094)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - speculative_decoding
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  verdict: adopt_patterns
+  credibility_score: null
+  authors:
+  - rufftruffles (reporter)
+  - khushali9 (diagnosis)
+  key_claims:
+  - 'Reported: byte-identical 1,040,011-token replay under a DFlash2 K=7 drafter + static YaRN hits 0 prefix-cache tokens, while target-only YaRN reuses 1,039,584 of 1,040,011 (single machine, one RTX PRO 6000 Blackwell, vLLM 0.26.1rc1 dev with a local patch; author-reported).'
+  - 'Instrumented attribution (reporter, 2026-08-28): FullAttention reaches 1,038,240; Mamba and the DFlash SlidingWindow drafter group return 0 in the first reconcile pass; all 15 groups published and zero evictions.'
+  - 'Controlled comparison (reporter, 2026-08-31): the same code with retention forced to dense None yields reconciled_hit 1,038,240 and replay TTFT 8.184 s vs 1,598 s cold, identifying the PR #52216 default 0 as the variable. Write-side under 0: 6,300 Mamba commits intended 1, reusable 0.'
+  - 'Port of #53479 (2026-09-07) fixed the Mamba group but left the DFlash SlidingWindow group at hit 0, so reconcile (the minimum over groups) stayed 0.'
+  - 'On a later main nightly (2026-09-11, 50k control) the failure moved earlier: the planner could not identify the DFlash draft group, flagged every group, and disabled reuse; #56026 fixed the annotation, and the remaining miss was the default trailing-block drop (46,144 cached tokens appear only with disable_eagle_block_drop).'
+  - The thread never tests the post-#61455 or post-#62206 main; the issue is still OPEN as of 2026-10-20 with its last comment on 2026-09-13.
+  techniques:
+  - per-group hit-length reconciliation (min across groups)
+  - dense vs sparse retention control
+  - write-side reusable-vs-intended commit logging
+  reported_results:
+  - Cold TTFT 1,602.766 s (DFlash2 K=7) vs 1,625.504 s (target-only) at 1,040,011 tokens; decode 61.09 vs 22.97 tok/s; pooled draft acceptance 38.1 percent (72/189) (reporter, one run each).
+  - 'Dense control replay: TTFT 8.184 s, wall 9.650 s, prefix_cache_hits_total 1,038,240 (reporter, one run).'
+  - '50k control: default block drop 0 hits; disable_eagle_block_drop 46,144 hits, replay TTFT 10.435 s to 1.200 s (reporter, one run each).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - intake-2108 (#53479 tested on this reproducer)
+    - intake-2114 (#52216 default)
+    - intake-2113 (#61455 annotation fix, not tested here)
+    - intake-2112 (#54076)
+  recommended_actions:
+  - 'Operator-review candidate: add a DFlash2 + sparse-checkpoint arm to the KPF-17 identical-resend case with a dense-checkpoint control, and report the per-component hit (target KV, recurrent state, drafter KV) rather than one combined number.'
+  notes: 'Issue OPEN, 21 comments read in full, last 2026-09-13. Not read: the linked PRs #54119, #54381, #56026, #52244, #53670, #45238, #52897 and #50897 beyond what this thread quotes. "SWA=0 after #54713" in the w5b ledger is a compression: the SWA-group zero was observed with a #53479 port on an old base (pre-#54713), and the post-#54713 run failed at annotation. Nothing in the thread mentions #62206, so the ledger question whether #62206 covers this stays open; the thread has no run after #61455 (merged 2026-10-17) or #62206 (merged 2026-10-19). Reporter-run hardware (NVIDIA Blackwell, vLLM block allocator) is not ours; figures are mechanism evidence only.'
+  reader_should_conclude: 'Cite the per-group min-reconcile mechanism and the dense-vs-sparse retention control; do not cite any hit or TTFT figure as ours or as current-main behavior, and do not treat the issue as resolved or as covered by #62206 or #61455: no one in the thread tested them.'
+  source_revision: 'vllm-project/vllm issue #54094, state OPEN, last update 2026-09-13; body + 21 comments read via gh api 2026-10-20'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: issue body, Describe the bug ¶1
+    quote: but zero reuse after enabling a DFlash2 K=7 drafter on the same target and vLLM base revision
+    quote_sha256: ae16650b7e1ce13fb44bb85dbfe299ab3cc56facf7dcc8651bf4273dbdcbf96d
+    source_revision: 'issue #54094 body, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: comment rufftruffles 2026-08-28T15:31
+    quote: both `MambaSpec` and the DFlash `SlidingWindowSpec` return zero during the first fixed-point pass
+    quote_sha256: 917b4fc5951fb4260501a7da679f363e6e87ac59a2295d89c8a1bdcc60a75a93
+    source_revision: 'issue #54094 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: comment rufftruffles 2026-08-31
+    quote: 'This controlled comparison identifies the `0` semantic-boundary default introduced by #52216 as the variable responsible for the zero-reuse result in this reproduction.'
+    quote_sha256: 5e1459a7a3c9dab821d236dcae259206b44bac8ee015f5818f8d22c1fab4d7c5
+    source_revision: 'issue #54094 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: comment rufftruffles 2026-09-07
+    quote: '#53479 fixed the Mamba side but not the DFlash sliding-window group'
+    quote_sha256: dc38bb20386d12ec13f2c6a34c2a3f081ac91d3b477e16a85603e6c27f30d33b
+    source_revision: 'issue #54094 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: comment rufftruffles 2026-09-11
+    quote: The flag all fallback marks every cache group as draft
+    quote_sha256: ea578932c0632074af139d7d3e82695e6f3aa6c816ae010aaaaa503b2ef7d20e
+    source_revision: 'issue #54094 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: comment rufftruffles 2026-09-13
+    quote: default trailing-block drop still leaves the replay at zero
+    quote_sha256: 37a41f06ddd853b8015e46f48e57fa3aeb8b23f67efd5c38fb52a416eddf6ef4
+    source_revision: 'issue #54094 comments, read 2026-10-20'
+    verified_by: research-intake/stage2
+  depends_on:
+  - entry: intake-2114
+    claim_index: 2
+    why: 'Claim 2 is a statement about the #52216 default; if that PR''s default were retracted the attribution changes.'
+  dive_corrections: '2026-10-20 (wave 6): ledger D4 described "SWA=0 hit result after #54713; a reported miss that #62206 may or may not cover". Read: the SWA-group zero was measured with a #53479 port (before #54713); the post-#54713 run failed earlier at draft-group annotation (since fixed upstream by #61455, merged 2026-10-17). Whether #62206 covers this is NOT-FOUND-IN-SOURCE: no comment mentions it and no run post-dates either merge. The thread is the reproducer for retention-0 + drafter identical-resend, which is the sharper reason to dive it.
+
+    2026-10-20 second reader (independent agent): re-find 6/6; support yes 6 / partial 0 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: none
+
+    '

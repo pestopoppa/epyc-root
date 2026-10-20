@@ -2,7 +2,7 @@
   "session_id": "intake-hybrid-prefix-cache-20261020",
   "started_at": "2026-10-20T16:12:41Z",
   "last_checkpoint": "2026-10-20T16:12:41Z",
-  "stage": "stage2-in-progress",
+  "stage": "stage2-complete",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/kpf-takeover-20261020",
   "branch": "lane/kpf-takeover-20261020",
@@ -49,10 +49,23 @@
     "intake-2099",
     "intake-2100",
     "intake-2101",
-    "intake-2102"
+    "intake-2102",
+    "intake-2103",
+    "intake-2104",
+    "intake-2105",
+    "intake-2106",
+    "intake-2107",
+    "intake-2108",
+    "intake-2109",
+    "intake-2110",
+    "intake-2111",
+    "intake-2112",
+    "intake-2113",
+    "intake-2114",
+    "intake-2115"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2103,
+  "next_intake_id": 2116,
   "expansion_cap": 10,
   "expansion_count": 2,
   "expansion_entries": [
@@ -9864,7 +9877,38 @@
         ],
         "dispatched": "2026-10-20",
         "applied": "2026-10-20"
+      },
+      {
+        "wave": 5,
+        "entries": [
+          "intake-2103",
+          "intake-2104",
+          "intake-2105",
+          "intake-2106",
+          "intake-2107",
+          "intake-2108",
+          "intake-2109",
+          "intake-2110",
+          "intake-2111"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20"
+      },
+      {
+        "wave": 6,
+        "entries": [
+          "intake-2112",
+          "intake-2113",
+          "intake-2114",
+          "intake-2115"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20"
       }
-    ]
+    ],
+    "closeout": {
+      "waves_run": 6,
+      "final_wave_surfaced_sources": "carried to Stage-3 as decline/monitor items (see /mnt/raid0/llm/tmp/dive-w6/LEDGER.md)"
+    }
   }
 }
