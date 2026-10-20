@@ -179,6 +179,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     tested.
   - 2026-10-04: code on research main (`dc1828a0`, integrated in `eff6c41f`; opt-in `--longctx-surface <spec>`),
     refusals unit-tested. Not yet run end to end on Q38FN, so open.
+  - 2026-10-20: the 10-08 Q38FN r10 attention candidates refused `oracle_unavailable` / `process_environ_witness_missing`. Cause: `_oracle_arm` (32a72fefc) rebuilt the oracle template without environment variables, so all 8 recipe keys checked at `/proc/<pid>/environ` went `unknown`. Fixed on research main (1aa0b0441 + b27636385; the latter fixes the same env-less template in `production_enrollment.resolve_exported_recipes`, the runtime-anchor path) with regression tests (92 pass). The refusal happened before serving, so no stale `identity-*.json` receipts. Also 2026-10-20: a manual served sweep measured Q38FN at depth 512-128k (research `data/q38fn-threads-depth-20261020/`, commit 23119ea4e): decode 33-37 -> 16-17 t/s and 4k-tail prefill 160-210 -> 72 t/s at 128k, insensitive to 48 vs 96 threads - use it as the pre-AK baseline for the long-context surface; `-t 48 -tb 96` is the runtime-arm candidate.
 - [ ] **AKX-ALL-5 (C1): DS41 restore-identity gate.** `state_write/read` exist for the dsv4 caches and engram, but
   DS41-B14 warns those caches mutate destructively. One-time gate: a restored slot and a fresh prefill give
   identical greedy continuations at depth. If it fails, DS41's long surface falls back to fresh prefill (~27 min) and
