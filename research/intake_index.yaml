@@ -24520,6 +24520,7 @@
   - large-moe-expert-parallelism.md
   - gpu-acceleration-path.md
   handoffs_created: []
+  notes: '2026-10-20: resurfaced in hybrid prefix-caching reverse-engineering intake (friend''s vLLM 35B-A3B NVFP4 deployment).'
   novelty_justification: Concrete engineering recipe for serving hybrid SSM+attention models — MambaRadixCache, layer-ID remap to skip KV for linear layers, CUDA-VMM-backed elastic Mamba/KV pool, and PD-disaggregation State Transfer Channel are non-trivial named primitives we have not seen catalogued before. The benchmark numbers on Qwen3-Next-80B-A3B-FP8 with EAGLE/MTP are also fresh (Dec 2025). Not 'high' because the architectural problem (state-pool sizing, prefix caching with SSM state) is recognized in the multiscreen and Log-Linear GDN handoffs; this is a polished implementation report, not a new mechanism.
   relevance_justification: 'Pure CUDA-/H200-targeted (TP=2, FP8 weights, CUDA VMM); none of the kernel-level wins port directly to llama.cpp CPU. However, the architectural lessons are squarely on our active research path: (1) hybrid-radix-cache logic and the per-layer skip-KV remap are equally needed if we ever serve Qwen3-Next-80B-A3B or Qwen3.5-35B-A3B (both hybrid Delta-Net) via our llama.cpp fork, and the multiscreen-attention-evaluation handoff is explicitly tracking this class; (2) the elastic Mamba/KV pool design pattern translates to host-RAM accounting on EPYC; (3) the in-place-state rollback workaround is directly relevant to prior v3-hybrid-ssm-regression and ssm-hybrid-acceleration findings that flagged speculative decoding as ''dead on CPU'' for hybrid SSM — SGLang''s solution shows it is solvable in principle on the architecture side. Per feedback_dont_dismiss_creative_uses.md and feedback_custom_llama_implementation.md, the right framing is adopt_patterns rather than not_applicable. Not ''high'' because there is no GPU stack today and Qwen3-Next is not in the active worker stack.'
   verdict_justification: 'adopt_patterns — extract the four named primitives (HybridReqToTokenPool, HybridLinearKVPool, MambaRadixCache, Elastic Memory Pool) as a reference design that the multiscreen-attention-evaluation and log-linear-gated-deltanet-readiness handoffs can cite when scoping llama.cpp-side support for hybrid SSM serving. No code/component is portable as-is (CUDA VMM, FP8, TP=2, EAGLE), so adopt_component is not warranted. Not new_opportunity because the core thesis (hybrid SSM is the right shape for KV-bound workloads) is already represented in our chapters and handoffs; this URL upgrades the engineering vocabulary and benchmark anchor for that thesis. Credibility 5: pytorch.org official + named SGLang authors + concrete reproducible benchmark commands and version pin (SGLang v0.5.5), with a -1 vendor-bias deduction since SGLang is a serving-framework competitor pitching its own design.'
@@ -90558,7 +90559,7 @@
     we would reimplement and the blog describes it only in prose. SEE intake-1192, which did exactly that and found
     the comparator liftable but the PR own benchmark tables confounded the same way. SECOND CAVEAT: the benchmark
     models are largely frontier/unfamiliar and we hold NO independent baselines for any of them, so none of these
-    figures can be normalized against anything we have measured.'
+    figures can be normalized against anything we have measured. 2026-10-20: resurfaced in hybrid prefix-caching reverse-engineering intake (friend''s vLLM 35B-A3B NVFP4 deployment).'
   recommended_actions:
   - 'Add session-reference-aware eviction ORDERING to PrefixRouter/RadixCache: attach a stable session_id, register
     the reusable region on successful completion, and order slot reclamation by session reference count WITHOUT
@@ -265956,3 +265957,494 @@
   disposition_evidence:
   - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
     W6-HUMD-01 -> P6 / CS-48; W6-HUMD-02 -> decline'
+- id: intake-2061
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/46384
+  source_type: repo
+  title: "[2/N][Core] support partial prefix cache hit for hybrid model (vLLM PR #46384)"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - "ZJY0516 (Jiangyun Zhu)"
+  key_claims:
+  - "The PR decouples prefix-match granularity (a new public prefix_match_unit) from the physical KV block size, so a hybrid full-attention + Mamba model can hit a prefix that ends inside a block; the unit must divide every cache group's block size and defaults to their GCD."
+  - "Cache-manager lookup now returns the physical blocks plus an exact matched-token length; the hybrid coordinator repeatedly shrinks a candidate length until every cache group covers the same logical prefix (full-attention hits are downward-closed and can be trimmed without a re-lookup; EAGLE drops one match unit instead of one block)."
+  - "For aligned Mamba the recurrent state must come from exactly the hit boundary: the scheduler stops once at the final match-unit boundary before the end of a partial prompt block and the MambaManager registers that one state; it does not retain every intermediate state inside the block."
+  - "Copy-on-write has two paths: a new request hitting a partial entry is redirected to a private block and the shared source is copied into it; an already-running aligned-Mamba request instead moves the cache entry to a cache-owned destination block (BlockPool.move_block_hashes re-points hashes without emitting remove/store events) while the request keeps writing its original block."
+  - "Copies are queued as (source, destination) block pairs, executed by the worker after zeroing new blocks and before the model forward; both endpoints are retained until the scheduler step carrying the copy has completed, using the existing deferred-free queue so neither block is recycled while asynchronous work still reads or writes it."
+  - "The PR body reports one smoke test (Qwen3.5-35B-A3B-FP8, 10000-token request followed by 10000+200): second-request latency 0.0955 s with partial hit versus 0.1337 s without; single run, no variance reported."
+  techniques:
+  - "prefix_match_unit (sub-block hash granularity)"
+  - "downward-closed hit-length convergence across cache groups"
+  - "tail-only Mamba checkpoint at the last match-unit boundary"
+  - "copy-on-write with scheduler-side deferred-free lifetime fencing"
+  - "block-hash re-pointing without event emission"
+  reported_results:
+  - "PR body: second-request latency 0.0955 s (partial hit) vs 0.1337 s (no partial hit) on a 10000 then 10200-token pair; first request 0.305 s vs 0.287 s. Single run, own report, no confounder control."
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2062
+    - intake-2071
+    - intake-2065
+  expanded_from: intake-2062
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "vllm-project/vllm PR #46384, state MERGED 2026-07-12T05:37:52Z, merge commit 481e481be786c1ca3229e26aa34c15ffd22375af, head 4918bbed3a462f39c85af232c6e4f52040573c3d; PR body and file list read via gh 2026-10-20; diff NOT read"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20 via gh pr view (body + file list only; code not read).  Survey cross-reference: kv-serving-survey 2026-10-04 section 2.1 already cites #46384 for take_pending_cow_copies and #45939 for prefix-match-unit; NOT covered by the survey: the hit-length convergence rule, the two CoW paths (private-destination vs cache-owned-destination), deferred-free lifetime fencing, and the single-tail-checkpoint rule. Design pointers for our fork (hypotheses, unverified): our recurrent half cannot share a block the way attention KV can, so the vLLM 'copy the recurrent state from the shared block into a private one' step corresponds to our checkpoint restore (KPF-13); the tail-only checkpoint rule corresponds to the explicit junction checkpoint (KPF-15). Whether vLLM shares versus copies recurrent state is settled only for the CoW-on-hit case here; running-request behaviour needs the code. Test files listed include tests/v1/core/prefix_cache/test_partial_prefix_cache_hits.py and test_deferred_block_free.py (not read). Read depth DIGEST-equivalent: PR description only."
+  recommended_actions:
+  - "Operator-review candidate: dive the diff (kv_cache_coordinator.py, single_type_kv_cache_manager.py, scheduler.py, gpu_model_runner.py) for the recurrent-state copy path, async scheduling and spec-decode interaction."
+- id: intake-2062
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/45939
+  source_type: repo
+  title: "[1/N][Core] add partial prefix cache primitives (vLLM PR #45939)"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - "vLLM contributors (author handle not recorded this stage)"
+  key_claims:
+  - "First, deliberately small step: prefix-chain boundary hashes are computed at a fine hash_block_size, with each hash covering the whole prefix to that boundary, and coarser cache-group block keys are derived by taking the hash at the end of the larger block (BlockHashListWithBlockSize) rather than recomputing."
+  - "KVCacheBlock gains block_hash_num_tokens so a block first registered at a partial boundary can later be replaced by a longer partial key or promoted to its full-block key without leaving two live keys."
+  - "BlockPool.cache_partial_block registers a partial entry for an existing block; a reverse map (cached_block_hashes_by_block) lets eviction, reset and promotion remove every partial alias so stale keys cannot point at freed or repurposed blocks; the block stays the single ref-counted resource and partial entries are only lookup metadata."
+  - "The PR explicitly adds no CLI flag, no scheduler splitting and no backend checkpointing; it is primitives plus lifecycle tests only."
+  techniques:
+  - "chained fine-grained boundary hashes"
+  - "coarse block view over fine hashes"
+  - "partial-entry alias map with reverse index"
+  - "partial-to-full promotion"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "vllm-project/vllm PR #45939, state MERGED 2026-06-22T06:43:10Z, merge commit 6bc6f2d86d7800f878a4a13495b51a6e3b728c37, head 32ee4016f39d74ed4890f2be192100ef3912944f; body + file list read via gh 2026-10-20; diff not read"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "[1/N] predecessor found by name in the body of intake-2061 (#45939 is cited there as the source of the primitives). Retrieved 2026-10-20.  Survey cross-reference: survey section 2.1 cites #45939 only as the origin of --prefix-match-unit; the alias-map/refcount lifecycle (a block is the refcounted resource, aliases are metadata) is NOT covered by the survey and is the part most relevant to KPF refcount/lifetime questions. Our analogue: slot-level checkpoints are the 'aliases', cells are the refcounted resource."
+  recommended_actions:
+  - "Operator-review candidate: read block_pool.py diff for the alias lifecycle and compare to our seq_cp / checkpoint lifetime rules (KPF-14)."
+- id: intake-2063
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/45845
+  source_type: repo
+  title: "[v1][kvcache] Honor prefix-cache retention interval for Mamba/linear attention (vLLM PR #45845)"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - "vLLM contributor (handle not recorded this stage)"
+  key_claims:
+  - "Wires the existing VLLM_PREFIX_CACHE_RETENTION_INTERVAL env var to Mamba/linear-attention cache groups (it previously covered only sliding-window attention): MambaManager.reachable_block_mask keeps one cached recurrent-state snapshot per retention_interval-sized segment plus the latest replay boundary instead of one per block."
+  - "Motivation stated in the PR: dense per-boundary Mamba snapshots saturate the KV pool at small block sizes (about 80 percent of blocks at block_size 128 in the author's setting), forcing eviction of live attention prefixes and collapsing hit rate late in long multi-turn runs; larger block sizes (256/512) were unaffected."
+  - "A hit resumes from the nearest retained boundary, at most retention_interval tokens coarser, trading a little extra prefill for freed snapshot memory. Default (interval unset) is unchanged dense caching."
+  - "Evidence in the PR is a unit-test pass count plus an unquantified end-to-end check on Kimi-Linear-48B-A3B (block_size 512, TP4, 50 prompts x 60 turns, interval 2048); the PR body truncates before giving numbers I could read."
+  techniques:
+  - "retention-interval sparsification of recurrent-state snapshots"
+  - "reachable_block_mask for Mamba groups"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "vllm-project/vllm PR #45845, state MERGED 2026-06-23T02:51:12Z, merge commit 430a95ae3aecedfc8b568ad0d540477bf2fb4344, head 1dd93f51bc7c19f7806d8989748a8129bf466c26; body + file list read via gh 2026-10-20; diff not read"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (it names no retention interval). Directly relevant to checkpoint-density policy: our per-slot checkpoints are large and the survey's lesson is snapshots at branch points, not a dense grid; this PR is the vLLM answer for the dense-grid case. Note the PR was written with AI assistance (stated in its body). Relevant to KVU-12 np x ctx memory arithmetic: snapshot count per context is the cost knob."
+  recommended_actions:
+  - "Operator-review candidate: compare retention-interval policy to our --ctx-checkpoints / checkpoint-min-step density when sizing np x ctx."
+- id: intake-2064
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/issues/40696
+  source_type: repo
+  title: "[Feature]: Prefix caching completely ineffective for Mamba-hybrid models (Qwen3.5) when prompt < block_size (528 tokens) (vLLM issue #40696)"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - "Gaodzlearn"
+  key_claims:
+  - "Reporter (vLLM 0.19.1, Qwen3.5-4B, H20) states that vLLM sets the attention block size to 528 tokens to match the Mamba page size, so only full 528-token blocks are cached and prompts under that length get a 0 percent prefix hit rate."
+  - "Reporter's own table (200 requests each): 479 tokens about 0 percent, 552 tokens 95.4 percent, 597 tokens 88.2 percent, 979 tokens 53.7 percent hit rate; throughput dropped from 200 to under 100 QPS when the prompt shrank below the boundary."
+  - "A maintainer replied (2026-04-23) that this is a limitation of the current hybrid prefix-caching design and later pointed to RFC #45702, which led to the partial-hit work in PRs #45939 and #46384. The issue was open and marked stale by the bot on 2026-09-23."
+  techniques:
+  - "block-size floor for hybrid prefix caching"
+  reported_results:
+  - "Issue table: hit rate by prompt length 479/552/597/979 tokens = ~0/95.4/88.2/53.7 percent (reporter's own benchmark, one setup)."
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2071
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "vllm-project/vllm issue #40696, state OPEN, created 2026-04-23, last bot activity 2026-09-23; body + 4 comments read via gh api 2026-10-20"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (it does not mention this issue or the 528-token floor). Value for us: it quantifies the granularity cliff that block-aligned recurrent state creates; our checkpoint-based design has the analogue that a fork can only start at a checkpointed position, so a prompt shorter than checkpoint spacing gets nothing. Low novelty on its own; the fix lives in intake-2061/2071."
+  recommended_actions:
+  - "Operator-review candidate: derive the equivalent hit-length-vs-checkpoint-spacing curve for our fork as a KPF-18 gate row."
+- id: intake-2065
+  arxiv_id: null
+  url: https://docs.vllm.ai/en/latest/design/hybrid_kv_cache_manager/
+  source_type: blog
+  title: "vLLM design doc: Hybrid KV Cache Manager"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: already_integrated
+  ingested_date: '2026-10-20'
+  authors:
+  - "vLLM project"
+  key_claims:
+  - "All layers share one memory pool of equal-page-size blocks; layers are split into KV cache groups of a single attention type each, with the same page size across groups; irregular layer ratios are handled by grouping to the smallest count and padding the last group (wasting some memory)."
+  - "Prefix cache keys are (block hash, group id), so groups are cached and evicted independently and a request's hit is the intersection across groups; full attention scans forward to the first miss, sliding window scans right-to-left for the last window, and full-attention-plus-X works only for models with exactly two attention types."
+  - "For Mamba the page says the attention block_size is enlarged and the state padded to match, pushing block_size above 400, and that another padding strategy is still in progress; eviction uses one LRU queue shared by all groups."
+  - "The page is marked early-stage (as of a named commit) and lists no configuration flags."
+  techniques:
+  - "KV cache groups with unified page size"
+  - "per-group cache keys"
+  - "two-type hit search"
+  - "shared LRU across groups"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "https://docs.vllm.ai/en/latest/design/hybrid_kv_cache_manager/ retrieved 2026-10-20 via WebFetch (model-summarised digest, not source text)"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20 via WebFetch (DIGEST, so claims stay unverified).  Survey cross-reference: ADDS LITTLE beyond the survey: section 2.1 already covers HybridKVCacheCoordinator, the fixed-point shrink and the page-size padding. Rank low for a dive. Minor new items: the 'exactly two attention types' limit and the shared single LRU across groups."
+  recommended_actions:
+  - "No separate action; use the survey for this content."
+- id: intake-2066
+  arxiv_id: null
+  url: https://docs.vllm.ai/en/latest/features/automatic_prefix_caching.html
+  source_type: blog
+  title: "vLLM docs: Automatic Prefix Caching (hybrid / Mamba section)"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: already_integrated
+  ingested_date: '2026-10-20'
+  authors:
+  - "vLLM project"
+  key_claims:
+  - "With prefix caching on, Mamba state is stored only on the Mamba block grid, so a hit can resume only at a block boundary."
+  - "--prefix-match-unit sets the granularity of prefix-cache keys; if unset it defaults to the GCD of the prefix-cacheable group block sizes (so for hybrid Mamba it equals the block size and gives no sub-block hit); it must divide every cacheable group's block size and the page suggests 64 as a starting point."
+  - "--enable-mamba-shared-prefix-checkpoint (off by default) stores a checkpoint at the shared-prefix junction where an earlier request with the same prefix stopped; the page says it takes effect only with prefix caching on, EAGLE/MTP speculative decoding on the Mamba group, prefix-match-unit smaller than the Mamba block size, and no multi-module MTP."
+  - "The section names no mamba cache mode values (the fetched digest found none on this page; the survey cites an align mode from elsewhere). A search result also showed a differently named flag in the v0.30 docs, so the name is version dependent."
+  techniques:
+  - "prefix-match-unit"
+  - "shared-prefix junction checkpoint"
+  - "MTP-conditioned checkpointing"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "https://docs.vllm.ai/en/latest/features/automatic_prefix_caching.html retrieved 2026-10-20 via WebFetch (digest); a search snippet indicated v0.30 docs name the flag differently (--enable-mamba-fine-grained-prefix-cache), unverified"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20 via WebFetch (DIGEST).  Survey cross-reference: Mostly covered: survey section 2.1 quotes --enable-mamba-shared-prefix-checkpoint and --prefix-match-unit. NOT covered: the explicit statement that the junction checkpoint is gated on EAGLE/MTP on the Mamba group, which is the key spec-decode coupling question for our KPF-15 junction checkpoint with DFlash2/MTP; rank low-medium, worth a one-pass read of the source gate. The mamba-cache-mode option is NOT on this page as fetched; do not cite its values from here."
+  recommended_actions:
+  - "Operator-review candidate: read the code gate for the MTP condition to learn why a junction checkpoint needs spec decode."
+- id: intake-2067
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/15293
+  source_type: repo
+  title: "server : add SWA checkpoints (llama.cpp PR #15293)"
+  categories:
+  - kv_cache
+  - local_inference
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: already_integrated
+  ingested_date: '2026-10-20'
+  authors:
+  - "ggerganov"
+  key_claims:
+  - "The server snapshots cache state (KV cells and data) so it can avoid re-processing context for SWA models; only the SWA part is stored so the checkpoint is small (proportional to the window); default 3 per slot via --swa-checkpoints N."
+  - "A checkpoint is created when prompt processing finishes, and only if --swa-full is not set (with swa-full any past position can be branched from, at the cost of larger SWA memory)."
+  - "The PR adds llama_state_seq_get_size_ext / get_data_ext / set_data_ext so callers can request SWA-only or non-SWA state; it touches the memory-hybrid and memory-recurrent classes, which is the API our checkpoint code builds on."
+  techniques:
+  - "partial (SWA-only) sequence-state save/restore"
+  - "per-slot checkpoint ring"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "ggml-org/llama.cpp PR #15293, MERGED 2025-08-14T11:59:50Z, merge commit d32e03f4495d3efa1c5126f53b449f1d429c5664, head 3d08a6562480a9e7073d8de26bebc528c0581c02; body + file list read via gh 2026-10-20"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20.  Survey cross-reference: survey section 2.4 describes the resulting --ctx-checkpoints behaviour and cites #24176/#25592 etc. but does not cite this origin PR; this entry is provenance for the *_ext state API only (ADDS LITTLE). Rank low."
+  recommended_actions:
+  - "No new action; provenance record for the llama_state_seq_*_ext API the fork's checkpoint copy relies on (KPF-13)."
+- id: intake-2068
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/22929
+  source_type: repo
+  title: "server: fix checkpoints creation (llama.cpp PR #22929)"
+  categories:
+  - kv_cache
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - "jacekpoplawski"
+  key_claims:
+  - "Server change that extracts message spans from chat templates (autoparser) to find the prompt token position just before the latest user message, splits prompt batching at that position, and creates a context checkpoint there."
+  - "When that position is known it avoids periodic mid-prompt checkpoints; multimodal prompts are mapped from text/template positions to server prompt tokens."
+  - "Author's goal: stop 'forcing full prompt re-processing' for agentic coding on hybrid models; the author notes preserve_thinking matters because otherwise the prompt history changes and there is always reprocessing."
+  - "The PR's example command uses --ctx-checkpoints 24, --cache-ram 65536, --checkpoint-min-step 256 and speculative drafting flags; no benchmark numbers were given in the body."
+  techniques:
+  - "checkpoint at user-message boundary"
+  - "template message-span extraction"
+  - "min-step checkpoint spacing"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "ggml-org/llama.cpp PR #22929, MERGED 2026-05-25T05:56:19Z, merge commit e2ef8fe42ccef597bfeab901dd6e39589613b71e, head 556d36b06049181fc034aa14c725678898604c1b; body + file list read via gh 2026-10-20"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20.  Survey cross-reference: survey section 2.4 mentions checkpoints 'created at user-message boundaries (#24176) and near the end of the prompt'; #22929 itself (and the span-extraction mechanism) is NOT cited by the survey. Relevance: this is the checkpoint-placement policy a cross-slot fork's junction checkpoint (KPF-15 checkpoint_at) has to coexist with. Rank low-medium."
+  recommended_actions:
+  - "Operator-review candidate: confirm our v10 tree carries this placement logic and how it interacts with KPF-15 checkpoint_at."
+- id: intake-2069
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/24587
+  source_type: repo
+  title: "[Bug/Performance] Context checkpoint invalidation loops with dynamic RAG prompts (bge-m3) on SWA models (Qwen) (llama.cpp issue #24587)"
+  categories:
+  - kv_cache
+  - local_inference
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - "nshields1512-code"
+  key_claims:
+  - "Reporter (Qwen3.5-35B-A3B Q8_0, Vulkan, 131k-262k ctx, bge-m3 RAG) says checkpoints made for earlier requests are repeatedly found invalid against new prompts whose middle (retrieved chunks) changes, so the server logs forcing full prompt re-processing and erases the checkpoint every request."
+  - "Expected behaviour stated: reuse the cache for the static prefix (system prompt + question template) even when a middle section varies; workaround was dropping checkpoint flags."
+  - "A commenter reported that all agentic work with growing context suffers the same and that they moved Qwen3.6-27B to vLLM; the issue was closed by the stale bot on 2026-08-01 (inactivity), not by a fix, so it records an unresolved pain point."
+  techniques:
+  - "checkpoint invalidation on mid-prompt divergence"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "ggml-org/llama.cpp issue #24587, CLOSED (stale bot) 2026-08-01; body + 3 comments read via gh api 2026-10-20"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey as an issue; the survey's section 2.4 states the contested checkpoint-reuse PR tail but not this symptom. Relevance: shows that checkpoint-only recurrent reuse is exact-prefix-position limited, which bounds what a fork can recover when prompts diverge before the checkpoint. Closed without fix, ranking low-medium. Reporter statements are unverified."
+  recommended_actions:
+  - "No action beyond noting the divergence-before-checkpoint case in KPF-18's prompt mix (operator-review candidate)."
+- id: intake-2070
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/13979
+  source_type: repo
+  title: "Hybrid recurrent cache (llama.cpp PR #13979)"
+  categories:
+  - kv_cache
+  - ssm_hybrid
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: already_integrated
+  ingested_date: '2026-10-20'
+  authors:
+  - "gabe-l-hart"
+  key_claims:
+  - "Introduces the llama_kv_cache_hybrid_recurrent cache: it holds two child caches (unified attention KV and recurrent) following the iswa pattern and routes layers between them; the PR adds llama_model_is_hybrid_recurrent and an attention-layer-indices hparam."
+  - "Graph code that needs a specific cache type goes through getters (get_state_unified / get_state_recurrent); n_embd_k_s / n_embd_v_s become layer dependent and the recurrent cache gets layer filtering."
+  - "This is the architectural reason hybrid models' recurrent half cannot be positionally shifted or partially truncated like attention KV, which is what forces checkpoint-based reuse."
+  techniques:
+  - "hybrid recurrent memory (two child caches)"
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "ggml-org/llama.cpp PR #13979, MERGED 2025-06-19T05:08:14Z, merge commit edc4a29effe716956fdfd2bc5b9cba2a6d8492f8, head 304f86e667effe01f7b2d64cb58f090c1a4352c3; body + file list read via gh 2026-10-20"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Retrieved 2026-10-20.  Survey cross-reference: ADDS LITTLE: the survey takes this memory split as given (our fork's 'What already exists' section describes the attention/recurrent halves). Provenance only; the class has since been renamed (llama-memory-hybrid in later file lists). Rank lowest."
+  recommended_actions:
+  - "No action; provenance for the attention-only vs recurrent split used in KPF-12/KPF-13."
+- id: intake-2071
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/issues/45702
+  source_type: repo
+  title: "[RFC]: Partial Cache Hits for Hybrid Models (vLLM RFC #45702)"
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - "ZJY0516"
+  key_claims:
+  - "The RFC states the problem as full-attention block size being forced up to the Mamba state block size (example: 16-32 natural vs 1024), so effective hybrid prefix granularity becomes the Mamba block; proposes hash_block_size decoupling with at most ONE partial alias per request, created for the final under-filled block (to keep alias count bounded)."
+  - "Review discussion records design tensions: a maintainer asked about worst-case lookup cost (author: probe only inside the first unmatched block, about 64 lookups for block 2048 and granularity 32), preferred copying the whole block over copying only the reused slice, and asked how async scheduling and speculative decoding fit since the scheduler does not know exact computed-token counts."
+  - "An alternative (draft PR #46251) decouples mamba block size from the allocation unit so attention block size can be used everywhere; its author reports 32 percent hit-rate gain and 2.7x prefill speedup on a synthetic test (own claim, draft)."
+  - "A commenter's initial memory-explosion worry (state checkpoints at every fine boundary) was withdrawn after clarification that the goal is only recovering the unaligned request tail, with the state checkpointed once at the request boundary; the author stated all cached states are evictable and the partial-hit approach is a workaround until memory management is refactored."
+  - "A comment also proposes DAG-tracked copy-on-write of Mamba state with ref counts and PyTorch copies, with a small proof of concept (RTX 5070) showing a shared state corrupted without CoW; unreviewed community proposal."
+  techniques:
+  - "hash_block_size decoupling"
+  - "single tail partial alias"
+  - "whole-block copy-on-write"
+  - "allocation-side alternative (mamba block size decoupled from page)"
+  reported_results:
+  - "Comment from #46251 author: +32 percent cache hit rate, 2.7x prefill speedup on a synthetic test (draft PR, own claim)."
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2064
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: "vllm-project/vllm issue #45702 (RFC), state CLOSED (closed_at 2026-06-15T13:18:59Z per API); body + comments read via gh api 2026-10-20 (comments truncated at ~800-1500 chars each)"
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: "Expansion from intake-2061 / intake-2062 bodies, which cite RFC #45702; retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (RFC never cited). Most useful for us as the design-alternatives record: it names the async-scheduling/spec-decode interaction as an open question (relevant to MTP/DFlash2 and our KPF design) and the memory-vs-hit-rate argument for tail-only checkpoints. Comments only partially read."
+  recommended_actions:
+  - "Operator-review candidate: dive the full RFC thread for the spec-decode / async scheduling resolution."
