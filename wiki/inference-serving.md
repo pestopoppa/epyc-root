@@ -2661,3 +2661,9 @@ The [strict per-call reader](../docs/reference/serving-call-reader-contract.md) 
 A GPU measurement window that needs gpu-quiet EXCLUSIVE can wait forever while AutoKernel lanes take shared claims back to back. Measured 2026-10-07 02:42Z: the Jet-Long 27B window stopped :8083, then the EXCLUSIVE acquire timed out after 600 s with FIFO admission off; the executor restored :8083 and the window was lost. A shared claim is never observed to be free, so absent FIFO default-on or writer preference an exclusive request cannot be served. Task GPUQUIET-WRITER-PREFERENCE (autokernel-concurrent-target-coordination.md); the scripts now use a prefill-only pattern with a 1800 s acquire timeout. Related: standing GPU-window approval branch (GPUWIN-STANDING-APPROVAL, gpu-serving-tie-in-program.md).
 
 Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [concurrent target coordination](../handoffs/active/autokernel-concurrent-target-coordination.md).
+
+## Incremental synthesis — 2026-10-20: slotdraft fold and np x ctx study reopening
+
+**Confidence: session-reported.** The champion fold "slotdraft" (`e33229348` to `dd3d9721c`) ports upstream slot-save checkpoint persistence (#26004) and draft-state persistence (#30574); MTP acceptance after a slot restore measured 0.98-1.02x of live versus 0.53-0.71x before (ledger in [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md)). The upstream mechanisms are discussed in `intake-2096#record` and upstream llama.cpp PR #30574. KVU-12 (CPU np x ctx study) was reopened with a driver and context bank on a research branch and a Tier-0 overnight window armed; unified-pool rollout context is in [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md). Details: [kv-cache](kv-cache.md).
+
+Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
