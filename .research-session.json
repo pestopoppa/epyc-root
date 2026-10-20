@@ -1,8 +1,8 @@
 {
   "session_id": "intake-deepinfer-20261020",
   "started_at": "2026-10-20T19:40:00Z",
-  "last_checkpoint": "2026-10-20T20:18:45Z",
-  "stage": "stage1-complete",
+  "last_checkpoint": "2026-10-20T20:43:08Z",
+  "stage": "stage2-wave1-applied",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepinfer-20261020",
   "branch": "intake/deepinfer-20261020",
@@ -98,7 +98,68 @@
       "rule": "all recommended dives + all recommended dive-surfaced sources per wave (Stage-2b combined ingest+dive); then close Stage 2",
       "source": "operator 2026-10-20 (steering seq 1)"
     },
-    "waves": []
+    "waves": [
+      {
+        "wave": 1,
+        "entries": [
+          "intake-2116",
+          "intake-2117",
+          "intake-2118",
+          "intake-2119",
+          "intake-2120",
+          "intake-2121",
+          "intake-2122",
+          "intake-2123",
+          "intake-2124",
+          "intake-2125",
+          "intake-2126"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20",
+        "seed_split": [
+          "D1 spec/varlen",
+          "D2 YOCO+SWA replay+KV",
+          "D3 scheduler",
+          "D4 MoE/EPLB+model deltas",
+          "D5 determinism/sampling/quant"
+        ],
+        "patches": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/",
+        "ledger": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/LEDGER.jsonl",
+        "second_reader": {
+          "anchors_refound": "302/302",
+          "support": {
+            "yes": 110,
+            "partial": 38,
+            "no": 1
+          },
+          "overturned_by_main_after_review": [
+            "intake-2116 claim 21 (preemption victim order)"
+          ],
+          "corrected_in_place": [
+            "intake-2116 claim 3 (ZOS default)"
+          ]
+        },
+        "surfaced_selected_for_wave2": [
+          "arXiv 2503.03588 PowerAttention",
+          "arXiv 2603.28458 HISA",
+          "arXiv 2606.06467 YOIO",
+          "arXiv 2601.22705 CONCUR",
+          "github deepseek-ai/DeepGEMM-Ascend",
+          "arXiv 2604.13556 YOCO++",
+          "github deepseek-ai/EPLB",
+          "github deepseek-ai/DeepEP",
+          "xgrammar (mlc-ai/xgrammar + arXiv 2411.15100)",
+          "Zhihu post p/2095560295930508953 (Stage-1 refused; fetched via r.jina.ai text extraction)"
+        ],
+        "surfaced_declined": [
+          {
+            "source": "arXiv 2507.06607 SambaY",
+            "bears_on": "intake-2125",
+            "reason": "dive recommendation: no served checkpoint of this family; its YOCO-relevant content already recorded in intake-2125"
+          }
+        ]
+      }
+    ]
   },
   "prior_sessions": [
     {
