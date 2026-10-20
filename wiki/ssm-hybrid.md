@@ -666,3 +666,14 @@ Sources: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE
 - Follow-on: HYBRID-PREFIX-REUSE (correctness on the serving port) in kv-unified-stack-rollout.md.
 
 Sources: [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+
+## Compiled Update — 2026-10-20: recurrent-state prefix caching in vLLM and llama.cpp, checkpoint-position lessons
+
+**Confidence: external** (vendor PR and issue text, author-reported numbers, none reproduced here); the full synthesis is in [kv-cache](kv-cache.md#compiled-update--2026-10-20-hybrid-prefix-cache-survey-vllm-and-llamacpp-and-the-prefix-fork-recut).
+
+- A recurrent state cannot be shared like attention KV: it is valid only at the exact position it was written, so every hybrid prefix-cache design reduces to where states are checkpointed. vLLM publishes one state at the final match-unit boundary (`intake-2061#record`), at a reactively discovered junction (`intake-2072#record`), or at a branch point under Marconi-style admission (`intake-2102#record`, `intake-2091#record`).
+- With MTP/EAGLE the draft shifts the resume position by one unit; chunk end and published-state position must derive from one flag (`intake-2073#record`).
+- Align-mode checkpoints materialised only at chunk ends give zero reuse for siblings that share less than the deepest chunk end; one fix stops chunks at every retained boundary (`intake-2108#record`, PR text says its branch is superseded).
+- llama.cpp's slot file now persists context checkpoints and the draft state (`intake-2096#record`, upstream llama.cpp PR #30574), the upstream counterpart of the local prefill-only-boundary result recorded above.
+
+Sources: [Progress 2026-10-20](../progress/2026-10/2026-10-20.md), [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [research intake index](../research/intake_index.yaml).
