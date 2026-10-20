@@ -1,32 +1,57 @@
 {
   "by_type": {
-    "docs": 179,
+    "docs": 183,
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
-    "progress": 648,
+    "progress": 649,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-20T16:44:20Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 3,
+      "added": 5,
+      "changed": 23,
       "removed": 0
     },
-    "at": "2026-10-20T19:42:11Z",
+    "at": "2026-10-20T21:59:22Z",
     "scope_paths": [
+      "docs/design/eg2-embedder-adoption-stack-change-package.md",
+      "docs/design/harness-improvement-loop-design-20261006.md",
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "docs/reference/kernel-manifests/speech-v2-manifest.md",
+      "docs/reference/speech/turn-taking-measurands.md",
+      "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/conversation-stack.md",
+      "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "handoffs/active/engram-conditional-memory.md",
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "handoffs/active/harness-improvement-loop.md",
+      "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "handoffs/active/iqk-iquant-enablement.md",
       "handoffs/active/kv-prefix-fork-and-paged-attention.md",
       "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/llama-cpp-dsa-contribution.md",
+      "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+      "handoffs/active/moe-routing-tap-and-locality-measurement.md",
+      "handoffs/active/multimodal-pipeline.md",
+      "handoffs/active/qwen-chat-template-evaluation.md",
+      "handoffs/active/qwen38-27b-replace-qwen36.md",
+      "handoffs/active/repl-embedding-retrieval.md",
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/within-role-placement-state-machine.md",
+      "progress/2026-10/2026-10-20-workspace-f8.md",
       "progress/2026-10/2026-10-20.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-20T19:42:11Z",
+  "scan_time": "2026-10-20T21:59:22Z",
   "schema_version": 1,
-  "source_set_hash": "8659f7c3390f4c4d68a27ea41392362271fdfdb946d0df0ef22ab1a28ce00f47",
+  "source_set_hash": "eaa0d023d8783cd66e10fea7daf6afd0a4013b43de5845bd15654a768c7dc0c0",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -109,18 +134,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e58f09ef1f920cc8b3f9c4fafecc9afc4182dc2d2bec99a6698980285a98a550",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "b6a0e54f6dd3f3ecfeb5e91a479cd0623df69c52a79278591d2fd8a6658193a0",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 52121,
+      "size": 97583,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
     {
-      "content_hash": "3af885f44a2f84cc2ad9243f6d996fab645d9d28a5c38269a30e370cbbd6f2c9",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "5f9d932478e07ca8117e73fc0be51289f0fa762f39431af7ce6f4aa22b1bd259",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 60231,
+      "size": 68104,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -301,10 +326,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "73f52a55e64a55585518eceb98e16c72bd72ae79620871658139d36cada8e6d7",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "806847a1aee47ee5f70e541af821c85618b35a2217311d480f45c61bce506338",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 71390,
+      "size": 91993,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -381,10 +406,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a78eb30a193216ec3ce98bae8b4080f9869be53abf868dec67ef229ae3f61a42",
-      "modified": "2026-10-20T16:35:58Z",
+      "content_hash": "deedf1e5af6ce09116b0b841e27b3a4fdc3d77a5f4507f18f45d51c7d23718c9",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 156802,
+      "size": 175519,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -413,10 +438,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cc3104ecdd5debe8fd6eb094a93d1faa74446fbb769295004f2beac69448d82d",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "8e7a3d31fce73914e2a64ecede11afd40edd52ed7a39d3669b8ae95035cf1c95",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 64809,
+      "size": 82686,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -437,10 +462,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e28e4a68cd9a41c23b7352783ca80ed400fd48fb4d4212329a4fc25eae11aac6",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "5855c28e9a61d33c6fb8dfa0675a3c9a3eb87f359460f93920eccc1686bfe26a",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/engram-conditional-memory.md",
-      "size": 47086,
+      "size": 47355,
       "title": "Engram \u2014 Conditional Memory via Scalable Lookup",
       "type": "handoff-active"
     },
@@ -653,10 +678,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1ccc22bfae49fca63aa80027f2b12bd6a847ca0877722f28a10fd2fb62e51373",
-      "modified": "2026-10-20T16:36:16Z",
+      "content_hash": "4c4bdacab08dbdeca933b8d80d353c9eee24b444b92167c606553a3156561f43",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 86154,
+      "size": 87417,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -669,10 +694,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "66459973ad35029bb438a8e3a0040def260c7b933cf30e17e02154add0170b2c",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "9ae0ae831e66f4075d51688a0c2f2f778570effecdab5e80c9f69dc404e5fd87",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 13137,
+      "size": 13578,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
@@ -685,10 +710,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d5dfbd0b6e3324c94b401a4ae4f127a9a9f07c80456664d940000c3c7794d36d",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "8c7d105171fdb050147fa593516bde7916eb0acca217507677b8f91b9ab45aa9",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
-      "size": 34099,
+      "size": 35661,
       "title": "Heterogeneous CPU\u00d7GPU Slot Fabric + Dynamic Residency",
       "type": "handoff-active"
     },
@@ -733,26 +758,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3d2241ba4c21702f743cb1e18f8cee35c4af493ce1d4eaf2b21078f49a0d0cb7",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "cb62f7f98fad0687c9f876eed4571bfe1839b6a4daa5e8d5a2e99cd5036d13f4",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/iqk-iquant-enablement.md",
-      "size": 30226,
+      "size": 35073,
       "title": "iqk IQ-quant Enablement \u2014 shipped in v8, residual research active",
       "type": "handoff-active"
     },
     {
-      "content_hash": "5fdb963ee56c9e3ef8059c32ba7014f99b5efdd26f07dc6fedc05584b4d2d836",
-      "modified": "2026-10-20T19:39:19Z",
+      "content_hash": "09fc7605f83b1615775afb3798d5f7dc76a711276b74409ad7b3eb6c042fb3ea",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 74030,
+      "size": 78236,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
     {
-      "content_hash": "bf9bb6e4fe56ddac55c93e4eea19f34f479ff38c7fe2f8cece3febc672bed103",
-      "modified": "2026-10-20T19:39:19Z",
+      "content_hash": "a421cf207035e5bff0d3a1caf47fd45332403d20c1948516a2885ac42ca37e7a",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 37532,
+      "size": 45697,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -789,10 +814,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "848b8ca7da0c4e8bc80aa74f1099f32eef8710f1a86ed910faed30dfbee50682",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "fe7e74fbc1d3cedb9f299bb9f95a7f21d775d86647e18d260f6281dcd93db757",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/llama-cpp-dsa-contribution.md",
-      "size": 28712,
+      "size": 29325,
       "title": "llama.cpp DSA Contribution \u2014 DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)",
       "type": "handoff-active"
     },
@@ -845,10 +870,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "55aab6020bb861c84ea3026064b85c36b2a7999613c3e70f3c19e4eedbe75f52",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "e8f1313dd1c090871f9b4bfcac068d73ac9f401ef86879b4ec46a4d250af527e",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
-      "size": 41042,
+      "size": 44845,
       "title": "Handoff: MI210 single-stream roofline \u2014 Q8 dequant-GEMV kernel + batch-1 latency levers",
       "type": "handoff-active"
     },
@@ -901,10 +926,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5eddb881de7f4e95506e0c84c2eefbe8f434419bca646c3ff034240e2a0a479d",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "e4c03b0ca1fefcca01706eed28d0723aab869e97dab4755d279ceaf2edbc10a7",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/moe-routing-tap-and-locality-measurement.md",
-      "size": 7023,
+      "size": 12537,
       "title": "MoE per-token routing tap and locality measurement (INF-72)",
       "type": "handoff-active"
     },
@@ -925,10 +950,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d04bac2d63befb33f1375c841fd80b25a54e3e300492c1a0ff5ed7274b6eeb0a",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "924fee2377854465ec1f332cd22903beb90816626c648d48b6a028db8ecda627",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/multimodal-pipeline.md",
-      "size": 105946,
+      "size": 106268,
       "title": "Multimodal Pipeline: Vision + TTS + ASR",
       "type": "handoff-active"
     },
@@ -1037,10 +1062,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d0d618b5f5b5db846bd328b5c1e270ae4ffdb7097343e09ea56960e92872b37f",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "b05b271e5de40462dcea35c7158263d76c1ced6766a03e30f426793ca7dba5a0",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/qwen-chat-template-evaluation.md",
-      "size": 51971,
+      "size": 52955,
       "title": "Qwen Chat-Template Evaluation",
       "type": "handoff-active"
     },
@@ -1053,10 +1078,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5e7e040e56c1daa3689821f4ef09877ed2ba2617505386b7accc81d6cc7083d6",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "5a36c13ab48123868d092b019b867a919426f589a3031499f7894a86a2203370",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/qwen38-27b-replace-qwen36.md",
-      "size": 49713,
+      "size": 72949,
       "title": "Qwen3.8-27B \u2014 replace Qwen3.6-27B in production",
       "type": "handoff-active"
     },
@@ -1109,10 +1134,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "50e3ce31876452e0a7b6bf3856811f1beed77a1dd8543a549bdc7dba219064c6",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "ba58faac72ab27bf150e920256bf49699a3a541a9238efe747b02e69081d22ea",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 32963,
+      "size": 59068,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
@@ -1277,10 +1302,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9f2514cf97a5b75bdacf4d820afc579c91ac477c555849a6f014fb6fdadb9046",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "dba37075f18ff86629908a4bb69eca5b6129e2ed31ec66e9e69a53c0fec23c5a",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 76222,
+      "size": 80166,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1429,10 +1454,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7fa41b673995ef7ec065e481dd01eb93c1301cde9f6d787ef58aece335d8d9f2",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "4af31fed3fd4530bb9e45e990f7e968337645f36413d93265672a56490bbe0a5",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "handoffs/active/within-role-placement-state-machine.md",
-      "size": 61160,
+      "size": 62025,
       "title": "within-role-placement-state-machine",
       "type": "handoff-active"
     },
@@ -9461,6 +9486,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "ae22de9b9d841a730e4c216f13056ebeca49cb3898d2777fcf4bae573b488203",
+      "modified": "2026-10-20T21:54:10Z",
+      "path": "progress/2026-10/2026-10-20-workspace-f8.md",
+      "size": 4252,
+      "title": "2026-10-20 \u2014 workspace-f8",
+      "type": "progress"
+    },
+    {
       "content_hash": "75c87c7b38ef5e98876795a51b25c3ce28c1896ec72c5c2373a7510fccd6f19b",
       "modified": "2026-10-20T16:34:33Z",
       "path": "progress/2026-10/2026-10-20-wrapup-intake-20261020.md",
@@ -9469,10 +9502,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "eb1b6ed3db6fd034780b65d23864f065211f2064fc1fb8c355e9428d18e770b7",
-      "modified": "2026-10-20T19:39:19Z",
+      "content_hash": "81c3a5041aec1781585983300c3c1901162aac3edc063a9f768325cb6a0ff0c0",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "progress/2026-10/2026-10-20.md",
-      "size": 29678,
+      "size": 39780,
       "title": "2026-10-20",
       "type": "progress"
     },
@@ -9541,6 +9574,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "28048bb609fe4c869a72ba2a21441a51db1c39383ab4bdc7b1112c3ef34616b4",
+      "modified": "2026-10-20T21:54:10Z",
+      "path": "docs/design/eg2-embedder-adoption-stack-change-package.md",
+      "size": 50208,
+      "title": "Stack-change package (DRAFT): EmbeddingGemma 2 BF16 @256 as the REPL embedder-pool model",
+      "type": "docs"
+    },
+    {
       "content_hash": "a90cfcc4952b47ef97044354da7ecef49c29fafb4c7a866dd396eae9a1ec471d",
       "modified": "2026-10-20T16:34:33Z",
       "path": "docs/design/exl3-mul1-ggml-type.md",
@@ -9565,10 +9606,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "0d658af66a23ba2625e28de491cfd2151606dee1744906bdde8951f4a7003b2c",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "0058ba7710b783579108f6a968c1478d19f406c8694f65a965bfd96f27536318",
+      "modified": "2026-10-20T21:54:10Z",
       "path": "docs/design/harness-improvement-loop-design-20261006.md",
-      "size": 23997,
+      "size": 26607,
       "title": "Harness improvement loop \u2014 reviewed design and architecture decision",
       "type": "docs"
     },
@@ -10349,6 +10390,22 @@
       "type": "docs"
     },
     {
+      "content_hash": "dcf0668dfb95f0c0c0c482dd061dafabccafeb36eefd7904ab833b47aca97495",
+      "modified": "2026-10-20T21:54:10Z",
+      "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "size": 54125,
+      "title": "llama.cpp v11 release manifest",
+      "type": "docs"
+    },
+    {
+      "content_hash": "ee71ab9e8d8951a5150f0f4049f82d6b4e529033282de8eeaca4b0dacebc3202",
+      "modified": "2026-10-20T21:54:10Z",
+      "path": "docs/reference/kernel-manifests/speech-v2-manifest.md",
+      "size": 9701,
+      "title": "production-speech-v2 release manifest",
+      "type": "docs"
+    },
+    {
       "content_hash": "d8485b0f945676fb9e67cb4dbf21572d6f68ebaa7af1b51db769a62a4fe749a7",
       "modified": "2026-10-20T16:34:33Z",
       "path": "docs/reference/kv-admission-cluster-decision-memo-2026-07-18.md",
@@ -10546,6 +10603,14 @@
       "path": "docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md",
       "size": 43103,
       "title": "Speech-Native Interlocutor + External Orchestrator",
+      "type": "docs"
+    },
+    {
+      "content_hash": "c9986446c933f026749e705b823c12702d84d414bedcb232d60b1d736c984999",
+      "modified": "2026-10-20T21:54:10Z",
+      "path": "docs/reference/speech/turn-taking-measurands.md",
+      "size": 11131,
+      "title": "Turn-taking measurands (CS-45 measurand note)",
       "type": "docs"
     },
     {
@@ -10909,7 +10974,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1360,
+  "total_new": 1365,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
