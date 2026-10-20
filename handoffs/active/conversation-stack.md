@@ -109,6 +109,7 @@ The interlocutor and the orchestrator split the work like this.
 - **Voice routing to :8083 is unimplemented.** "Voice turns reason on the :8083 27B" (KVU-11; that role is `architect_critic` since ARCHSWAP-20260927) is written in docs only; no routing code implements it.
 
 **Speech kernels today**
+- Release manifest for the next speech kernel set: [`docs/reference/kernel-manifests/speech-v2-manifest.md`](../../docs/reference/kernel-manifests/speech-v2-manifest.md) (must-carry gfx90a patches, threadpool work status, proposed `champion/speech-*` branches). Edit it in the same commit as any speech-kernel change.
 - **whisper.cpp** is `production-speech-v1` `b3073792` (ggml 0.18.0).
   - It serves `POST /v1/audio/transcriptions`: one shot, WAV only, no streaming. It pads to 30 s, so a 3.5 s utterance costs about 2 s on CPU and about 0.12 s on GPU.
   - Built-in Silero VAD flags exist but are unused.
