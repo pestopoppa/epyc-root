@@ -267067,13 +267067,7 @@
     - claim_index: 4
       effect: 'unaffected'
       note: 'Unreviewed community proposal; vLLM instead shipped block-level CoW (_pending_cow_copies, single_type_kv_cache_manager.py:147-148), not a DAG. PoC is a PyTorch toy, not run here.'
-  depends_on:
-    - entry: 'intake-2066'
-      claim_index: 0
-      why: 'the shipped realisation of the partial-hit + junction checkpoint is documented by 2066; verification of both rests on the same code revision'
-    - entry: 'intake-2066'
-      claim_index: 2
-      why: 'the shipped realisation of the partial-hit + junction checkpoint is documented by 2066; verification of both rests on the same code revision'
+  depends_on: []
   dive_corrections: |-
     2026-10-20 RFC outcome vs code @ b272cff: partial hits + tail checkpoint shipped (#45939, #46384, #49502); spec-decode/async question answered only by assertion in the RFC, resolved structurally in code; granularity flag renamed to --prefix-match-unit; competing allocation-decoupling #46251 still open draft. Junction checkpoint for EAGLE/MTP (#53945) is the later, separate mechanism and is what intake-2066 documents.
     2026-10-20 second reader (independent agent): re-find 7/7 exact; support yes 1 / partial 3 / no 3; disagreements carried to the Stage-3 plan: intake-2071#3.7, intake-2071#3.8, intake-2071#1.9, intake-2071#3.11, intake-2071#1.12, intake-2071#1.13
