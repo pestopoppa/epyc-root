@@ -231,7 +231,7 @@
         "second_reader": {
           "anchors_refound": "55/55",
           "support": {
-            "yes": 19,
+            "yes": 18,
             "partial": 8,
             "no": 0
           }
@@ -253,7 +253,7 @@
         "second_reader": {
           "anchors_refound": "28/28",
           "support": {
-            "yes": 11,
+            "yes": 10,
             "partial": 1,
             "no": 0
           }
@@ -293,9 +293,9 @@
       "ledger_rows": 149,
       "ledger_file": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/LEDGER.jsonl",
       "second_reader_totals": {
-        "anchors_refound": "516/516",
-        "yes": 205,
-        "partial": 47,
+        "anchors_refound": "516/516 (plus 4 main-added anchors)",
+        "yes": 191,
+        "partial": 46,
         "no": 4,
         "no_resolved": "intake-2116 c21 overturned+corrected by main; intake-2133 c2-c4 rotated anchors re-indexed by main"
       }

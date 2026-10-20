@@ -279474,7 +279474,7 @@
     time 15.9x while cutting preprocessing 8.1x.
 
 
-    2026-10-20 second reader (independent agent): re-find 10/10; support yes 6 / partial 1 / no 0. Partial carried to Stage
+    2026-10-20 second reader (independent agent): re-find 10/10; support yes 5 / partial 1 / no 0. Partial carried to Stage
     3 as an anchor gap: claim 1''s structural-hashing mechanism and Table 4 figures are not in its quotes. Main dropped a
     malformed bare-list depends_on [intake-2132]: counterfactual test fails (XGrammar-2''s claims rest on its own paper).'
 - id: intake-2138
@@ -280747,7 +280747,7 @@
     contains no performance numbers.
 
 
-    2026-10-20 second reader (independent agent): re-find 14/14; support yes 5 / partial 1 / no 0. The partial (claim 4''s
+    2026-10-20 second reader (independent agent): re-find 14/14; support yes 4 / partial 1 / no 0. The partial (claim 4''s
     LPLB ''+12% over Megatron-LM'') was checked by main: the figure is in the UltraEP paper (intake-2138, saved paper text:
     ''EPLB, LPLB, EPLB++, and UltraEP improve throughput by 20%, 12%, 29%, and 42% over Megatron-LM''), and the claim already
     attributes it as competitor-reported; claim stands. Main dropped a malformed bare-list depends_on [intake-2138] (counterfactual
