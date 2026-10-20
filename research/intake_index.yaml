@@ -272308,3 +272308,479 @@
     2026-10-20 second reader (independent agent): re-find 6/6; support yes 6 / partial 0 / no 0; corrections applied: none required; remaining disagreements carried to the Stage-3 plan: none
 
     '
+- id: intake-2116
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepInfer
+  source_type: repo
+  title: 'DeepInfer: DeepSeek''s production inference framework for DeepSeek-V4.1-Flash (DSpark confidence-scheduled verification, SWA bounded replay, async scheduler, EPLB, FP4 KV)'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - kv_cache
+  - moe_optimization
+  - quantization
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - DeepSeek-AI
+  key_claims:
+  - 'The open release is the engine DeepSeek says powers its V4.1-Flash service, but only offline inference: the KV cache system, VE/prefill/decode disaggregation and DP load balancing are stated as not included (README "Required for a complete inference service").'
+  - 'DSpark speculative decoding uses variable-length verification: a confidence head predicts per-draft-token acceptance, the drafter emits 5 tokens, and the scheduler verifies the prefix subset that maximizes expected effective throughput against a profiled hardware throughput curve (doc/inference_deployment_qa.md, Speculative decoding).'
+  - 'SWA bounded replay recomputes only the last 128 tokens with attention truncated to the replayed segment (an approximate SWA KV), making recompute cost constant in context length; the decoder-side variant recomputes only the prompt tail in the decoder layers and is said to nearly halve prefill compute (Q&A, KV cache hits and recomputation; README YOCO env vars).'
+  - 'Asynchronous zero-overhead scheduling overlaps CPU schedule/post-process of step N+1/N-1 with device forward/sample of step N; with DSpark the per-request verify lengths are recomputed on device because step-N confidence is not yet on the host (Q&A, Asynchronous scheduling).'
+  - 'Prefill chunk size is solved per step from a time budget with a fitted quadratic cost model cost(q, c) (q new tokens, c computed prefix), and decode routing balances request count against total KV length (Q&A, Data-parallel load balancing).'
+  - 'EPLB keeps redundant replicas of hot experts, re-assigned from windowed load statistics (Q&A, Expert-parallel load balancing).'
+  - 'Low precision: main KV FP4 (per-16 e4m3 scale), indexer KV MXFP4, routed experts MXFP4, SWA KV in an MXFP8 format (Q&A, Low-precision computation; SWA KV cache).'
+  - 'Batch-invariant inference and deterministic sampling are offered behind DEEPINFER_BATCH_INVARIANT=1 (NVIDIA only per README).'
+  techniques:
+  - DSpark confidence-scheduled variable-length verification
+  - SWA bounded replay (encoder and decoder variants)
+  - YOCO / causal encoder-decoder prefill truncation
+  - zero-overhead asynchronous batch scheduling
+  - time-budgeted prefill chunk sizing from a fitted cost model
+  - EPLB redundant hot-expert replication
+  - FP4 / MXFP4 / MXFP8 KV and expert formats
+  - batch-invariant kernels and deterministic sampling
+  - asynchronous structured-output grammar compilation
+  reported_results:
+  - 'Vendor-reported (Q&A table, EP64/DP64 estimate): dynamic-length verification cuts verified draft tokens per step from 5.00 to 3.2-4.4 with accepted length 3.29 vs 3.20, +4-7% throughput near 60 sequences/rank, and -1.5% at 16 sequences/rank. UNVERIFIED (stage 1).'
+  - 'Vendor-reported: a single cluster serves 155 trillion tokens/day. UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - kv-prefix-fork-and-paged-attention.md
+    - speculative-decoding-mtp-refresh.md
+    - v9-kernel-per-request-speculative-params.md
+    - sarathi-serve-cpu-evaluation.md
+    - large-moe-expert-parallelism.md
+    - numa-prefill-decode-disaggregation.md
+    - llama-cpp-dsa-contribution.md
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-738
+    - intake-737
+    - intake-1825
+    - intake-2067
+    - intake-2083
+    - intake-472
+    intake_entry_notes:
+    - intake-738 (DSpark paper - adaptive verification depth; the algorithm DeepInfer's varlen verify serves)
+    - intake-737 (DeepSpec - DSpark training framework)
+    - intake-1825 (DeepSeek-V4-Flash on gfx90a - port precedent on our GPU class)
+    - intake-2067 (llama.cpp SWA checkpoints - our analogue of the SWA state store)
+    - intake-2083 (SWA checkpoints store only non-masked cells)
+    - intake-472 (Mooncake - KVCache-centric disaggregation; DeepInfer's store design is a sibling)
+  recommended_actions:
+  - 'Operator-review candidate: dive the DSpark varlen-verify scheduler and map it onto our draft-dspark (DS41) and DFlash2 (27B, np4) verify widths.'
+  - 'Operator-review candidate: dive SWA/decoder bounded replay and price it against the DS41 port prefill path and the KPF prefix-fork hit policy.'
+  - 'Operator-review candidate: dive the scheduler (async overlap, cost-model chunking, decode KV-length balancing) for llama-server and orchestrator analogues.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (2026-10-20): cloned https://github.com/deepseek-ai/DeepInfer --depth 1 at 774ce244b87cc0eb8d4b94ab9f5de2ab22049f01 (2026-10-20T19:03:13+08:00, "update Q&A EN doc") into /mnt/raid0/llm/tmp/dive-deepinfer-main/src; README.md sha256 b55624158ada; read README.md and doc/inference_deployment_qa.md from disk. Code (csrc/, deepinfer/, examples/, tests/) NOT read in Stage 1. Repo created 2026-10-16; 342 files; Apache-2.0; vendor submodules DeepSelect, FlashMLA, DeepEP, DeepGEMM (+Ascend variants). The Q&A builds on a Zhihu post (zhuanlan.zhihu.com/p/2095560295930508953) that returned HTTP 403 to curl and the Zhihu API refused (code 10003); archive.org lookup rate-limited (429) - unverified-in-stage1, not absent. Default checkpoint deepseek-ai/DeepSeek-V4.1-Flash-1017 (HF 1bae0e10), the same finetune EPYC is swapping to (DS41-W). Tier-2b bounded search ("DeepInfer ... limitations"): no third-party discussion found (repo is 4 days old) - provisional. Supported hardware NVIDIA SM100 and Ascend 950 only; per operator steering this is not a decline reason.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'deepseek-ai/DeepInfer @ 774ce244b87c (2026-10-20), README + doc/inference_deployment_qa.md'
+  reader_should_conclude: 'Unverified - do not cite any figure or mechanism until a Stage-2 dive reads the code.'
+- id: intake-2117
+  arxiv_id: '2609.19969'
+  url: https://arxiv.org/abs/2609.19969
+  source_type: paper
+  title: 'DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression'
+  categories: [kv_cache, inference_serving, moe_optimization, quantization, speculative_decoding, memory_augmented, context_extension]
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors: ['DeepSeek-AI']
+  key_claims:
+  - 'A multimodal MoE with a stated 552B backbone parameters and up to 1M-token context; a Causal Encoder-Decoder (CED) layout activates fewer parameters per token in prefill than in decode.'
+  - 'CED is YOCO-inspired: the bottom half of the layers is a causal encoder, and decoder-layer global KV is projected from the encoder-boundary hidden state, so prefill computes only the encoder half for global KV; SWA KV is still per-layer, so decoder SWA KV needs replay.'
+  - 'Compressed Sparse Attention 2 (CSA2) statically assigns Full / Reindex / Reuse modes per layer, reusing global KV, indexer K and top-k indices across layers.'
+  - 'SWA Bounded Replay rebuilds SWA KV approximately from only the last window of tokens, so SWA KV no longer has to be persisted; the decoder variant leans on prior work that the SWA effective receptive field is small.'
+  - 'Main KV is trained with FP4 QAT (E2M1 values, one E4M3 scale per 16 channels, no global scale) and dequantized before attention, i.e. a storage saving rather than an FP4-matmul requirement.'
+  - 'DSpark is the speculative decoder (3 blocks, 128-token sliding window, 5 draft positions per pass, Markov and confidence heads) with a scheduler choosing per-request verification length from profiled throughput curves.'
+  techniques: [Causal Encoder-Decoder (YOCO-style), CSA2 cross-layer KV/index reuse, SWA Bounded Replay, FP4 main-KV QAT, DSpark confidence-scheduled verification, Engram, Single-Pass mHC, tiered persistent KV]
+  reported_results:
+  - 'Vendor-reported: global KV 890 bytes/token, about 1/4 of DeepSeek-V4-Flash; persistent KV about 1/8 of V4-Flash with bounded replay. UNVERIFIED (stage 1).'
+  - 'Vendor-reported: CED removes nearly half of prefill compute at comparable quality. UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [deepseek-v41-flash-evaluation.md, llama-cpp-dsa-contribution.md, kv-prefix-fork-and-paged-attention.md, kv-unified-stack-rollout.md, speculative-decoding-mtp-refresh.md, engram-conditional-memory.md, tq3-quantization-evaluation.md]
+    experiments: []
+    intake_entries: [intake-599, intake-738, intake-2116]
+    intake_entry_notes:
+    - 'intake-599 (Engram, arXiv 2601.07372; the paper integrates Engram)'
+    - 'intake-738 (DSpark paper; the report describes the DSpark module)'
+    - 'intake-2116 (DeepInfer, the serving engine implementing this report)'
+  recommended_actions:
+  - 'Operator-review candidate: audit the DS41 llama.cpp port KV layout and prefill path against CED and CSA2 mode assignment.'
+  - 'Operator-review candidate: evaluate SWA Bounded Replay as the restore policy for SWA layers in prefix-cache save/restore.'
+  - 'Operator-review candidate: evaluate FP4 (E2M1 + E4M3/16) main-KV storage with dequant-before-attention for DS41 KV memory.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Bounded search 2026-10-20 ("DeepSeek V4.1 Flash FP4 KV cache quality degradation SWA bounded replay criticism"): no independent ablation of FP4 KV or of the 128-token replay approximation found; secondary coverage only restates the report (provisional).'
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): arxiv.org/abs v1 (submitted 2026-09-17) and arxiv.org/html/2609.19969 extracted to /mnt/raid0/llm/tmp/dive-deepinfer-main/s1/ds41paper/text.txt; arXiv PDF sha256-12 0cfdda19c8e1 (1,663,475 B). The local copy /mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash/DeepSeek_V41_Tech_Report.pdf has sha256-12 ba68e2e40408 (1,809,802 B) and differs from the arXiv PDF; not read. Not read in detail: persistent KV management, CSA2 sections, evaluation tables, post-training. The 552B backbone figure conflicts with the 763.2B in the DS41 handoff artifact table; not reconciled (Engram tables/vision/MTP may account for it). Previously surfaced and declined in intake-1825''s Stage-2c gate (2026-09-26) and routed to a later DS41-focused intake: this is that intake.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'arXiv 2609.19969v1 (2026-09-17), retrieved 2026-10-20'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2118
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/deepseek-recipe
+  source_type: repo
+  title: 'deepseek-recipe: protocol conversion, prompt rendering and tokenization for DeepSeek V4/V4.1'
+  categories: [inference_serving, tool_implementation, agent_architecture]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors: ['DeepSeek-AI']
+  key_claims:
+  - 'Rust libraries with Python bindings that convert Messages / Chat Completions / Responses requests into one Conversation format, render DeepSeek V4/V4.1 prompts, encode to token ids, and parse complete or streamed model output back into protocol responses.'
+  - 'The caller supplies inference, tool execution and HTTP transport; the library runs no model.'
+  - 'Handles thinking mode, reasoning effort, tool calls, deferred tool loading (V4.1), structured-output constraints and images.'
+  - 'Sets default max_tokens by mode when unset and checks prompt plus max_tokens against the context limit.'
+  - 'The README warns that the default image fetcher connects to any address and advises a destination filter (SSRF).'
+  techniques: [protocol-to-Conversation normalization, V4.1 prompt rendering, streamed output parsing, constrained-decoding constraint selection]
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: [deepseek-v41-flash-evaluation.md]
+    experiments: []
+    intake_entries: [intake-2116]
+    intake_entry_notes: ['intake-2116 (DeepInfer Q&A describes recipe''s special-token-injection prevention and segmented parallel tokenization)']
+  recommended_actions:
+  - 'Operator-review candidate: diff its V4.1 prompt rendering and thinking/effort handling against what our DS41 serving path renders (DS41-T3a), now that the HF release ships no chat template.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): raw README (sha256-12 e3ea4bd6b3a3) + GitHub API; HEAD 935817c66f5d (pushed 2026-10-19), MIT. Not read: docs/tokenizer.md, docs/streaming.md, source. The injection-prevention and segmented-tokenization mechanisms described in the DeepInfer Q&A were not visible in the README. No contradiction search run (repo, no empirical claims).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'deepseek-ai/deepseek-recipe @ 935817c66f5d (2026-10-19), README only'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2119
+  arxiv_id: '2602.21548'
+  url: https://arxiv.org/abs/2602.21548
+  source_type: paper
+  title: 'DualPath: Breaking the Storage Bandwidth Bottleneck in Agentic LLM Inference'
+  categories: [inference_serving, kv_cache, agent_architecture]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: [Yongtong Wu, Shaoyuan Chen, Yinmin Zhong, Rilin Huang, Yixuan Tan, Wentao Zhang, Liyue Zhang, Shangyan Zhou, Yuxuan Liu, Shunfeng Zhou, Mingxing Zhang, Xin Jin, Panpan Huang]
+  key_claims:
+  - 'Multi-turn agentic inference is I/O-bound on KV-cache loading; in disaggregated serving the prefill engines'' storage NICs saturate while decode engines'' sit idle.'
+  - 'DualPath adds a storage-to-decode loading path, then moves KV to the prefill engine over the compute network, alongside the usual storage-to-prefill path.'
+  - 'A traffic manager isolates KV traffic from latency-critical model communication.'
+  - 'An adaptive scheduler balances load with engine groups, token count as the load proxy and disk read queue length; inter-engine and intra-engine scheduling are described.'
+  techniques: [dual-path KV loading, decode-side storage bandwidth reuse, traffic isolation, token-count load balancing with queue awareness]
+  reported_results:
+  - 'Author-reported: offline throughput up to 1.87x and online 1.96x without SLO violation on the authors'' system. UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [numa-prefill-decode-disaggregation.md, kv-prefix-fork-and-paged-attention.md, deepseek-v41-flash-evaluation.md]
+    experiments: []
+    intake_entries: [intake-472, intake-2116]
+    intake_entry_notes:
+    - 'intake-472 (Mooncake; DualPath cites it as related work)'
+    - 'intake-2116 (DeepInfer Q&A cites DualPath''s scheduling for its decode load balancer)'
+  recommended_actions:
+  - 'Operator-review candidate: pin the decode-side group scheduling algorithm the DeepInfer Q&A cites and judge it for np-slot assignment and CPU/GPU request routing.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No bounded contradiction search run beyond the Stage-1 discovery search (2026-10-20); provisional.'
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): abs + arxiv.org/html/2602.21548v2, text at /mnt/raid0/llm/tmp/dive-deepinfer-main/s1/dualpath/text.txt (abs.html sha256-12 65b62440aa87, html ee83c3d1c2a6). Read: abstract, motivation, Algorithm 1 (inter-PE scheduling), scale-test excerpt. Not read: decode-engine scheduling, intra-engine scheduling, ablations. The literal phrase "intra-group" does not occur in the extracted text. Relevance raised from the analyst''s low to medium by main: the multi-node hardware does not match, but the decode-routing heuristic is what the DeepInfer Q&A cites and agentic KV reload from storage is an EPYC concern (KPF).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'arXiv 2602.21548v2, retrieved 2026-10-20'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2120
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepSelect
+  source_type: repo
+  title: 'DeepSelect: TopK kernels for DeepSeek Sparse Attention (DSA) and samplers'
+  categories: [hardware_optimization, inference_serving, local_inference]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: [Yi Qian, Shengyu Liu, Yichen Li]
+  key_claims:
+  - 'A TopK kernel for the DSA lightning indexer and for samplers on NVIDIA CUDA and Huawei Ascend, claimed 2x-20x faster than torch.topk.'
+  - 'Indexer case: bf16 input, any batch/row length, topk up to 4096, tuned for topk=512; sampler case: fp32 over a ~128K vocabulary.'
+  - 'Measured as effective memory bandwidth, since TopK does no floating-point work.'
+  - 'API supports per-row end bounds for variable-length rows, index-only output and NaN trapping.'
+  techniques: [bandwidth-oriented TopK, variable-length row bounds, index-only output]
+  reported_results:
+  - 'README prose only: 2x-20x vs torch.topk; hardware and shapes not stated in text. UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [llama-cpp-dsa-contribution.md, deepseek-v41-flash-evaluation.md, gpu-acceleration-path.md]
+    experiments: []
+    intake_entries: [intake-2116]
+    intake_entry_notes: ['intake-2116 (DeepInfer vendors DeepSelect as a submodule)']
+  recommended_actions:
+  - 'Operator-review candidate: read the algorithm deep-dive and judge a CPU (AVX-512) / HIP port for the DS41 indexer top-k after profiling its share of decode.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): raw README (sha256-12 70489aa4ce1e) + GitHub API; HEAD bfa4507d935f (pushed 2026-09-30), MIT. Not read: docs/DeepSelect-deep-dive.md, kernels, perf charts.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'deepseek-ai/DeepSelect @ bfa4507d935f (2026-09-30), README only'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2121
+  arxiv_id: null
+  url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017
+  source_type: repo
+  title: 'DeepSeek-V4.1-Flash-1017 model card (the checkpoint EPYC is swapping DS41 to)'
+  categories: [local_inference, agent_architecture, benchmark_methodology]
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: already_integrated
+  ingested_date: '2026-10-20'
+  authors: ['DeepSeek-AI']
+  key_claims:
+  - 'Described as a minor update to DeepSeek-V4.1-Flash with gains in reasoning, coding, agentic and visual benchmarks and shorter outputs; MIT licensed.'
+  - 'Vendor benchmark table compares 1017 with the September release and other models.'
+  - 'Ships no Jinja chat template; a Python reference encoder is in encoding/ and the card points to deepseek-recipe for production use.'
+  - 'Recommends temperature 1.0, top_p 1.0, 1M context and max_tokens of at least 256K.'
+  techniques: [finetune, reference prompt encoder, recommended sampling settings]
+  reported_results:
+  - 'Vendor-reported benchmark scores (card table). UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [deepseek-v41-flash-evaluation.md]
+    experiments: []
+    intake_entries: [intake-2116, intake-2118]
+    intake_entry_notes: ['intake-2116 (DeepInfer default checkpoint)', 'intake-2118 (deepseek-recipe, the encoder the card points to)']
+  recommended_actions:
+  - 'Operator-review candidate: reconcile the DS41 serving recipe''s sampling defaults with the card.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent + main, 2026-10-20): raw README.md (5,231 B) fetched by main and subagent; HF API sha 1bae0e1088993b9b82de08f59de5be5a34e42170, lastModified 2026-10-17. The swap itself is already tracked in deepseek-v41-flash-evaluation.md §W (DS41-W1..W8). Not read: encoding/, inference/, config.json.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'HF deepseek-ai/DeepSeek-V4.1-Flash-1017 @ 1bae0e10 (2026-10-17), README only'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2122
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/FlashMLA
+  source_type: repo
+  title: 'FlashMLA: MLA / DSA sparse attention kernels with FP8 and FP4 KV formats (DeepSeek-V4.1)'
+  categories: [inference_serving, kv_cache, hardware_optimization, quantization]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: [Jiashi Li, Shengyu Liu, Yuanhang Sun]
+  key_claims:
+  - 'Token-level sparse attention kernels for prefill and decode power DSA; decode runs on a quantized KV cache (FP8 or FP4), bf16 KV unsupported.'
+  - 'V4.1 head_dim 512 KV formats are detected from bytes per token: a 528-byte e4m3 + e8m0 format and a 288-byte fp4 (e2m1 + e4m3 per 16) format.'
+  - 'Sparsity is passed as an indices tensor (page*size+offset, -1 invalid) without a block table; prefill exposes an attention sink and per-query topk length.'
+  - 'A fused Q-norm / RoPE / attention / inverse-RoPE / cast-to-FP8 kernel needs offline weight permutation.'
+  - 'Backends are NVIDIA SM100/SM103 and Ascend 950; AMD is only a community pointer to ROCm aiter.'
+  techniques: [token-level sparse attention, FP8/FP4 block-scaled KV, attention sink, fused norm-RoPE-attn-RoPE-cast with weight permutation]
+  reported_results:
+  - 'README TFLOPS figures on B200 / Ascend 950. UNVERIFIED (stage 1); not EPYC-relevant as numbers.'
+  cross_references:
+    chapters: []
+    handoffs: [llama-cpp-dsa-contribution.md, deepseek-v41-flash-evaluation.md, kv-prefix-fork-and-paged-attention.md, gpu-acceleration-path.md, autokernel-all-devices-all-dimensions.md]
+    experiments: []
+    intake_entries: [intake-497, intake-2116]
+    intake_entry_notes: ['intake-497 (TileLang puzzles; AMD authoring route)', 'intake-2116 (DeepInfer vendors FlashMLA)']
+  recommended_actions:
+  - 'Operator-review candidate: use the 528 B / 288 B KV layouts and the indices contract as reference semantics for DS41 KV-quant and DSA work; price software dequant on CPU/MI210.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): raw README (22,629 B, sha256-12 0a3d44311928) + GitHub API; HEAD 0f11e178da1f (pushed 2026-10-15), MIT. Not read: docs/, kernel source, tests. The DeepInfer Q&A claim (internal FlashMLA has one extra SASS optimization, 5-10% faster decode) is not in this README.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'deepseek-ai/FlashMLA @ 0f11e178da1f (2026-10-15), README only'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2123
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepGEMM
+  source_type: repo
+  title: 'DeepGEMM: FP8/FP4 GEMM, Mega MoE fused kernel, MQA indexer logits (DeepSeek)'
+  categories: [moe_optimization, quantization, hardware_optimization, inference_serving]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: [Chenggang Zhao, Zhean Xu, Liang Zhao, Jiashi Li, Chenhao Xu, Anyi Xu, Shengyu Liu, Kexing Zhou, Kuai Yu]
+  key_claims:
+  - 'Mega MoE is one kernel fusing EP dispatch, linear 1, SwiGLU, linear 2 and EP combine, overlapping NVLink communication with compute.'
+  - 'Grouped GEMMs come in a contiguous layout (prefill) and a masked layout for graph-captured decode where per-expert counts are only known on device.'
+  - 'Includes lightning-indexer MQA logits kernels (non-paged prefill and paged decode).'
+  - 'All kernels are runtime-JIT compiled; NVIDIA SM90/SM100 only in this repo.'
+  techniques: [Mega MoE fusion, contiguous and masked grouped GEMM, FP8xFP4 GEMM, MQA indexer logits, runtime JIT]
+  reported_results:
+  - 'No Mega MoE speedup figure in the README (benchmarks referenced to PR #316, not read). UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [large-moe-expert-parallelism.md, deepseek-v41-flash-evaluation.md, llama-cpp-dsa-contribution.md, autokernel-all-devices-all-dimensions.md]
+    experiments: []
+    intake_entries: [intake-2116]
+    intake_entry_notes: ['intake-2116 (DeepInfer vendors DeepGEMM; Q&A recommends Mega MoE)']
+  recommended_actions:
+  - 'Operator-review candidate: judge the Mega MoE fusion idea (gather, GEMM1, SwiGLU, GEMM2, scatter in one pass) for CPU MoE decode and the masked grouped GEMM for MI210 graph capture.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): raw README (13,257 B, sha256-12 111252116545) + GitHub API; HEAD 5081f8513af5 (pushed 2026-10-20), MIT. Not read: PRs #304/#316/#432/#462, kernel source, tests/test_mega_moe.py.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'deepseek-ai/DeepGEMM @ 5081f8513af5 (2026-10-20), README only'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2124
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/TileKernels
+  source_type: repo
+  title: 'TileKernels: TileLang kernel library (MoE routing, FP8/FP4 quant, Engram gate, mHC, RoPE)'
+  categories: [hardware_optimization, moe_optimization, quantization, memory_augmented]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors: [Xiangwen Wang, Chenhao Xu, Huanqi Cao, Luotian Huang, Yuxuan Zhou, Weilin Zhao, Rui Tian, Anyi Xu, Fucong Dai, Kuai Yu, Ruifan Xu, Yi Qian, Shengyuan Jia, Chenggang Zhao, Wei Zhang, Lei Wang]
+  key_claims:
+  - 'Dozens of TileLang kernels for training and inference, said to approach hardware limits (no numbers).'
+  - 'Families: MoE top-k routing, FP8/FP4 cast/dequant and fused SwiGLU+quant, Engram gating fwd/bwd, mHC Sinkhorn mixing, RoPE, RNG, plus PyTorch reference implementations.'
+  - 'README lists CUDA (SM90/SM100) and Ascend 950 backends; HIP/ROCm is not mentioned.'
+  techniques: [TileLang DSL kernels, fused SwiGLU+quant, Engram gate kernels, Sinkhorn mHC, PyTorch reference implementations]
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: [engram-conditional-memory.md, agentic-rocm-kernel-authoring.md, autokernel-all-devices-all-dimensions.md, deepseek-v41-flash-evaluation.md, gpu-acceleration-path.md]
+    experiments: []
+    intake_entries: [intake-497, intake-2029, intake-2116]
+    intake_entry_notes: ['intake-497 (TileLang puzzles)', 'intake-2029 (tile-ai/tilelang, the DSL)', 'intake-2116 (DeepInfer uses TileLang ops)']
+  recommended_actions:
+  - 'Operator-review candidate: use the PyTorch reference implementations (Engram gate, mHC, FP4 quant) as bit-level references for the DS41 port; judge a gfx90a TileLang build route.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): raw README (4,178 B, sha256-12 e0fbe098c9b1) + GitHub API; HEAD c1cf914a82e6 (pushed 2026-10-14), MIT. Not read: kernel sources, tests.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'deepseek-ai/TileKernels @ c1cf914a82e6 (2026-10-14), README only'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2125
+  arxiv_id: '2405.05254'
+  url: https://arxiv.org/abs/2405.05254
+  source_type: paper
+  title: 'You Only Cache Once: Decoder-Decoder Architectures for Language Models'
+  categories: [kv_cache, inference_serving, context_extension, ssm_hybrid]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors: [Yutao Sun, Li Dong, Yi Zhu, Shaohan Huang, Wenhui Wang, Shuming Ma, Quanlu Zhang, Jianyong Wang, Furu Wei]
+  key_claims:
+  - 'A cross-decoder stacked on a self-decoder: the self-decoder uses constant-memory attention and produces one global KV cache that every cross-decoder layer reuses.'
+  - 'KV memory scales as O((N+L)D) vs O(LND) for a Transformer.'
+  - 'Prefill can exit before the cross-decoder without changing the output, which the paper says roughly halves prefill even at short context.'
+  - 'A 3B model trained from scratch is reported competitive with same-size Transformers and extended to 1M context.'
+  - 'A pretraining architecture: it cannot be retrofitted to an existing checkpoint.'
+  techniques: [decoder-decoder architecture, shared global KV cache, prefill early exit, gated retention, sliding-window self-decoder]
+  reported_results:
+  - 'Author-reported H100 memory/prefill/throughput gains at 32K-1M context. UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [kv-unified-stack-rollout.md, kv-prefix-fork-and-paged-attention.md, deepseek-v41-flash-evaluation.md]
+    experiments: []
+    intake_entries: [intake-2117]
+    intake_entry_notes: ['intake-2117 (V4.1 report says CED is YOCO-inspired)']
+  recommended_actions:
+  - 'Operator-review candidate: use YOCO''s exact prefill early-exit argument to separate what is exact from what is approximate in the DS41 CED prefill truncation.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Bounded search 2026-10-20: a follow-up (YOCO++, arXiv 2604.13556, seen only via an alphaxiv overview, id not yet resolved) argues routing all cross-decoder layers to one cache can hurt complex reasoning; SambaY (arXiv 2507.06607) reports lower irreducible loss than a YOCO baseline. Secondary/provisional.'
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): abs + arxiv.org/html/2405.05254v2 (sha256-12 b2c5f9cea80f). Not read: appendices, code, gated retention detail. Credibility: NeurIPS 2024 (papers.neurips.cc hit in search) +2, >24 months -1, MSR +1 = 2.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'arXiv 2405.05254v2, retrieved 2026-10-20'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
+- id: intake-2126
+  arxiv_id: '2408.12757'
+  url: https://arxiv.org/abs/2408.12757
+  source_type: paper
+  title: 'NanoFlow: Towards Optimal Large Language Model Serving Throughput'
+  categories: [inference_serving, hardware_optimization, kv_cache]
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: [Kan Zhu, Yufei Gao, Yilong Zhao, Liangyu Zhao, Gefei Zuo, Yile Gu, Dedong Xie, Tian Tang, Qinyu Xu, Zihao Ye, Keisuke Kamahori, Chien-Yu Lin, Ziren Wang, Stephanie Wang, Arvind Krishnamurthy, Baris Kasikci]
+  key_claims:
+  - 'Argues end-to-end batched LLM serving is compute-bound for common workloads, via a cost model and an optimal-throughput bound.'
+  - 'Splits a batch into nano-batches and overlaps compute-, memory- and network-bound operations on one device, chosen by an automated pipeline search.'
+  - 'Forms the batch for iteration i+1 before iteration i finishes, so the scheduler cannot see EOS from iteration i (one wasted step per finished request).'
+  - 'Offloads KV of running requests to host memory/SSD layer by layer for multi-round chat.'
+  techniques: [nano-batching, intra-device operation overlap, asynchronous batch formation, per-layer KV offload]
+  reported_results:
+  - 'Author-reported: 1.91x average throughput vs vLLM/DeepSpeed-FastGen/TensorRT-LLM on LLaMA-2-70B (8xA100). UNVERIFIED (stage 1).'
+  cross_references:
+    chapters: []
+    handoffs: [sarathi-serve-cpu-evaluation.md, kv-unified-stack-rollout.md, numa-prefill-decode-disaggregation.md]
+    experiments: []
+    intake_entries: [intake-2116]
+    intake_entry_notes: ['intake-2116 (DeepInfer cites NanoFlow for its asynchronous scheduler)']
+  recommended_actions:
+  - 'Operator-review candidate: measure the inter-step host gap of llama-server on the MI210 before considering asynchronous batch formation.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Bounded search 2026-10-20: no independent reproduction found; the paper itself concedes nano-batch duplication raises weight-loading I/O, hidden only when the workload is compute-bound (provisional). Published at OSDI 2025 (usenix.org hit).'
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (subagent, 2026-10-20): abs + arxiv.org/html/2408.12757v2 (sha256-12 7c567bdff8f1). Not read: evaluation 6.3-6.6, pipeline search detail. Credibility: OSDI 2025 +2, first version >24 months -1, UW systems group +1 = 2.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'arXiv 2408.12757v2, retrieved 2026-10-20'
+  reader_should_conclude: 'Unverified - do not cite any figure until a Stage-2 dive.'
