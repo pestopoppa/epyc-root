@@ -564,7 +564,7 @@ _FILE_SOURCES = (
     "qwen4exp-quality-measurement",
     "evidence-durability",
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
-    "chat-template-ab", "occ1", "tale-budget", "review-f1", "opencode-shell",
+    "chat-template-ab", "kv-prefix-fork", "occ1", "tale-budget", "review-f1", "opencode-shell",
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
     "mhs-guard-verdicts", "mhs-guard-ops",
