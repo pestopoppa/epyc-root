@@ -755,3 +755,4 @@ rather than smuggled in.
 Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
 
 - [ ] **CH-19 — Screen the dead iqk_moe_fused_up_gate hook as a default-off fused MoE up+gate+SwiGLU node (intake-2123#record, intake-2124#record).** Add a caller in the CPU MUL_MAT_ID path behind a default-0 knob (fix the non-IQK stub signature); gate on MUL_MAT_ID test-backend-ops and decode-logit NMSE; then a same-window ABA on the champion for Qwen3.6-35B-A3B Q8_0 decode (frozen manifest, 5 interleaved pairs, predeclared keep at >= the window floor); drop if within noise.
+  - *(2026-10-20.)* Implemented on `experimental/intake-fixes-20261020` (CH-19 2f5873d60), queued for CPU correctness tests. Gated by an ENV var (`GGML_CPU_FUSED_UPGATE`): before any champion fold this must become an argv/request/metadata switch (ONE-champion rule: no env-only gates; env only as a diagnostic kill switch).
