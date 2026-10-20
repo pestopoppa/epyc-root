@@ -12,7 +12,7 @@ Sources read: orchestrator lane worktree `/mnt/raid0/llm/worktrees/repl-emb-25-o
 
 ## 0. Posture: what was decided, and what the evidence is
 
-- **Operator decision 2026-10-20 (verbatim, relayed by the coordinator):** "accept the extension-only verdict and adopt EmbeddingGemma 2 BF16 @256, hybrid with grep." It ships with the next production kernel upgrade (v11, which folds the EG2 model support), **together with** the stack change and the store migration. Nothing is promoted piecemeal.
+- **Operator decision 2026-10-20 (verbatim, relayed by the coordinator):** "accept the extension-only verdict and adopt EmbeddingGemma 2 BF16 @256, hybrid with grep." **Resolved by the operator ruling of 2026-10-20 (verbatim, relayed by the coordinator): "keep the BM25 hybrid. The adopted configuration is BM25 + EG2 @256 fused with `rrf_fuse`, which is the measured arm, recall@5 0.676. Grep stays the baseline, not a fusion leg."** The adopted configuration is therefore **BM25 + EG2 @256 (FP16 storage), RRF** (FP16 here is the STORED vector format only; EG2 inference stays BF16 and is never run in FP16). It ships with the next production kernel upgrade (v11, which folds the EG2 model support), **together with** the stack change and the store migration. Nothing is promoted piecemeal.
 - **The registered arms FAILED the 2.1 kill rule** (hybrid-BGE -0.058, hybrid-Granite +0.055 vs grep, margin 0.10). EG2 @256 hybrid passes only as an **extension-only** arm (+0.139 vs grep, CI [0.087, 0.191], n = 346). This package changes which model the pool serves. It does **not** flip `repl_embedding_pool` or `context_search`, which stay default OFF (REPL-EMB-2.1 rule; no operator order to flip them).
 - **Caveat from the operator record, carried unsoftened.** The EG2 gain rests mostly on the synthetic stratum (LLM-written queries, which favour lexical arms, so the bias runs against EG2), and **EG2 hybrid trails BGE and Granite hybrid on probe45 (45 questions)**. A re-check is scheduled for when >= 75 real REPL traces accrue (task REPL-EMB-2.8; the repo has none persisted today).
 
@@ -24,7 +24,7 @@ Sources read: orchestrator lane worktree `/mnt/raid0/llm/worktrees/repl-emb-25-o
   | pooled (n = 346) | 0.538 | 0.480 | 0.592 | 0.676 (+0.139, CI [+0.087, +0.191]) |
 
   Leakage-flagged rows were excluded from the primary set; they lift lexical arms about 21 points (handoff 2.2 result note).
-- **What "hybrid" was in the measurement:** the shipped `ContextSearchIndex.search` = BM25 + dense fused with `rrf_fuse` (`FREEZE-RULES.md`: "hybrid (shipped rrf_fuse with BM25)"). `grep` was the lexical baseline L the hybrid was compared against, **not a fusion leg**. See N-4.
+- **What "hybrid" was in the measurement:** the shipped `ContextSearchIndex.search` = BM25 + dense fused with `rrf_fuse` (`FREEZE-RULES.md`: "hybrid (shipped rrf_fuse with BM25)"). `grep` was the lexical baseline L the hybrid was compared against, **not a fusion leg**; the operator confirmed this reading (2026-10-20): the adopted configuration is BM25 + EG2 @256 (FP16 storage), RRF. N-4 is closed (below).
 - **Measured vs not.** Parity of the EG2 BF16 GGUF against sentence-transformers FP32 is measured (§8). Recall is measured at **800-char chunks only**. Throughput as served by llama-server, decode interference (G1), memory per instance, behaviour at inputs above 459 tokens, and recall at larger chunks are **not measured**. Every such number below is marked.
 
 ---
@@ -336,7 +336,7 @@ If the stack is already up for a reason other than the v11 cut, the embedder-onl
 - **N-1 Sign** the v11 ratification with this package attached. Nothing here is signable until the patch set, the migration tool and the retrain list exist.
 - **N-2 G1 thresholds for the EG2 pool** (§8): recommended non-inferiority to the accepted BGE post-cap values, hard floor 0.86, absolute 0.95/0.90 reported. Alternative: the Phase 0 bands (0.95 / 0.90), which the incumbent itself does not meet.
 - **N-3 Window:** a quiet period with no autokernel CPU arm and no bench claim on 136-183, inside the v11 full-stack window.
-- **N-4 "Hybrid with grep".** The measured arm is BM25 + dense (RRF); grep was the baseline. Is that what was meant? If you meant grep hits as the lexical leg, that arm was **not measured**, and one extra offline arm on the frozen set (correctness work, any window) must precede the signature. Default assumed here: the measured arm. This blocks nothing else.
+- **N-4 "Hybrid with grep" - NOT NEEDED (closed by the operator, 2026-10-20).** Operator ruling, verbatim: "keep the BM25 hybrid. The adopted configuration is BM25 + EG2 @256 fused with `rrf_fuse`, which is the measured arm, recall@5 0.676. Grep stays the baseline, not a fusion leg." The extra grep-fused offline arm before signature is not required; the post-freeze approximate grep-fused supplementary (non-deciding) stays on record under REPL-EMB-2.2. Adopted configuration: BM25 + EG2 @256 (FP16 storage), RRF.
 - Chunk size (3200 now, ~7000 for a literal 2048-token chunk) is **not** an operator item: decided by G-C1 with 800 as the fallback.
 
 ## 14. Not in this change (h), and the not-measured ledger
