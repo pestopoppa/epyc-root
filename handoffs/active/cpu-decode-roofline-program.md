@@ -746,6 +746,18 @@ argument, and it costs about a second.
       promoted. Do not close it by citing champion-3's own G2-CONC run if the artifact changes.
       Run it with the `coherence_gate` procedure (tier 0 paired byte-identity vs the anchor first), not
       `classify.py` (CLS-RECT, 2026-10-04).
+      **2026-10-20 — operator ruling resolves the anchor half:** *"focus on UD-IQ4 XS instead. This will allow
+      us to reclaim more space."* The anchor is now the served UD-IQ4_XS 3-shard set (RECLAIM-2's keeper). The
+      recipe `scripts/lib/qwen38_flash_next_recipe.py` (research, rev 2026-10-20) pins `TRUNK_SHARDS` = UD and
+      keeps the uniform file as `MEASURED_TRUNK`, the identity of every past headline. `IQ4_XS-uniform` is
+      **retired**, and its deletion is the operator's own action. Two corrections to the precondition above:
+      the file is **not on HF**, and it is a quant-from-quant that `llama-quantize --allow-requantize <UD
+      shard 1> … IQ4_XS` (build 10151, `requant.log`) regenerates; bit-identity of a regeneration is unproven.
+      **Consequence: the CPU-decode measurement epoch resets.** Every INF-70 headline (23.16, 33.370, 43.281 /
+      27.893) is a uniform-file number. UD streams 5.839 GB/token against 4.166 (+40%), and OP-32 measured
+      it −13% decode, so a re-bench on the served artifact is expected to read lower. That gap is an artifact
+      fact, not a regression. Remaining under this row: the champion-kernel promotion half, plus a G2-CONC and
+      speed re-baseline on the UD pair.
 
 **★ SEQUENCING SETTLED BY THE OPERATOR 2026-09-05: "I'm not promoting to production any time soon —
 certainly not before we finish this optimization study thoroughly."** So there is **no promotion window to
@@ -2028,7 +2040,8 @@ config). None of these is a closed NO-GO.
 **RECLAIM-2 — 2026-09-15 (operator ruling; resolves OP-37).** KEEP `UD-IQ4_XS` (the artifact the INF-67 CPU
 fused-decoder megakernel was developed and benched on, and the source of the uniform requant) and KEEP
 `IQ4_XS-uniform` (recipe-pinned champion/era anchor, sha256 `4bfb9849…c9f8957`, re-hashed OK 2026-09-15; not
-published on HF, so not re-downloadable). DELETED, operator-directed: `IQ4_XS-uniform-gateup-r16` (98,267,079,776 B)
+published on HF, so not re-downloadable). **Superseded 2026-10-20 (operator): `IQ4_XS-uniform` RETIRED, keeper UD-IQ4_XS; see
+PROD-3.** DELETED, operator-directed: `IQ4_XS-uniform-gateup-r16` (98,267,079,776 B)
 and `IQ4_XS-uniform-r16` (98,267,083,136 B), both regenerable from `IQ4_XS-uniform` via fork
 `experimental-inf70-b3` `dd27ec3bb` + `-b4` `49a1255` / `-b4r2` `a0907a8bc`; plus the recipe-REJECTED
 self-contained head `MTP/mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B, on HF). Pre-checks: zero mmaps/fds,

@@ -97,14 +97,17 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
     reference has a KLD floor of about 0.022–0.027.
   - Step 2: imatrix, then quantize 1–2 arms: IQ4_KS or IQ3_K gate/up, IQ5_KS/IQ4_KS dense, IQ4_NL down (640-wide).
     About 85–100 GB per arm.
-  - Step 3: in the same ik binary, measure UD-IQ4_XS, IQ4_XS-uniform and the new arm(s): `--kl-divergence` (mean KLD,
+  - Step 3: in the same ik binary, measure UD-IQ4_XS and the new arm(s) (IQ4_XS-uniform dropped: retired 2026-10-20, keeper UD-IQ4_XS): `--kl-divergence` (mean KLD,
     same-top-1), PPL, `llama-bench -p 5,256 -n 128` r3, and the serving shape (MTP d4, verify N=5). Compare ratios
     within ik only, never absolute numbers across trees.
   - Budget: about 3–5 CPU-window hours excluding the download (imatrix ≤ 30 min, quantize ~0.5–1.5 h per arm, KLD
     ~7 min per file plus base, bench ~25 min), in a DS41 pause window with DS41 unloaded. Peak disk ≈ 188 + 2×95 +
     25 (logits) ≈ 400 GB; delete Q8_0 after the base logits are saved.
   - **Justifiable means all of:** the IQ\*_K arm is ≥ +8% decode vs UD at the serving shape; ≥ +3.4–4.5% (the admission
-    floor) over IQ4_XS-uniform, otherwise the zero-port file swap dominates (INF-70 XFER-3); mean KLD ≤ UD's and
+    floor) over IQ4_XS-uniform, otherwise the zero-port file swap dominates (INF-70 XFER-3) — **criterion
+    retired 2026-10-20**: the operator retired the uniform file (keeper UD-IQ4_XS), which takes the zero-port
+    swap off the table, and the 2026-10-04 EXL3 window measured it at +17.8% PPL vs UD
+    (`exl3-cpu-mi210-implementation.md`, EXL3-6c5), so it is no quality-equivalent competitor. Mean KLD ≤ UD's and
     same-top-1 within 1 pp; a paired per-item task eval no worse than UD. If any fails, the port is closed. If all
     pass, port in `llama.cpp-experimental`: register about 15 types (decide the ID policy first), compile the vendored
     iqk kernels and quantizer, respect the `715383cde` OOB class — 2–4 sessions.

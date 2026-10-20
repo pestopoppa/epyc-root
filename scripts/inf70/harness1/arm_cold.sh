@@ -15,7 +15,15 @@ H=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 OUT=${INF70_RUNS:-/mnt/raid0/llm/tmp/inf70/agents/harness1/runs}
 MTPH=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
 . "$H/sc75_capture.sh"
-TRUNK=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf
+# 2026-10-20: retargeted from the retired IQ4_XS-uniform single file (operator; keeper UD-IQ4_XS)
+# to the production-served UD-IQ4_XS split set, matching the recipe's TRUNK_SHARDS. Numbers from
+# this harness before 2026-10-20 were measured on the uniform file and do NOT compare with new arms.
+# llama-server loads the set from shard 1, but shard 1 is metadata only, so eviction must name all
+# three shards. SC75 identity: the shard-1 `.sha256` sidecar identifies the metadata shard only --
+# set GGUF_SHA256 explicitly if a belief row must pin the tensor shards.
+TRUNK_DIR=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS
+TRUNK_SHARDS=("$TRUNK_DIR"/Qwen3.8-Flash-Next-UD-IQ4_XS-0000{1,2,3}-of-00003.gguf)
+TRUNK=${TRUNK_SHARDS[0]}
 PORT=${PORT:-18499}
 EVICT_GIB=${EVICT_GIB:-58}
 TRIES=${TRIES:-3}
@@ -39,7 +47,7 @@ cores_sampler(){ exec bash "$H/tools/cores_sampler.sh" "$1" "$OUT/$LABEL.coresid
 
 for try in $(seq 1 "$TRIES"); do
   if [ "${EVICT_MODE:-old}" = "targeted" ]; then
-    bash "$H/evict_targeted.sh" "$EVICT_GIB" "$TRUNK" "$MTPH" > "$OUT/$LABEL.evict.$try" 2>&1
+    bash "$H/evict_targeted.sh" "$EVICT_GIB" "${TRUNK_SHARDS[@]}" "$MTPH" > "$OUT/$LABEL.evict.$try" 2>&1
   else
     bash "$H/evict_nodes_force.sh" "$EVICT_GIB" > "$OUT/$LABEL.evict.$try" 2>&1
   fi

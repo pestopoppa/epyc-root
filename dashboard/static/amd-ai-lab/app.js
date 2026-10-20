@@ -724,7 +724,7 @@ function recipePanel(m) {
         ["KV cache", "F16 key and value"],
         ["Quality runs", "MMLU-Pro cap 8,192 · GPQA cap 16,384"],
       ]) +
-      '<p>The canonical recipe document measures a separate IQ4_XS-uniform weight file. Check the model path and benchmark source before comparing throughput. Download model weights and the MTP head separately.</p><p><a class="source-link" href="' +
+      '<p>The canonical recipe now pins these UD-IQ4_XS weights, but its recorded throughput headlines were measured on a separate, since-retired IQ4_XS-uniform weight file. Check the model path and benchmark source before comparing throughput. Download model weights and the MTP head separately.</p><p><a class="source-link" href="' +
       sourceURL("scripts/lib/qwen38_flash_next_recipe.py") +
       '">Inspect the serving recipe ↗</a></p><p><a class="source-link" href="' +
       release +
