@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T13:31:10+00:00",
-  "stage": "stage2-wave2-running",
+  "last_checkpoint": "2026-10-20T13:43:34+00:00",
+  "stage": "stage2-wave3-running",
   "phase": 2,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
@@ -54,10 +54,23 @@
     "intake-2006",
     "intake-2007",
     "intake-2008",
-    "intake-2009"
+    "intake-2009",
+    "intake-2010",
+    "intake-2011",
+    "intake-2012",
+    "intake-2013",
+    "intake-2014",
+    "intake-2015",
+    "intake-2016",
+    "intake-2017",
+    "intake-2018",
+    "intake-2019",
+    "intake-2020",
+    "intake-2021",
+    "intake-2022"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2010,
+  "next_intake_id": 2023,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -175,6 +188,17 @@
       "disposition": "context-only",
       "plan_ref": null,
       "reason": "Applied: FluidAudio re-scored medium and dived as a catalogue of portable duplex front-end components; relevance rule for the rest of the campaign = potential to reverse-engineer for EPYC/MI210."
+    },
+    {
+      "seq": 11,
+      "stage": 2,
+      "verbatim": "\"\n\n<pasted_content id=\"df15\">\nYou were weighing EmbeddingGemma 2 as an upgrade for the embedders (the models that turn text into searchable vectors) in the orchestration stack. A deep dive just checked Google's scores against independent ones:\n  - The benchmark maintainers (MTEB), not Google, ran the listed results. Google withdrew its own score submission on 10-12.\n  - Code search: about +9 points over the older EmbeddingGemma-300m, so the gain holds.\n  - Multilingual: about 0.6 points *below* the older model, against Google's claimed gain.\n  - Caveat: the dive averaged the stored results itself rather than reading the official leaderboard. The same method matched the older model's official numbers closely.\n</pasted_content id=\"df15\">\n\n\" - and what is the tradeoff vis-a-vis embedder speed?",
+      "text": "\"\n\n<pasted_content id=\"df15\">\nYou were weighing EmbeddingGemma 2 as an upgrade for the embedders (the models that turn text into searchable vectors) in the orchestration stack. A deep dive just checked Google's scores against independent ones:\n  - The benchmark maintainers (MTEB), not Google, ran the listed results. Google withdrew its own score submission on 10-12.\n  - Code search: about +9 points over the older EmbeddingGemma-300m, so the gain holds.\n  - Multilingual: about 0.6 points *below* the older model, against Google's claimed gain.\n  - Caveat: the dive averaged the stored results itself rather than reading the official leaderboard. The same method matched the older model's official numbers closely.\n</pasted_content id=\"df15\">\n\n\" - and what is the tradeoff vis-a-vis embedder speed?",
+      "ts": "2026-10-20T13:43:24+00:00",
+      "timestamp": "2026-10-20T13:43:24+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Answered from verified specs (no measured speed exists in any verified source); Stage-3 plan will bind an explicit EPYC latency/throughput arm (BGE-large vs EmbeddingGemma 2 @768/@256 vs static-embedding arm) into the REPL-EMB-2.2 comparison - plan_ref to be set at Stage 3."
     }
   ],
   "actionable_ledger": [
@@ -1132,6 +1156,336 @@
       "project_decision": "none",
       "wave": 1,
       "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-STATELESS-01",
+      "source": "intake-2010",
+      "action": "Add a third arm to the W1-intake-1998-01 forget-round design: \"harness-rebuilt context\" (planner/actor sessions fresh every iteration, context rebuilt from the journal as champion + score + a per-mechanism evidence summary that labels each prior attempt measured-null vs inconclusive-failure, no free-text lessons), alongside candidate-only and candidate+bounded-notes; score each arm on keep yield and repeat-null rate per dollar on the same DS41 campaign.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "SLA is the only source that ablates what enters each fresh context (Advisor reconstruction vs raw record, all 8 comparisons worse without it) rather than only discarding it; AK already holds the journal needed to build that summary and the three arms span the 1998 / LLM4LLM / SLA positions.",
+      "project_decision": "What state, in what form, a fresh AK planner/actor invocation receives.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-STATELESS-02",
+      "source": "intake-2010",
+      "action": "In the AK planner prompt/ledger spec, require every prior attempt entry to carry an outcome class that separates \"sealed-valid non-improvement\" (negative performance evidence) from \"build/runtime/correctness failure\" (inconclusive), and check the existing do-not-repeat records already make that split.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "SLA Advisor prompt and §3.1 treat the split as load-bearing so a failed execution is not read as an exhausted direction; AK funnel counts (handoff-recorded: 567 of 660 intents lost as planner_transient) suggest inconclusive failures dominate, so conflating them would poison do-not-repeat.",
+      "project_decision": "Whether do-not-repeat blacklisting keys on measured nulls only.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-MODECOLLAPSE-01",
+      "source": "intake-2011",
+      "action": "Compute, offline and zero-compute, the four-axis collapse diagnostic over AK campaign history: (1) define a kernel mechanism taxonomy (e.g. tiling/blocking, vectorization+ISA path, prefetch, threading/affinity, quant-layout/dequant fusion, kernel fusion, memory placement, other) from a pilot sample of planner intents, frozen before the analysis, and tag every planner intent and candidate; (2) over a sliding window of 20 compute surface diff distance, mechanism entropy H_t and (optionally) SBERT+HDBSCAN cluster count; (3) report H_t vs S_t for the DS41 and earlier campaigns so a collapse (flat S_t, falling H_t) is seen or ruled out.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Needs only existing events.jsonl / journal records and a small text embedder; uses all planner intents (handoff-recorded 660) rather than only accepted edits since AK accepted edits are too few for a 20-edit window; gives the first evidence on whether the keep-drought is a mode-collapse or a space-exhaustion phenomenon, which decides whether a forget round or a coverage reweighting is the right lever.",
+      "project_decision": "Whether to spend the forget-round / diversity-reweighting experiments, or to conclude the search space is exhausted.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-MODECOLLAPSE-02",
+      "source": "intake-2011",
+      "action": "Define the AK faithfulness-ratio analog and report it from existing records: rho = (gain confirmed at the serving gate / full-graph measurement) / (gain claimed at the cheap screen), per campaign and per mechanism class, using the established screen-vs-serving divergence data.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "The paper shows the in-loop/held-out ratio is the only quantity that exposes Goodharting at the proposal layer; AK has both tiers by construction, so this is bookkeeping on existing journal fields (do not invent: report not-judgeable where either tier is missing).",
+      "project_decision": "Whether cheap-screen wins in a given mechanism class are trusted for promotion ordering.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-ANSOR-01",
+      "source": "intake-2012",
+      "action": "Add pre-build feature capture to the AK candidate record: for every parametric candidate (block/tile sizes, unroll, thread count and affinity, OMP/prefetch knobs, quant-layout choice) journal the knob vector and the static code-shape features (loop trip counts, bytes touched, arithmetic intensity) beside the later measured result, so that a GBDT surrogate could be fitted offline; no behaviour change.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Write-side capture is cheap and permanent while retrofitting is impossible (belief-kernel rule); Ansor shows a small GBDT on such features reaches pairwise accuracy 0.851 on a CPU workload, but only with thousands of labelled measurements, which AK does not yet have in a fittable form (handoff-recorded: 17 benchmarked candidates in the audited campaign).",
+      "project_decision": "Whether a surrogate pre-screen is ever justified for the parametric part of AK search.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-ANSOR-02",
+      "source": "intake-2012",
+      "action": "Do not build a learned cost model for AK now; revisit only after the rebuild reports (a) a candidate-count large enough to fit one and (b) a post-rebuild iteration breakdown showing measurement, not build, dominates.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "decline",
+      "reason": "Handoff-recorded breakdown has build 75.7% and measurement 3.9% of an iteration, and the funnel loses candidates before measurement; a measurement surrogate attacks the smaller term. Re-open on the stated trigger.",
+      "project_decision": "None changed now.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB15-01",
+      "source": "intake-2013",
+      "action": "In CS-23, specify the barge-in measurand set as FDB-v1.5 t_stop (onset of overlapping user speech to model silence) and t_resp, with scenario-dependent direction (interruption: both low; backchannel/off-talk: stop HIGH, resume low), and add a talking-to-others / background-speech stimulus class to the CS-4 corpus design so the cascade is not scored on interruptions only.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Gives published, directional definitions of cancel and recovery latency plus the false-yield stimulus classes; costs nothing to adopt as definitions.",
+      "project_decision": "CS-23 barge-in acceptance metrics / CS-2 Annex S P-VOICE barge-in measurands",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB15-02",
+      "source": "intake-2013",
+      "action": "In CS-5/CS-21, add an FDB-v1.5 offline adapter: run the 4 overlap scenarios through the whisper+VAD+qwentts cascade, write output.wav (+ clean_output.wav), and score with the repo's evaluate.py behavior + get_timing.py; pin the repo commit.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Cascade is the D8 baseline; the GPT-4o behavior classifier is the only cloud call and the data download is a dataset fetch, so schedule it inside the CS-5 window.",
+      "project_decision": "Whether cascade endpointing/floor-holding meets CS-2 targets before CS-8 bake-off",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB15-03",
+      "source": "intake-2013",
+      "action": "Do not use the v1.5 GPT-4o Respond/Resume labels as a gate unless a local judge is validated against them on the released clips.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Cloud judge; a gate on an unvalidated substitute would be unjudgeable. Timing metrics (VAD based) are local and can gate on their own.",
+      "project_decision": "none",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB2-01",
+      "source": "intake-2014",
+      "action": "In CS-36, record the FDB-v2 Daily/Correction/Entity task-family design (staged semantic goals, Fast vs Slow examiner pacing, correction and entity probes) as a template for the end-to-end acceptance dialogues; do not adopt its GPT-Realtime examiner or Gemini judge as a gate.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "The pacing contrast and goal-staged scripts are reusable design; the judge is cloud and only moderately human-aligned (r 0.59-0.69).",
+      "project_decision": "CS-36 end-to-end acceptance dialogue design",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB2-02",
+      "source": "intake-2014",
+      "action": "Decline wiring the full FDB-v2 orchestrator (OpenAI examiner + Gemini judge) into CS-8/CS-36.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Two cloud keys required, judge not validated locally, no timing metric to feed CS-2.",
+      "project_decision": "none",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB3-01",
+      "source": "intake-2015",
+      "action": "In CS-24 prep, add a self-correction / state-rollback probe class (user changes intent mid-utterance, e.g. destination Rome->Milan) to the CS-4 annotation contract, scored by exact tool-call and argument match against a deterministic mock, with the cascade baseline expected to be weakest.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Directly tests the endpointing-before-correction failure that whisper-based cascades show (0.176 in v3).",
+      "project_decision": "CS-22 endpointing policy and CS-24 routing probes",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB3-02",
+      "source": "intake-2015",
+      "action": "In CS-21, report first-response / tool-call / task-completion latency and the filler and interruption rates (v3 definitions) for the cascade backend, mapped to LOCAL and ORCH routes.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Decomposition separates filler-hidden latency from true completion; definitions are runtime independent.",
+      "project_decision": "CS-36 LOCAL vs ORCH turn latency reporting",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-FDB3-03",
+      "source": "intake-2015",
+      "action": "Decline using the v3 LiveKit-cloud harness as-is.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "LiveKit Cloud + OpenAI keys required; re-host scoring locally instead (see FDB3-01/02).",
+      "project_decision": "none",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-SAMEWORDS-01",
+      "source": "intake-2016",
+      "action": "In the CS-2 Annex S amendment package and CS-4 corpus design, define the yield/keep gate on matched PAIRS (same interruption/backchannel text, two preceding contexts) and report PASR together with the constant-policy baselines, rather than interruption accuracy alone.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "A constant-yield cascade endpointer would pass an interruption-only gate; PASR gives zero credit to it. Definitions are published and tool-free.",
+      "project_decision": "CS-2 P-VOICE barge-in gate form; CS-22 turn-detection acceptance",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G3-SAMEWORDS-02",
+      "source": "intake-2016",
+      "action": "In CS-5, request access to the gated shuofeng123/ECHO dataset and, if granted, score the cascade turn detector on the 100 I-B pairs as a smoke gate; otherwise author an English paired set of at least 100 pairs following the paper recipe.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Access is a one-sentence operator action; English authoring is the fallback so the gate is not blocked on the request.",
+      "project_decision": "Whether the CS-22 turn detector avoids constant-yield bias",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-PARAKEET-EOU-01",
+      "source": "intake-2017",
+      "action": "Add a Parakeet-EOU arm to CS-22: run community ONNX (fp32 and decoder-int8) under onnxruntime on CPU against the CS-4 hesitation clips and report EOU latency and false-cut rate next to Silero+silence-threshold; vendor numbers are synthetic latency-only.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "CS-22 requires end-of-turn latency and false-cut rate on CS-4 hesitation clips; this is the only open-weights model found whose turn-end is a native in-band token, and the vendor gives no false-cut figure so it must be measured.",
+      "project_decision": "whether the turn-end arm is Silero VAD + silence threshold, a streaming-ASR EOU token, or semantic end-of-turn",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-LOCALVQE-01",
+      "source": "intake-2018",
+      "action": "In CS-23 harness design, add an optional AEC pre-stage (LocalVQE v1.4-AEC 203K, CPU, ref = the TTS PCM the controller emitted) and measure false-barge-in rate and cancel latency with simulated overlap against no-AEC; no code change to the D7 client-concern ruling, offline measurement only.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheap offline A/B (0.83 ms/hop per vendor); tells whether self-echo is a real false-barge-in source before the client-side AEC deferral (D7) is revisited.",
+      "project_decision": "whether D7 (echo cancellation deferred to client) needs revisiting for the server-side controller",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-MODEL2VEC-01",
+      "source": "intake-2019",
+      "action": "Add potion-base-8M (and potion-code-16M-v2 as the code-spill variant) as a static-embedding arm in the REPL-EMB-2.2 offline eval, reporting recall@k, CPU-s and latency like the other arms and applying the already-frozen 2.1 rule unchanged.",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "propose",
+      "reason": "Lowest-cost dense arm possible (no server, numpy lookup); gives the cheapest-within-X criterion a floor and shows whether neural dense retrieval is needed at all over lexical on spill files.",
+      "project_decision": "whether the REPL retrieval arm needs the :8090-:8095 embedder pool at all or a static in-process embedding suffices",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-NEW-COUNT-CKPT-01",
+      "source": "intake-2020",
+      "action": "Amend the proposed Engram Track B COUNT arm (W1-intake-1988-02) to state the pairing explicitly: vanilla-1b step32537 + general-797gb is the paper recipe; general-17gb with 1B is an off-recipe cheaper variant that must be labelled as such, and the arm needs CountLookup code.",
+      "owner": "handoffs/active/engram-conditional-memory.md",
+      "proposed_disposition": "propose",
+      "reason": "Wave-1 text pairs 1B with the 17 GB table, which the checkpoint card contradicts for the COUNT-trained 1B.",
+      "project_decision": "whether Track B proceeds with learned hashed tables, count tables, or neither",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G5-llama25618-01",
+      "source": "intake-2021",
+      "action": "Add a batch-invariance op gate to the AK correctness corpus on the experimental branch: for MUL_MAT / MUL_MAT_ID / FLASH_ATTN_EXT, compare row 0 of an N=k batch against N=1 with memcmp and tolerance 0 over k in {2,3,4,5,8,9}, on the quant types DS41/Q38FN actually run (Q8_0, IQ2_XXS/XS, IQ3_XXS/S, IQ4_XS, Q4_K) and on both CPU and gfx90a HIP; report the first failing k per type/route instead of a pass/fail.",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "propose",
+      "reason": "Existing op_correctness (test-backend-ops MUL_MAT, NMSE tolerance) cannot see this class: Ankk98 notes packing can be wrong and still stay inside that NMSE and jeffbolznv's tests did not fail (PR #26358 thread). AKX-ALL-11 already lists \"row-exactness across N\" in prose; issue #28111 gives a ready test design. Correctness-class work: no quiet host needed, only build role + GPU claim for the HIP half.",
+      "project_decision": "Whether any AK-admitted kernel (especially low-bit IQ MMVQ/MMQ routes, where #28111 found invariance breaking at n=5/8 on SM120) silently changes speculative-verify outputs, and thus whether DFlash2 n-max 7 (8-row verify) is ever bit-exact on our stack.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G5-llama25618-02",
+      "source": "intake-2021",
+      "action": "Amend DF2-6b-bis: replace \"re-run ngram at comparable draft volume to test #25618 localisation\" with a note that #25618 never established an ngram control (its ngram arms accepted 0 and 4/8 tokens on one prompt) and that n-max 1 and width-independent flips show N>1 alone suffices; keep the task only if cheap, otherwise propose closing it as moot.",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "propose",
+      "reason": "The lane text at DF2-6b presents #25618 as having reported ngram staying byte-identical \"even with accepts\"; the issue body shows ngram-simple 0 accepted and ngram-mod 4/8. Our own 2026-08-28 finding (ngram 218 drafted tokens vs 4012) already agrees. Owning session applies; this is preparation only.",
+      "project_decision": "Whether to spend GPU window on DF2-6b-bis at all.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G5-llama25618-03",
+      "source": "intake-2021",
+      "action": "In the champion/DFlash2 serving notes, record that no exact-greedy contract is offered for any speculative arm (upstream has no merged batch-invariant fix on CUDA or Vulkan as of 2026-10-18) and that tool-calling/exact-argument roles should be A/B-checked for speculation-induced quality loss before enabling n-max 7, using the near-tie/degenerative classifier from INF-70.",
+      "owner": "handoffs/active/qwen38-27b-replace-qwen36.md",
+      "proposed_disposition": "propose",
+      "reason": "sjvrensburg reports (small sample, Vulkan) a 12/12 to 10/12 code-eval drop under DFlash on a tool-calling model; the rest of the thread reports coherent near-tie flips. Decision-relevant for per-role speculative config, but evidence is thin; no new compute implied.",
+      "project_decision": "Per-role speculative configuration (spec off on exact-argument roles).",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G5-littlebit2-01",
+      "source": "intake-2022",
+      "action": "Record LittleBit-2 (arXiv 2603.00042) in tq3-quantization-evaluation.md monitor list next to LittleBit (intake-1977) as a QAT+KD-only sub-1-bit reference with an init-only change; keep the stop-rule \"no serving-path work unless a PTQ variant or a published inference kernel appears\".",
+      "owner": "handoffs/active/tq3-quantization-evaluation.md",
+      "proposed_disposition": "propose",
+      "reason": "Closes wave-1 surfaced-source question with evidence; monitor list line 188 already frames b1.58 as QAT-only.",
+      "project_decision": "Whether any low-bit effort goes to sub-1-bit QAT formats vs the PTQ IQ1/IQ2/IQ3 lanes (DS41/Q38FN): no.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-G5-littlebit2-02",
+      "source": "intake-2022",
+      "action": "OPTIONAL bounded CPU probe (correctness-class, no quiet host, no GPU, no model download): take 2-3 weight tensors from the existing DS41/Q38FN GGUFs (dequantised from their current IQ/K-quant files), run Joint-ITQ (Algorithm 1) at the rank giving ~1.0 and ~0.55 BPW per the H.3 formula, and report INIT-ONLY NMSE (no QAT) against the same tensor quantised to IQ2_XXS and IQ1_S; stop at that number.",
+      "owner": "handoffs/active/iqk-iquant-enablement.md",
+      "proposed_disposition": "decline",
+      "reason": "Deciding question would be \"is the rotated sign-factor init usable without training\". The paper never reports it, and a 1-bit sign factorisation of a trained 27B tensor without QAT is expected to be worse than IQ1_S NMSE; the result could only gate a decision if it won, and winning would still need per-model QAT and a new kernel (neither exists). Operator steering: low-bit work is PTQ-lane only (ppl+NMSE+coherence on DS41/Q38FN). Revisit only if a PTQ variant appears; if ever run it is the cheapest decider (~1 hour numpy, SVD of ~5120x17408 tensors).",
+      "project_decision": "none presently",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1979-03-w2",
+      "source": "intake-1979",
+      "action": "REVISED: still do not port any Magnitude kernel or schedule family into HIP/CPU, but the stated reason is replaced: Magnitude has a Vulkan backend (hand-authored GLSL) and AVX-512/VNNI CPU tiers; reasons not to port are (i) wave-64 Vulkan path unrun by the authors, (ii) MFMA likely unreachable via the Vulkan coopmat gate on gfx90a (inference from facts.rs RDNA3+ gating, not tested), (iii) different weight resident layout and ABI from ggml, (iv) no published performance.",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "decline",
+      "reason": "Port has no demonstrated benefit; the reusable value is design prior art, captured by W2-1979-01/02. Main note: the frozen v3 TileLang fork does target gfx90a via HIP, so TileLang (upstream, wave-3 B) remains the live porting question.",
+      "project_decision": "None.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-1979-01",
+      "source": "intake-1979",
+      "action": "Read packets.glsl IQ2_XS/IQ2_XXS/IQ3_XXS decode and the rows16 planar layout (code/scale/super planes, 16-byte packet loads, factored scale*dot+bias*sum(x)) and the grid sign-parity trick, and record in the IQ2 replay section whether it differs from the ggml IQ2 dequant-GEMV on MI210 in ways worth an AK seed (documentation-only, zero compute)",
+      "owner": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+      "proposed_disposition": "propose",
+      "reason": "Open IQ2 governed replay on MI210 is the consumer; low-bit GPU perf is a stated priority; source is already on disk at /mnt/raid0/llm/tmp/dive-1979/repo.",
+      "project_decision": "Whether to seed an IQ2/IQ3 planar-decode GEMV variant in AK GPU search.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-1979-02",
+      "source": "intake-1979",
+      "action": "Read native-cpu weights.rs IQ grid CPU decode plus VNNI dot_u8_i8 and rows16/rows8 repack against our iqk IQ2/IQ3 paths and note any decode-then-int8-VNNI structure we lack (documentation-only)",
+      "owner": "handoffs/active/iqk-iquant-enablement.md",
+      "proposed_disposition": "propose",
+      "reason": "CPU low-bit (IQ2/IQ3/IQ1) perf is a priority; this is an independent Zen4/5-VNNI implementation for the same formats; IQ1 absent so only IQ2/IQ3.",
+      "project_decision": "Whether iqk residual research adopts an int8-activation VNNI route for IQ2/IQ3 on Zen5.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-1979-03",
+      "source": "intake-1979",
+      "action": "Run `vulkaninfo --summary` and check the MI210 against Magnitude's Vulkan floor list (facts.rs L714-L745: Vulkan 1.3, bufferDeviceAddress, vulkanMemoryModel, subgroup size, 8/16-bit storage, workgroup_memory_explicit_layout, RTE fp32); do not build or run Seismic",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "propose",
+      "reason": "One read-only system command settles whether the MI210 is even eligible; if it fails, the Vulkan question is closed; if it passes, a separate measurement task can be scoped. Vulkan on gfx90a would lack MFMA so is not a serving candidate.",
+      "project_decision": "Whether any Vulkan-based tuning evidence is obtainable on our GPU.",
+      "wave": 2,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W2-1979-04",
+      "source": "intake-1979",
+      "action": "Do not swap AK's sign test-martingale for Magnitude's uniform-mixture closed form; revise W1-1979-01 to drop the 'AK lacks anytime-valid test' framing and keep only the scheduling idea (admit exactly the fewest remaining blocks to cross, end the session at the first non-ahead block, continue later) as a note on W1-1979-02's replay harness",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "decline",
+      "reason": "Same family; simulated power equal (pass2/power_sim.out); AK's cost is dominated by B_min=12 from A/A calibration and process-level pairing, not the crossing statistic.",
+      "project_decision": "None for the statistic; the admission policy is covered under W1-1979-02.",
+      "wave": 2,
+      "verification": "dive-verified"
     }
   ],
   "state": {
@@ -1983,6 +2337,323 @@
             "source": "VISTA visual harness (Han et al. 2026)",
             "bears_on": "intake-2006",
             "reason": "ARC-AGI-3 baseline provenance only; no arXiv ID observed."
+          }
+        ],
+        "status": "applied",
+        "applied": "2026-10-20T13:43:34+00:00",
+        "new_entries": {
+          "NEW-STATELESS": "intake-2010",
+          "NEW-MODECOLLAPSE": "intake-2011",
+          "NEW-ANSOR": "intake-2012",
+          "NEW-FDB15": "intake-2013",
+          "NEW-FDB2": "intake-2014",
+          "NEW-FDB3": "intake-2015",
+          "NEW-SAMEWORDS": "intake-2016",
+          "NEW-PARAKEET-EOU": "intake-2017",
+          "NEW-LOCALVQE": "intake-2018",
+          "NEW-MODEL2VEC": "intake-2019",
+          "NEW-COUNT-CKPT": "intake-2020",
+          "NEW-LLAMA25618": "intake-2021",
+          "NEW-LITTLEBIT2": "intake-2022"
+        },
+        "surfaced": [
+          {
+            "id_or_url": "arXiv:2609.15309 When Agents Slow Down: Understanding LLM Agents Test-Time Strategies via Elo-per-token Analysis",
+            "what_it_would_settle": "Independent measurement that coding-agent sessions up to 100M tokens fall below independent sampling and that splitting a budget into shorter sessions wins; the empirical premise under both SLA and intake-1998.",
+            "bears_on": "intake-1998",
+            "recommend": "ingest-and-dive",
+            "reason": "Cited in SLA §2.2 for exactly this; 0 grep hits for 2609.15309 in intake_index.yaml; authors overlap with 1998 (Mang, Dimakis) so independence is partial.",
+            "from_entry": "intake-2010",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/Alex-q-z/stateless-language-agents",
+            "what_it_would_settle": "Whether the harness (evidence-summary builder, Advisor prompt, Landlock isolation) is released, i.e. whether the SLA context-reconstruction can be read rather than inferred.",
+            "bears_on": "NEW-STATELESS",
+            "recommend": "ingest-and-dive",
+            "reason": "Link appears in the paper front matter; not fetched in this run; 0 hits in intake_index.yaml.",
+            "from_entry": "intake-2010",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2602.13103 R-Diverse: Mitigating Diversity Illusion in Self-Play LLM Training",
+            "what_it_would_settle": "Origin of the surface-vs-semantic dissociation and the memory-augmented penalty that DAPS reuses; would not change an AK conclusion.",
+            "bears_on": "NEW-MODECOLLAPSE",
+            "recommend": "decline",
+            "reason": "Self-play training setting; the code-loop paper above already adapts and measures the transferable piece (pem), and R-Diverse-A is its B3 baseline.",
+            "from_entry": "intake-2011",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/BokwaiHo/arl-mode-collapse",
+            "what_it_would_settle": "Exact diagnostic implementation (rule-based category parser, HDBSCAN settings) so AK can reuse it instead of re-deriving.",
+            "bears_on": "NEW-MODECOLLAPSE",
+            "recommend": "ingest-and-dive",
+            "reason": "Cloned and README/LICENSE read only; the code under arl/ and scripts/ was not read; 0 hits in intake_index.yaml.",
+            "from_entry": "intake-2011",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2211.03578 TLP: A Deep Learning-based Cost Model for Tensor Program Tuning",
+            "what_it_would_settle": "Whether a learned cost model fed schedule primitives (not statement features) removes the feature-engineering cost and transfers across hardware; would inform a surrogate for AK parametric knobs.",
+            "bears_on": "NEW-ANSOR",
+            "recommend": "ingest-and-dive",
+            "reason": "Seen in search results only; 0 hits in intake_index.yaml; directly measures Ansor GBDT against a learned alternative with a cross-platform claim.",
+            "from_entry": "intake-2012",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2402.02361 Pruner: A Speculative Exploration Mechanism to Accelerate Tensor Program Tuning",
+            "what_it_would_settle": "A draft-then-verify pre-screen with a cheap analytical model before the learned model; the closest analog to speculative filtering of AK candidates.",
+            "bears_on": "NEW-ANSOR",
+            "recommend": "ingest-and-dive",
+            "reason": "Seen in search results only; 0 hits in intake_index.yaml; names the slow-learned-cost-model problem Ansor leaves open.",
+            "from_entry": "intake-2012",
+            "wave": 2
+          },
+          {
+            "id_or_url": "TenSet: A Large-scale Program Performance Dataset for Learned Tensor Compilers (https://neurips.cc/virtual/2021/22738)",
+            "what_it_would_settle": "Measured effect of pre-training the Ansor cost model on offline measurements (reported up to 10x less search time) and how cross-hardware transfer behaves.",
+            "bears_on": "NEW-ANSOR",
+            "recommend": "ingest-and-dive",
+            "reason": "Seen in search results only; the transfer-learning result decides whether AK history from one device could bootstrap another; arXiv id not seen in this run so not recorded.",
+            "from_entry": "intake-2012",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2509.26388 (Game-time: evaluating temporal dynamics in spoken language models; cited by FDB-v2)",
+            "what_it_would_settle": "Source of the Gemini-judge turn-taking protocol FDB-v2 follows, with human correlation numbers; bears on whether a local judge could replace Gemini.",
+            "bears_on": "NEW-FDB2",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (count 0); directly bounds judge-substitution question.",
+            "from_entry": "intake-2013",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/DanielLin94144/Full-Duplex-Bench (v3/ scoring scripts)",
+            "what_it_would_settle": "Whether the tool-call scoring and latency scripts can run against a local OpenAI-compatible endpoint without LiveKit.",
+            "bears_on": "NEW-FDB3",
+            "recommend": "ingest-and-dive",
+            "reason": "Repo already parent-dived under intake-2003 but v3 code was not read; only code read can settle portability.",
+            "from_entry": "intake-2015",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2608.25218 (TurnBench: A Multi-Domain Benchmark for Turn-Taking Dynamics in Spoken Dialogue)",
+            "what_it_would_settle": "Whether an English multi-domain false-interruption benchmark exists that already offers paired or context-controlled stimuli.",
+            "bears_on": "NEW-SAMEWORDS",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (count 0); cited by this paper as covering false interruptions across conversation types; has FDB-related authors.",
+            "from_entry": "intake-2016",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2604.21406 (ICASSP 2026 HumDial challenge study)",
+            "what_it_would_settle": "Independent challenge results on interruption vs non-interruptive feedback for full-duplex systems.",
+            "bears_on": "NEW-SAMEWORDS",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (count 0); a second independent testbed for the same decision.",
+            "from_entry": "intake-2016",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2509.23938 (Easy Turn)",
+            "what_it_would_settle": "Open modular turn-state predictor (complete/incomplete/backchannel/offtalk) that is the closest drop-in endpointing model for the CS-22 cascade.",
+            "bears_on": "NEW-SAMEWORDS",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (count 0); would change CS-22 candidate choice, and here it is the strongest constant-yield failure (BC Keep 1.09%).",
+            "from_entry": "intake-2016",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://huggingface.co/ysdede/parakeet-realtime-eou-120m-v1-onnx",
+            "what_it_would_settle": "the portable CPU artifact set (fp32/fp16/int8 ONNX, vocab, frontend contract) for the CS-22 arm",
+            "bears_on": "NEW-PARAKEET-EOU",
+            "recommend": "decline",
+            "reason": "Fully covered by this entry; fetch at execution time, not an intake source.",
+            "from_entry": "intake-2017",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/NVIDIA-NeMo/Speech/tree/main/examples/voice_agent",
+            "what_it_would_settle": "how NVIDIA wires EOU into VAD/turn handling and the chunk-size/debounce defaults",
+            "bears_on": "NEW-PARAKEET-EOU",
+            "recommend": "ingest-and-dive",
+            "reason": "Only vendor source for the turn-handling logic; the model card alone cannot settle false-cut behaviour. Not in index (0 hits for NVIDIA-NeMo/Speech).",
+            "from_entry": "intake-2017",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://huggingface.co/LocalAI-io/LocalVQE",
+            "what_it_would_settle": "weights hashes and any model-card eval beyond the README",
+            "bears_on": "NEW-LOCALVQE",
+            "recommend": "decline",
+            "reason": "README already carries the tables; HF card is redundant for the decision.",
+            "from_entry": "intake-2018",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/MinishLab/semble",
+            "what_it_would_settle": "the shipped static-embedding + BM25 code-search product and its agent-facing eval; closest analogue to REPL context.search",
+            "bears_on": "NEW-MODEL2VEC",
+            "recommend": "ingest-and-dive",
+            "reason": "Names potion-code-16M-v2 as its engine (HF card); may include retrieval-for-agents numbers. Index check: grep of semble returned only substring hits (assemble) so treat as not indexed.",
+            "from_entry": "intake-2019",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/IanMagnusson/COUNT",
+            "what_it_would_settle": "whether CountLookup and the COUNT embedding can run outside OLMo-core/CUDA and be bolted onto a frozen checkpoint",
+            "bears_on": "NEW-COUNT-CKPT",
+            "recommend": "ingest-and-dive",
+            "reason": "Decides executability of the Track B COUNT arm on our hardware; cited in all three cards. Index check: not grepped by this URL.",
+            "from_entry": "intake-2020",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/issues/28111",
+            "what_it_would_settle": "Batch-variance of IQ-quant MMVQ at n=5 and n=8 and the nwarps remedy: whether our IQ2/IQ3 low-bit GPU verify routes (shared mmvq.cu, HIP build) are batch-variant and at which widths",
+            "bears_on": "intake-2004",
+            "recommend": "ingest-and-dive",
+            "reason": "Directly touches the operator's low-bit priority (IQ2/IQ3) and DFlash2 n-max 7; test design is portable. Not in index (grep count 0).",
+            "from_entry": "intake-2021",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/Apoze/llama.cpp/commit/6263445513416ef93fd5d05391299f33c64702fa",
+            "what_it_would_settle": "Concrete CUDA-source fix (quantized-KV FA stays on vec kernel for Q->ne[1]<=4, parallel_blocks independent of ntiles_KV, MMVF selection order) that makoni reports giving 15/15 control matches; applicability to the HIP/gfx90a fattn/mmvf path",
+            "bears_on": "intake-2004",
+            "recommend": "ingest-and-dive",
+            "reason": "ggml-cuda sources compile for gfx90a; a candidate batch-invariance patch is reverse-engineerable. Not in index (count 0). Read-only dive; never apply to frozen v10.",
+            "from_entry": "intake-2021",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/28108",
+            "what_it_would_settle": "CUDA flash-attn batch-invariance for narrow widths (test_flash_attn_ext_batch_invariance design; closed unmerged)",
+            "bears_on": "intake-2004",
+            "recommend": "decline",
+            "reason": "Folded into the #28111/Apoze dive; closed unmerged, SM120-specific.",
+            "from_entry": "intake-2021",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/28489",
+            "what_it_would_settle": "Vulkan MMVQ selection independent of N; maintainer perf objection",
+            "bears_on": "intake-1288",
+            "recommend": "decline",
+            "reason": "Vulkan-only and open; our serving path is HIP. Pointer recorded here is enough.",
+            "from_entry": "intake-2021",
+            "wave": 2
+          },
+          {
+            "id_or_url": "Lee et al. 2025 LittleBit (arXiv 2506.13771) kernel numbers: Table/Fig. 6 end-to-end 2.46x",
+            "what_it_would_settle": "whether the 82.6 -> 203.2 tok/s end-to-end figure has an independent basis",
+            "bears_on": "intake-1977",
+            "recommend": "decline",
+            "reason": "Already intake-1977; inherited number, A100 CUDA; no EPYC/MI210 path.",
+            "from_entry": "intake-2022",
+            "wave": 2
+          },
+          {
+            "id_or_url": "arXiv:2504.17577 (TileLang paper)",
+            "what_it_would_settle": "Already in the index (grep hit 2504.17577); no action.",
+            "bears_on": "intake-1979",
+            "recommend": "decline",
+            "reason": "Already indexed; the fork is a Metal-first derivative, the paper adds nothing on gfx90a.",
+            "from_entry": "intake-1979",
+            "wave": 2
+          },
+          {
+            "id_or_url": "https://github.com/tile-ai/tilelang (upstream repo, examples/amd and tilelang/rocm)",
+            "what_it_would_settle": "Whether upstream TileLang HIP codegen (MFMA macro generators) has been exercised on gfx90a/MI210; README names gfx942/gfx950 only",
+            "bears_on": "intake-1979",
+            "recommend": "ingest-and-dive",
+            "reason": "index has only tilelang-puzzles (grep: github.com/tile-ai/tilelang exact URL absent); MI210 MFMA kernel authoring is within the AK GPU search scope.",
+            "from_entry": "intake-1979",
+            "wave": 2
+          }
+        ],
+        "second_reader": "second-reader-SR-W2.yaml, second-reader-SR-W2b.yaml; one 'no' (intake-1979 pass-2 claim 3: gfx90a 'not named' was false for the TileLang fork) corrected by main before write; 7 claim-text corrections and 3 anchor re-indexings applied by main (recorded in each entry's dive_corrections)"
+      },
+      {
+        "wave": 3,
+        "started": "2026-10-20T13:34:34+00:00",
+        "selection_basis": "auto-advance of wave-2 recommended dive-surfaced sources (operator seq 9) plus main overrides",
+        "units": {
+          "W3-A": [
+            "NEW 2609.15309",
+            "NEW github Alex-q-z/stateless-language-agents",
+            "NEW github BokwaiHo/arl-mode-collapse"
+          ],
+          "W3-B": [
+            "NEW 2211.03578",
+            "NEW 2402.02361",
+            "NEW TenSet neurips.cc/virtual/2021/22738",
+            "NEW github tile-ai/tilelang"
+          ],
+          "W3-C": [
+            "NEW 2509.26388",
+            "NEW 2608.25218",
+            "NEW 2604.21406",
+            "NEW 2509.23938"
+          ],
+          "W3-D": [
+            "NEW github DanielLin94144/Full-Duplex-Bench",
+            "NEW github NVIDIA-NeMo/Speech examples/voice_agent",
+            "NEW hf ysdede/parakeet-realtime-eou-120m-v1-onnx"
+          ],
+          "W3-E": [
+            "NEW github ggml-org/llama.cpp#28111",
+            "NEW Apoze/llama.cpp commit 6263445",
+            "NEW github ggml-org/llama.cpp PR #28108",
+            "NEW github MinishLab/semble"
+          ]
+        },
+        "main_overrides": [
+          {
+            "source": "https://huggingface.co/ysdede/parakeet-realtime-eou-120m-v1-onnx",
+            "dive_rec": "decline",
+            "main": "ingest-and-dive",
+            "why": "It is the CPU-portable (reverse-engineered) artifact for the CS-22 EOU arm (operator seq 7/10)."
+          },
+          {
+            "source": "https://github.com/ggml-org/llama.cpp/pull/28108",
+            "dive_rec": "decline",
+            "main": "ingest-and-dive",
+            "why": "Its batch-invariance test design is the template for the proposed AK batch-invariance op gate."
+          }
+        ],
+        "declined": [
+          {
+            "source": "arXiv:2602.13103 R-Diverse",
+            "bears_on": "NEW-MODECOLLAPSE (wave-2)",
+            "reason": "Origin of the surface-vs-semantic dissociation only; would not change an AK decision (dive rec)."
+          },
+          {
+            "source": "https://huggingface.co/LocalAI-io/LocalVQE",
+            "bears_on": "NEW-LOCALVQE (wave-2)",
+            "reason": "Weights hashes/card only; GitHub repo already dived."
+          },
+          {
+            "source": "https://github.com/IanMagnusson/COUNT",
+            "bears_on": "NEW-COUNT-CKPT (wave-2)",
+            "reason": "Already ingested and dived as intake-1989 (wave 1 answered: NumPy mmap/searchsorted reader, no compiled lookup)."
+          },
+          {
+            "source": "https://github.com/ggml-org/llama.cpp/pull/28489",
+            "bears_on": "NEW-LLAMA25618 (wave-2)",
+            "reason": "Vulkan MMVQ-selection change with maintainer perf objection; open; does not change a conclusion for HIP/CPU."
+          },
+          {
+            "source": "LittleBit end-to-end 2.46x figure (arXiv 2506.13771)",
+            "bears_on": "NEW-LITTLEBIT2 (wave-2)",
+            "reason": "Already in intake-1977; inherited, not re-measured."
+          },
+          {
+            "source": "arXiv 2504.17577 TileLang paper",
+            "bears_on": "intake-1979",
+            "reason": "Already in the index; cross-referenced instead."
           }
         ],
         "status": "running"

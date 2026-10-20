@@ -252133,6 +252133,74 @@
   - 'CPU coverage in the Seismic path is scalar (Cranelift) code only, and the shipped backends are Metal/CUDA/Vulkan:
     nothing is tuned for AVX-512 CPU kernels or HIP/gfx90a. The portable content is the search/measurement/validation
     protocol, not any kernel.'
+  - 'The Seismic (current, Rust) engine''s Vulkan backend is NOT TileLang/SPIR-V-from-Python: kernels
+    are hand-authored GLSL 4.60 compute (77 .comp files plus lib/*.glsl under inference/engine/kernels/kernels/vulkan,
+    76 `native ... for vulkan` entry declarations), formed with a statically linked glslang to sealed,
+    SPIRV-Tools-validated SPIR-V and run through ash on one queue. Each entry is declared in a .seismic
+    file as an ordered tunable candidate list (`params X in [default, ...]`, first = default) with a `where`
+    feasibility predicate and `launch` geometry/shared_bytes formulas; the tuner (tune.rs/search.rs) times
+    those candidates at install. The same declaration form exists for CPU (76), CUDA (80) and Metal (84)
+    entries.'
+  - 'Quant coverage in the Vulkan kernels (and the CPU native library) is wide and includes our low-bit
+    priority: Q4_K, Q5_K, Q6_K, Q8 (g32s), Q4/Q5 g32 variants, IQ4 (g32/NL), MXFP4, NVFP4, BF16/F16/F32
+    and the grid-coded IQ2_XS, IQ2_XXS and IQ3_XXS (no IQ1, no TQ). Weights are repacked to a planar ''rows16''
+    resident layout (code plane, scale plane, super-factor plane; one 16-byte load per 32-element packet)
+    and dotted in factored form scale*dot(code,x)+bias*sum(x). The CPU side (inference/seismic/native-cpu)
+    has runtime-detected tiers x86v2/v3/v4/v4vnni/neon with an AVX-512-VNNI int8 dot and a CPU rows16/rows8
+    IQ2_XS/IQ3_XXS/IQ2_XXS grid decode. This CORRECTS wave-1 claim 3: the ''CPU is scalar-only'' statement
+    came from inference-v4/README.md (an older tree); the current inference/ tree has vectorized AVX2/AVX-512/VNNI
+    CPU tiers. No performance number for either is published.'
+  - 'Vendor-neutrality and MI210: nothing in the Vulkan path is AMD-specific; it is a Vulkan 1.3 floor
+    (bufferDeviceAddress, Vulkan memory model, subgroup size 32 required or fixed 32/64, 8/16-bit storage,
+    workgroup_memory_explicit_layout, RTE fp32) with optional tiers (cooperative matrix, fp16, shader_fma).
+    The compatibility doc lists AMD GCN4+ (incl. Vega) on RADV as supported but also states the wave-64
+    ''AMD GCN'' Vulkan path has been ''validated offline but not yet run on those devices''. The cooperative-matrix
+    (WMMA) GEMM path is enabled only on RDNA3+ (accelerated mixed int8 dot as RDNA3 detector); gfx90a/CDNA2
+    is not named anywhere in the current inference/ (Seismic) tree, so on an MI210 (inference, not source
+    text) the GEMM class would fall back to the F32 FMA 4x8 register tile and MFMA is unreachable through
+    this path. Whether an MI210 on RADV passes the floor was NOT tested (no run allowed).'
+  - 'The TileLang fork (magnitudedev/tilelang, branch magnitude @26ef76e, VERSION 0.1.14) belongs to the
+    FROZEN v3 engine (old-inference/ and inference-v3/), not the current Seismic engine. Measured delta
+    against the merge-base 030556de with upstream tile-ai/tilelang main: 45 commits, 124 files, +5696/-935,
+    overwhelmingly Metal (adapter/kernel cache, simdgroup fragments/GEMM, fast-math lowering, native submissions)
+    plus profiler timing, cache-key identity and a few cross-backend fixes (runtime-valid GEMM rows, HIP/Metal
+    FP literal precision). Upstream TileLang''s own README lists AMD ROCm/HIP as ''Supported'' (Linux,
+    CDNA and RDNA incl. gfx942/gfx950 paths, CI on gfx942 only); the tree has tilelang/rocm with MFMA
+    and WMMA macro generators and wave-64 handling for gfx9*, and gfx90a IS named in the fork''s HIP support
+    (Dockerfile.rocm PYTORCH_ROCM_ARCH includes gfx90a; docs/get_started/targets.md gives a hip target
+    example with mcpu gfx90a; src/tl_templates/hip/common.h guards on __gfx90a__) - corrected by main
+    after the second reader (the dive had stated gfx90a/gfx908 were not named). TileLang has no Vulkan
+    target in this tree (cuda, rocm, metal, webgpu, cpu). Magnitude''s v3 AGENTS.md forbids per-backend
+    kernels, so v3 was a Metal-first TileLang schedule set, and is superseded.'
+  - 'Stopping statistic (statistics.rs): per round d_r (challenger minus incumbent cost, in-round ratio);
+    a round is ''ahead'' if d<0, ''behind'' if d>0, ties neither. Tally::verdict returns Leads when the
+    uniform-prior mixture likelihood ratio M_n(ahead)=sum_{j<=s} C(n+1,j)/((n+1)C(n,s)) times alpha >=
+    1, Trails when the same on ''behind''. It is a nonnegative supermartingale under ''P(ahead)<=1/2''
+    (so distribution-free; ties count as rounds but not successes, which is conservative), and by Ville''s
+    inequality holds over every look and any optional-stopping/continuation rule, across sessions. No
+    effect-size margin is asked of a lead. Fewest all-ahead rounds to Lead: 5/7/9 at alpha 0.1/0.05/0.01
+    (my recomputation matches the source''s 7 and 9). Block-of-rounds shuffling of sample order per round
+    controls clock-state drift.'
+  - 'Early-reject is a BUDGET rule, not a verdict: a comparison session is admitted exactly Tally::fewest(alpha)
+    rounds and ends at its first round that is not ahead (tune.rs:L2123-L2128), so most (slower) challengers
+    cost one round; the challenger is formally dropped (ContenderStanding::Trailing) only if its behind-mixture
+    reaches 1/alpha, and otherwise stays measured and may be continued in later sessions without invalidating
+    the guarantee. Wave-1 W1-1979-01 described this as ''slower challengers rejected after 1 round'';
+    that overstated it.'
+  - 'Versus AK: AK already has an anytime-valid sign test-martingale (evaluator/statistics.py, construction
+    sign_martingale_predictable_lambda/v1: X=+1/-1 on oriented block effect vs a contribution-floor boundary,
+    ties charged to the null, predictable lambda=mean/second-moment capped at 0.5, init 0.1; wealth threshold
+    1/alpha_sel for selection and 1/alpha_conf for confirmation, calibration solve accepted alpha_sel=0.1,
+    alpha_conf=0.05, B_min=12, A/A false-crossing 1.4%). The two tests are the same family (sign null
+    P<=1/2, Ville). In all-ahead runs Magnitude''s mixture crosses sooner (5/7/9 vs AK 7/9/13 blocks at
+    0.1/0.05/0.01 by my recomputation), but in a pure-python Monte Carlo (1500 runs, alpha 0.05, 80 rounds,
+    pass2/power_sim.out) crossing rates and median crossing rounds are nearly identical for P(ahead) 0.7-0.9
+    (mixture 0.83/32, 1.0/17 vs AK 0.81/33, 1.0/17 at 0.7/0.8) and both stay under alpha under the null
+    (2.7% vs 1.9%). Differences that remain are policy, not statistics: Magnitude asks no margin and runs
+    a symmetric trail/futility verdict plus fewest-rounds admission; AK binds a contribution floor and
+    B_min from A/A calibration. Successive halving (research-loop §9.3 item 4) is AK''s allocation across
+    candidates; Magnitude''s analogue is per-unit exhaustive/budgeted search with demand-weighted objective,
+    not halving.'
   techniques:
   - per-hardware kernel autotuning
   - per-model drafter
@@ -252160,23 +252228,38 @@
     3.6 35B A3B), prefill +9%, DGX Spark decode +19%, with a KV-cache-type mismatch noted (https://aiweekly.co/alerts/magnitude-yc-s25-launches-self-compiling-inference-engine-claims-92-faster;
     restatement); no independent reproduction found in this search.'
   - stork.ai, zeli.app HN aggregate as in Stage-1 (restatement / unverified commenters).
+  - 'No independent replication or reproduction of Magnitude Vulkan/AMD performance found (WebSearch 2026-10-20:
+    only generic Phoronix/llama.cpp Vulkan-vs-ROCm results on RDNA parts, unrelated; none mentions Magnitude
+    or Seismic; restatement-free negative).'
   recommended_actions:
   - '[unverified] Inspect inference-v4 tuner for search dimensions; diff against AK knob list in handoffs/active/autokernel-research-loop.md.'
   source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
   verification: dive-verified
   read_depth: PARTIAL
   dive_wave: 1
-  reader_should_conclude: 'Magnitude is worth reading for its tuner PROTOCOL (inference/seismic/runtime/src/native/{sampling,search,tune,replay}.rs
-    and design/inference/seismic-compilation.md), which is more rigorous than most autotuners: anytime-valid
-    paired sign test vs the incumbent, demand-weighted objective, numerical admission, exact-identity
-    cache, replay of recorded surveys. Do NOT carry the ''2x faster'' number into any decision: baseline
-    is Ollama, drafters differ between arms, results are vendor-run. Do NOT assume it tunes CPU or AMD
-    GPU kernels: the CPU backend is scalar and no HIP backend exists in the Seismic path. Its drafter
-    catalog confirms DFlash2 GGUF drafters are being distributed for Qwen3.8-27B (a mirror of z-lab''s).'
+  reader_should_conclude: 'Magnitude is NOT TileLang-on-Vulkan: TileLang/v3 is the frozen Metal-first
+    engine; the live Seismic engine ships hand-written GLSL (Vulkan), Rust (CPU, AVX2/AVX-512/VNNI tiers),
+    CUDA and Metal sources behind one declarative tunable-entry format. The MI210 (gfx90a) is not a stated
+    target: Vulkan wave-64 GCN is ''validated offline, not run'', and WMMA is RDNA3+ only so MFMA is unreachable.
+    Do NOT port these kernels or cite them as validated on AMD. DO treat the repo as free, readable prior
+    art for (a) IQ2/IQ3 planar decode and VNNI dot layouts and (b) the candidate-list+constraint schema.
+    AK''s statistic is already the same family as Magnitude''s; do not propose swapping it (power equal
+    in simulation). The earlier ''CPU is scalar-only'' conclusion is wrong for inference/ (right only
+    for inference-v4).'
   dive_corrections: '2026-10-20 Stage-2: tuned dimensions are small enumerated schedule families, not
     open kernel search; the stopping rule is an anytime-valid sign test; drafters are catalog pairings
     (DFlash2 for Qwen3.8-27B, mirrored from z-lab); the 2x chart pits different drafters per arm; Seismic
-    path claims no performance and has scalar-only CPU.'
+    path claims no performance and has scalar-only CPU. 2026-10-20 Stage-2 pass 2: (1) premise ''no HIP
+    backend therefore nothing to port'' replaced by: a Vulkan backend exists (hand-authored GLSL, vendor-neutral,
+    wave-64 path unrun, MFMA unreachable on gfx90a); (2) TileLang fork identified as v3/Metal-first, 45
+    commits/124 files/+5696-935 vs upstream merge-base; upstream TileLang supports HIP incl. MFMA but
+    names gfx942/gfx950 only; (3) wave-1 ''CPU scalar-only'' OVERTURNED for inference/ (x86v4vnni tiers,
+    IQ2/IQ3 grid CPU decode); (4) exact stopping statistic read and compared with AK: same Ville sign-test
+    family, equal power in simulation, so W1-1979-01''s premise that AK lacks an anytime-valid test was
+    wrong (AK has one); early-reject is a session budget rule, not a verdict. Main correction 2026-10-20
+    after second reader: claim 3''s ''gfx90a/gfx908 not named in any file'' was FALSE for the TileLang
+    fork (9 files name gfx90a, e.g. targets.md L18, hip/common.h L128, Dockerfile.rocm L20); rewritten.
+    5/7/9 vs 7/9/13 rounds-to-Lead and the power Monte Carlo are agent-computed (pass2/), not source text.'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -252255,6 +252338,103 @@
     quote_sha256: 119cc0a291427be63c8541cffcef9743cb154fe59da3f04544e0d15ae8a57cd2
     source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
     verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: 'inference/seismic/backends/vulkan/src/lib.rs:L2 (Vulkan backend: authored GLSL -> glslang
+      SPIR-V, no TileLang) @ 940e51b'
+    quote: //! (`specs/26-09-24/vulkan-native-backend.md`). Authored GLSL compute
+    quote_sha256: 81f381db3623b24a702ff989363cded5fd4407180db2dbba8d165406c696f5f8
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: inference/engine/kernels/kernels/dense_rows.seismic:L464 (per-entry ordered tunable candidate
+      list for the Vulkan GEMV/GEMM) @ 940e51b
+    quote: params (SIMDGROUPS in [16, 8, 4, 2, 32], ROWS in [1, 2, 4], arithmetic LANES in [16, 32],
+    quote_sha256: fc7841f37d6b4520beeae200b0d28b3f37b9c3470b3e2beea7ddcc45d684b4ab
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: inference/seismic/lang/native-library/vulkan/packets.glsl:L49-L55 (IQ grid-coded kinds) @
+      940e51b
+    quote: '#define PACKETS_IQ2XXS 16'
+    quote_sha256: a3657d421d1b139593e833ed9c84cd7a41b231ee4033ea07f8009466d6f9fcd6
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: inference/seismic/native-cpu/src/weights.rs:L1271 (CPU IQ grid reps, rows16 resident layout)
+      @ 940e51b
+    quote: '/// A vector-coded representation (the GGUF IQ grids: registry `iq2xs`,'
+    quote_sha256: cf9de58ebdc6404200f96ed36634980d0de925d34a51f57bef24091c658ca514
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: inference/docs/compatibility.md:L187-L188 @ 940e51b
+    quote: '- **Unqualified hardware:** the Vulkan paths for 64-wide hardware (AMD GCN), for devices without'
+    quote_sha256: 33405aa7fbac3fb9302ad99d637e3fd0e5d9785340f36bae01983899e4f97fd4
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: inference/seismic/backends/vulkan/src/facts.rs:L643 (cooperative-matrix path gated off RDNA2;
+      AMD requires accelerated mixed int8 dot) @ 940e51b
+    quote: // RDNA2 has no WMMA units whatever its driver reports; accelerated
+    quote_sha256: 86e2f1783282cfb07cf5dc572db7195d8736ca9d7129dd5f5d4da183d8dd4978
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: inference-v3/README.md:L18 @ 940e51b
+    quote: forks that carry our changes ahead of upstream. `pyproject.toml` installs
+    quote_sha256: 4dbf2603401bd5d8009c2af17db662f411d3275699f67c14da6054b1c3200375
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: tilelang/README.md:L122 (upstream-derived ROCm row; gfx942 CI only) @ 26ef76e
+    quote: CI runs on a self-hosted gfx942 (MI300X) runner; gfx950 is not yet covered.
+    quote_sha256: 58d4219efbf1611eac6c38ae07fb664ce911baa911ff90ca5335365a53393b9d
+    source_revision: magnitudedev/tilelang@26ef76e1cc9101e02dd4e591e21113fce917c2ea
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: line-range
+    locator: inference/seismic/measure/src/statistics.rs:L124-L128 (Tally::verdict) @ 940e51b
+    quote: if wealth(self.rounds, self.ahead) * rate >= 1. {
+    quote_sha256: 7315f2a5eae368b4e5ff6abdc942ddd8b12e4ef244cf4da898d520cdfdc86801
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: line-range
+    locator: inference/seismic/measure/src/statistics.rs:L44-L45 (anytime-valid guarantee) @ 940e51b
+    quote: //! it holds over every look at a comparison together, however many rounds
+    quote_sha256: b2b68f113faf720c05669578c830fb1b8d30ff9fea77654716eaf2a410c06a21
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 9
+    kind: line-range
+    locator: inference/seismic/runtime/src/native/tune.rs:L2123 (session-end rule, not a verdict) @ 940e51b
+    quote: // Its part ends when it is resolved, and with its first round
+    quote_sha256: 22d81b9c632791c2f078831fd41af04549099d29571a8fac77907e2cd585cef3
+    source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: line-range
+    locator: evaluator/statistics.py:L793 (AK sign test-martingale, Ville) @ f1c6fef56
+    quote: '`P(sup_b W_b >= 1/alpha) <= alpha` at ANY stopping time, which is what'
+    quote_sha256: 172994d502b0baffdb9dc99ae8c8b0ab43ecb5c1ced672cad034cfdc388c1f0e
+    source_revision: epyc-inference-research@f1c6fef56c54d1c9532e964658c8eebedce5b8b7
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: inference-v3/tilelang/docs/get_started/targets.md:L18 @ 26ef76e
+    quote: '| `hip` | AMD GPUs via ROCm. Use a config dict for options such as `{"kind": "hip", "mcpu":
+      "gfx90a"}`. |'
+    quote_sha256: 083e68331dfd24f308f1b9b65b08ebc89f63169542cf4d13b917dec626aee83e
+    source_revision: magnitudedev/tilelang@26ef76e1cc9101e02dd4e591e21113fce917c2ea
+    verified_by: research-intake/stage2 (main correction)
   claim_corrections:
   - claim_index: 0
     effect: narrowed
@@ -252268,8 +252448,12 @@
     note: Unequal drafting and per-machine baselines confirmed from harness config; independent replication
       absent.
   - claim_index: 3
-    effect: unaffected
-    note: README text only.
+    effect: narrowed
+    note: '(wave 2 pass 2) W1 corrected_key_claims[3] (''CPU coverage scalar (Cranelift) only; nothing
+      tuned for AVX-512 CPU kernels'') is OVERTURNED for the current inference/ tree: runtime-detected
+      x86v3/x86v4/x86v4vnni tiers with VNNI dot and IQ2/IQ3 grid decode exist (see pass-2 claim 1). The
+      Cranelift/scalar sentence survives only in the older inference-v4 README. ''No HIP backend'' stays
+      true but is incomplete: a Vulkan backend exists (pass-2 claims 0,2).'
   depends_on: []
   second_reader:
     date: '2026-10-20'
@@ -252312,7 +252496,54 @@
     results handoffs (handoffs/26-09-21/*) referenced by the README are not in the clone. Repo-wide: v3
     (TileLang, Python) is the frozen prior engine per inference/README; Seismic (Rust) is the current
     engine. Fetch route: git clone --depth 1; HF card via curl (raw README) and /api/models for sha ead2a051;
-    WebSearch for Tier-2b. sha256 README.md 8e90278740df5df1...; models.json 81e98b0b12476d49....'
+    WebSearch for Tier-2b. sha256 README.md 8e90278740df5df1...; models.json 81e98b0b12476d49.... Wave-2
+    second pass: Pass 2 read from disk: inference/seismic/measure/src/statistics.rs (full, 243 lines),
+    runtime/src/native/sampling.rs (L1-200), tune.rs (L1-60, 2100-2135, 2855-2870, 3060-3095), replay.rs
+    (L630-660), search.rs (L100-135), backends/vulkan/src/lib.rs (L1-80), facts.rs (floor L540-760), toolchain.rs
+    (head), hardware/rdna3-vulkan.md (full), inference/docs/compatibility.md (L120-200), engine/kernels/kernels/{dense_rows,attention}.seismic
+    (excerpts), vulkan/lib/projection/projection.glsl (L1-70), lang/native-library/vulkan/packets.glsl
+    (L1-110, grep), native-cpu/src/{isa(head),weights(L570-640,1268-1350)}; TileLang submodule inference-v3/tilelang
+    @26ef76e (README, rocm/ listing, AGENTS.md of inference-v3, git log vs merge-base 030556de after fetching
+    tile-ai/tilelang main with --shallow-since, upstream tip 876a59e6); AK evaluator/statistics.py L775-960
+    and handoffs/active autokernel-research-loop.md L940-990, 2300-2345, 3157, 3701-3706, 5092-5100. NOT
+    read: individual GLSL kernels beyond headers, the Vulkan direct.rs/device.rs/memory.rs, the CPU codegen
+    backend, specs/26-09-24 (absent from clone), design/inference/seismic-compilation.md beyond W1, per-file
+    TileLang fork diffs (stat only), AK rebuild-program beyond grep. submodule initialised (git submodule
+    update --init --depth 1) plus fetch of tile-ai/tilelang main into the submodule''s .git for the diff;
+    nothing built or run. Own scripts: pass2/min_rounds.py, pass2/power_sim.py with .out files (pure python,
+    seconds; statistics reimplemented from the quoted source, not the repo''s code). AK numbers (alpha_sel=0.1,
+    alpha_conf=0.05, B_min=12) are quoted from handoff L3706 as a record; run summary/config echo not
+    checked, so treat as ''handoff-recorded'', not judged. Pass-2 relevance proposal: medium-high - Raise
+    relevance from medium: current tree has hand-authored GLSL and Rust CPU kernels for IQ2_XS/IQ2_XXS/IQ3_XXS
+    with a published planar repack, relevant to the low-bit priority; still no performance data. Main
+    kept relevance medium (no performance data; MI210 Vulkan path unrun). Internal anchor evaluator/statistics.py:L793
+    verified by main in epyc-inference-research scripts/kernel_rnd/autokernel/evaluator/statistics.py
+    @ f1c6fef56.'
+  second_reader_wave2:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 2
+      partial: 4
+      false: 1
+    flags_for_operator:
+    - 'k1 partial: Quant kinds (incl IQ2XS/IQ2XXS/IQ3XXS, no IQ1/TQ), x86v2/v4vnni/neon tiers, rows16/rows8,
+      dot_u8_i8 VNNI confirmed; factored scale*dot+bias*sum(x) and 16-byte-per-packet details not seen
+      in anchored text.'
+    - 'k2 partial: Compat doc (GCN ''validated offline, not run''), RADV GCN4+ list, RDNA3+ WMMA gate
+      confirmed; but ''gfx90a/CDNA2 not named anywhere in the tree'' is false for inference-v3/tilelang
+      (true only for inference/); MFMA-unreachable is inference.'
+    - 'k4 partial: Verdict/wealth/Ville anchors support mechanism. But 5/7/9 figures are agent-computed
+      (min_rounds.py); source text states only 7 at alpha 0.05, no source statement of 9 for alpha 0.01.
+      ''ties conservative'' is agent inference.'
+    - 'k6 partial: AK Ville/predictable-lambda (cap 0.5, init 0.1) confirmed at statistics.py ~793-945.
+      But 5/7/9 vs 7/9/13 and the Monte Carlo (0.83/32 vs 0.81/33) are agent-computed from pass2 scripts,
+      not source text; alpha_sel/B_min/A/A 1.4% only ''handoff-recorded''.'
+    - 'actionable W1-1979-03: Reason (ii) MFMA unreachable via Vulkan is inference; reasons assume ''gfx90a
+      not named'' which is only true for inference/ tree.'
+    - 'actionable W2-1979-04: ''power equal in simulation'' rests on agent''s own pure-python sim; ''AK
+      cost dominated by B_min=12'' is handoff-recorded, unverified.'
 - id: intake-1980
   arxiv_id: null
   url: https://github.com/Gen-Verse/RSI-Anything
@@ -256772,3 +257003,2295 @@
     are not on the multilingual v2 board in this clone and were not fetched), the HF mteb/results dataset,
     leaderboard rendered tables, mteb PR #5588 (reference implementation), the PR #793 bot comparison
     table beyond its first lines.'
+- id: intake-2010
+  arxiv_id: '2610.07625'
+  url: https://arxiv.org/abs/2610.07625
+  source_type: paper
+  title: 'Stateless Language Agents: Scaling Long-Horizon Automated Research'
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - context_management
+  - swarm_techniques
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Qizheng Zhang
+  - Changxiu Ji
+  - Isaac Sun
+  - Yuetai Li
+  - Shubhangi Upasani
+  - Sherry Ruan
+  - Boyuan Ma
+  - Fenglu Hong
+  - Vamsidhar Kamanuru
+  - Yoonho Lee
+  - Yuzhen Mao
+  - Genghan Zhang
+  - Rulin Shao
+  - Qiuyang Mang
+  - Andy Dimnaku
+  - Changran Hu
+  - Radha Poovendran
+  - Kunle Olukotun
+  key_claims:
+  - 'SLA (Stateless Language Agents) splits state from context: the harness owns the research state (candidate
+    solutions and measured outcomes, a full chronological record) and rebuilds a fresh role-specific context
+    for every invocation. A stateless Advisor (new session each epoch) sees the task, the current global-best
+    code+score and a harness-built evidence summary grouped by search direction that separates measured
+    non-improvements from inconclusive implementation/runtime/correctness failures, and assigns one concrete
+    experiment per Worker; each Worker (new session per trial, W=3 default, 3 local trials per epoch)
+    sees only task, its assignment, its retained local candidate and compact feedback (previous status,
+    score, correctness diagnostics). Workers cannot read other Workers workspaces or the full history.'
+  - 'Statelessness is enforced, not requested: Landlock filesystem restriction, restricted network, saved
+    sessions and temp files cleared between trials, evaluators protected and run outside Worker environments,
+    built-in subagents disabled. The Advisor prompt keeps a sanitized scalar ledger ("Reset means fresh
+    reasoning from measured state, not amnesia") so SLA is a harness-managed memory design, NOT the keep-nothing-but-the-best-candidate
+    reset of intake-1998.'
+  - 'Token-matched evaluation (one external cumulative-token counter across all roles, 1B tokens on Anthropic
+    VLIW kernel, 700M per FrontierSWE task): on the VLIW kernel with Codex+GPT-5.5, 3 runs each, SLA 1112.0+-8.9
+    cycles vs SwarmResearch 1275.7+-133.9 (best baseline mean), CORAL 1350.0+-134.2, EvoX 1343.3+-4.0;
+    every SLA run beats every baseline run (worst SLA 1122 vs best baseline 1191). SLA needs 67.9M tokens
+    to reach the best baseline final (986.3M for SwarmResearch). Every other configuration (Claude Code
+    arm, FrontierSWE x4, SOL-ExecBench x3, FrontierCS) is ONE run per method.'
+  - 'Ablations resumed from shared checkpoints (3 continuations, +100M tokens): removing Advisor context
+    reconstruction, Worker isolation or Advisor assignments each reduces mean progress in all 8 comparisons
+    (e.g. kernel 100M->200M: full -25.7 cycles vs -23.3% / -42.8% / -10.5% of that progress), but the
+    continuations are short and several differences are small relative to std; a single full 1B-token
+    run without Worker isolation ends at 1336 vs 1112.0 cycles (n=1). Rankings flip with horizon: SLA
+    trails the best baseline on all four FrontierSWE tasks at 25% budget and leads at 100%.'
+  - 'Relation to intake-1998 (forgetting): neither reproduces nor contradicts it. The paper never ablates
+    conversation retention versus reset and its Limitations say so; it studies where state LIVES and who
+    chooses experiments. Its mechanisms overlap in spirit (fresh contexts every invocation; the Advisor
+    prompt calls its design "frontier-reset"), but it retains all measured outcomes in harness state and
+    gives the Advisor a summary of them, whereas 1998 discards everything except the best candidate. Its
+    own CORAL trace (App D.1) shows a discarded-then-recovered feature (a note from ~60 attempts earlier
+    added +0.55 to a leading candidate), i.e. a counter-datum to discarding all history. Both papers use
+    the same Anthropic VLIW kernel task but different models, budgets (tokens vs dollars) and baselines,
+    so 1112 vs 1097 cycles are NOT comparable.'
+  techniques:
+  - stateful search with stateless agents (harness owns state)
+  - harness-reconstructed role-specific context per invocation
+  - stateless Advisor assigns concrete experiments to parallel Workers
+  - Worker isolation via Landlock + session clearing
+  - checkpointed research state for ablations from identical states
+  - evidence summary separating measured non-improvement from inconclusive failure
+  - token-matched evaluation at several cumulative budgets
+  reported_results:
+  - 'Anthropic VLIW kernel, Codex GPT-5.5, 3 runs, 1B tokens: SLA 1112.0+-8.9 cycles; SwarmResearch 1275.7+-133.9;
+    CORAL 1350.0+-134.2; EvoX 1343.3+-4.0 (§4.2 Table 1). Start seed 147,734 cycles (App B.2).'
+  - 'Same task, Claude Code Opus 4.8, 1 run per method: SLA 1039 vs best baseline CORAL 1130 (§4.2 Table
+    1, -8.1%); tokens to match 138.5M vs CORAL 888.3M (-84.4%).'
+  - 'FrontierSWE (1 run): SLA +6.75 / +0.86 / +6.68 / +5.49 points vs best baseline at 700M; trails by
+    0.85 / 3.90 / 11.27 / 2.75 at 175M (§4.2 Table 2).'
+  - 'Ablations from shared checkpoints, 3 continuations +100M tokens, kernel 100M->200M: full 1192.3+-2.5,
+    w/o Advisor reconstruction 1198.3+-2.3, w/o Worker isolation 1203.3+-7.1, w/o assignments 1195.0+-2.6
+    (§4.3 Table 4); 1B no-isolation single run 1336 cycles.'
+  - Advisor share of tokens 0.24% (kernel) / 0.51% (libexpat) vs SwarmResearch Shepherd 8.39% / 10.70%;
+    cost 1.20% / 2.29% vs 6.14% / 7.35% (§4.4 Table 5).
+  - 'Worker width W=1/3/7/15 on kernel at 1B tokens: 1109 / 1112 / 1113 / 1107 cycles; wall-clock 98.1
+    / 39.0 / 18.3 / 14.8 h (§4.4 Table 6). At 25% budget W=7 trails W=1 by 337 cycles.'
+  referenced_arxiv_ids:
+  - '2609.15309'
+  - '2606.29718'
+  - '2607.02807'
+  - '2603.19173'
+  - '2602.20133'
+  - '2506.13131'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    - autokernel-restart-and-strip.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-1998
+    - intake-1993
+    intake_entry_notes:
+    - intake-1998 (companion forgetting result on the same VLIW kernel task; this paper is the harness-state
+      counterpart)
+    - intake-1993 (fork-and-flush keeps the workspace; SLA keeps harness state, resets conversations)
+  expanded_from: intake-1998
+  credibility_score: 3
+  source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 2
+  reader_should_conclude: 'Take away: a Stanford/SambaNova design in which ALL durable state lives in
+    the harness and every agent invocation (including the planner/Advisor) starts a fresh session beat
+    three published frameworks at matched tokens on the Anthropic VLIW kernel (3 runs, large margin) and
+    on FrontierSWE (1 run each); AK already has stateless actors and a lessons store, so the transferable
+    pieces are (a) the harness-built evidence summary that separates measured non-improvement from inconclusive
+    failure, (b) explicit per-lane assignment by a stateless planner, (c) reporting at several cumulative
+    budgets. Do NOT carry: that SLA reproduces or refutes the "forget everything except the best" result
+    of intake-1998 (it never tests conversation retention); that gains transfer to noisy, expensive real-hardware
+    judges (all tasks have fast deterministic evaluators; the kernel task is a simulated VLIW machine;
+    the NVIDIA SOL-ExecBench tasks are single-run); any claim that Worker isolation matters at short horizons
+    (differences after 100M tokens are small, the 1B contrast is n=1). No code release was verified and
+    no independent replication exists.'
+  dive_corrections: '2026-10-20 Stage-2 (NEW source, combined Stage-1+2): paper read from arXiv HTML on
+    disk (main body Tables 1-7, App A-D, App E prompts through the FrontierSWE advisor prompt). Settled
+    that SLA neither reproduces nor contradicts 1998 (no retention-vs-reset ablation; keeps measured outcomes
+    in harness state and gives the Advisor a summary). Replication is limited: only the Codex VLIW kernel
+    arm and the checkpoint ablations have 3 runs.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: no agent carries its conversation across invocations; instead, the harness owns the research
+      state (candidate solutions and measured outcomes) and reconstructs a fresh and role-specific context
+      for every invocation.
+    quote_sha256: 4f91160546d2e2a2bfee2b9398465da18c197de9d8a64e3aa62e40eab8e1b181
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 Worker context
+    quote: 'Each trial, a Worker receives the task specification, its assignment, its retained candidate,
+      and compact local feedback: the previous trial’s status, measured score, and available correctness
+      diagnostics.'
+    quote_sha256: 3721650a914b5e017446c38cbf5ff3023879a59aa37c4b41c7cc573bf4b241fb
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.1 Baselines (common protocol)
+    quote: All methods share the same coding agents, models, seed solutions, public task materials, and
+      protected evaluators, and the same external cumulative-token counter stops every run.
+    quote_sha256: 02f7920b7c19f10779c33a91ea8d8aa930daea7e6ef0ee25848407f3715974b6
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 Table 1 text
+    quote: On the Anthropic kernel task with Codex, SLA needs only 67.9M tokens, compared with 986.3M
+      for SwarmResearch, a 93.1% reduction.
+    quote_sha256: bf4d335c4c2e6afe7e3a464624aef7f8478c15ddfda660f43d861afb5b11d1e4
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5 Limitations
+    quote: Because long-horizon runs are costly, most configurations use a single run. Only Anthropic
+      kernel optimization with Codex and the checkpoint ablations are replicated.
+    quote_sha256: 7dab28e30855535cf3a3a7880cada51d0d43112eba0772798b2e32b71397ba2e
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §5 Limitations
+    quote: Our ablations change what each agent sees, not whether it keeps its conversation across invocations.
+    quote_sha256: b23121688ce69f7f2211d1d3191d004fb4abde6e15e5402288811c961ba13df5
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: App E Anthropic Kernel Advisor Prompt
+    quote: Reset means fresh reasoning from measured state, not amnesia.
+    quote_sha256: 7b5fbe2d715ee6dab24b7a7281eb90d76b725071c4c5344537af5156f5cf57bf
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: App D.1 Implications
+    quote: Discarding older results would have lost it.
+    quote_sha256: fbe56c063905fa1f5f7e67570d03b61efb625ef4cd94128ae2d237eea3a27c8d
+    source_revision: arXiv:2610.07625v1 (html, sha256 dd362939...9c17)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 2
+      partial: 2
+      unanchored: 1
+    flags_for_operator:
+    - 'k1 partial: Landlock/network/session clearing/ledger quote confirmed; "built-in subagents disabled"
+      is stated only for Codex ("turn off its built-in multi-agent feature"); not-1998 contrast is interpretive.'
+    - 'k4 partial: Limitations quote and App D.1 counter-datum confirmed; the 1097-cycle figure and intake-1998
+      characterisation are not in this source (cross-source, unverifiable here).'
+    - k3 unanchored citable
+    - 'actionable W2-NEW-STATELESS-01: "SLA is the only source that ablates what enters each fresh context"
+      is an unsupported superlative about the literature; also the 1998 vs LLM4LLM position mapping is
+      not from this paper.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read /mnt/raid0/llm/tmp/dive-w2-stateless/paper.html
+    (sha256 dd3629395bbbeaff76ab4f256967fc619816d0c37a9ef1ae98f0b79e3ea5df74, arxiv.org/html/2610.07625v1)
+    via paper.txt (h2t.py). Read abstract, §1-5, all tables 1-7, App A-D and the Advisor/Worker prompts
+    for kernel and the FrontierSWE advisor prompt; NOT read: remaining Appendix E prompts after the FrontierSWE
+    advisor prompt, figures (images). Code link in front matter: https://github.com/Alex-q-z/stateless-language-agents
+    (NOT cloned; unverified whether populated). License CC BY 4.0 (paper). Tier-2b: one search; only secondary
+    mirrors (opentrain.ai, chatpaper) restating the abstract (restatement); no replication or criticism
+    found. Comparison numbers for intake-1998 are taken from the W1-D1 dive output, not re-read here.'
+- id: intake-2011
+  arxiv_id: '2609.00077'
+  url: https://arxiv.org/abs/2609.00077
+  source_type: paper
+  title: 'Beneath the Diff: Diagnosing and Mitigating Algorithmic Mode Collapse in Code-Level Autonomous
+    Research Loops'
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Bowei He
+  - Weixu Zhang
+  - Yili Jin
+  - Xue Liu
+  key_claims:
+  - 'Algorithmic mode collapse is measured as a DISSOCIATION between axes over a run: surface diversity
+    S_t (mean pairwise normalized Levenshtein distance of the last W=20 accepted diffs) stays flat (0.66-0.68)
+    while semantic diversity (HDBSCAN cluster count of Sentence-BERT embeddings of per-edit one-sentence
+    intent descriptions; falls 50-70% over 500 iterations) and mechanism entropy H_t (Shannon entropy
+    over a frozen 9-category ML-edit taxonomy; 1.76 -> 1.18 nats on T2) collapse. The conclusion is that
+    surface-only monitoring misses it.'
+  - 'Collapse co-moves with a faithfulness gap: faithfulness ratio rho = audited gain / in-loop gain is
+    0.38-0.49 for vanilla autoresearch (T=300, four single-A100 NLP tasks, proposer Claude Opus 4.7, 3
+    seeds / 5 on T1), in-loop gains overstate held-out gains 2.0-2.6x by iteration 300; the construct
+    is validated with 12 known-good edits (rho 0.93) vs 8 proxy-only edits (rho 0.11). Longer horizon
+    (T=1000, one seed) deepens collapse (H_t 0.94, rho 0.31).'
+  - 'Mitigation DAPS = category-coverage reweighting of N sampled candidates (w = exp(-log p_t(c)/tau_c)),
+    FIFO memory of the last 200 accepted edit-description embeddings with cosine rejection (tau_m 0.85),
+    and a revert gate every K=10 iterations when in-loop minus audit gain exceeds a threshold (80th percentile
+    of vanilla gap over first 30 iterations). Measured effect (avg of four tasks, T=300): cluster decay
+    0.68 -> 0.21 (-69.1%), rho_audit 0.44 -> 0.79, rho_blind 0.41 -> 0.74, in-loop gain 0.983x of vanilla;
+    +1.4% wall-clock (reported for task T2 only); raising temperature does nothing (HiTemp rho 0.43-0.51);
+    the audit-gated revert alone gives rho 0.67 but leaves dC at 0.55, and ccr+pem alone (no audit access)
+    gives rho 0.71, dC 0.28.'
+  - 'Scope: all main results are ML training-pipeline loops on one A100 with authors-built baselines;
+    the only non-ML evidence is a 150-iteration, 2-seed probe (App M) in which 66% of late accepted edits
+    were caching or micro-optimisations. No GPU-kernel/CPU-kernel loop, no independent replication, code
+    released (MIT) at BokwaiHo/arl-mode-collapse.'
+  techniques:
+  - surface diversity (windowed pairwise normalized Levenshtein over accepted diffs)
+  - semantic cluster count (Sentence-BERT of one-sentence edit descriptions + HDBSCAN)
+  - mechanism entropy over a frozen 9-category taxonomy
+  - three-tier audit (in-loop / audit read by gate / blind never read)
+  - faithfulness ratio audited-gain over in-loop-gain
+  - 'DAPS: category-coverage reweighting + FIFO edit-memory dedup + audit-gated revert'
+  reported_results:
+  - 'Fig.1: semantic cluster count collapses 50-70% over 500 iterations while surface diversity is flat;
+    shaded +-1 sd over 3 seeds (§1).'
+  - 'Table 2 (T=300): rho_audit vanilla 0.41/0.46/0.38/0.49 (T1-T4) vs DAPS 0.78/0.80/0.74/0.82; in-loop
+    gains within 1 sd.'
+  - 'Table 3 (avg): Vanilla dC 0.68, rho_aud 0.44, rho_bli 0.41; HO-Revert 0.55 / 0.67 / 0.62; ccr+pem
+    0.28 / 0.71 / 0.67; DAPS 0.21 / 0.79 / 0.74.'
+  - 'Table 4: S_T ~0.65-0.69 constant across all methods; H_T 1.18 (vanilla) -> 1.71 (DAPS); gap 0.171
+    -> 0.067.'
+  - 'Table 6: Aider proposer reproduces collapse (rho 0.48, H 1.22) and DAPS effect (0.76, 1.65).'
+  - 'Table 13: known-good edits rho 0.93+-0.06 (n=12), proxy-only edits rho 0.11+-0.08 (n=8).'
+  - 'Table 16 (one seed): T=1000 vanilla rho 0.31, H 0.94; 8B target rho 0.44.'
+  - 'Compute: ~6,200 A100-hours (§4.1.4); DAPS adds ~1.4% per-iteration wall-clock (§4.8).'
+  referenced_arxiv_ids:
+  - '2602.13103'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-1998
+    - intake-148
+    intake_entry_notes:
+    - intake-1998 (cites this work as independent evidence of anchoring/diversity collapse)
+    - intake-148 (karpathy/autoresearch loop that this paper instruments)
+  expanded_from: intake-1998
+  credibility_score: 3
+  source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 2
+  reader_should_conclude: 'Take away: the DIAGNOSTIC is the reusable part. Edit-surface diversity is blind
+    to collapse; counting clusters of per-attempt intent descriptions and the entropy of a frozen mechanism
+    taxonomy over a sliding window exposes it, and an in-loop-vs-held-out gain ratio exposes the Goodhart
+    cost. All of it is computable offline from logged proposals and metrics. Do NOT carry: the 9-category
+    taxonomy (ML pipeline edits: optimizer, scheduler, loss...) - AK needs a kernel taxonomy derived the
+    same way, from pilot logs, frozen before analysis; the DAPS numbers as a prediction for AK (single
+    A100, small ML tasks, authors-tuned baselines, no replication); the idea that more diversity is automatically
+    better (the paper itself notes DAPS edits are "not necessarily better edits", and the audit-gated
+    revert accounts for most of the faithfulness gain on its own). The rho analog for AK is already structurally
+    present as screen-vs-serving-gate divergence.'
+  dive_corrections: '2026-10-20 Stage-2 (NEW source): paper read from arXiv HTML on disk (all of §1-5,
+    App A-N text; figures are images). Settled the measurement (four axes; the headline dissociation is
+    S_t flat vs H_t / C_t collapsing), the mitigation effect sizes and their attribution (revert gate
+    vs ccr+pem), and found an early performance-engineering probe (App M) but no kernel-search loop. Repo
+    cloned and README/LICENSE read, nothing executed. Main correction 2026-10-20 after per-claim second
+    reader: +1.4% wall-clock is a T2-only figure, not a four-task average.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 Surface diversity
+    quote: For each accepted edit, we extract its unified diff and compute the normalized Levenshtein
+      distance between every pair of diffs in a sliding window of the W=20 most recent accepted edits.
+    quote_sha256: 9b80d7f31adfbc41babf7732b6cbadbf02a4d430de109597998aa690ddfedb9d
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 Semantic diversity
+    quote: We embed all descriptions accumulated up to iteration t with Sentence-BERT (Reimers and Gurevych,
+      2019) and cluster them with HDBSCAN (Campello et al., 2013) at a fixed minimum cluster size of 5.
+    quote_sha256: 109c569e214c410820e23535510534f323f1781cbdec95d7e8e59d05fb19574e
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 Mechanism entropy
+    quote: Ht is the Shannon entropy (Shannon, 1948) of the category distribution over a window of W accepted
+      edits.
+    quote_sha256: 9d8e2e3f5c590c8ec4c4a26fb3cca7492468ce04bbf575e95bff9cfaffbe6b1c
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.4 (a)
+    quote: St stays in [0.66,0.68] for both methods throughout, while Ht under Vanilla AR drops from 1.76
+      nats at t=30 to 1.18 nats at t=300.
+    quote_sha256: 80e52c97a31955ae2d38385930e25c227fac205ef413417f6ad50f71875726fb
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §1
+    quote: By iteration 300, average in-loop gains overstate held-out gains by a factor of 2.0 to 2.6
+      across our tasks.
+    quote_sha256: 47229d9f8c8d6e7150427218d2023ffc6446b8082d88ca7ea7a5ed24aca135d0
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.3
+    quote: with zero audit access ccr+pem already surpasses both published diversity mitigations on both
+      faithfulness tiers
+    quote_sha256: ce27915132881b7f1698b9a0d7144722465052003226914005e4433fa3363911
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 Third
+    quote: Increased proposer entropy does not, in our experiments, translate to increased semantic diversity
+    quote_sha256: 1cd374e0571f42186e427f2adfa546ebe24a33ed552a392711bd88a2dea9ec77
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: App M
+    quote: surface diversity is flat (0.71 to 0.70) while semantic clusters fall from 11 to 5
+    quote_sha256: e55e8376ddd30acc9675bba5a590579c18683b15a50dfbcac385a685306e2701
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Limitations
+    quote: Our study is confined to model and data scales accessible on a single A100 machine
+    quote_sha256: b764b7a9a4a069817ae5b5f2262ea9361fcd60757fb5e523968abc670267763b
+    source_revision: arXiv:2609.00077v1 (html, sha256 cf65c855...7ca1); code BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+    flags_for_operator:
+    - 'k2 partial: DAPS numbers (0.68->0.21, 69.1%, 0.79/0.74, tau_m 0.85, 80th pct, ablations) confirmed,
+      but +1.4% wall-clock is stated for T2 only, not the four-task average the claim implies.'
+    - 'actionable W2-NEW-MODECOLLAPSE-02: Reason says in-loop/held-out ratio is "the only quantity" exposing
+      Goodharting; paper does not claim exclusivity (it also uses H_t, C_t, V_t).'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read /mnt/raid0/llm/tmp/dive-w2-modecollapse/paper.html
+    (sha256 cf65c8558ca241d163dd7408558cb13b020e0c65ff6b62cf7de66d71b48349e9, arxiv.org/html/2609.00077v1)
+    via paper.txt: all body, Tables 1-6, App A, B (skimmed), C (table values skimmed), D, E (headings
+    + first examples), F, G-N. Repo cloned depth 1 to dive-w2-modecollapse/repo @ bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    (LICENSE MIT; README read; code files in arl/ and scripts/ NOT read, nothing executed). Tier-2b: one
+    search; no independent replication or criticism of DAPS; related-loop critiques surfaced (2605.26200
+    already in index with 28 hits). Aggregate Tier-2b: none.'
+- id: intake-2012
+  arxiv_id: '2006.06762'
+  url: https://arxiv.org/abs/2006.06762
+  source_type: paper
+  title: 'Ansor: Generating High-Performance Tensor Programs for Deep Learning'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Lianmin Zheng
+  - Chengfan Jia
+  - Minmin Sun
+  - Zhao Wu
+  - Cody Hao Yu
+  - Ameer Haj-Ali
+  - Yida Wang
+  - Jun Yang
+  - Danyang Zhuo
+  - Koushik Sen
+  - Joseph E. Gonzalez
+  - Ion Stoica
+  key_claims:
+  - 'Ansor is a sample-complete-programs-then-fine-tune tuner: it samples whole tensor programs from an
+    automatically generated hierarchical space (sketches + random annotation), then iterates evolutionary
+    search scored by a learned cost model, measures only a small top batch per round on hardware, and
+    re-trains the model on all measurements so far. The cost model is a gradient-boosted decision tree
+    predicting a per-innermost-statement score (summed over the program) from a 164-dim hand-engineered
+    feature vector (op counts, vectorize/unroll/parallel annotations, thread bindings, buffer bytes/lines/reuse,
+    arithmetic-intensity curve), trained with a loss that weights faster programs, a new model each round
+    from scratch (<30,000 samples).'
+  - 'The paper deliberately does NOT use the cost model on incomplete programs: Fig.3 shows a model trained
+    on complete programs has near-chance pairwise accuracy/top-k recall on partial programs, which is
+    why Halide beam-search style pruning of partial programs loses good programs ("Beam Search" ablation)
+    - the surrogate is applied only to complete candidates.'
+  - 'Measured accuracy of the surrogate: RMSE 0.079, R2 0.958, pairwise-comparison accuracy 0.851, recall@30
+    of top-30 0.624 (25k ResNet-50 CPU programs, random 80/20 split, test set biased to good programs);
+    in other words it ranks well but misses 38% of the true top-30.'
+  - 'Measured search savings are against AutoTVM, not against a cost-model-free search: 1.0-21.8x end-to-end
+    speedup, and 2.7x-16.5x fewer measurements (3.3x-88.6x less wall-clock) to match AutoTVM on Intel
+    CPU; the paper credits scheduler + fine-tuning + coverage jointly. The only cost-model-adjacent ablations
+    are "No fine-tuning" (random sampling only, loses final performance) and "Beam search" (cost model
+    used on partial programs, loses). Single-op ablation is median of 5 runs on one convolution.'
+  - 'Limits that matter here: static dense shapes only; relies on LLVM/NVCC for instruction selection
+    and "comes short of utilizing the special instructions ... for mixed-precision and low-precision operators";
+    evaluated on Intel 18/20-core CPU, V100, ARM A53 (not AMD, not HIP). The search space is a parametric
+    schedule space (tile sizes, annotations), not LLM-written source patches.'
+  techniques:
+  - hierarchical search space (sketch generation + random annotation)
+  - evolutionary search (tile/parallel/pragma/compute-location mutation, node-based crossover) driven
+    by a learned cost model
+  - gradient-boosted-tree cost model retrained from scratch on all measurements each round, per-statement
+    features
+  - weighted squared-error loss that weights fast programs
+  - gradient-descent task scheduler across subgraphs
+  - epsilon-greedy exploration
+  reported_results:
+  - 'Single operators (80 cases, 20-core Xeon 8269CY, <=1,000 trials each): Ansor best or tied on all,
+    1.1-22.5x over search frameworks (§7.1, Fig.6).'
+  - 'Subgraphs (ConvLayer, TBS) CPU and V100: 1.1-14.2x over manual libraries and search frameworks (§7.2,
+    Fig.8).'
+  - 'End-to-end (Intel 18-core 8124M, V100, ARM A53): up to 3.8x / 1.7x / 2.6x over best alternative;
+    1.0-21.8x over AutoTVM; 1000 x n trials per DNN (§7.3).'
+  - 'Measurements to match AutoTVM (Intel CPU, bs=1): ResNet-50 21,220 -> 6,403; MobileNet-V2 31,272 ->
+    1,892; 3D-ResNet 5,158 -> 1,927; DCGAN 3,003 -> 298; BERT 6,220 -> 496 (§7.4 Table 3a). Wall-clock
+    seconds 39,250 -> 4,540; 58,468 -> 660; 7,594 -> 2,296; 4,914 -> 420; 12,007 -> 266 (Table 3b).'
+  - 'Cost model on 5,000 held-out of 25,000 ResNet-50 programs: RMSE 0.079, R2 0.958, pairwise acc 0.851,
+    recall@30 0.624 (§7.5).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2000
+    intake_entry_notes:
+    - 'intake-2000 (RSI-Anything: world-model pre-screening of candidates; Ansor is the classical learned-cost-model
+      instance of the same idea)'
+  expanded_from: intake-2000
+  credibility_score: 5
+  contradicting_evidence:
+  - TLP (arXiv 2211.03578; https://arxiv.org/pdf/2211.03578; independent) and Pruner (arXiv 2402.02361;
+    https://arxiv.org/html/2402.02361v2; independent) are follow-ups reported by search to build on Ansor
+    and to argue that its learned-cost-model search remains slow and that models do not transfer across
+    hardware; TenSet (https://neurips.cc/virtual/2021/22738; independent) reports a pre-trained cost model
+    cutting Ansor search time by up to 10x. Search-result snippets only, not read from disk.
+  source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+    v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 2
+  reader_should_conclude: 'Take away: Ansor is the canonical measured-surrogate loop: rank many cheap
+    candidates with a learned model, measure only a small top batch, retrain on every measurement. It
+    is useful to AK only for the PARAMETRIC part of the search (tile/block sizes, unroll, thread/affinity
+    and OMP knobs, pragmas), where a 164-dim-style statement feature vector + GBDT could be fitted from
+    AKs own measurements and used to pre-rank configurations. Do NOT carry: "N-fold fewer trials" as a
+    prediction (savings are vs AutoTVM and jointly credited to scheduler, fine-tuning and coverage; no
+    cost-model-off ablation); the surrogate for LLM-written patches (Ansor features come from an IR it
+    generates; AK candidates are source diffs); the cost model on partial/unbuilt programs (the paper
+    shows it fails there); anything about AMD CPU, MI210/HIP or low-bit quantised kernels (not evaluated;
+    the paper lists low-precision instruction use as a limit). The surrogate saves MEASUREMENT time only;
+    where builds dominate an iteration (handoff-recorded AK breakdown: build 75.7%, measured 3.9%, not
+    judged by this dive) a pre-build predictor is the prerequisite.'
+  dive_corrections: '2026-10-20 Stage-2 (NEW source): read the ar5iv rendering of the paper from disk
+    (full text, version not stated; the v5 PDF was saved but local text extraction failed, so v5-identity
+    is unverified; this is an OSDI 2020 paper, the arXiv abs page lists Comments "OSDI 2020"). Settled
+    the cost-model design and its measured quality, and corrected the "trial savings vs measurement-only"
+    framing: the paper reports savings only vs AutoTVM with no cost-model-off ablation.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §5.2
+    quote: We train a gradient boosting decision tree [9] as the underlying model f.
+    quote_sha256: 16b6e45878e2de5bca64887d3dc29475e4902055bf1df7d47cac07d37d324e54
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §5.2
+    quote: Because we mostly care about identifying the well-performing programs from the search space,
+      we put more weight on the programs that run faster.
+    quote_sha256: cffb9d9a255787784d658c9a2a7443b28a48005760dacfbdf73edf8bf7ecbc48
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: App B
+    quote: The length of a feature vector including all the listed features for one statement is 164.
+      We use the same set of features for both CPU and GPU.
+    quote_sha256: 928afb3533792a3f295d6af51fcf80e6186e249a13b32f6f10ded9b1273ae4c9
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §5
+    quote: Finally, the profiling data got from measurement is used to re-train the cost model to make
+      it more accurate.
+    quote_sha256: 38fec26d91f9b9a34ff94067c3b1de9810d3a385c14e5a729270ad6e265a12b4
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §5.2
+    quote: Training a gradient boosting decision tree is very fast on such a small data sets, so we train
+      a new model every time instead of doing incremental updates.
+    quote_sha256: 26813d0e1e86582ee9173f38e1dfefbd3f3d9f7a519d3d05d3a85f171aef3cf5
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §7.4
+    quote: Ansor can match the performance of AutoTVM with an order of magnitude less search time.
+    quote_sha256: 646e3b4d2a42a472a9ea53389808b711ac3cac88a9cb5530e60a8101c5d14c82
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §7.4
+    quote: In Table 3a the saving in search time comes from the task scheduler, efficient fine-tuning,
+      and comprehensive coverage of effective optimizations.
+    quote_sha256: 43598e5e398ce5c6df3aacb0d1dece7010cf1fddb73b4ce6b6ab1a150991f9b2
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §7.5
+    quote: The model archives 0.079 RMSE, 0.958 R2 correlation, 0.851 pairwise comparison accuracy, and
+      0.624 recall@30 of top-30 programs
+    quote_sha256: c9bda98aed2942ca279c7f83359a34c0e05c3e09893ba37cd78f7f0420d7a81e
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §2 (Fig.3 discussion)
+    quote: the cost model trained on complete programs cannot accurately predict the final performance
+      of incomplete programs.
+    quote_sha256: 36b664bd73ec9c908b2484ddc7572f5cecae4f67f756cbb2982f25e0f0adf1be
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §9 Limitations
+    quote: Ansor comes short of utilizing the special instructions, such as Intel VNNI, NVIDIA Tensor
+      Core, and ARM Dot for mixed-precision and low-precision operators
+    quote_sha256: 1ee8d65775a34af2d4e70109dae8539aef2cb9dfa0f0f606f0bcdfc84c108693
+    source_revision: arXiv:2006.06762 (ar5iv rendering, version not stated on page, sha256 6055529d...d92fd;
+      v5 PDF sha256 44a4d779...3a3 saved but text not extractable locally)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 4
+      partial: 1
+    flags_for_operator:
+    - 'k4 partial: Static shapes, dense-only, LLVM/NVCC reliance, VNNI quote confirmed; hardware is 18-core
+      Intel/V100/4-core A53, "18/20-core" has no 20-core support.'
+    - 'actionable W2-NEW-ANSOR-01: "only with thousands of labelled measurements" is not in the paper
+      (it says <30,000 measured typically); presented as Ansor finding.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read /mnt/raid0/llm/tmp/dive-w2-ansor/ar5iv.html
+    (sha256 6055529d5a0f93183ccaea40ba04eab37aad907c2642196f50c116a0f5d192fd, ar5iv.labs.arxiv.org/html/2006.06762)
+    via ar5iv.txt: abstract, §1-§10, Tables 2-3, App B feature list; skimmed refs; NOT read: App A (gradient
+    derivation), App C shape configs, figure images (Fig.6-11 values). arXiv v5 PDF saved as paper.pdf
+    (sha256 44a4d77988c6bd03276720d982cc86d620f525cfd3b8cc6a40e79fee9f4093a3); pypdf unavailable and the
+    local zlib extractor returned empty pages. Tier-2b: one search; follow-ups (TenSet, TLP, Pruner) surfaced,
+    not read; no failed reproduction found; Ansor is shipped in Apache TVM (paper §10). License: not applicable
+    to the paper.'
+- id: intake-2013
+  arxiv_id: '2507.23159'
+  url: https://arxiv.org/abs/2507.23159
+  source_type: paper
+  title: 'Full-Duplex-Bench v1.5: Evaluating Overlap Handling for Full-Duplex Speech Models'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - Guan-Ting Lin
+  - Shih-Yun Shan Kuan
+  - Qirui Wang
+  - Jiachen Lian
+  - Tingle Li
+  - Shinji Watanabe
+  - Hung-yi Lee
+  key_claims:
+  - 'FDB v1.5 replaces v1''s pause/backchannel/smooth-turn/interruption set with four scripted OVERLAP
+    scenarios injected while the model is speaking: user interruption (200 synthesized clips), user backchannel
+    (99), user talking to others (100, off-axis filtering: -8 dB, >4 kHz -5 dB, reflections at 45/120
+    ms), background speech (100, different voice, -15 dB, 3 kHz low-pass, 100 ms echo). All stimuli are
+    TTS-synthesized.'
+  - 'Metrics are scenario-conditioned, not TOR/JSD: (a) GPT-4o classifies the post-overlap response from
+    Parakeet-TDT transcripts into Respond/Resume/Uncertain/Unknown; (b) stop latency t_stop = t_model_stop
+    - t_user_start and response latency t_resp = t_model_start - t_user_end, in seconds via Silero-VAD;
+    (c) pre- vs post-overlap prosody (WPM, pitch, intensity, UTMOSv2) with paired t-tests. Directions
+    per Table 1/2: interruption wants Respond high with low stop and response latency; backchannel/talking-other/background
+    want Resume high with HIGH stop latency (hold the floor) and low response latency.'
+  - 'v1''s near-random backchannel JSD is NOT carried forward: v1.5 has no JSD or backchannel-frequency
+    metric and no human-timing reference; backchannel is graded by the categorical Resume rate and stop
+    latency. The successor therefore removes, rather than repairs, the non-discriminating metric. (Not-in-paper
+    inference: Resume rate for a listener backchannel is scored on 99 TTS clips with no human reference,
+    so it measures filtering, not backchannel PRODUCTION.)'
+  - 'Five systems (Table 2): Freeze-Omni, Moshi, gemini-2.0-flash-live-001, Nova Sonic, gpt-4o-realtime-preview-2024-12-17.
+    user_intr Respond: 0.72/0.50/0.33/0.24/0.78; stop(s): 1.42/1.16/2.20/2.25/0.23; resp(s): 1.35/1.47/2.62/2.75/1.50.
+    user_backch Resume: 0.80/0.06/0.93/0.98/0.70 (Moshi Unknown 0.92). talking_other Resume: 0.25/0.19/0.99/0.90/0.02
+    (GPT-4o Respond 0.91). bkg_speech Resume: 0.25/0.07/0.30/0.98/0.04. Two strategies: fast-yielding
+    GPT-4o vs floor-holding Gemini/Sonic; Freeze-Omni (a VAD/cascaded design) is the most balanced.'
+  - 'CASCADE SCORABLE: yes, offline. The framework is model-agnostic and needs only a time-synchronous
+    output.wav per stimulus (clean_input/clean_output references are also expected for the adaptation
+    analyses); scoring needs Parakeet-TDT ASR, Silero-VAD, UTMOSv2 and a GPT-4o call for the behavior
+    classifier. A whisper->LLM->qwentts cascade needs a streaming harness that plays the stimulus in real
+    time against an already-speaking assistant and records the cancel/resume behavior; the stop-latency
+    metric maps directly onto CS-23 barge-in cancel latency. Only the GPT-4o behavior classifier is a
+    cloud dependency (replaceable by a local judge, which then breaks comparability with the published
+    numbers).'
+  techniques:
+  - scripted overlap injection (interruption / backchannel / talking-to-others / background speech)
+  - GPT-4o 4-class behavior labelling over Parakeet-TDT transcripts
+  - Silero-VAD stop/response latency
+  - pre/post-overlap prosody deltas with paired t-tests
+  reported_results:
+  - 'Table 2 (§3-4): behavior distribution and stop/response latency for 5 systems x 4 scenarios, values
+    quoted in claim 3'
+  - 'Table 3 (§5): prosody Pre->Post deltas; GPT-4o WPM +19.04 (p<.001), Moshi WPM +59.55 (p<.001), Sonic
+    UTMOSv2 -0.21 (p<.001)'
+  - '§4.2: "effective human-like repair typically requires tresp<=1.5 s" (author heuristic, no human data
+    shown)'
+  referenced_arxiv_ids:
+  - '2507.18161'
+  - '2507.06261'
+  - '2411.00774'
+  - '2411.18138'
+  - '2501.06282'
+  - '2409.11727'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2003
+    intake_entry_notes:
+    - intake-2003 (parent FDB v1; v1.5 reuses its repo, ASR and evaluate.py entry)
+  expanded_from: intake-2003
+  credibility_score: 4
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'v1.5 is the useful FDB successor for CS-23/CS-22: scenario-conditioned stop/response
+    latency and Respond/Resume labels over a speaking assistant, scorable on a cascade offline. Do NOT
+    carry v1''s JSD forward (v1.5 drops it); do NOT read Table 2 as a ranking of architectures (five systems,
+    TTS-synthesized stimuli, gemini-2.0 and gpt-4o-realtime-preview endpoints since superseded, repo README
+    now lists newer models). The Respond/Resume labelling needs GPT-4o; swapping the judge voids comparability
+    with the published numbers. The ~1.5 s repair-gap threshold is an author heuristic with no human-data
+    support in the paper. Stop-latency ''direction'' is scenario-dependent (high is good for backchannel/off-talk/background).'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected the w1 impression that v1.5 inherits v1''s
+    metrics: JSD/Freq/TOR are gone, replaced by behavior classes + stop/response latency + prosody; backchannel
+    JSD problem removed not fixed. Main correction 2026-10-20 after per-claim second reader: claim_anchors
+    re-indexed to the corrected claim list (dive had shifted indices); claims 0 and 2 are unanchored.'
+  claim_anchors:
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Abstract
+    quote: 'Benchmarking five state-of-the-art agents reveals two divergent strategies: a responsive approach
+      prioritizing rapid response to user input, and a floor-holding approach that preserves conversational
+      flow by filtering overlapping events.'
+    quote_sha256: 32504f1327f4d8e5abadbe49c0a2f6e1a5bc49cda6c4f864558640d84bd0b74e
+    source_revision: arXiv:2507.23159v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §2.3.2
+    quote: Both tstop and tresp are in seconds, with speech activity detected by Silero-VAD [28].
+    quote_sha256: 4d8c3bee7997fa62e05c69d570d0734ecdb617a838704d2be7dc2b2286ef3a17
+    source_revision: arXiv:2507.23159v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §2.3.1
+    quote: Crucially, the text-based GPT-4o evaluator operates solely on ASR transcripts from (Parakeet-TDT)
+      [22] to perform objective semantic categorization
+    quote_sha256: 3c9b561a2d690bd86f2258dd2285e9cf644fd0964ed57c2cd70d095946e30f78
+    source_revision: arXiv:2507.23159v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.1.1
+    quote: GPT-4o exhibits the strongest responsiveness (Respond=0.78) and extremely fast yielding (tstop=0.23
+      s), with Freeze-Omni closely following (Respond=0.72) and achieving the shortest tresp (1.35 s).
+    quote_sha256: 12cf92b541f7ca486b316dc6ec8c33f1c70c213119153411a96a9d1c2a07d80c
+    source_revision: arXiv:2507.23159v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.1.2
+    quote: Sonic and Gemini are most reliable (Resume=0.98 and 0.93, Respond close to 0), with Sonic also
+      keeping response latency modest (1.45 s).
+    quote_sha256: d93c3148f5c3f47ce937e34881d997437dcf21616ef69739f3fb898fa56cece9
+    source_revision: arXiv:2507.23159v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §2.1
+    quote: This approach is model-agnostic, making no assumptions about internal architecture and thus
+      supporting both open-source models and closed commercial APIs.
+    quote_sha256: cba1e34b434201a84e504502fe4ea1a542b85f4e1a3594d671613f4b9f2809cb
+    source_revision: arXiv:2507.23159v4 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2003
+    claim_index: 1
+    why: 'metric lineage: FDB v1 TOR/JSD/latency definitions are what the successors extend or replace'
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 2
+    flags_for_operator:
+    - 'k2 partial: v1.5 has no JSD metric (confirmed) but "v1 near-random backchannel JSD" is not in this
+      source and the removal-not-repair framing is inference (author partly flags).'
+    - 'k4 partial: Needs only time-synchronous output.wav and the scoring stack (repo readmes confirm);
+      streaming-harness need and CS-23 mapping are inference, not source.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-fdb15/paper.txt
+    (arXiv html v4, 26 Apr 2026, sha256 d3f133878736d37a4e67c64240b1addd8c2f85922a3eafb92836b85589d17c44;
+    abs.html lists v1-v4). Also repo README raw (sha256 1131ac9c8cdc87d3cfa52294d42a350f71adeadd49189561acdafa387167da50),
+    v1_v1.5/README.md, evaluation/README.md, dataset/README.md (raw copies in dive dir). NOT read: evaluate.py
+    / get_timing.py code, Google-Drive dataset (no downloads), v1/v2/v3 version diffs of this paper. Tier-2b
+    search: no independent replication found (aggregators restate authors'' numbers: restatement). Repo
+    evaluation README confirms entry points `evaluate.py --task behavior`, `get_timing.py`, `significance_test.py`.
+    License: paper CC BY-SA 4.0 (one-line fact).'
+- id: intake-2014
+  arxiv_id: '2510.07838'
+  url: https://arxiv.org/abs/2510.07838
+  source_type: paper
+  title: 'Full-Duplex-Bench-v2: A Multi-Turn Evaluation Framework for Duplex Dialogue Systems with an
+    Automated Examiner'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Guan-Ting Lin
+  - Shih-Yun Shan Kuan
+  - Jiatong Shi
+  - Kai-Wei Chang
+  - Siddhant Arora
+  - Shinji Watanabe
+  - Hung-yi Lee
+  key_claims:
+  - 'FDB-v2 evaluates MULTI-TURN dialogue: an automated Examiner (itself a speech LM, gpt-realtime, synthesized
+    voice) drives staged goals against the Evaluatee over WebRTC in two pacing modes (Fast: may interrupt/backchannel
+    at stage completion; Slow: replies only after end-of-turn or long pause; no barge-in) across four
+    task families: Daily, Correction, Entity Tracking, Safety (11 policy classes).'
+  - 'Metrics are LLM-judge scores, not v1-style signal metrics: Turn-Taking Fluency (TT, 1-5 per event),
+    Multi-Turn Instruction Following (IF, 1-5 per event) and one global task-specific 1-5 score (Correction
+    / Entity / Safety); higher is better throughout. Transcripts come from Parakeet-TDT; the judge is
+    gemini-2.5-flash-preview-09-2025. There is NO TOR, JSD, latency-in-seconds or VAD timing metric in
+    v2: v1''s JSD problem is not addressed but made moot (backchannel timing is no longer measured; backchannels
+    only appear as examiner behavior).'
+  - 'Judge validity: on 120 human-scored sessions, Pearson r / Krippendorff alpha between judge and humans
+    are TT 0.6137/0.6143, IF 0.6807/0.6833, Correction 0.5877/0.5879, Entity 0.6330/0.6383, Safety 0.6914/0.6931,
+    i.e. moderate; the paper reports no judge-vs-judge or judge-seed variance and no CI on Tables 1/3
+    (3 systems, run counts not stated in the text read).'
+  - 'Systems (Table 1 task-specific, Fast): Correction/Entity/Safety FreezeOmni 2.74/2.62/3.94, Moshi
+    2.88/2.76/3.67, GPT-Realtime 4.02/4.51/4.44; (Slow): FreezeOmni 3.50/2.86/4.27, Moshi 3.46/3.84/3.51,
+    GPT-Realtime 3.94/4.12/4.53. Appendix Table 3 TT/IF Fast, Daily: FreezeOmni 3.14/2.34, GPT-Realtime
+    3.74/3.81, Moshi 3.73/2.67. All systems degrade over a 75 s session; IF is less stable than TT. Pacing
+    matters: Slow improves Entity IF by about 0.5-1.0 for GPT-Realtime and Moshi.'
+  - 'CASCADE SCORABLE: only through a WebRTC adapter. The cascade must be wrapped as a streaming 48 kHz/16-bit/mono
+    10 ms-frame peer; the framework itself is cloud-bound (OPENAI_API_KEY for the gpt-realtime Examiner,
+    GEMINI_API_KEY for the judge per the v2 README) so a fully local run would need both a local examiner
+    SLM and a local judge, which is an unvalidated substitution. The 1-5 TT score is an LLM impression
+    of timing, not a measured latency, so it cannot supply a CS-2 latency gate; it could supply CS-36
+    end-to-end conversational acceptance after the judge is cross-checked.'
+  techniques:
+  - speech-LM examiner (gpt-realtime) with staged semantic goals
+  - fast vs slow examiner pacing
+  - WebRTC adapter-orchestrator-adapter (48 kHz mono, 10 ms frames)
+  - Gemini-2.5-flash LLM judge, 1-5 rubrics
+  reported_results:
+  - 'Table 1 (§3.2.3): task-specific 1-5 scores, 3 systems x 3 tasks x 2 pacings'
+  - 'Appendix Table 3: TT and IF by task and pacing, averaged over 0-75 s'
+  - 'Table 2 (§3.3): judge-human agreement r 0.59-0.69 on 120 sessions'
+  - '§3.2.1-3.2.2: degradation over time and pacing effects'
+  referenced_arxiv_ids:
+  - '2503.04721'
+  - '2509.26388'
+  - '2510.02066'
+  - '2411.00774'
+  - '2410.00037'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2003
+    intake_entry_notes:
+    - intake-2003 (parent FDB v1; v2 shares the repo)
+  expanded_from: intake-2003
+  credibility_score: 3
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: v2 is a LLM-judged multi-turn conversation harness, not a timing benchmark.
+    It answers 'does the interlocutor keep goals, corrections and entities across turns under overlapping
+    speech', with 1-5 scores at moderate human agreement (r about 0.6). It does NOT repair v1's backchannel
+    JSD problem (it simply drops timing metrics), and only three systems were evaluated (GPT-Realtime,
+    Moshi, Freeze-Omni; no cascade). Treat the Examiner as a cloud dependency (OpenAI) and the judge as
+    a cloud dependency (Gemini). Do not cite TT scores as latency evidence.
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected wave-1 framing ''v2 = FDB with timing'':
+    v2 has no TOR/JSD/latency; all metrics are 1-5 Gemini-judge scores; no cascade evaluated in the paper.
+    Appendix text cites a nonexistent ''§2.5'' (should be §2.4), cosmetic.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §2.1
+    quote: Importantly, in FDB-v2 the Examiner itself is a spoken language model. We adopt gpt-realtime
+    quote_sha256: d53d258b564a20d8285049b273e0727ee97dcc2ea4daa88084e2ace4a9ef6b53
+    source_revision: arXiv:2510.07838v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §2.4
+    quote: We leverage Gemini (gemini-2.5-flash-preview-09-2025) (Google DeepMind, 2025), conditioned
+      on the Examiner’s system prompt and stage-level semantic goals
+    quote_sha256: 6dd2291aa8863db0bf7db5058c302736f6e8836c8c093e31abc666e59585f9a0
+    source_revision: arXiv:2510.07838v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3.3
+    quote: The results show moderate to strong agreement across all metrics (Pearson’s r = 0.59–0.69).
+    quote_sha256: 007e416cd56fa948002ab66d82bce2ecf5330065f19510932f78384b029a41ac
+    source_revision: arXiv:2510.07838v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §3.2.3
+    quote: Under Fast pacing, GPT-Realtime scores above 4.0 on all three tasks, while Moshi and Freeze-Omni
+      remain below 3.0 on Correction and Entity.
+    quote_sha256: 890c1dc9b3d20066b3e75a24649f18dcbe791d0ca7466e259e2aecce530a3d72
+    source_revision: arXiv:2510.07838v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §2.2
+    quote: To add a new model, implement a corresponding adapter that receives and forwards audio to its
+      API/server
+    quote_sha256: 8c43f63a709b43d1e3f6cdf0a2ee6e815b5d64ac5c57ba1449442ff5bdc775ab
+    source_revision: arXiv:2510.07838v2 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2003
+    claim_index: 1
+    why: 'metric lineage: FDB v1 TOR/JSD/latency definitions are what the successors extend or replace'
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 4
+      partial: 1
+    flags_for_operator:
+    - 'k4 partial: Adapter requirement (48 kHz/10 ms) and both API keys confirmed; "only through WebRTC
+      adapter" and the CS-2/CS-36 gating judgments are inference.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-fdb2/paper.txt
+    (arXiv html v2, 26 Apr 2026, sha256 7b059edd25ce9adc709a56e028feb8392edf38dba535d9c571b213b743a1ad1b;
+    abs lists v1,v2). Fig.2 curves are images (not read; numeric content only via Tables 1 and appendix
+    3). v2/README.md raw copy (sha256 b0f5c5c3a73cbc13141f6da5f5305ab2e5a3b36b377d3c3bbf5a694be9b498e1):
+    requires OPENAI_API_KEY and GEMINI_API_KEY, NeMo ASR, Node.js orchestrator. NOT read: orchestrator/judge
+    code, the Examiner prompts in the repo, session counts per cell. Tier-2b: no independent replication
+    found. License: paper CC BY 4.0 (one-line fact).'
+- id: intake-2015
+  arxiv_id: '2604.04847'
+  url: https://arxiv.org/abs/2604.04847
+  source_type: paper
+  title: 'Full-Duplex-Bench-v3: Benchmarking Tool Use for Full-Duplex Voice Agents Under Real-World Disfluency'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  - tool_implementation
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Guan-Ting Lin
+  - Chen Chen
+  - Zhehuai Chen
+  - Hung-yi Lee
+  key_claims:
+  - 'FDB-v3 is a tool-use benchmark: 100 recordings from 12 human speakers (native and Korean/Russian
+    non-native English, built-in mics, ambient trailing silence), annotated for fillers, pauses, hesitations,
+    false starts and self-corrections, over four domains with locally executed deterministic mock APIs
+    (Travel & Identity, Finance & Billing, Housing & Location, E-Commerce Support) in Easy/Medium/Hard
+    tiers.'
+  - 'Metrics and directions: Tool Selection F1 (up); Argument Accuracy judged by GPT-4o (up); Pass@1 requires
+    exactly the expected tools AND perfect args on every call (up); Response Quality GPT-4o (up); Turn-take
+    rate (up); Latency = t_agent_start - t_user_end in seconds with negative values counted as Interruptions
+    (Interrupt rate down); Filler rate down (a filler lowers perceived latency but can overlap the user).
+    Latency is decomposed into first-response, tool-call and task-completion (a GPT-4o pass isolates the
+    informative sentence from filler).'
+  - 'Headline Table 2 (Tool Sel/Arg/Resp/Pass@1/Take-turn/Latency/Interrupt/Filler): GPT-Realtime 0.876/0.680/0.792/0.600/96.0%/6.89
+    s/13.5%/16.9%; Gemini Live 2.5 0.786/0.593/0.554/0.490/92.0%/7.26/14.1%/8.9%; Gemini Live 3.1 0.817/0.588/0.718/0.540/78.0%/4.25/19.2%/31.7%;
+    Grok 0.797/0.542/0.617/0.430/94.0%/6.65/25.5%/44.3%; Ultravox 0.794/0.513/0.510/0.410/96.0%/8.40/47.9%/88.0%;
+    Cascaded (Whisper->GPT-4o->OpenAI TTS) 0.803/0.562/0.600/0.450/100%/10.12/33.0%/26.9%.'
+  - 'A CASCADE IS EXPLICITLY SCORED AND IS THE WEAK POINT ON SELF-CORRECTION: Cascaded Pass@1 by disfluency
+    (Table 3) is Filler 0.448, Pause 0.444, Hesitation 0.600, False start 0.500, Self-corr 0.176 (the
+    lowest; GPT-Realtime 0.588). By difficulty (Table 4) Easy/Medium/Hard 0.639/0.441/0.233. The authors''
+    explanation (Whisper may finalize the pre-correction transcript before the correction arrives) is
+    an unverified hypothesis, not an ablation. Latency Table 6 (s): Cascaded first word 8.78, tool call
+    3.15, task completion 10.12; the same LLM family gives Pass@1 0.450 vs GPT-Realtime 0.600. All six
+    systems run through LiveKit, which needs a LiveKit Cloud account; the shipped cascade uses OpenAI
+    Whisper/gpt-4o/TTS and is not local.'
+  - 'SCOPE: no TOR, no backchannel metric and no JSD; v1''s near-random backchannel JSD problem is not
+    addressed and is not relevant here. v3''s turn-taking readout is only response timing and interruption
+    counting on single-utterance queries; ''pauses are the weakest category'' (Pass@1 0.333 for Grok and
+    Ultravox) is the only end-of-turn signal. Sample size is small (100 scenarios total): per-cell Pass@1
+    differences of 0.05-0.10 are within a few scenarios and no CIs are reported.'
+  - 'PORTABLE VALUE FOR OUR CASCADE: the mock-API tool-call scoring, the self-correction/state-rollback
+    scenarios and the first-response/tool-call/completion latency decomposition are independent of LiveKit
+    and OpenAI and can be re-hosted on a local cascade whose only tool is the orchestrator; the filler-rate/interrupt-rate
+    readout directly measures the ''let me check on that'' behavior of CS-24 routing.'
+  techniques:
+  - mock-API deterministic tool scoring (F1 over tool calls, GPT-4o argument judge, Pass@1)
+  - real human disfluent audio (5 categories)
+  - 'latency decomposition: first response / tool call / task completion'
+  - filler-rate and interruption-rate from time-aligned logs
+  reported_results:
+  - 'Table 2 (§4): overall tool-use + turn-taking for 6 configurations'
+  - 'Table 3 (§5): Pass@1 by disfluency category'
+  - 'Table 4 (§5.2): Pass@1 by difficulty (GPT-Realtime 0.750/0.588/0.433, Cascaded 0.639/0.441/0.233)'
+  - 'Table 5 (§5.4): by domain (Finance easiest: GPT-Realtime 0.960; Housing hardest: 0.308)'
+  - 'Table 6 (§5.5): latency breakdown (s)'
+  - '§6.2: pre-emptive tool-call rates Grok 41.6%, Ultravox 23.2%, Gemini 2.5 17.9%, Gemini 3.1 16.9%,
+    GPT-Realtime 10.8%'
+  - '§6.4: Gemini Live 3.1 silent in 22% of scenarios, 86% of those still executed tool calls'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2003
+    intake_entry_notes:
+    - intake-2003 (parent FDB v1; v3 ships in the same repo, v3/ folder)
+  expanded_from: intake-2003
+  credibility_score: 4
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: v3 is the one FDB successor that scores a cascade (Whisper->GPT-4o->TTS) head-to-head
+    and shows it is slow (10.12 s) and worst at self-correction (Pass@1 0.176); this is a published failure
+    mode of cascades that finalize ASR early, which matters for our whisper endpointing. Carry the mock-API
+    tool scoring, disfluency categories and latency decomposition; do NOT carry the LiveKit/OpenAI runtime,
+    the 'why' for the cascade deficit (hypothesis only), or small-cell rankings (100 scenarios, no CIs).
+    The baseline cascade here is an OpenAI cloud stack, so its numbers say nothing about a local whisper.cpp+qwentts
+    cascade. v1's JSD problem is irrelevant here (no backchannel metric).
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Wave-1 said the shipped cascade uses Silero VAD;
+    the paper itself describes Whisper->GPT-4o->TTS via LiveKit (Silero appears only in the repo README).
+    Added: cascade scored in Tables 2-4/6 with self-correction 0.176; no CIs; Hard-tier is the only large
+    discriminator. Main correction 2026-10-20 after per-claim second reader: removed ''21 of 100 self-corrections''
+    and ''11 mock APIs'' (not found in the paper text on disk; pass rates imply ~17 self-correction items).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.3
+    quote: The dataset comprises 100 recordings from 12 speakers, including native and non-native English
+      speakers (Korean and Russian backgrounds) with varying accent strengths.
+    quote_sha256: 34bfbde9cc80b070257cd8c12836ff456891db6b130e18059d855fccf3b71c09
+    source_revision: arXiv:2604.04847v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.1
+    quote: 'Task Completion (Pass@1): A binary metric requiring all three conditions simultaneously: the
+      agent invokes exactly the expected tools, and scores perfect argument accuracy for every call.'
+    quote_sha256: 3fb26ccdbeca509fa37dcc124ae46d12be5a7fc74b33459e48e73a3967582d48
+    source_revision: arXiv:2604.04847v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Abstract
+    quote: GPT-Realtime leads on Pass@1 (0.600) and interruption avoidance (13.5%); Gemini Live 3.1 achieves
+      the fastest latency (4.25 s) but the lowest turn-take rate (78.0%); and the Cascaded baseline, despite
+      a perfect turn-take rate, incurs the highest latency (10.12 s).
+    quote_sha256: a16fa4d4863a3613207a0da4bfa5035c490a0b00019151bc15eaeeefc0e74bc0
+    source_revision: arXiv:2604.04847v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §6.5
+    quote: 'The gap is starkest on self-corrections: Cascaded scores only 0.176—the lowest of all systems—versus
+      GPT-Realtime’s 0.588.'
+    quote_sha256: 82d64aeec2c5673920bd23d7b491a05180913330d0e850e4ff9738a150079a6a
+    source_revision: arXiv:2604.04847v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §5.3
+    quote: Pauses are the weakest category across most systems (Grok and Ultravox both at 0.333), highlighting
+      a shared difficulty in detecting whether a user has finished speaking.
+    quote_sha256: f30ed7d667a2df72d14cbd6b61a502bf2e9f1235a7b8eee3bbcb60acefeed66d
+    source_revision: arXiv:2604.04847v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §3.1
+    quote: Rather than routing queries to live web services, we use locally executed mock APIs with deterministic,
+      zero-latency responses.
+    quote_sha256: d7b56d238cc816dadd5348a907e06d4c36a236f4ac6066ff73ba54605c7dbf4f
+    source_revision: arXiv:2604.04847v1 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2003
+    claim_index: 1
+    why: 'metric lineage: FDB v1 TOR/JSD/latency definitions are what the successors extend or replace'
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      partial: 3
+      'yes': 3
+    flags_for_operator:
+    - 'k0 partial: 100 recordings/12 speakers, native+Korean/Russian, built-in mics confirmed; "11 mock
+      APIs" and "21 of 100 contain self-corrections" not found in source (pass rates imply 17 self-correction
+      items).'
+    - 'k4 partial: Pause 0.333 and no TOR/JSD consistent, but "single-utterance queries" and "only end-of-turn
+      signal" are interpretation; CI absence unverifiable.'
+    - 'k5 partial: Local deterministic mock APIs confirmed; portability to a local cascade and CS-24 mapping
+      are the entry judgement, not source.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-fdb3/paper.txt
+    (arXiv html v1, 06 Apr 2026, sha256 500ff1cc08028cfcaaea473dd1b8bf2a3da458e5b1a5a0abd4d731de58308313;
+    abs lists only v1). Appendix judge prompts A.1-A.3 are in the text but only skimmed (headings). v3/README.md
+    raw copy sha256 fbdec843c7bb5a4ca9a4c35f5627068a800b0f4265c036faa2573ae1768bafea: LiveKit Cloud account
+    REQUIRED for inference, OPENAI_API_KEY also used for the evaluation LLM judge; evaluation scripts
+    do not need LiveKit. Data on Google Drive (not fetched). NOT read: v3 code, per-scenario case tables
+    beyond Case 1 start. Tier-2b: aggregator benchlm.ai transcribes the paper''s numbers (restatement).
+    License: paper CC BY-SA 4.0 (one-line fact).'
+- id: intake-2016
+  arxiv_id: '2609.17360'
+  url: https://arxiv.org/abs/2609.17360
+  source_type: paper
+  title: 'Same Words, Different Actions: Paired Turn-Taking Evaluation under Rewritten Dialogue Contexts'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Shuofeng Zhao
+  - Hongwei Cai
+  - Wenke Fan
+  - Qingxiang Guo
+  - Zhou Wang
+  - Dawei Yang
+  - Zhiyang Zhou
+  - Yingxin Shang
+  - Weixu Wang
+  - Lin Yang
+  - Shuran Zhou
+  - Yang Song
+  key_claims:
+  - 'The title is ''Same Words, Different Actions: Paired Turn-Taking Evaluation under Rewritten Dialogue
+    Contexts''; ECHO (''Evaluating Context-conditioned Handling of Overlaps'') IS in the paper (21 occurrences)
+    as the NAME OF THE DATASET, so the wave-1 label ''ECHO benchmark'' was a real alias, not an error
+    (search snippets show v1''s title as ''ECHO: A Matched-Contrast Benchmark for Context-Sensitive Turn-Taking
+    in Full-Duplex Dialogue''; v2 retitled).'
+  - 'ECHO is a CHINESE-only, synthetic, event-level diagnostic: 266 groups, 549 audio instances (183 each
+    of interruption, backchannel, off-talk), 300 pair relations (100 each of I-B, I-O, B-O). Dialogue
+    skeletons from DuplexDrama, insertions by DeepSeek-V4-Pro, context rewrites by Claude-3.5-Sonnet,
+    audio by IndexTTS2, 97.45% of reviewed candidates judged label-consistent. The authors state it does
+    not evaluate closed-loop interaction or latency.'
+  - 'Metric definitions (all higher is better): Yield accuracy on interruptions, Keep accuracy on backchannel
+    (BC Keep) and off-talk (OT Keep), macro accuracy; PASR_X = fraction of action-flip pairs where BOTH
+    members are right (constant-Yield and constant-Keep score 0); PKC = fraction of backchannel-off-talk
+    pairs with Keep on both (constant-Keep maximizes it, so it must be read with PASR); PRSR for three-way
+    role prediction.'
+  - 'Table 5 (%): Int. Yield / BC Keep / OT Keep / Macro / PASR_I-B / PASR_I-O / PKC_B-O: Easy Turn 98.91/1.09/0.55/33.52/0.00/0.00/1.00;
+    SoulX-Duplug 91.26/6.56/15.30/37.71/4.00/12.00/2.00; Lychee-FD 55.19/12.02/8.20/25.14/4.00/6.00/0.00;
+    MiniCPM-o 4.5 63.39/65.57/53.55/60.84/54.00/53.00/49.00; Gemini-3.1-Pro (text-only reference) 90.71/86.34/71.58/82.88/79.00/52.00/70.00.
+    Three speech systems yield on nearly everything (BC Keep <13%) so interruption accuracy alone looks
+    excellent while paired success on interruption-vs-backchannel pairs is at most 4% (interruption-vs-off-talk:
+    SoulX 12%, Lychee 6%).'
+  - 'CAVEATS THAT LIMIT WHAT PASR PROVES: the paired waveforms are independently synthesized (not acoustically
+    matched), interruptions receive onset emphasis that backchannels do not, systems get different context
+    (Easy Turn gets the insertion only; MiniCPM-o gets teacher-forced assistant text), and the authors
+    say a waveform-matched, gain-controlled evaluation would be needed to isolate context sensitivity.
+    Off-talk Keep is a scenario-labelled diagnostic, not a false-trigger estimate.'
+  - 'CASCADE SCORABLE: only as an event-level yield/keep detector. The harness replays fixed dialogue
+    trajectories and extracts a binary action (stop event during insertion) from the system, so a whisper+VAD+qwentts
+    cascade needs (a) an overlap-time stop signal and (b) a semantic gate on the transcribed insertion;
+    Chinese-only data means English use requires re-authoring pairs (the construction recipe is transferable).
+    The dataset on Hugging Face (shuofeng123/ECHO) is gated (manual approval), so data access needs a
+    request. No cloud key is needed to SCORE (binary actions), only to generate new pairs (DeepSeek/Claude).'
+  techniques:
+  - paired contrast evaluation (same insertion transcript, rewritten context)
+  - Pairwise Action Success Rate (PASR) with zero credit for constant policies
+  - Pairwise Keep Consistency (PKC)
+  - LLM-rewritten contexts + human review
+  reported_results:
+  - 'Table 1 (§1): lexical closure of non-interruptive feedback (SID-Bench zh 81.8% top-15-char only;
+    Easy Turn 26.0%; ECHO 0.0%)'
+  - 'Table 3 (§2.4): 266 groups / 549 samples / 300 pairs'
+  - 'Table 5 (§3.3): binary action results for 5 systems, quoted in claim 3'
+  - '§3.3 Finding 1 and 2: PASR_I-B Easy Turn 0.00, SoulX-Duplug 4.00, Lychee-FD 4.00, MiniCPM-o 4.5 54.00,
+    Gemini 79.00; three-way PRSR Gemini 66.00'
+  referenced_arxiv_ids:
+  - '2609.12872'
+  - '2608.25218'
+  - '2604.17358'
+  - '2509.23938'
+  - '2604.21406'
+  - '2607.06540'
+  - '2604.27393'
+  - '2604.01897'
+  - '2606.19348'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2003
+    intake_entry_notes:
+    - intake-2003 (FDB v1 scores events independently; this paper is the independent critique of that
+      design and also shows its near-ceiling interruption accuracy hides constant-yield bias)
+  expanded_from: intake-2003
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Search hit ''ECHO: Learning Epistemically Adaptive Language Agents with Turn-Level Credit'' (arxiv.org/pdf/2606.29745)
+    is an UNRELATED paper sharing the acronym (independent; irrelevant)'
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'Use PASR/PKC as a METRIC DESIGN (paired, constant-policy-proof) for any yield/keep
+    gate on our cascade; do not use ECHO''s numbers as a speech-model ranking (Chinese, synthetic, unequal
+    context per system, not acoustically matched, interruptions carry onset emphasis). It supplies the
+    independent critique of event-independent scoring that wave 1 sought: it shows a 98.91% interruption
+    Yield score coexisting with 1.09% backchannel Keep and 0% PASR. It is not a cascade benchmark per
+    se (Easy Turn / SoulX-Duplug are the modular systems tested). ''ECHO'' is the dataset name inside
+    the paper; the arXiv title is the long one. The HF dataset is gated, so no data was read.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Resolved wave-1 label: ''ECHO'' is the paper''s own
+    dataset name (21 text occurrences) and v1''s title; current v2 title is ''Same Words, Different Actions...''.
+    Content: Chinese, 4 speech systems plus a text-only Gemini reference, PASR/PKC/PRSR definitions, strong
+    caveats read from §3.3 and Limitations. Main correction 2026-10-20 after per-claim second reader:
+    narrowed the ''at most 4%'' paired-success statement to interruption-vs-backchannel pairs.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §1
+    quote: We introduce ECHO (Evaluating Context-conditioned Handling of Overlaps), a paired diagnostic
+      set of Chinese multi-turn dialogues.
+    quote_sha256: 53565bd31996c79781112efad8ece17afe3cb64b171d762378c261ecaf72fbea
+    source_revision: arXiv:2609.17360v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §2.4
+    quote: ECHO contains 266 groups, 549 unique audio instances, and 300 pair relations
+    quote_sha256: 573e6015a968df720558bc0900c8532a738048a2e55258d19a67f7de7bd675b0
+    source_revision: arXiv:2609.17360v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3.2
+    quote: Consequently, deterministic constant-Yield and constant-Keep policies both obtain zero PASR.
+    quote_sha256: d2c9831b7018ded0a9485895ef91947b95a48326554a9b02ba8a01ac1558f1fe
+    source_revision: arXiv:2609.17360v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §3.3 Finding 2
+    quote: Easy Turn and SoulX-Duplug correctly yield on 98.91% and 91.26% of interruptions, respectively,
+      but keep the floor on only 1.09% and 6.56% of backchannels.
+    quote_sha256: c723b1761d088679fc8b4f6500ccfb6b6f0511f72d13bdf5eb95eaaad301eefa
+    source_revision: arXiv:2609.17360v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §3.3 Interpretation caveat
+    quote: A waveform-matched, gain-controlled evaluation would be required to isolate contextual sensitivity.
+    quote_sha256: acef7c51a52dcbd28330fb82f49fe0d82cd125c410becff78281f8f46f163f03
+    source_revision: arXiv:2609.17360v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §4 Limitations
+    quote: Moreover, replaying fixed dialogue trajectories, including teacher-forced assistant turns where
+      required, cannot simulate real-time full-duplex interaction or evaluate latency, mutual adaptation,
+      post-yield recovery, and subsequent response quality.
+    quote_sha256: 8f41c1c3ceb1e4f5e7edb8b0b3b1d62136c0765a5a0864f55aec80c4b901e8e8
+    source_revision: arXiv:2609.17360v2 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2003
+    claim_index: 1
+    why: 'metric lineage: FDB v1 TOR/JSD/latency definitions are what the successors extend or replace'
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      partial: 3
+      'yes': 3
+    flags_for_operator:
+    - 'k0 partial: ECHO named and defined in source; v1 title and "21 occurrences" are from search snippets/counts
+      not in the dive text.'
+    - 'k3 partial: Table 5 numbers match, but "paired success at most 4%" holds only for I-B; SoulX PASR_I-O
+      is 12% and Lychee 6%.'
+    - 'k5 partial: Gated=manual (HF API) and Chinese-only confirmed; cascade-scorability requirements
+      are inference.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-samewords/paper.txt
+    (arXiv html v2, 24 Sep 2026, sha256 144490f6cfd1bd81e7dd6c67f72009e7fdc4ef73a57307aed146a5be5709d358;
+    abs lists v1,v2). HF dataset page for shuofeng123/ECHO is gated=manual: API JSON (sha 112226d1c1b263c01eb80f0a64c7084a4ee4b75d,
+    lastModified 2026-09-17) readable, README and data NOT readable (raw README fetch returned an auth
+    wall; hf_readme.md in the dive dir contains only that error text). NOT read: the reference list tail
+    beyond [14], the cited systems'' papers. Tier-2b: no independent replication of ECHO results found
+    (paper is 4 weeks old). License: arXiv perpetual non-exclusive (one-line fact).'
+- id: intake-2017
+  arxiv_id: null
+  url: https://huggingface.co/nvidia/parakeet_realtime_eou_120m-v1
+  source_type: repo
+  title: parakeet_realtime_eou_120m-v1
+  categories:
+  - multimodal
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - NVIDIA
+  key_claims:
+  - 'Architecture: cache-aware streaming FastConformer-RNNT, 17 encoder layers, attention context [70,1],
+    120M params, English-only, no punctuation/capitalization; signals end of utterance by emitting an
+    <EOU> token inside the RNNT output.'
+  - 'Latency: card states 80ms~160ms ASR latency; input needs >=160ms of 16kHz mono audio. WER 9.30 avg
+    on HF OpenASR leaderboard measured in a 160ms streaming setting (LS-clean 3.61, LS-other 7.79, AMI
+    15.62).'
+  - EOU detection is reported ONLY as a latency distribution (p50 160ms, p90 280ms, p95 320ms) on TTS-generated
+    DialogStudio audio with 3 s of appended silence. The card publishes NO precision, recall, false-cut
+    or premature-cut rate, so the EOU quality (the thing CS-22 measures) is unreported by the vendor.
+  - 'Export/runtime: the official artifact is a single .nemo file; card lists NeMo 2.5.3+, CUDA acceleration,
+    tested on V100/A100/A6000 and no CPU claim. Community ONNX conversions exist (ysdede: fp32/fp16/int8
+    encoder and decoder_joint ONNX with vocab.txt; decoder-only INT8 token-exact on one smoke fixture
+    only, encoder INT8 not exact) - independent third-party exports, not vendor-validated.'
+  techniques:
+  - cache-aware streaming FastConformer-RNNT
+  - in-band <EOU> token turn-end detection
+  - 80-160ms chunked streaming ASR
+  reported_results:
+  - WER avg 9.30 at 160ms streaming (README.md Benchmark Score, WER table)
+  - EOU latency p50/p90/p95 = 160/280/320 ms on TTS DialogStudio + 3 s silence (README.md EOU table)
+  referenced_arxiv_ids:
+  - '2305.05084'
+  - '2312.17279'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-1983
+    intake_entry_notes:
+    - intake-1983 (FluidAudio; this is the EOU model it ships via CoreML)
+  expanded_from: intake-1983
+  credibility_score: null
+  source_revision: HF nvidia/parakeet_realtime_eou_120m-v1@a7e2b4629593dce0ec19f600e00e9904353fda2d
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'A 120M streaming RNNT whose turn-end signal is an in-band <EOU> token, so ASR
+    and end-of-turn share one forward pass. Vendor evidence is latency-only on synthetic TTS audio with
+    clean 3 s silence; there is NO precision/recall/false-cut number, so it cannot be cited as a quality
+    claim for CS-22 and must be measured on the CS-4 hesitation clips. Do NOT carry ''low latency 80ms''
+    as EOU latency: EOU p50 is 160 ms, p95 320 ms (and measured on synthetic audio). CPU is untested by
+    the vendor; the portable path is the community ONNX export (not vendor-validated).'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Settled: card has no EOU precision/recall; EOU latency
+    is synthetic-TTS-only; no ONNX in the official repo (only .nemo), community ONNX/CoreML ports exist.
+    Main correction 2026-10-20 after per-claim second reader: INT8 exactness is on a single smoke fixture.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Model Architecture
+    quote: cache-aware streaming FastConformer [2] with 17 encoder layers (attention context = [70,1])
+      and RNNT decoder.
+    quote_sha256: dfeef2cf431d3fd0e1eaa7aada4553358f9f3ae5f9d1876638c69f0d6039f751
+    source_revision: HF nvidia/parakeet_realtime_eou_120m-v1@a7e2b4629593dce0ec19f600e00e9904353fda2d
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Benchmark Score / Speech Recognition
+    quote: '| WER (%)        | 9.30    | 15.62 | 15.76      | 13.31      | 3.61          | 7.79           |
+      3.79 | 5.48    | 9.07      |'
+    quote_sha256: 08f52dd6e4ca78dc8f552e6c9a4453255c7770c581f1da9c6b258c7cf85661e6
+    source_revision: HF nvidia/parakeet_realtime_eou_120m-v1@a7e2b4629593dce0ec19f600e00e9904353fda2d
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Benchmark Score / End-of-Utterance Detection (Latency)
+    quote: The latency metrics are evaluated on TTS generated audios from DialogStudio, and a 3-second
+      silence is appended to each sample.
+    quote_sha256: 3d993325a492f420514ab4d630d736e00ec6392c400e4f3d562025d42ec1cb93
+    source_revision: HF nvidia/parakeet_realtime_eou_120m-v1@a7e2b4629593dce0ec19f600e00e9904353fda2d
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Inference
+    quote: '**Acceleration Engine:** CUDA<br>'
+    quote_sha256: 01f3b6c0c0afdd83d414720c39f0c6254fe073d0b3f67e1047f7ec40ba70a3f9
+    source_revision: HF nvidia/parakeet_realtime_eou_120m-v1@a7e2b4629593dce0ec19f600e00e9904353fda2d
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+    flags_for_operator:
+    - 'k3 partial: NeMo 2.5.3+, CUDA, V100/A100/A6000, .nemo file confirmed; ysdede decoder-INT8 exact
+      parity is on a smoke fixture only, condition dropped.'
+    - 'actionable W2-NEW-PARAKEET-EOU-01: "only open-weights model found whose turn-end is a native in-band
+      token" is a survey claim not supported by the dive source (search file lists other ONNX/CoreML ports
+      only).'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full: HF README.md (sha256 618bce4a1ac767cc01c1d7fd5aafee3341667185b855bae7d4abc656008bfa93),
+    HF API json (sha a7e2b46..., files: README.md, .nemo, 2 pngs; license nvidia-open-model-license one-line
+    fact), ysdede ONNX card (first 3500 chars only; sha 16e4e812...; repo sha 6d6be8e9...), NeMo voice_agent
+    README grep only. NOT read: .nemo weights (never downloaded), NeMo training code/config, any EOU paper
+    (none located by one search). The CHRV ONNX card does not exist (Entry not found); its int8-only file
+    list is from the API. Effort estimate to run on EPYC CPU (not measured): 120M params is tiny; path
+    A = onnxruntime CPU with community fp32/int8 ONNX plus a hand-written cache-aware chunk loop and NeMo
+    128-bin mel frontend (the ONNX card says it does NOT use the normalized nemo128 contract) - roughly
+    1-3 days to a working streaming harness and the RNNT greedy decode + cache tensors are the risky parts;
+    path B = NeMo PyTorch on CPU (pip NeMo, heavy dependency). No llama.cpp/ggml path exists. Estimate
+    is judgement, labelled unmeasured.'
+- id: intake-2018
+  arxiv_id: null
+  url: https://github.com/localai-org/LocalVQE
+  source_type: repo
+  title: LocalVQE
+  categories:
+  - multimodal
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - LocalAI team (localai-org)
+  key_claims:
+  - 'LocalVQE is a causal streaming 16 kHz AEC+NS+dereverb family, 256-sample hop (16 ms latency), F32
+    GGML C++ inference with a PyTorch reference (model definition only), derived from DeepVQE. Sizes:
+    v1.3 4.8M params ~19MB; v1.2 1.3M; v1.4-AEC 203K (echo only); v1.4-AEC 2.7K (linear filter only);
+    a separate 49K GTCRN-AEC line.'
+  - 'CPU latency per 16 ms hop on Ryzen 9 7900 (Zen4), 4 threads: v1.3 3.21 ms p50 (5.0x RT); v1.2 1.65
+    ms; v1.4-AEC 0.83 ms (1 thread 1.29 ms p50, 1.89 p99); 2.7K 0.36 ms. Pi 5 single core GTCRN line ~0.78
+    ms/hop. All vendor-reported, not reproduced; Zen5 EPYC 9655 untested.'
+  - 'Quality: full 800-clip ICASSP 2022 AEC Challenge blind test set, AECMOS echo/deg plus blind ERLE.
+    v1.3 doubletalk echo 4.73 / deg 2.62; farend-singletalk ERLE 50.9 dB; v1.4-AEC (keeps noise/room)
+    farend-singletalk echo 3.80, ERLE 14.6 dB. Unprocessed-mic echo MOS 2.67/2.56/1.90/2.13/5.00. ERLE
+    of joint (noise-deleting) and AEC-only models are explicitly not comparable. Self-reported: no independent
+    replication, no WER/ASR-downstream or barge-in-detection metric.'
+  - 'Every model needs a far-end reference signal (loopback of the speaker output) in addition to the
+    mic; weights trained on DNS Challenge 2023 and fine-tuned on AEC Challenge 2022/23. Builds: CMake
+    GGML CPU (multi-ISA libggml-cpu-*.so incl. AVX-512, runtime-selected), optional Vulkan, C API (localvqe_process_frame_f32
+    per-hop). No HIP/ROCm option; Vulkan is the GPU route (MI210 supports Vulkan), but the README says
+    the neural stage is too small for GPU to pay.'
+  techniques:
+  - streaming DeepVQE derivative
+  - GGML CPU inference
+  - adaptive-filter front-end + small neural mask (v1.4-AEC)
+  - GTCRN-AEC 49K
+  reported_results:
+  - v1.3 AECMOS echo 4.73 doubletalk, ERLE 50.9 dB farend-singletalk (README Performance)
+  - v1.3 3.21 ms p50/hop 4 threads Ryzen 9 7900 (README Latency)
+  referenced_arxiv_ids:
+  - '2306.03177'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-1983
+    intake_entry_notes:
+    - intake-1983 (FluidAudio; LocalVQE surfaced as its AEC companion)
+  expanded_from: intake-1983
+  credibility_score: null
+  source_revision: localai-org/LocalVQE@7f61cd05095d42e56a135b303f5bb4d761da22b9
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'Small, CPU-real-time, Apache-2.0 AEC with a C API and GGUF weights; plausible
+    as a server-side AEC stage for CS-23, BUT CS-23 currently defers echo cancellation to the client (D7)
+    and the model needs a clean far-end reference, which the controller does have (it generated the TTS
+    audio). Numbers are self-reported on ICASSP-2022 blind clips; they say nothing about barge-in detection
+    accuracy or downstream WER. Do not carry ''16 ms latency'' as end-to-end: it is algorithmic hop latency,
+    excluding buffering/alignment of reference to mic.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Settled sizes, builds (GGML+PyTorch reference, GGUF
+    f32/bf16), per-hop CPU latency, AECMOS/ERLE tables, test set; HF weights and the Space not fetched.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README Models table
+    quote: '| **v1.3** *(current)* | AEC + NS + dereverb | 4.8 M | ~19 MB | 3.2 ms · 5.0× RT |'
+    quote_sha256: 921a1aed30dbbd97d03c2249d09c6f906a82193550978a4dd5a4fd4a88fceffd
+    source_revision: localai-org/LocalVQE@7f61cd05095d42e56a135b303f5bb4d761da22b9
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README Latency, v1.4-AEC
+    quote: '| 1 | 1.29 ms | 1.89 ms | 12.2× |'
+    quote_sha256: c52d83efb0163b6ee3b2676e011724498612b87f3e9fe798fcacbf7d258bd584
+    source_revision: localai-org/LocalVQE@7f61cd05095d42e56a135b303f5bb4d761da22b9
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: README Performance, v1.3/v1.2 table
+    quote: '| doubletalk | 115 | 4.73 / 2.62 / 8.5 dB / 2.89 | 4.72 / 2.37 / 8.4 dB / 2.83 |'
+    quote_sha256: 2a7007f65a6a816fab19b0c09a3f04346a21d452ef3e7b358727efd985cb19b1
+    source_revision: localai-org/LocalVQE@7f61cd05095d42e56a135b303f5bb4d761da22b9
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: README Models bullets
+    quote: Every model needs a far-end **reference** signal (a loopback of what your speakers play) in
+      addition to the mic.
+    quote_sha256: 4bfdfb4d0cc6ec8bfefe9edd5956ba4a2f63a04409b30066cb539b7e4f16486b
+    source_revision: localai-org/LocalVQE@7f61cd05095d42e56a135b303f5bb4d761da22b9
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+    flags_for_operator:
+    - 'k3 partial: Far-end reference, DNS/AEC training, multi-ISA CPU build, Vulkan option confirmed;
+      "neural stage too small for GPU" is stated for v1.4-AEC only (v1.3 Vulkan 2.57 ms beats CPU 3.21);
+      MI210 Vulkan is external.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Cloned depth-1 at 7f61cd05 (2026-10-19), nothing
+    run. Read README.md in full (sha256 2eeed279c971cce67f7897ae51bc9c8552c0e88bdd715d27520f956262d2423c),
+    listed ggml/ and pytorch/ trees, grepped CMakeLists for backends, pytorch/README grep. NOT read: ggml/*.cpp
+    sources, eval scripts, HF model card (LocalAI-io/LocalVQE), weights. Apache-2.0 (one-line fact). Fit
+    into CS-23 harness (proposal, not tested): feed the harness''s simulated-overlap clips (TTS playback
+    as ref, injected user speech as mic) through localvqe_process_frame_f32 (or CLI --in-wav mic ref --out-wav)
+    before the barge-in detector, report cancel-latency and false-barge-in rate with and without AEC;
+    reference/mic time alignment is the part the README does not address.'
+- id: intake-2019
+  arxiv_id: null
+  url: https://github.com/MinishLab/model2vec
+  source_type: repo
+  title: 'Model2Vec: Fast State-of-the-Art Static Embeddings'
+  categories:
+  - search_retrieval
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - Stephan Tulkens
+  - Thomas van Dongen
+  key_claims:
+  - 'Model2Vec distills a sentence transformer into a static token-embedding table: the vocabulary is
+    forward-passed through the teacher (no dataset needed, ~30 s on CPU), then post-processed (PCA, Zipf
+    weighting); output embeddings beat input embeddings, and a non-sentence-transformer teacher (BERT)
+    is much worse (ablation table).'
+  - 'potion-base-8M (7.5M params, teacher BAAI/bge-base-en-v1.5) is further trained with Tokenlearn (mean
+    teacher embeddings over a C4 corpus, then re-regularised with frequency weighting, PCA and SIF); it
+    is NOT plain distillation. MTEB: potion-base-8M avg 51.08, Retrieval 31.11 vs all-MiniLM-L6-v2 55.93
+    / 42.92. The bge-base TEACHER is not in the repo tables, so ''vs the teacher'' is unreported; the
+    comparison is to all-MiniLM-L6-v2 (the 8M card states 91.96% of all-MiniLM-L6-v2''s Avg(All): 51.32
+    vs 55.80 - a different average from the MTEB 51.08 vs 55.93 above).'
+  - 'potion-code-16M-v2 (16.2M params, teacher nomic-ai/CodeRankEmbed 137M): vocab extended by 43k code
+    tokens (~63.5k), distilled to 256-d, Tokenlearn then contrastive fine-tune on 1.2M CornStack pairs.
+    CoIR NDCG@10 avg: teacher 59.14, potion-code-16M-v2 39.08, BM25 42.31, hybrid RRF(k=60) potion+BM25
+    43.36. So the static code model is BELOW BM25 alone and 20 points below its teacher; only the hybrid
+    edges BM25 (+1.05).'
+  - 'Retrieval is the static models'' weak axis: best static retrieval model potion-retrieval-32M scores
+    35.06 vs 42.92 for all-MiniLM-L6-v2 (81.69%); speed claim ''up to 500x faster on CPU'' is vendor-reported,
+    measured with multiprocessing disabled on an unstated machine.'
+  techniques:
+  - vocabulary-forward-pass static distillation
+  - PCA + Zipf/SIF weighting
+  - Tokenlearn regression on teacher mean embeddings
+  - static code embeddings + BM25 RRF hybrid
+  reported_results:
+  - potion-base-8M MTEB avg 51.08, Retrieval 31.11 (results/README.md MTEB table)
+  - potion-code-16M-v2 CoIR avg 39.08 vs BM25 42.31 vs hybrid 43.36 vs CodeRankEmbed 59.14 (HF card)
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-embedding-retrieval.md
+    experiments: []
+    intake_entries:
+    - intake-1981
+    intake_entry_notes:
+    - intake-1981 (sgrep; the static-embedding code search shipped as Semble is the same family)
+  expanded_from: intake-1981
+  credibility_score: null
+  source_revision: MinishLab/model2vec@dc1ff382f2794d31f3b5932ced8a858335e3ca17
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'Static embeddings are a legitimate CPU-trivial dense arm (numpy only, lookup+mean)
+    but they are measurably weaker retrievers: ~72% of all-MiniLM on MTEB retrieval at 8M, and the code
+    variant loses to plain BM25 (39.08 vs 42.31) and wins only fused with it (+1.05). Credible for REPL-EMB-2.2
+    as a cheap-cost anchor arm that tests whether ANY dense signal beats lexical, NOT as a likely winner;
+    do not carry ''500x faster'' (unspecified hardware, vendor-run) or the MTEB numbers as evidence about
+    spill-file/context-bundle retrieval. Vendor does not report the bge-base teacher on the same table.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Settled provenance of potion-base-8M (bge-base-en-v1.5
+    + Tokenlearn, not plain distill) and potion-code-16M-v2 (CodeRankEmbed + 43k code tokens + Tokenlearn
+    + contrastive); static code model underperforms BM25 on CoIR. Main correction 2026-10-20 after per-claim
+    second reader: 91.96% belongs to Avg(All) 51.32 vs 55.80, not the MTEB averages.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README What is Model2Vec?
+    quote: The core idea is to forward pass a vocabulary through a sentence transformer model, creating
+      static embeddings for the indiviudal tokens.
+    quote_sha256: f4e90c978db4d2183138ca6f656388102c285e4c8f0a1eb6a0cf87ff2ee318de
+    source_revision: MinishLab/model2vec@dc1ff382f2794d31f3b5932ced8a858335e3ca17
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: HF potion-base-8M card How it works
+    quote: 'Post-training re-regularization: after training, the model is re-regularized by weighting
+      the tokens based on their frequency, applying PCA, and finally applying [SIF weighting](https://openreview.net/pdf?id=SyK00v5xx).'
+    quote_sha256: 4496bb8af3013d1475e7fa595e745b24dc6bf2f2a4a8ba6726ca5e1431096f13
+    source_revision: HF minishlab/potion-base-8M@bf8b056651a2c21b8d2565580b8569da283cab23
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: HF potion-code-16M-v2 card Results
+    quote: '| CodeRankEmbed | 137M | 59.14 |'
+    quote_sha256: 4ddd812de6dc199dbc6cd575e153e9b2bf8eaa7af2d871d98927d0dafab1ee6f
+    source_revision: HF minishlab/potion-code-16M-v2@e9d2a44ca6a05ac6685f3b23709ea57eb7352d5b
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: results/README.md Retrieval Results
+    quote: '| [potion-retrieval-32M](https://huggingface.co/minishlab/potion-retrieval-32M)           |
+      35.06              |'
+    quote_sha256: 0cab30d0777501d96ea3b8afe255380bd748b56d9f2b05f2dc9cf5457a391681
+    source_revision: MinishLab/model2vec@dc1ff382f2794d31f3b5932ced8a858335e3ca17
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+    flags_for_operator:
+    - 'k1 partial: 51.08/31.11 vs 55.93/42.92 and 7,559,168 params confirmed, but the 91.96% figure is
+      for Avg(All) 51.32 vs 55.80, not the MTEB average cited.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Cloned depth-1 at dc1ff382 (nothing run). Read:
+    README.md (sha256 1897812863c65915470b142e56afc30890dba3043bc9969a8a4745bd9cfecc38), results/README.md
+    in full, HF cards potion-base-8M (de8ec91b..., repo sha bf8b0566...) and potion-code-16M-v2 (835e4161...,
+    repo sha e9d2a44c...). NOT read: model2vec/ source (distill code), docs site, tokenlearn repo, speed
+    script. MIT (one-line fact). Fit for REPL-EMB-2.2 (arm list there: grep/BM25, BGE, Granite-97M-R2,
+    hybrid RRF, ColGREP; handoff line 192): a model2vec arm costs ~0 CPU-s per query and needs a one-time
+    index with the same static model (invariant: one embedding model per index); adding it only widens
+    the arm set and does not touch the frozen 2.1 rule text. Potion-base-8M also ships an ONNX file (API
+    listing) - irrelevant for numpy path.'
+- id: intake-2020
+  arxiv_id: null
+  url: https://huggingface.co/IanMagnusson/count-checkpoints-standard-transformer
+  source_type: repo
+  title: count-checkpoints-standard-transformer
+  categories:
+  - memory_augmented
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Ian Magnusson
+  key_claims:
+  - 'The standard (non-COUNT) baseline IS released: seven OLMo-core ladder sizes 60M-1B, each at 10/20/40
+    tokens per parameter (1B: steps 8134 / 16268 / 32537, global batch 1,572,864 tokens), trained on Dolma
+    3 with the same batch as the COUNT and learned-ngram models of that size. Each checkpoint carries
+    model weights, optimizer state and trainer state (OLMo-core distributed format, 8 train ranks for
+    1B).'
+  - 'The 1B standard model matches the COUNT 1B training budget by design (same step numbers and batch
+    in the COUNT repo table: 1B COUNT steps 8134/16268/32537 on table general-797gb). Matched on tokens
+    and batch; the COUNT 190M checkpoints are a rerun, not the paper''s exact weights.'
+  - 'Tokenizer: allenai/dolma2-tokenizer (vocab_size 100278 in the tokenizer config; model vocab_size
+    100352), 1B config d_model 2048, 16 layers, 16 heads, SwiGLU ff 8192, seq len 8192, WSDS schedule,
+    trained world size 8. This is the same Dolma 2 tokenizer used by every COUNT table (vocab 100278),
+    so the table and the standard checkpoint are token-compatible.'
+  - 'Executability of the wave-1 Engram Track B ''COUNT arm'' (zero-init gate on frozen standard 1B +
+    released table): the checkpoint and the tables (general-17gb, 142gb, 797gb; ODC-By) exist, so NO pretraining
+    is needed to start. BUT the COUNT embedding is not a free add-on in the card''s own description: it
+    averages rows of the model''s OWN output head weighted by n-gram scores, so it needs the COUNT-lookup
+    code (olmo_core.data.count_table.CountLookup) and a patched forward. Caveats: (a) the paper''s COUNT
+    models were trained with the table from step 0, so a frozen-backbone retrofit measures something the
+    paper does not; (b) the 1B COUNT checkpoint used general-797gb (797.5 GB, needs RAM) while the 17
+    GB table was used only for 60M-190M models, so ''standard 1B + 17 GB table'' is an off-recipe pairing;
+    (c) training uses OLMo-core torchrun with --cluster local/h200 examples (CUDA); a gate-only train
+    on 1B needs the same data pipeline or a custom loop, and an MI210 port was not assessed.'
+  techniques:
+  - OLMo-core model ladder baseline
+  - D/N 10/20/40 token budgets
+  - Dolma2 tokenizer
+  reported_results:
+  - '1B vanilla: steps 8134/16268/32537 at batch 1,572,864 tokens (README Checkpoints table)'
+  referenced_arxiv_ids:
+  - '2610.20456'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-1988
+    intake_entry_notes:
+    - intake-1988 (COUNT paper; this is its released standard-transformer baseline)
+  expanded_from: intake-1988
+  credibility_score: null
+  source_revision: HF IanMagnusson/count-checkpoints-standard-transformer@748e5de4cb046bb9963c37bb7133ea6b0802eac3
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'The controlled baseline exists and is budget-matched, so a COUNT-vs-standard
+    comparison needs no pretraining; the wave-1 ''zero-init gate on frozen standard 1B'' arm is therefore
+    START-able, but it is an off-recipe retrofit (paper trained COUNT from scratch; 1B used the 797 GB
+    table) and needs the COUNT lookup code. Do NOT read this as evidence that frozen-backbone COUNT works
+    - no such result is released. Hardware: examples are CUDA/H200 OLMo-core; EPYC/MI210 port unassessed.
+    Weights not downloaded.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Settled that the standard 1B baseline exists at matched
+    D/N and batch, tokenizer = dolma2, and that the Track B COUNT arm is executable w/o pretraining but
+    off-recipe on table size.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README Checkpoints table
+    quote: '| 1B | step 8134 | step 16268 | step 32537 | 1,572,864 |'
+    quote_sha256: 7167742d8700594d4a9124cb17be5eb6f898fbb7ea5e8d0ae654e85c82004d76
+    source_revision: HF IanMagnusson/count-checkpoints-standard-transformer@748e5de4cb046bb9963c37bb7133ea6b0802eac3
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README Checkpoints
+    quote: Each size uses the same global batch as the COUNT and learned n-gram models of that size.
+    quote_sha256: 33f7871d85b1f4ece2bfca5e298b8ee9501d39ee0abdd0b5dc1fee70d30325ee
+    source_revision: HF IanMagnusson/count-checkpoints-standard-transformer@748e5de4cb046bb9963c37bb7133ea6b0802eac3
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: model-ladders/vanilla-1b/1B/step32537/config.json#/instance_sources/0/sources/0/tokenizer
+    quote: '"identifier": "allenai/dolma2-tokenizer",'
+    quote_sha256: 03883b18cfcbed9bb48e44da67902409e6ffbccf6a6170ba292fadbca3711699
+    source_revision: HF IanMagnusson/count-checkpoints-standard-transformer@748e5de4cb046bb9963c37bb7133ea6b0802eac3
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: HF IanMagnusson/count-checkpoints-count README Checkpoints
+    quote: '| 1B | `general-797gb` | step 8134 | step 16268 | step 32537 | 1,572,864 |'
+    quote_sha256: c5079252406df2db8a839e156cf9c2069f26f8cd7511cb8f5e6befe34fa8270b
+    source_revision: HF IanMagnusson/count-checkpoints-count@b3522bbbe693069f55ed61582701d2cc35f88807
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+    flags_for_operator:
+    - 'k3 partial: Output-head averaging, CountLookup, 797.5 GB for 370M-1B, 17 GB for 60M-190M, ODC-By
+      confirmed; "COUNT trained from step 0" and MI210-port remarks are inference.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read: HF README (sha256 d1e183a5..., repo sha 748e5de4),
+    1B step32537 config.json and release_args.json, COUNT checkpoints README (repo sha b3522bbb), n-gram
+    tables README and general-17gb build_manifest.json (dataset sha 5a284fd6). NO weights, no distcp,
+    no tables downloaded. NOT read: COUNT code repo, paper appendix (paper arXiv 2610.20456 already indexed,
+    8 index lines). Apache-2.0 checkpoints / ODC-By tables (one-line facts). Table sizes: 17.1 GB (min
+    history count 12319), 142 GB, 797.5 GB. 1B checkpoint total disk size not measured (full optimizer
+    state; sizes not queried). Wave-1 Track B proposal wording says ''standard 1B + 17 GB table''; the
+    COUNT 1B checkpoint card says its training table was general-797gb.'
+- id: intake-2021
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/25618
+  source_type: repo
+  title: 'Eval bug: Speculative decoding (draft-mtp / draft-dspark): greedy output diverges from vanilla
+    on quantized targets'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - local_inference
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Ankk98 (opener)
+  - frizikk
+  - snick525
+  - thc1006
+  - Apoze (branch)
+  - makoni
+  - tczank
+  - skoulik-claude
+  - msb-msb
+  - dbsanfte
+  - aic0d3r
+  - YavorGIvanov
+  key_claims:
+  - 'Issue #25618 (opened 2026-07-13 by Ankk98, label bug-unconfirmed, still OPEN at updated_at 2026-10-18;
+    31 comments, not the 15 intake-1288 saw) reports that greedy speculative output differs from vanilla
+    on quantized targets. Its original Vulkan/Strix-Halo matrix (Qwen3-8B Q4_K_M + draft-dspark, Gemma-4-12B
+    Q4 + draft-mtp) showed ngram-simple/ngram-mod matching vanilla - but those ngram arms accepted 0 and
+    4/8 tokens on one prompt, so that control had almost no exposure (same defect our DF2-6b-bis already
+    names).'
+  - 'The ''six-defect kernel-selection analysis'' is VULKAN-ONLY (comment #3 and the 2026-09-06 summary
+    #19, which grows it to 7): GQA-packed FA used for N>1, N-dependent FA tile/split_k, FA-off KxQ p021
+    vs GEMM, FA-off V*kq DMMV dual-stride and holey-view stride, F32-DMMV vs Q8_1-MMVQ choice by N (should_use_mmvq
+    returns true for n>1), and the fused ADD->RMS_NORM partial-reduction path at N=1 only. It is not an
+    analysis of CUDA/HIP kernels. The author''s own summary: no fix was merged; PR #26358 (FA GQA gate)
+    was CLOSED UNMERGED by its author on 2026-08-27; PR #28489 (MMVQ selection independent of N) and PR
+    #28488 (tests) are open as of the fetch, with maintainer 0cc4m warning the MMVQ change ''will cost
+    a lot of performance''.'
+  - 'The raw-logit instrumentation is frizikk''s (Vulkan RADV Strix Halo, Qwen3.8-27B Q6_K + Q8_0 MTP):
+    at the first mismatch baseline token 548 = 24.319630 vs 320 = 24.295303, while the speculative row
+    had 320 = 24.301819 vs 548 = 24.298832, i.e. a ~0.02-logit batch-dependent shift flips an argmax near-tie.
+    His later bisect located the earliest boundary at Q8_0 x F32 MUL_MAT (N=1 mul_mat_vec_q8_0_f32_f32
+    vs N=2 quantize_q8_1_x4 + MMVQ; forcing the N=1 path made row 0 bit-exact) and a second at ADD->RMS
+    fusion (2 ULP); FA was exonerated for his remaining prompt.'
+  - 'Backends with a reproduction in the thread: Vulkan (Strix Halo, RADV RDNA4 R9700, RX 7900 XTX, NVIDIA
+    GTX1660S via Vulkan), Metal (M4, M1 Max with two isolated causes: mul_mv vs mul_mv_ext and flash_attn_ext_vec
+    simdgroup count), and CUDA (sm_86 x2, sm_120 x several, 4080 laptop). The sole ROCm/HIP report (gfx1151,
+    aic0d3r) was RETRACTED by its author one day later as a DSpark draft-path/acceptance problem and ''not
+    the quantized-verify bug''; nothing in the thread concerns gfx90a/CDNA or HIP on a discrete Instinct
+    card.'
+  - 'Root-cause consensus that emerged: this is a BATCH-INVARIANCE violation, not a quantization or drafter
+    defect. Evidence: divergence already at width 2 (thc1006: 57/75 requests at n-max 1), drafter-independent
+    (MTP and DFlash2 at three drafter quants fork at the same byte, snick525), flip position independent
+    of width in one case (tczank), BF16 targets lossless in three reporters'' small samples (Metal 10/10,
+    Vulkan Strix Halo BF16 identical, one F16 LFM2 target) but the quantization-only reading is NOT established
+    (Q8_0, Q6_K_XL and Q8_K_XL also diverge). A no-drafter batched-prefix-scoring control (msb-msb, CUDA)
+    flips the same argmax in 2/6 cases.'
+  - 'CUDA/HIP-relevant mechanisms and fixes (shared ggml-cuda source with our gfx90a build): thc1006 showed
+    fork positions group by verification width {3,4} vs {5,6,8} matching mmvq.cu calc_nwarps (4 warps
+    for ncols 1..4, 2 for 5..8) but his forced-warp intervention moved kernel time up to 26.68% and changed
+    zero output bytes, so the warp table is NOT the cause for his Q4_K_XL/sm_86 setup; separately issue
+    #28111 (open) shows MUL_MAT with IQ3_S/IQ4_XS is bitwise batch-variant at n=5 and n=8 on SM120 (n=1..4
+    pass) and forcing a fixed warp count restores invariance. Apoze''s unmerged branch plus makoni''s
+    modification gives 15/15 answers matching control for Qwen3.8-27B UD-IQ3_S, KV q4_0, MTP n-max 1..3
+    (n-max above 3 not covered; DFlash2 n-max 7 outside patched range). PR #28108 (CUDA batch-invariant
+    FA, SM120) was closed unmerged.'
+  - 'Per-GPU generalisation is weak: tczank found the #26358 FA gate had zero effect on RDNA3 (0/16 files
+    differ), and frizikk found FA exonerated for his residual case - the dominant defect differs by backend,
+    quant and prompt. Practical operator-side reports in the thread: sjvrensburg keeps speculation off
+    for tool-calling endpoints (a 3-probe code set went 12/12 to 10/12 in a DFlash thinking-on test on
+    Vulkan, and 8/8 to 7/8 in a separate n-max 3 parser test; very small samples); other reporters judge
+    flips to be near-ties with coherent text.'
+  techniques:
+  - batch-invariance (row 0 of N>1 batch bit-exact to N=1) as the speculative-verify losslessness invariant
+  - 'op-level memcmp tests: MUL_MAT_BATCH_INVARIANCE / FLASH_ATTN_EXT_BATCH_INVARIANCE n_tokens x n_kv
+    sweeps'
+  - raw full-vocab logit row comparison N=1 vs row 0 of N=2
+  - no-drafter batched prefix scoring as a control
+  - forced-kernel-parameter intervention (warp count) with SASS check
+  - fresh server per arm; ABBA ordering; sha256 over canonical response identity
+  reported_results:
+  - 'frizikk comment #12: baseline token 548 = 24.319630 vs 320 = 24.295303; speculative row 320 = 24.301819
+    vs 548 = 24.298832 (argmax flip)'
+  - 'thc1006 comment #18: width 2 (n-max 1) 57/75 requests differ; identical rate 24.0% (w2-4), 20.0%
+    (w5-8), 12.0% (w9); forced-warp builds change kernel time up to 26.68%, output bytes 0/150'
+  - 'issue #28111: MUL_MAT IQ3_S/IQ4_XS n=1..4 PASS, n=5 and n=8 FAIL on SM120 (12/18 pass), ERR 1.0 vs
+    tolerance 0'
+  - 'makoni comment #29: Qwen3.8-27B UD-IQ3_S patched: 15/15 answers match control; Qwen3.6-35B-A3B Q4_K_M
+    with three changes: 9/9; MTP n-max 3 gen 45.9 vs 27.1 tok/s patched control at 67k'
+  - 'snick525 comment #14: byte 204 identical first-difference for MTP and DFlash2 Q4/Q8/BF16 drafters;
+    f16 vs q8_0 KV alone moves greedy output with no speculation (byte 561)'
+  - 'tczank comment #25: RDNA3 7900 XTX, #26358 head vs master 0/16 files differ (q4_0 KV) and 0/16 (f16
+    KV)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - autokernel-all-devices-all-dimensions.md
+    - autokernel-cross-workload-keep-gate.md
+    - autokernel-champion-aggregate.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-1288
+    - intake-2004
+    - intake-1277
+    intake_entry_notes:
+    - 'intake-1288 (names #25618 as source of record; its reader_should_conclude should now read 25618
+      as Vulkan-analysis-heavy and note it never ran on gfx90a)'
+    - 'intake-2004 (thc1006 hackmd/repo corroborates this thread; its comments #17/#18 are in this thread)'
+    - intake-1277 (earlier upstream citation of the same symptom class)
+    - 'intake-2004 (separately reports BF16 divergence 36/75 on a 9B sibling; NOT a #25618 finding)'
+  expanded_from: intake-2004
+  credibility_score: null
+  contradicting_evidence:
+  - 'Original issue framing ''quantization-related / ngram is lossless'' is contradicted inside the thread:
+    n-max 1 diverges (thc1006 #18, F-Mangini #15), Q8_0/Q6_K_XL/Q8_K_XL diverge (snick525 #13, dan-arnold
+    #22), ngram arm had 0 and 4/8 accepted tokens (issue body) (independent)'
+  - 'aic0d3r ROCm/gfx1151 low-acceptance report was retracted by the same author as not the verify bug
+    (comment #10) (independent, self-retraction)'
+  - 'FA GQA-pack fix PR #26358 had zero effect on RDNA3 (tczank #25) and left 1/5 prompts diverging even
+    for its tester (frizikk #12) (independent)'
+  source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z, 31
+    comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 2
+  reader_should_conclude: 'Take away: upstream''s own best diagnosis is that greedy speculative verify
+    is lossless only if every kernel is batch-invariant (row 0 of an N>1 batch bit-identical to N=1),
+    that the invariant is violated in many places that differ by backend/quant/prompt, and that NO fix
+    is merged for Vulkan (PRs closed or open) or CUDA (branches/PRs unmerged or closed) as of 2026-10-18.
+    This matches and strengthens our DF2-6/DF2-8 finding that the non-parity is the 1-row vs multi-row
+    numeric split and not a DFlash2 defect; it also means no exact-greedy contract can be promised for
+    any speculative arm on any backend, ours included. Do NOT carry: that 25618 settles HIP/gfx90a (zero
+    gfx90a/CDNA data; the lone ROCm report was retracted); that the ''six defects'' are CUDA/HIP defects
+    (they are Vulkan shader paths); that ngram is a lossless control (it barely speculated); that quantization
+    causes it (BF16 evidence is small-sample and contradicted); or that a fix exists. Treat intake-1288''s
+    phrasing ''four backends, two contributor reproductions'' as partly stale: of the two CONTRIBUTOR
+    reproductions one (aic0d3r, ROCm) was retracted; CUDA arrived later from non-contributors.'
+  dive_corrections: '2026-10-20 Stage-2b NEW source: read all 31 comments via the GitHub API (was 15 when
+    1288 was filed). Separated what the ''six-defect analysis'' is (Vulkan-only, author-compiled, later
+    7) from CUDA findings (mmvq warp grouping, refuted as cause; IQ-quant invariance failure at n=5/8
+    on SM120; FA invariance on SM120); established fix status (no merged fix; #26358 and #28108 closed
+    unmerged, #28489/#28488/#28111 open); established that no gfx90a/CDNA/discrete-ROCm data exists in
+    the thread and that the one ROCm report was retracted. Main correction 2026-10-20 after per-claim
+    second reader: removed ''thc1006 repo BF16 9B diverging 36/75'' from claim 4 (cross-contaminated from
+    intake-2004; not in the #25618 files); fixed sjvrensburg test attribution in claim 6; claim_anchors
+    re-indexed to the 7 corrected claims (claim 0 = issue metadata, unanchored).'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'comment #3 (Ankk98, 2026-07-13) Issue 6'
+    quote: 'Fix: disable auto MMVQ for DMMV entirely so both N=1 and N>1 use F32 DMMV (prefill GEMM MMQ
+      unchanged; force-reenable via `GGML_VK_FORCE_MMVQ`).'
+    quote_sha256: 5432de39c15695b4e950f9cc1674118169bcccd02ee83fdc6eb740825ab7355e
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'comment #12 (frizikk, 2026-08-20)'
+    quote: The small batch-dependent logit change flips the greedy argmax.
+    quote_sha256: bae09946c35abe57dfa93a47b96f29b957246cb4ab4a1cd1e4aa658025de092b
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'comment #19 (Ankk98, 2026-09-06)'
+    quote: Vulkan spec verify vs vanilla - master@7620399 - all 6 reported bugs still present, none merged
+    quote_sha256: bb0b04c5a3946d4c1919b40af471b2bc00b64cb1721eb80a67bb852f9be159d6
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'comment #18 (thc1006, 2026-08-26)'
+    quote: The forced builds moved the kernel's runtime by up to **26.68%** and changed **not one output
+      byte** in 150 records each.
+    quote_sha256: 8c881ad6e9593da88aa609146350db25c88890a83603d5dd669c38a6807a4604
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'comment #10 (aic0d3r, 2026-08-16) ROCm/gfx1151 retraction'
+    quote: Acceptance does **not** recover on the unquantized target — so the low acceptance is *not*
+      the quantized-target verify drift this issue describes.
+    quote_sha256: 571898076b43d933f3584075a6e5d8681e35e7982cb179d334b2a365f01e6e65
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'PR #26358 comments (Ankk98, 2026-08-27)'
+    quote: We can close this PR and if someone wants to pick this up, they can.
+    quote_sha256: 284ce2e2166cdd63463fa96a18f66ad48be51e97a7180c71bdc83b78337212b5
+    source_revision: ggml-org/llama.cpp PR/issue API bodies+comments fetched 2026-10-20 (extra.txt sha256
+      551a941e...)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'comment #29 (makoni, 2026-10-09)'
+    quote: '**Qwen3.8-27B, change 1 only, ctx 114688: 15/15 answers match control**'
+    quote_sha256: 5c5a1888b0c1af15eece18ad1164c0815829b941d6ecb90334e5f23bda532175
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'issue #28111 body (SM120)'
+    quote: 'On SM120, `mul_mat` with IQ quants is not batch-invariant for `n` of 5 and 8: evaluating `n`
+      columns in one call gives a bitwise different result from `n` calls of one column.'
+    quote_sha256: 80d51cf86737fb1bdd2abdf0bce017b015a6996e219a9cfabb1ec8d117ba3c29
+    source_revision: ggml-org/llama.cpp PR/issue API bodies+comments fetched 2026-10-20 (extra.txt sha256
+      551a941e...)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'comment #17 (thc1006, 2026-08-24)'
+    quote: sm_86 is not RDNA, GCN, CDNA or DGX Spark, and the Turing table is gated on `arch >= TURING
+      && arch < AMPERE`, so it falls through to `MMVQ_PARAMETERS_GENERIC`
+    quote_sha256: 76945f80317b16793f73fb5ace446fecabf962a8e2df42fedeb4e9d83a569ce2
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: 'comment #25 (tczank, 2026-09-24) RDNA3'
+    quote: '**The #26358 head has zero effect here**: outputs are bit-for-bit identical between master
+      and master+fix'
+    quote_sha256: 39aede885894488da46895b13d33bf5d86755901d6a399a96fc4fb43224446bf
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'comment #5 (dbsanfte, 2026-08-08)'
+    quote: A kernel that does a batched/grouped decode for e.g. M=3 must be bitwise identical to the serial
+      decode result (unbatched) for rows 1,2,3.
+    quote_sha256: e761cae33c39dd4ce65ecc5f11297ca24e4e93c410d0c64f807164c8da4dfcff
+    source_revision: 'ggml-org/llama.cpp issue #25618 via GitHub API, updated_at 2026-10-18T19:11:45Z,
+      31 comments (comments.txt sha256 921ebb64...; issue.json sha256 48f4a58b...)'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 5
+      partial: 2
+    flags_for_operator:
+    - 'k4 partial: 57/75 at width 2, 2/6 no-drafter flips, Metal 10/10 BF16 confirmed; "thc1006 repo BF16
+      9B 36/75" not found anywhere in dive; "consensus" is synthesis.'
+    - 'k6 partial: tczank 0/16 and frizikk confirmed; sjvrensburg 12/12->10/12 is a DFlash thinking-on
+      test, while n-max 3 belongs to the separate 8/8->7/8 parser test.'
+    - 'actionable W2-G5-llama25618-03: "upstream has no merged batch-invariant fix on CUDA or Vulkan as
+      of 2026-10-18" is an absence claim inferred from a handful of PRs, not a surveyed fact.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Fetched via curl to /mnt/raid0/llm/tmp/dive-w2-llama25618/:
+    issue.json (sha 48f4a58b..., updated_at 2026-10-18T19:11:45Z), c1.json (31 comments; pages 2-3 empty),
+    timeline.json, comments.txt (rendered), plus issue/PR JSON for 26358, 28488, 28489, 28111, 28108,
+    23335, 26741, 27407 and their comments (extra.txt). Read in full: issue body and all 31 comments (large
+    ones #8, #11, #12, #16-#18, #24, #29 read in full). NOT read: the linked gists and fork branches (Apoze
+    fix/cuda-speculative-batch-invariance, Ankk98 ft-dspark-qwen3, thc1006 repo beyond intake-2004), PR
+    diffs, #23335 comments, #26741 comments, #28108 comments; no code was run. Several reporters are NONE-association
+    first-time posters; numbers are as reported, not reproduced here. Anchors are quotes from the rendered
+    API text (comments.txt/extra.txt).'
+- id: intake-2022
+  arxiv_id: '2603.00042'
+  url: https://arxiv.org/abs/2603.00042
+  source_type: paper
+  title: 'LittleBit-2: Maximizing the Spectral Energy Gain in Sub-1-Bit LLMs via Latent Geometry Alignment'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Banseok Lee
+  - Youngmin Kim
+  key_claims:
+  - 'LittleBit-2 changes ONE thing relative to LittleBit: the initialisation. It inserts Joint-ITQ (an
+    alternating sign / Procrustes rotation R of the concatenated SVD latent factors, 50 iterations, ~3
+    s extra per layer per Appendix F.1) between truncated SVD and Dual-SVID scale extraction. The deployed
+    layer (two residual paths of h * U_b * l * V_b^T * g) is unchanged; BPW accounting is identical to
+    LittleBit (M = 2r(din+dout+16) + 32(din+dout) bits per layer, blocks only; embeddings/LM head stay
+    FP16).'
+  - 'It is STILL quantisation-aware training with knowledge distillation, not PTQ: the paper says ''Initialize
+    Phase'' then ''QAT Phase'', states it adopts LittleBit''s identical training configuration, and the
+    official repo trains per model (5 epochs, c4_wiki dataset, bs 4/GPU, lr 4e-5, multi-GPU DeepSpeed
+    example). The paper reports no GPU-hours or token budget, and no pre-QAT (init-only) perplexity, so
+    whether the rotated init alone is usable without training is not measured.'
+  - 'Quality gains over LittleBit at matched BPW (WikiText-2 ppl, Table 1 / Table 3): Llama-3 8B 1.0 bpp
+    16.30 -> 11.53 (OneBit 13.09; FP16 6.10), 0.55 bpp 18.47 -> 14.01, 0.1 bpp 26.11 -> 23.74; Llama-2
+    7B 1.0 bpp 9.08 -> 8.27 (OneBit 8.36; FP16 5.47), 0.55 bpp 10.47 -> 9.65, 0.1 bpp 15.92 -> 14.70 (about
+    2.7x FP16); Llama-2 13B 0.1 bpp 15.09 -> 13.94; Gemma-3 27B 0.1 bpp 17.72 -> 16.38 (FP16 4.58; zero-shot
+    avg 47.06 vs 79.48 FP16). Zero-shot average at 0.1 bpp is 42.06 on Llama-2 7B, vs FP16 68.88: functional
+    but far from usable. The only sub-1-bit PTQ baseline is STBLLM (Llama-2 7B 0.55 bpp ppl 32.93); no
+    comparison to GGUF IQ/K-quants at their native 1.5-2.5 bpw is given.'
+  - 'Comparisons that look favourable are against QAT peers trained at equal budget (LittleBit, OneBit);
+    the 2-bit PTQ baselines (GPTQ 52.2 ppl on Llama-2 7B; EfficientQAT 7.17 at 2.25 effective bpw with
+    group 128) are listed with the group-scale overhead, and EfficientQAT at ~2.25 bpw beats LittleBit-2
+    at 1.0 bpp (7.17 vs 8.27) at a very different training cost. Training data (repo: c4_wiki) includes
+    WikiText, so WikiText-2 ppl may not be held-out (the paper defers to Lee et al.; not verified).'
+  - 'Inference claims are inherited, not re-measured: the 11.6x kernel speedup (Llama-2 70B MLP layer,
+    0.288 -> 0.025 ms vs cuBLAS FP16) and a 2.46x end-to-end (82.6 -> 203.2 tok/s, 0.1 bpp Llama-2 7B,
+    128-token decode, batch 1) are quoted from Lee et al. 2025; ''it guarantees the same level of acceleration''
+    is an assertion from shared graph structure. No kernel is released (repo: python/torch QAT + eval
+    only; CC BY-NC 4.0 repo, CC BY-NC-ND paper - facts only).'
+  techniques:
+  - 'Joint-ITQ: alternating sign / orthogonal-Procrustes rotation of concatenated SVD latent factors before
+    binarisation'
+  - Internal latent rotation (random orthogonal R) exploiting U V^T = (UR)(VR)^T invariance
+  - local distortion coefficient lambda = 1 - (||u||_1/||u||_2)^2 / r as the geometry diagnostic
+  - spectral break-even condition for low-rank-binary vs tiny-rank FP16 (gamma* 0.36 -> 0.41 -> 0.51)
+  - QAT with KD on top of the improved init (inherited from LittleBit)
+  reported_results:
+  - 'Table 1 Llama-3 8B WikiText-2 ppl: 1.0 bpp 16.30 -> 11.53; 0.55 bpp 18.47 -> 14.01; 0.1 bpp 26.11
+    -> 23.74 (FP16 6.10)'
+  - 'Table 1 Llama-2 7B ppl: 1.0 bpp 9.08 -> 8.27 (OneBit 8.36); 0.55 bpp 10.47 -> 9.65; 0.1 bpp 15.92
+    -> 14.70 (FP16 5.47); STBLLM 0.55 bpp 32.93'
+  - 'Table 2 Gemma-3 27B 0.1 bpp: LittleBit-2 ppl 16.38 / avg 47.06 vs LittleBit 17.72 / 45.52 vs FP16
+    4.58 / 79.48'
+  - 'Table 3 Llama-3 8B ablation: +Random Rotation 24.16 (0.1 bpp) / 12.63 (1.0 bpp); Joint-ITQ 23.74
+    / 11.53'
+  - 'Appendix F.1: Joint-ITQ T=50 costs ~3 s on top of ~4 s baseline for one q_proj layer; no whole-model
+    init time or QAT GPU budget stated'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-1977
+    intake_entry_notes:
+    - 'intake-1977 (LittleBit v1: this entry confirms the QAT+KD-only, no-kernel, non-GGUF conclusion
+      and quantifies the init-only change)'
+  expanded_from: intake-1977
+  credibility_score: 3
+  source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...; text
+    paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 2
+  reader_should_conclude: 'Take away: LittleBit-2 does NOT change the intake-1977 conclusion. It is a
+    better initialisation (Joint-ITQ) for the same QAT+KD recipe, same deployed structure, same BPW accounting
+    (blocks only, embeddings/LM head FP16), still no released inference kernel, still per-model training
+    with no stated GPU budget, and no pre-QAT ppl reported. Quality at 0.1 bpp remains roughly 2.7x FP16
+    ppl on Llama-2 7B and 3.6x on Gemma-3 27B. Do NOT carry: ''sub-1-bit PTQ'', the 11.6x/2.46x speed
+    figures as measured for LittleBit-2 (inherited, A100 CUDA), or 0.1 bpp as whole-model size (embeddings
+    dominate). The one transferable idea is the diagnostic, not the format: SVD latent factors are spiky
+    (kurtosis ~16.8, max lambda 0.88) and a shared orthogonal rotation of U and V costs nothing at inference
+    - an incoherence-processing observation in the QuIP#/QuaRot family, relevant only if someone wants
+    a rotation-based preconditioner for existing low-bit lanes.'
+  dive_corrections: '2026-10-20 Stage-2b NEW source: read v2 HTML in full text (abstract, §3-§6, Algorithm
+    1, Tables 1-3, Appendix F.1/H.3/I start) and the official repo README. Settled the three wave-1 questions:
+    not PTQ (QAT+KD, identical training config, repo trains per model), no cheaper-training claim (only
+    a ~3 s/layer init overhead; no GPU budget or init-only ppl), no kernel release; quantified the quality
+    delta vs LittleBit and OneBit at matched BPW. Main correction 2026-10-20 after per-claim second reader:
+    claim_anchors re-indexed to the 5 corrected claims; claim 3 unanchored.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §2.1 Extreme Quantization
+    quote: Building on this protocol, our work specifically tackles the initialization bottleneck via
+      geometric alignment.
+    quote_sha256: be5d262623daebafb42d212ad440a2e2bd6973f474f2265e6f59129483d94ccf
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §4.4 Joint-Iterative Latent Quantization
+    quote: The process incurs negligible overhead, converging within 50 iterations with few seconds (Appendix
+      F.1).
+    quote_sha256: 9f1471e1254fd0b0c953b8b44cb4e9d6ccf98d0d36922649a9f57edd6721b3cc
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §5.2 Baselines
+    quote: we adopted the identical training configuration (including the number of tokens, epochs, and
+      learning rate) as detailed in (Lee et al., 2025).
+    quote_sha256: 7fe2169a6e9755bd8c8f7f6dbbd4e40b66514806d46e70be3c8e234dee52fe27
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5.2 Performance Analysis
+    quote: It achieves a perplexity of 23.74 on Llama-3 8B, outperforming the baseline LittleBit (PPL
+      26.11).
+    quote_sha256: 4239e6f76047449e7de88eefdc99eb50a2005e211ab4d95f126e94a4a8780776
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §6.2 Inference Efficiency
+    quote: Since LittleBit-2 shares this underlying computational graph, it guarantees the same level
+      of acceleration.
+    quote_sha256: 5f35aa7e963443b7a02001f0cb6ecc4ac2321dedaddc8845254f94797dbc2133
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Appendix H.3
+    quote: The memory requirements for LittleBit-1 and LittleBit-2 are identical, governed by the Residual
+      Low-Rank Binary Factorization.
+    quote_sha256: 2e2fc6427300865f8838723fee1bc57c94a1a6602fef1724e9c8e294d0a4eafb
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: repo README (SamsungLabs/LittleBit@42d658b0) intro
+    quote: LittleBit-2 initialization is available as an opt-in (`--use_itq`) and produces no additional
+      inference overhead.
+    quote_sha256: 3ec43f7efb7dbd2455b66c0b6aa79ec21744869a306d023bd168e89937b59c7f
+    source_revision: SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Table 1 caption / §5.2
+    quote: At 0.1 bpp, LittleBit-2 compresses body weights to <1%, leaving the footprint dominated by
+      the fixed LM Head with Embedding.
+    quote_sha256: a730669b435402eb9c00ca93bae463b2f04c00c3e2aff3956c455235e945cc9a
+    source_revision: arXiv:2603.00042v2 (html, 03 May 2026, ICML 2026) paper.html sha256 2567b925...;
+      text paper.txt sha256 43af0fbd...; code SamsungLabs/LittleBit@42d658b0c79f76450b34b6a3547462c7cdc3e1a0
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-1977
+    claim_index: 2
+    why: QAT+KD dependency and absence of a released kernel are established there; LittleBit-2 inherits
+      both
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 5
+    flags_for_operator:
+    - 'actionable W2-G5-littlebit2-02: "a 1-bit sign factorisation ... without QAT is expected to be worse
+      than IQ1_S NMSE" and "~1 hour numpy" are the author''s expectations, not source-verified.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read: /mnt/raid0/llm/tmp/dive-w2-littlebit2/paper.txt
+    (stripped from paper.html v2 sha256 2567b925...), lines 1-560 in full plus Appendix F.1 and H.3; arxiv.org/abs
+    shows Submitted 9 Feb 2026 (v1), v2 03 May 2026. Repo SamsungLabs/LittleBit @42d658b0 (2026-10-09)
+    README only; no code read beyond file listing (quantization/, utils/, no CUDA). NOT read: Appendix
+    A-E, G, J proofs/code, Table in App. D, Fig. 6/9/13 values, the reference list. No web search for
+    independent replication was run (Tier-2b: none found within the sources read). License facts: paper
+    CC BY-NC-ND 4.0, repo CC BY-NC 4.0 (irrelevant to this project).'
