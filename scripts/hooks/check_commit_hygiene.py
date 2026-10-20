@@ -68,7 +68,10 @@ SHARED_REPOS = [
 # Separator TOKENS a command is cut at (see split_into_segments below). Kept as
 # a set of literal shlex tokens, not a regex over raw text -- that distinction
 # is the HYG-2 fix (see split_into_segments' docstring).
-_SEP_TOKENS = {"&&", "||", ";", "|"}
+# The sentinel is emitted ONLY by _mark_separators() for an UNQUOTED separator, so a quoted
+# `";"` argument (which shlex hands back as a bare `;`) can never be mistaken for a cut.
+_SEP_MARK = "\x00SEP\x00"
+_SEP_TOKENS = {_SEP_MARK}
 
 WHOLESALE_ADD_FLAGS = {"-A", "--all", "-u", "--update"}
 OPERATOR_BYPASS_NOTE = (
@@ -256,6 +259,60 @@ def strip_redirections(tokens: list[str]) -> list[str]:
     return out
 
 
+def _mark_separators(cmd: str) -> str:
+    """Replace every UNQUOTED command separator with a space-delimited sentinel word.
+
+    shlex.split is a word splitter: it glues `;`/`&&`/`|` to adjacent words (`msg.txt;`,
+    `x&&y`) and treats an unquoted newline as plain whitespace, so separators were never seen
+    as tokens (measured 2026-10-20: `git commit -F m; echo rc=$?` read `echo` as a pathspec).
+    This quote-aware pre-pass finds them first. Redirection operators that contain `&`
+    (`2>&1`, `&>f`, `>&2`, `<&3`) are not separators. Backslash-newline is a continuation.
+    Unterminated quotes are left for shlex to reject (fail open, as before).
+    """
+    out: list[str] = []
+    i, n, quote = 0, len(cmd), ""
+    while i < n:
+        c = cmd[i]
+        if quote:
+            out.append(c)
+            if c == "\\" and quote == '"' and i + 1 < n:
+                out.append(cmd[i + 1])
+                i += 1
+            elif c == quote:
+                quote = ""
+            i += 1
+            continue
+        if c == "\\" and i + 1 < n:
+            if cmd[i + 1] == "\n":
+                out.append(" ")                       # line continuation
+            else:
+                out.append(c + cmd[i + 1])
+            i += 2
+            continue
+        if c in "'\"":
+            quote = c
+            out.append(c)
+        elif c in ";\n":
+            out.append(f" {_SEP_MARK} ")
+        elif c == "|":
+            if cmd.startswith("||", i):
+                i += 1
+            out.append(f" {_SEP_MARK} ")
+        elif c == "&":
+            prev = cmd[i - 1] if i else ""
+            if cmd.startswith("&&", i):
+                i += 1
+                out.append(f" {_SEP_MARK} ")
+            elif prev in "<>" or cmd.startswith("&>", i):
+                out.append(c)                         # part of a redirection
+            else:
+                out.append(f" {_SEP_MARK} ")
+        else:
+            out.append(c)
+        i += 1
+    return "".join(out)
+
+
 def split_into_segments(cmd: str) -> list[str]:
     """Command segments, cut at &&/||/;/| -- QUOTE-AWARE.
 
@@ -287,7 +344,7 @@ def split_into_segments(cmd: str) -> list[str]:
     happens before segmenting, not after.
     """
     try:
-        tokens = strip_redirections(shlex.split(cmd))
+        tokens = strip_redirections(shlex.split(_mark_separators(cmd)))
     except ValueError:
         return []                          # unparsable -> no segments (fail open, as before)
     segments: list[str] = []

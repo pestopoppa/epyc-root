@@ -217,6 +217,65 @@ CASES += [
      "HYG-3 PAIR: a redirected fetch still satisfies freshness for a redirected commit"),
 ]
 
+# ---- HYG-4 (reproduced 2026-10-20): UNQUOTED separators glued to words, and bare newlines ----
+# shlex.split glues `;` to the previous word (`msg.txt;`) and treats a newline as whitespace, so
+# the following command (`echo`, `git log`) was read as a commit PATHSPEC and falsely blocked.
+_HEREDOC_THEN_LOG = """git add f && git diff --cached --stat && git commit -q -F - <<'EOF'
+subject line
+
+body mentions git commit -- file; and more
+EOF
+git log --oneline -1"""
+
+_REAL_PATHSPEC_AFTER_NEWLINE = """echo hi
+git commit -m x -- b"""
+
+HYG4_CASES: list[tuple[str, int, dict, str]] = [
+    ("cd /workspace && git commit -q -F /tmp/msg.txt; echo rc=$?; git log --oneline -1", 0, FRESH,
+     "HYG-4: `;` glued to the -F argument"),
+    (_HEREDOC_THEN_LOG, 0, FRESH, "HYG-4: newline after a heredoc ends the commit segment"),
+    ("git commit -q -m x;git log", 0, FRESH, "HYG-4: `;` glued on both sides"),
+    ("git commit -q -m x&&git log", 0, FRESH, "HYG-4: `&&` glued"),
+    ("git commit -q -m x||git log", 0, FRESH, "HYG-4: `||` glued"),
+    ("git commit -q -m x|cat", 0, FRESH, "HYG-4: `|` glued"),
+    ("git commit -q -m x & git log", 0, FRESH, "HYG-4: backgrounding `&` separates"),
+    ("git commit -q -m x\ngit log --oneline -1", 0, FRESH, "HYG-4: bare newline separates"),
+    ('git commit -m "a; b && c | d\ngit commit -- file.txt"', 0, FRESH,
+     "HYG-4 PAIR: quoted separators and newline inside -m do not cut"),
+    ("git commit -m 'x;y' -F m.txt 2>&1; echo $?", 0, FRESH, "HYG-4: `2>&1;` redirect then separator"),
+    ("git commit -m x >/dev/null; echo ok", 0, FRESH, "HYG-4: `>/dev/null;`"),
+    ("git commit -m x &>log; echo ok", 0, FRESH, "HYG-4: `&>log;` is a redirect, then a separator"),
+    ("git commit -m x 2>&1&& git log", 0, FRESH, "HYG-4: `2>&1&&`"),
+    ("git commit -m x -- file", 2, FRESH, "HYG-4 PAIR: real pathspec with `--` still blocked"),
+    ("git commit -m x file", 2, FRESH, "HYG-4 PAIR: real pathspec still blocked"),
+    ("git commit -am x file", 2, FRESH, "HYG-4 PAIR: -am with pathspec still blocked"),
+    ("git add a && git commit -m x -- b", 2, FRESH, "HYG-4 PAIR: pathspec commit in a chain"),
+    ("git add a;git commit -m x -- b", 2, FRESH, "HYG-4 PAIR: pathspec commit after glued `;`"),
+    (_REAL_PATHSPEC_AFTER_NEWLINE, 2, FRESH, "HYG-4 PAIR: pathspec commit after a newline"),
+]
+CASES += HYG4_CASES
+
+
+def test_split_into_segments_hyg4() -> None:
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "hooks"))
+    import check_commit_hygiene as h
+    segs = lambda c: [x for x in h.split_into_segments(c) if x]  # noqa: E731
+    assert segs("git commit -F m.txt; echo rc=1") == ["git commit -F m.txt", "echo rc=1"]
+    assert segs("a;b&&c||d|e&f\ng") == list("abcdefg")
+    assert segs("git commit -F m 2>&1; x") == ["git commit -F m", "x"]
+    assert segs("git commit -m x &>log; y") == ["git commit -m x", "y"]
+    assert len(segs('git commit -m "a; b && c\nd"')) == 1
+    assert len(segs("echo 'a;b'")) == 1 and len(segs("echo a\\;b")) == 1
+    assert h.split_into_segments('git commit -m "unterminated') == []   # fail open
+
+
+import pytest  # noqa: E402
+
+
+@pytest.mark.parametrize("cmd,expect,env,why", HYG4_CASES, ids=[c[3] for c in HYG4_CASES])
+def test_hyg4_end_to_end(cmd: str, expect: int, env: dict, why: str) -> None:
+    assert run(cmd, env) == expect, why
+
 
 def main() -> int:
     failures: list[str] = []
