@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T13:54:54+00:00",
-  "stage": "stage2-wave4-running",
+  "last_checkpoint": "2026-10-20T14:04:25+00:00",
+  "stage": "stage2-wave6-running",
   "phase": 2,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
@@ -85,10 +85,26 @@
     "intake-2037",
     "intake-2038",
     "intake-2039",
-    "intake-2040"
+    "intake-2040",
+    "intake-2041",
+    "intake-2042",
+    "intake-2043",
+    "intake-2044",
+    "intake-2045",
+    "intake-2046",
+    "intake-2047",
+    "intake-2048",
+    "intake-2049",
+    "intake-2050",
+    "intake-2051",
+    "intake-2052",
+    "intake-2053",
+    "intake-2054",
+    "intake-2055",
+    "intake-2056"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2041,
+  "next_intake_id": 2057,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -1911,6 +1927,369 @@
       "project_decision": "whether dense embeddings are needed at all for REPL retrieval",
       "wave": 3,
       "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-A-agentttscode-01",
+      "source": "intake-2041",
+      "action": "Reimplement the self-Elo estimator (BT-MM, task-local pairs, prior 0.5, 1.5x checkpoint grid, whole-campaign bootstrap B=500) as an offline analysis script over AutoKernel campaign journals, using an evaluation-count or wall-clock budget axis, and render the self-Elo-vs-budget slope against the independent-sampling reference line defined in intake-2023 (Elo-per-token paper, Theorem 3.1).",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "All inputs are (campaign_id, cumulative budget, best-so-far score); no new measurement is required if the journal already carries them, and the estimator is a few dozen lines.",
+      "project_decision": "Whether AK campaigns should be restarted/split after a budget point rather than extended.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-A-agentttscode-02",
+      "source": "intake-2041",
+      "action": "Audit whether AK journal evaluation events carry a monotone cumulative budget field and a stable campaign/trial id; if not, add both fields to the event schema so later Elo-per-budget analysis needs no reconstruction.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Write-side hooks are cheap and retrofitting is impossible; the Elo pipeline needs only trial_id, budget, score.",
+      "project_decision": "Whether Elo-per-budget can ever be computed for past and future AK campaigns.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-A-indepsampling-01",
+      "source": "intake-2042",
+      "action": "When two or more completed AK campaigns exist on the same target, define a per-campaign binary success (keep beyond a stated gain threshold), estimate p and cost c per campaign, and compare -ln(1-p)/c for the campaign cap against alternatives before changing restart policy.",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheap offline calculation; gives the only principled restart-vs-continue criterion in this source.",
+      "project_decision": "Per-campaign budget cap and restart policy for AK.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-A-tlm-01",
+      "source": "intake-2043",
+      "action": "Desk-check whether the AK knob space (thread counts, tile sizes, NUMA/placement knobs) can be written as a bounded decision-token sentence and count how many measured (config, result) tuples the existing AK journals hold, to size a TLM-style proposer.",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "No compute needed; settles whether a learned proposer is feasible against the 300K-measurement scale TLM needed.",
+      "project_decision": "Whether a learned knob proposer is worth pursuing versus the current search.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-LLAMA28768-01",
+      "source": "intake-2044",
+      "action": "Adopt the thread's reporting recipe in the AK batch-invariance gate spec: for each (model, quant, width W in {1,2,3,4,5,8}) record reference-arm near-tie count (<1.0 and <0.25 on pre-softmax top1-top2), top-1 flips, row-mean-centred max delta and max_dP, and require a near-tie-dense corpus (real code, not repetitive text) before reading '0 flips' as a pass",
+      "owner": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "proposed_disposition": "propose",
+      "reason": "a zero-flip result on a confident prompt is uninformative; fixed-width PPL cannot detect width-conditional paths",
+      "project_decision": "how the AK keep gate certifies that a kernel change preserves speculative-decoding losslessness",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-LLAMA28768-02",
+      "source": "intake-2044",
+      "action": "Audit our experimental-branch graph builders and any fusion predicates for batch-width gates (conditions on ne[1]==1 or n_tokens==1) that route decode and verify through different kernels, starting with the Qwen3.x gated-delta-net path; list each with its enabling condition and an env/knob to disable it for an A/B",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "propose",
+      "reason": "the one localised cause in this thread was a decode-only fused GDN kernel in the commenter's OWN fork (upstream remains non-invariant, unexplained); our champion is a GDN hybrid verified at widths >=2",
+      "project_decision": "whether DFlash2 verification of the champion is bit-consistent with W=1 decode",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-LLAMA28768-03",
+      "source": "intake-2044",
+      "action": "Do not file an 'MI210 reproduces #28768' claim; instead run the batched-vs-serial probe (see W3-NEW-LLAMA28111-01 and W4-NEW-PR28109-01) on gfx90a before asserting anything",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "decline",
+      "reason": "the thread has only gfx1201 data; the cheap deciding test already exists as another proposal",
+      "project_decision": "n/a",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-PR28489-01",
+      "source": "intake-2045",
+      "action": "Include a Vulkan N=1-vs-N>1 column-0 ULP-0 matmul probe (the MMVQ_BATCH design, extended to IQ2/IQ3/IQ4_XS and widths 2..8) in the MI210 Vulkan cross-check of the AK batch-invariance gate, run on an experimental branch only",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "decline",
+      "reason": "Vulkan is not a serving path for the champion; the HIP probe is the deciding test and PR #28109/NEW-LLAMA28111 already cover it; revisit only if a Vulkan lane is opened",
+      "project_decision": "n/a",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-PR28109-01",
+      "source": "intake-2046",
+      "action": "On an experimental branch, port test_gated_delta_net_batch_invariance and run it with -b ROCm0 (gfx90a) and on the CPU backend for n_tokens 1,2,3,4,5,8, plus a variant at the champion's real head_count/head_size and with the gate form it uses; record pass/fail per width as an AK gate probe",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "propose",
+      "reason": "the test is a few dozen lines, needs no model, and is a correctness job (shard build-role claims, no quiet host)",
+      "project_decision": "whether GDN verification at widths >=2 is bit-identical to serial decode on MI210 and EPYC, i.e. whether DFlash2 acceptance can be lossless",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-PR28109-02",
+      "source": "intake-2046",
+      "action": "Add a model-level companion to the op test: run the champion graph for the same prefix at widths 1 and n through the real llama_decode path (reference-arm near-tie metrics from W4-NEW-LLAMA28768-01) because op-level invariance misses graph fusions and prefill/chunked scheduling that depend on batch width",
+      "owner": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "proposed_disposition": "propose",
+      "reason": "issue #28768's only localised GDN width variance was a decode-only fusion in a commenter's own fork, outside the op",
+      "project_decision": "what the AK keep gate must contain to certify a recurrent-layer kernel change",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-SMARTTURN-01",
+      "source": "intake-2047",
+      "action": "Add Smart Turn v3.2 (int8 ONNX, onnxruntime CPU, behind Silero VAD) as a CS-22 turn-end arm; measure per-call latency on EPYC 9655 (pinned cores, include WhisperFeatureExtractor time) and score it with the TurnBench dev adapter at BOTH the published operating point (1 s silence gate, theta_eot 0.0082) and a shortened gate.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "An open, audio-native, ONNX-CPU turn-completion model with a published TurnBench row; cheap to wire; gives the first external-reference arm next to Silero+silence and Parakeet-EOU.",
+      "project_decision": "CS-22 endpointer choice (silence threshold vs semantic turn-end arm).",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-SMARTTURN-02",
+      "source": "intake-2047",
+      "action": "Record in the CS-22 arm table that TurnBench SmartTurn v3 = v3.1 weights + 1 s silence gate wrapper, so the 1017 ms is not compared to our arms' model-only latency.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Prevents a mis-compared reference row.",
+      "project_decision": "How CS-22 arms are compared to TurnBench references.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-ENDPOINTANTICIP-01",
+      "source": "intake-2048",
+      "action": "Add a CS-22 note and a non-blocking research task: measure (a) whisper.cpp partial-transcript availability during speech and (b) llama.cpp prompt-cache reuse cost for a discarded speculative generation, as the two preconditions for an endpoint-anticipation speculation arm.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Precondition measurements are cheap (no new model) and decide whether the 505 ms mechanism is even reachable in our cascade.",
+      "project_decision": "Whether to pursue speculative LLM+TTS execution after CS-22 endpointing lands.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-ENDPOINTANTICIP-02",
+      "source": "intake-2048",
+      "action": "Do not ingest the EPA weights yet; revisit after the CS-22 arm table exists.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "English 8 kHz telephone-trained forecaster with no comparison to the arms we will already have; Mimi dependency adds a codec to the stack.",
+      "project_decision": "Same as above.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-PARAKEET-RS-01",
+      "source": "intake-2049",
+      "action": "Port the Parakeet-EOU loop (constants, 25-frame slice, cache tensors, greedy EOU decode) to a Python onnxruntime CPU harness using parakeet-rs as the reference, featurise incrementally (only new frames), and diff its mel features and EOU frame index against NeMo on the CS-4 hesitation clips before using it as a CS-22 arm.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Closes the gap that the repo has no parity or latency evidence; the port is ~600 lines of logic.",
+      "project_decision": "Whether Parakeet-EOU is a viable CS-22 arm on CPU (ms per 160 ms chunk, EOU delay).",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-PARAKEET-RS-02",
+      "source": "intake-2049",
+      "action": "Do not adopt reset_on_eou as written; if adopting the loop, surface the <EOU> event explicitly (with reset_on_eou=false the token only breaks the decode loop and nothing is emitted) and test a separate decoder-reset policy.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Author reports it works poorly in real-world tests.",
+      "project_decision": "EOU reset policy in the CS-22 arm.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-LABS-VOICEAGENT-01",
+      "source": "intake-2050",
+      "action": "Copy the turn-taking policy parameters (78-phrase backchannel list as seed, suppression only while bot speaks, max_buffer_size=2 words early interrupt, bot_stop_delay 0.5 s) into the CS-23 barge-in design as the baseline policy to test against TurnBench INT (backchannel FPR).",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Exact, tiny, language-agnostic-in-structure policy; TurnBench INT FPR can score it.",
+      "project_decision": "CS-23 backchannel vs interruption rule.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-LABS-VOICEAGENT-02",
+      "source": "intake-2050",
+      "action": "Evaluate whether the response-latency bridge (user-stop to agent-start, P50/P95) can wrap our STT->LLM->TTS cascade via a WS/RTVI shim for CS-22/CS-23 end-to-end latency.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Requires Pipecat 1.6 + a GPU simulated-user bot; our harness already measures cancel latency (CS-23); revisit only if an external-agent comparison is wanted.",
+      "project_decision": "Choice of end-to-end latency harness.",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-BADCAT-01",
+      "source": "intake-2051",
+      "action": "In the CS-22 design note, specify turn-end and barge-in as one state-conditioned two-way decision (continue/switch) with a post-VAD hold (start at 0.64 s) and make the hold a swept parameter in the harness.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheap design pattern from a rank-2 system; no new model needed.",
+      "project_decision": "CS-22 turn-detection interface",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-BADCAT-02",
+      "source": "intake-2051",
+      "action": "Reuse the Badcat interrupt-prompt classes (explicit rebuttal/question/stop vs acknowledgement) as labelled false-barge-in cases in the CS-23 cancellation test set.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Gives a concrete backchannel-vs-interruption oracle for CS-23 simulated overlap.",
+      "project_decision": "CS-23 false-barge-in acceptance",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-BADCAT-03",
+      "source": "intake-2051",
+      "action": "Run the Badcat omni-LLM judge locally.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Needs an audio-in 30B-A3B omni model that is not in our lineup; repo HEAD is cloud-API based.",
+      "project_decision": "none",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-HUMDIAL-OVERVIEW-01",
+      "source": "intake-2052",
+      "action": "Label CS-4 hesitation/backchannel and CS-23 false-barge-in cases with the HumDial Rejection class names (URB, PH, TPS, SDO) and Interruption class names (FQ, ND, RR, TS, ST), writing our own one-line definitions since the overview supplies none.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Free, externally recognised vocabulary; definitions must be ours.",
+      "project_decision": "CS-4 / CS-23 scenario taxonomy",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-HUMDIAL-OVERVIEW-02",
+      "source": "intake-2052",
+      "action": "Treat the organiser Cascade/Baseline rows as non-comparable to our cascade; do not set CS-22/CS-23 targets from them.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Composition undisclosed; GPU-served on A6000.",
+      "project_decision": "none",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-POTION-CODE-01",
+      "source": "intake-2053",
+      "action": "Add potion-code-16M-v2 (static, CPU) as an arm in the REPL-EMB-2.2 offline retrieval eval next to BGE-large and EmbeddingGemma 2, run once with and once without BM25 RRF, reporting retrieval metric and encode throughput.",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheap offline arm; only way to answer the encoder-speed question on our hardware.",
+      "project_decision": "REPL-EMB-2.2 embedder choice and the REPL-EMB-2.1 kill rule inputs",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-POTION-CODE-02",
+      "source": "intake-2053",
+      "action": "Measure potion-code-16M-v2 encode throughput (chunks/s, single thread and 96-core, queries and documents separately) on the EPYC 9655 under the region-lock CPU claim, and record CPU model, threads and library versions in the run echo.",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "propose",
+      "reason": "The source gives no hardware for its speed claims, so no number is portable.",
+      "project_decision": "whether encoder speed on EPYC matters vs retrieval quality",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W4-NEW-POTION-CODE-03",
+      "source": "intake-2053",
+      "action": "Do not cite the Semble 480x/23x speedup as an encoder-speed baseline versus BGE-large or EmbeddingGemma 2.",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "decline",
+      "reason": "Whole-pipeline, hardware-unnamed, and the comparator is CodeRankEmbed.",
+      "project_decision": "none",
+      "wave": 4,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-UNMUTE-01",
+      "source": "intake-2054",
+      "action": "Add to CS-22 an 'EOT policy constants' note recording Unmute's reference values (end-of-turn when smoothed pause score >0.6; barge-in when <0.4; barge-in disabled until 3 s of total session audio received (audio_received_sec > 3, not 3 s after bot start); word-triggered interrupt) as the starting hysteresis for our end-of-turn arm, and score them on the CS-4 hesitation clips with whatever scorer arm (Silero/SmartTurn/VAP) supplies the probability.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "constants are copyable and cheap, but 0.6/0.4 are calibrated to Kyutai's smoothed pause head and must be re-swept for any other probability source",
+      "project_decision": "CS-22 end-of-turn policy parameters",
+      "wave": 5,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-UNMUTE-02",
+      "source": "intake-2054",
+      "action": "In CS-23 cite Unmute's cancel chain (append interruption marker, clear audio queue, swap output queue, remove TTS then LLM tasks) as the reference ordering to compare against our stop-queue/stop-generation/stop-vocoder/stop-orchestrator chain when measuring cancel latency.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "matches CS-23 ordering and gives a second implementation to diff",
+      "project_decision": "CS-23 cancellation ordering",
+      "wave": 5,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-UNMUTE-03",
+      "source": "intake-2054",
+      "action": "Port the flush trick (send trailing silence to a faster-than-real-time STT to collapse its latency).",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "whisper.cpp is non-streaming so the STT-delay term the trick removes does not exist in our cascade",
+      "project_decision": "none",
+      "wave": 5,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-VAP-01",
+      "source": "intake-2055",
+      "action": "Add VAP (public pretrained example checkpoint, stereo input = user mic + our TTS output channel) as a candidate probability source for the CS-22 end-of-turn arm; measure per-frame CPU latency at 1 s context on the EPYC under region-lock, and end-of-turn latency/false-cut on the CS-4 hesitation clips.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "public weights, small head, natural two-channel fit in a cascade; the paper gives the context-length vs latency curve to replicate",
+      "project_decision": "whether CS-22 uses a learned turn predictor beyond Silero+silence",
+      "wave": 5,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-VAP-02",
+      "source": "intake-2055",
+      "action": "When comparing arms to TurnBench numbers, tag the VAP row as 'fine-tuned oto checkpoint, 20 s windows, dev-swept thresholds' and do not use it as the expected performance of the public pretrained VAP.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "prevents an apples-to-oranges baseline",
+      "project_decision": "CS-22 acceptance bar",
+      "wave": 5,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-HUMDIAL-01",
+      "source": "intake-2056",
+      "action": "Label the CS-4 hesitation clips (and any new CS-22 test clips) with the HumDial Track 2 nine-class taxonomy, adding the three rejection classes our set lacks (backchannel, third-party speech, speech directed at others), so CS-22/CS-23 results can be reported per class.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "taxonomy is public and matches our end-of-turn and barge-in questions; costs labels only",
+      "project_decision": "coverage of CS-22 false-cut and CS-23 barge-in test set",
+      "wave": 5,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W5-HUMDIAL-02",
+      "source": "intake-2056",
+      "action": "Request Track 2 train/dev data.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "institutional-email gated, distributed to registered teams only; the challenge closed Nov 2025 and no public train/dev mirror was found on the site (the test set is described as officially released)",
+      "project_decision": null,
+      "wave": 5,
+      "verification": "dive-verified"
     }
   ],
   "state": {
@@ -3423,8 +3802,322 @@
             "reason": "Semble's own table already contrasts it; no new decision."
           }
         ],
+        "status": "applied",
+        "declined_surfaced": [
+          {
+            "source": "https://github.com/MinishLab/model2vec",
+            "bears_on": "NEW-POTION-CODE",
+            "reason": "Already ingested and dived as intake-2019."
+          },
+          {
+            "source": "https://huggingface.co/nvidia/parakeet_realtime_eou_120m-v1",
+            "bears_on": "NEW-PARAKEET-RS",
+            "reason": "Already ingested and dived as intake-2017."
+          },
+          {
+            "source": "arXiv:2604.21406",
+            "bears_on": "NEW-BADCAT",
+            "reason": "Already dived as intake-2032."
+          },
+          {
+            "source": "https://github.com/CoIR-team/coir",
+            "bears_on": "NEW-POTION-CODE",
+            "reason": "Benchmark harness; potion's CoIR numbers already read from its card."
+          },
+          {
+            "source": "W4-A surfaced (princeton-pli/competitive-programming-agents, agentpatterns.ai restatement, zhaiyi000/tlm, SLA repo)",
+            "bears_on": "NEW-INDEPSAMPLING / NEW-TLM",
+            "reason": "All dive-recommended decline (restatement, duplicate of intake-2024, or code without new decision value)."
+          },
+          {
+            "source": "W4-B surfaced (#28211, LMR-P4-UPSTREAM-REPRO.zip)",
+            "bears_on": "NEW-LLAMA28768",
+            "reason": "#28211 is a different bug (host-buffer defect); zip has no URL."
+          },
+          {
+            "source": "W4-C surfaced (smart-turn-data-v3.2-test, Daily v3 blog, viks66/endpoint-anticipation card, examples/voice_agent)",
+            "bears_on": "W4-C entries",
+            "reason": "Dive-recommended decline: already read, card-only, or deprecated duplicate."
+          }
+        ],
+        "applied": "2026-10-20T14:04:25+00:00",
+        "new_entries": {
+          "NEW-AGENTTTS-CODE": "intake-2041",
+          "NEW-INDEPSAMPLING": "intake-2042",
+          "NEW-TLM": "intake-2043",
+          "NEW-LLAMA28768": "intake-2044",
+          "NEW-PR28489": "intake-2045",
+          "NEW-PR28109": "intake-2046",
+          "NEW-SMARTTURN": "intake-2047",
+          "NEW-ENDPOINTANTICIP": "intake-2048",
+          "NEW-PARAKEET-RS": "intake-2049",
+          "NEW-LABS-VOICEAGENT": "intake-2050",
+          "NEW-BADCAT": "intake-2051",
+          "NEW-HUMDIAL-OVERVIEW": "intake-2052",
+          "NEW-POTION-CODE": "intake-2053"
+        },
+        "surfaced": [
+          {
+            "id_or_url": "https://github.com/Alex-q-z/stateless-language-agents",
+            "what_it_would_settle": "already dived as NEW-SLA-REPO in W3; no action",
+            "bears_on": "NEW-ELOTOKEN",
+            "recommend": "decline",
+            "reason": "Already covered; listed only because the inflection K rule is cited by SLA.",
+            "from_entry": "intake-2041",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/princeton-pli/competitive-programming-agents",
+            "what_it_would_settle": "k-shot and SWE-agent harness details",
+            "bears_on": "NEW-INDEPSAMPLING",
+            "recommend": "decline",
+            "reason": "Evaluator is a private Codeforces API so it is not rerunnable; the metric needs no code.",
+            "from_entry": "intake-2042",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://agentpatterns.ai/token-engineering/inflection-point-session-budget-split/",
+            "what_it_would_settle": "secondary write-up of NEW-ELOTOKEN inflection rule",
+            "bears_on": "NEW-ELOTOKEN",
+            "recommend": "decline",
+            "reason": "Restatement, adds no measurement.",
+            "from_entry": "intake-2042",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/zhaiyi000/tlm",
+            "what_it_would_settle": "concrete tensor-sentence format and training recipe",
+            "bears_on": "NEW-TLM",
+            "recommend": "decline",
+            "reason": "Only worth reading if the desk-check actionable is accepted; named in paper abstract.",
+            "from_entry": "intake-2043",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/issues/28211",
+            "what_it_would_settle": "HIP wrong logits on gfx1151 for prompts longer than n_ubatch",
+            "bears_on": "NEW-LLAMA28768",
+            "recommend": "decline",
+            "reason": "read in this run: host-buffer defect from PR #24233, fixed by revert #28604; not a batch-invariance cause (it is about ubatch splitting), so it does not change any conclusion",
+            "from_entry": "intake-2044",
+            "wave": 4
+          },
+          {
+            "id_or_url": "LMR-P4-UPSTREAM-REPRO.zip (sha256 BA3749F414839733D3082563262A72F5AAD8A2704B94C65758457D0600BB8D7F, linked only by name in the issue body)",
+            "what_it_would_settle": "the exact HIP/Vulkan scoring harness and persisted logits for the gfx1201 Gemma case",
+            "bears_on": "NEW-LLAMA28768",
+            "recommend": "decline",
+            "reason": "no URL given in the issue; the method is already documented in the thread; would not change a conclusion",
+            "from_entry": "intake-2044",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://huggingface.co/datasets/pipecat-ai/smart-turn-data-v3.2-test",
+            "what_it_would_settle": "size, languages and synthetic/human split of the vendor test set (clip-level accuracy meaning)",
+            "bears_on": "NEW-SMARTTURN",
+            "recommend": "decline",
+            "reason": "Only changes how much to trust 92-94% clip accuracy, which we are not using as a decision input; TurnBench is the scoring route.",
+            "from_entry": "intake-2047",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://www.daily.co/blog/announcing-smart-turn-v3-with-cpu-inference-in-just-12ms/",
+            "what_it_would_settle": "v3.0 CPU latency table (already read here)",
+            "bears_on": "NEW-SMARTTURN",
+            "recommend": "decline",
+            "reason": "Already read from disk in this dive; no separate entry needed.",
+            "from_entry": "intake-2047",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://huggingface.co/viks66/endpoint-anticipation",
+            "what_it_would_settle": "model card / config of the released EPA weights (frame rate, horizons, inference cost)",
+            "bears_on": "NEW-ENDPOINTANTICIP",
+            "recommend": "decline",
+            "reason": "Only needed if the speculation arm is pursued; config.yaml can be read then.",
+            "from_entry": "intake-2048",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/kyutai-labs/unmute",
+            "what_it_would_settle": "how Unmute implements semantic VAD and cascade (the host of the 505 ms result)",
+            "bears_on": "NEW-ENDPOINTANTICIP",
+            "recommend": "ingest-and-dive",
+            "reason": "The cascade architecture (streaming ASR + semantic VAD endpointer) is the closest published analogue to CS-22; not in the index (grep count 0).",
+            "from_entry": "intake-2048",
+            "wave": 4
+          },
+          {
+            "id_or_url": "arXiv:2401.04868",
+            "what_it_would_settle": "Voice Activity Projection real-time turn-taking (the baseline EPA beats; also a TurnBench top-recall system)",
+            "bears_on": "NEW-ENDPOINTANTICIP",
+            "recommend": "ingest-and-dive",
+            "reason": "VAP is the strongest open EOT baseline on TurnBench (.845 recall, 368 ms) and is not in the index (grep count 0).",
+            "from_entry": "intake-2048",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://huggingface.co/nvidia/parakeet_realtime_eou_120m-v1",
+            "what_it_would_settle": "official EOU delay/WER numbers and training data for the model this port runs",
+            "bears_on": "NEW-PARAKEET-RS",
+            "recommend": "ingest-and-dive",
+            "reason": "Needed to judge EOU token timing; check against the index first (NEW-PARAKEET-ONNX may already cover).",
+            "from_entry": "intake-2049",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/NVIDIA-NeMo/Speech/tree/main/examples/voice_agent",
+            "what_it_would_settle": "the deprecated predecessor (already identified as the same code)",
+            "bears_on": "NEW-LABS-VOICEAGENT",
+            "recommend": "decline",
+            "reason": "Same code relocated; nothing new.",
+            "from_entry": "intake-2050",
+            "wave": 4
+          },
+          {
+            "id_or_url": "arXiv:2604.21406",
+            "what_it_would_settle": "post-challenge comparison of Badcat/Cookie_asr and others against commercial/open models",
+            "bears_on": "NEW-BADCAT",
+            "recommend": "decline",
+            "reason": "Already dived as NEW-HUMDIAL in wave 3.",
+            "from_entry": "intake-2051",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://aslp-lab.github.io/HumDial-Challenge/",
+            "what_it_would_settle": "detailed results and possibly team system descriptions and rejection class definitions (overview points to it for more information)",
+            "bears_on": "NEW-HUMDIAL-OVERVIEW",
+            "recommend": "ingest-and-dive",
+            "reason": "Only cited route to per-team descriptions; not fetched in this dive.",
+            "from_entry": "intake-2052",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/MinishLab/model2vec",
+            "what_it_would_settle": "static-embedding method and any published encode-throughput measurements with hardware",
+            "bears_on": "NEW-POTION-CODE",
+            "recommend": "ingest-and-dive",
+            "reason": "Only plausible primary source for a stated CPU speed with hardware; Model2Vec GitHub not in this dive.",
+            "from_entry": "intake-2053",
+            "wave": 4
+          },
+          {
+            "id_or_url": "https://github.com/CoIR-team/coir",
+            "what_it_would_settle": "independent CoIR scoring of static models",
+            "bears_on": "NEW-POTION-CODE",
+            "recommend": "decline",
+            "reason": "Benchmark harness only; scoring would need compute.",
+            "from_entry": "intake-2053",
+            "wave": 4
+          }
+        ],
+        "second_reader": "second-reader-SR-W4.yaml; no 'no'; main fixed SmartTurn threshold (0.05 -> swept 0.0082, README anchor added), 10 entries' anchor re-indexing, 9 claim/actionable corrections"
+      },
+      {
+        "wave": 5,
+        "started": "(launched with wave-4 second reader)",
+        "units": {
+          "W5": [
+            "NEW github kyutai-labs/unmute",
+            "NEW 2401.04868",
+            "NEW aslp-lab.github.io/HumDial-Challenge"
+          ]
+        },
+        "status": "applied",
+        "applied": "2026-10-20T14:04:25+00:00",
+        "new_entries": {
+          "NEW-UNMUTE": "intake-2054",
+          "NEW-VAP": "intake-2055",
+          "NEW-HUMDIAL-SITE": "intake-2056"
+        },
+        "surfaced": [
+          {
+            "id_or_url": "https://github.com/kyutai-labs/delayed-streams-modeling",
+            "what_it_would_settle": "the Rust server code that emits prs, which head index is the end-of-turn horizon, and training of the extra heads",
+            "bears_on": "NEW-UNMUTE",
+            "recommend": "ingest-and-dive",
+            "reason": "the semantic-VAD mechanism is undocumented in the Unmute repo and absent from the DSM paper text; index count 0",
+            "from_entry": "intake-2054",
+            "wave": 5
+          },
+          {
+            "id_or_url": "https://arxiv.org/abs/2606.13450",
+            "what_it_would_settle": "already in index (count 1); search result says it uses the Unmute endpointer",
+            "bears_on": "NEW-UNMUTE",
+            "recommend": "decline",
+            "reason": "already ingested",
+            "from_entry": "intake-2054",
+            "wave": 5
+          },
+          {
+            "id_or_url": "https://arxiv.org/abs/2205.09812",
+            "what_it_would_settle": "original VAP objective, Switchboard/Fisher training data, event-level accuracy for the English pretrained example checkpoint",
+            "bears_on": "NEW-VAP",
+            "recommend": "ingest-and-dive",
+            "reason": "cited by the README as the model paper (seen in fetched README); needed to know what the public .pt actually reaches; index count 0",
+            "from_entry": "intake-2055",
+            "wave": 5
+          },
+          {
+            "id_or_url": "https://huggingface.co/viks66/VAP_checkpoints",
+            "what_it_would_settle": "what oto fine-tuning is (card/README), explaining TurnBench's VAP gap",
+            "bears_on": "NEW-TURNBENCH",
+            "recommend": "ingest-and-dive",
+            "reason": "card-only read needed; index count 0; do not download the .ckpt files",
+            "from_entry": "intake-2055",
+            "wave": 5
+          },
+          {
+            "id_or_url": "https://github.com/DanielLin94144/Full-Duplex-Bench",
+            "what_it_would_settle": "RESPOND/RESUME definitions and scripts that HumDial scoring reuses",
+            "bears_on": "NEW-HUMDIAL-OVERVIEW",
+            "recommend": "decline",
+            "reason": "intake index already references Full-Duplex-Bench (31 hits)",
+            "from_entry": "intake-2056",
+            "wave": 5
+          },
+          {
+            "id_or_url": "https://github.com/ASLP-lab/Hum-Dial",
+            "what_it_would_settle": "evaluation scripts and baseline serving code for Track 2 rejection/interruption scoring",
+            "bears_on": "NEW-HUMDIAL-OVERVIEW",
+            "recommend": "ingest-and-dive",
+            "reason": "cloned and listed here but scoring scripts not read; index count 0; scorer could be reused on our own clips",
+            "from_entry": "intake-2056",
+            "wave": 5
+          }
+        ],
+        "second_reader": "second-reader-SR-W5.yaml; no 'no'; main fixed VAP (16 kHz, oto speculation, training-from-repo, latency definition), HumDial gating scope, Unmute guard semantics"
+      },
+      {
+        "wave": 6,
+        "started": "2026-10-20T13:58:52+00:00",
+        "final_wave": true,
+        "units": {
+          "W6": [
+            "NEW github kyutai-labs/delayed-streams-modeling",
+            "NEW 2205.09812",
+            "NEW hf viks66/VAP_checkpoints",
+            "NEW github ASLP-lab/Hum-Dial"
+          ]
+        },
+        "declined": [
+          {
+            "source": "https://arxiv.org/abs/2606.13450",
+            "reason": "Already dived (wave 4, NEW-ENDPOINTANTICIP)."
+          },
+          {
+            "source": "https://github.com/DanielLin94144/Full-Duplex-Bench",
+            "reason": "Already dived (wave 3, intake-2034)."
+          },
+          {
+            "source": "HumDial Track 2 train/dev data",
+            "reason": "Gated to institutional e-mail; a data request, not a source."
+          }
+        ],
+        "cap_note": "Wave 6 is the operator cap (seq 9); any sources it surfaces are recorded as declined-at-cap in the bearing entries' dive_corrections.",
         "status": "running"
       }
-    ]
+    ],
+    "placeholder_resolution": "36 NEW-* placeholders in the campaign block replaced by real intake IDs after wave-5 apply; all 585 anchor hashes re-verified."
   }
 }
