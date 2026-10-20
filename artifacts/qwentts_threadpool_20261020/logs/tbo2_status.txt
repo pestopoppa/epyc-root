@@ -1,0 +1,3 @@
+default partial: ok=9155 fail=0 FLASH_ATTN_EXT cases seen=5034
+spin partial: ok=8798 fail=0 FLASH_ATTN_EXT cases seen=4677
+stress partial: ok=9221 fail=0 FLASH_ATTN_EXT cases seen=5097
