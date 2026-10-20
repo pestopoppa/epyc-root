@@ -145,6 +145,10 @@ Speed per derived model, candidate vs incumbent, **each at its own best recipe**
 never force one kernel through the other's configuration). Quality per the incumbent's recorded
 suites, same pinned questions and seed.
 
+**Presence gates first:** the candidate must pass the presence gate of every `in champion` row in the
+kernel's release manifest, and every `pending fold` row must be resolved before the freeze — rules in
+[`docs/reference/kernel-manifests/README.md`](../../../docs/reference/kernel-manifests/README.md).
+
 **Which suites, which roles, what n: [`promotion_gates.yaml`](promotion_gates.yaml).**
 Before it existed, "the incumbent's recorded suites" resolved to nothing — v9 and v10
 both ran MMLU-Pro + GPQA on `worker_general` and `architect_critic` at n=200/195 by
