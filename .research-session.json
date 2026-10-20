@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T13:13:59+00:00",
-  "stage": "stage2-wave1-running",
+  "last_checkpoint": "2026-10-20T13:31:10+00:00",
+  "stage": "stage2-wave2-running",
   "phase": 2,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
@@ -53,10 +53,11 @@
     "intake-2005",
     "intake-2006",
     "intake-2007",
-    "intake-2008"
+    "intake-2008",
+    "intake-2009"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2009,
+  "next_intake_id": 2010,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -658,6 +659,479 @@
       "ledger_id": "D2-1976-01",
       "source": "intake-1976",
       "action": "Monitor only for an observable release of implementation code plus manifest and raw result artifacts; no active task or checkbox before that trigger."
+    },
+    {
+      "ledger_id": "W1-intake-1998-01",
+      "source": "intake-1998",
+      "action": "Add a pre-registered \"forget round\" arm to the AK loop design: every K measured iterations, start the actor/planner with an empty session and a workspace containing only the current champion plus its score (no experiments.md lessons, blacklist or dead-end steering), and compare keep yield and effect size per dollar against the carry-over arm on the same DS41 campaign.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "R24-7 (autokernel-rebuild-program.md:2717-2740) already adds a clean-context diagnostician on keep-drought, but no existing row tests discarding the lessons store itself; the paper reports the largest forgetting effect on exactly the state AK keeps (do-not-repeat, failures-by-mechanism, planner-context lines 1543-1562).",
+      "project_decision": "Whether AK planner/actor context should carry accumulated lessons across iterations or reset to champion-only at round boundaries.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1998-02",
+      "source": "intake-1998",
+      "action": "Record the paper as a measured counter-datum next to do-not-repeat design: its judges are deterministic simulators/cheap scores, so the do-not-repeat value under noisy 30+-minute AK measurements is untested; require the arm in W1-intake-1998-01 to carry a repeat-rate metric (fraction of proposals duplicating a prior null) so forgetting cost is measurable.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Forgetting removes the exact mechanism (receipted do-not-repeat) that closed AK repeated-null waste (rebuild-program R24 rows; research-loop §6.1); the cost side must be measured, not assumed.",
+      "project_decision": "Same as above; guards against importing the benefit without the repeat-null cost.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2005-01",
+      "source": "intake-2005",
+      "action": "Add the three LLM4LLM deployment-gap cases as explicit negative test fixtures for the AK keep gate: (a) a candidate that wins in a cold-input microbench but loses inside the real graph, (b) an out-of-bounds read that passes isolated shapes, (c) a candidate covering only the prefill-shaped (q_len>1) path; check that T1b real-graph translation, the OOB gate on the GPU lane and the per-phase non-inferiority rule each refuse them.",
+      "owner": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "proposed_disposition": "decline",
+      "reason": "That handoff is ACTIVE/STUB with no implementation authorized (header lines 1-4); research-loop §1.6/§9.4 already require per-phase non-inferiority and tiny real-graph translation, and the cross-workload gate already covers differential coverage and token identity. The three cases add a regression-test idea, not a missing mechanism; the OOB case has no verified AK owner but needs a ROCm sanitizer tool not named in the paper. Re-open if the keep gate leaves STUB.",
+      "project_decision": "None changed: the existing keep-gate design is not shown to be missing anything by this paper.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2005-02",
+      "source": "intake-2005",
+      "action": "Record in the restart design (W1-intake-1998-01) that LLM4LLM restarts keep a compact distilled constraints record while intake-1998 keeps only the best candidate; make the forget arm two-armed (candidate-only vs candidate+bounded notes).",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "The two papers disagree on what to carry across a restart and each measures only its own variant; the AK arm should measure both before choosing.",
+      "project_decision": "What state, if any, survives an AK planner/actor reset.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1993-01",
+      "source": "intake-1993",
+      "action": "Extend the existing AK-plateau pack row to add a fork-and-flush arm: A/B (nonpromotable lane, offline-replay or prospective) of K=4 context-flush forks at 33%/66% of budget vs the power-law ancestor-revert/context-reset arm and cold restart; correctness-gate branches first, re-measure only the top branch on a timing window with paired interleaving (A/A CV 1.6-1.9%, so best-of-K on a single noisy timing sample is winner-curse prone).",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Row at autokernel-research-loop.md:5514 already plans a context-reset vs cold-restart A/B but has no fork/K-branch arm; fork-and-flush adds exactly that. Note the 2026-09-17 checkpoint (line ~5521) says per-idea context state is not archived, so the comparison must be prospective.",
+      "project_decision": "Whether AK adds a restart/diversification policy beyond PLATEAU_STOP (currently plateau_rounds: 0, i.e. stop-only).",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1993-02",
+      "source": "intake-1993",
+      "action": "Quantify between-run score spread across completed AK/autopilot campaigns (same target, same code, different run) from existing journals; report SD/CV and whether plateau levels differ across runs, before any fork-and-flush wiring.",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Paper basin evidence rests on cross-run plateau spread (p171 68-100); we have the A/A (autokernel_aa_20260804, CV 1.62/1.88%) for the measurement, not for the search outcomes. Stage-1 action (autopilot journal analysis) retained but retargeted to AK because the AK handoff owns the restart row; autopilot is intentionally stopped (autopilot-continuous-optimization.md header).",
+      "project_decision": "Whether the basin hypothesis is even testable on our loops (needs >=4 independent same-target campaigns).",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1993-03",
+      "source": "intake-1993",
+      "action": "Do not add serialized-branch timing for fork-and-flush to autokernel-concurrent-target-coordination.md; branches can be correctness-only and share the build role, one timing window for the winner.",
+      "owner": "handoffs/active/autokernel-concurrent-target-coordination.md",
+      "proposed_disposition": "decline",
+      "reason": "That handoff is PROPOSED (implementation not authorized) and scoped to target-pair admission; the branch-scoring policy belongs to the research loop row, and correctness work needs no quiet host (project memory).",
+      "project_decision": "None.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2006-01",
+      "source": "intake-2006",
+      "action": "Correct intake-921 (index lines 54857, 54877, 54895): replace \"average gain of just 0.6 points\"/\"14x larger\" framing with v4 figures (3-model average +0.0, Opus +1.2, mini -1.4, n=34 test tasks) and mark the v1/v2 quotes as superseded; the quoted abstract sentence is v1/v2-only.",
+      "owner": "research/intake_index.yaml",
+      "proposed_disposition": "propose",
+      "reason": "Table 3 changed in v3/v4. The comparison to MemoHarness +8.4 pp on a held-out split is still directionally valid (0.0 vs +8.4) but the ratio and the quoted sentences are stale. Also 54875 \"tests THREE models\" is true for Tables 1-2 in v1 but Table 3 had 2 models in v1/v2.",
+      "project_decision": "Which figure future notes quote as the held-out null.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2006-02",
+      "source": "intake-2006",
+      "action": "Correct intake-1341 (index lines 140878, 141306, 141380): change \"+0.6 points\" held-out gain to \"+0.0 avg over 3 models (v3/v4)\"; fix source pointer \"intake_index.yaml:53276,:53294\" which now resolves to unrelated entries (Loopie) - re-point to intake-921 row (lines 54857/54877) or to arXiv:2607.12227v4 Table 3.",
+      "owner": "research/intake_index.yaml",
+      "proposed_disposition": "propose",
+      "reason": "Line anchors checked in the lane: 53276 is a verdict_justification about Loopie, 53294 a note about inference-time compute matching.",
+      "project_decision": "None beyond citation accuracy.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2006-03",
+      "source": "intake-2006",
+      "action": "Correct intake-1323 (index lines 128822, 129221-129232, 129565-129567): the verbatim abstract quote is v2-only, v4 abstract now names ARC-AGI-3/EdgeBench games and \"fails to outperform\"; v4 still has zero occurrences of Harness-R1 or 2608.02276 (the \"Shao\" grep hit is the reference author S. Shao in Li et al. 2026, not the Harness-R1 author), so the \"not a rebuttal\" narrowing stands. Add that the latest version includes a positive games result.",
+      "owner": "research/intake_index.yaml",
+      "proposed_disposition": "propose",
+      "reason": "Cited text exists in v1/v2; checked v4 for each cited string.",
+      "project_decision": "None beyond citation accuracy.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2006-04",
+      "source": "intake-2006",
+      "action": "intake-926 (line 55726) and intake-1339 (lines 139571, 139657): no figure is quoted; update only the quoted phrase \"does not consistently outperform ... exhibits limited generalization\" to note it is v1/v2 abstract wording (v4 body still has \"does not consistently outperform simple test-time discovery\").",
+      "owner": "research/intake_index.yaml",
+      "proposed_disposition": "propose",
+      "reason": "Low severity; qualitative direction holds in v4.",
+      "project_decision": "None.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2006-05",
+      "source": "intake-2006",
+      "action": "Add a matched-budget + held-out checklist to the harness-improvement-loop experiment template: (1) task-level baselines at identical rollout count - parallel sampling (self-judge or tests), sequential refinement, per-task harness scaling; (2) count meta-agent/summariser tokens too (the paper does not); (3) disjoint train/validation/test split (paper: 45/10/34) with selection on validation only; (4) report the 3-way table with and without verification signal; (5) >=2 runs and a CI, plus a stated minimum detectable effect (paper: n=34, no CI, +/-1.4 swings); (6) an unmodified-harness control on the same split.",
+      "owner": "handoffs/active/harness-improvement-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Handoff exists and is a design-stage handoff (runtime loop not started, 92 lines). Checklist is distilled from the paper protocol plus the gaps above, with items 2, 5, 6 our additions and labelled as such.",
+      "project_decision": "Whether the harness improvement loop (HIL) design commits to a held-out gate before any runtime start.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1982-01",
+      "source": "intake-1982",
+      "action": "Add to conversation-stack CS-8/CS-20 a note that PersonaPlex-7B-v1 is an English-only full-duplex reference: it fails the D2 language gate (G1) as a winner, but can occupy a 'full-duplex reference' slot behind the CS-20 interlocutor backend interface to exercise barge-in / turn-taking paths in English.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "HF card use-case statement and 'en' tag; D2 at conversation-stack.md:62. It emits agent text + audio, no documented tool-call event, so it exercises the timing paths (CS-22/CS-23) but not G3.",
+      "project_decision": "CS-8 candidate list and CS-20 backend interface coverage.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1982-02",
+      "source": "intake-1982",
+      "action": "In CS-5, add an optional PersonaPlex smoke run on the MI210 under plain PyTorch-ROCm (offline script, one assistant clip) to prove the torch.cuda/CUDA-graph path works on gfx90a (set NO_CUDA_GRAPH=1 as the fallback), and to reproduce the card's published FDB numbers (smooth-turn latency 0.170, interruption latency 0.240) as a harness known-answer test.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheapest evidence of ROCm viability for Moshi-class streaming models, which also bounds the feasibility of porting the same loop to ggml; needs weights download (operator accepts the HF gate) and a bench window, so not done in this dive.",
+      "project_decision": "Whether Moshi-class models are a viable GPU reference in CS-5 and whether a ggml port (D4) is worth designing.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1982-03",
+      "source": "intake-1982",
+      "action": "Draft a port-feasibility note for a Moshi-class loop in the llama.cpp family: two transformers (4096x32 temporal at 12.5 Hz, 1024x6 depth transformer x8 codebooks per frame) + Mimi encoder/decoder; list which ggml ops exist (qwentts.cpp codec path) and which are missing (Mimi SEANet/RVQ, multi-linear depformer).",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "CS-28 designs the port only after CS-8 names a winner; a short pre-note costs no compute and helps decide whether a Moshi-class candidate is worth ever benchmarking. Not dismissed: ops coverage in v10 is not verified here.",
+      "project_decision": "CS-28 port design scope.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2001-01",
+      "source": "intake-2001",
+      "action": "Do not schedule a Service-Duplex-Bench task; if CS-4 needs role-adherence probes, author them in-house using the 7-probe taxonomy (proper noun, context details x2, unfulfillable request, rudeness, unspecified, unrelated) as a template.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Benchmark data is unreleased; the taxonomy in Table 3 is usable as a design template for CS-4 set 3/4 (routing/fidelity).",
+      "project_decision": "CS-4 corpus design.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2003-01",
+      "source": "intake-2003",
+      "action": "In the CS-2 Annex S amendment package, add FDB v1 definitions as the reference semantics for the P-VOICE barge-in / turn-taking measurands: TOR (pause, smooth-turn, interruption), smooth-turn latency (s, TO=1 only), interruption response latency; state directions explicitly; exclude backchannel JSD.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Gives CS-2 ready, published metric definitions; Annex S is a human-only trust boundary so this is package prep only.",
+      "project_decision": "Annex S P-VOICE-* metric set (CS-2).",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2003-02",
+      "source": "intake-2003",
+      "action": "In CS-5/CS-21, specify an FDB-v1 adapter for the cascade backend: stream input.wav in real time through whisper+VAD+qwentts, record a time-synchronous output.wav, run FDB's get_transcript/asr.py and evaluate.py unchanged on tasks pause_handling, smooth_turn_taking, user_interruption; pin Full-Duplex-Bench@3e799c4.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Cascade is the D8 baseline and must be measured on the same clips; FDB provides turn-taking scoring without a custom metric. Needs NeMo parakeet ASR and the Google Drive data download (a dataset fetch, so done only in a CS-5 window).",
+      "project_decision": "Whether the cascade baseline's endpointing meets the CS-2 targets (end-of-speech to first audio p95 <= 1.0 s).",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2003-04",
+      "source": "intake-2003",
+      "action": "Decline adopting FDB-v3's LiveKit cascaded_agent as the cascade baseline.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Requires LiveKit Cloud account and OpenAI Whisper/gpt-4o/TTS; not local. Reuse only its tool-call scoring ideas after intake of arXiv 2604.04847.",
+      "project_decision": "none",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1984-01",
+      "source": "intake-1984",
+      "action": "Record Drama 3 in conversation-stack Prior art as a TTS-slot reference (not an interlocutor), with its mechanism (hybrid DeltaNet MoE backbone + per-frame 13-layer decoder + DAC codec, ~6 GB weights/frame), the H200-only latency figures and the absence of a ROCm/CPU/llama.cpp path.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "multimodal-pipeline.md header redirects speech work to conversation-stack.md; fits D8 (cascade baseline) and the D11 ladder rung 'streamed answer'.",
+      "project_decision": "Whether a TTS other than qwentts.cpp is ever tried in the cascade baseline.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1984-02",
+      "source": "intake-1984",
+      "action": "Write a ggml-port scoping note for Drama 3 (ops: partial-codebook-fusion embedding, 13-layer per-frame decoder with per-codebook sampling, DAC causal decoder, FP8-block dequant/requant to a K-quant; check v10 DeltaNet/MoE op coverage) and fold it into the CS-44 watch item.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Zero-compute scoping; the backbone family is the same as the lineup's 35B-A3B, so kernel reuse is the interesting angle. Op coverage in v10 is unverified.",
+      "project_decision": "TTS upgrade path / experimental-branch kernel work scope.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2002-01",
+      "source": "intake-2002",
+      "action": "Add a watch item next to CS-44: if llama.cpp (experimental branch) gains a fish_omni / codebook-MTP TTS path, re-evaluate Drama 3 against qwentts.cpp on gfx90a; the backbone class (Qwen3.5-35B-A3B hybrid DeltaNet MoE) is the same family as the lineup's 35B-A3B.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Low-cost tripwire; no work until upstream support exists. Whether our frozen v10 kernel already covers every op (DeltaNet, MoE) is not verified here.",
+      "project_decision": "Future TTS swap / CS-8 cascade baseline quality ceiling.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2002-02",
+      "source": "intake-2002",
+      "action": "Use the report's Table 3 style (SIM/WER penalise whispered/laughing styles) as a caution when CS-8 G2 scores paralinguistic TTS output: do not use WER/SIM as the paralinguistic quality metric.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Evidence is Fish Audio's own Expresso analysis (vendor, Table 3) and CS-8 G2 already requires real human recordings and a perception set (CS-4 set 2); nothing to add.",
+      "project_decision": "none",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2004-01",
+      "source": "intake-2004",
+      "action": "Re-run DF2-6/DF2-8 serial-vs-batched parity on the champion build at a 1600-token cap (not 256) on the same >=12 prompts, classify each first-divergence as near-tie vs degenerative (existing INF-70 classifier), and tabulate fork position by verify width (MTP n-max 2/3 vs 4+ vs DFlash2 n-max 7) to test whether OUR fork positions group by width across drafters as theirs do.",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "propose",
+      "reason": "Tests our DF2-8 conclusion ('1-row vs multi-row numeric split ... not a DFlash2 defect', 12 prompts x 256 tokens, dflash 6/12 FAIL) at longer horizon where theirs saturates at 92-100%; our 6/12 at 256 tokens is not comparable to their 76-80% at 400 or 92-100% at 1600 until horizon is matched. GPU window required (operator-held).",
+      "project_decision": "Whether the 'DFlash2 greedy-parity non-failure' ruling (qwen38-27b-replace-qwen36.md decision row) needs a horizon caveat, and whether any exact-greedy contract can be offered for DFlash2 serving.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-2004-02",
+      "source": "intake-2004",
+      "action": "From existing Q38-T7 Phase A 24-prompt production-mix records (if per-prompt tok/s retained), break DFlash2 n-max 7 vs the n_max 0 arm out by prompt class (code/reasoning vs prose/chat/non-English) before any further per-workload claim; no new compute unless records lack per-prompt rows.",
+      "owner": "handoffs/active/qwen38-27b-replace-qwen36.md",
+      "proposed_disposition": "propose",
+      "reason": "Our DF2-5 +28..+48% DFlash2-over-MTP is an aggregate; the post's n-max 7 sign flip on prose/chat/Chinese (3090, Q4_K_XL, ctx 8k) is a hypothesis for MI210 that our aggregate cannot refute. Q38-T7 results not read here (not judgeable).",
+      "project_decision": "Whether DFlash2 n-max 7 should be routed off for prose/chat-heavy roles (per-role speculative config) rather than a single champion setting.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1977-01",
+      "source": "intake-1977",
+      "action": "Record LittleBit in the tq3-quantization-evaluation weight-quant monitor list as a QAT-only sub-1-bit reference (not a candidate): needs per-model QAT+KD, no released kernel, non-GGUF layer structure; decline any serving-path work unless a PTQ variant or a published inference kernel appears.",
+      "owner": "handoffs/active/tq3-quantization-evaluation.md",
+      "proposed_disposition": "propose",
+      "reason": "Closes the intake question 'is it post-training' with evidence; the monitor list already frames b1.58 as QAT-only (line 188) so the entry is consistent.",
+      "project_decision": "Whether any low-bit effort goes to sub-1-bit QAT formats vs the PTQ IQ1/IQ2/IQ3 lanes (DS41/Q38FN).",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1977-02",
+      "source": "intake-1977",
+      "action": "OPTIONAL bounded probe, only if the operator wants a CPU-kernel datapoint: microbench the two-binary-GEMM structure (batch-1 matvec, AVX-512 VPOPCNTDQ or sign-select) at the paper's 8192x28672 MLP shape at r for 0.1/0.3 BPW against our Q2_K/IQ2_XS matvec on one CCD; no model, no training, timing window needed.",
+      "owner": "handoffs/active/tq3-quantization-evaluation.md",
+      "proposed_disposition": "decline",
+      "reason": "Quality cannot be obtained without QAT of our own models, so a speed-only number cannot gate any decision; at 0.1 BPW the layer is ~3 MB so the result would be an L3-resident artifact (cf. byte-roofline-vs-L3 lesson). Revisit only if a PTQ route appears.",
+      "project_decision": "none presently",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1981-01",
+      "source": "intake-1981",
+      "action": "Evaluate adding a Model2Vec static-embedding arm (minishlab/potion-base-8M, 256-d, mean-pool, no forward pass) plus 0.75/0.25 BM25 fusion as one extra cheap arm in REPL-EMB-2.2, run via a small script rather than the sgrep binary, over the same spill/bundle corpus and pre-registered metrics.",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "propose",
+      "reason": "REPL-EMB-2.1 (lane L151-L156) froze k, M, X, n and the CI rule, and L191-L193 lists the 2.2 arms (grep/BM25, BGE, Granite-97M-R2, hybrid RRF, ColGREP); adding an arm needs the owning session to confirm it does not alter the frozen rule text (frozen at L156: 'Changing k, M, X, n or the CI...'). The cost axis is the point: Phase 0 shows pool-induced 9-14% frontdoor decode loss (L182), and a static table lookup has no embedder-pool footprint. Prose spill files are not what sgrep's text mode was benchmarked on (README L75: benchmarks measure code retrieval, not document search).",
+      "project_decision": "Whether context.search needs a decode-safe CPU-light dense arm, or stays at the lexical kill-rule default.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1981-02",
+      "source": "intake-1981",
+      "action": "Do not add the sgrep binary as a baseline arm for kb-search / internal-kb-rag.",
+      "owner": "handoffs/active/internal-kb-rag.md",
+      "proposed_disposition": "decline",
+      "reason": "kb-search corpus is markdown (wiki/handoffs/progress) and SKILL.md routes code search to GitNexus; sgrep's benchmarks cover code only (README L75), its prose model (potion-base-8M) has no published result, and ColBERT kb-search is already certified (K1-K7). No demonstrated consumer gap: no handoff row, intake note or incident asks for natural-language code search over our repos.",
+      "project_decision": "none",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-MTEB-01",
+      "source": "intake-2009",
+      "action": "Amend intake-1964 claim 1 narrowing text to cite the maintainer-run files (results PR #793) alongside the publisher figure, noting the multilingual score is not reproduced above the 300m predecessor.",
+      "owner": "research/intake_index.yaml (intake-1964)",
+      "proposed_disposition": "propose",
+      "reason": "Index edits belong to the owning session; this is preparation only.",
+      "project_decision": "Whether an embedder swap off BGE/ColBERT is motivated by multilingual quality (not supported) or by code retrieval (supported).",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1979-01",
+      "source": "intake-1979",
+      "action": "Add to AK's paired-comparison design review a one-paragraph comparison against Magnitude's anytime-valid paired sign test (7 rounds all-ahead at alpha 0.05; slower challengers rejected after 1 round) versus AK's pre-committed-extension paired blocks, and decide whether a runtime-knob screen (not a claim) can adopt early-reject-after-one-behind-round to cut screen cost",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "AK already interleaves and uses successive halving (research-loop L2337-2339) and calibrated alpha (L3701), so the delta is only the stopping rule; sampling.rs documents the rule and a measured 9% median / 79% p90 session-to-session drift that mirrors AK's host-drift findings.",
+      "project_decision": "Whether AK discovery screens can shorten per-candidate timing windows without raising false-keep rate.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1979-02",
+      "source": "intake-1979",
+      "action": "Evaluate adopting Magnitude's replay-against-recorded-survey method (replay.rs: resample recorded samples with replacement to simulate a search order) as an offline harness for choosing AK's runtime-arm ordering and sample counts from existing AK journals",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "propose",
+      "reason": "Zero compute; uses recorded samples; directly tests search-order efficiency (evals-to-best) which AKX-ALL-13's widened arm set (-ub, -ctk/-ctv, FA knobs; L257) will need.",
+      "project_decision": "Search order and budget for the widened runtime-arm dimensions.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-1979-03",
+      "source": "intake-1979",
+      "action": "Do not port any Magnitude kernel or schedule family; record that its CPU backend is scalar and it has no HIP backend",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "decline",
+      "reason": "Nothing to port to EPYC/gfx90a; the protocol is the portable asset, covered by -01/-02. Platform is not the reason: the kernels themselves are Metal/CUDA/Vulkan MSL/PTX/GLSL authored in Seismic and CPU is scalar-only.",
+      "project_decision": "None.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2000-01",
+      "source": "intake-2000",
+      "action": "Offline replay probe: from AK's strategy-store/journal rows (candidate descriptor, measured delta, noise floor, trial wall cost) test whether a cheap predictor (route family + knob values + diff size, then a small gradient-boosted model) ranks held-out trials better than the planner's own order, reporting evals-to-first-keep and top-K recall under leave-one-epoch-out, no new compute",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheapest decider of the Stage-1 question. Caveats to bake in: positives are rare (live DS41 run 10k has 2 keeps, L21-L25), so report recall with intervals and expect underpowered; compare against a no-model baseline and a Bayesian/successive-halving screen (L2339), not only random; the strategy store is flagged contaminated (L981 'anchor-less runs'), so restrict to anchored rows. The predictor must never gate a claim (AK-D40/AK-LN: screens rank, full instance verifies).",
+      "project_decision": "Whether to build any trial-ranking surrogate for AK or keep measured screening plus successive halving.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-2000-02",
+      "source": "intake-2000",
+      "action": "Record the evidence-tier plus reliability-gated-update pattern (predicted vs measured fields stored separately; predictor refits only when a coverage-aware reliability check says unreliable) in the AK planner-memory design, without building a learned model",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "decline",
+      "reason": "AK already separates screen from verify and keeps provenance (AK-LN rule, L4892; claim grammar in MEASUREMENT.md); no new work follows from the paper that is not covered, and the probe in -01 decides whether any predictor exists to be gated.",
+      "project_decision": "None unless -01 shows signal.",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1988-01",
+      "source": "intake-1988",
+      "action": "Extend the DF2-14 offline replay: tokenize the F12/C95 agentic transcripts with allenai/dolma2-tokenizer and score, at every generated position, whether the released 17 GB general table's top-1 (and top-3) continuation for the longest matching <=5-token history equals the emitted token; report coverage, top-1 hit rate and implied accepted length alongside DF2-14's per-request lookup, and the union.",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheap (CPU, no inference) and the only way to learn what a corpus-scale table adds over per-request suffix lookup; DF2-14 found 8.0% coverage / -2.6..+2.4% step gain from request-local lookup. Needs a ~17 GB table download (operator-owned) and a retokenisation proxy (Dolma2 vs Qwen/gemma vocab), so it measures token-level n-gram predictability, not exact drafter acceptance.",
+      "project_decision": "whether any n-gram drafter lane (corpus-scale, host RAM) is worth a DF2-15-style serving A/B",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1988-02",
+      "source": "intake-1988",
+      "action": "Add a COUNT-style arm to Engram Track B Phase 0b: take the released standard-transformer 1B checkpoint (IanMagnusson/count-checkpoints-standard-transformer) plus the 17 GB table, add the COUNT input embedding behind a zero-init scalar gate (optionally a zero-init projection), train only the gate on 5-20B tokens, and compare recovered fraction of the COUNT-pretrained 1B gain against the hashed-Engram frozen retrofit.",
+      "owner": "handoffs/active/engram-conditional-memory.md",
+      "proposed_disposition": "propose",
+      "reason": "Same >=30% recovery gate as Track B; the table is free (counts, not trained), so the trainable surface is tiny and the backbone/tokenizer pair is released as a controlled comparison - cheaper than Engram's table training. Checkpoint repo existence taken from the COUNT README (not fetched).",
+      "project_decision": "whether Track B proceeds with learned hashed tables, count tables, or neither",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1988-03",
+      "source": "intake-1988",
+      "action": "Record COUNT as a corpus-statistics (non-learned) memory family in the Engram handoff design-principles list, with the caveat that its gains are pretraining-time and <=1B; no deploy action.",
+      "owner": "handoffs/active/engram-conditional-memory.md",
+      "proposed_disposition": "propose",
+      "reason": "Documentation-level; cites intake-1988#record.",
+      "project_decision": "none (context)",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1988-04",
+      "source": "intake-1988",
+      "action": "Do not pursue inference-only late fusion (kNN-LM-style top-K n-gram interpolation) on production models until W1-intake-1988-01 shows corpus-table top-1 predictability materially above request-local lookup.",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "decline",
+      "reason": "Output-side fusion changes the sampled distribution (not lossless like speculative verify); n-gram arms were retracted twice (speculative-decoding-mtp-refresh.md:41-64).",
+      "project_decision": "n-gram lane scope",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1989-01",
+      "source": "intake-1989",
+      "action": "If W1-intake-1988-01 shows a corpus table adds predictability, write a C++ reader for the COUN v2 format (mmap, per-order binary search, 8-bit decode) and benchmark single-thread lookup latency per token and per 5-token chained draft on the EPYC host, with the table on 1 NUMA node vs interleaved, before any drafter integration.",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "propose",
+      "reason": "Reference reader is NumPy; paper gives only end-to-end overhead (~0.13 ms/token on 1B with 8 threads, H200 host). Gated on the replay.",
+      "project_decision": "feasibility of host-RAM n-gram drafter",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1983-01",
+      "source": "intake-1983",
+      "action": "Fold into CS-22: add Parakeet-Realtime-EOU-120M (NeMo, CPU or MI210) as a third end-of-turn arm beside whisper.cpp Silero-VAD flags and standalone Silero; measure end-of-turn latency (EOU token + 1280 ms debounce vs silence-only 0.75 s) and false-cut rate on the CS-4 hesitation clips.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "This is the cheapest deciding probe: one model, existing CS-22 harness and clips, answers whether a semantic/learned EOU beats silence thresholds on hesitations. NeMo runtime/export availability on gfx90a or CPU must be checked first (unverified).",
+      "project_decision": "cascade end-of-turn policy (CS-22) and the permanent-fallback quality bar (D8)",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1983-02",
+      "source": "intake-1983",
+      "action": "Evaluate LocalVQE (upstream PyTorch/GGML) as a server-side or client-side AEC for the barge-in chain: feed mic + the exact TTS PCM played as reference in the CS-23 simulated-overlap harness and report near-end retention vs far-end leakage and added latency.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Echo cancellation was deferred (D7, line 297/383) because browser AEC failed in pibot; LocalVQE is a 4.8M CPU model with 16 ms latency and a GGML build. FluidAudio flags the reference-timing path as untested live; our harness controls the reference exactly.",
+      "project_decision": "whether echo cancellation stays a deferred client concern (D7) or becomes a server-side stage",
+      "wave": 1,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W1-intake-1983-03",
+      "source": "intake-1983",
+      "action": "Read FluidAudio's Sortformer/LS-EEND docs only if multi-speaker diarization enters the interlocutor scope; no action now.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "No diarization requirement in the ratified vision beyond single user (not read in this dive).",
+      "project_decision": "none",
+      "wave": 1,
+      "verification": "dive-verified"
     }
   ],
   "state": {
@@ -1259,8 +1733,259 @@
             "intake-1983"
           ]
         },
-        "status": "running",
-        "addendum": "D6/D7 added mid-wave after operator steering seq 7/10 re-scoring."
+        "status": "applied",
+        "addendum": "D6/D7 added mid-wave after operator steering seq 7/10 re-scoring.",
+        "completed": "2026-10-20T13:23:39+00:00",
+        "applied": "2026-10-20T13:31:10+00:00",
+        "new_entries": {
+          "NEW-MTEB": "intake-2009"
+        },
+        "surfaced": [
+          {
+            "id_or_url": "arXiv:2610.07625 Stateless Language Agents: Scaling long-horizon automated research",
+            "what_it_would_settle": "Whether a stateless-advisor-plus-isolated-workers design (harness holds state) reproduces forgetting gains; closest design to AK stateless actors.",
+            "bears_on": "intake-1998",
+            "recommend": "ingest-and-dive",
+            "reason": "Cited by the paper (p.3, refs) and 0 grep hits in intake_index.yaml; direct comparison point for AK actor design.",
+            "from_entry": "intake-1998",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2609.00077 Beneath the diff: Diagnosing and mitigating algorithmic mode collapse in code-level autonomous research loops",
+            "what_it_would_settle": "Independent measurement of loop diversity collapse in code-level research loops, the anchoring phenomenon here.",
+            "bears_on": "intake-1998",
+            "recommend": "ingest-and-dive",
+            "reason": "Cited by the paper (He et al., 2026); 0 hits in intake_index.yaml; independent of this paper.",
+            "from_entry": "intake-1998",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2507.14417 (Inverse scaling in test-time compute)",
+            "what_it_would_settle": "Long-context degradation of the same-chat continuation that flush removes; cited in paper §7 only.",
+            "bears_on": "intake-1993",
+            "recommend": "decline",
+            "reason": "Peripheral; cited for plateaus in reasoning, not for agent loops. Not checked against index.",
+            "from_entry": "intake-1993",
+            "wave": 1
+          },
+          {
+            "id_or_url": "github.com/rethinking-harness-evolution",
+            "what_it_would_settle": "Whether the K=5 matching, AHE-with-explore-disabled setup and Table 3 split ids are reproducible.",
+            "bears_on": "intake-2006",
+            "recommend": "decline",
+            "reason": "Org URL stated in the paper; not fetched or verified here; reading it would not change the evidence level for our decisions.",
+            "from_entry": "intake-2006",
+            "wave": 1
+          },
+          {
+            "id_or_url": "VISTA: a visual harness for reasoning in an interactive world (Han et al. 2026)",
+            "what_it_would_settle": "The ARC-AGI-3 baseline VISTA* provenance and its claimed perfect RHAE with Claude Opus 5.0.",
+            "bears_on": "intake-2006",
+            "recommend": "decline",
+            "reason": "Games-domain only; not relevant to current EPYC decisions; no URL appeared in the fetched source.",
+            "from_entry": "intake-2006",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2604.04847 (Full-Duplex-Bench-v3: Benchmarking Tool Use for Full-Duplex Voice Agents Under Real-World Disfluency; abs page fetched, submitted 6 Apr 2026)",
+            "what_it_would_settle": "Whether a tool-use + disfluency benchmark with a cascaded baseline can score G3 tool-call slot quality for an interlocutor whose only tool is the orchestrator.",
+            "bears_on": "intake-2003",
+            "recommend": "ingest-and-dive",
+            "reason": "Directly maps to conversation-stack D5/G3 and CS-24; not in index (grep count 0).",
+            "from_entry": "intake-2003",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2507.23159 (Full-Duplex-Bench v1.5: Evaluating Overlap Handling for Full-Duplex Speech Models; abs fetched, 30 Jul 2025)",
+            "what_it_would_settle": "Metrics for side conversation / ambient speech / listener backchannel, relevant to an always-listening interlocutor and CS-23 barge-in.",
+            "bears_on": "intake-2003",
+            "recommend": "ingest-and-dive",
+            "reason": "Same harness, small delta over v1; not in index (count 0).",
+            "from_entry": "intake-2003",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2510.07838 (Full-Duplex-Bench-v2: multi-turn automated examiner; abs fetched, 9 Oct 2025)",
+            "what_it_would_settle": "Whether multi-turn live evaluation fits CS-36 end-to-end acceptance.",
+            "bears_on": "intake-2003",
+            "recommend": "ingest-and-dive",
+            "reason": "Needs Node WebRTC + Gemini judge; lower priority than v1.5/v3; not in index (count 0).",
+            "from_entry": "intake-2003",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2609.17360 (ECHO benchmark, id seen only in a search-result snippet this run; title not verified)",
+            "what_it_would_settle": "Independent critique of FDB-style event-independent scoring.",
+            "bears_on": "intake-2003",
+            "recommend": "ingest-and-dive",
+            "reason": "Only independent contradiction candidate found; verify title and content at intake time; not in index (count 0).",
+            "from_entry": "intake-2003",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/issues/25618",
+            "what_it_would_settle": "Upstream root-cause thread for greedy divergence on quantized targets; whether Vulkan localisation transfers to HIP/MMQ on gfx90a",
+            "bears_on": "intake-2004",
+            "recommend": "decline",
+            "reason": "Already referenced by the post/repo and by our DF2-6 text; not fetched here; pointer only.",
+            "from_entry": "intake-2004",
+            "wave": 1
+          },
+          {
+            "id_or_url": "arXiv:2603.00042 (LittleBit-2, ICML 2026; named in repo README)",
+            "what_it_would_settle": "Whether a PTQ-leaning or training-cheaper initialisation (Joint-ITQ before QAT) removes the training-cost objection, and any kernel release",
+            "bears_on": "intake-1977",
+            "recommend": "ingest-and-dive",
+            "reason": "Only source that could change the QAT-only conclusion; README says it changes initialisation only, so expect not, but it is the one cheap check. Not in the index (grep count 0).",
+            "from_entry": "intake-1977",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://github.com/MinishLab/model2vec (potion-base-8M / potion-code-16M-v2 cards)",
+            "what_it_would_settle": "Static-embedding quality vs BGE/Granite on prose retrieval, license and distillation provenance (potion-code distilled from CodeRankEmbed per README L80), which decides whether a static arm is worth adding to REPL-EMB-2.2.",
+            "bears_on": "intake-1981",
+            "recommend": "ingest-and-dive",
+            "reason": "grep -c -i 'minishlab|model2vec' research/intake_index.yaml = 0 in the lane; sgrep's whole embedder premise rests on it and nothing in the index covers it.",
+            "from_entry": "intake-1981",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://github.com/embeddings-benchmark/mteb/pull/5588",
+            "what_it_would_settle": "Reference implementation and prompt handling used by the maintainers' run (why scores differ from the publisher's pipeline).",
+            "bears_on": "intake-1964",
+            "recommend": "ingest-and-dive",
+            "reason": "Cited in withdrawn PR #745 body; grep for mteb/pull/5588 in lane index not run for this exact URL (embeddings-benchmark/results already appears 8 times in the index).",
+            "from_entry": "intake-2009",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://arxiv.org/abs/2006.06762 (Ansor, learned cost model for tensor-program search; cited in info/inference-tile-sizing-autotuning.md)",
+            "what_it_would_settle": "Measured trial savings of a learned cost model versus measured-only search, the best prior art for the intake-2000 surrogate question applied to kernel candidates",
+            "bears_on": "intake-2000",
+            "recommend": "ingest-and-dive",
+            "reason": "grep count 0 in the lane index; Magnitude's own note chose bounded measured search before a learned ranker, so Ansor's reported savings are the comparison point.",
+            "from_entry": "intake-1979",
+            "wave": 1
+          },
+          {
+            "id_or_url": "inference/seismic/measure/src/statistics.rs in magnitudedev/magnitude@940e51bd (paired sign test / mixture likelihood ratio, Tally::verdict)",
+            "what_it_would_settle": "Exact stopping statistic and its anytime-valid guarantee, for comparison with AK's calibrated alpha_sel/alpha_conf",
+            "bears_on": "intake-1979",
+            "recommend": "ingest-and-dive",
+            "reason": "Not read in this dive; sampling.rs defers to it; same repo so cheap.",
+            "from_entry": "intake-1979",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://huggingface.co/IanMagnusson/count-checkpoints-standard-transformer",
+            "what_it_would_settle": "Controlled base for a COUNT retrofit (W1-intake-1988-02): is a 1B standard checkpoint released with matching training budget?",
+            "bears_on": "intake-1988",
+            "recommend": "ingest-and-dive",
+            "reason": "Named in the COUNT README (fetched); not in the index (not grepped by exact URL - see audit).",
+            "from_entry": "intake-1988",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://huggingface.co/nvidia/parakeet_realtime_eou_120m-v1",
+            "what_it_would_settle": "EOU quality/latency on non-FluidAudio hardware, NeMo export formats, EOU precision/recall methodology",
+            "bears_on": "intake-1983",
+            "recommend": "ingest-and-dive",
+            "reason": "Primary model behind the EOU component; only its Description was read.",
+            "from_entry": "intake-1983",
+            "wave": 1
+          },
+          {
+            "id_or_url": "https://github.com/localai-org/LocalVQE",
+            "what_it_would_settle": "Upstream PyTorch/GGML AEC weights, latency, AECMOS table (FluidAudio says partially reproduced)",
+            "bears_on": "intake-1983",
+            "recommend": "ingest-and-dive",
+            "reason": "Named in FluidAudio LocalVQE.md; the GGML build is the directly portable artifact.",
+            "from_entry": "intake-1983",
+            "wave": 1
+          }
+        ],
+        "second_reader": [
+          "second-reader-SR-A.yaml",
+          "second-reader-SR-B.yaml (scratchpad); no 'no' verdicts; partial/unanchored flags stored per entry as second_reader.flags_for_operator"
+        ],
+        "mechanical_anchor_check": "all anchors re-found on disk (1 checker false-miss on a '<' quote, verified by grep)"
+      },
+      {
+        "wave": 2,
+        "started": "2026-10-20T13:23:39+00:00",
+        "selection_basis": "auto-advance of wave-1 recommended dive-surfaced sources (operator seq 9) plus main overrides",
+        "units": {
+          "W2-G1": [
+            "NEW 2610.07625",
+            "NEW 2609.00077",
+            "NEW 2006.06762"
+          ],
+          "W2-G2": [
+            "intake-1979 second pass (Vulkan backend, TileLang fork, statistics.rs)"
+          ],
+          "W2-G3": [
+            "NEW 2507.23159",
+            "NEW 2510.07838",
+            "NEW 2604.04847",
+            "NEW 2609.17360"
+          ],
+          "W2-G4": [
+            "NEW hf nvidia/parakeet_realtime_eou_120m-v1",
+            "NEW github localai-org/LocalVQE",
+            "NEW github MinishLab/model2vec",
+            "NEW hf IanMagnusson/count-checkpoints-standard-transformer"
+          ],
+          "W2-G5": [
+            "NEW github ggml-org/llama.cpp#25618",
+            "NEW 2603.00042"
+          ]
+        },
+        "main_overrides": [
+          {
+            "source": "https://github.com/ggml-org/llama.cpp/issues/25618",
+            "dive_rec": "decline",
+            "main": "ingest-and-dive",
+            "why": "intake-1288 names it the strictly-stronger source of record yet it was never ingested; Vulkan->HIP/gfx90a transfer is a reverse-engineering question (operator seq 7/10)."
+          },
+          {
+            "source": "intake-1979 second pass",
+            "dive_rec": "(W1-1979-03 declined: no HIP backend)",
+            "main": "re-dive",
+            "why": "Premise incomplete: Magnitude has a Vulkan backend and MI210 runs Vulkan; TileLang fork and statistics.rs unread."
+          },
+          {
+            "source": "arXiv 2609.17360",
+            "note": "Dive labelled it 'ECHO benchmark' from a snippet; arXiv API title is 'Same Words, Different Actions: Paired Turn-Taking Evaluation under Rewritten Dialogue Contexts' - ingested under the verified title. CORRECTION (wave-2 G3 read): 'ECHO' appears 21x in the paper as the dataset name and v1 was titled 'ECHO: A Matched-Contrast Benchmark...'; the wave-1 label was a real alias, not an error."
+          }
+        ],
+        "declined": [
+          {
+            "source": "https://github.com/embeddings-benchmark/mteb/pull/5588",
+            "bears_on": "intake-1964",
+            "reason": "Already ingested as intake-1974 (exact URL collision) - re-encounter, not a new source."
+          },
+          {
+            "source": "https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/",
+            "bears_on": "intake-1964",
+            "reason": "HTTP 403 on old/www reddit .json with browser UA; no digest substituted. Operator may paste the thread text if wanted."
+          },
+          {
+            "source": "arXiv:2507.14417",
+            "bears_on": "intake-1993",
+            "reason": "Cited only in Fork-and-Flush related work (long-context degradation); does not change a conclusion."
+          },
+          {
+            "source": "github.com/rethinking-harness-evolution",
+            "bears_on": "intake-2006",
+            "reason": "Reproducibility of the K=5 setup does not change the version-staleness finding the dive settled."
+          },
+          {
+            "source": "VISTA visual harness (Han et al. 2026)",
+            "bears_on": "intake-2006",
+            "reason": "ARC-AGI-3 baseline provenance only; no arXiv ID observed."
+          }
+        ],
+        "status": "running"
       }
     ]
   }
