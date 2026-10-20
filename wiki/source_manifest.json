@@ -9,10 +9,24 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-20T16:44:20Z",
-  "mode": "touch",
-  "scan_time": "2026-10-20T16:44:20Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 3,
+      "removed": 0
+    },
+    "at": "2026-10-20T19:42:11Z",
+    "scope_paths": [
+      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "progress/2026-10/2026-10-20.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-20T19:42:11Z",
   "schema_version": 1,
-  "source_set_hash": "97bfe39897da4fdbcb3284f1e84c5f0762749358852c8f7add13037b6cf6c68b",
+  "source_set_hash": "8659f7c3390f4c4d68a27ea41392362271fdfdb946d0df0ef22ab1a28ce00f47",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -727,18 +741,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c481e2b4c80cadcc2c8ccece859cbc26abdba42955bf016c52417a38ef27873c",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "5fdb963ee56c9e3ef8059c32ba7014f99b5efdd26f07dc6fedc05584b4d2d836",
+      "modified": "2026-10-20T19:39:19Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 55169,
+      "size": 74030,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
     {
-      "content_hash": "349a049137bbd978193b16c4c7809d0178b1decb9e9d8ebc314b0bfe1589ba25",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "bf9bb6e4fe56ddac55c93e4eea19f34f479ff38c7fe2f8cece3febc672bed103",
+      "modified": "2026-10-20T19:39:19Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 33772,
+      "size": 37532,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -9455,10 +9469,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e2f5e4e8a0398d9b6f90f76e76d7a97221fb031fc8d62a631258155d66e2c48e",
-      "modified": "2026-10-20T16:34:33Z",
+      "content_hash": "eb1b6ed3db6fd034780b65d23864f065211f2064fc1fb8c355e9428d18e770b7",
+      "modified": "2026-10-20T19:39:19Z",
       "path": "progress/2026-10/2026-10-20.md",
-      "size": 6807,
+      "size": 29678,
       "title": "2026-10-20",
       "type": "progress"
     },
