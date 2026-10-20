@@ -1,0 +1,30 @@
+48 Counter({'instruction_precision': 8, 'coder': 6, 'math': 6, 'bigcodebench': 4, 'gpqa_diamond_cot': 4, 'mmlu_pro': 4, 'real_suite_v1': 4, 'debugbench': 2, 'livecodebench': 2, 'mode_advantage': 2, 'physics': 2, 'simpleqa': 2, 'thinking': 2})
+mbpp_0391             coder         code    n=41/41 df=60.85 nd=31.45 ratio=1.935 acc=0.5893
+mbpp_0303             coder         code    n=200/200 df=78.06 nd=31.55 ratio=2.474 acc=0.7217
+mbpp_0508             coder         code    n=57/57 df=88.08 nd=31.14 ratio=2.829 acc=0.875
+bcb_BigCodeBench/547  bigcodebench  code    n=88/88 df=93.11 nd=31.47 ratio=2.959 acc=0.9048
+bcb_BigCodeBench/512  bigcodebench  code    n=200/200 df=83.17 nd=31.55 ratio=2.636 acc=0.7925
+debugbench_flood-fill_cppdebugbench    code    n=200/200 df=96.58 nd=30.43 ratio=3.174 acc=0.9886
+leetcode_the-number-of-the-smallest-unoccupied-chairlivecodebench code    n=200/200 df=73.96 nd=31.51 ratio=2.347 acc=0.6992
+ma_multi_015          mode_advantageprose   n=200/200 df=64.85 nd=27.38 ratio=2.369 acc=0.7112
+gsm8k_00739           math          reason  n=200/200 df=73.16 nd=31.46 ratio=2.325 acc=0.8204
+gsm8k_00115           math          reason  n=200/200 df=74.56 nd=31.37 ratio=2.377 acc=0.7205
+gsm8k_00041           math          reason  n=200/200 df=56.38 nd=31.37 ratio=1.797 acc=0.4842
+gpqa_diamond_cot_5fd3fe9084c9gpqa_diamond_cotreason  n=200/200 df=63.86 nd=31.1 ratio=2.053 acc=0.5824
+gpqa_diamond_cot_8116937b0ca6gpqa_diamond_cotreason  n=200/200 df=57.95 nd=31.3 ratio=1.851 acc=0.5016
+phybench_electricity_25physics       reason  n=200/200 df=58.92 nd=31.46 ratio=1.873 acc=0.5065
+mmlu_pro_law_01532    mmlu_pro      reason  n=2/2 df=25.03 nd=54.98 ratio=0.455 acc=0.1429
+mmlu_pro_health_05883 mmlu_pro      reason  n=2/2 df=25.05 nd=55.31 ratio=0.453 acc=0.1429
+ifeval_3456           instruction_precisionprose   n=200/200 df=47.92 nd=31.36 ratio=1.528 acc=0.393
+ifeval_322            instruction_precisionprose   n=9/9 df=22.11 nd=32.25 ratio=0.686 acc=0.1143
+ifeval_1481           instruction_precisionprose   n=200/200 df=29.24 nd=31.62 ratio=0.925 acc=0.175
+ifeval_1129           instruction_precisionprose   n=139/139 df=51.56 nd=31.61 ratio=1.631 acc=0.4245
+real_suite_v1_0003    real_suite_v1 prose   n=200/200 df=45.29 nd=31.48 ratio=1.439 acc=0.3579
+real_suite_v1_0032    real_suite_v1 prose   n=53/53 df=67.32 nd=30.84 ratio=2.183 acc=0.6
+simpleqa_general_01814simpleqa      prose   n=8/8 df=36.92 nd=32.15 ratio=1.148 acc=0.4286
+hellaswag_06230       thinking      reason  n=2/2 df=24.89 nd=55.41 ratio=0.449 acc=0.1429
+EXCL ['mbpp_0391', 'mmlu_pro_law_01532', 'mmlu_pro_health_05883', 'ifeval_322', 'simpleqa_general_01814', 'hellaswag_06230']
+code 6 df=83.38 nd=31.27 ratio=2.667 acc=0.803
+prose 6 df=45.10 nd=30.55 ratio=1.476 acc=0.366
+reason 6 df=63.35 nd=31.34 ratio=2.021 acc=0.583
+ALL 18 60.013139747152415 31.063302469915396

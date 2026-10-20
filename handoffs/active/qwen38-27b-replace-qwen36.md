@@ -178,6 +178,54 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
     with sentence ids). Ask every needle in the no-draft arm too, and give phase C a no-draft pair. The INF-59 E0
     runner (`yarn-context-extension-research.md`) builds this harness, so reuse it rather than writing a second one.
     Done when `q38_t7.py` (or its `coherence_gate` successor, TD-30d) uses the neutral haystack with paired needles.
+  - **2026-10-20 (Q38-T9, per-class replay, no inference): no class loses; the 24-prompt mix cannot refute a prose/chat sign flip.**
+    Frozen input `artifacts/gpu-block-27b-20261004/results/q38_t7/20261004T025247Z/calls.jsonl`, sha256
+    `56315a4b7adf11f759efab5f9a9616eb600b382e0a81f8b9c5d1c41326855bf2` (68 lines; phase A = 48 records = 24 prompts x 2 arms;
+    on-disk copy equals the origin/main blob). Script and raw output (sha256 `fb4ad45f...` / `311b52f5...`):
+    `artifacts/gpu-block-27b-20261004/analysis/q38t9-perclass/`. Token-weighted ratio = sum(predicted_n)/sum(predicted_n/decode_tps)
+    per arm; draft_acc = sum(draft_n_accepted)/sum(draft_n). Classes by suite: code = coder, bigcodebench, debugbench,
+    livecodebench; reasoning/math/science = math, gpqa_diamond_cot, physics, mmlu_pro, thinking; instruction/prose/chat/other =
+    instruction_precision, real_suite_v1, simpleqa, mode_advantage. Six prompts with `predicted_n` < 50 are EXCLUDED from ratios
+    (listed in the table).
+    | class | qualifying prompts | DFlash2 tok/s | no-draft tok/s | token-weighted ratio | draft_acc |
+    |---|---:|---:|---:|---:|---:|
+    | code | 6 | 83.38 | 31.27 | 2.667 | 0.803 |
+    | reasoning/math/science | 6 | 63.35 | 31.34 | 2.021 | 0.583 |
+    | instruction/prose/chat/other | 6 | 45.10 | 30.55 | 1.476 | 0.366 |
+
+    All 18 qualifying prompts: 60.01 vs 31.06 tok/s (matches the reported 60.02 / 31.07). Predeclared rule: no class has a
+    token-weighted ratio < 1.0, so no A/B task is filed. Per-prompt sub-1.0 ratios exist but do not move a class: ifeval_1481
+    0.925 (qualifying, acc 0.175) and the excluded short answers ifeval_322 0.686, mmlu_pro x2 ~0.45, hellaswag 0.449 (n 2-9,
+    acc 0.114-0.143). The prose class is the weakest (ratio 1.476, acc 0.366) and holds only 6 prompts, one of them a loser;
+    this mix cannot refute a prose/chat sign flip. Next evidence: Q38-T7a (organic :8083 acceptance, >= 200 drafted calls).
+    Per-prompt table:
+
+      | prompt | suite | class | predicted_n | DFlash2 tok/s | no-draft tok/s | ratio | draft_acc | status |
+      |---|---|---|---:|---:|---:|---:|---:|---|---|
+      | mbpp_0391 | coder | code | 41 | 60.85 | 31.45 | 1.935 | 0.5893 | EXCLUDED (<50) |
+      | mbpp_0303 | coder | code | 200 | 78.06 | 31.55 | 2.474 | 0.7217 | in |
+      | mbpp_0508 | coder | code | 57 | 88.08 | 31.14 | 2.829 | 0.875 | in |
+      | bcb_BigCodeBench/547 | bigcodebench | code | 88 | 93.11 | 31.47 | 2.959 | 0.9048 | in |
+      | bcb_BigCodeBench/512 | bigcodebench | code | 200 | 83.17 | 31.55 | 2.636 | 0.7925 | in |
+      | debugbench_flood-fill_cpp | debugbench | code | 200 | 96.58 | 30.43 | 3.174 | 0.9886 | in |
+      | leetcode_the-number-of-the-smallest-unoccupied-chair | livecodebench | code | 200 | 73.96 | 31.51 | 2.347 | 0.6992 | in |
+      | ma_multi_015 | mode_advantage | prose | 200 | 64.85 | 27.38 | 2.369 | 0.7112 | in |
+      | gsm8k_00739 | math | reason | 200 | 73.16 | 31.46 | 2.325 | 0.8204 | in |
+      | gsm8k_00115 | math | reason | 200 | 74.56 | 31.37 | 2.377 | 0.7205 | in |
+      | gsm8k_00041 | math | reason | 200 | 56.38 | 31.37 | 1.797 | 0.4842 | in |
+      | gpqa_diamond_cot_5fd3fe9084c9 | gpqa_diamond_cot | reason | 200 | 63.86 | 31.1 | 2.053 | 0.5824 | in |
+      | gpqa_diamond_cot_8116937b0ca6 | gpqa_diamond_cot | reason | 200 | 57.95 | 31.3 | 1.851 | 0.5016 | in |
+      | phybench_electricity_25 | physics | reason | 200 | 58.92 | 31.46 | 1.873 | 0.5065 | in |
+      | mmlu_pro_law_01532 | mmlu_pro | reason | 2 | 25.03 | 54.98 | 0.455 | 0.1429 | EXCLUDED (<50) |
+      | mmlu_pro_health_05883 | mmlu_pro | reason | 2 | 25.05 | 55.31 | 0.453 | 0.1429 | EXCLUDED (<50) |
+      | ifeval_3456 | instruction_precision | prose | 200 | 47.92 | 31.36 | 1.528 | 0.393 | in |
+      | ifeval_322 | instruction_precision | prose | 9 | 22.11 | 32.25 | 0.686 | 0.1143 | EXCLUDED (<50) |
+      | ifeval_1481 | instruction_precision | prose | 200 | 29.24 | 31.62 | 0.925 | 0.175 | in |
+      | ifeval_1129 | instruction_precision | prose | 139 | 51.56 | 31.61 | 1.631 | 0.4245 | in |
+      | real_suite_v1_0003 | real_suite_v1 | prose | 200 | 45.29 | 31.48 | 1.439 | 0.3579 | in |
+      | real_suite_v1_0032 | real_suite_v1 | prose | 53 | 67.32 | 30.84 | 2.183 | 0.6 | in |
+      | simpleqa_general_01814 | simpleqa | prose | 8 | 36.92 | 32.15 | 1.148 | 0.4286 | EXCLUDED (<50) |
+      | hellaswag_06230 | thinking | reason | 2 | 24.89 | 55.41 | 0.449 | 0.1429 | EXCLUDED (<50) |
 - [x] **Q38-T8 — DFlash2 load-time VRAM peak sampled DURING the load** (PACKAGE M-2). ✅ 2026-10-03 — the sampler
   armed before `reload architect_critic` (`/mnt/raid0/llm/tmp/stack-change-dflash2-20261003/apply/vram_during_reload.log`,
   0.5 s cadence) reads 44.31 GiB card-total on the OLD process (04:44:36Z), 0.01 GiB at unload (04:44:39Z), and a
@@ -255,7 +303,7 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
   UNVERIFIED until someone actually starts the stack; that is a separate lifecycle action with its
   own gates and was deliberately not taken here.
 - [x] **Architect bench (reasoning + coding ladders)** ✅ 2026-08-15 — L0–L4: mmlu_pro 56.7%, gpqa_diamond 42.4% (letter) / 81.3% (CoT), aime25 **76.7%**, olympiadbench_hard 47.1%; P2a–P2d: humaneval 96.3%, BCB-hard 31.1%, LCB-hard **52.8%** (tops stock 45.3%), SWE-oracle 39/40 single-shot (2 hard tool-using instances deferred to the agentic rung). Full tables in `gpu-candidates-surface-qwen38-update.md` + the artifact dir. The quality uplift the operator banked is now measured — it is real on LCB (52.8 vs 45.3) and aime25 (76.7), near-parity elsewhere, with SWE + agentic still landing.
-- [ ] **Q38-T9 — Per-class replay of the banked Q38-T7 phase A: where does DFlash2 n-max 7 lose to no-draft? (intake-2004; filed 2026-10-20).** No inference. Frozen input: `artifacts/gpu-block-27b-20261004/results/q38_t7/20261004T025247Z/calls.jsonl` phase A (24 prompts x 2 arms; record its sha256). Group suites into code, reasoning/math/science, and instruction/prose/chat/other; compute per-prompt and token-weighted DFlash2/no-draft decode ratios from the stored `decode_tps`, `predicted_n` and `draft_acc`; prompts with `predicted_n` < 50 are listed and excluded from ratios, never silently dropped. Predeclared: a class with >= 3 qualifying prompts and a token-weighted ratio < 1.0 files a paired live class-stratified A/B (per-request `speculative.n_max` 7 vs 4 vs 0) as a new task here; otherwise the note records that the 24-prompt mix cannot refute a prose/chat sign flip and names the organic-traffic read (Q38-T7a) as the next evidence. Done when the table is filed under Q38-T7 with the file digest.
+- [x] ✅ 2026-10-20 **Q38-T9 — Per-class replay of the banked Q38-T7 phase A: where does DFlash2 n-max 7 lose to no-draft? (intake-2004; filed 2026-10-20).** No inference. Frozen input: `artifacts/gpu-block-27b-20261004/results/q38_t7/20261004T025247Z/calls.jsonl` phase A (24 prompts x 2 arms; record its sha256). Group suites into code, reasoning/math/science, and instruction/prose/chat/other; compute per-prompt and token-weighted DFlash2/no-draft decode ratios from the stored `decode_tps`, `predicted_n` and `draft_acc`; prompts with `predicted_n` < 50 are listed and excluded from ratios, never silently dropped. Predeclared: a class with >= 3 qualifying prompts and a token-weighted ratio < 1.0 files a paired live class-stratified A/B (per-request `speculative.n_max` 7 vs 4 vs 0) as a new task here; otherwise the note records that the 24-prompt mix cannot refute a prose/chat sign flip and names the organic-traffic read (Q38-T7a) as the next evidence. Done when the table is filed under Q38-T7 with the file digest.
 - [ ] **Q38-T10 — State the greedy-parity contract of the DFlash2 serving path where the selection decision is recorded (intake-2004/2021; filed 2026-10-20).** Add to the "DFlash2 selection decision" row: speculative serving (DFlash2 n-max 7 and MTP) is NOT bit-identical to non-speculative greedy on this stack (DF2-6/DF2-8, 12 prompts at 256 tokens: 6 prompts differ for dflash, all six first divergences at top1-top2 margins of 0.005-0.079, and draft-simple fails too, recorded 5/12; exact only under `LLAMA_SPEC_EXACT=serial`, which gives no speedup); parity-gated work and eval-reproducibility runs must use spec off or serial-exact; the DF2-17 horizon/width result and any exact-argument-role decision (monitor M6) are appended when they report. Done when the statement is in the row with the DF2-17 pointer, so "parity was attributed away from DFlash2" can no longer be read as "parity holds".
 
 ## Key questions this handoff must answer
