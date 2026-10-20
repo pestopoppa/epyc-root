@@ -1,12 +1,12 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-07T10:50:25.267145+00:00",
-  "stage": "stage2-awaiting-source-selection",
+  "last_checkpoint": "2026-10-20T13:05:03+00:00",
+  "stage": "stage1-complete",
   "phase": 5,
-  "lane": "/mnt/raid0/llm/worktrees/intake-memory-embedding-20261007",
-  "branch": "research/agent-memory-embeddinggemma2-20261007",
-  "topic": "Cognition Agent Memory Repo and Google EmbeddingGemma 2",
+  "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
+  "branch": "intake/batch-20261020",
+  "topic": "Cognition Agent Memory Repo and Google EmbeddingGemma 2 + 2026-10-20 batch (24 new URLs: agent memory/tooling, speech, mLattice, COUNT n-gram, 9 arXiv papers, RTX3090 27B article)",
   "entries_processed": [
     "intake-1963",
     "intake-1964",
@@ -21,10 +21,42 @@
     "intake-1973",
     "intake-1974",
     "intake-1975",
-    "intake-1976"
+    "intake-1976",
+    "intake-1977",
+    "intake-1978",
+    "intake-1979",
+    "intake-1980",
+    "intake-1981",
+    "intake-1982",
+    "intake-1983",
+    "intake-1984",
+    "intake-1985",
+    "intake-1986",
+    "intake-1987",
+    "intake-1988",
+    "intake-1989",
+    "intake-1990",
+    "intake-1991",
+    "intake-1992",
+    "intake-1993",
+    "intake-1994",
+    "intake-1995",
+    "intake-1996",
+    "intake-1997",
+    "intake-1998",
+    "intake-1999",
+    "intake-2000",
+    "intake-2001",
+    "intake-2002",
+    "intake-2003",
+    "intake-2004",
+    "intake-2005",
+    "intake-2006",
+    "intake-2007",
+    "intake-2008"
   ],
   "entries_remaining": [],
-  "next_intake_id": 1977,
+  "next_intake_id": 2009,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -54,6 +86,50 @@
       "ts": "2026-10-07T09:48:21.854424+00:00",
       "plan_ref": null,
       "reason": "Retained operator direction; Stage-3 plan will bind the useful outcomes after source verification."
+    },
+    {
+      "seq": 3,
+      "stage": 1,
+      "verbatim": "/research-intake https://cognition.com/agent-memory-repo https://huggingface.co/google/embeddinggemma-2 https://arxiv.org/abs/2506.13771 https://arxiv.org/pdf/2609.20804 https://github.com/NVIDIA/personaplex https://github.com/Gen-Verse/RSI-Anything https://arxiv.org/html/2609.35738v1 https://arxiv.org/html/2610.07447v1 https://github.com/eelbaz/mLattice/blob/main/PAPER.md https://huggingface.co/spaces/Ex0bit/mLattice https://github.com/eelbaz/mLattice https://github.com/FluidInference/FluidAudio https://huggingface.co/fishaudio/drama-3 https://github.com/context-dot-dev/sgrep https://arxiv.org/html/2610.18809 https://github.com/davidgonmar/depth-memory https://github.com/magnitudedev/magnitude https://arxiv.org/abs/2610.20456 https://github.com/IanMagnusson/COUNT https://huggingface.co/datasets/IanMagnusson/count-ngram-tables https://arxiv.org/html/2610.14224v1 https://arxiv.org/html/2610.22192v1 https://wccftech.com/rtx-3090-4-6x-token-generation-27b-llm-inference-optimizations/ https://arxiv.org/html/2610.18861v1 https://arxiv.org/pdf/2610.20563 https://arxiv.org/pdf/2610.12668",
+      "text": "/research-intake https://cognition.com/agent-memory-repo https://huggingface.co/google/embeddinggemma-2 https://arxiv.org/abs/2506.13771 https://arxiv.org/pdf/2609.20804 https://github.com/NVIDIA/personaplex https://github.com/Gen-Verse/RSI-Anything https://arxiv.org/html/2609.35738v1 https://arxiv.org/html/2610.07447v1 https://github.com/eelbaz/mLattice/blob/main/PAPER.md https://huggingface.co/spaces/Ex0bit/mLattice https://github.com/eelbaz/mLattice https://github.com/FluidInference/FluidAudio https://huggingface.co/fishaudio/drama-3 https://github.com/context-dot-dev/sgrep https://arxiv.org/html/2610.18809 https://github.com/davidgonmar/depth-memory https://github.com/magnitudedev/magnitude https://arxiv.org/abs/2610.20456 https://github.com/IanMagnusson/COUNT https://huggingface.co/datasets/IanMagnusson/count-ngram-tables https://arxiv.org/html/2610.14224v1 https://arxiv.org/html/2610.22192v1 https://wccftech.com/rtx-3090-4-6x-token-generation-27b-llm-inference-optimizations/ https://arxiv.org/html/2610.18861v1 https://arxiv.org/pdf/2610.20563 https://arxiv.org/pdf/2610.12668",
+      "ts": "2026-10-20T12:54:43+00:00",
+      "timestamp": "2026-10-20T12:54:43+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Operator-submitted URL batch for this campaign; outcomes bound in Stage 3 after verification."
+    },
+    {
+      "seq": 4,
+      "stage": 1,
+      "verbatim": "I approve all recommended stage 2 literature exapnsions for up to 6 stage 2 waves",
+      "text": "I approve all recommended stage 2 literature exapnsions for up to 6 stage 2 waves",
+      "ts": "2026-10-20T12:54:43+00:00",
+      "timestamp": "2026-10-20T12:54:43+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Pre-selection of all recommended Stage-2 dives and Stage-2b dive-surfaced expansions, capped at 6 waves counted from 2026-10-20; supersedes the 10-07 4-wave cap for remaining work. Not a waiver of the Stage-3 plan gate."
+    },
+    {
+      "seq": 5,
+      "stage": 1,
+      "verbatim": "\"\n\nThe 10-07 memory and embedding intake is waiting on you\n  - On 10-07, an earlier research intake already processed the Cognition agent-memory page and EmbeddingGemma 2. It added 14 entries to\n    the research index (intake-1963 to 1976).\n  - That run got through its deep dives and then stopped at a checkpoint. It is waiting for you to choose which newly found sources to\n    dive into next, and it has a list of 46 possible follow-up actions.\n\n\" - pick up that session and fold it into this research-intake session",
+      "text": "\"\n\nThe 10-07 memory and embedding intake is waiting on you\n  - On 10-07, an earlier research intake already processed the Cognition agent-memory page and EmbeddingGemma 2. It added 14 entries to\n    the research index (intake-1963 to 1976).\n  - That run got through its deep dives and then stopped at a checkpoint. It is waiting for you to choose which newly found sources to\n    dive into next, and it has a list of 46 possible follow-up actions.\n\n\" - pick up that session and fold it into this research-intake session",
+      "ts": "2026-10-20T12:54:43+00:00",
+      "timestamp": "2026-10-20T12:54:43+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Folded: session 09f781b0 resumed as one campaign; its 14 entries, 46-row actionable ledger and 2 steering rows retained unchanged; its 4 pending dive-surfaced leads get per-item recommendations under seq 4."
+    },
+    {
+      "seq": 6,
+      "stage": 1,
+      "verbatim": "Here is a note offered by a side agent:\n\n> Heads up · The first two links you sent were already taken in on 10-07, and that earlier run is still paused, waiting for you to pick sources.\n>\n> **The 10-07 memory and embedding intake is waiting on you**\n> - On 10-07, an earlier research intake already processed the **Cognition agent-memory** page and **EmbeddingGemma 2**. It added 14 entries to the research index (intake-1963 to 1976).\n> - That run got through its deep dives and then stopped at a checkpoint. It is waiting for you to choose which newly found sources to dive into next, and it has a list of 46 possible follow-up actions.\n> - Today's batch includes those same two links again. The new run also uses the same saved session file, so it could **replace that paused state** if the main agent isn't careful.\n> - **Decide whether to finish or close the 10-07 run first**, or tell the main agent to keep its saved state when it starts today's run.\n\nFold the incomplete 10-07 research-intake session into this research-intake session so that all actionables are contextualized processed together",
+      "text": "Here is a note offered by a side agent:\n\n> Heads up · The first two links you sent were already taken in on 10-07, and that earlier run is still paused, waiting for you to pick sources.\n>\n> **The 10-07 memory and embedding intake is waiting on you**\n> - On 10-07, an earlier research intake already processed the **Cognition agent-memory** page and **EmbeddingGemma 2**. It added 14 entries to the research index (intake-1963 to 1976).\n> - That run got through its deep dives and then stopped at a checkpoint. It is waiting for you to choose which newly found sources to dive into next, and it has a list of 46 possible follow-up actions.\n> - Today's batch includes those same two links again. The new run also uses the same saved session file, so it could **replace that paused state** if the main agent isn't careful.\n> - **Decide whether to finish or close the 10-07 run first**, or tell the main agent to keep its saved state when it starts today's run.\n\nFold the incomplete 10-07 research-intake session into this research-intake session so that all actionables are contextualized processed together",
+      "ts": "2026-10-20T12:55:03+00:00",
+      "timestamp": "2026-10-20T12:55:03+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Fold executed in place (session 09f781b0 resumed, nothing replaced); the single Stage-3 plan will map retained 10-07 actionables (S1-01..D2-1976-01) and 2026-10-20 actionables in one complete recommendation table."
     }
   ],
   "actionable_ledger": [
@@ -941,6 +1017,160 @@
       "accepted_payload_sha256": "bf3acfdfef19d4083e44424a68ce8cec114a576e0904d2a099a2ab19a5b4ebe2",
       "final_second_reader": "All64anchors and corrected semantic/schema checks pass; rootnormalizedprose shape resolved.",
       "actionable_ledger_snapshot_sha256": "9843426a41d2a714d471cc6fe88d02b41c6724caf8fc8d775d226ce93b7a48ff"
+    }
+  },
+  "campaign_fold_20261020": {
+    "folded_at": "2026-10-20T12:54:43+00:00",
+    "prior_open_session": {
+      "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
+      "stage_at_fold": "stage2-awaiting-source-selection",
+      "lane": "/mnt/raid0/llm/worktrees/intake-memory-embedding-20261007",
+      "branch": "research/agent-memory-embeddinggemma2-20261007",
+      "last_checkpoint": "2026-10-07T10:50:25.267145+00:00",
+      "topic": "Cognition Agent Memory Repo and Google EmbeddingGemma 2"
+    },
+    "new_lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
+    "new_branch": "intake/batch-20261020",
+    "base": "origin/main@84c441145",
+    "resubmitted_duplicates": {
+      "https://cognition.com/agent-memory-repo": "intake-1963",
+      "https://huggingface.co/google/embeddinggemma-2": "intake-1964"
+    },
+    "pending_leads_recommendation": {
+      "https://leaderboard.mteb.org/models": {
+        "rec": "ingest-and-dive",
+        "bears_on": [
+          "intake-1964",
+          "intake-1966"
+        ],
+        "why": "Only independent third-party listing that can corroborate or contradict the publisher-only model comparison flagged in the 10-07 contradiction pass."
+      },
+      "https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/": {
+        "rec": "ingest-and-dive",
+        "bears_on": [
+          "intake-1964",
+          "intake-1967",
+          "intake-1969"
+        ],
+        "why": "Independent practitioner runtime reports (GGUF/llama.cpp embedding behaviour) the publisher sources cannot supply; anecdotal, labelled as such."
+      },
+      "https://s5labs.io/resources/insights/google-embeddinggemma-2-multimodal-embeddings/": {
+        "rec": "decline",
+        "bears_on": [
+          "intake-1964"
+        ],
+        "why": "Third-party blog restating publisher figures; restatement is not corroboration."
+      },
+      "https://www.codesota.com/benchmarks/mteb": {
+        "rec": "decline",
+        "bears_on": [
+          "intake-1964"
+        ],
+        "why": "Aggregator mirroring MTEB; the MTEB leaderboard itself (recommended) is the primary."
+      }
+    },
+    "stage2_wave_budget": {
+      "cap": 6,
+      "counted_from": "2026-10-20",
+      "prior_waves_10_07": 3,
+      "operator_seq": 4
+    },
+    "stage1_20261020": {
+      "url_to_id": {
+        "https://arxiv.org/abs/2506.13771": "intake-1977",
+        "https://github.com/davidgonmar/depth-memory": "intake-1978",
+        "https://github.com/magnitudedev/magnitude": "intake-1979",
+        "https://github.com/Gen-Verse/RSI-Anything": "intake-1980",
+        "https://github.com/context-dot-dev/sgrep": "intake-1981",
+        "https://github.com/NVIDIA/personaplex": "intake-1982",
+        "https://github.com/FluidInference/FluidAudio": "intake-1983",
+        "https://huggingface.co/fishaudio/drama-3": "intake-1984",
+        "https://github.com/eelbaz/mLattice": "intake-1985",
+        "https://huggingface.co/spaces/Ex0bit/mLattice": "intake-1986",
+        "https://wccftech.com/rtx-3090-4-6x-token-generation-27b-llm-inference-optimizations/": "intake-1987",
+        "https://arxiv.org/abs/2610.20456": "intake-1988",
+        "https://github.com/IanMagnusson/COUNT": "intake-1989",
+        "https://huggingface.co/datasets/IanMagnusson/count-ngram-tables": "intake-1990",
+        "https://arxiv.org/abs/2609.20804": "intake-1991",
+        "https://arxiv.org/abs/2609.35738": "intake-1992",
+        "https://arxiv.org/abs/2610.07447": "intake-1993",
+        "https://arxiv.org/abs/2610.18809": "intake-1994",
+        "https://arxiv.org/abs/2610.14224": "intake-1995",
+        "https://arxiv.org/abs/2610.22192": "intake-1996",
+        "https://arxiv.org/abs/2610.18861": "intake-1997",
+        "https://arxiv.org/abs/2610.20563": "intake-1998",
+        "https://arxiv.org/abs/2610.12668": "intake-1999",
+        "https://arxiv.org/abs/2610.13912": "intake-2000",
+        "https://arxiv.org/abs/2602.06053": "intake-2001",
+        "https://arxiv.org/abs/2610.18010": "intake-2002",
+        "https://arxiv.org/abs/2503.04721": "intake-2003",
+        "https://hackmd.io/@thc1006/qwen3-8-27b-speculative-decoding-rtx-3090": "intake-2004",
+        "https://arxiv.org/abs/2608.21836": "intake-2005",
+        "https://arxiv.org/abs/2607.12227": "intake-2006",
+        "https://arxiv.org/abs/2608.26218": "intake-2007",
+        "https://arxiv.org/abs/2605.05716": "intake-2008"
+      },
+      "folded_submitted_urls": {
+        "https://github.com/eelbaz/mLattice/blob/main/PAPER.md": "intake-1985 (alias)"
+      },
+      "expansion": {
+        "cap": 10,
+        "count": 9,
+        "entries": [
+          "intake-2000",
+          "intake-2001",
+          "intake-2002",
+          "intake-2003",
+          "intake-2004",
+          "intake-2005",
+          "intake-2006",
+          "intake-2007",
+          "intake-2008"
+        ],
+        "reference_chasing": 8,
+        "search": 1,
+        "note": "Slot 10 unused: LittleBit-2 follow-up seen only in a secondary newsletter with no arXiv ID (drop-unobserved-ID rule)."
+      },
+      "expansion_refused": [
+        {
+          "seed": "intake-1977",
+          "reason": "Only follow-up candidate (LittleBit-2) had no observable arXiv ID or primary URL in this run's results; refused rather than persist a recalled identifier."
+        },
+        {
+          "seed": "intake-1988",
+          "reason": "Seed relevance low; expansion runs only from relevance>=medium seeds."
+        }
+      ],
+      "identifier_resolution": "63 arXiv IDs resolved via export.arxiv.org API 2026-10-20; all titles matched the source citation.",
+      "dedup": {
+        "entries_checked": 1972,
+        "base_commit": "84c441145",
+        "collisions": [
+          "intake-1963",
+          "intake-1964"
+        ],
+        "redirects": "none (curl -sIL, 12 non-arXiv URLs)"
+      },
+      "tier2b": "bounded, 2 queries/source, 10 sources; provisional",
+      "stage1_dive_ranking": [
+        "intake-1998",
+        "intake-1993",
+        "intake-2004",
+        "intake-2005",
+        "intake-2006",
+        "intake-1977",
+        "intake-1982+intake-2001",
+        "intake-2003",
+        "intake-1984+intake-2002",
+        "intake-1981"
+      ],
+      "stage2b_from_1007": [
+        "https://leaderboard.mteb.org/models",
+        "https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/"
+      ],
+      "operator_questions": [
+        "not_applicable confirmations held at worth_investigating/low: intake-1978 depth-memory repo, intake-1983 FluidAudio, intake-1986 mLattice HF Space"
+      ]
     }
   }
 }

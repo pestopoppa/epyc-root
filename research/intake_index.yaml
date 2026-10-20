@@ -249101,7 +249101,7 @@
     requires source/current-consumer verification. Git conflict detection does not resolve semantic contradictions.
     Do not infer demonstrated latency/quality gains or install autonomous editing, startup or maintenance
     from this record.
-  notes: 'Stage 1 only; no empirical run. Source illustrative checkout and SQL examples are not benchmark
+  notes: 'Re-encountered 2026-10-20: URL resubmitted in the 26-URL /research-intake batch; no new entry minted (dedup rule 2b); its open 10-07 session was folded into the 2026-10-20 campaign. Stage 1 only; no empirical run. Source illustrative checkout and SQL examples are not benchmark
     results. Root rejected a redundant blanket broken-link audit: wiki lint and the completed 114-source
     compilation already cover structural links/status and source deltas. Query-based discovery and episodic
     recall exist; whether source-linked project knowledge is supplied effectively at cold start remains
@@ -249470,7 +249470,7 @@
     model/revision/prompt/pooling/dimension identity and freshly encoded candidate vectors; never mix
     with BGE, MiniLM, CLIP or ColBERT representations. Vendor metrics, phone RAM figures, a GGUF publication
     and library claims are not local quality/runtime validation.
-  notes: 'Stage-1 only. HF snapshot 914f7f89142e33e77833254d9c9b90c3cef7303b; raw README SHA256 b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
+  notes: 'Re-encountered 2026-10-20: URL resubmitted in the 26-URL /research-intake batch; no new entry minted (dedup rule 2b); its open 10-07 session was folded into the 2026-10-20 campaign. Stage-1 only. HF snapshot 914f7f89142e33e77833254d9c9b90c3cef7303b; raw README SHA256 b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
     retained. Credibility rubric: recent +1, lab +1, commercial bias -1; no independent corroboration
     or peer-review bonus. Current orchestrator snapshot 2b0a727e490b1e4a01f1d2d720dcc7d0349d630e: context_search.py:121-126,292-297
     already applies BGE query prefixes, raw document chunks at369-373, model-ID-bound reset at339-342;
@@ -251861,3 +251861,2604 @@
     intake_entry_notes:
     - intake-1968 (paper this repository accompanies; not independent corroboration)
   reported_results: []
+- id: intake-1977
+  arxiv_id: '2506.13771'
+  url: https://arxiv.org/abs/2506.13771
+  source_type: paper
+  title: 'LittleBit: Ultra Low-Bit Quantization via Latent Factorization'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Banseok Lee
+  - Dongkyu Kim
+  - Youngcheon You
+  - Youngmin Kim
+  key_claims:
+  - Weights are replaced by a low-rank latent factorization whose factors are binarized, targeting rates
+    down to about 0.1 bits per weight.
+  - A multi-scale compensation scheme learns importance parameters along row, column and latent dimensions
+    to offset binarization loss.
+  - Training uses Dual-SVID initialisation for quantization-aware training plus Residual Compensation.
+  - Abstract claims 0.1 bpw LittleBit beats leading methods at 0.7 bpw on Llama2-7B, and about 31x memory
+    reduction (Llama2-13B under 0.9 GB).
+  - Abstract claims potential 11.6x inference speedup over FP16 (a potential figure, kernel/hardware basis
+    not verified).
+  techniques:
+  - low-rank latent factorization
+  - binarized factors
+  - Dual-SVID QAT init
+  - residual compensation
+  - multi-scale scaling
+  reported_results:
+  - 'Abstract (via abs page digest): ~31x memory reduction; Llama2-13B < 0.9 GB at 0.1 bpw'
+  - 'Abstract: 0.1 bpw beats leading methods at 0.7 bpw on Llama2-7B'
+  - 'Abstract: potential 11.6x speedup vs FP16'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: null
+  credibility_score: 3
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Read full body: ppl/accuracy tables, speedup measurement hardware, QAT token budget;
+    feed into handoffs/active/tq3-quantization-evaluation.md as a low-bit reference point.'
+  source_revision: arXiv:2506.13771v5 (abs page only; html/PDF body not fetched)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'arXiv current version v5 (first posted 2025-05-30). Tier-2b saw a NeurIPS 2025 poster listing
+    (neurips.cc/virtual/2025/poster/115061): peer-reviewed +2, lab +1, age ~17 months gives no recency
+    bonus -> credibility 3 (analyst estimate 4 replaced). A ''LittleBit-2'' follow-up was seen only in
+    a secondary newsletter with no arXiv ID; not persisted (drop-unobserved-ID rule). Stage-1 analyst
+    read: arXiv:2506.13771v5 (abs page only; html/PDF body not fetched); fetch_status: partial (abs page
+    only via digest; abstract summarised not verbatim; body not read). EPYC fit (unverified): Sub-1-bit
+    weights need QAT (training), unlike the PTQ IQ1/IQ2/IQ3 work in the low-bit lanes (DS41/Q38FN), and
+    need custom binary-factor GEMM kernels that do not exist in the frozen llama.cpp. Of interest as an
+    AutoKernel kernel-target concept (binary low-rank matmul on CPU/AVX512 or MI210) and as a bound on
+    how far low-bit can go, but it needs retraining so it cannot apply to existing GGUF lineup models
+    directly. Note: this source is a quantization paper, not an agents paper, despite the group label.
+    Tier-2b (bounded, provisional): queries LittleBit ultra low-bit quantization latent factorization
+    sub-1-bit limitations criticism; LittleBit sub-1-bit LLM NeurIPS 2025 follow-up evaluation binary
+    factorization. No independent criticism or third-party reproduction surfaced in bounded search (provisional).
+    Speedup claim inconsistent across versions (5x in v1 vs 11.6x in later/NeurIPS). Corroboration seen:
+    NeurIPS 2025 poster page lists LittleBit (peer-reviewed venue confirmed); 0.1 BPW beats 0.7 BPW leader
+    on Llama2-7B, 11.6x kernel speedup claim. Authors'' own claims. (https://neurips.cc/virtual/2025/poster/115061;
+    restatement) Dive recommendation (Stage-1): yes - Low-bit perf is a standing priority (IQ2/IQ3/IQ1
+    for CPU architects); a dive settles whether the latent-factorized sub-1-bit format needs QAT or is
+    reachable post-training, and whether its kernels map to a GGUF/iqk CPU path. Speedup claim differs
+    across versions (5x v1 vs 11.6x NeurIPS abstract per Tier-2b) - dive must read current v5. Analyst
+    notes: Version history seen: v1 2025-05-30 .. v5 2026-02-05 (current); comments say accepted to NeurIPS
+    2025 (credibility +2 venue, +1 corroboration-free; age >12 months so no recency point; score 4 is
+    estimate). Contradiction pass skipped (verdict not strongly actionable; bounded). No cross-ref hit
+    for ''littlebit'' in handoffs/wiki/intake_index. Re-verify every figure against primary source before
+    citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-1978
+  arxiv_id: null
+  url: https://github.com/davidgonmar/depth-memory
+  source_type: repo
+  title: 'depth-memory: Linear Depth Memory (LDM) reference implementation'
+  categories:
+  - memory_augmented
+  - training_distillation
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - David González-Martínez
+  - Philipp Nazari
+  - T. Konstantin Rusch
+  - Shiwei Liu
+  key_claims:
+  - LDM augments a transformer with a fixed-size associative memory that carries information across layers
+    (depth), replacing residual-stream style depth mixing.
+  - Repo implements baselines PreLN, Attention Residuals (Block/Full) and mHC for comparison.
+  - Fast backends are CuTe DSL kernels targeting H100/B200; also a Triton and FP32 reference path.
+  - Checkpoints released on HF at 400M and 1.5B scale; training on FineWeb-Edu 100B-token sample.
+  techniques:
+  - linear associative memory over depth
+  - fixed-size state
+  - CuTe DSL kernels
+  reported_results:
+  - README gives no accuracy numbers; only training setups (400M on 50B tokens, 1.5B on 100B tokens, LR
+    1e-3 for LDM)
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1994
+    intake_entry_notes:
+    - intake-1994 (paper this repository accompanies per its README badge; companion artifact, not independent
+      corroboration)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions: []
+  source_revision: davidgonmar/depth-memory@9a6865feeb43a153a4501cc9a6457e047ffef3c3
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Analyst proposed not_applicable; held at worth_investigating/low pending operator confirmation
+    (project rule: never dismiss as not_applicable without asking). Stage-1 analyst read: davidgonmar/depth-memory@9a6865feeb43a153a4501cc9a6457e047ffef3c3;
+    fetch_status: partial (repo page digest only; raw README and paper not read). EPYC fit (unverified):
+    Pretraining architecture change at 400M-1.5B scale; requires training from scratch and NVIDIA-only
+    fast kernels. No fit with a frozen llama.cpp serving stack or existing GGUF lineup. Only conceptual
+    interest if the paper shows decode-cost or long-context benefits. Verdict not_applicable is provisional
+    pending operator review per research-intake policy (flag, not dismiss). Dive recommendation (Stage-1):
+    no - Pretraining-time architecture (no path to our frozen GGUF lineup); companion paper entry covers
+    the technique. Analyst notes: WebFetch digest cited arXiv ID 2610.18809; not verified against arxiv.
+    License MIT. 12 stars. Re-verify every figure against primary source before citing; this entry is
+    stage1-unverified.'
+- id: intake-1979
+  arxiv_id: null
+  url: https://github.com/magnitudedev/magnitude
+  source_type: repo
+  title: Magnitude (local inference engine with per-hardware kernel tuning)
+  categories:
+  - inference_serving
+  - local_inference
+  - hardware_optimization
+  - speculative_decoding
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors: []
+  key_claims:
+  - Open-source engine for open-weight models that auto-tunes kernels per model on the user's hardware
+    at download time (up to ~1 min).
+  - Ships a built-in speculative-decoding drafter per model, quantized KV cache and shared prefix caches
+    across sessions.
+  - README claims about 2x faster than Ollama on average over 11 models; supports Apple Silicon, NVIDIA,
+    AMD GPUs and CPU.
+  - Integrates with coding agents (Pi, OpenCode, Hermes, Codex) via one-click or OpenAI-compatible API.
+  techniques:
+  - per-hardware kernel autotuning
+  - per-model drafter
+  - quantized KV
+  - prefix cache sharing
+  reported_results:
+  - 'README chart (avg of 11 models vs Ollama): Mac prefill 1.32x, decode 2.19x; NVIDIA prefill 1.34x,
+    decode 2.17x'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence:
+  - Review says no independent verification; baseline shifts (llama.cpp, Ollama MLX, Ollama llama.cpp)
+    between machines; speculative decoding applied unequally (Ollama MLX drafted few tokens), so part
+    of the gain is spec-dec vs none; FAQ claims beating llama.cpp but page gives figures only vs Ollama.
+    (https://explainx.ai/blog/magnitude-open-source-inference-engine-2x-faster-than-ollama-claim-checked-2026;
+    independent)
+  - Article titled 2x claim has a catch; M4 Pro result is a single test; results vary by hardware/model.
+    Site has sponsored content, so weak. (https://www.stork.ai/blog/magnitudes-2x-speed-claim-has-a-catch;
+    not independent / restatement)
+  - Aggregator of Launch HN discussion; commenters argue llama.cpp Metal kernels already saturate memory
+    bandwidth and UI speed estimates looked ~2x slower than measured. Unverified commenter claims. (https://zeli.app/story/49911995;
+    independent)
+  recommended_actions:
+  - '[unverified] Inspect inference-v4 tuner for search dimensions; diff against AK knob list in handoffs/active/autokernel-research-loop.md.'
+  source_revision: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90; fetch_status:
+    partial (repo page digest only; code and raw README not read). EPYC fit (unverified): Conceptually
+    parallels the AutoKernel loop (tune kernels per model per hardware) but as a product; baseline is
+    Ollama (not tuned llama.cpp), so the 2x claim says little against our frozen v10 fork with DFlash2.
+    Worth a look at its tuning search space and drafter approach for AK ideas; AMD GPU/CPU coverage of
+    its kernels is unverified. Source tree not inspected. Tier-2b (bounded, provisional): queries magnitudedev
+    magnitude local inference engine per-hardware kernel tuning benchmark; Magnitude inference engine
+    vs llama.cpp independent benchmark reproduce claim catch. Headline numbers (92% Metal M4 Pro, 19%
+    CUDA on DGX Spark, Qwen 3.6 35B A3B) are vendor-run; no independent reproduction surfaced (provisional).
+    Dive recommendation (Stage-1): no - Declined: Metal/CUDA-first engine with vendor-run headline numbers
+    that an independent review and HN commenters contest (shifting baselines, unequal speculative decoding);
+    AutoKernel already owns per-hardware kernel tuning on EPYC/MI210. Analyst notes: Apache-2.0; 7.2k
+    stars at fetch. Benchmark numbers are vendor self-reported against Ollama; commercial-ish product.
+    Contradiction pass not run (no empirical paper claims, bounded). Re-verify every figure against primary
+    source before citing; this entry is stage1-unverified.'
+- id: intake-1980
+  arxiv_id: null
+  url: https://github.com/Gen-Verse/RSI-Anything
+  source_type: repo
+  title: RSI-Anything (recursive self-improvement with world-model prediction feedback)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Taoyong Cui
+  - Pinxian Zeng
+  - Wanghan Xu
+  - Hao Xiao
+  - Shuhan Xue
+  - Qiang Gao
+  - Wanli Ouyang
+  - Pheng Ann Heng
+  - Zhenfei Yin
+  - Yingcheng Wu
+  - Ling Yang
+  key_claims:
+  - Loop of Propose, Predict, Select, Evaluate, Learn, Retain, where a JEPA-style world model predicts
+    outcomes of candidate actions before costly external evaluation.
+  - Built on JEPA-Anything; applied to code repair, GUI interaction, lab planning, reaction optimisation,
+    immune science.
+  - README reports gains across domains but baselines and ablations were not examined.
+  techniques:
+  - world-model-guided candidate selection
+  - surrogate pre-screening before real evaluation
+  - retained-improvement memory
+  reported_results:
+  - 'README: code repair 31.2% hidden-test success on 200 CodeContests tasks (3 seeds); 46.37% APPS Introductory
+    (1,000); 33.05% LiveCodeBench v6 (1,055)'
+  - 'README: MiniWoB++ click-checkboxes 99% success, 39.4% fewer actions; OSWorld 18.4% relative gain'
+  - 'README: LabHorizon F200 L2 planning score 46.01%; Suzuki flow screens mean best yield 96.15% over
+    100 runs'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-755
+    - intake-2000
+    intake_entry_notes:
+    - intake-755 (AdaJEPA, JEPA latent world model used in MPC; same JEPA family)
+    - intake-2000 (paper this repository accompanies (README cites it); companion artifact)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Read arXiv 2610.13912 ablations for predictor-on/off; if solid, draft an AK trial-ranking
+    surrogate experiment under handoffs/active/autokernel-research-loop.md.'
+  source_revision: Gen-Verse/RSI-Anything@8ba44cd73ec6f57b151ec06e2f71a0726adfb687
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Repository entry: arxiv_id deliberately null; the paper arXiv:2610.13912 (title verified via
+    arXiv API 2026-10-20) is its own expansion entry. Stage-1 analyst read: Gen-Verse/RSI-Anything@8ba44cd73ec6f57b151ec06e2f71a0726adfb687;
+    fetch_status: partial (repo page digest only; paper not fetched). EPYC fit (unverified): The surrogate
+    pre-screening idea (predict a candidate''s outcome before running an expensive trial) maps onto AutoKernel,
+    where each kernel trial costs compile plus a timing window. Whether a learned predictor beats cheap
+    heuristics there is unproven; needs a training signal from AK''s own trial history. Does not touch
+    serving. Tier-2b (bounded, provisional): queries RSI-Anything Gen-Verse recursive self-improvement
+    world models; RSI-Anything criticism limitations replication world model recursive self-improvement.
+    none surfaced in bounded search (provisional). Second search returned only generic RSI critiques (e.g.
+    Lambert lossy self-improvement) not specific to this work. Corroboration seen: Aggregator page for
+    the paper; results (code repair hidden-test 26.3% to 31.2%, lab planning 21.80% to 46.01%, reaction
+    optimization 96.15% vs 82.16% Bayesian opt) are self-reported and restated by news sites. (https://www.emergentmind.com/papers/2610.13912;
+    restatement) Dive recommendation (Stage-1): no - Declined (repo and paper): self-reported, small domain-specific
+    gains (e.g. code repair 26.3% -> 31.2% per Tier-2b digest) with no independent evaluation; the world-model-prediction
+    pattern is recorded for the harness/autopilot cluster without a dive. Analyst notes: Apache-2.0; 809
+    stars. All numbers are README-reported and unverified against the paper. Re-verify every figure against
+    primary source before citing; this entry is stage1-unverified.'
+- id: intake-1981
+  arxiv_id: null
+  url: https://github.com/context-dot-dev/sgrep
+  source_type: repo
+  title: sgrep (local semantic plus lexical code search CLI)
+  categories:
+  - search_retrieval
+  - tool_implementation
+  - rag_alternatives
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: []
+  key_claims:
+  - Reranks ripgrep candidates using static (non-transformer) embeddings, Potion Code 16M v2 and Potion
+    Base 8M, 256-dim, so no neural forward at search time.
+  - Hybrid score is 75% semantic and 25% BM25 over top-200 lexical plus top-200 semantic; exact case-sensitive
+    identifiers rank first.
+  - Syntax-aware chunking via Tree-sitter and Chonkie, about 2,048-character passages; cached indexes;
+    text or JSON output with --explain.
+  - Reports on SWE-bench Verified (50 tasks, 2 repeats) 21.3% lower LLM spend than ripgrep and 70/100
+    vs 68/100 solved.
+  techniques:
+  - static embeddings
+  - hybrid BM25 plus semantic fusion
+  - ripgrep piping
+  - Tree-sitter chunking
+  reported_results:
+  - 'README: SWE-bench Verified, 21.3% less API spend vs ripgrep; 70/100 vs 68/100 attempts solved (difference
+    within noise at this n)'
+  - 'README: CK semantic mode beats sgrep on its CoSQA test; sgrep leads on RepoQA complete-function retrieval'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-embedding-retrieval.md
+    - colbert-reranker-web-research.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-1366
+    intake_entry_notes:
+    - intake-1366 (ContextBench, referenced in wiki/search-retrieval.md as retrieval instrument)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence:
+  - 'Release notes (likely the same project under a different owner, mrmps/sgrep; not confirmed identical
+    to context-dot-dev) caveat the benchmark: ripgrep baseline is literal OR matching in path order not
+    agent-generated queries; test used 12 MB small snapshots (10% sample); does not establish large-monorepo
+    performance; CK returns complete functions more often than sgrep. Vendor self-caveat, not independent.
+    (https://github.com/mrmps/sgrep/releases; not independent / restatement)'
+  recommended_actions:
+  - '[unverified] Run sgrep as a baseline arm in the REPL embedding retrieval evaluation under handoffs/active/repl-embedding-retrieval.md
+    (CPU-only, region-lock).'
+  source_revision: context-dot-dev/sgrep@dec6122c05be553c5a60bd647d1350b221b7b9c3
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: context-dot-dev/sgrep@dec6122c05be553c5a60bd647d1350b221b7b9c3; fetch_status:
+    partial (repo page digest only; raw README and benchmark notes not read). EPYC fit (unverified): A
+    CPU-only, zero-GPU code-search tool suits REPL tool environments and Claude-Code sessions on this
+    host, and static embeddings avoid contending with timed inference windows. Fits as a cheap first-stage
+    retriever or baseline against our ColBERT/embedding retrieval for code. The 70 vs 68 solved result
+    is within noise, and the ''GPT-6 Luna'' model named in the digest was not verified. Tier-2b (bounded,
+    provisional): queries context-dot-dev sgrep semantic code search benchmark ripgrep; "context-dot-dev/sgrep"
+    OR "Context.dev sgrep" semantic grep. Repo identity unconfirmed - searches did not surface context-dot-dev/sgrep
+    itself; no independent benchmark found (provisional). Dive recommendation (Stage-1): yes - Local semantic+lexical
+    code search could serve REPL/agent code retrieval; a dive settles its index/embedder design, whether
+    it runs offline on our embedders, and whether its benchmark baseline (Tier-2b: a same-name project
+    used literal-OR ripgrep on 12 MB snapshots - identity unconfirmed) is meaningful vs our ColBERT kb-search.
+    Analyst notes: MIT; 318 stars. Requires Rust 1.90+ and ripgrep (build step needed, not run). Benchmarks
+    are vendor self-reported. Re-verify every figure against primary source before citing; this entry
+    is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-1982
+  arxiv_id: null
+  url: https://github.com/NVIDIA/personaplex
+  source_type: repo
+  title: 'PersonaPlex: real-time full-duplex speech-to-speech conversational model'
+  categories:
+  - multimodal
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Rajarshi Roy
+  - Jonathan Raiman
+  - Sang-gil Lee
+  - Teodor-Dumitru Ene
+  - Robert Kirby
+  - Sungwon Kim
+  - Jaehyeon Kim
+  - Bryan Catanzaro
+  key_claims:
+  - Full-duplex speech-to-speech model fine-tuned from Moshi (architecture and weights), with the Helium
+    LLM credited as backbone.
+  - Persona control via a text role prompt plus an audio voice-conditioning prompt.
+  - Evaluated against FullDuplexBench categories (user interruption, pause handling, backchannel, smooth
+    turn-taking); README gives prompt guidance but no numeric results.
+  - Training data is synthetic customer-service/assistant dialogues plus real Fisher English Corpus conversations.
+  techniques:
+  - full-duplex speech-to-speech
+  - voice conditioning prompt
+  - role text prompt
+  - Moshi fine-tune
+  - cpu-offload via accelerate
+  reported_results:
+  - 'README (as digested): no latency or accuracy numbers stated'
+  referenced_arxiv_ids:
+  - '2602.06053'
+  - '2410.00037'
+  - '2503.04721'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-511
+    - intake-512
+    - intake-513
+    - intake-514
+    - intake-515
+    - intake-2001
+    - intake-2003
+    intake_entry_notes:
+    - 'intake-511..515 (KAME family: Moshi-based tandem S2S; previously not_applicable for direct adoption
+      because GPU-only, no GGUF/Mimi codec path)'
+    - intake-2001 (companion paper)
+    - intake-2003 (benchmark the project evaluates on)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Read NVIDIA Open Model License text and record terms vs open-source-only policy; handoffs/active/conversation-stack.md'
+  - '[unverified] Adopt FullDuplexBench categories as interlocutor eval rubric; conversation-stack.md'
+  source_revision: NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91 (WebFetch digest of repo
+    page, retrieved 2026-10-20)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91 (WebFetch
+    digest of repo page, retrieved 2026-10-20); fetch_status: partial (WebFetch digest only; raw README
+    and HF card not read; param count not stated, ''7b'' inferred from model name only). EPYC fit (unverified):
+    Directly in the ratified speech-interlocutor lane (conversation-stack.md), which currently names Step-Audio
+    2 mini as lead and Qwen3-Omni as challenger with the whisper+qwentts cascade as baseline. PersonaPlex
+    is a Moshi-class full-duplex candidate; same blockers as prior Moshi-derived entries (PyTorch/CUDA-oriented,
+    Mimi codec, no GGUF/llama.cpp), but it runs on a single MI210 only if ROCm PyTorch works. Weights
+    are NVIDIA Open Model License (not MIT), so terms need review against open-source-only policy; code
+    is MIT. Useful mainly as a bake-off reference for full-duplex behaviour and as a FullDuplexBench pointer.
+    Tier-2b (bounded, provisional): queries NVIDIA PersonaPlex full-duplex speech-to-speech evaluation
+    latency license criticism; PersonaPlex 7B hands-on review problems hallucination latency GPU independent
+    test. none surfaced in bounded search (provisional): no independent latency/quality evaluation, no
+    license complaints found. Latency figures differ by metric across sources. Corroboration seen: Press
+    coverage of NVIDIA''s own benchmark (DNMOS 3.90 vs Gemini Live 3.72; speaker switch 0.07s vs 1.3s).
+    Vendor numbers restated. (https://the-decoder.com/nvidia-open-sources-personaplex-a-voice-ai-that-listens-and-talks-at-the-same-time/;
+    restatement) Dive recommendation (Stage-1): yes - Only open-weight full-duplex speech-to-speech candidate
+    against the ratified speech-interlocutor vision; a dive settles weight license terms (NVIDIA Open
+    Model License vs open-source-only policy), VRAM/latency feasibility on MI210 (ROCm, not CUDA), and
+    the Moshi-derived serving path. Analyst notes: Weights license (NVIDIA Open Model License) taken from
+    digest, not verified against license text. arXiv IDs come from the digest of the repo page. No contradiction
+    search run (credibility null). Re-verify every figure against primary source before citing; this entry
+    is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-1983
+  arxiv_id: null
+  url: https://github.com/FluidInference/FluidAudio
+  source_type: repo
+  title: 'FluidAudio: Swift SDK for on-device audio AI on Apple Neural Engine'
+  categories:
+  - multimodal
+  - local_inference
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors: []
+  key_claims:
+  - Swift SDK running ASR, TTS, diarization, VAD, speaker embeddings and echo/noise suppression on the
+    Apple Neural Engine (macOS/iOS).
+  - Bundles Parakeet TDT v3 (0.6B) and Parakeet EOU (120M, streaming end-of-utterance) for ASR; Kokoro
+    (82M) and others for TTS; Silero VAD; LocalVQE (4.8M) AEC in beta.
+  - Code is Apache 2.0; models described as MIT/Apache 2.0, with Sortformer under the NVIDIA Open Model
+    License.
+  techniques:
+  - ANE CoreML inference
+  - streaming ASR with EOU detection
+  - online diarization (LS-EEND/Sortformer)
+  - neural echo cancellation
+  reported_results:
+  - 'README: ASR ~190x real time on M4 Pro (1 h audio in ~19 s)'
+  - 'README: Kokoro ANE v3 36-54 ms median inference for 3.05-3.68 s audio on M5 Pro (excludes text processing/loading)'
+  - 'README: Paradee ~100x real time on CPU'
+  - 'README: LocalVQE v1.3 on exploratory AEC subset: near-end word recall 44.1% to 77.6%, far-end leakage
+    34.0% to 1.1%'
+  referenced_arxiv_ids:
+  - '2409.06656'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-123
+    - intake-242
+    intake_entry_notes:
+    - intake-123 (Qwen3-TTS repo; our qwentts.cpp basis)
+    - intake-242 (Voxtral TTS; another TTS candidate)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Note Parakeet EOU, Silero VAD, LocalVQE as turn-taking/echo-cancel component candidates
+    for the cascade baseline; handoffs/active/conversation-stack.md'
+  source_revision: FluidInference/FluidAudio@61d41b3ca04833d1cb80632c82ba401f117a01ef (WebFetch digest,
+    retrieved 2026-10-20)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Analyst proposed not_applicable; held at worth_investigating/low pending operator confirmation.
+    Its component model list (end-of-utterance detection, VAD, echo cancellation) may matter for cascade
+    turn-taking even though the SDK itself cannot run here. Stage-1 analyst read: FluidInference/FluidAudio@61d41b3ca04833d1cb80632c82ba401f117a01ef
+    (WebFetch digest, retrieved 2026-10-20); fetch_status: partial (WebFetch digest only). EPYC fit (unverified):
+    Apple-ANE-only Swift code cannot run on EPYC/MI210, so the SDK itself is a misfit. The model choices
+    are the transferable part: Parakeet EOU (streaming end-of-utterance), Silero VAD, Sortformer/LS-EEND
+    diarization and LocalVQE echo cancellation are the front-end pieces a full-duplex cascade fallback
+    needs and which whisper.cpp does not supply. Models are permissively licensed except Sortformer. Use
+    as a catalogue of open duplex front-end components, not as code. Dive recommendation (Stage-1): no
+    - Swift/CoreML SDK locked to Apple Neural Engine; not runnable on EPYC/MI210. Analyst notes: Not dismissed
+    lightly: verdict reflects platform mismatch only; component list may merit a flag for review per research-intake
+    rule. No numbers independently verified. Re-verify every figure against primary source before citing;
+    this entry is stage1-unverified.'
+- id: intake-1984
+  arxiv_id: null
+  url: https://huggingface.co/fishaudio/drama-3
+  source_type: repo
+  title: Fish Audio Drama 3 (multi-speaker MoE TTS)
+  categories:
+  - multimodal
+  - moe_optimization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Fish Audio
+  key_claims:
+  - MoE TTS with about 35B total / 3B active parameters (metadata lists 36B), hybrid-attention text backbone
+    and a 10-codebook MTP audio decoder; FP8 experts, remaining weights bf16.
+  - Up to 16 speakers per text via speaker tags, reference-clip voice cloning, inline emotion tags, and
+    edit-by-continuation.
+  - Served via SGLang-Omni and vLLM-Omni with per-chunk streaming for long text.
+  - License is the Fish Audio Community License (metadata tag fish-audio-research-license), so likely
+    not fully permissive.
+  techniques:
+  - MoE TTS
+  - codebook multi-token prediction
+  - FP8 expert weights
+  - streaming chunked synthesis
+  - inline control tags
+  reported_results:
+  - 'Card, H200 streaming, Seed-TTS English prompts: concurrency 1 = 166.7 frames/s, TTFA p50 88.9 ms,
+    RTF 0.131'
+  - 'Card: concurrency 16 = 927.6 frames/s, RTF 0.373; concurrency 64 = 1687.3 frames/s, TTFA p50 450.9
+    ms, RTF 0.801'
+  - 'Card: 256 streams with vocoder on second GPU = 4160 frames/s, TTFA p50 2146 ms (vs 2422 frames/s,
+    3403 ms on engine GPU)'
+  referenced_arxiv_ids:
+  - '2610.18010'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-091
+    - intake-123
+    - intake-242
+    - intake-317
+    - intake-401
+    - intake-2002
+    intake_entry_notes:
+    - intake-091/123 (Qwen3-TTS, our production TTS basis via qwentts.cpp)
+    - 'intake-242/317/401 (Voxtral, VoxCPM2, LuxTTS: other TTS candidates)'
+    - intake-2002 (companion technical report)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Read the Fish Audio Community License text and file eligibility decision; handoffs/active/conversation-stack.md'
+  source_revision: HF model card retrieved 2026-10-20 (WebFetch digest)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: HF model card retrieved 2026-10-20 (WebFetch digest); fetch_status: partial
+    (WebFetch digest only; license text not read). EPYC fit (unverified): A 3B-active MoE TTS is conceptually
+    attractive for CPU decode (bandwidth-bound, like our MoE LLMs), and the MTP audio decoder resembles
+    our speculative-decoding interests. But it is 35B total, GPU-served via SGLang/vLLM, FP8 (MI210 lacks
+    FP8 hardware), has no llama.cpp path, and the license is a community/research license, so it conflicts
+    with open-source-only unless terms are permissive. Production TTS (qwentts.cpp) is frozen and works;
+    this is a quality/latency reference rather than a drop-in. Dive recommendation (Stage-1): yes - Cheap
+    and decisive: the weight license (tagged fish-audio-research-license per digest) decides admissibility
+    under the open-source-only policy before any TTS evaluation; also settles MoE size/streaming latency
+    vs qwentts.cpp. Analyst notes: Training data and authors not stated on card. Benchmarks are on H200
+    and vendor-reported, not comparable to MI210/EPYC. arXiv ID taken from digest, unverified that it
+    resolves. Card has no dated stamp. Re-verify every figure against primary source before citing; this
+    entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-1985
+  arxiv_id: null
+  url: https://github.com/eelbaz/mLattice
+  source_type: repo
+  title: 'μLattice: A Dynamically Allocated Memory Lattice for Sequence Models (Breaking the Quadratic
+    Memory Barrier in AI)'
+  categories:
+  - memory_augmented
+  - ssm_hybrid
+  - context_extension
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Eric E.
+  - Tensorbend Research
+  key_claims:
+  - A sequence-mixer layer addresses memory with a learned continuous 2D address; each token reads/writes
+    exactly 9 cells (3x3 bump-kernel neighbourhood), each cell holding a gated-delta-rule state matrix,
+    so per-token access cost is O(1) while storage grows with distinct addresses.
+  - 'Synthetic/associative-recall results (single runs, released checkpoints): 1.0000 recall on 8,192
+    KV pairs in a 133,120-token stream; 0.9980/1.0000 updated/untouched with 50% overwrites; 1.0000 on
+    3,548 wikitext bigram associations in a 259,552-token stream.'
+  - 'Head-to-head vs flash-attention on one GB10 GPU (d_model=64, 1 layer): attention per-token cost rises
+    1.1 to 2.9 us (1K to 131K) while the lattice stays ~9 us; the headline ''7,280x fewer operations''
+    is a comparison count (1.1T key-query comparisons vs 151M cell accesses), NOT wall-clock - the paper
+    admits attention is faster in absolute time (381 ms vs 1,184.8 ms at 131K) because the lattice scan
+    is Python-level.'
+  - A frozen Qwen3.5-4B steered through a 10.8M-parameter soft-prompt bridge reaches 0.645 exact match
+    on fresh facts vs 0.025 floor, 0.015 shuffled-memory control, 1.000 RAG ceiling; passwords and invented
+    city names score 0.000.
+  - 'Paper''s own scope limits: no language-model pretraining results, copy task fails (0.003), density
+    ceiling ~0.25 keys/cell in 2D, no seed variance, vocabulary only 16,384 keys.'
+  techniques:
+  - learned 2D content-addressed memory lattice
+  - cos^2 bump kernel with 9-cell support
+  - per-cell gated delta rule
+  - rung curriculum training with key-density control
+  - frozen-LM soft-prompt bridge (inputs_embeds)
+  - MQAR / MAD / RULER S-NIAH evaluation
+  reported_results:
+  - 'README Results / PAPER 4.2: capacity 8,192 pairs T=133,120 -> 1.0000 (dense 0.9990)'
+  - 'PAPER 4.2: forgetting primary N=5,461 -> 0.9980 updated / 1.0000 untouched'
+  - 'PAPER 4.2: real-text T=259,552, 2,048/2,048 on both seeds'
+  - 'PAPER 4.2/4.6: MAD mean 0.834 vs ''published Spotlight'' 0.787; Copy 0.003'
+  - 'PAPER 4.3 table: attention 1.1->2.9 us/tok, lattice 9.3->9.0 us/tok, T=1,024..131,072; attention
+    peak 16,248 MB at 131K'
+  - 'PAPER 4.5: ~8 KB per stored pair; 8,192 pairs = 63 MB'
+  - 'PAPER 4.8: bolt-on exact match 0.645 (0.610/0.680) vs floor 0.025, control 0.015, RAG 1.000; gate
+    settled at 0.003'
+  - 'README: ~26 GPU-hours training for capacity model on one GB10'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - delta-mem-reproduction.md
+    experiments: []
+    intake_entries:
+    - intake-539
+    - intake-568
+    - intake-1986
+    intake_entry_notes:
+    - intake-539 (delta-mem, delta-rule online associative memory; same gated-delta substrate, frozen-LM
+      memory attachment)
+    - intake-568 (trained persistent memory for frozen enc-dec, six attachment topologies; soft-prompt
+      bridge here is the 'prefix' style)
+    - intake-1986 (companion HF Space demo linked from the README; owner identity (Ex0bit vs eelbaz) unverified)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Attach as a note to handoffs/active/delta-mem-reproduction.md as a related (low-weight)
+    memory-sidecar data point; no new task.'
+  source_revision: eelbaz/mLattice@7af2de3797af315e026d5a50523ab2a9efd22b3a (HEAD via ls-remote); README.md
+    sha256 9a204f98076210770db6b7e3f069b93fc4ecb92db5a2b3d713128a4377611904; PAPER.md sha256 c3df4e9f8a1536af2c24c31b0df27ca52ce73adda59a92e158d34a575c224758;
+    retrieved 2026-10-20
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Operator submitted both the repo URL and PAPER.md; folded into one repo entry (PAPER.md recorded
+    as alias). Stage-1 analyst read: eelbaz/mLattice@7af2de3797af315e026d5a50523ab2a9efd22b3a (HEAD via
+    ls-remote); README.md sha256 9a204f98076210770db6b7e3f069b93fc4ecb92db5a2b3d713128a4377611904; PAPER.md
+    sha256 c3df4e9f8a1536af2c24c31b0df27ca52ce73adda59a92e158d34a575c224758; retrieved 2026-10-20; fetch_status:
+    ok. EPYC fit (unverified): Not a serving-stack technique: it is a toy-scale (d_model 64, 1 layer)
+    trained memory mixer with no LM pretraining and no llama.cpp path, so it does not touch the DFlash2/MI210/kernel
+    work. Its only fit is as another data point for the frozen-memory/associative-memory line already
+    tracked in delta-mem-reproduction (frozen LM + trained sidecar memory). Claims are single-run, self-reported,
+    and the paper internally contradicts itself (section 6 says the mixer ''has not been successfully
+    attached'' to a frozen LM while section 4.8 reports it did). Dive recommendation (Stage-1): no - Toy-scale
+    (d_model 64, 1 layer), operation-count headline that the paper itself says loses on wall-clock, and
+    an internal inconsistency on frozen-LM attachment (PAPER.md s4.8 vs s6) per Stage-1 read. Analyst
+    notes: Headline ''7,280x'' is operation-count not speed; cost study used 1 layer d_model=64 only.
+    Contradiction pass skipped (credibility null, verdict not actionable beyond note). PAPER.md folded
+    into this entry per main. Reference list in PAPER.md has no arXiv IDs (Gated Delta Networks ICLR 2025,
+    SDM 1988, Titans 2024 cited by name only). Re-verify every figure against primary source before citing;
+    this entry is stage1-unverified.'
+  aliases:
+  - https://github.com/eelbaz/mLattice/blob/main/PAPER.md
+- id: intake-1986
+  arxiv_id: null
+  url: https://huggingface.co/spaces/Ex0bit/mLattice
+  source_type: repo
+  title: mLattice (uLattice) live demo - Hugging Face Space by Ex0bit
+  categories:
+  - memory_augmented
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Ex0bit (HF user)
+  key_claims:
+  - Running HF Space owned by user Ex0bit, linked from the eelbaz/mLattice README and PAPER.md as the
+    'live demo'.
+  - Page digest shows no description, no measured numbers, and no links beyond Files/Community; 0 likes.
+  techniques: []
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1985
+    intake_entry_notes:
+    - intake-1985 (repository whose README links this Space as its live demo)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions: []
+  source_revision: retrieved 2026-10-20 (WebFetch digest only; no commit pinned)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Analyst proposed not_applicable; held at worth_investigating/low pending operator confirmation
+    (companion artifact of an in-domain repo). Stage-1 analyst read: retrieved 2026-10-20 (WebFetch digest
+    only; no commit pinned); fetch_status: partial (WebFetch digest only; Space files/app code not inspected).
+    EPYC fit (unverified): Demo front-end for the mLattice repo; adds no independent measurement. Same-author
+    inference only: the repo links to it as its own demo, and README says the demo server is experiments/demo_server.py,
+    but handle Ex0bit vs repo owner eelbaz is not confirmed identical by any fetched page. Dive recommendation
+    (Stage-1): no - Demo page with no description or measurements in the Stage-1 read. Analyst notes:
+    Treat as a pointer under the repo entry. Whether it is the same person as eelbaz was not verified
+    (linked as ''Live demo'' from the repo, which strongly implies the author''s own). Re-verify every
+    figure against primary source before citing; this entry is stage1-unverified.'
+- id: intake-1987
+  arxiv_id: null
+  url: https://wccftech.com/rtx-3090-4-6x-token-generation-27b-llm-inference-optimizations/
+  source_type: blog
+  title: 'Wccftech: RTX 3090 4.6x token generation for 27B LLM via inference optimizations (Qwen3.8-27B
+    ~381 tok/s)'
+  categories:
+  - speculative_decoding
+  - local_inference
+  - hardware_optimization
+  - kv_cache
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: superseded
+  ingested_date: '2026-10-20'
+  authors:
+  - Omar Sohail
+  key_claims:
+  - 'Press restatement: a Reddit user (u/iamMess, r/LocalLLaMA) reports a custom single-user engine pushing
+    Qwen3.8-27B on one RTX 3090 (24 GB, 936.2 GB/s) to a ~381-382 tok/s peak versus an 82 tok/s baseline
+    (headline 4.6x).'
+  - 'Press restatement: stack = tuned built-in MTP (~114 tok/s), plus a lookup drafter over conversation
+    text (138 tok/s), plus a DFlash2 drafter proposing 7 tokens, verified in a wider 16-token check step
+    with lookup filling extra slots.'
+  - 'Press restatement: peak occurs on text-copying tasks (about 15 of 16 guesses accepted when quoting
+    a document; 25,000-token document task 260-382 tok/s); ordinary chat ~133 tok/s.'
+  - 'Press restatement: compact KV/working-memory format gives 138,696-token context but costs half the
+    request slots and 8,000 tokens of context; outside copy-heavy work this mode runs at about half the
+    speed of plain MTP.'
+  - Wccftech states it did not independently verify the results.
+  techniques:
+  - MTP tuning
+  - DFlash2 block drafter (7 tokens)
+  - lookup / context-copy drafter filling a 16-wide verify
+  - compact KV format for long context
+  reported_results:
+  - 'Article (press restatement, unverified): 82 -> ~114 -> 138 -> 382 tok/s; 96.5% math benchmark accuracy;
+    ~15/16 accepted on quoting; ordinary chat ~133 tok/s; 25K-token doc 260-382 tok/s; context 138,696
+    tokens'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 01-speculative-decoding.md
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    - qwen-mtp-llamacpp-port.md
+    - qwen38-27b-replace-qwen36.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1833
+    - intake-1843
+    intake_entry_notes:
+    - intake-1827 (github.com/syv-ai/HyperQwen; the HyperQwen/LABD wave on DFlash2 + context-copy lookup,
+      already evaluated in DF2-14)
+    - intake-1833 (lukaLLM DFlash2_Qwen3.8_3.6_27B_LlamaCPP; DFlash2 on llama.cpp)
+    - intake-1843 (llama.cpp PR 22546 line; whole-draft fallback chaining vs per-position merge)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence:
+  - Own bounded searches (2) did not find the 381 tok/s post or any independent corroboration (provisional).
+    Other searches surfaced lower single-3090 numbers (hackmd llama.cpp MTP 66.39 tok/s vs 41.55 baseline;
+    https://hackmd.io/@thc1006/qwen3-8-27b-speculative-decoding-rtx-3090) which are different setups,
+    not rebuttals.
+  - EPYC's own offline replay (DF2-14, handoffs/active/dflash2-block-drafter-experimental-build.md) found
+    lookup adds no material gain on our agentic traffic (8.0% coverage, -2.6% to +2.4% simulated), consistent
+    with the article's own caveat that gains are copy-task-specific.
+  recommended_actions:
+  - '[unverified] Resolve the Reddit primary (r/LocalLLaMA 1vtup5s) via operator-side fetch or search;
+    if a repo exists, intake it as its own entry and cross-link to DF2 lookup section in handoffs/active/dflash2-block-drafter-experimental-build.md.'
+  - '[unverified] Check the compact-KV-format claim against kv-cache/long-context tasks in handoffs/active/qwen38-27b-replace-qwen36.md.'
+  source_revision: retrieved 2026-10-20 (WebFetch digest)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'superseded by intake-1827/intake-1830 (the primary sources this article restates). Any figure
+    here is a press restatement, not corroboration. The thc1006 HackMD write-up the article surfaced was
+    ingested as an expansion entry to test for independent reproduction. Stage-1 analyst read: retrieved
+    2026-10-20 (WebFetch digest); fetch_status: partial (article read via WebFetch digest; primary Reddit
+    post blocked). EPYC fit (unverified): Directly overlaps our champion (Qwen3.8 27B + DFlash2): the
+    same recipe (MTP + DFlash2 + lookup fill in a wide verify) is already under study in the DFlash2 handoff''s
+    ''composing DFlash2 with n-gram lookup'' section, where our own replay found no material lift on agentic
+    traffic. The new element is per-position lookup fill inside a 16-wide verify (llama.cpp v10 only does
+    whole-draft fallback) and the compact-KV long-context trade. The headline is a single-user, copy-friendly
+    peak on an RTX 3090 and not transferable to MI210/agentic traffic without a matched replay. Dive recommendation
+    (Stage-1): no - Press restatement of sources already dive-verified: intake-1827 (HyperQwen repo) and
+    intake-1830 (its primary, r/LocalLLaMA 1vtup5s). Both scope the 381 tok/s peak to greedy context-reproduction;
+    our DF2-14 replay found no material lookup gain on agentic traffic. Analyst notes: All numbers are
+    press restatement of a Reddit post not read in this run; the article names no repo/engine. Headline
+    says 381 tps, body 382 tok/s and ''near-5x'' vs 4.6x - internal inconsistency. Search snippets (not
+    fetched) are unverified secondary. Re-verify every figure against primary source before citing; this
+    entry is stage1-unverified.'
+- id: intake-1988
+  arxiv_id: '2610.20456'
+  url: https://arxiv.org/abs/2610.20456
+  source_type: paper
+  title: 'The COUNT: Counting N-grams Unlocks Scaling on Host Memory and Training-Free Adaptation'
+  categories:
+  - memory_augmented
+  - retrieval_augmented_decoding
+  - training_distillation
+  - local_inference
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Ian Magnusson
+  - Noah A. Smith
+  - Pang Wei Koh
+  key_claims:
+  - COUNT adds an input embedding built from precomputed corpus n-gram counts (top-K continuations with
+    stupid-backoff scores) held in read-only host RAM; no learned parameters are added.
+  - The embedding is a count-weighted average of the model's own unembedding rows for likely next tokens,
+    added to the token embedding.
+  - At fixed compute, a 1B model with the 797.5 GB table matches a standard transformer trained with roughly
+    46-89% more compute on LM loss and 6-56% more on task loss (abstract states 57%).
+  - Swapping in a domain table at inference (math, biomedical, law) gives training-free adaptation; task
+    loss drops but biomedical accuracy is mixed.
+  - Host-side lookup keeps ~96% of decode and ~95.5% of prefill throughput at 1B on 8xH200.
+  techniques:
+  - precomputed n-gram count table in host RAM
+  - stupid-backoff scoring
+  - count-weighted unembedding-row embedding
+  - inference-time table swap/mixing
+  - late fusion
+  - compiled multithreaded host lookup with prefetch
+  reported_results:
+  - 'HTML/abstract: 1B model with COUNT matches loss of standard transformer with 57% more compute (abstract);
+    46-89% (LM loss) and 6-56% (task loss) in results summary'
+  - Primary table 797.5 GB for 370M-1B backbones; 17.1 GB for 60M-190M
+  - Shrunken general tables 459/142/68/17 GB still beat standard transformer at 1B
+  - 'Throughput 1B: training 93.1-97.8%, prefill 95.5-95.8%, decode 95.9-96.7% of standard transformer'
+  - At D/N=20 COUNT lowers task loss by 0.010 BPB vs 1B transformer
+  - Domain swap lambda=0.25 lowers task loss in math/biomed/law
+  referenced_arxiv_ids:
+  - '2401.17377'
+  - '2501.16975'
+  - '2601.21204'
+  - '2606.08347'
+  - '2605.16893'
+  - '2601.21461'
+  - '2602.03359'
+  - '2207.06366'
+  - '1911.00172'
+  - '2112.04426'
+  - '2512.13961'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-599
+    - intake-600
+    - intake-758
+    - intake-504
+    intake_entry_notes:
+    - 'intake-599 (Engram, DeepSeek: the hashed learned n-gram memory COUNT contrasts with)'
+    - intake-758 (Scaling Embeddings Outperforms Scaling Experts; cited by COUNT as 2601.21204)
+    - intake-504 (LongCat-Flash-Lite CPU probe, negative; learned n-gram embedding family)
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Add COUNT as a comparison point in Engram Track B proxy derisk (handoffs/active/engram-conditional-memory.md).'
+  - '[unverified] Check whether the n-gram tables could serve as a corpus-side drafter source for prompt-lookup
+    revalidation (handoffs/completed/corpus-augmented-prompt-lookup-revalidation.md); table is top-32
+    continuations to order 6, so a drafting use is speculative.'
+  source_revision: arXiv:2610.20456v1 (abs page + html route; last ~13.8k chars of HTML not read)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.20456v1 (abs page + html route; last ~13.8k chars of HTML not
+    read); fetch_status: partial (arXiv HTML read up to 100k of 113.8k chars; Appendix B.1 onward unread).
+    EPYC fit (unverified): COUNT is a pretraining-time architecture change, so it cannot be applied to
+    our frozen GGUF lineup (Qwen3.8, gemma4, DS41) without training a model from scratch or a retrofit;
+    the 797 GB table also competes with model weights for the host''s RAM. It is conceptually adjacent
+    to Engram Track B (frozen-backbone retrofit): COUNT''s parameter-free, count-based table is a cheaper,
+    trainless-table variant and the training-free domain swap is an interesting angle for the retrofit
+    derisk. It is not a speculative-decoding method; only the n-gram-counting idea overlaps with prompt-lookup.
+    Dive recommendation (Stage-1): no - Pretraining-time n-gram count tables on the dolma2 tokenizer with
+    no path to our frozen GGUF lineup; record as monitor input for the Engram handoff rather than spend
+    a dive. Analyst notes: Fetched via WebFetch digest, not raw. Credibility 2 = recent +1, known AI2/UW
+    authors +1, no venue, no corroboration. Contradiction pass not run (relevance low, verdict exploratory).
+    The paper abstract page lists no code link, but the repo README names this arXiv ID as its paper,
+    and the dataset card cites it. Re-verify every figure against primary source before citing; this entry
+    is stage1-unverified.'
+- id: intake-1989
+  arxiv_id: null
+  url: https://github.com/IanMagnusson/COUNT
+  source_type: repo
+  title: COUNT (Counting Offline Unlocks N-gram Transformers) reference implementation
+  categories:
+  - memory_augmented
+  - training_distillation
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Ian Magnusson
+  - Noah A. Smith
+  - Pang Wei Koh
+  key_claims:
+  - The README states it is the companion code for arXiv 2610.20456 (the README links that ID).
+  - Contains a fork of OLMo-core with COUNT and learned n-gram embedding methods, a table-building pipeline
+    (count_corpus, stupid_backoff_scoring, pack), a ladder launch script, and eval aggregation.
+  - README says it is a simple reproducing implementation, not the optimized runtime behind the paper's
+    throughput numbers.
+  - Needs Python 3.12; table is meant to live on a RAM filesystem such as /dev/shm; license Apache-2.0.
+  techniques:
+  - n-gram counting pipeline
+  - stupid backoff scoring
+  - top-K table packing
+  - RAM-resident table
+  - eval-time table swap and mixing
+  reported_results:
+  - 'README: 1B model with 797 GB table matches a standard transformer with 57% more compute'
+  referenced_arxiv_ids:
+  - '2610.20456'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-599
+    intake_entry_notes:
+    - intake-599 (Engram; learned n-gram memory comparison)
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] If Engram Track B proceeds, read the pack/stupid_backoff_scoring code for the table
+    format (handoffs/active/engram-conditional-memory.md).'
+  source_revision: IanMagnusson/COUNT@31fd41ef4be88327d656af48463883628ceb8598 (HEAD via git ls-remote,
+    2026-10-20)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: IanMagnusson/COUNT@31fd41ef4be88327d656af48463883628ceb8598 (HEAD via
+    git ls-remote, 2026-10-20); fetch_status: ok (raw README via WebFetch digest; repo page not separately
+    fetched). EPYC fit (unverified): Training-oriented code (OLMo-core fork, Beaker extras, H200-scale
+    ladder); we have no pretraining infrastructure on EPYC+MI210. Useful only as a reference for the table-build
+    pipeline (counting, stupid backoff, packing), which runs on CPU/RAM-heavy hosts like ours. Not a serving
+    component. Dive recommendation (Stage-1): no - Deep-dive of the paper covers it; code is training-side.
+    Analyst notes: HEAD SHA from git ls-remote. No code run or cloned. Re-verify every figure against
+    primary source before citing; this entry is stage1-unverified.'
+- id: intake-1990
+  arxiv_id: null
+  url: https://huggingface.co/datasets/IanMagnusson/count-ngram-tables
+  source_type: repo
+  title: count-ngram-tables (packed n-gram tables for COUNT)
+  categories:
+  - memory_augmented
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Ian Magnusson
+  - Noah A. Smith
+  - Pang Wei Koh
+  key_claims:
+  - The card states it holds packed n-gram tables for arXiv:2610.20456; histories up to five context tokens
+    (orders 1-6) map to the 32 most frequent next tokens with stupid-backoff scores.
+  - Total size 1.2 TB; tables range ~17 GB to 797.5 GB; the largest is split in four parts needing ~800
+    GB free disk to reassemble.
+  - Tables: general-797gb/142gb/17gb from Dolma 3; math-83gb (10.66B tokens), biomedical-82gb (95.39B
+      tokens), law-80gb (12.34B tokens).
+  - Tokenizer allenai/dolma2-tokenizer (vocab 100,278); files per table are forward_index_topk.bin, build_manifest.json,
+    SHA256SUMS.
+  - License ODC-By; card warns rare-context counts can expose short fragments of source documents.
+  techniques:
+  - packed top-K forward index
+  - stupid-backoff scores
+  reported_results:
+  - 'Card: 1.2 TB total; general-797gb min history count 265, general-17gb 12,319; 213M order-3 histories
+    in the 797gb table'
+  - 'Card: 76 downloads last month; dataset viewer errors (schema cast)'
+  referenced_arxiv_ids:
+  - '2610.20456'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: null
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions: []
+  source_revision: retrieved 2026-10-20 (HF dataset card; no commit SHA seen)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: retrieved 2026-10-20 (HF dataset card; no commit SHA seen); fetch_status:
+    ok (card via WebFetch digest). EPYC fit (unverified): Tables are tied to the dolma2 tokenizer, so
+    they only align with models using that vocabulary (Olmo 3 family); none of our lineup uses it. Download
+    of 1.2 TB or even 17 GB is not needed at intake. Value is only if a COUNT-style experiment on Olmo-3-sized
+    models were ever run. Dive recommendation (Stage-1): no - Tokenizer-bound artifact; no lineup model
+    matches. Analyst notes: Size/format/license as stated on the card: 1.2 TB, .bin + json + SHA256SUMS,
+    ODC-By. Grep of repo for infini-gram returned no intake entry; no contamination handoff directly relevant
+    (the card has no benchmark data). Re-verify every figure against primary source before citing; this
+    entry is stage1-unverified.'
+- id: intake-1991
+  arxiv_id: '2609.20804'
+  url: https://arxiv.org/abs/2609.20804
+  source_type: paper
+  title: An Empirical Study of Harness Design for Coding Agents
+  categories:
+  - context_management
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Run-Ze Fan
+  - Zihao Zhang
+  - Simin Ma
+  - Yebowen Hu
+  - Shouju Wang
+  - Kaiqiang Song
+  - Fei Liu
+  - Hamed Zamani
+  - Xiaoyang Wang
+  key_claims:
+  - Holding the execution loop fixed and varying planning, action space and context management over 176
+    matched settings isolates per-component effects.
+  - Context management matters more as the window budget shrinks, mostly by eliminating context-overflow
+    failures.
+  - Rule-based elision of stale tool observations before LLM summarization is the cheapest effective strategy;
+    making elided content recoverable (recall tool) gave no accuracy gain and is often never called.
+  - Planning helps weak models' accuracy and mainly saves cost for strong ones; bash-only action space
+    can beat predefined tools for bash-capable models at lower cost but hurts a model with weaker bash
+    skill.
+  techniques:
+  - staged context management (elision at soft threshold
+  - summarization at hard threshold)
+  - observation stubbing
+  - recall_event tool
+  - bash-only vs predefined toolset ablation
+  - matched-setting ablation design
+  reported_results:
+  - 'Setup: Nemotron-3 30B/120B/550B and Mistral-Medium-3.5-128B on SWE-Bench Verified (500) and Terminal-Bench
+    2.1 (89); 176 settings.'
+  - Managed-minus-T0 success gap averaged over models shrinks 35.7pp (32k) -> 2.7pp (128k) on SWE-Bench;
+    9.5pp -> 2.8pp on Terminal-Bench.
+  - T0 overflow rate falls 78.7% -> 8.7% (SWE) and 61.0% -> 12.1% (TB) as window grows; managed tiers
+    have zero overflow failures.
+  - 'Table 3 (SWE-V, T4, 128k): Nemotron 30B 25.2%/$0.09; 120B 44.0%/$0.34; 550B 65.8%/$2.33; Mistral
+    68.6%/$3.14.'
+  - Recall (T2 vs T1) mean diff -0.36pp; 56.3% of T2/T4 settings never call recall_event.
+  - 'Bash-only at 128k T4: Nemotron 550B SWE 65.8->69.4% and $2.33->$1.11; Mistral 68.6->45.4%.'
+  - 'Planning: Nemotron 30B +11.6pp SWE, +4.5pp TB; 550B/Mistral cut SWE cost ~30%/32% for -2.0/-0.4pp.'
+  referenced_arxiv_ids:
+  - '2605.04050'
+  - '2510.00615'
+  - '2606.30005'
+  - '2605.05716'
+  - '2608.26218'
+  - '2310.08560'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - repl-session-memory-maturity.md
+    - conversation-stack.md
+    - context-folding-progressive-completed-through-2026-05-28.md
+    experiments: []
+    intake_entries:
+    - intake-244
+    intake_entry_notes:
+    - intake-244 (Meta-Harness; harness-as-optimization-target, same family)
+    - LCM plugin entry in intake_index.yaml (~line 4142; ID not resolved) relates to cited 2605.04050
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Check handoffs/active/tool-output-compression.md for an elision-before-summarization
+    staged policy and whether a recall tool is planned (paper suggests low usage).'
+  - '[unverified] Consider matched-setting component ablation as a template for orchestrator harness evals
+    (eval-tower).'
+  source_revision: arXiv:2609.20804v1 (abs + html route; html read to char 100000 of 163580)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2609.20804v1 (abs + html route; html read to char 100000 of 163580);
+    fetch_status: partial (html read first 100000 of 163580 chars; later appendix unread). EPYC fit (unverified):
+    The orchestrator''s REPL/agent loop manages long tool-output contexts on local models with bounded
+    windows, so the finding that rule-based elision first then summarization is cheapest, and that a recall
+    tool goes unused, directly informs tool-output-compression and REPL session memory design. Models
+    studied are Nemotron/Mistral, not the EPYC lineup, so thresholds need local re-measurement. No kernel/hardware
+    relevance. Tier-2b (bounded, provisional): queries "An Empirical Study of Harness Design for Coding
+    Agents"; harness design coding agents context management matters more than model SWE-Bench independent
+    study 2026. none surfaced in bounded search (provisional). No replication found. Corroboration seen:
+    Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents - source-code study of
+    eleven systems; adjacent independent work, not a replication of the numbers. (https://arxiv.org/pdf/2609.00006;
+    independent) Dive recommendation (Stage-1): no - Pattern-level confirmation of choices likely already
+    made in tool-output-compression; moderate value as a cited design check. Analyst notes: Contradiction
+    search not run (credibility<3, verdict adopt_patterns); not a negative result. Authors/figures from
+    the abs page and html digest via WebFetch (small-model summary), not raw download. Re-verify every
+    figure against primary source before citing; this entry is stage1-unverified.'
+- id: intake-1992
+  arxiv_id: '2609.35738'
+  url: https://arxiv.org/abs/2609.35738
+  source_type: paper
+  title: Harness Learning Enables Generalizable Test-Time Adaptation
+  categories:
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Alvin Zhang
+  - Xuecheng Liu
+  - Zixuan Wang
+  - Fahim Tajwar
+  - Daman Arora
+  - Ruslan Salakhutdinov
+  - Daniel Khashabi
+  - Yuda Song
+  - Andrea Zanette
+  key_claims:
+  - Frame harness (program coordinating model calls, tools, information flow) revision as meta-learning
+    where code edits replace weight updates.
+  - Train a proposer model with RL (GRPO) to revise a frozen solver's harness from execution feedback;
+    at test time it refines the harness on a new task with no weight change.
+  - Single-revision-trained proposers keep improving harnesses over multiple rounds, and a small trained
+    proposer can match/beat a larger teacher on unseen task families.
+  - Sequential rounds can match or exceed oracle best-of-N independent proposals.
+  techniques:
+  - harness learning
+  - GRPO on code edits
+  - validity/execution bonus reward
+  - optional LoRA SFT on filtered teacher revisions
+  - single-step vs multistep RL
+  - test-time harness refinement
+  reported_results:
+  - 'Reasoning Gym (Qwen3.5-4B proposer+solver, 35B teacher): unseen-family mean single-revision score
+    0.32 (Base) -> 0.62 after RL; teacher 0.56 (21 families, main figures).'
+  - 'Across 26 unseen families: Base 0.282, SFT 0.415, single-step RL 0.528, teacher 0.501.'
+  - 'Multi-hop QA (Qwen3-4B proposer, Qwen3-8B solver; trained HotpotQA): MuSiQue EM 0.15 independent
+    revisions vs 0.27 after ten sequential rounds.'
+  - SFT corpus 432 retained examples, 48% interpreter loops.
+  referenced_arxiv_ids:
+  - '2603.28052'
+  - '2603.03329'
+  - '2609.00196'
+  - '2608.02276'
+  - '2607.14004'
+  - '2607.12227'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - promptforge-mutation-safety-contract.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-244
+    intake_entry_notes:
+    - intake-244 (Meta-Harness, outer-loop harness search; cited here as 2603.28052)
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Note in handoffs/active/promptforge-mutation-safety-contract.md as a possible learned-proposer
+    future option; no action now.'
+  source_revision: arXiv:2609.35738v1 (abs + html route; html read to char 100000 of 160701)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2609.35738v1 (abs + html route; html read to char 100000 of 160701);
+    fetch_status: partial (html read first 100000 of 160701 chars; appendices D-F unread). EPYC fit (unverified):
+    The orchestrator is itself a harness (prompts, tools, routing) already optimized by autopilot/PromptForge
+    via search; this paper offers an RL-trained small proposer as a learned alternative to LLM-prompted
+    mutation. Evidence is limited to small-model reasoning/QA toy settings and needs training compute
+    and a verifiable reward, so near-term fit is conceptual. The 4B-scale proposer would run locally,
+    which is compatible. Dive recommendation (Stage-1): no - Interesting but training-heavy, small-scale
+    evidence; Meta-Harness lineage already covered. Analyst notes: Contradiction search not run (credibility
+    2); not a negative result. Figures from WebFetch digest. Re-verify every figure against primary source
+    before citing; this entry is stage1-unverified.'
+- id: intake-1993
+  arxiv_id: '2610.07447'
+  url: https://arxiv.org/abs/2610.07447
+  source_type: paper
+  title: 'Fork-and-Flush: Escaping Idea Basins in Autoresearch Agents'
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - context_management
+  - swarm_techniques
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Ziyang Cai
+  - Christos Ziakas
+  - Vasilis Kontonis
+  - Tim Pearce
+  - Siddhartha Sen
+  - Akshay Krishnamurthy
+  - Shivam Garg
+  - Dimitris Papailiopoulos
+  key_claims:
+  - Independent runs of the same autoresearch agent on the same task stall at widely different scores
+    that extra compute does not close; runs stay in confined regions ('idea basins') of solution space.
+  - Fork-and-flush periodically forks K parallel branches that copy the workspace but start with cleared
+    chat context, runs each a fixed horizon, and keeps the best branch.
+  - Under equal compute, it beats single-run and best-of-4 on 13 long-horizon tasks; both forking and
+    flushing contribute in ablation.
+  - A fixed schedule was used because plateau-triggered forking often never fired.
+  techniques:
+  - fork-and-flush
+  - context flush preserving workspace
+  - parallel branch selection
+  - functional-similarity embedding of artifacts (t-STE map) to define basins
+  - fixed-schedule restarts (K=4
+  - at 33%/66% of budget)
+  reported_results:
+  - 'Normalized avg score (equal compute): single-run 0.47, best-of-4 0.54, fork-and-flush 0.78 (Main
+    table).'
+  - Relative improvement +66.0% vs single-run, +44.4% vs best-of-4; highest mean on 12 of 13 tasks.
+  - 'Ablation (11 tasks): single-run 0.45, flush-only 0.55, fork-only 0.57, fork-and-flush 0.71.'
+  - On task p171 eight single runs ended between 68.3 and 100.0.
+  - 'Setup: agent GPT-5.6-terra / GPT-5.5 via GitHub Copilot CLI v1.0.73; runs hours to days; budgets
+    6,000-100,000 credits.'
+  - t-STE map held-out agreement with LLM triplet judgments 0.85 (chance 0.50).
+  referenced_arxiv_ids:
+  - '2509.14279'
+  - '2506.13131'
+  - '2407.21787'
+  - '2303.11366'
+  - '2411.15114'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    - autokernel-concurrent-target-coordination.md
+    experiments: []
+    intake_entries:
+    - intake-148
+    intake_entry_notes:
+    - intake-148 (karpathy/autoresearch loop; this paper diagnoses its stall mode)
+  expanded_from: null
+  credibility_score: 3
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Add a fork-and-flush restart policy (fixed 33%/66% schedule, K branches scored on correctness-only
+    gates) as an experiment in handoffs/active/autokernel-research-loop.md.'
+  - '[unverified] Analyze existing AK/autopilot run journals for between-run score spread to test the
+    basin hypothesis (autopilot-continuous-optimization.md).'
+  source_revision: arXiv:2610.07447v1 (abs + html route; html read to char 100000 of 110711)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.07447v1 (abs + html route; html read to char 100000 of 110711);
+    fetch_status: partial (html read first 100000 of 110711 chars). EPYC fit (unverified): Directly relevant
+    to AutoKernel and autopilot: long single-trajectory kernel-search loops can stall in one idea basin,
+    and the remedy (periodic fork with fresh context but retained workspace, pick best) maps to AK restart/strip
+    behavior and context-limited Claude/actor sessions. It uses parallel branches, which compete for the
+    single-host CPU/GPU timing windows, so branch scoring would have to be serialized or correctness-only.
+    Paper includes a kernel task among its 13 (agent GPT-5.5). Tier-2b (bounded, provisional): queries
+    "Fork-and-Flush" Escaping Idea Basins in Autoresearch Agents; Fork-and-Flush autoresearch idea basins
+    criticism limitations reproduction. none surfaced in bounded search (provisional). Secondary sources
+    disagree on task count (11 vs 13) and numbers. Corroboration seen: Press summary restating paper numbers
+    (13 tasks 0.78 vs 0.47 single run; ablation 0.71 vs fork-only 0.57, flush-only 0.55). Restatement
+    only. (https://www.neoteo.com/en/fork-and-flush-topped-an-11-task-test-of-ai-agent-context-clearing;
+    restatement); Blog restatement; has a limits section whose content was not visible. (https://explainx.ai/blog/fork-and-flush-idea-basins-autoresearch-agents-microsoft-2026;
+    restatement) Dive recommendation (Stage-1): yes - Directly targets stagnation in autoresearch loops
+    (AutoKernel''s known failure mode); a dive settles the fork/flush mechanism, what state is flushed
+    vs kept, and whether gains survive beyond one harness (Copilot CLI) and the GPT-5.x models used. Analyst
+    notes: Credibility 3 = recent +1, known contributors (Papailiopoulos et al.) +1, unreviewed preprint
+    0, plus +1 for being from a multi-institution group; judgement call. Contradiction search not run
+    in this pass (not a negative result). Task-model names (GPT-5.6-terra) as stated in source. Re-verify
+    every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-1994
+  arxiv_id: '2610.18809'
+  url: https://arxiv.org/abs/2610.18809
+  source_type: paper
+  title: Depth Memory
+  categories:
+  - hardware_optimization
+  - memory_augmented
+  - ssm_hybrid
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - David González-Martínez
+  - Philipp Nazari
+  - T. Konstantin Rusch
+  - Shiwei Liu
+  key_claims:
+  - Depth mixing (PreLN, mHC, AttnRes) can be unified as read/write on information streams, i.e. storing
+    and retrieving across layers.
+  - 'Linear Depth Memory (LDM) treats cross-layer retrieval as regression solved by recursive least squares
+    with three streams: residual, matrix memory, inverse covariance.'
+  - LDM reaches lowest perplexity among baselines at 400M and 1.5B scales with about 1% extra parameters.
+  - A hardware-aware implementation (state unwinding, windowed writes, CuTe DSL kernels for Hopper/Blackwell)
+    cuts peak activation memory and traffic; LDM may still raise peak training memory.
+  techniques:
+  - Depth Memory framework
+  - Linear Depth Memory
+  - recursive least squares via Sherman-Morrison
+  - state unwinding
+  - windowed writes (E=4)
+  - grouped forgetting gates (G=16)
+  reported_results:
+  - 'Table 2, 400M/50B tokens: Val PPL PreLN 12.73, AttnRes Block 12.12, mHC 12.23, LDM(D_k=8) 12.08;
+    WikiText-2 20.70 vs PreLN 22.59; LAMBADA 19.10 vs 25.32.'
+  - 'Table 2, 1.5B/100B tokens: Val PPL PreLN 9.48, mHC 9.25, AttnRes Block 9.26, LDM 9.15; LAMBADA 8.42
+    vs PreLN 10.49.'
+  - 'Avg zero-shot acc: 1.5B LDM 59.71 vs PreLN 58.41; 400M LDM 50.46 vs PreLN 49.05 (AttnRes Block 50.61).'
+  - Parameters ~+1% over PreLN; D_k=8 stores 8D entries/token vs 4D for mHC.
+  referenced_arxiv_ids:
+  - '2603.15031'
+  - '2601.05732'
+  - '2607.14530'
+  - '2608.30320'
+  - '2606.19348'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-fused-decoder-blocks.md
+    - deepseek-v4-flash-0731-dspark.md
+    - deepseek-v41-flash-evaluation-completed-through-2026-09-26.md
+    experiments: []
+    intake_entries:
+    - intake-1978
+    intake_entry_notes:
+    - hyper-connections appear in several existing intake entries (e.g. DeepSeek-V4 entry near intake_index.yaml
+      line 34632; IDs not resolved)
+    - intake-1978 (companion code repository (README badge cites this arXiv ID))
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Watch for lineup-candidate models using mHC/AttnRes/LDM; note kernel-support gaps in
+    handoffs/active/cpu-fused-decoder-blocks.md if so.'
+  source_revision: arXiv:2610.18809v1 (abs + html route; html read to char 100000 of 113769)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.18809v1 (abs + html route; html read to char 100000 of 113769);
+    fetch_status: partial (html read first 100000 of 113769 chars; Figure 5 throughput numbers not visible).
+    EPYC fit (unverified): A pretraining-architecture change; EPYC serves existing GGUF models and does
+    not train, so it matters only if a future served model (Qwen3.8-Next family, DeepSeek-V4 lineage cite
+    mHC/AttnRes) adopts depth memory, which would add per-token matrix state and RLS-style ops to decode.
+    Worth tracking for kernel implications (extra state memory traffic on CPU decode), not for action
+    now. Dive recommendation (Stage-1): no - Training-side architecture work without served-model impact
+    yet; revisit if a lineup model adopts it. Analyst notes: Contradiction search not run (low relevance).
+    Ablation delta values were not legible in extraction and are omitted. Re-verify every figure against
+    primary source before citing; this entry is stage1-unverified.'
+- id: intake-1995
+  arxiv_id: '2610.14224'
+  url: https://arxiv.org/abs/2610.14224
+  source_type: paper
+  title: 'Harness^2: Recursive Agent Harnessing for an Open World'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Ruiyao Xu
+  - Yanfei Chen
+  - Zhongying CuiZhu
+  - Bhavana Dalvi Mishra
+  - Yifei Ming
+  - Han Yu
+  - Rujun Han
+  - Chen-Yu Lee
+  - Tomas Pfister
+  key_claims:
+  - Agent performance depends on the execution harness; harness edits can be made per task without ground-truth
+    verifiers.
+  - Task-level Propose-Probe-Compose runs a reference execution, proposes an invariant edit and a domain-specific
+    edit, probes each under matched conditions, and a composer merges/adopts/keeps; contrasts are treated
+    as evidence, not verified correctness.
+  - Harnessing-level recursion keeps a library of adopted harnesses plus EXPERIENCE.md lessons that later
+    tasks reuse; harness has eight editable components.
+  - One step lifts GLM-5 and Gemini 3.5 Flash over base harnesses; k=5 recursion adds more (parallel pool
+    or sequential chain, agentic selector).
+  techniques:
+  - Propose-Probe-Compose
+  - contrastive harness editing without verifiers
+  - parallel/sequential recursion
+  - harness library with experience file
+  reported_results:
+  - 'Table (main): WorkBuddy Avg Gemini/OpenCode 72.4 -> 77.5 (k=1) -> 80.8 (k=5); GLM-5/OpenCode 64.2
+    -> 75.7 -> 79.6'
+  - 'Table (main): JobBench Gemini 31.5 -> 36.0 -> 39.0; GLM-5 20.6 -> 24.2 -> 28.4'
+  - 'Table (main): LAB Partial Gemini 79.9 -> 81.9 -> 84.5; GLM-5 59.6 -> 71.4 -> 74.4'
+  - 'Abstract: largest single-step gains +11.5 WorkBuddy (GLM-5), +11.8 pts LAB'
+  referenced_arxiv_ids:
+  - '2607.15524'
+  - '2607.08124'
+  - '2607.12227'
+  - '2606.01770'
+  - '2604.25850'
+  - '2509.25140'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - harness-selection-and-integration.md
+    - promptforge-mutation-safety-contract.md
+    experiments: []
+    intake_entries:
+    - intake-244
+    intake_entry_notes:
+    - intake-244 (Meta-Harness 2603.28052, agentic proposer harness search - direct predecessor of the
+      harness-evolution line)
+  expanded_from: null
+  credibility_score: 3
+  contradicting_evidence:
+  - Third-party guide notes gains (+11.5 WorkBuddy-Bench, +4.5 JobBench) are authors' measurements from
+    different configs, not guaranteed productivity gains; release leaves executor networking unrestricted
+    and disables Codex sandbox; not an officially supported Google product. (https://wavect.io/blog/google-harness2-setup-cost-safety/;
+    independent)
+  recommended_actions:
+  - '[unverified] Compare Propose-Probe-Compose to current PromptForge mutation flow; owner handoffs/active/harness-improvement-loop.md'
+  source_revision: arXiv:2610.14224v1 (html route; text read to char 100000 of 169089)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.14224v1 (html route; text read to char 100000 of 169089); fetch_status:
+    partial (read first 100k of 169k chars; Appendix F limitations truncated). EPYC fit (unverified):
+    Relevant to the autopilot/PromptForge self-optimisation loop and the harness-improvement handoff:
+    verifier-free contrastive edits and an experience library are patterns, not a component. All executors/editors
+    in the paper are proprietary or GLM-5 via OpenCode/Codex; editor/judge is Claude, so the artifact
+    is not self-hostable as-is. Gains are not verified correctness, which matters given the measurement
+    constitution. Tier-2b (bounded, provisional): queries "Harness^2" Recursive Agent Harnessing for an
+    Open World; Harness2 Google open-source recursive agent harnessing WorkBuddy-Bench JobBench arXiv
+    2610.14224. No arXiv page for 2610.14224 appeared in results; ID unverified. Primary paper not surfaced,
+    only a LinkedIn post and the wavect guide (which restates numbers). Dive recommendation (Stage-1):
+    no - Pattern-level overlap with existing harness handoffs; limitations (noisy probes, 3 benchmarks)
+    weaken evidence. Analyst notes: Contradiction pass not run (credibility 3, verdict adopt_patterns
+    only; bounded budget). Provisional. Re-verify every figure against primary source before citing; this
+    entry is stage1-unverified.'
+- id: intake-1996
+  arxiv_id: '2610.22192'
+  url: https://arxiv.org/abs/2610.22192
+  source_type: paper
+  title: 'Terminal-RSI: Recursive Self-Improving Terminal Agents via Recursive Self-Rewrite and Policy-Refine'
+  categories:
+  - training_distillation
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Junyao Yang
+  - Zongxia Li
+  - Yucheng Shi
+  - Zhongzhi Li
+  - Ruhan Wang
+  - Ruiwen Zhou
+  - Haitao Mi
+  - Shuicheng Yan
+  - Leowei Liang
+  key_claims:
+  - Alternating phases: Recursive Self-Rewrite (SFT on verifier-passed trajectories rewritten into demonstrations)
+      and Recursive Policy-Refine (PPO-style actor-critic with critic handoff between rounds).
+  - TB-GAE applies advantage decay across interaction turns rather than tokens so verbose observations
+    do not dilute credit.
+  - Family Dense Reward normalises partial progress per task family; Success-Prioritized Reward keeps
+    verified success above partial credit.
+  - Starting from a Qwen3.8-27B base, five stages raise four-suite mean success from 20.68% to 50.58%.
+  techniques:
+  - rejection-sampled trajectory rewrite SFT
+  - critic inheritance
+  - turn-level GAE
+  - success-prioritised dense reward
+  reported_results:
+  - 'Table 2 (Mean@3 %): Base TB4.0 0.00 / TB2.1 51.70 / TB3.0 0.00 / TB-Hard 31.00; final TB4.0 19.84
+    / TB2.1 86.52 / TB3.0 16.95 / TB-Hard 79.00'
+  - 'Table 2: LHTB process reward 0.21 -> 0.37; SWR100 3.00 -> 6.00; LHTB strict completion 0/46 -> 5/46'
+  - 'Text: PPO actor LR 5e-7 (RPR-1), 1e-7 (RPR-2); critic 1.5e-5; batch 256; 3,000 training tasks'
+  referenced_arxiv_ids:
+  - '2610.02826'
+  - '2609.11042'
+  - '2607.08964'
+  - '2601.11868'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Check if checkpoint is released; if so note as candidate for REPL/terminal role evaluation
+    (handoffs/active/repl-turn-efficiency.md)'
+  source_revision: arXiv:2610.22192v1 (html route; text read to char 100000 of 134396)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.22192v1 (html route; text read to char 100000 of 134396); fetch_status:
+    partial (last ~34k chars not read). EPYC fit (unverified): Trains a Qwen3.8-27B model (our champion
+    family) as a terminal agent, but the pipeline is GPU-cluster Megatron RL, far beyond the single MI210
+    host; no weights confirmed in this read. Useful only as a reward-design reference for any future terminal/REPL
+    agent training. Single backbone, no independent seeds, causal attribution unisolated. Dive recommendation
+    (Stage-1): no - Training-heavy, out of compute scope; reward patterns only. Analyst notes: Abstract/page
+    did not state compute (GPU counts/hours). Release of weights not verified. Re-verify every figure
+    against primary source before citing; this entry is stage1-unverified.'
+- id: intake-1997
+  arxiv_id: '2610.18861'
+  url: https://arxiv.org/abs/2610.18861
+  source_type: paper
+  title: Hybrid Reasoning Agents
+  categories:
+  - agent_architecture
+  - training_distillation
+  - inference_serving
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Jiaru Zou
+  - Yunzhe Qi
+  - Sirui Chen
+  - Federico Bianchi
+  - Shang Zhu
+  - Pan Lu
+  - Jingrui He
+  - James Zou
+  key_claims:
+  - A single generation interleaves latent reasoning and text/tool actions; a small residual adapter (HybridLink,
+    ~2d_h^2 params, ~10M at 4B) maps hidden states back to input embeddings.
+  - Latent mode is entered by a special token and exited when the adapter output is nearest the end-latent
+    embedding; latent steps are inspectable via nearest token.
+  - Persistent working memory carries text, latent thoughts and tool observations across turns without
+    re-tokenisation.
+  - HybridSFT then HybridRL (HybridLink fixed in RL) on Qwen3-Base 4B/8B/14B; abstract claims 35.5-54.7%
+    fewer tokens, 1.8-2.6x faster inference.
+  techniques:
+  - latent reasoning with tool calls
+  - residual hidden-to-embedding adapter
+  - hybrid policy factorisation RL
+  reported_results:
+  - 'Abstract: ~10.4% avg gain over frontier agents/frameworks; 35.5-54.7% fewer tokens; 1.8-2.6x faster;
+    2.7-3.7x cost savings'
+  - 'Table 2 (14B): AIME25 43.3 vs GRPO 40.8; MATH500 88.2 vs 87.4; GPQA-D 55.1 vs 52.5'
+  - 'Table 1 (14B): GAIA avg 52.4 vs ARPO 56.4 (HybridAgent lower on this)'
+  referenced_arxiv_ids:
+  - '2412.06769'
+  - '2507.19849'
+  - '2503.09516'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - 'research/intake_index.yaml line ~3897 ''CoLaR: Think Silently, Think Fast'' (latent reasoning;
+      id field not read - verify numeric id)'
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions: []
+  source_revision: arXiv:2610.18861v1 (html route; text read to char 100000 of 174272)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.18861v1 (html route; text read to char 100000 of 174272); fetch_status:
+    partial (last ~74k chars not read). EPYC fit (unverified): Latent reasoning needs custom serving (authors
+    note engines lack multi-turn hybrid generation), and llama.cpp has no such path; weights are small
+    Qwen3 bases not in our lineup. Only conceptual relevance to token-efficiency of tool agents. Headline
+    GAIA result is below the strongest text baseline. Dive recommendation (Stage-1): no - Requires bespoke
+    serving stack; not matched to frozen kernel. Analyst notes: intake-3897 id is a guess from a line-number
+    grep (title at line 3897); the real intake id was not looked up - verify before citing. Treat intake_entries
+    field accordingly. Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+- id: intake-1998
+  arxiv_id: '2610.20563'
+  url: https://arxiv.org/abs/2610.20563
+  source_type: paper
+  title: Scaling Discovery Requires Forgetting
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - swarm_techniques
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Shangyin Tan
+  - Ben Zhou
+  - Lakshya A Agrawal
+  - Jialin Zhang
+  - Yilin Chen
+  - Qiuyang Mang
+  - Donghyun Lee
+  - Dennis Jacob
+  - Koushik Sen
+  - Alex Dimakis
+  - Matei Zaharia
+  key_claims:
+  - Three scaling strategies for LLM research agents (longer single run, parallel agents, parallel agents
+    sharing candidates) all plateau because agents anchor on their own history and make fewer, smaller
+    edits.
+  - Proposed fix: periodically discard the search state (sessions and candidate history) and restart from
+      the best candidate found so far.
+  - Evaluated on four tasks spanning heuristic programming, kernel optimization and model training.
+  - Reported gains up to 15% over parallel agents and up to 39% over a single agent.
+  techniques:
+  - periodic restart from best candidate
+  - context/history discarding
+  - parallel agent search
+  reported_results:
+  - 'Abstract: up to +15% vs parallel agents, up to +39% vs single agent (four tasks)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-restart-and-strip.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: null
+  credibility_score: 3
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Read full body, then evaluate periodic restart-from-best in AutoKernel supervisor; owner
+    handoffs/active/autokernel-research-loop.md'
+  source_revision: arXiv:2610.20563v1 (abs page only; html 404, PDF streams not decodable)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.20563v1 (abs page only; html 404, PDF streams not decodable);
+    fetch_status: partial (abs page + search mirror only; /html returned 404 for v1 and unversioned; PDF
+    saved at /mnt/raid0/llm/tmp/intake-20261020/F-arxiv/p4.pdf sha256 9c14df8357e1fb46caa8349e6225d502180ee74c20c62d5af97ec29cd4285edc,
+    text extraction failed - no pdftotext). EPYC fit (unverified): Directly about the AutoKernel loop''s
+    failure mode (long-running kernel search plateauing and anchoring on history); includes a kernel-optimization
+    task and Zaharia/Agrawal (GEPA) authors. Suggests a restart-from-best policy as a loop-level knob
+    for AK sessions. Details (which kernel, hardware, protocol, baselines) NOT verified - body unreadable
+    in this run. Tier-2b (bounded, provisional): queries "Scaling Discovery Requires Forgetting" arXiv;
+    "Scaling Discovery Requires Forgetting" github code Tan Zhou Agrawal Dimakis Zaharia. none surfaced
+    in bounded search (provisional). Corroboration seen: Aggregator listing of abstract (Tan, Zhou, Agrawal
+    ... Dimakis, Zaharia; up to +15% vs parallel agents, +39% vs single agent over 4 tasks incl. kernel
+    optimization). Restatement of abstract. (https://deeplearn.org/arxiv/848509/scaling-discovery-requires-forgetting;
+    restatement) Dive recommendation (Stage-1): yes - Highest load-bearing: claims discovery agents must
+    forget/restart rather than accumulate, which bears on AutoKernel restart-from-best; Stage 1 read only
+    the abstract (HTML 404, PDF undecoded) so every specific is unverified and a dive must read the PDF
+    from disk. Analyst notes: All claims from abstract only. One bounded search found no criticism (provisional).
+    Retry html later or use a PDF text tool. Re-verify every figure against primary source before citing;
+    this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-1999
+  arxiv_id: '2610.12668'
+  url: https://arxiv.org/abs/2610.12668
+  source_type: paper
+  title: Recurrent Harness for Agentic Continual Learning
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - context_management
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Yuxin Xiao
+  - Zhiyun Lu
+  - Jianyu Wang
+  - Yangtian Zhang
+  - Yang Song
+  - Qifan Wang
+  - Bailin Wang
+  key_claims:
+  - ReHarness adds a backward revision step to reflection-memory harnesses: after each instance, the retrieved
+      reflections are rewritten using the new trajectory as feedback, grounded in their source trajectories.
+  - Strictly online: no replay, validation set or gradient updates; top-5 retrieval via Qwen3-Embedding-8B.
+  - Beats raw-context, memory/reflection and prompt-optimisation baselines (Mem0, RBank, DoT, ACE, GEPA-Online)
+    across three benchmarks and three proprietary backbones.
+  - Token-cheaper than full raw context; weak on noisy-reward tasks (poker).
+  techniques:
+  - backward reflection revision
+  - source-grounded memory editing
+  - online reflection memory
+  reported_results:
+  - 'Main results: avg normalized gain 0.240 vs Top-K Raw 0.168, Full Raw 0.164; first/tied in 8 of 9
+    benchmark-backbone combos'
+  - 'CL-Bench/Claude: ~41.6M tokens vs 52.7M (Top-K Raw) vs 142.1M (Full Raw); est. cost $254 / $85 /
+    $314'
+  - 'Ablation: removing revised demonstrations 0.217 -> 0.191; counterfactual replay 0.335 (not a valid
+    online method)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - episodic-memory-integrity.md
+    - repl-session-memory-maturity.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - research/intake_index.yaml ~line 2392 MemRL (episodic-memory RL); id field not read - verify
+  expanded_from: null
+  credibility_score: 3
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Evaluate backward revision of stored reflections in unified-trace-memory-service; owner
+    handoffs/active/unified-trace-memory-service.md'
+  source_revision: arXiv:2610.12668v1 (html route; read to char 100000 of 103474)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.12668v1 (html route; read to char 100000 of 103474); fetch_status:
+    ok (cited works shown by title only, no arXiv IDs in source). EPYC fit (unverified): Editing stored
+    reflections with later evidence maps onto the episodic/trace memory handoffs and the belief-kernel
+    idea that stale claims should be corrected. Backbones are Claude/GPT/Gemini, so open-model behaviour
+    is unknown; revision adds output tokens and raw-trajectory storage. Pattern-level adoption only. Tier-2b
+    (bounded, provisional): queries "Recurrent Harness for Agentic Continual Learning" ReHarness; ReHarness
+    recurrent harness continual learning replication OR benchmark OR limitations. none surfaced in bounded
+    search (provisional). No replication of ReHarness. Corroboration seen: Do Agent Optimizers Compound?
+    A Continual-Learning Evaluation on Terminal-Bench 2.0 - related independent evaluation of the method
+    family; notes methods assume repeatable tasks and reliable verifiers. Not about ReHarness itself.
+    (https://arxiv.org/pdf/2607.14004; independent) Dive recommendation (Stage-1): no - Pattern fits memory
+    handoffs but unproven on open models. Analyst notes: Contradiction pass not run. Backbone names (Claude
+    Opus 4.8, GPT-5.5, Gemini 3.7 Flash) as reported by the fetch digest. Re-verify every figure against
+    primary source before citing; this entry is stage1-unverified.'
+- id: intake-2000
+  arxiv_id: '2610.13912'
+  url: https://arxiv.org/abs/2610.13912
+  source_type: paper
+  title: 'RSI-Anything: Unlocking Recursive Self-Improvement with World Models'
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Taoyong Cui
+  - Pinxian Zeng
+  - Wanghan Xu
+  - Hao Xiao
+  - Shuhan Xue
+  - Qiang Gao
+  - Wanli Ouyang
+  - Pheng Ann Heng
+  - Zhenfei Yin
+  - Yingcheng Wu
+  - Ling Yang
+  key_claims:
+  - A predictive world model (JEPA-Anything-based) scores candidate actions before execution, so scarce
+    external feedback is spent only on the top feasible candidate.
+  - Imagined trajectories are admitted into training only if they pass validity, utility, optional uncertainty
+    and an evidence-tier test (E0 rule checks .. E3 real measurements).
+  - World-model adaptation fires only when a reliability check flags it as unreliable and data/budget
+    allow; policy and world model are gated separately, then as a pair, and a pair is retained only if
+    it passes.
+  - Reported gains span code repair, GUI agents, lab planning and reaction optimisation, but each domain
+    is a small-scale setup with its own baselines.
+  techniques:
+  - world-model-guided candidate selection
+  - evidence-tiered trajectory admission
+  - reliability-triggered world-model adaptation
+  - component+pair retention gates
+  - orthogonal predictive factorization
+  reported_results:
+  - 'Code repair, ReasonFlux-Coder-7B fixed, 200 CodeContests tasks x3 seeds (paper results table): hidden
+    all-pass 26.0% random-K, 26.3% static verifier, 29.2% fixed WM, 31.2% adapted WM; ~3.7 online calls/task
+    all arms; paired gain over static verifier +2.83 pts (95% interval +0.17 to +5.50).'
+  - 'MiniWoB++ click-checkboxes: success 51% -> 79% -> 99%; mean actions 5.30 -> 3.21 (-39.4%).'
+  - 'OSWorld: +18.4% relative to initial agent, +5.5% relative to RLAnything.'
+  - 'LabHorizon F200 L2, 4B policy over five versions: 21.80 -> 46.01%; vs Qwen3.6-35B-A3B trained 0.4100
+    and Gemini 3.1 Pro 0.3263 (L2 final).'
+  - 'Reaction optimisation, 40-experiment flow LC-MS screen: 96.15% mean best yield vs 82.16% Bayesian
+    optimisation.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1980
+    intake_entry_notes:
+    - Darwin Godel Machine entries (index lines ~43626, 198461) are the self-improving-agent precedent;
+      the paper cites DGM.
+    - intake-1980 (companion code repository)
+  expanded_from: intake-1980
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Note evidence-tier + pair-retention gating pattern for handoffs/active/autopilot-continuous-optimization.md;
+    no build work.'
+  source_revision: arXiv:2610.13912v1 (html route); companion repo Gen-Verse/RSI-Anything@8ba44cd73ec6f57b151ec06e2f71a0726adfb687
+    (README sha256 df44d12f..., retrieved 2026-10-20)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.13912v1 (html route); companion repo Gen-Verse/RSI-Anything@8ba44cd73ec6f57b151ec06e2f71a0726adfb687
+    (README sha256 df44d12f..., retrieved 2026-10-20); fetch_status: partial (html route read to ~100k
+    chars; appendix/compute not read). EPYC fit (unverified): Conceptually adjacent to the autopilot /
+    AutoKernel loops: spend expensive real measurements only on candidates a cheap predictor ranks highest,
+    and gate retained updates on component plus pair checks. The headline gains are small (code repair
+    +2.9 pts over static verifier, CI lower bound +0.17) and domains are not ours, so it is a pattern
+    source, not a component. The evidence-tier idea maps loosely onto our measurement constitution''s
+    claim grammar. Tier-2b (bounded, provisional): queries RSI-Anything Gen-Verse recursive self-improvement
+    world models; RSI-Anything criticism limitations replication world model recursive self-improvement.
+    none surfaced in bounded search (provisional). Second search returned only generic RSI critiques (e.g.
+    Lambert lossy self-improvement) not specific to this work. Corroboration seen: Aggregator page for
+    the paper; results (code repair hidden-test 26.3% to 31.2%, lab planning 21.80% to 46.01%, reaction
+    optimization 96.15% vs 82.16% Bayesian opt) are self-reported and restated by news sites. (https://www.emergentmind.com/papers/2610.13912;
+    restatement) Dive recommendation (Stage-1): no - Declined (repo and paper): self-reported, small domain-specific
+    gains (e.g. code repair 26.3% -> 31.2% per Tier-2b digest) with no independent evaluation; the world-model-prediction
+    pattern is recorded for the harness/autopilot cluster without a dive. Analyst notes: Repo README states
+    Apache-2.0 and links HF dataset Gen-Verse/RSI-Anything. Contradiction pass not run (credibility <3,
+    non-actionable verdict). Companion, distinct from the repo entry. Re-verify every figure against primary
+    source before citing; this entry is stage1-unverified.'
+- id: intake-2001
+  arxiv_id: '2602.06053'
+  url: https://arxiv.org/abs/2602.06053
+  source_type: paper
+  title: 'PersonaPlex: Voice and Role Control for Full Duplex Conversational Speech Models'
+  categories:
+  - multimodal
+  - local_inference
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Rajarshi Roy
+  - Jonathan Raiman
+  - Sang-gil Lee
+  - Teodor-Dumitru Ene
+  - Robert Kirby
+  - Sungwon Kim
+  - Jaehyeon Kim
+  - Bryan Catanzaro
+  key_claims:
+  - 'Role and voice control for a full-duplex speech-to-speech model via hybrid system prompts: a text
+    prompt for role plus a speech sample for voice cloning.'
+  - Built by fine-tuning Moshi (initialised from Moshi weights) on large synthetic prompt+conversation
+    data generated with open-source LLMs and TTS; training reported at 6 hours on 8xA100.
+  - Extends Full-Duplex-Bench with Service-Duplex-Bench (50 customer-service scenarios x 7 questions =
+    350 questions).
+  - Claims better role adherence, speaker similarity, latency and naturalness than prior duplex models
+    (Moshi, Freeze-Omni, Qwen-2.5-Omni, Gemini), though Gemini scores higher on role adherence.
+  techniques:
+  - hybrid system prompts (text role + voice sample)
+  - synthetic conversation data from open LLM+TTS
+  - Moshi fine-tuning (temporal and depth transformers)
+  - Service-Duplex-Bench
+  reported_results:
+  - 'Table 1 speaker similarity: PersonaPlex 0.57 vs Moshi 0.10, Freeze-Omni 0.05, Qwen-2.5-Omni 0.07,
+    Gemini 0.00; released checkpoint 0.65 (Appendix A).'
+  - 'Table 1 DMOS: Full-Duplex-Bench 3.90 +-0.15 (Moshi 3.11); Service-Duplex-Bench 3.59 +-0.12.'
+  - 'Table 4 role adherence (GPT-4o score): PersonaPlex 4.48, Gemini 4.73, Freeze-Omni 4.02, Qwen-2.5-Omni
+    2.76, Moshi 1.75.'
+  - 'Table 2 experimental model: smooth turn-taking latency 0.070 (units not stated in extraction), interruption
+    latency 0.400; Table 6 released checkpoint 0.170 / 0.240.'
+  - 'Training data: 1,840 h customer service (105,410 dialogs) + 410 h general QA; released checkpoint
+    also uses 7,303 Fisher conversations (1,217 h). 24,576 steps, batch 32.'
+  - 'Table 5 data scaling: SSIM 0.10 (0%) -> 0.54 (25%) -> 0.57 (100%).'
+  referenced_arxiv_ids:
+  - '2410.00037'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-511
+    - intake-513
+    - intake-514
+    - intake-515
+    - intake-1982
+    intake_entry_notes:
+    - intake-511/513/514/515 (KAME and Moshi-based tandem S2S entries; verdict not_applicable on GPU-only/no-GGUF
+      grounds). PersonaPlex is the same Moshi family, so the same blocker class applies, but the 2026-09-24
+      interlocutor vision changes the relevance weighting.
+    - No existing intake entry for PersonaPlex or Full-Duplex-Bench found by grep of research/intake_index.yaml
+      (only a passing mention of personaplex_voice_interface.md in an old note).
+    - intake-1982 (companion code repository)
+  expanded_from: intake-1982
+  credibility_score: 4
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Add PersonaPlex-7B as a candidate/reference baseline to the CS-8 bake-off in handoffs/active/conversation-stack.md;
+    check ROCm gfx90a runnability of the moshi server first.'
+  - '[unverified] Reuse Full-Duplex-Bench / Service-Duplex-Bench as the turn-taking gate in the CS-5 reference
+    harness.'
+  source_revision: arXiv:2602.06053v1 (html route); companion repo NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91
+    (README sha256 4e8d2598..., retrieved 2026-10-20)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2602.06053v1 (html route); companion repo NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91
+    (README sha256 4e8d2598..., retrieved 2026-10-20); fetch_status: ok. EPYC fit (unverified): Directly
+    relevant to the conversation-stack handoff, whose interlocutor bake-off names Step-Audio 2 mini (lead)
+    and Qwen3-Omni-30B-A3B (challenger) against the whisper+qwentts cascade; PersonaPlex (7B, Moshi/Helium
+    base, name personaplex-7b-v1) is an unlisted third candidate with open weights (NVIDIA Open Model
+    license per repo README; code MIT; the paper itself does not state a weights license). Obstacles:
+    PyTorch/CUDA-oriented Moshi stack, no GGUF/llama.cpp path (README offers --cpu-offload via accelerate),
+    MI210/ROCm status unverified. It also supplies Service-Duplex-Bench and a role/voice-control recipe
+    that fits an orchestrator-driven persona. Dive recommendation (Stage-1): yes - Dive together with
+    the PersonaPlex repo: the paper carries the latency/turn-taking evaluation and the voice/role-control
+    mechanism; the repo carries license and serving path. Analyst notes: Latency units/column labels in
+    tables were inferred by the fetch summarizer (not stated); verify against the PDF before quoting.
+    Parameter count ''about 7B'' is inferred from checkpoint name. Contradiction pass skipped (not run).
+    Memory notes were not grepped (not in my read scope); handoff conversation-stack.md was. Re-verify
+    every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-2002
+  arxiv_id: '2610.18010'
+  url: https://arxiv.org/abs/2610.18010
+  source_type: paper
+  title: Fish Audio Drama 3 Technical Report
+  categories:
+  - multimodal
+  - moe_optimization
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Dawei Han
+  - Shidong Li
+  - Shijia Liao
+  - Jiahua Liu
+  - Songting Liu
+  - Qingzheng Wang
+  - Yuxuan Wang
+  - Xin Chen
+  - Yifan Cheng
+  - Tianyu Li
+  - Gangin Park
+  - Xuehao Yang
+  - Chang Zeng
+  - Haoyang Zhang
+  - Ruoyi Zhang
+  - Xiangyu Zhang
+  key_claims:
+  - 'Open-weight directed-performance TTS: multi-reference voice cloning, natural-language direction,
+    revision from feedback, multi-character scenes (up to 16 speaker tags), infilling edits, long-form
+    and streaming.'
+  - 'Backbone initialised from Qwen3.5-35B-A3B''s language model: 35B total / 3B active MoE, 40-layer
+    hybrid of Gated DeltaNet and gated full attention (one full-attention layer per block of three), 8
+    of 256 experts routed plus a shared expert.'
+  - 'New codebook-MTP audio decoder (13 layers: 4 shared, 9 per-codebook) predicts acoustic codebooks
+    per frame; codec is the S2 tokenizer on Descript Audio Codec, 44.1 kHz, 10 codebooks, about 21.5 fps.'
+  - Trained with three-stage pre-training, instruction tuning and RL using a single learned human-preference
+    reward; FP8 block-scaled experts used in rollouts.
+  techniques:
+  - codebook-MTP decoder
+  - hybrid DeltaNet MoE TTS backbone
+  - FP8 block-scaled routed experts
+  - prefill-decode disaggregation
+  - preference-reward RL for TTS
+  reported_results:
+  - Single-stream decode 271 frames/s on one H200 vs 177 for Fish Audio S2 (abstract/speed section); 295
+    fps on B300 with MXFP8 experts.
+  - 'HF card, H200 streaming: first audio about 89 ms p50 / 91 ms p95 single stream; 16 streams ~2.7x
+    faster than real time (mean RTF 0.373); 64 streams ~1,687 fps, RTF 0.801, p50 TTFA ~451 ms. (Model
+    card, not the report; report itself gives no first-packet figure.)'
+  - 'Seed-TTS-Eval: test-zh CER 0.83, test-en WER 1.54; streaming WER 1.86 vs 1.83 non-streamed (LibriSpeech-PC).'
+  - 'Production: ~24 streams per RTX PRO 6000 with prefill-decode disaggregation vs ~10 single GPU.'
+  referenced_arxiv_ids:
+  - '2410.00037'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-1984
+    intake_entry_notes:
+    - No existing intake entry for Fish Audio S2 / Drama 3 found by grep.
+    - intake-1984 (companion model card)
+  expanded_from: intake-1984
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Read the LICENSE and record terms; if permissive enough, list as TTS candidate in handoffs/active/multimodal-pipeline.md.'
+  source_revision: arXiv:2610.18010v2 (html route, first 100k of 136k chars read); HF fishaudio/drama-3
+    @ b2b5ee998034b2975720906c815e7fb0e9f007bd
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2610.18010v2 (html route, first 100k of 136k chars read); HF fishaudio/drama-3
+    @ b2b5ee998034b2975720906c815e7fb0e9f007bd; fetch_status: partial (last ~36k chars of html not read;
+    HF card read). EPYC fit (unverified): A TTS candidate whose backbone shares the Qwen3.5-35B-A3B hybrid
+    DeltaNet MoE class that our lineup already serves, so llama.cpp-side kernels (DeltaNet, MoE) could
+    in principle be reused, but the audio decoder/codec path has no llama.cpp or qwentts.cpp support.
+    Weights are 36B on the HF card; every number is H200, nothing for CPU or MI210; serving is via SGLang-Omni/vLLM-Omni.
+    License is the Fish Audio Community License (metadata tag says fish-audio-research-license), so open-source-only
+    policy compliance needs a read of the LICENSE file. Not a replacement for the frozen qwentts TTS soon,
+    but a quality ceiling reference. Dive recommendation (Stage-1): yes - Dive together with the drama-3
+    model card: license first (decides admissibility), then streaming latency and the Qwen3.5-35B-A3B
+    backbone (hybrid DeltaNet MoE - llama.cpp support status matters for any CPU/MI210 path). Analyst
+    notes: credibility null: TTS tech report from the vendor (commercial bias), no third-party corroboration
+    seen; scored null per ''blogs without empirical claims'' is not exact, set to 3 minus 1 bias if the
+    main prefers numeric. HF card lists 3 finetunes and 39 quantized variants. Contradiction pass skipped.
+    Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-2003
+  arxiv_id: '2503.04721'
+  url: https://arxiv.org/abs/2503.04721
+  source_type: paper
+  title: 'Full-Duplex-Bench: A Benchmark to Evaluate Full-duplex Spoken Dialogue Models on Turn-taking
+    Capabilities'
+  categories:
+  - benchmark_methodology
+  - multimodal
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - Guan-Ting Lin
+  - Jiachen Lian
+  - Tingle Li
+  - Qirui Wang
+  - Gopala Anumanchipalli
+  - Alexander H. Liu
+  - Hung-yi Lee
+  key_claims:
+  - 'Benchmarks four turn-taking behaviours of full-duplex spoken dialogue models: pause handling, backchanneling,
+    smooth turn-taking, user interruption, with automatic metrics.'
+  - 'Metrics: takeover rate (TOR), backchannel frequency, JSD of backchannel timing vs humans, response
+    latency, and a GPT-4o 0-5 coherence score for interruptions.'
+  - 'Early results show large differences: Moshi almost always takes over during pauses (TOR ~0.98), Gemini
+    Live far less (0.255 / 0.310).'
+  - Code and data are released; transcripts use parakeet-tdt-0.6b-v2 ASR.
+  techniques:
+  - automatic turn-taking metrics
+  - takeover rate
+  - JSD backchannel timing
+  - synthetic interruption set
+  - Candor/ICC-derived test sets
+  reported_results:
+  - 'Table III pause TOR (synthetic/Candor), lower better: dGSLM 0.934/0.935; Moshi 0.985/0.980; Freeze-Omni
+    0.642/0.481; Gemini Live 0.255/0.310.'
+  - 'Table III smooth turn-taking TOR / latency (s): dGSLM 0.975/0.352; Moshi 0.941/0.265; Freeze-Omni
+    0.336/0.953; Gemini Live 0.655/1.301.'
+  - 'Table III interruption GPT-4o / latency: Moshi 0.765/0.257; Freeze-Omni 3.615/1.409; Gemini Live
+    3.376/1.183.'
+  - 'Dataset sizes: Candor 216 pause / 119 turn-taking, ICC 55 backchannel, synthetic 200 interruption
+    + 137 pause.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-511
+    - intake-515
+    intake_entry_notes:
+    - Full-Duplex-Bench is NOT covered by any existing intake entry (grep for Full-Duplex-Bench / FullDuplex
+      / turn-taking in research/intake_index.yaml found only a barge-in note at ~line 38569 and KAME/Moshi
+      entries). Moshi-class entries (intake-511/513/514/515) are the models it evaluates.
+  expanded_from: intake-1982
+  credibility_score: 4
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Evaluate adopting Full-Duplex-Bench as turn-taking gate in CS-5/CS-8 of handoffs/active/conversation-stack.md;
+    check repo license (github.com/DanielLin94144/Full-Duplex-Bench) first.'
+  source_revision: arXiv:2503.04721v3 (html route; v3 revised 2025-08-16)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2503.04721v3 (html route; v3 revised 2025-08-16); fetch_status:
+    ok (html route; repo not fetched). EPYC fit (unverified): Fills a gap: conversation-stack CS-5/CS-8
+    needs a reference harness and gates for turn-taking and barge-in, and CS-23 measures barge-in cancel
+    latency; this benchmark provides ready, automatic metrics and open code/data. The evaluated models
+    are GPU speech models, but the harness treats models as black boxes with audio in/out, so it could
+    also score our whisper+qwentts cascade baseline and any interlocutor candidate. Note Annex S of the
+    measurement constitution currently admits only single-backend STT/TTS, so use under the constitution
+    needs the pending amendment (CS-2). Dive recommendation (Stage-1): yes - Could supply turn-taking
+    / barge-in / backchannel gates for the conversation-stack harness (CS-5/CS-8 per Stage-1 read); a
+    dive settles metric definitions, whether it scores cascades (STT->LLM->TTS) as well as end-to-end
+    models, and the current version''s task set. Analyst notes: Table column semantics taken from the
+    fetch summarizer; verify TOR direction per task before quoting. ASRU 2025 acceptance per arXiv abs
+    page. Contradiction pass skipped. Re-verify every figure against primary source before citing; this
+    entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-2004
+  arxiv_id: null
+  url: https://hackmd.io/@thc1006/qwen3-8-27b-speculative-decoding-rtx-3090
+  source_type: blog
+  title: 'Qwen3.8-27B on One RTX 3090: 59.8% Faster with MTP, But Not Bit-Exact (Hsiu-Chi Tsai, HackMD)'
+  categories:
+  - speculative_decoding
+  - local_inference
+  - benchmark_methodology
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Hsiu-Chi Tsai
+  key_claims:
+  - 'Own preregistered, archived measurement on llama.cpp (not vLLM): Qwen3.8-27B UD-Q4_K_XL on one stock-power
+    RTX 3090, greedy, batch 1, ctx 8192, q8_0 KV; MTP n-max 2 is the best tested point at +59.8% over
+    plain decode.'
+  - MTP outperforms DFlash2 on this setup at tested depths for the aggregate, but DFlash2 n-max 7 loses
+    on prose (-11.1%), chat (-4.3%) and Chinese (-28.7%) while winning on code (+91.8%) and reasoning
+    (+65.4%); no paired test declares a winner.
+  - 'Speculative output is not bit-exact: 92-100% of requests diverge from serial greedy by a 1,600-token
+    cap, with first-divergence points reproducible; cause not established and answer quality not measured.'
+  - A 0.8B external drafter on dense Qwen3.8 lost 29.8%; the earlier Qwen3.6-35B-A3B MoE study found every
+    llama.cpp configuration lost to plain decoding.
+  techniques:
+  - llama.cpp draft-mtp
+  - DFlash2 (PR 27342)
+  - paired cluster bootstrap over prompts
+  - clock-sensitivity probes
+  - board-telemetry energy estimate
+  reported_results:
+  - Baseline 41.55 tok/s; MTP n-max 2 66.39 (+59.8%, CI +57.0 to +62.8); MTP n-max 3 63.29 (+52.3%); DFlash2
+    n-max 4 63.13 (+51.9%); MTP n-max 5 54.89 (+32.1%); DFlash2 n-max 7 50.95 (+22.6%) (primary results
+    table; 25 prompts x 5 classes x 5 passes).
+  - Decode energy ~37% lower for MTP n-max 2 (board telemetry, tokens/J 0.1627 vs 0.1005).
+  - 'Per-class MTP n-max 2: code +92.0%, reasoning +73.6%, prose +48.6%, chat +46.9%, Chinese +37.7%.'
+  - Author states nominal 95% intervals have simulated coverage of 87.5-92.0%, and that n-max 2 was picked
+    on the same data it was scored on.
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1830
+    - intake-1829
+    intake_entry_notes:
+    - 'intake-1827 (HyperQwen): patched vLLM, 250 W 3090, DFlash2 + lookup (LABD), greedy, 25k ctx, W4A16
+      Marlin; headline 127 tok/s single-stream (baseline 47 tok/s stock vLLM no-spec). This post is llama.cpp,
+      stock 420 W, UD-Q4_K_XL, ctx 8192, baseline 41.55 tok/s, short prompts 400-1600 tokens.'
+    - 'intake-1830 (r/LocalLLaMA 1vtup5s): author scopes DFLASH_TOKENS=15 to context-reproduction and
+      says ~2:1 behind plain MTP elsewhere. This post''s per-class pattern (DFlash2 loses on prose/chat,
+      wins code/reasoning; MTP n-max 2 best overall) is directionally consistent with that caveat.'
+  expanded_from: intake-1987
+  credibility_score: null
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Cite as intake_entry in handoffs/active/dflash2-block-drafter-experimental-build.md
+    as corroboration of workload-dependence only; do not pool its tok/s with HyperQwen figures.'
+  - '[unverified] Add divergence-from-serial-greedy rate as a recorded metric in the spec-decode verification
+    (llama.cpp issue #25618 referenced by the post).'
+  source_revision: retrieved 2026-10-20 (WebFetch digest, not raw); post dated 2026-08-29 per page metadata;
+    companion repo github.com/thc1006/qwen3.8-speculative-decoding-rtx3090 not fetched
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Not a reproduction of intake-1827/1830 (different engine, quant, power, context); do not pool
+    its tok/s with HyperQwen figures. Stage-1 analyst read: retrieved 2026-10-20 (WebFetch digest, not
+    raw); post dated 2026-08-29 per page metadata; companion repo github.com/thc1006/qwen3.8-speculative-decoding-rtx3090
+    not fetched; fetch_status: partial (WebFetch digest of the post; raw page and companion repo not read;
+    numbers come from the digest and should be verified against the page/repo in Stage 2). EPYC fit (unverified):
+    Answer to the key question: NOT an independent reproduction of intake-1827 or intake-1830. Different
+    engine (llama.cpp vs patched vLLM), different quant, power limit, context length and baseline, no
+    lookup/LABD arm, and DFlash2 here is plain draft-dflash at n-max 4/7. It is independent corroboration
+    only of the qualitative claims that DFlash2 is workload-dependent and that MTP is the stronger general
+    default on a 24 GB 3090, plus a new contribution: byte-level divergence under speculation on a quantized
+    target and a statistically careful design. Relevant to our DFlash2/MTP champion work and the measurement
+    constitution (paired cluster bootstrap, divergence reporting, intervals optimistic by the author''s
+    own simulation). Dive recommendation (Stage-1): yes - Separate llama.cpp measurement on the same target
+    model family as our champion (MTP vs DFlash2 by workload, greedy, quantized target); a dive settles
+    its per-workload table and the reported 92-100% divergence from serial greedy on a quantized target
+    - which bears on how we gate DFlash2 ''losslessness'' under quantization. Analyst notes: Seed wccftech
+    page not fetched by me. Post claims no independent replication of its own results. Titled ''preregistered'';
+    the Zenodo DOI 10.5281/zenodo.22149941 is cited. Contradiction pass not run (credibility null). Greedy
+    only, no temperature tested, so it is silent on the sampling regime where HyperQwen reports chains/lookup
+    losses. Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-2005
+  arxiv_id: '2608.21836'
+  url: https://arxiv.org/abs/2608.21836
+  source_type: paper
+  title: 'LLM4LLM: Bridging Kernel Benchmarks and Real Deployment via Closed-Loop Agentic Optimization'
+  categories:
+  - autonomous_research
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Hui Zeng
+  - Pengfei Yang
+  - Yanxin Chen
+  - Fusong Ju
+  - Xinran Wei
+  key_claims:
+  - 'Standalone kernel benchmarks are a weak proxy for in-model behaviour: kernels that pass isolated
+    tests can differ in speed, safety or behaviour across inference phases once integrated (the benchmark-to-deployment
+    gap).'
+  - Proposed closed-loop framework starts from a target inference script, extracts phase-aware optimisation
+    tasks, searches with an experience-guided episodic agent, and accepts patches only after validation
+    inside the real model.
+  - Accepted to EMNLP 2026 main conference (per abs page comments).
+  techniques:
+  - deployment-aware kernel search
+  - phase-aware task extraction
+  - experience-guided episodic agent
+  - in-model patch validation
+  reported_results:
+  - 'Abstract: end-to-end latency reduced on all ten LM inference workloads on A100 and H100'
+  - 'Abstract: geometric-mean speedup 3.91x on A100 and 6.98x on H100'
+  - 'Abstract: up to 2.745x geomean on KernelBench Level 2'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autokernel-cross-workload-keep-gate.md
+    - autokernel-unified-surface-program.md
+    - autokernel-rebuild-program.md
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: intake-1998
+  credibility_score: 4
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Compare LLM4LLM''s in-model validation and phase split against autokernel-cross-workload-keep-gate.md;
+    extract any failure taxonomy.'
+  source_revision: arXiv:2608.21836v1 (abs page digest only; full html not read)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2608.21836v1 (abs page digest only; full html not read); fetch_status:
+    partial (abs page only via WebFetch digest; no full text, baselines unread). EPYC fit (unverified):
+    Directly names the bench-vs-deployment gap that AutoKernel''s cross-workload keep-gate and serving-gate
+    work address. The accept-only-after-in-model-validation and phase-aware (prefill vs decode) task extraction
+    map onto AK keep-gates. Misfit: evaluated on NVIDIA A100/H100 with PyTorch-style workloads, not llama.cpp
+    CPU/HIP kernels, and speedups of this size are likely against unoptimised baselines; the baseline
+    is not verified. Dive recommendation (Stage-1): yes - Closest published analogue of the AK keep-gate
+    design; phase-aware task extraction may inform how AK weights prefill vs decode. Analyst notes: Only
+    the abstract was read. Cross-references are grep hits on handoff names plus the stated EPYC context;
+    intake_index not searched for this paper. Contradiction search not run (credibility 4 and actionable
+    verdict, but depth-capped expansion pass). Contradiction pass: none surfaced (not searched; provisional).
+    Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-2006
+  arxiv_id: '2607.12227'
+  url: https://arxiv.org/abs/2607.12227
+  source_type: paper
+  title: Rethinking the Evaluation of Harness Evolution for Agents
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Yike Wang
+  - Huaisheng Zhu
+  - Zhengyu Hu
+  - Yige Yuan
+  - Zhengyu Chen
+  - Shakti Senthil
+  - Hannaneh Hajishirzi
+  - Yulia Tsvetkov
+  - Noah A. Smith
+  - Pradeep Dasigi
+  - Teng Xiao
+  key_claims:
+  - Existing harness-evolution evaluations lack a matched feedback/inference-budget comparison against
+    simple task-level search or test-time scaling.
+  - Evolution tunes harnesses on verification signals (e.g. unit tests) from the same benchmark used for
+    final reporting, breaking train/test separation.
+  - On Terminal-Bench 2.1, harness evolution does not beat simple test-time scaling (with or without test
+    cases) and generalises poorly.
+  - Long-horizon games with granular feedback look more promising for task-specific evolution.
+  - Matched-budget baselines and held-out evaluation are required to separate real harness gains from
+    benchmark-specific search and overfitting.
+  techniques:
+  - matched-budget baselines
+  - held-out task evaluation
+  - test-time scaling baseline
+  reported_results:
+  - 'Abstract: task-specific harness evolution beats the search baseline by 80% on ARC-AGI-3 under matched
+    budgets'
+  - 'Abstract: +11% on EdgeBench games under matched budgets'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - harness-selection-and-integration.md
+    experiments: []
+    intake_entries:
+    - intake-921
+    - intake-926
+    - intake-1323
+    - intake-1339
+    - intake-1341
+    intake_entry_notes:
+    - 'intake-921 (MemoHarness; carries this paper as the Tier-2b CONTESTED caution: matched-budget and
+      same-benchmark defects, held-out gain only ~0.6-1.2 points per that entry''s notes)'
+    - intake-926, intake-1323, intake-1339, intake-1341 (cite it as category-level caution that harness-evolution
+      gains are small and hard to measure; Harness-R1 entry notes a v2 narrowing)
+  expanded_from: intake-1995
+  credibility_score: 4
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Add matched-budget + held-out checklist to harness-improvement-loop.md experiment template.'
+  source_revision: arXiv:2607.12227v4 (abs page digest only; revised 2026-10-05)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2607.12227v4 (abs page digest only; revised 2026-10-05); fetch_status:
+    partial (abs page digest only; v4 body not read; index notes cite v1/v2 figures that I did not re-verify).
+    EPYC fit (unverified): The paper has been used in the index only as a caution on other harness-evolution
+    entries; the primary source was never ingested. Its matched-budget and held-out requirements are directly
+    applicable to autopilot and AK experiment design and to the project''s own null randomized-pool result
+    (learned-routing-controller P4.6, per intake-921 notes). Pattern adoption, not a component. Dive recommendation
+    (Stage-1): yes - Load-bearing for existing records: intake-921/926/1323/1339/1341 cite v1/v2 figures,
+    while the current v4 abstract reports different benchmarks (ARC-AGI-3, EdgeBench); a dive on v4 settles
+    whether those citations are stale (dive-the-current-version rule) and yields the matched-budget held-out
+    checklist. Analyst notes: Version drift: index entries quote earlier-version numbers (three models,
+    45/10/34 split); abstract of v4 names ARC-AGI-3 and EdgeBench, which may be newer content. Verify
+    against full text before any claim tuple. Contradiction pass not run; none surfaced (provisional).
+    Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
+- id: intake-2007
+  arxiv_id: '2608.26218'
+  url: https://arxiv.org/abs/2608.26218
+  source_type: paper
+  title: 'Same Model, Different Harness: Different Coding-Agent Results'
+  categories:
+  - agent_architecture
+  - context_management
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Sydney Lewis
+  key_claims:
+  - With model and tasks fixed, changing only the harness changes coding-agent results.
+  - Treatment keeps the same record but shortens older tool results as context fills and reacts to repeated
+    or stalled work; control keeps the full conversation.
+  - Gains concentrate under tight context windows; with wide windows outcomes on Verified and Pro are
+    close.
+  - The same frozen treatment improved three other models without retuning.
+  - Evaluations should treat model plus harness as the tested solver.
+  techniques:
+  - tool-result truncation under context pressure
+  - stall/repeat detection
+  - tight-window evaluation
+  reported_results:
+  - 'Abstract: tight-window SWE-bench Verified cohort (169 tasks, 20,480-token window): mean per-task
+    fail-to-pass fraction 28% to 49%'
+  - 'Abstract: complete solutions 43 to 72 on that cohort'
+  - 'Abstract: fewer prompt tokens per turn in wide-window Verified cohort'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: intake-1991
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Consider an old-tool-result shortening arm in REPL context management tests; owner agentic-serving-harness-fixes.md.'
+  source_revision: arXiv:2608.26218v1 (abs page digest only)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2608.26218v1 (abs page digest only); fetch_status: partial (abs
+    page digest only). EPYC fit (unverified): Local models often run with constrained effective context,
+    which is exactly the regime where the paper reports gains; the observation-trimming treatment is cheap
+    and could apply to the REPL tool environment. Reinforces the project stance that harness numbers are
+    not model numbers. Single author, no venue, abstract only read. Dive recommendation (Stage-1): no
+    - Low-cost pattern worth noting for REPL context management; evidence single-author and unreviewed.
+    Analyst notes: Credibility estimate: arXiv-only +0, recent +1, no major lab, no corroboration = 1;
+    I scored 2 generously for large cohort; treat as 1-2. Contradiction pass not run. Re-verify every
+    figure against primary source before citing; this entry is stage1-unverified.'
+- id: intake-2008
+  arxiv_id: '2605.05716'
+  url: https://arxiv.org/abs/2605.05716
+  source_type: paper
+  title: 'More Is Not Always Better: Cross-Component Interference in LLM Agent Scaffolding'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Ming Liu
+  key_claims:
+  - Full factorial over 32 subsets of five scaffolding components (planning, tools, memory, self-reflection,
+    retrieval) shows the all-components configuration consistently underperforms the best subset.
+  - Optimal component count varies by task (1 to 4) and model scale; some combinations hurt at 8B but
+    help at 70B.
+  - 56.3% of tested cases violate submodularity, so greedy component selection is unreliable.
+  - Effect replicates on Qwen2.5 and under prompt paraphrasing; a three-way Tool/Reflection/Retrieval
+    synergy is exploratory only.
+  techniques:
+  - full factorial ablation
+  - Shapley interaction analysis
+  - main-effects regression
+  reported_results:
+  - 'Abstract: 96 conditions, up to 10 seeds, HotpotQA and GSM8K, Llama-3.1 8B and 70B'
+  - 'Abstract: single-tool agent beats full config by 32% on HotpotQA; three-component subset beats it
+    by 79% on GSM8K'
+  - 'Abstract: main-effects regression R^2 = 0.916'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  expanded_from: intake-1991
+  credibility_score: 2
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Cite as rationale for per-role scaffold-subset ablation in harness-selection-and-integration.md.'
+  source_revision: arXiv:2605.05716v1 (abs page digest only)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-1 analyst read: arXiv:2605.05716v1 (abs page digest only); fetch_status: partial (abs
+    page digest only). EPYC fit (unverified): Supports ablating orchestrator and REPL scaffolding components
+    per role and model size rather than stacking features by default; the 8B-vs-70B sign flips matter
+    for small worker models versus large architects. Weak evidence: two simple benchmarks, one model family
+    plus a replication, single author. Dive recommendation (Stage-1): no - Useful as a justification for
+    per-role component ablation; evidence base narrow. Analyst notes: Abstract only; no full text. Credibility
+    estimate rough. Contradiction pass not run. Re-verify every figure against primary source before citing;
+    this entry is stage1-unverified.'
