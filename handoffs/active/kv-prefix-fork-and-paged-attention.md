@@ -123,40 +123,52 @@ attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carrie
   already crosses (the KV pool gate and the serving record), with a flag-off test that proves nothing else
   changed — the January module failed on exactly that last point.
 
-## What already exists in our tree (v10 `ffc1bac82`, read-only line refs)
+## What already exists in our tree (read-only line refs, each tagged by tree)
 
-- `llama_kv_cache::seq_cp` (`src/llama-kv-cache.cpp:450-491`): in unified mode (`s0 == s1`) it adds the dst
+Tree tags used below, every number verified with `git show <rev>:<path>` on 2026-10-20 (script `/mnt/raid0/llm/tmp/zero-inference-20261020/KPF-DOC-1/map.py`):
+**v10** = `ffc1bac82` (frozen production); **champ** = `dd3d9721c` (champion tip; `e33229348` was the tip before the #26004/#30574 ports, so a ref quoted against it is ~+229 lines off from `server-context.cpp` L2450 onward); **p1r** = `a1f0c8cf9` (KPF-11..17 on `e33229348`); **p1r2** = `14d603f3a` (the same KPF work rebased on `dd3d9721c`, plus the slot-file pin test). A bare `L123` below is v10; cite a line only with its tree tag. Format: `[v10 · champ · p1r · p1r2]`.
+
+- `llama_kv_cache::seq_cp` (`src/llama-kv-cache.cpp` [450-491 · 451-492 · 526-567 · 526-567]): in unified mode (`s0 == s1`) it adds the dst
   seq bit to every src cell in `[p0, p1)`. Zero copy. One O(n_cells) metadata pass, ~393k cells.
-- `llama_memory_recurrent::seq_cp` (`src/llama-memory-recurrent.cpp:246-281`) **ignores p0/p1**. It makes dst share
-  src's *current* tail cell. `llama_memory_hybrid::seq_cp` (`src/llama-memory-hybrid.cpp:152-155`) calls both
+- `llama_memory_recurrent::seq_cp` (`src/llama-memory-recurrent.cpp` 246-281 in all four trees) **ignores p0/p1**. It makes dst share
+  src's *current* tail cell. `llama_memory_hybrid::seq_cp` (`src/llama-memory-hybrid.cpp` 152-155 in all four trees; p1r/p1r2 add the attention-only share, KPF-12, as a separate entry point and leave this one unchanged) calls both
   halves, so a hybrid `seq_cp(src, dst, 0, p)` gives dst the correct attention prefix but src's state at its
   current end, not at p. **Never use hybrid `seq_cp` for a fork.**
-- Context checkpoints (`create_checkpoint`, `tools/server/server-context.cpp:2365-2412`) save the
+- Context checkpoints (`create_checkpoint`, `tools/server/server-context.cpp` [2365-2412 · 2396-2443 · 2802 · 2802]; p1r/p1r2 add the `bool pinned = false` parameter) save the
   non-rollbackable state with `LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY`: the target's recurrent half
-  (`llama-memory-hybrid.cpp:191-203`), the drafter's SWA cache (`llama-kv-cache-iswa.cpp:259-273`), and the
+  (`llama-memory-hybrid.cpp` [191-203 · 191-203 · 203-215 · 203-215]), the drafter's SWA cache (`llama-kv-cache-iswa.cpp` [259-273 · 259-273 · 273-287 · 273-287]), and the
   DFlash2 speculative state (`common_speculative_get_state` → `cur.data_spec`). The placement policy is in
-  `pre_decode` (L2984-3737, called from `update_slots` L2856-2965) ~L3562-3720: user-message starts (#24176), and
-  `4 + n_ubatch` and 4 tokens before prompt end.
-  Restore is at ~L3451-3480, on the slot's own checkpoints only.
-- `server_slot::copy_state_to` (L735-757) does `seq_rm` + full `seq_cp` on `ctx_tgt` and `ctx_dft`. It is used only
+  `pre_decode` ([2984-3733 · 3334-4117 · 3666-4466 · 3895-4705], called from `update_slots` starting [2856 · 3194 · 3526 · 3755]) placement ~[3562-3726 · 3933-4110 · 4263-4459 · 4502-4698]: user-message starts (#24176), and
+  `4 + n_ubatch` and 4 tokens before prompt end. The spacing exemption `is_last_user_message || near_prompt_end` is in v10 (L3718), in the champion before the KPF work (`e33229348` L3863, `dd3d9721c` L4102) and in all KPF trees: it is NOT a KPF change. The KPF departures in this block are the `ckpt_pinned ||` term added to that same condition and `create_checkpoint(..., ckpt_pinned)` (`ckpt_pinned` defined at p1r L4433 / p1r2 L4672, spacing term p1r L4449 / p1r2 L4688, call p1r L4458 / p1r2 L4697), see "KPF-branch departures" below.
+  Restore is at ~[3451-3480 · 3812-3841 · 4146-4175 · 4375-4404], on the slot's own checkpoints only (champ: the block grew by ~10 lines with the #26004 port).
+- `server_slot::copy_state_to` ([735-757 · 756-778 · 798 · 798]; p1r/p1r2 body changed for forks) does `seq_rm` + full `seq_cp` on `ctx_tgt` and `ctx_dft`. It is used only
   for `n>1` child tasks, and only from `SLOT_STATE_DONE_PROMPT`.
-- `get_available_slot` (L1601-1705): it computes LCP similarity only over slots that are **not processing**, then
+- `get_available_slot` ([1601-1705 · 1632-1736 · 2013 · 2013]; the p1r/p1r2 body is KPF-14's fork-source path): it computes LCP similarity only over slots that are **not processing**, then
   falls back to LRU, then does a `--cache-ram` save/load **by copy**.
-- Idle-slot purge (L2469-2484, `[TAG_IDLE_SLOT_CLEAR]`): with `cache_idle_slots` on and unified KV, each new task
+- Idle-slot purge ([2469-2484 · 2713-2728 · 2968-2983 · 3181-3196], `[TAG_IDLE_SLOT_CLEAR]`): with `cache_idle_slots` on and unified KV, each new task
   launch saves every idle slot to `--cache-ram` and `prompt_clear()`s it. **This runs after
   `launch_slot_with_task`**, so a fork whose source is an idle slot must be taken at launch, before this loop
   (KPF-14).
-- `--cache-reuse` is force-disabled for recurrent memory (L1286-1301). Correct, and not a lever here.
-- `find_slot` (`src/llama-kv-cache.cpp:901-1075`) is first-fit from `head` per ubatch (P3).
-- Hybrid ubatch split (`src/llama-memory-hybrid.cpp:80-89`): `split_equal(n_ubatch, !unified, n_rs_seq + 1)`. The
-  pure-KV path at `llama-kv-cache.cpp:716` uses `split_simple`. **Survey correction to verify in KPF-40:** survey §2.4
+- `--cache-reuse` is force-disabled for recurrent memory ([1286-1301 · 1307-1322 · 1361-1376 · 1361-1376]). Correct, and not a lever here.
+- `find_slot` (`src/llama-kv-cache.cpp` [901-1075 · 902-1076 · 977-1151 · 977-1151]) is first-fit from `head` per ubatch (P3).
+- Hybrid ubatch split (`src/llama-memory-hybrid.cpp:80-89` in all four trees): `split_equal(n_ubatch, !unified, n_rs_seq + 1)`. The
+  pure-KV path at `llama-kv-cache.cpp` [716 · 717 · 792 · 792] uses `split_simple`. **Survey correction to verify in KPF-40:** survey §2.4
   finding 3 says #29510 cannot slice DFlash2 verify ubatches because unified KV uses `split_simple`. Our hybrid
   model goes through `split_equal`, and #29510's `get_n_kv_slices()` accepts `equal_seqs() && n_seqs == n_seqs_unq`
   (`pr29510.diff` L1080-1091). So verify ubatches (4 seqs × 8 rows) may slice after all. If so, P4 is worth more
   than the survey estimated.
 - CPU paged-attention scaffolding from v5 (`src/llama-kv-block.h`, `GGML_OP_FLASH_ATTN_EXT_PAGED`,
-  `tests/test-kv-block.cpp`): forward-ported in `0e485a91b`, reverted in `a4e2b4f86`. It is reusable block
+  `tests/test-kv-block.cpp`): forward-ported in `0e485a91b`, reverted in `a4e2b4f86`; none of the three files exists in v10, champ, p1r or p1r2 (checked), so this is history, not tree content. It is reusable block
   accounting for P3/P4, with no GPU kernel.
+
+### KPF-branch departures from the champion (p1r on `e33229348`, p1r2 on `dd3d9721c`)
+
+These exist only on the KPF branches. A promotion carries them inside the FULL candidate build (fresh production + every feature, validated as a whole) and never as a cherry-pick:
+
+- `common_prompt_checkpoint::pinned` (`common/common.h:1130` in p1r and p1r2; absent in v10 and champ) and the `checkpoint_at` request parameter (`tools/server/server-task.h:72`, KPF-15), with the eviction loops in `create_checkpoint` never dropping a pinned checkpoint.
+- The `ckpt_pinned` override of the checkpoint spacing rule in `pre_decode`: a requested junction is checkpointed regardless of spacing or placement policy (`ckpt_pinned ||` heads the `do_checkpoint` spacing condition: p1r L4433-4458, p1r2 L4672-4697).
+- Correction to the earlier wording: the last-user exemption `is_last_user_message || near_prompt_end` is NOT a departure. It is in v10 and in the champion, and the KPF branches only prepend `ckpt_pinned ||` to it.
+- Everything else (cross-slot fork in `get_available_slot`/`copy_state_to`, attention-only zero-copy seq share in `llama-kv-cache.cpp`/`llama-memory-hybrid.cpp`, fork telemetry, `/props` fork capability, prefix-hash ladder, content epoch) is also KPF-only: commits `528b76f99`..`a1f0c8cf9` on p1r and `efd92d46a`..`14d603f3a` on p1r2.
 
 ## GitNexus pass, 2026-10-04 (read-only; drafting session)
 
@@ -219,7 +231,7 @@ attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carrie
   rule). The owning session applies both. Done when both are on main and KPF-18's runner emits the record shape.
 - [ ] **KPF-04: compile the radix lesson (above), the vLLM copy-vs-share table by path (PR #46384) and the junction-checkpoint lesson (PR #53945) into `wiki/kv-cache.md`** at the first wiki sweep after KPF-18
   closes, including the KPF-18 result.
-- [ ] **KPF-DOC-1 — tag line references by tree and record the KPF-branch departures from the champion.** In "What already exists in our tree" and "Key files" tag each line reference with its tree (v10 `ffc1bac82`, champion `e33229348`, or p1r `a1f0c8cf9`) so a reader cannot cite one against another (create_checkpoint is L2365 in v10 but L2396 in the champion, pre_decode L2984 vs L3105). Record that the last-user spacing exemption (is_last_user_message || near_prompt_end) and the pinned checkpoint field are KPF-branch departures from the champion, so any promotion carries them inside the FULL candidate build and never as a cherry-pick. Zero compute.
+- [x] **KPF-DOC-1 — tag line references by tree and record the KPF-branch departures from the champion.** In "What already exists in our tree" and "Key files" tag each line reference with its tree (v10 `ffc1bac82`, champion `e33229348`, or p1r `a1f0c8cf9`) so a reader cannot cite one against another (create_checkpoint is L2365 in v10 but L2396 in the champion, pre_decode L2984 vs L3105). Record that the last-user spacing exemption (is_last_user_message || near_prompt_end) and the pinned checkpoint field are KPF-branch departures from the champion, so any promotion carries them inside the FULL candidate build and never as a cherry-pick. Zero compute. ✅ 2026-10-20
 
 ### P1: cross-slot prefix fork, server side (workspace-ec) — effort M-L, ~2-3 weeks including the gate
 
@@ -544,18 +556,19 @@ Each item is dormant, not blocked. A reviewed session confirms the trigger and o
 
 ## Key files
 
-- **llama.cpp** (reference lines at v10 `ffc1bac82`; edit only in the phase worktree):
-  - `tools/server/server-context.cpp`: `copy_state_to` L735, `get_available_slot` L1601, `create_checkpoint`
-    L2365, the idle-slot purge L2469, `update_slots` L2856, `pre_decode` L2984
-    (checkpoint restore ~L3451, placement ~L3562-3720).
+- **llama.cpp** (reference lines tagged `[v10 `ffc1bac82` · champ `dd3d9721c` · p1r `a1f0c8cf9` · p1r2 `14d603f3a`]`; edit only in the phase worktree):
+  - `tools/server/server-context.cpp`: `copy_state_to` [735 · 756 · 798 · 798], `get_available_slot` [1601 · 1632 · 2013 · 2013],
+    `create_checkpoint` [2365 · 2396 · 2802 · 2802], the idle-slot purge [2469 · 2713 · 2968 · 3181],
+    `update_slots` [2856 · 3194 · 3526 · 3755], `pre_decode` [2984 · 3334 · 3666 · 3895]
+    (checkpoint restore ~[3451 · 3812 · 4146 · 4375], placement ~[3562 · 3933 · 4263 · 4502]).
   - `tools/server/server-task.{h,cpp}` (request params, `server_prompt_cache`, checkpoints).
-  - `src/llama-kv-cache.cpp` (`seq_cp` L450, `find_slot` L901, `apply_ubatch` L1100, `set_input_kq_mask` L1757);
+  - `src/llama-kv-cache.cpp` (`seq_cp` [450 · 451 · 526 · 526], `find_slot` [901 · 902 · 977 · 977], `apply_ubatch` [1100 · 1101 · 1176 · 1176], `set_input_kq_mask` [1757 · 1758 · 1833 · 1833]);
     `src/llama-kv-cells.h`.
-  - `src/llama-memory-hybrid.cpp` (split L89, `seq_cp` L152, state L191); `src/llama-memory-recurrent.cpp`
-    (`seq_cp` L246); `src/llama-kv-cache-iswa.cpp` (state L259).
+  - `src/llama-memory-hybrid.cpp` (split L89 and `seq_cp` L152 in all four; state [191 · 191 · 203 · 203]); `src/llama-memory-recurrent.cpp`
+    (`seq_cp` L246 in all four); `src/llama-kv-cache-iswa.cpp` (state [259 · 259 · 273 · 273]).
   - `src/llama-context.cpp`, `include/llama.h`, `common/common.cpp`, `common/speculative.{h,cpp}`
     (`common_speculative_{get,set}_state`).
-  - `src/llama-graph.cpp` (`build_attn_mha` L2533).
+  - `src/llama-graph.cpp` (`build_attn_mha` [2533 · 2699 · 2699 · 2699]).
   - `ggml/src/ggml-cuda/fattn-{common.cuh,vec.cuh,wmma-f16.cu,mma-f16.cuh}`.
   - Tests: `tests/test-save-load-state.cpp`, `tests/test-state-restore-fragmented.cpp`,
     `tests/test-recurrent-state-rollback.cpp`, `tools/server/tests/unit/test_slot_save.py`,
