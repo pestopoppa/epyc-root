@@ -560,6 +560,7 @@ _FILE_SOURCES = (
     "exl3-measurement", "exl3-verifier",
     "research-screen",
     "kv-quant-27b-v10-measurement", "embedder-placement-gate", "gfx90a-static-register",
+    "repl-retrieval-eval", "repl-embedder-speed",
     "qwen4exp-quality-measurement",
     "evidence-durability",
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",

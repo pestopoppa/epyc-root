@@ -48,6 +48,21 @@ def _files(*patterns: str) -> Units:
     return units
 
 
+def _files_except(exclude_suffix: str, *patterns: str) -> Units:
+    """Like ``_files``, but a directory walk skips names ending in ``exclude_suffix``.
+
+    For two sources that share one directory and must never read each other's sidecars (the
+    offline recall and speed instruments). An explicitly named file is always its own unit, so the
+    wrong source meets it and refuses it by name instead of never seeing it.
+    """
+    inner = _files(*patterns)
+
+    def units(path: Path) -> list[Path]:
+        found = inner(path)
+        return found if path.is_file() else [p for p in found if not p.name.endswith(exclude_suffix)]
+    return units
+
+
 def _run_dirs(marker: str) -> Units:
     """A directory holding ``marker`` is one run; otherwise its children that hold it are."""
     def units(path: Path) -> list[Path]:
@@ -162,6 +177,22 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="UFH-12 placement gate sidecars (`<record>.belief_measurements.jsonl`); the "
                 "2026-09-26 Phase-0 records have none and yield no claims",
            task="VB-UFH12-PLACEMENT"),
+    Source("repl-retrieval-eval", "repl_retrieval_eval",
+           _files_except(".speed.belief_measurements.jsonl", "*.belief_measurements.jsonl",
+                         "*/*.belief_measurements.jsonl"),
+           default=ORCHESTRATOR / "data/repl_retrieval_eval",
+           note="UFH-12 offline retrieval eval sidecars (`<run_id>.belief_measurements.jsonl`, instrument "
+                "offline_recall, written by `RetrievalRun.finalize()`); speed sidecars in the same "
+                "directory are not read here, and an explicit one is refused by name",
+           task="VB-UFH12-RETR"),
+    Source("repl-embedder-speed", "repl_retrieval_eval",
+           _files("*.speed.belief_measurements.jsonl", "*/*.speed.belief_measurements.jsonl"),
+           natives="speed_native_rows", project="project_speed",
+           default=ORCHESTRATOR / "data/repl_retrieval_eval",
+           note="UFH-12 embedder speed-block sidecars (`<run_id>.speed.belief_measurements.jsonl`, "
+                "instrument offline_speed, written by `SpeedRun.finalize()`); every row carries its "
+                "timing context and its A/A noise floor",
+           task="VB-UFH12-EMBSPEED"),
     Source("gfx90a-static-register", "gfx90a_static_register",
            _files("audit_*.json", "audit_*.json.gz", "*isa_audit*.json", "*isa_audit*.json.gz"),
            note="gfx90a static register/ISA audits (research `gfx90a_isa_audit.py audit --json`, "

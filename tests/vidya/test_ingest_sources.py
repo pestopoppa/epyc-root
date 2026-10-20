@@ -259,6 +259,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # Cross-repo capture-module pin, whole-file refusal and ledger ingest:
         # test_embedder_placement_gate_adapter.py.
         "embedder-placement-gate",
+        # Cross-repo capture-module pin, two instruments kept apart, whole-file refusal and
+        # ledger ingest of both sources: test_repl_retrieval_eval_adapter.py.
+        "repl-retrieval-eval", "repl-embedder-speed",
         # Cross-repo producer pin (research e603216f), whole-document refusal, pre-hook
         # decline and ledger ingest: test_gfx90a_static_register_adapter.py.
         "gfx90a-static-register",
