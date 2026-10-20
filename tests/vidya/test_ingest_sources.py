@@ -90,6 +90,12 @@ def _chat_template(tmp: Path) -> Path:
     return h.write_sidecar(h.make_run(tmp))
 
 
+def _kv_prefix_fork(tmp: Path) -> Path:
+    import shutil
+    shutil.copytree(Path(__file__).parent / "fixtures" / "kpf", tmp / "kpf")
+    return tmp / "kpf" / "belief_measurements.jsonl"
+
+
 def _occ1(tmp: Path) -> Path:
     h = _helpers("test_occ1_optical_compression_adapter")
     return h.write_sidecar(h.make_run(tmp))
@@ -195,6 +201,7 @@ BUILDERS = {
     "beam": _beam,
     "tulving": _tulving,
     "chat-template-ab": _chat_template,
+    "kv-prefix-fork": _kv_prefix_fork,
     "occ1": _occ1,
     "tale-budget": _tale_budget,
     "review-f1": _review_f1,
