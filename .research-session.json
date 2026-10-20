@@ -1,8 +1,8 @@
 {
   "session_id": "intake-deepinfer-20261020",
   "started_at": "2026-10-20T19:40:00Z",
-  "last_checkpoint": "2026-10-20T20:43:08Z",
-  "stage": "stage2-wave1-applied",
+  "last_checkpoint": "2026-10-20T20:51:36Z",
+  "stage": "stage2-wave2-applied",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepinfer-20261020",
   "branch": "intake/deepinfer-20261020",
@@ -19,10 +19,20 @@
     "intake-2123",
     "intake-2124",
     "intake-2125",
-    "intake-2126"
+    "intake-2126",
+    "intake-2127",
+    "intake-2128",
+    "intake-2129",
+    "intake-2130",
+    "intake-2131",
+    "intake-2132",
+    "intake-2133",
+    "intake-2134",
+    "intake-2135",
+    "intake-2136"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2127,
+  "next_intake_id": 2137,
   "expansion_cap": 10,
   "expansion_count": 10,
   "expansion_entries": [
@@ -156,6 +166,48 @@
             "source": "arXiv 2507.06607 SambaY",
             "bears_on": "intake-2125",
             "reason": "dive recommendation: no served checkpoint of this family; its YOCO-relevant content already recorded in intake-2125"
+          }
+        ]
+      },
+      {
+        "wave": 2,
+        "kind": "Stage-2b ingest+dive",
+        "entries": [
+          "intake-2127",
+          "intake-2128",
+          "intake-2129",
+          "intake-2130",
+          "intake-2131",
+          "intake-2132",
+          "intake-2133",
+          "intake-2134",
+          "intake-2135",
+          "intake-2136"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20",
+        "second_reader": {
+          "anchors_refound": "129/129",
+          "support": {
+            "yes": 65,
+            "partial": 0,
+            "no": 3
+          },
+          "resolved": [
+            "intake-2133 rotated anchors re-indexed (claims 2-4)"
+          ]
+        },
+        "surfaced_selected_for_wave3": [
+          "arXiv 2601.04426 XGrammar-2",
+          "arXiv 2606.04101 UltraEP",
+          "github MoonshotAI/MoonEP",
+          "github ROCm/mori"
+        ],
+        "surfaced_declined": [
+          {
+            "source": "github deepseek-ai/3FS",
+            "bears_on": "intake-2136",
+            "reason": "dive recommendation: distributed RDMA filesystem at 100 PiB scale has no single-host consumer; transferable lessons (EC read fan-out, LRU GC under a watermark) recorded in intake-2136; PROPOSED for operator confirmation in the Stage-3 plan"
           }
         ]
       }

@@ -276883,3 +276883,2369 @@
     A first strict pass flagged claim 2''s ''68.5% average compute utilization'' as a conflation with ''68.5% of optimal throughput'';
     main checked the saved paper text: §6.5 states both (''achieves 68.5% average compute utilization''), so the claim stands;
     corrections applied: none.'
+- id: intake-2127
+  arxiv_id: '2503.03588'
+  url: https://arxiv.org/abs/2503.03588
+  source_type: paper
+  title: 'PowerAttention: Exponentially Scaling of Receptive Fields for Effective Sparse Attention'
+  categories:
+  - kv_cache
+  - context_extension
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2117
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Lida Chen
+  - Dong Xu
+  - Chenxin An
+  - Xintao Wang
+  - Yikai Zhang
+  - others (Fudan University Knowledge Works / HKU; full list not recorded)
+  key_claims:
+  - PowerAttention defines the receptive field as the set of tokens that can influence a tokens representation and models
+    stacked sparse-attention layers as a DAG; for a sliding window of width W the multi-layer receptive field grows only linearly
+    with depth (O(N) layers to reach distance N), which is the upper bound that n_win x L arithmetic assumes.
+  - Measured on Qwen2-7B (28 layers, 32K context, 256-token blocks) with a synthetic passkey task, achieved retrieval accuracy
+    by passkey position tracks the THEORETICAL reachable-block fraction for sliding window as well as for PowerAttention (Fig.
+    1b; only one worked number, 10/128 = 7.82% for one layer, is in the text; the curves are not recoverable from text).
+  - 'The papers own statement closest to the V4.1 reports claim: a sliding window of roughly 2K tokens retrieves passkeys
+    up to about 12K tokens and fails beyond 16K, and the authors estimate information strength decays to near zero after propagating
+    through 6 layers of a 28-layer model, i.e. the usable depth is about 6 of 28 layers (an estimate, not a controlled measurement
+    of effective receptive field).'
+  - 'Probing (logistic classifiers on pooled hidden states, N=1200, 16K context, 6 passkeys, chance 1/6): in the unmodified
+    full-attention model information still spreads layer by layer with spatial locality; the sliding-window last-token probe
+    accuracy is 0.48 before and 0.37 after post-training, so the model does not learn to push passkey information further
+    through a window stack.'
+  - 'RULER (Qwen2-7B hybrid, 2 full-attention layers per 7, sparse layers at up to 94% sparsity, continued pretraining on
+    1B SlimPajama tokens plus ChatQA2 finetune): sliding window averages 72.20/58.17/49.40/34.91 at 4k/8k/16k/32k versus full
+    attention 91.77/86.34/84.27/79.24; variable-tracing at 32K is 10.60 (sliding window) versus 84.60 (full), the steepest
+    collapse of any sub-task.'
+  - PowerAttention (power-of-2 distance slashes) beats sliding window on RULER 32K, 50.74 vs 34.91 average, and is reported
+    3.0x faster than full attention at 128K prefill on one A800; author-run, one base model, no MoE.
+  - 'Scope limits: all evidence is a dense Qwen2-7B that was pretrained with FULL attention and retrofitted to sparse patterns
+    with 1B-token continued pretraining; windows are ~2K tokens, not 128; no MoE model, no model natively trained with sliding-window
+    layers, and no model that also has a compressed/global attention path. The paper never tests prefill-with-skipped-layers
+    or any truncated-replay scheme.'
+  techniques:
+  - receptive-field analysis of sparse attention as DAG reachability
+  - power-of-2-distance static sparse attention (O(log n) edges per token)
+  - block-sparse (256-token blocks) attention via FlexAttention
+  - information-flow probing with per-layer linear classifiers
+  - 'hybrid layers: 2 full-attention per 7'
+  reported_results:
+  - 'vendor-reported (author-run, Qwen2-7B, 1B-token continued pretraining + ChatQA2 finetune, ~94% sparsity in sparse layers):
+    RULER average at 4k/8k/16k/32k, PowerAttention 72.40/64.93/60.59/50.74, sliding window 72.20/58.17/49.40/34.91, full attention
+    91.77/86.34/84.27/79.24.'
+  - 'author-run PG19 perplexity at 94% sparsity, 4k..32k: sliding window 9.94/9.99/9.99/9.97, PowerAttention 10.03/10.08/10.05/10.00,
+    full 9.77/9.72/9.60/9.42.'
+  - 'author-run, NVIDIA A800: PowerAttention prefill 3.0x faster than full attention and 1.3x faster than MInference at 128K;
+    decode takes 58% / 80% of the time of those two.'
+  - 'Probing, Qwen2-7B 16K, chance 1/6: sliding-window last-token accuracy 0.48 before, 0.37 after post-training; PowerAttention
+    last-token accuracy rises by 44 points to 100% after post-training.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2117
+    intake_entry_notes:
+    - intake-2117 (the V4.1 report entry that cites this paper as the justification for Decoder SWA Bounded Replay)
+  recommended_actions:
+  - 'Operator-review candidate: treat as a prior only for the DS41-CED-1 / DS41-YOCO-1 quality gate; the gate must include
+    multi-hop long-range tasks and context lengths well above the replay window.'
+  credibility_score: 1
+  contradicting_evidence:
+  - Fig. 1 caption in the same paper says retrieval closely matches the THEORETICAL linear receptive field, which is in tension
+    with reading the paper as proof that the effective field is much smaller than the theoretical n_win x L; the ~6-of-28-layer
+    decay is an authors estimate.
+  - 'Appendix C.2: sliding-window probe accuracy fell after post-training (0.48 -> 0.37); authors hypothesise overfitting,
+    not tested.'
+  referenced_arxiv_ids: []
+  notes: 'Fetched https://arxiv.org/html/2503.03588v1 to /mnt/raid0/llm/tmp/dive-deepinfer-powerattn/paper.html (sha256-12
+    da4291a6b476); abs page confirms title, single version v1, submitted 5 Mar 2025. Full text converted to paper.txt and
+    read: abstract, §1-5, Appendices A-D (Appendix B proof and D pseudo-code skimmed only; figures not viewable, so all figure-only
+    numbers, including Fig. 1b curves and Fig. 4 latencies other than quoted text, are NOT read). Peer-review status not established
+    (license line CC BY-NC-SA; no venue seen). Credibility: +1 recency (>=12 months old, <=24 so 0), no venue verified, no
+    independent corroboration read; scored 1 on a 0-6 rubric.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+  reader_should_conclude: 'Cite only as: a retrofitted dense 7B with ~2K windows shows usable propagation of roughly 6 of
+    28 layers (authors estimate) and sliding-window stacks collapse on multi-hop tasks (RULER VT). Do NOT cite it as having
+    measured "effective receptive field << n_win x L" nor as evidence about a 128-token window, 20 decoder layers, MoE, or
+    a model with compressed global attention. It does not justify a 134-140 token replay; if anything it says information
+    crosses several window hops, so the DS41 replay must be gated empirically on long-range multi-hop tasks.'
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §2 Static Sparse Attention ¶2
+    quote: This inherent locality implies that the range of context that sliding window attention can capture (which we refer
+      to as receptive field later) expands linearly with the number of layers.
+    quote_sha256: ad32e973304e798dde955facc52c37c8fd8e94eae72e77dd49722e9d07dc9535
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 ¶1
+    quote: We define the receptive field as the set of all tokens that can influence a given token’s representation.
+    quote_sha256: 1718ec3c2618f5d957f4017ab95e370c6199834411af856d93958bc752d00b0c
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Fig. 1 caption
+    quote: The actual token retrieval capability closely matches the theoretical receptive field growth for both patterns.
+    quote_sha256: 868ecc4f0b05c9e1b4d5c2817a3b22e4dca49762fcc78597550cf9f1a84b1892
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.3 ¶3
+    quote: With a window size of approximately 2K tokens, we estimate that information strength decays to near zero after
+      propagating through 6 layers.
+    quote_sha256: 0a5e942495758fa7ca24473b967fbcb024c3c3d24a3254568732ce5d08eede3b
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.3 ¶3
+    quote: sliding window performs well up to 12K tokens but degrades significantly at 16K and 32K lengths
+    quote_sha256: f1bc1ceeb5e25368fd9173276cbafaad5ac9a1fe2d68a0706e7d359d80ff3321
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Appendix C.2
+    quote: Interestingly, the model’s performance in information flow degrades post-training, with accuracy declining from
+      0.48 to 0.37 .
+    quote_sha256: c974e666b79957d4ba459d08fada6a4a7465591bc9263519db0ab946a3fdb156
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.4 ¶1
+    quote: we keep 2 full attention layers for every 7 layers
+    quote_sha256: 69e3fbb2257e78895e20c9f1ff04d8e0a5b8f10c6b75102306cd9a83563fafa1
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.4 ¶3
+    quote: Notably, the widely adopted sliding window pattern achieves the lowest accuracy.
+    quote_sha256: f173e66b6193f42baf1d3aa8de4010fb41abd47d60d640a674bbd21f3c170113
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: §4.1 Implementation
+    quote: We use Qwen2-7B  ( Yang et al., 2024a ) , a pretrained model with 32K context length, as our base model.
+    quote_sha256: a0c6101f26c5a7c317e0af73bc2376273c76e98503ae609d179b83bad9effade
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §4.5 End-to-end Latency
+    quote: At a context length of 128K, PowerAttention delivers speedups of 3.0 × and 1.3 × over full attention and MInference
+      in the prefilling phase, respectively.
+    quote_sha256: c3774b6c651adac1392c7a0d5126e74ec8af8431004b7a898aba8d2fb832db1e
+    source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: definition and linear-growth statement are verbatim.
+  - claim_index: 1
+    effect: narrowed
+    note: figure-only data; text gives one worked number
+  - claim_index: 2
+    effect: narrowed
+    note: the 6-of-28 figure is an authors estimate on a retrofitted 2K-window model
+  - claim_index: 3
+    effect: unaffected
+    note: App. C.2 verbatim
+  - claim_index: 4
+    effect: unaffected
+    note: Table 2 values
+  - claim_index: 5
+    effect: unaffected
+    note: vendor-reported
+  - claim_index: 6
+    effect: unaffected
+    note: scope statement from §4.1
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled that the paper does not itself
+    state or measure "much smaller than n_win x L" (it reports linear theoretical growth matched by retrieval, and a ~6-of-28
+    layer usable-depth estimate), and that nothing transfers directly to DS41 (window 128, 20 layers, MoE, compressed global
+    path).
+
+
+    2026-10-20 second reader (independent agent): re-find 10/10; support yes 7 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2128
+  arxiv_id: '2604.13556'
+  url: https://arxiv.org/abs/2604.13556
+  source_type: paper
+  title: 'YOCO++: Enhancing YOCO with KV Residual Connections for Efficient LLM Inference'
+  categories:
+  - kv_cache
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2125
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - You Wu
+  - Ziheng Chen
+  - Yizhen Zhang
+  - Haoyi Wu
+  - Chengting Yu
+  - Yuchi Xu
+  - Wenbo Su
+  - Bo Zheng
+  - Kewei Tu
+  key_claims:
+  - YOCO splits an M-layer decoder into a self-decoder (bottom half, whose middle layer produces the one global KV cache)
+    and a cross-decoder (top half, which reuses that cache and stores none); the paper states this halves KV cache and, because
+    the top half can be skipped, halves prefill latency via early exit.
+  - 'Capacity-loss evidence against plain YOCO: 1.1B TinyLlama-config models (22 layers, 32 heads, 4 KV heads), 100B SlimPajama
+    tokens from scratch, standard attention in the self-decoder. Zero-shot average over six commonsense tasks: Transformer
+    48.37, YOCO 47.98 (-0.39), YOCO++ 48.99 (+0.62 vs Transformer). Worst YOCO task delta is WinoGrande 53.59 vs 56.04. Single
+    training run, no seeds or error bars.'
+  - 'Validation loss ablation (10B-token runs): Transformer 2.4266, YOCO 2.4372, FusedKV-Lite 2.4258, FusedKV 2.4204, YOCO++
+    2.4194; without the scaling factor YOCO++ is 2.4333 (about YOCO), without key residual 2.4264. The YOCO-to-Transformer
+    gap is 0.0106 nats.'
+  - 'KV residual fix: in each bottom-half layer the cached K and V are a learned weighted combination of that layers own K/V
+    and the bottom layers K/V, so the middle layers shared KV carries more information; weights are initialised to reproduce
+    YOCO and a fixed scaling factor lambda (35 gave best results) is needed to make the weights learnable. It adds four scalars
+    per layer.'
+  - 'Efficiency (NVIDIA H20 96GB, HF Transformers + FlashAttention-2): YOCO, FusedKV, FusedKV-Lite and YOCO++ show almost
+    the same prefill latency (TTFT), half of the standard Transformer, through early exit; decode throughput is higher than
+    the Transformer via larger batch sizes; FusedKV loses the throughput advantage due to cache I/O. Latency values appear
+    only in Figure 3, not in text.'
+  - 'Not tested: any long-context or retrieval task, any pretrained-model retrofit, MoE, quality at long prefill, or accuracy
+    degradation attributable to early exit itself. YOCO++ is a training-time architecture change; it cannot be applied to
+    an existing checkpoint.'
+  techniques:
+  - 'cross-layer KV sharing (YOCO: middle layer KV shared to top half)'
+  - KV residual connection to bottom-layer KV in bottom-half layers
+  - scaled residual-weight parameterisation (lambda=35)
+  - early exit during prefill (skip top-half layers)
+  reported_results:
+  - 'vendor-reported (Alibaba/ShanghaiTech, single run, 1.1B TinyLlama-config, 100B SlimPajama tokens, from scratch) zero-shot
+    avg of HellaSwag/OBQA/WinoGrande/ARC-c/ARC-e/PIQA: Transformer 48.37, YOCO 47.98, FusedKV-Lite 48.43, FusedKV 48.42, YOCO++
+    48.99.'
+  - 'validation loss, 10B-token ablation runs: Transformer 2.4266, YOCO 2.4372, FusedKV-Lite 2.4258, FusedKV 2.4204, YOCO++
+    2.4194, YOCO++ w/o scaling 2.4333, w/o key residual 2.4264.'
+  - 'H20 GPU: YOCO-family prefill latency about half of the Transformer (Fig. 3, values not in text); decode throughput above
+    the Transformer, FusedKV falls back to Transformer level due to extra cache I/O.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2125
+    intake_entry_notes:
+    - intake-2125 (YOCO, the bearing entry; this paper provides independent capacity-loss evidence against it)
+  recommended_actions:
+  - 'Operator-review candidate: no code action; use as the independent bound on how much a skipped-upper-layer design can
+    lose at small scale, and as a caution that no long-context quality evidence exists for YOCO-style early exit.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Independent of the YOCO authors (Alibaba/ShanghaiTech), but tiny scale and single seeds: the +0.62 and -0.39 average
+    deltas are not shown to exceed run-to-run noise.'
+  referenced_arxiv_ids: []
+  notes: 'HTML https://arxiv.org/html/2604.13556v1 saved by the intake-2125 dive at /mnt/raid0/llm/tmp/dive-deepinfer-yoco/yocopp.html
+    (sha256-12 e7234e578ad2); abs page abs_2604.html confirms title and v1 15 Apr 2026. Whole paper text read (abstract, §1-5;
+    references skimmed). Equations were stripped from the text conversion; lambda=35 and alpha initialisation were recovered
+    from the HTML annotation tags. Figures 1-4 not viewable: Fig. 3 latency/throughput values and Fig. 4 loss curves NOT read.
+    Code repo (github.com/wuyou2002/YOCO-plus) not fetched. Credibility 2: preprint (no venue verified) +1 recency, +1 independent
+    of the YOCO authors; -0 commercial.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+    v1
+  reader_should_conclude: 'Cite for: (1) independent small-scale evidence that plain YOCO is slightly worse than a standard
+    Transformer (-0.39 avg points, +0.0106 val loss at 1.1B/100B tokens, single run); (2) a training-time KV-residual fix;
+    (3) early exit halves prefill compute by layer count. Do NOT cite for long-context behaviour, retrofit onto a trained
+    model, MoE, or any claim that YOCO-style skipping is free at inference on a model not trained for it.'
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 ¶1
+    quote: which reuses the global KV cache and does not generate KV cache by itself.
+    quote_sha256: 927a74916315341e00a4b0dc1554fdd65c0a4ec131bd4dc09e48618cf2cd644d
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 ¶1
+    quote: The prefilling latency is also reduced by 50% because we can exit early before computing the top-half layers.
+    quote_sha256: 9c533aa49e46ae22371073148e0c3814b3bfb093a96ef9bd3f2e0e0847c51418
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §1 ¶2
+    quote: The main cause of this degradation is that the direct KV sharing from one layer to another weakens the model capacity.
+    quote_sha256: 9b00b9b29a15e799392d0a001b9b78bff10f06a9af687fbcb5bbcd879de939ae
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.2 ¶1
+    quote: We train all the models on a 100B subset of the SlimPajama dataset (Soboleva et al., 2023) from scratch.
+    quote_sha256: e1d1c87449145beb928e43455b2770ef129e743d327e702d1539d74206c85937
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4 ¶1
+    quote: The models have 22 layers, 32 attention heads and 4 KV heads.
+    quote_sha256: 6391f3e3b4ad28058d3de6516bb725fe79d6208382373e85821e16ed0417bb79
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.2 ¶3
+    quote: In terms of both training loss and downstream task accuracy, YOCO underperforms the standard Transformer
+    quote_sha256: 7f70fa30fa9c07b469121c73d6e29d3b45cffda27386dc8cd6d80d885532b045
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.3 ¶1
+    quote: The validation loss of YOCO++ without the scaling factor
+    quote_sha256: c8f2233bab05fb7ca8c417d568afecfd39e1738c138743fa03ee10279a79347c
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §3.2 ¶1
+    quote: we add only the KVs of the bottom layer to those of each layer.
+    quote_sha256: f02976dc5d7c32fa5d08d3f54f2a02e5264f9a7929e1b0624722ac55c6666201
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §3.2 ¶4
+    quote: We initialize the residual weights by
+    quote_sha256: c5a612ccd15037cf47dc22da1482324c5ac411b4543f4f3b00eac0b812466860
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.1 ¶1
+    quote: which is half that of the standard Transformer, because they can exit early before computing the top-half layers.
+    quote_sha256: 9d09d1197ed5b039cdc2dfb2c25cbb0fe2997a684cb28d641baf3addd90ff483
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.1 ¶2
+    quote: its throughput degrades to the same level as the standard Transformer because it introduces additional I/O overhead.
+    quote_sha256: 2f1875d4e60ca8c6bed578ba6b6d97fd5a87be9eef1ab0b25479b104773690a1
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.1 ¶1
+    quote: The original YOCO uses efficient attention in the self-decoder to achieve higher efficiency, while we use standard
+      attention in this work for fair comparison.
+    quote_sha256: 2bb72b9c3c8836dea112e123905c35df70065338372929402fe0a79e169868e5
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 1
+    quote: Transformer 51.25 33.0 56.04 27.56 52.1 70.29 48.37 YOCO 51.21 32.0 53.59 29.01 51.43 70.62 47.98
+    quote_sha256: 629efd68bf1f04bd8727f081883cc0d179a28b03755fb9b00d834886ccb1d4b3
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 1
+    quote: YOCO++ 52.30 34.0 55.48 27.90 53.11 71.16 48.99
+    quote_sha256: f18bb6fa968e46cecda9f79d5b97b7673978586228247283a63896771bcf213c
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table 2
+    quote: Transformer 2.4266 YOCO 2.4372 FusedKV-Lite 2.4258 FusedKV 2.4204 YOCO++ 2.4194 w/o scaling 2.4333 w/o key residual
+      2.4264
+    quote_sha256: 9d0a76337b7cc0ba8bb18f9758046d66522e4f12b652a3ebbf14cc79112ac7c7
+    source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
+      v1
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: §3.1 verbatim
+  - claim_index: 1
+    effect: narrowed
+    note: Stage-1 relayed plain YOCO underperforms; confirmed but the gap is 0.39 avg points / 0.0106 loss, single run
+  - claim_index: 2
+    effect: unaffected
+    note: Table 2
+  - claim_index: 3
+    effect: unaffected
+    note: method; lambda=35 from HTML annotation
+  - claim_index: 4
+    effect: unaffected
+    note: text states; values in figure only
+  - claim_index: 5
+    effect: unaffected
+    note: absence statements verified by reading whole §4
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled setup and sizes of the capacity-loss
+    evidence (1.1B, 100B tokens, -0.39 avg / +0.0106 val loss, single run), the fix (scaled KV residual to bottom layer, lambda=35),
+    and that prefill halving is a layer-count identity with no long-context quality evidence.
+
+
+    2026-10-20 second reader (independent agent): re-find 15/15; support yes 5 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2129
+  arxiv_id: '2603.28458'
+  url: https://arxiv.org/abs/2603.28458
+  source_type: paper
+  title: 'HISA: Efficient Hierarchical Indexing for Fine-Grained Sparse Attention'
+  categories:
+  - inference_serving
+  - kv_cache
+  - hardware_optimization
+  - context_extension
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2117
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Yufei Xu
+  - Fanxu Meng
+  - Fan Jiang
+  - Yuxuan Wang
+  - Ruijie Zhou
+  - Zhaohui Wang
+  - Jiexi Wu
+  - Zhixin Pan
+  - Xiaojuan Tang
+  - Wenjie Pei
+  - Tongxuan Liu
+  - Di Yin
+  - Xing Sun
+  - Muhan Zhang
+  key_claims:
+  - HISA replaces the DSA indexer's flat prefix scan with two stages. Stage 1 scores mean-pooled per-block indexing keys (block
+    size B) using the same indexing queries and head-gating weights as DSA, keeps the top-m blocks plus always the first and
+    last block; stage 2 runs the unchanged DSA token scorer only over the tokens of the kept blocks and takes the final top-k.
+    Output is the same token-index set Sparse MLA already consumes; training-free; token-level KV layout unchanged, with a
+    separate block-pooled indexing-key cache (one pooled vector per block).
+  - 'Cost model (paper): per query O(L/B + m*B) instead of O(L), per layer O(L^2/B + L*m*B) instead of O(L^2); three regimes
+    (k >= prefix: dense; m*B >= prefix: identical to DSA; m*B << prefix: real pruning). Requires the pooled keys to be maintained
+    incrementally alongside the KV cache.'
+  - 'Kernel level (A100, TileLang for BOTH indexers, 64K context, final top-k 2048, B=128): about 2.16x indexer speedup at
+    a 4:1 first-stage compression ratio (16K candidate budget) and up to 3.75x at a fixed 8K candidate budget (m=64). At 64K
+    the DSA indexer costs 5.6 ms against ~1.6 ms for Sparse MLA itself. Kernel microbenchmark only.'
+  - 'End-to-end (DeepSeek-V3.2, SGLang, 8xH200 TP=8, 10 random requests of 128K input / 512 output, B=128, m=64): throughput
+    5868.43 -> 9712.21 tok/s (1.65x), TTFT 106449.81 -> 62722.91 ms (1.70x), TPOT 73.02 -> 46.96 ms (1.55x) against the official
+    DSA CUDA path. Gain is concurrency dependent: TPOT speedup is only 1.05x at concurrency 1 (1.38x at 2, 1.55x at 4), TTFT
+    gain flat at about 1.75x. Authors say the HISA kernels are TileLang/Triton and less tuned than the baseline.'
+  - 'Quality (training-free drop-in, vLLM FP8, final 2048 tokens for all arms): LongBench average DeepSeek-V3.2 DSA 51.05
+    / HISA 50.78 / Block-Sparse 49.54; GLM-5 DSA 46.01 / HISA 46.32 / Block-Sparse 42.67 (Block-Sparse = Stage 1 only, 16
+    blocks of 128). NIAH heatmaps (8K-128K) are qualitative: HISA near DSA with marginal degradation at extreme lengths.'
+  - 'HISA is an approximation, not an exact reproduction: token-set IoU with DSA on DeepSeek-V3.2 is 92.58-94.94% averaged
+    over layer bins but falls with query position from 96.91% (2-4K) to 78.66% (18.4-18.8K); the paper states it approximates
+    rather than exactly reproduces DSA''s selection. IoU was only measured to ~18.8K positions, not at the 64K-128K lengths
+    where the speed claims are made.'
+  - 'Sensitivity: with training-free mean pooling the best block size is non-monotonic and task dependent (candidate pool
+    fixed m*B=8192; B=64/128 edge out 256); authors recommend B=128, m=64, attribute the non-monotonicity to the untrained
+    pooling summary, and list max-pooling / overlapping blocks / training the block scorer as untested future work.'
+  - 'Relation to DeepSeek-V4.1-Flash (derived by reading the official reference, NOT stated in the paper, which predates V4.1):
+    V4.1''s level-1 block score is the MAX over a block of the source layer''s own exact index logits (select_candidate_blocks),
+    so building the candidate set costs a full dense index scan at the candidate-source layer (config: layer 20); the saving
+    is in the LATER index-source layers (24, 28, 32, 36), which rescore only inside the 2048x8 = 16384 candidate positions.
+    HISA instead pools KEYS first and scans only N/B pooled rows at the coarse stage, i.e. it would also cut the source-layer
+    scan, at the price of a different (mean-pool) block score the V4.1 weights were not trained against. V4.1''s README calls
+    its variant a ''Hierarchical Sparse Indexer'' bounded ''independently of context length''.'
+  techniques:
+  - block-pooled coarse filter then token-level indexer refinement
+  - mean-pooled index-key block cache maintained incrementally
+  - forced first/last block inclusion (attention sink + locality)
+  - training-free indexer swap on DSA models (DeepSeek-V3.2, GLM-5)
+  reported_results:
+  - 'indexer kernel, A100, TileLang vs TileLang, 64K ctx, top-k 2048, B=128: ~2.16x (4:1 compression, 16K candidates), up
+    to 3.75x (fixed 8K budget); DSA indexer 5.6 ms vs Sparse MLA ~1.6 ms (paper-reported, GPU, not an EPYC number)'
+  - 'e2e DeepSeek-V3.2 SGLang 8xH200 TP8, 10 requests 128K in/512 out, B=128 m=64: 5868.43 -> 9712.21 tok/s, TTFT 106449.81
+    -> 62722.91 ms, TPOT 73.02 -> 46.96 ms vs official DSA (paper-reported)'
+  - 'TPOT speedup vs concurrency 1/2/4: 1.05x/1.38x/1.55x; TTFT 1.75-1.76x flat (paper-reported)'
+  - 'LongBench avg, final 2048 tokens: V3.2 DSA 51.05 / HISA 50.78 / Block 49.54; GLM-5 46.01 / 46.32 / 42.67 (vLLM FP8, zero-shot)'
+  - 'token-set IoU HISA vs DSA on V3.2: 92.58-94.94% by layer bin; 96.91% (2-4K) down to 78.66% (18.4-18.8K) by query position'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - llama-cpp-dsa-contribution.md
+    experiments: []
+    intake_entries:
+    - intake-2117
+    intake_entry_notes:
+    - 'intake-2117 (DeepSeek-V4.1-Flash tech report: the V4.1 candidate-block stage is the shipped counterpart of HISA)'
+  recommended_actions:
+  - 'Operator-review candidate: do NOT port HISA as such; port the exact V4.1 candidate restriction (indexer rescoring only
+    inside the candidate blocks on index-source layers 24/28/32/36) and treat HISA pooled-key scanning for the source layer
+    / ratio-2 layers as an optional approximate variant gated by ppl and top-k IoU against the reference.'
+  credibility_score: 3
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2603.12201'
+  notes: Fetched https://arxiv.org/abs/2603.28458 (title confirmed; versions v1-v4, v4 = 10 Sep 2026) and https://arxiv.org/html/2603.28458
+    (latest, v4) to /mnt/raid0/llm/tmp/dive-deepinfer-main/s2/hisa/ (paper.html sha256-12 364c3c40c23c; text extraction paper.txt,
+    math kept as alttext). Whole text read including appendices A-C.3; App. C.4-C.5 (extended block sizes, failure cases)
+    and the figures (heatmaps, latency plots) NOT read as images; NIAH quality is therefore taken only from the text. IndexCache
+    2603.12201 is cited by the paper and already referenced in the lane index (not re-ingested). No code released in the paper
+    text beyond a GitHub org link (MuLabPKU/TransArch) - not fetched.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+  reader_should_conclude: 'Cite HISA for the block-then-token indexing structure, the O(L/B + mB) cost model and the GPU-measured
+    indexer/e2e speedups (with their conditions: A100 kernel, 8xH200 SGLang, 128K, concurrency-dependent TPOT). Do NOT cite
+    it as exact (IoU 78.7-96.9%), as measured at 128K quality, or as the V4.1 mechanism: V4.1 scores blocks by max of exact
+    logits. The speed numbers are GPU numbers; on EPYC the indexer is a small share of decode bytes next to the dense-mask
+    final attention (see ledger HISA-A1).'
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §1 ¶(Stage 1 bullet)
+    quote: A pooled representative vector is computed for each block via mean pooling over its constituent indexing keys.
+    quote_sha256: eefead0cae547509c9a10c5fbf5a2005805b6359022ed5ebf7867593c2a2ffdd
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §1 ¶(after Fig.1 desc.)
+    quote: HISA maintains pooled indexing-key summaries only for its coarse filter.
+    quote_sha256: a7ef9785bc003a854e1280490394317a559ba308b188a0ce5cfd3ed6b75bace5
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5.1 ¶3
+    quote: the indexer reaches 5.6 ms at 64K context length
+    quote_sha256: 8fb58fa8dcd062847af27336d45dc1ace9255b72fd26d81a928e8d975575b57b
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: App. B.1
+    quote: The workload consists of 10 random requests, each with 128K input tokens and 512 generated tokens
+    quote_sha256: 692dd390fb661c1d3c7a52f2c86a02943f4df124805c5c62e04bd138f49726fd
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §5.4 ¶2
+    quote: all three configurations ultimately retain 2048 tokens for computation
+    quote_sha256: fce7bb3c3ed331dc934dba2d00cfdbca7481a21f03396344ada704650b230b84
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §5.6 ¶(after Table 3)
+    quote: HISA therefore preserves the same token-index output contract for Sparse MLA while approximating, rather than exactly
+      reproducing, DSA’s selected token set.
+    quote_sha256: 9f45577fad38937eeb64e06b735c491e7a993b951b587d354753378a13729bb0
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: App. C.3
+    quote: there is no single HISA configuration that is optimal everywhere
+    quote_sha256: f50b2d83b09828f92306b730fde3fc3daa15eb0601f25fed714cc1c4553cfec4
+    source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: inference/model.py:L597 @ model.py sha256-12 4e9ae23620ed (official V4.1-Flash inference dir; not a git repo)
+    quote: score each block by its best position; -inf pads the last one out to block_size
+    quote_sha256: d06f2ad226a6ef266394584b8c7c236beaf8942b7e182573b79cb33633f7c7ab
+    source_revision: model.py sha256-12 4e9ae23620ed (official V4.1-Flash inference dir; not a git repo)
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: README.md:L49
+    quote: a **Hierarchical Sparse Indexer** further restricts later indexing layers to a candidate pool constructed by the
+      first Full Mode layer, bounding deeper indexer cost independently of context length
+    quote_sha256: 9497e631b2119eba689cb7027876421b9dc11ae12959d873f5605c22be373ea3
+    source_revision: README.md sha256 not pinned; read from disk 2026-10-20
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: algorithm confirmed against §3-§4 and Algorithm 1 pseudocode (App. A)
+  - claim_index: 1
+    effect: unaffected
+    note: Eq. 10-11 confirmed
+  - claim_index: 2
+    effect: unaffected
+    note: 2.16x/3.75x are both stated; the 3.75x is the fixed-8K-budget configuration, not the 4:1 one
+  - claim_index: 3
+    effect: unaffected
+    note: Table 1 / Table 4 confirmed; headline 1.65x hides 1.05x TPOT at concurrency 1
+  - claim_index: 4
+    effect: unaffected
+    note: Table 2 confirmed; HISA is -0.27 avg on V3.2 and +0.31 on GLM-5
+  - claim_index: 5
+    effect: unaffected
+    note: IoU decay is in the paper; the abstract does not mention it
+  - claim_index: 6
+    effect: unaffected
+    note: App. C.3 confirmed
+  - claim_index: 7
+    effect: unaffected
+    note: derived from model.py:L583-L610 and config.json; the paper makes no V4.1 claim
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled that HISA mean-pools index keys
+    while V4.1 maxes exact logits, that HISA is explicitly approximate (IoU decay), and that the 3.75x headline is the fixed-8K-budget
+    kernel config only.
+
+
+    2026-10-20 second reader (independent agent): re-find 9/9; support yes 8 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2130
+  arxiv_id: '2606.06467'
+  url: https://arxiv.org/abs/2606.06467
+  source_type: paper
+  title: 'You Only Index Once: Cross-Layer Sparse Attention with Shared Routing'
+  categories:
+  - inference_serving
+  - kv_cache
+  - context_extension
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2117
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Yutao Sun
+  - Yanqi Zhang
+  - Li Dong
+  - Jianyong Wang
+  - Furu Wei
+  key_claims:
+  - 'What is shared: one single-head indexer (index q/k projected from the shared hidden states at the YOCO self-decoder/cross-decoder
+    boundary) computes a token-level top-k (activated tokens up to 2048) ONCE per token, and all 16 cross-decoder layers reuse
+    that same index over the same shared KV cache. Each layer still has its own queries and FFN. The paper''s own name for
+    the method is cross-layer sparse attention (CLSA).'
+  - 'It is an architecture plus training result, not a retrofit: a 4B model (32 layers = 16 self-decoder + 16 cross-decoder,
+    hidden 2560, 20 heads / 4 KV heads, SWA 512 in the self-decoder) is pretrained dense (125,000 + 10,000 steps at 8M tokens/step)
+    and then sparse-adapted for 2,500 + 2,500 steps at 32K using a multi-layer KL distillation of the indexer onto the head-and-layer-averaged
+    dense cross-attention distribution (lambda 0.1). The sharing only exists because all cross-decoder layers read ONE KV
+    cache.'
+  - 'Quality (4B, vs dense YOCO and vs a Transformer): Table 2 average over 8 tasks roughly equal to dense YOCO (e.g. GSM8K
+    0.470 vs 0.430, MMLU 0.513 vs 0.519); RULER average 62.9 vs 62.7 (16K) and 53.1 vs 52.3 (32K), Transformer 64.4 / 46.2;
+    long-context validation loss overlaps dense YOCO. At 2048 selected tokens the routed set covers 76.29-84.12% of dense
+    attention mass and the CE-loss gap to dense is -0.0004 (StarCoder) to +0.0054 (Books).'
+  - 'The quality COST OF SHARING is not isolated: there is no ablation that holds the architecture fixed and compares one
+    shared index against per-layer (DSA-style) indices, and no cross-layer index-similarity measurement. The introduction''s
+    statement that attention-pattern analysis shows sharing has only a minor effect rests on the coverage table (Table 4)
+    alone.'
+  - 'Speed (vLLM with the authors'' CLSA merged in, NVIDIA B200, 4B model): at 128K decode throughput 3276.80 vs 431.16 tok/s
+    for the Transformer (7.6x) and vs 960.94 for dense YOCO (3.4x); overall 1068.06 vs 62.53 tok/s (17.1x; vs dense YOCO 1.8x).
+    Per-layer latency at 128K: Transformer 2.28 ms, YOCO dense 1.04, YOCO CLSA 0.31, of which amortized top-k 0.08 ms and
+    sparse attention 0.05. The baseline for the headline ratios is the dense Transformer, not DSA/IndexCache.'
+  - 'Cost model (Table 1): decode O(L/2 (W1+W2) D + eta*N) for CLSA versus O(L W2 D + eta*L*N) for per-layer DSA, i.e. the
+    indexer term is paid once instead of once per layer. The paper''s contrast set: DSA (per-layer top-k; slower than dense
+    Transformer at 128K), IndexCache (reuse across four layers), HySparse (block-sparse layers mixed with dense layers) -
+    all lose to CLSA on per-layer latency at 128K (Fig. 5, no numbers in the text for them).'
+  - 'Contrast with DeepSeek-V4.1 CSA2 (derived from model.py/config.json, not from the paper): V4.1 shares at finer grain
+    with three static layer modes - Full (index source that also owns KV, layers 2/8/14/20), Reindex (index source rescoring
+    inside the candidate pool, layers 24/28/32/36) and Reuse (copies the source''s topk_idxs, the other layers) - using a
+    multi-head indexer (32 heads x 128 dim, fp4) with its own weights per source, so there are 8 index scans per token, not
+    1. YOIO has one single-head indexer for 16 layers with mean-attention distillation. V4.1 keeps the layer-specific query
+    for attention but the sparse index comes from a recent source layer.'
+  techniques:
+  - single shared token-level top-k index across all cross-decoder layers (YOCO)
+  - multi-layer KL distillation of the indexer onto layer/head-averaged attention
+  - two-stage indexer warmup then joint sparse adaptation
+  reported_results:
+  - 'B200, vLLM + authors CLSA, 4B, 128K: decode 3276.80 vs 431.16 tok/s Transformer (7.6x) and vs 960.94 dense YOCO; overall
+    1068.06 vs 62.53 (17.1x) (paper-reported)'
+  - 'per-layer latency at 128K: Transformer 2.28 ms, YOCO dense 1.04, YOCO CLSA 0.31 (amortized top-k 0.08, sparse attn 0.05)
+    (paper-reported)'
+  - 'RULER avg 16K / 32K: Transformer 64.4 / 46.2, YOCO dense 62.7 / 52.3, CLSA 62.9 / 53.1'
+  - '2048 selected tokens: attention-mass coverage 76.29-84.12%, CE-loss delta to dense -0.0004 to +0.0054'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - llama-cpp-dsa-contribution.md
+    experiments: []
+    intake_entries:
+    - intake-2117
+    intake_entry_notes:
+    - intake-2117 (V4.1 CSA2 Full/Reindex/Reuse is the in-model analogue of cross-layer index sharing)
+  recommended_actions:
+  - 'Operator-review candidate: knowledge-only for EPYC. The method needs a YOCO-architecture model trained for it, so it
+    does not apply to DS41 or the Qwen lineup; its use is as independent evidence that cross-layer index sharing is cheap
+    in quality terms only when the model is trained for it (V4.1 is), and that a per-layer top-k dominates decode cost on
+    GPU.'
+  credibility_score: 3
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2603.12201'
+  notes: Fetched https://arxiv.org/abs/2606.06467 (title confirmed, v1 only, 04 Jun 2026) and https://arxiv.org/html/2606.06467v1
+    to /mnt/raid0/llm/tmp/dive-deepinfer-main/s2/yoio/ (paper.html sha256-12 dde9e10201cd; paper.txt extraction). Whole text
+    read including appendices A-E tables; figures (Fig. 1-6 plots) NOT read as images, so Fig. 5 per-method latencies for
+    DSA/IndexCache/HySparse are not available as numbers. No released code located in the text. IndexCache 2603.12201 is already
+    referenced in the lane index.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+  reader_should_conclude: 'Cite YOIO/CLSA for: one shared single-head indexer feeding 16 YOCO cross-decoder layers, trained
+    by distillation; and for the GPU observation that per-layer token top-k can exceed dense attention time at 128K. Do NOT
+    cite it for the quality cost of sharing (not isolated), for retrofitting existing models (needs YOCO + training), or for
+    the 7.6x/17.1x as gains over sparse baselines (they are over a dense Transformer on B200).'
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §1 ¶4
+    quote: When multiple cross-decoder layers read from the same KV cache, they also share the same routing index.
+    quote_sha256: e05dfab9f5da7ab435648137158f966cc05b9e074941da8427371ab374a8ba8c
+    source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.1 ¶1
+    quote: We compare a Transformer baseline, a dense YOCO model, and YOCO with cross-sparse attention, all at the 4B scale.
+    quote_sha256: e363aa9982fa0ef6c2d66779421d0cd0eca50832a3dfe16fe9bb10d66287ee21
+    source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3.5 ¶2
+    quote: Across Books, ArXiv, and StarCoder, sparse attention reaches dense-level quality, with loss differences around
+    quote_sha256: 0fa48e442a6945c3b4f40394bfb2edd9c615761f52e639d354d8ab7b6897d31f
+    source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §1 ¶5
+    quote: Attention-pattern analysis further shows that sharing one routing index across layers has only a minor effect on
+      the resulting attention behavior
+    quote_sha256: 8ac3496626f16f1f831accffdc8daf122c87a7e072c7cd6b7cabefd6db1cd7b1
+    source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §3.4 ¶3
+    quote: All numbers in this subsection are obtained on NVIDIA B200 GPUs.
+    quote_sha256: ef8fc9c853dbe985ef4b67b834d04ca295bb92d9d92d1d5c488617791a486eae
+    source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §3.4 ¶(Fig. 5)
+    quote: At 128K context, DSA is slower than the dense Transformer because the unamortized token top- $k$ dominates per-layer
+      cost.
+    quote_sha256: 47fe7fa57324a07b1e49090ce6d16c2d9a2e211d8ac2fdc344b1393cd48924c3
+    source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: inference/model.py:L724-L727 @ model.py sha256-12 4e9ae23620ed (official V4.1-Flash inference dir; not a git
+      repo)
+    quote: the layers in between reuse the result their source published.
+    quote_sha256: 908e9f55403a98b452cc69ae0d5314fd9a356248e92d0970f52df77b67abc51e
+    source_revision: model.py sha256-12 4e9ae23620ed (official V4.1-Flash inference dir; not a git repo)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: README.md:L49
+    quote: assigns each attention layer one of three static modes — **Full**, **Reindex**, or **Reuse** — to share main KV
+      and indexer K across layers and reuse Top-K sparse-attention indices
+    quote_sha256: 11df3f99b9b3015f9b5ad19958eb76910924e96aede960344d29897558537d4a
+    source_revision: README.md read from disk 2026-10-20
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fig.1 / §2 / §2.1 confirmed; the abstract says "up to 2048" via §3.1
+  - claim_index: 1
+    effect: unaffected
+    note: training schedule from Table 5 / §3.1
+  - claim_index: 2
+    effect: unaffected
+    note: Tables 2-4 confirmed
+  - claim_index: 3
+    effect: unaffected
+    note: Stage-1 claim that sharing is shown to be cheap is NOT supported by an isolating experiment
+  - claim_index: 4
+    effect: unaffected
+    note: 7.6x = 3276.80/431.16 and 17.1x = 1068.06/62.53 recomputed from Tables 11-12; baseline is a dense Transformer
+  - claim_index: 5
+    effect: unaffected
+    note: Table 1, Fig. 5 narrative
+  - claim_index: 6
+    effect: unaffected
+    note: derived from model.py:L488-L581, L720-L735 and config.json
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled that the shared routing is one
+    single-head index over a YOCO shared KV cache, that its sharing cost is not isolated in the paper, and that the headline
+    speedups are versus a dense Transformer.
+
+
+    2026-10-20 second reader (independent agent): re-find 8/8; support yes 7 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2131
+  arxiv_id: '2601.22705'
+  url: https://arxiv.org/abs/2601.22705
+  source_type: paper
+  title: 'CONCUR: High-Throughput Agentic Batch Inference of LLM via Congestion-Based Concurrency Control'
+  categories:
+  - inference_serving
+  - kv_cache
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2119
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Qiaoling Chen
+  - Zhisheng Ye
+  - Tian Tang
+  - Peng Sun
+  - Boyu Tian
+  - Guoteng Wang
+  - Shenggui Li
+  - Yonggang Wen
+  - Zhenhua Han
+  - Tianwei Zhang
+  key_claims:
+  - 'PATHOLOGY (vendor-reported, authors'' H100 + SGLang traces): agentic batch inference shows three phases - warmup (hit
+    rate near 90%), a ''middle phase'' that is >90% of runtime where KV usage sits at ~80-100% while the prefix-cache hit
+    rate collapses (LRU evicts the KV of agents paused on tool calls, so resumed agents re-prefill their whole history; recomputation
+    = 49.1% of end-to-end latency in the DeepSeek-V3 trace), and a cooldown. Adding agents in the middle phase LOWERS throughput.'
+  - 'CONTROL LAW: AIMD on the number of concurrently admitted AGENTS (window W), not requests. W += alpha when KV usage U
+    < U_low; W *= beta when U > U_high AND hit rate H < H_thresh; otherwise hold. Signals: KV cache usage (proactive) and
+    cache hit rate (reactive; the analogue of packet loss = eviction/recompute). Constants fixed for all models/engines: alpha=2,
+    beta=0.5, U_low=0.2, U_high=0.5, H_thresh=0.2. U_high is robust over 0.5-0.6 (0.8 gives 4-5x latency, 0.4 gives +46-64%);
+    U_low is the sensitive one (0.1 gives 7-8x latency, 0.3/0.5 give 2-3x).'
+  - 'MECHANISM: a middleware controller between agent framework and serving engine with three primitives admit/pause/resume;
+    pause is applied only at generation-step/tool-call boundaries and preserves agent state; paused agents'' idle KV is protected
+    simply by not admitting new work while pressure is high. No engine changes (SGLang used).'
+  - 'RESULTS (vendor-reported, one paper, H100 80GB NVLink, SGLang, fixed alpha/beta/thresholds): offline batch latency vs
+    plain SGLang up to 4.09x on Qwen3-32B (batch 256, TP8/8 GPUs: 1480 s -> 362 s) and up to 1.90x on DeepSeek-V3 (batch 40,
+    TP16: 3877 s -> 2043 s); at low pressure the gain is small (DeepSeek-V3 batch 32: 1.20x). The fixed request-level cap
+    baseline was WORSE than plain SGLang in two configs (0.72x Qwen3-32B TP8; 0.90x DS-V3 batch 32), and HiCache CPU offload
+    was worse than baseline at DS-V3 batch 16/32 (0.34x/0.54x). Best fixed agent cap (30/32/64/128) was 1.5-2.9x slower than
+    the adaptive controller on Qwen3-32B batch 256 TP2.'
+  - 'HIT-RATE FIGURES (DeepSeek-V3, TP8): plain SGLang 80.38/77.72/35.41 % at batch 16/32/40; request-cap 69.00/68.39/32.21
+    %; HiCache 97.48/97.13/96.08 %; CONCUR 96.38/93.65/73.36 %. These are the engine''s prefix-cache hit rate UNDER the compared
+    policies, not a property of the agentic trace itself. NOTE: the paper contains no ''>=95% agentic KV hit rate'' statement;
+    DualPath''s citation of it for that figure (intake-2119) is not supported by this source.'
+  - 'SCOPE LIMITS: offline batch (RL rollout / distillation / evaluation) with a fixed agent population, GPU-resident KV,
+    LRU prefix tree; no SLO/latency-percentile evaluation, no interactive or mixed traffic, no CPU inference, single paper,
+    no code release found in the text, thresholds hand-set (sensitivity shown only for Qwen3-32B TP8/4/2). Arxiv abs lists
+    the title ''CONCUR: High-Throughput Agentic Batch Inference of LLM via Congestion-Based Concurrency Control'' while the
+    v1 HTML body is titled ''Concur: Proactive Agent-Level Admission Control for Efficient Agentic Batch Inference'' (same
+    arXiv id, v1 only).'
+  techniques:
+  - Agent-level admission control (admit/pause/resume) between agent framework and serving engine
+  - AIMD concurrency window driven by KV-cache usage with a hit-rate-gated multiplicative decrease
+  - Middle-phase thrashing characterisation (warmup / middle / cooldown)
+  reported_results:
+  - 'vendor-reported (authors, H100 80GB, SGLang): Qwen3-32B batch 256 TP8: 1480 s plain vs 362 s CONCUR (4.09x); TP4 2213
+    -> 757 s (2.92x); TP2 2527 -> 846 s (2.99x). DeepSeek-V3: batch 16 873 -> 521 s (1.68x), batch 32 1226 -> 1018 s (1.20x),
+    batch 40 3877 -> 2043 s (1.90x).'
+  - 'vendor-reported: request-level cap 0.72x-2.03x and HiCache 0.34x-2.27x of plain SGLang depending on config (Table 1);
+    engine prefix hit rate DS-V3 TP8 batch 40: 35.41% plain, 32.21% request-cap, 96.08% HiCache, 73.36% CONCUR (Table 2).'
+  - 'vendor-reported: recomputation 49.1% of end-to-end latency in the middle phase (>90% of runtime) of a DeepSeek-V3 agent
+    trace; sensitivity: U_high 0.8 = 4-5x latency, U_low 0.1 = 7-8x latency (Qwen3-32B, TP8/4/2).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - kv-prefix-fork-and-paged-attention.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-2119
+  recommended_actions:
+  - 'Probe first: measure resume-turn recompute fraction (n_prompt_tokens_processed / n_prompt_tokens from /slots + timings)
+    on :8083 np4 under real 4-agent fan-out before building any controller (ledger CONCUR-A1).'
+  - Do not adopt the paper constants; if a controller is built, calibrate U_low/U_high on our pool and add a hit-rate gate
+    to the existing SharedKVPoolAdmission.
+  credibility_score: 2
+  contradicting_evidence:
+  - Single paper, authors own traces/H100/SGLang; no independent replication found in the text. Fixed request-level caps and
+    HiCache are the only baselines (no tuned vLLM/SGLang scheduling, no TTL pinning such as Continuum evaluated head-to-head).
+    Bounded contradiction search not run beyond reading the paper (provisional).
+  referenced_arxiv_ids:
+  - '2510.18586'
+  - '2508.06948'
+  - '2602.21548'
+  notes: 'READ_DEPTH FULL: whole body incl. App A.1, Tables 1-3, §6; reference list skimmed. Saved /mnt/raid0/llm/tmp/dive-deepinfer-concur/paper.html
+    (sha256 d30a18b20992...) and text.txt. v2 html does not exist (404-size stub). Title mismatch abs vs v1 body recorded
+    in key_claims[5]. Orchestrator already has the REQUEST-level analogue: SharedKVPoolAdmission FCFS token reservations against
+    /slots occupancy (src/scheduling/kv_pool_admission.py:L228-L236, _fits L646, acquire L654 @ 62ee3ba6), with adaptive new_token_ratio
+    (L143-L150) and a one-long-prefill lease; CONCUR adds the AGENT-level window plus hit-rate failure signal that it lacks.
+    Other admission surfaces @ 62ee3ba6: ContentionGate src/scheduling/contention_gate.py:L99 (evaluate L222, admit L383);
+    ConcurrencyAwareBackend src/backends/concurrency_aware.py:L242 (full vs quarter by active count); scout reservations src/api/routes/chat_pipeline/scout_stage.py:L766;
+    passthrough pool reservation src/api/routes/passthrough.py:L566. llama-server signals at dd3d9721c: /metrics (server-context.cpp:L5206-L5210
+    and README.md:L1063-L1073) exposes requests_processing, requests_deferred, n_tokens_max, n_busy_slots_per_decode - NO
+    kv-cache-usage gauge (kv_cache_usage_ratio survives only as a stale name in tools/server/bench/bench.py:L119); /slots
+    (server-context.cpp:L727-L735) gives per-slot n_ctx, is_processing, n_prompt_tokens, n_prompt_tokens_processed, n_prompt_tokens_cache,
+    from which usage = sum(tokens)/sum(n_ctx) and per-request cache-hit = n_prompt_tokens_cache/n_prompt_tokens are derivable
+    (the lane already defines kv_occupancy this way: heterogeneous-slot-fabric-residency.md:L254-L255).'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+  reader_should_conclude: 'Cite CONCUR for ONE thing: an AIMD agent-admission window gated on (KV usage high AND hit rate
+    low) beat fixed caps on GPU+SGLang offline batch, with numbers that are vendor-reported and configuration dependent. Do
+    NOT cite it for an agentic hit-rate figure (it has none; DualPath own 98.7% is separate) and do NOT carry its constants
+    or its 4.09x/1.90x to llama-server. Our request-level pool admission already exists; the open question is whether AGENT-level
+    resume recompute is measurable on :8083 at all (np4 plus --cache-ram changes the eviction economics).'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 ¶3 (Middle Phase)
+    quote: this extra recomputation takes 49.1% of the end-to-end latency
+    quote_sha256: fbe590f80561c72ba9b800e502d1fc7f170bd9772c6a2346a358d5b8bc9a85da
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 ¶3
+    quote: the prolonged middle-phase thrashing that dominates over 90% of the total execution time
+    quote_sha256: 0564e496a13b521eca7e7d2cb2de2927d7090d8f8bcf8c106486e13f48a3a7f5
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 ¶2 (Warmup)
+    quote: KV cache hit rates approach 90%
+    quote_sha256: 6314e6339cf57d14770223556f9c49369bf2933b551a1b9a5eaec93d83dd9d54
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.3 Algorithm Design
+    quote: the KV Cache Usage
+    quote_sha256: d541d7fe9a351604d5969ddce9ebec17601aabc36bafef7722f962a666155dac
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.1 Hyperparameter Configuration
+    quote: we set the additive increase factor to
+    quote_sha256: 3570a41decb536a2b24a75a13f669a81a3ce4877b712e921bf5d8752e95f0797
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §A.1 Impact of U_low
+    quote: requires more careful calibration to ensure the controller neither under-utilizes capacity nor over-admits requests
+    quote_sha256: c0000a86c389c355ad74de1ca49bb7df7c095e7f0e6ee3603d080ab2b2df3d10
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.3 Agent-Level Control Primitives
+    quote: Pause temporarily suspends an agent from issuing further requests while preserving its execution state
+    quote_sha256: 1cdec9a6a7b22dc4fa1590fb1a213618094983886ed2e25d631089242558c62b
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5.1
+    quote: Concur reduces latency by up to 4.09 × 4.09\times compared to SGLang and 2.8 × 2.8\times compared to request-level
+      admission.
+    quote_sha256: 86fd1f2b710cc77010ccfac6020306ce912213da90155bd77dc3eff6ad8b1d4a
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5.1 setup
+    quote: All experiments are conducted on NVIDIA H100 GPUs (80GB)
+    quote_sha256: cda948203d2481df79c28bbacc255368a0ee379521088bc3e3e06726cee1e623
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §5.2 ¶2
+    quote: they collapse to 35.41 % 35.41\% at the configuration of a large batch size of 40
+    quote_sha256: b9ddd072343a0effe537114b846c139d07b02aa4cb524255e0e167ec830c5ff6
+    source_revision: arXiv 2601.22705v1 (30 Jan 2026)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: phenomenon confirmed from §3.2/Fig 3
+  - claim_index: 1
+    effect: unaffected
+    note: law and constants confirmed §4.3/§5.1/§A.1
+  - claim_index: 2
+    effect: unaffected
+    note: primitives confirmed §4.3
+  - claim_index: 3
+    effect: unaffected
+    note: Table 1 numbers confirmed; ratios are latency, config-dependent
+  - claim_index: 4
+    effect: unaffected
+    note: Table 2 confirmed; no >=95% agentic figure
+  - claim_index: 5
+    effect: unaffected
+    note: limits are absences, verified by full read
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled the signal (KV usage + hit rate,
+    two-signal AIMD on agent count), the constants, the Table 1/2 numbers with conditions, and that DualPath ">95% hit rate"
+    is NOT in CONCUR; surfaced that llama-server lacks a usage gauge so the signal must be derived from /slots.
+
+
+    2026-10-20 second reader (independent agent): re-find 10/10; support yes 5 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2132
+  arxiv_id: '2411.15100'
+  url: https://arxiv.org/abs/2411.15100
+  source_type: paper
+  title: 'XGrammar: Flexible and Efficient Structured Generation Engine for Large Language Models'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Yixin Dong
+  - Charlie F. Ruan
+  - Yaxing Cai
+  - Ruihang Lai
+  - Ziyi Xu
+  - Yilong Zhao
+  - Tianqi Chen
+  key_claims:
+  - 'TOKEN-MASK PRECOMPUTE: a byte-level pushdown automaton for the CFG; per automaton node, vocabulary tokens are split into
+    context-independent (validity decided from the stack-top node alone: matching only expands into a child rule or advances
+    within the rule) and context-dependent (matching pops past the end of the rule so the full stack is needed). Context-independent
+    accept/reject sets are precomputed into an ''adaptive token mask cache'' keyed by stack-top node; only the context-dependent
+    remainder is checked at runtime. Llama-3.1 + JSON grammar: context-dependent tokens <1% (1134 of 128k); context expansion
+    (per-rule ''expanded suffix'' automata) cuts them 90% to 120; adaptive storage (store the smaller of accepted/rejected
+    set, bitset only when balanced) cuts cache memory 160 MB -> 0.46 MB (0.2%).'
+  - 'MASK COST PER STEP (vendor-reported, authors'' benchmarks; Llama-3.1-8B-Instruct, Ryzen 9 7950X + RTX 4090): under 40
+    us per token for JSON Schema and CFG(JSON), under 200 us for XML and Python-DSL CFG; up to 3x faster than the best baseline
+    on JSON Schema and >100x on CFG; baselines were Outlines v1.0, llama.cpp grammar engine b3998 and lm-format-enforcer.
+    Ablation (CFG JSON, Llama-3.1-8B): PDA baseline 65.8 ms/token -> node merging 38.3 -> adaptive token mask cache 0.154
+    -> rule inlining 0.035 -> context expansion 0.018 ms/token (the cache is the dominant step, 248.6x).'
+  - 'WHY llama.cpp IS SLOW IN THIS COMPARISON: the paper characterises llama.cpp''s grammar engine as a PDA that checks the
+    ENTIRE vocabulary at runtime every step (no precompute). End-to-end (Llama-3.1-8B, H100, batch sweep) the paper reports
+    vLLM+Outlines and llama.cpp throughput limited by grammar CPU time, with XGrammar giving up to 80x output-token-rate;
+    MLC-LLM TPOT with vs without XGrammar is 6.2 vs 6.3 ms (batch 1) and 9.0 vs 9.2 ms (batch 16) on JSON Schema - near-zero
+    overhead because mask generation (CPU) is overlapped with the GPU forward pass.'
+  - 'ROLLBACK / SPECULATIVE API: a persistent execution stack (tree of stacks) gives O(1) state branching and rollback by
+    moving stack-top pointers; the paper says a sliding window of history is kept and names speculative decoding trees (SpecInfer)
+    and jump-forward retokenization as consumers. In the code at HEAD, GrammarMatcher.rollback(num_tokens) exists and the
+    constructor argument max_rollback_tokens is DEPRECATED: any value other than -1 raises a DeprecationWarning and the effective
+    limit is always unlimited (-1). DeepInfer still passes max_rollback_tokens = DEEPINFER_USE_NEXTN_DECODE + 2 and also keeps
+    its own capped trigger-progress history of the same length, so the cap is a DeepInfer-side invariant, not an xgrammar
+    limit at this revision.'
+  - 'QUALITY EFFECT (vendor-reported, Llama-3.1-8B, authors'' datasets): syntactic correctness with vs without grammar: function
+    calling 62% -> 100%, XML 80% -> 100% (json-mode-eval and a synthetic XML set). Says nothing about task accuracy.'
+  - 'PROVENANCE AND SUPERSESSION: canonical source github.com/mlc-ai/xgrammar (Apache-style project; HEAD 614ab01 dated 2026-10-17)
+    and the MLSys 2025 paper arXiv 2411.15100 ''XGrammar: Flexible and Efficient Structured Generation Engine for Large Language
+    Models'' (Dong, Ruan, Cai, Lai, Xu, Zhao, Chen; v1 22 Nov 2024, v3 12 May 2025). The repo README additionally cites a
+    2026 follow-up ''XGrammar-2: Dynamic and Efficient Structured Generation Engine for Agentic LLMs'' (arXiv 2601.04426,
+    observed in the arXiv API); the paper measures a 2024 engine, the repo at HEAD has since grown Lark grammars, captures
+    and a BatchGrammarMatcher (matcher.py:L561-L711), none of which the 2024 paper''s numbers cover.'
+  techniques:
+  - Adaptive token mask cache (context-independent vs context-dependent token split, per-PDA-node, adaptive accepted/rejected/bitset
+    storage)
+  - Context expansion (expanded-suffix automata to reject context-dependent tokens at preprocessing)
+  - Persistent execution stack (tree of stacks) for O(1) branch and rollback
+  - Grammar mask generation overlapped with the LLM forward pass
+  - PDA rule inlining and node merging
+  reported_results:
+  - 'vendor-reported (authors; Ryzen 9 7950X + RTX 4090, Llama-3.1-8B-Instruct): per-token mask latency <40 us JSON Schema
+    / JSON CFG, <200 us XML / Python DSL; up to 3x (JSON Schema) and >100x (CFG) vs best of Outlines v1.0, llama.cpp b3998,
+    lm-format-enforcer v0.10.9.'
+  - 'vendor-reported (authors; EPYC 7R13 + H100, Llama-3.1-8B, avg 139 input / 53 output tokens, fixed batch): up to 80x output-token
+    rate vs vLLM+Outlines and llama.cpp grammar; MLC-LLM TPOT with/without XGrammar 6.3/6.2 ms (batch 1), 9.2/9.0 ms (batch
+    16).'
+  - 'vendor-reported ablation (CFG JSON, Llama-3.1-8B): 65.776 ms -> 38.280 (node merging) -> 0.154 (token mask cache) ->
+    0.035 (inlining) -> 0.018 ms/token (context expansion).'
+  - 'vendor-reported: syntactic correctness 62% -> 100% (function calling), 80% -> 100% (XML), Llama-3.1-8B.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-2116
+  recommended_actions:
+  - 'Do not build anything yet: first measure what llama.cpp grammar sampling actually costs on our vocabularies and whether
+    any production path uses a grammar with MTP/DFlash verify (ledger XGRAMMAR-A1).'
+  - Treat XGrammar-2 (arXiv 2601.04426) as the better-matched follow-up for agentic tool-call workloads (surfaced).
+  credibility_score: 5
+  contradicting_evidence:
+  - All comparisons are authored by the project; llama.cpp baseline is b3998 (late 2024), our tree is much newer and uses
+    a different sampler flow (grammar applied after the chain with a single-token rejection-sampling fast path, common/sampling.cpp:L593-L625
+    @ dd3d9721c), so the >100x CFG gap is not a statement about our build. Bounded contradiction search not run (provisional).
+  referenced_arxiv_ids:
+  - '2601.04426'
+  notes: 'READ_DEPTH PARTIAL: paper §1-§6 body, tables 1-4 read from saved arXiv v3 HTML text (sha256 73374a51ffe6...; appendices
+    A-C and reference list NOT read in detail); repo: cloned depth 1 to /mnt/raid0/llm/tmp/dive-deepinfer-xgrammar/src at
+    614ab01 (2026-10-17); read python/xgrammar/matcher.py (constructor, rollback, accept_token, fill_next_token_bitmask, BatchGrammarMatcher
+    signatures), README citation block, cpp/grammar_matcher.cc header comments (L441-L462); the C++ preprocess implementation
+    (grammar_matcher_preproc) and tests NOT read. No code executed. EPYC side: llama.cpp grammar at dd3d9721c - llama_grammar_apply_impl
+    (src/llama-grammar.cpp:L1339-L1380) decodes UTF-8 for every candidate in cur_p and calls llama_grammar_reject_candidates
+    over all stacks: O(candidates x stacks) per step, no precomputed mask (cur_p holds the full vocab unless truncated by
+    the chain). common_sampler_sample (common/sampling.cpp:L553-L636) mitigates this when grammar_first=false: sample from
+    the normal chain first, test ONLY that token against the grammar (single-token array, L609-L617) and resample with the
+    grammar applied first only on rejection - so unconstrained-looking outputs pay ~1 token check, constrained outputs pay
+    a full-vocab pass on the resample. Speculative verify: common_sampler_sample_and_accept_n (sampling.cpp:L637-L708) samples
+    and ACCEPTS tokens one at a time (common_sampler_accept advances the grammar per verified token) and stops at the first
+    draft mismatch, so grammar state is never ahead of the accepted prefix and no rollback API is needed; cost is one grammar
+    sample per verify row (up to draft+1), and the drafter itself is not grammar-aware so drafts violating the grammar are
+    simply rejected (acceptance rate, not correctness, suffers). llama_grammar_clone_impl exists (llama-grammar.cpp:L1309).
+    Orchestrator use (@ 62ee3ba6): GBNF grammar forced on the first tool-required turn (src/graph/helpers.py:L1097-L1104,
+    tool_reg.generate_gbnf_grammar), json_schema/grammar plumbed through InferenceRequest (src/llm_primitives/primitives.py:L675-L1218,
+    inference.py:L702-L905) and sent as response_format on /v1/chat/completions (src/backends/llama_server.py:L1470-L1497);
+    server_lifecycle.py:L179/L297/L356 declare json_schema=True capability. Lane context: gpu-acceleration-path.md:L72 already
+    flags a compressed-FSM/precomputed grammar engine as a llama.cpp upgrade target if grammar throughput becomes a bottleneck
+    - this dive supplies the mechanism, not the evidence that it is one.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2411.15100v3 (12 May 2025); github.com/mlc-ai/xgrammar @ 614ab01 (full SHA 614ab01d2af3fdfdde73ae3e4171a7f36db45c23)
+  reader_should_conclude: Cite XGrammar for the mechanism (context-independent token masks precomputed per automaton position;
+    only the <1% context-dependent remainder checked at runtime; O(1) persistent-stack rollback) and for its authors own tens-of-microseconds
+    mask costs on a 128k vocabulary. Do NOT cite max_rollback_tokens as an engine limit (deprecated, unlimited at HEAD), do
+    NOT read the >100x llama.cpp gap as applying to our newer tree, and do NOT assume a mask-overlap benefit on CPU-inference
+    models. llama.cpp verify already advances the grammar only on accepted tokens, so spec decoding + grammar is a cost question
+    (one grammar sample per verify row), not a correctness gap.
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 ¶1
+    quote: Validating tokens in the former two cases only relies on the stack top node
+    quote_sha256: d0dda015522d3c57c86c7966e592a9737f85d0ce67ad6c484ed3626b92517804
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 ¶2
+    quote: amounting to less than 1% (1134 out of 128k) for the Llama-3.1 model using JSON grammar
+    quote_sha256: 6ddd6d81bac42fd9e64754c23ce552203de31a1b52dab3b5c153e935ed5c8c5b
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.2 ¶3
+    quote: this technique reduces context-dependent tokens by 90% (from 1,134 to 120)
+    quote_sha256: 66d885bc3b4754052e3978e8743300beff44b46e56cd1ce42796579241860001
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 Adaptive storage
+    quote: this adaptive storage method can effectively reduce the total memory usage to 0.2% (from 160 MB to 0.46 MB)
+    quote_sha256: fa97d42ddc5ea3eeb9521d840d187419f252221d9d8dfb0340e514d205bd50e5
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.1 ¶2
+    quote: with under 40 µs per token for JSON Schema and CFG (JSON), and under 200 µs for XML and Python DSL
+    quote_sha256: 7c4ddf982542de907e41a6b0c51a92b7d7dd6b1e6d3f62061a191fc2f7ef2249
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.1 ¶1
+    quote: the grammar engine in llama.cpp Gerganov (2023) (b3998)
+    quote_sha256: c698b18a9bdb5b3cc728d3e60091aba27474404f8070a31d65d1be5879300cb7
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4.3 Table 3 text
+    quote: the results show that the adaptive token mask cache has the greatest impact in terms of speedup
+    quote_sha256: e3663eb97e1381b653bf6da45acea4eb8ababe42c8835b42c83a640655df303e
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5 Related Work
+    quote: but requires checking the entire vocabulary at runtime, which incurs large overhead
+    quote_sha256: 092bda9649f30fe0c1ae9145e89d5c188777c742a58982eb98322abda71c7352
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3.5
+    quote: we overlap the computation for mask generation with the LLM inference process
+    quote_sha256: 858899bed07679315f7637b409f4df29fa0ec1049b5f8da17674af472b318564
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §3.3 ¶3
+    quote: At runtime, a sliding window of history is maintained. To roll back to a previous state, we only need to change
+      the current stack pointers, which requires constant time.
+    quote_sha256: 1379b179e70544c6cb9f96e79582b3e5cb4c3aefd1f38c6d79b83e764a290d78
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §3.3 ¶5
+    quote: We can maintain the automata state for every branch of the output tree
+    quote_sha256: 6e2dafc92256ac2c8642af8faab99fab483e1b8a401ff94fb9bb987fade458c0
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: python/xgrammar/matcher.py:L261-L266 @ 614ab01
+    quote: '"max_rollback_tokens is deprecated. You don''t need to set it and it''s always "'
+    quote_sha256: f606c5a1eaad28c04a16ac2846feac6ca0b824e4e7efc4d619a0bf314568760a
+    source_revision: 614ab01
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: deepinfer/structure_output/matcher.py:L20 @ 774ce24
+    quote: MAX_ROLLBACK_TOKENS = envs.DEEPINFER_USE_NEXTN_DECODE + 2
+    quote_sha256: 6686fb32d07e09ac2524783252eb7387a5488c1aacce7eb934b4ae9815753907
+    source_revision: 774ce24
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: deepinfer/structure_output/matcher.py:L83 @ 774ce24
+    quote: self.inner_matcher = InnerMatcher(ctx, max_rollback_tokens=MAX_ROLLBACK_TOKENS)
+    quote_sha256: 0ecd92f586647df7c7f7d82518570334cb036ab6da3b3c6a2165cedca2612e85
+    source_revision: 774ce24
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.4 Table 4 text
+    quote: XGrammar ensures 100% syntactic correctness of the generated outputs.
+    quote_sha256: 90d717df5dca00f05c067de3d1ea388bd04e801d131e0519e2c277e22692aeb5
+    source_revision: arXiv 2411.15100v3 (12 May 2025, MLSys 2025)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: mechanism confirmed in paper and code comments
+  - claim_index: 1
+    effect: narrowed
+    note: numbers hold only for the authors hardware and Llama-3.1 128k tokenizer
+  - claim_index: 2
+    effect: unaffected
+    note: paper statement about llama.cpp b3998 confirmed; applicability to our tree is NOT established
+  - claim_index: 3
+    effect: narrowed
+    note: rollback exists but max_rollback_tokens is deprecated/unlimited at HEAD; DeepInfer cap is local
+  - claim_index: 4
+    effect: unaffected
+    note: Table 4 confirmed; syntactic only
+  - claim_index: 5
+    effect: unaffected
+    note: provenance confirmed on arxiv.org/abs and README
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; resolved canonical source (mlc-ai/xgrammar
+    + arXiv 2411.15100 title verified on abs page), settled mask precompute and per-step cost, and OVERTURNED the reading
+    of max_rollback_tokens as an engine bound (deprecated, unlimited at HEAD 614ab01); mapped llama.cpp grammar sampling and
+    spec verify at dd3d9721c.
+
+
+    2026-10-20 second reader (independent agent): re-find 15/15; support yes 5 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2133
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepGEMM-Ascend
+  source_type: repo
+  title: 'DeepGEMM-Ascend: Clean and Efficient BLAS Kernel Library on Ascend NPU'
+  categories:
+  - hardware_optimization
+  - quantization
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2123
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors: Kexing Zhou, Zhean Xu, Anyi Xu, Chenggang Zhao, Yuxuan Zhou, Yunfan Xiao, Guanglin Li, Kaifeng Chen, Yuhao Meng,
+    Huanqi Cao, Ruifan Xu, Chenhao Xu, Kuai Yu (DeepSeek-AI)
+  key_claims:
+  - 'Full Ascend 950 (CANN 9.20) port of DeepGEMM, API-compatible: BF16/FP8/FP4 dense GEMM, FP8xFP4 mixed GEMM, M-grouped
+    and K-grouped GEMM, MQA logits (dense + paged, for the Lightning Indexer), MegaMoE, and an HC-Prenorm GEMM for the mHC
+    (hyper-connections) module.'
+  - 'Mixed-precision FP8xFP4 GEMM is a DISTINCT kernel (fp8_dequant_gemm) from the native pure-FP4xFP4 GEMM: FP4 (E2M1, 2
+    values/byte) operands are unpacked to FP8 (E4M3) via a 256-entry register lookup table built once per kernel (vf_build_lut)
+    and a vectorized gather+nibble-interleave (vf_deq_nd2nz) before entering the systolic MAD array; the LUT directly maps
+    each 4-bit E2M1 code to its E4M3 bit pattern (code 0 -> 0x00, code 1 -> 0x30, codes 2-7 -> 0x30 + code<<2, sign bit relocated),
+    i.e. dequant is a table lookup, not float arithmetic.'
+  - Pure FP4xFP4 dense GEMM IS run natively on Ascend 950 hardware (no dequant stage) and reaches 98.3% of the reported FP4
+    hardware TFLOPS ceiling, so the dequant-to-FP8 path exists only for the mixed FP8xFP4 operand case, not because the hardware
+    lacks FP4 MAD entirely.
+  - 'Scaling-factor (UE8M0, power-of-two) packing differs from NVIDIA DeepGEMM: pairs along K are packed into one int16 (vs
+    4-per-int32 on SM100) and stored MN-major for Ascend DMA/cache efficiency; the exponent encoding itself (same UE8M0 semantics)
+    is unchanged.'
+  - 'MegaMoE (EP dispatch + grouped L1/L2 GEMM + SwiGLU + combine, fused into one kernel) is ported to Ascend with its own
+    MMA pipeline config (MMAConfig: BLOCK_M/N/K, MAD_M/N/K, L1/L0/epilogue stage counts) and benchmarked at EP8, top-k=6 +
+    1 shared expert, up to 384 experts / 16384 tokens-per-rank; only absolute latency/TFLOPS/bandwidth are reported, no fused-vs-unfused
+    speedup figure (unlike upstream DeepGEMM PR #316).'
+  - Grouped GEMM for MoE experts takes the same two-layout split as upstream DeepGEMM (contiguous for prefill, PSUM/masked-equivalent
+    "WithPsumLayout" for decode under fixed shapes), confirmed by the GemmType enum (Normal, Batched, MGroupedContiguousWithPsumLayout,
+    KGroupedContiguousWithPsumLayout) shared across the FP8 and FP8-dequant kernel families.
+  - MQA-logits kernel reported as FIX-pipe bound (99% utilization of a non-MAD execution pipe), not compute-bound, at the
+    benchmarked prefill/decode shapes -- a different bottleneck class than the GEMM kernels.
+  reported_results:
+  - 'vendor-reported (DeepSeek, Ascend 950DT, CANN 9.20, bench_msprof cold L2): dense GEMM M=4096,N=7168,K=16384 -- FP4xFP4
+    565.6us/1701 TFLOPS/98.3% of limit; FP8xFP4 1117.8us/861 TFLOPS/99.5%; FP8xFP8 1117.6us/861 TFLOPS/99.5%; BF16xBF16 2229.9us/431
+    TFLOPS/99.8%. No independent corroboration; hardware is unreleased/non-public-benchmark generation.'
+  - 'vendor-reported: MegaMoE EP8, top-k=6 + 1 shared expert, 384 experts, hidden 7168, intermediate 3072, 16384 tokens/rank
+    -- 17904.2us, 846.3 TFLOPS, 269.3 GB/s HBM, 103.3 GB/s inter-rank comm. No baseline/speedup column in this repo (contrast
+    upstream DeepGEMM PR #316, which gives 1.5x-1.96x vs an unfused baseline).'
+  - 'vendor-reported: MQA logits decode, FP4, 256 Q / 8192 K tokens, 32 heads, dim 128 -- 124.2us, 708 TFLOPS, 1349 GB/s,
+    described as FIX-pipe-bound at the reported shape.'
+  cross_references:
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - mi210-q8-dequant-gemv-roofline.md
+    - gpu-acceleration-path.md
+    - agentic-rocm-kernel-authoring.md
+  recommended_actions: []
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Dedup check: unbounded grep of research/intake_index.yaml for "deepgemm-ascend" and "deepgemm_ascend" returned no
+    hits -- genuinely new. Cheap contradiction pass not run (credibility_score 2, below the >=3 trigger, and this is a repo
+    not an actionable claim beyond port-pattern mapping); flagged instead via claim-level caveats above (unreleased hardware,
+    no independent corroboration, no fused-vs-unfused comparison for MegaMoE).'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: deepseek-ai/DeepGEMM-Ascend@3a35326271b069b8b5bf1a754435acd6cc91575b (cloned 2026-10-20, repo last commit
+    2026-10-14; depth-1 clone, submodules not fetched)
+  reader_should_conclude: 'Cite this repo for ONE thing only: the concrete, hardware-proven pattern of dequantizing a packed
+    sub-byte/narrow format (FP4/E2M1) into a wider native-MAD format (FP8/E4M3) via a small REGISTER-RESIDENT LOOKUP TABLE
+    plus a vectorized nibble-gather, run inline before the matmul, rather than a float-arithmetic dequant loop. Do NOT cite
+    its TFLOPS/utilization numbers as portable evidence (Ascend 950 is a different, non-public-benchmark NPU with its own
+    MAD/FIX-pipe microarchitecture) and do NOT cite the MegaMoE figures as a fused-vs-unfused speedup claim (this repo reports
+    no baseline, unlike intake-2123''s PR #316).'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L3 @ 3a35326
+    quote: DeepGEMM Ascend is a port of DeepGEMM to the HUAWEI Ascend platform. It is fully API-compatible with DeepGEMM and
+      supports BF16, FP8, FP4 GEMM, MQA logits, and MegaMoE.
+    quote_sha256: 3f62eeaa561600d18159be32d225cb1221f7a623c1711f83892280cd65a3abdc
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: csrc/apis/gemm.hpp:L28-L29 @ 3a35326
+    quote: '} else if (ab_dtype == std::tie(torch::kFloat8_e4m3fn, kPackedFP4)) { deep_gemm::launch_fp8_dequant_gemm(desc);'
+    quote_sha256: 50605762848fcc014ded56859a8cd4e42dd7b7438bd340516e2456c081711b3e
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: deep_gemm/include/deep_gemm/fp8_dequant_gemm.hpp:L13-L14 @ 3a35326
+    quote: Each packed FP4 byte holds two E2M1 values. Dequantization splits the low and high nibbles and uses each as an
+      index into this LUT, producing two raw E4M3 bytes.
+    quote_sha256: ebed2c49be3850bdd5382b7b0b90351d30aacae9cd68ea36e8af608b062a902c
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: deep_gemm/include/deep_gemm/fp8_dequant_gemm.hpp:L24-L25 @ 3a35326
+    quote: E2M1 code 0 maps to E4M3 0x00, code 1 to 0x30, and codes 2..7 to 0x30 + (code << 2). FP4 sign bit 3 is moved to
+      E4M3 sign bit 7 below.
+    quote_sha256: d17b29e5ac7c9cabb19515d1690bdc6344dd0afa8b1bbb8acb3644b1443c0edb
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: deep_gemm/include/deep_gemm/fp8_dequant_gemm.hpp:L69 @ 3a35326
+    quote: A 256B load holds 512 FP4 values. Low nibbles are even columns; high nibbles are odd columns.
+    quote_sha256: c8c12b0e6c41a081da8ba642ba1039227bd2b6b22373a7048d5f0e24c1b558e7
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L56 @ 3a35326
+    quote: 'The scaling factor format on Ascend differs from NVIDIA''s: each pair of UE8M0 scaling factors along the K dimension
+      is packed into an `int16`, and the packed values are stored in MN-major order for optimal hardware efficiency.'
+    quote_sha256: 1e73cfe8a787c8e9e6be279a846819acd710f334e6332b3df6c317c9f436e596
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L162 @ 3a35326
+    quote: Mega MoE fuses EP dispatch, two grouped GEMMs, SwiGLU, and combine. Benchmarked over EP8 with top-k=6 (each token
+      routed to 6 experts) and one shared expert; all values are averaged across 8 ranks.
+    quote_sha256: f6b197c0508f64f24592bbb8291956193c01369804f1dfc7bac1275113e64dc8
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L110 @ 3a35326
+    quote: '| FP4×FP4 | 4096 | 7168 | 16384 | 565.6 | 1701 | 1730 | 98.3 |'
+    quote_sha256: af66a436bcf570b9fb7ca6fa6552c032beb38c015b2e6353726d5efeba223936
+    source_revision: 3a35326
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: New entry (Stage-2b); no prior Stage-1 claim to correct.
+  - claim_index: 1
+    effect: unaffected
+    note: New entry; clarified the dequant mechanism is LUT-based, and that pure FP4xFP4 also runs natively (dequant path
+      is specific to the mixed-dtype case).
+  - claim_index: 2
+    effect: unaffected
+    note: New entry.
+  - claim_index: 3
+    effect: unaffected
+    note: New entry.
+  - claim_index: 4
+    effect: unaffected
+    note: New entry; noted vendor-only, unreleased-hardware caveat.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass. Settled the brief''s anchors: kernel inventory
+    (BF16/FP8/FP4 dense GEMM, FP8xFP4 mixed GEMM, M/K-grouped GEMM, MQA logits dense+paged, MegaMoE, HC-Prenorm) confirmed
+    from the file tree and README; FP8/FP4 hardware handling resolved as dequant-to-FP8-via-register-LUT for the MIXED FP8xFP4
+    case specifically (pure FP4xFP4 has its own native kernel and is NOT dequanted); what was rewritten vs shared with DeepGEMM
+    is the GemmType/layout API surface (shared design, Ascend-specific MAD/pipeline/SF-packing internals); performance numbers
+    recorded with hardware and conditions, flagged vendor-only/unreleased-hardware, and MegaMoE here carries no baseline comparison
+    unlike intake-2123''s PR #316.
+
+
+    2026-10-20 second reader (independent agent): re-find 8/8; support yes 2 / partial 0 / no 3. The three ''no'' verdicts
+    (claims 2, 3, 4) were rotated anchors (each claim carried a neighbouring claim''s README quote); main verified and re-indexed
+    README:L110 -> claim 2, README:L56 -> claim 3, README:L162 -> claim 4; quotes and hashes unchanged. Main also dropped
+    a malformed bare-list depends_on [intake-2123]: the counterfactual test fails (this entry''s claims rest on the DeepGEMM-Ascend
+    repo, not on intake-2123''s claims).'
+- id: intake-2134
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/EPLB
+  source_type: repo
+  title: deepseek-ai/EPLB - Expert Parallelism Load Balancer (redundant-expert replication and placement planner)
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - DeepSeek-AI
+  key_claims:
+  - 'Policy choice is a one-line switch on divisibility, not on load or stage: hierarchical when num_groups % num_nodes ==
+    0, otherwise ''global'', which is the SAME hierarchical routine called with one group and one node (eplb.py:L150-L156).
+    The README says hierarchical suits prefill with smaller EP and global suits decode with larger EP, but that is guidance;
+    the code does not look at the stage.'
+  - 'Replica-count rule: the caller fixes the total physical-expert count; redundant = num_phy - num_log (must be >= 0, and
+    num_replicas must be a multiple of num_gpus); every logical expert starts with 1 copy and the redundant slots are handed
+    out ONE AT A TIME to whichever expert currently has the highest load per replica (argmax of weight/logcnt), per layer,
+    with no cap and no gain threshold (eplb.py:L58-L71). So replica counts follow the load skew greedily; there is no separate
+    ''how many replicas does this expert deserve'' formula.'
+  - 'Packing algorithm (balanced_packing): longest-processing-time greedy with an equal-cardinality constraint. Sort items
+    by weight descending, put each into the least-loaded pack that is not yet full (each pack gets exactly n/m items); pure
+    Python loop per layer; shortcut when one item per pack (eplb.py:L5-L41). It optimises the mean weight vector only: one
+    number per expert per layer.'
+  - 'Hierarchical flow (eplb.py:L74-L129): (1) sum expert load per expert-group and pack GROUPS onto nodes with balanced_packing;
+    (2) inside each node replicate experts with replicate_experts; (3) pack the replicas onto that node''s GPUs with balanced_packing
+    using per-replica load = expert load / replica count (assumes the replicas split the load evenly). Global policy skips
+    (1). Group-aware placement exists to cut inter-node traffic under DeepSeek-V3 group-limited routing (README).'
+  - The repo contains only the planner (eplb.py 164 lines, README, MIT licence, one example image). The load predictor is
+    explicitly out of scope; README suggests a moving average of historical statistics. No token-to-replica assignment/dispatch
+    rule, no weight-movement code, no tests, and no benchmark or balance-quality numbers are in the repo. The README worked
+    example (two layers, 12 experts, 16 replicas, 2 nodes x 4 GPUs) prints a placement but no balance metric.
+  - 'Differences from DeepInfer''s eplb/policy.py (read in the seed dive, D4, @774ce24): (a) input is a single aggregate load
+    vector [layers, experts] here versus a WINDOW [steps, layers, experts] there; (b) replica choice here = hottest per-replica
+    expert by aggregate, there = the expert whose extra replica minimises the SUM OVER STEPS of the worst per-replica load;
+    (c) packing here = LPT on aggregate load, there = greedy minimising the sum over steps of the worst rank load (complementarity-aware:
+    it avoids stacking experts that peak in the same step); (d) DeepInfer vendors only the global policy, no group/node hierarchy;
+    (e) neither adds an anti-affinity rule (two replicas of one expert may land on the same bin). In short DeepInfer''s is
+    EPLB''s two-stage skeleton with the objective changed from mean load to per-step peak load.'
+  - 'Hierarchical policy cannot apply to DS41: its routing config exposes 384 routed experts, 6 per token and sqrtsoftplus
+    scoring with no n_group/topk_group field (NOT-FOUND in the official config.json and inference/config.json grep this session),
+    so there are no expert groups to pack onto nodes. Only the global policy is relevant, which is also the one DeepInfer
+    vendored.'
+  techniques:
+  - EPLB greedy redundant-expert allocation by hottest per-replica load
+  - Equal-cardinality LPT bin packing of expert replicas onto devices (balanced_packing)
+  - Group-limited-routing-aware hierarchical placement (groups to nodes, replicas within node, replicas to GPUs)
+  reported_results:
+  - No quantitative results exist in the source (no balance ratios, no throughput). README claims the policies 'ensure' balance
+    without a measurement; treat as mechanism description only. DeepSeek-V3-paper references in the README were not read.
+  cross_references:
+    handoffs:
+    - large-moe-expert-parallelism.md
+    - moe-routing-tap-and-locality-measurement.md
+    - deepseek-v41-flash-evaluation.md
+    intake:
+    - intake-2116
+    - intake-1336
+  recommended_actions:
+  - 'RT-6b: add EPLB-global as the reference arm of the offline replay'
+  - 'RT-2c: trace-shape rider (order, prefill/decode tag, deepseek41 coverage)'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Read FULL: eplb.py (164 lines), README.md (67 lines), LICENSE listing; clone d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    (2 files of substance; example.png not viewed, README text describes it). Compared against DeepInfer eplb/policy.py L12-L140
+    (@774ce24) re-read this session, and the seed D4 patch. Repo was already named in the lane index only as a declined Gate-2
+    item (issue #12, unrelated entry) and as a README fetched for dedup; no index entry has this URL. Vendor mechanism only:
+    no numbers anywhere in the repo.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+  reader_should_conclude: Cite EPLB for the algorithm (greedy hottest-per-replica replication, LPT equal-cardinality packing,
+    divisibility switch between hierarchical and global) and as the reference arm of RT-6. Do NOT cite it for any balance
+    or speed number (none exists), for a dispatch or weight-movement design (absent), or as the policy DeepInfer runs (DeepInfer
+    changed the objective to windowed per-step peak). Do NOT use it for CPU-vs-MI210 residency (RT-7 is a top-k coverage curve).
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: eplb.py:L150 @ d52c72d
+    quote: 'if num_groups % num_nodes == 0:'
+    quote_sha256: d92d11064e04cf913957ebf7149a37ef65ff2c65086bf71dbb6525a1f625c247
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: eplb.py:L156 @ d52c72d
+    quote: phy2log, phyrank, logcnt = rebalance_experts_hierarchical(weight, num_replicas, 1, 1, num_gpus)
+    quote_sha256: 50b58f9195bf16362d249b449d1ac6a94939b6e1327f920e799ca96db50ce610
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md §Hierarchical Load Balancing ¶1 @ d52c72d
+    quote: The hierarchical load balancing policy can be used in prefilling stage with a smaller expert-parallel size.
+    quote_sha256: 488c8af0f8f64c30700d7117cda5c08eb1c3f88c5014301a4815b94bdb594845
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: eplb.py:L67 @ d52c72d
+    quote: redundant_indices = (weight / logcnt).max(dim=-1).indices
+    quote_sha256: df690edceb57c14b68d1fc1fb535c0ad68c43600e4619826d250bf46d3370209
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: eplb.py:L59 @ d52c72d
+    quote: num_redundant = num_phy - num_log
+    quote_sha256: 39a8e2df6d6aa1a3755308cee6fc7824c20916b4a67a825b454d8b8e1af0f400
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: eplb.py:L34 @ d52c72d
+    quote: pack = min((i for i in range(num_packs) if pack_items[i] < groups_per_pack),
+    quote_sha256: deb7b7a8ae1a27cc9d3b5c271f157c9c3bb4e491a1ba401f7e6929ed2ed1d4aa
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: eplb.py:L27 @ d52c72d
+    quote: indices = weight.float().sort(-1, descending=True).indices.cpu()
+    quote_sha256: c797216d1459213ec8e9cb560d9b09369338fd507f118ff2ea3151372cdfe682
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: eplb.py:L117 @ d52c72d
+    quote: tokens_per_phy = (tokens_per_mlog / mlogcnt).gather(-1, phy2mlog)
+    quote_sha256: e32bbd4a81664cc29305ecd1fdd5ab7acb7b835d2d784fb05cc88c6a13a726f6
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: README.md §intro ¶2 @ d52c72d
+    quote: Note that the exact method to predict the loads of experts is out of this repo's scope.
+    quote_sha256: 82b35984312c98daf1fec5e3f90c2daf46db56b4aad9a3f6e05f675374f352a5
+    source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Stage-1 summary of two policies confirmed; added that the switch is divisibility only, and that DS41 has no groups.
+  - claim_index: 1
+    effect: unaffected
+    note: Replica rule read from code.
+  - claim_index: 2
+    effect: unaffected
+    note: Packing algorithm read from code.
+  - claim_index: 3
+    effect: unaffected
+    note: Hierarchical flow confirmed.
+  - claim_index: 4
+    effect: narrowed
+    note: 'Source is a planner only: no dispatch rule, no movement code, no metrics, so it cannot be cited for any balance-quality
+      or speedup number.'
+  - claim_index: 5
+    effect: unaffected
+    note: Comparison against D4 seed patch and DeepInfer policy.py L12-L140.
+  - claim_index: 6
+    effect: unaffected
+    note: DS41 config grep.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled that the policy switch is divisibility-only,
+    replicas are handed out one at a time to the hottest per-replica expert, packing is equal-cardinality LPT on a single
+    aggregate vector, and DeepInfer''s policy differs by objective (windowed per-step peak) rather than by structure; the
+    repo has no numbers or dispatch code.
+
+
+    2026-10-20 second reader (independent agent): re-find 9/9; support yes 5 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2135
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/DeepEP
+  source_type: repo
+  title: deepseek-ai/DeepEP - expert-parallel communication library (EP dispatch/combine, Engram remote fetch, redundant-expert
+    weight exchange)
+  categories:
+  - moe_optimization
+  - inference_serving
+  - memory_augmented
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - DeepSeek-AI
+  key_claims:
+  - 'EngramBuffer storage (the D4 flag ''supports GPU/CPU storage''): each layer''s table is a matrix of fixed-size entries
+    (hidden x element-size bytes, BF16 or FP8-e4m3 with separately held scaling factors), sharded across ranks (each rank
+    holds num_entries_per_layer rows per layer). With use_cpu_rdma_storage the shard is allocated with the CUDA virtual-memory
+    API at location HOST_NUMA on the GPU''s own NUMA node, mapped into the same address range as the GPU receive buffer, and
+    registered for RDMA; otherwise it sits in HBM. `write` copies the tables in with cudaMemcpyAsync and asserts the source
+    tensors are CUDA tensors, so a table passes through the device even when it lives in host memory. Nothing in the repo
+    pages, pins explicitly, evicts or caches rows: ''CPU storage'' means a NIC-readable host allocation, not a managed cache.'
+  - 'How rows are fetched: the caller passes an int32 GPU tensor [num_layers, num_tokens, num_entries_per_token] of GLOBAL
+    entry indices; one persistent kernel (one block per SM) has issue warps that, per layer, scan the indices, route each
+    to its owning peer, batch up to 32 requests per warp and issue one-sided RDMA GET operations (gin.get) that land each
+    row directly at its slot in a preallocated GPU receive buffer, ringing the doorbell only every few batches. The CPU is
+    not involved after launch and no host-side gather happens.'
+  - 'Prefetch and overlap: fetch() launches ONE issue kernel covering all layers (layer loop unrolled in-kernel, layer 0''s
+    requests go out first), records the last request of each layer, and returns one Python hook per layer; calling hook i
+    enqueues a small wait kernel on the current stream and returns a view into the receive buffer. The tests time ''issue''
+    and ''wait'' separately. So the overlap depth is intra-forward only: issue everything at forward start, wait just before
+    each layer needs its rows. There is no cross-step or speculative prefetch, no predictor, no residency tiering: it is exactly
+    the ''hoist hash and fetch to forward start with one completion hook per layer'' that D4 read in DeepInfer (deepseek.py:L177-L188),
+    now seen from the library side.'
+  - 'Concurrency sizing is Little''s law: get_theoretical_config sets queue-pair count = NIC read rate (45 or 90 million reads/s
+    depending on fast-RDMA-atomic support) x an assumed 10 microsecond read round trip / 16 outstanding reads per QP / peers,
+    then deepens the QP until all layers x tokens x entries requests fit (cap 32768 slots). The 10 us and the 45/90 Mpps are
+    constants in the code, not measurements in the repo.'
+  - 'FP8 handling: when entries are FP8 the scaling factors are NOT fetched over RDMA; every rank keeps them in GPU memory
+    (the test replicates the full factor table so any rank can read any entry''s factors locally; the kernel''s scaling-factor
+    warps read the shard via an NVLink-domain pointer), and the kernel writes them into a column-major TMA-aligned layout
+    for the FP8 GEMM. Entry size must be a multiple of 64 bytes (kNumRDMAAlignmentBytes asserted in set_config).'
+  - 'Low-latency dispatch/combine, in one sentence: V2.5 no longer has a separate low-latency API; decode uses the same EPBuffer
+    dispatch/combine as prefill and training but with do_cpu_sync=False, meaning receive counts stay on the GPU, outputs are
+    sized to the configured capacity and the expert GEMMs read per-expert valid ranges from the handle, with the epilogue
+    deferred so independent compute can overlap, all on persistent SM-resident NCCL-GIN kernels (README states zero-SM RDMA
+    EP is unsupported). The dispatch/combine kernels themselves (dispatch.cuh, combine.cuh, hybrid_*.cuh) were only skimmed
+    at the template signature level, so wire-protocol details (send ordering, FP8 dispatch packing, flag/atomic scheme) are
+    NOT-FOUND here.'
+  - 'Redundant-expert weight movement (the runtime counterpart of EPLB): lb_prefetch_weights pushes original expert weights
+    to redundant slots on peer ranks over NVLink before expert compute, asynchronously on the comm stream with an EventOverlap,
+    driven by a caller-supplied redundancy_mapping [ranks, slots]; the planner and token rerouting are the caller''s job,
+    and the README confines replication to the NVLink domain.'
+  - 'Platform requirements as written: Hopper-or-newer NVIDIA GPUs, CUDA 13.1+ for the JIT, NCCL with GIN (Engram additionally
+    needs ncclGinOptFlagsWarpGet), RDMA NIC (InfiniBand tested, RoCE theoretical). The README lists a ROCm backend (MORI,
+    low-latency mode) and a PCIe-kernel Hybrid-EP only as separate branches, not read here.'
+  techniques:
+  - Hoisted multi-layer embedding-table fetch with one wait hook per layer (GPU-initiated one-sided RDMA gets from host- or
+    HBM-resident shards)
+  - Host-NUMA-local CUDA VMM allocation of NIC-registered table storage
+  - Little's-law queue-pair sizing from NIC read rate x round-trip time
+  - Dispatch/combine with GPU-side receive counts (no CPU sync) and deferred epilogue for decode
+  - NVLink asynchronous prefetch of redundant-expert weights (lb_prefetch_weights)
+  reported_results:
+  - 'No performance numbers were read: the README text has no GB/s or microsecond results (figures/normal.png and figures/low-latency.png
+    exist but images were not viewed), and the Engram test prints issue/wait microseconds and GB/s only when run, which we
+    did not do. Treat all of this as mechanism evidence only.'
+  cross_references:
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - engram-conditional-memory.md
+    - large-moe-expert-parallelism.md
+    - moe-routing-tap-and-locality-measurement.md
+    intake:
+    - intake-2116
+  recommended_actions:
+  - 'DS41-B9b amend: single helper pass for all engram layers with per-layer completion flag'
+  - 'DS41-T7b: price engram transfer only if an engram layer is placed on MI210'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2606.04101'
+  notes: 'Cloned deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6. READ: README.md (all 533 lines, key sections
+    closely), deep_ep/buffers/engram.py (all), csrc/buffers/engram.hpp (all), deep_ep/include/deep_ep/impls/engram/engram_fetch.cuh
+    (all), csrc/kernels/comm/symmetric.hpp (allocation paths), tests/engram/test_engram.py (fetch/verify/perf sections), dispatch.cuh
+    header (template signature only). NOT READ: dispatch/combine/hybrid_* kernel bodies, bucket and PP buffers, lb_prefetch_weights
+    implementation and tests, comm/context.cpp, the images, all branches (hybrid-ep, mori-ep, nvDev, antgroup-opt), and the
+    22k-line total outside the files above. Mechanism evidence only; no performance numbers exist in the text read. No run,
+    build or install was done. Not in the lane index by URL (grep); README was fetched earlier only for dedup by the expansion
+    stage.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+  reader_should_conclude: 'Cite DeepEP for: how EngramBuffer stores and fetches rows (GPU-initiated one-sided gets from a
+    NIC-registered HBM or host-NUMA shard, one launch for all layers, per-layer wait hook, intra-forward overlap only, no
+    paging or cache policy) and the Little''s-law QP sizing. Do NOT carry its latency constants, its (absent) performance
+    numbers, or any claim about low-latency kernel internals beyond the README-level no-CPU-sync decode mode. It does not
+    change DS41-B9: a CPU-resident engram needs no transfer machinery; it informs only the shape of B9b and the optional MI210
+    pricing task T7b.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: csrc/kernels/comm/symmetric.hpp:L153 @ b5a33ee
+    quote: 'auto storage_prop = use_cpu_rdma_storage ? ctx.cpu_alloc_prop(true) : ctx.gpu_alloc_prop(true);'
+    quote_sha256: c59762604d81eb78d1dc2d8fc64192250023a78cdb81a4dbb12a514b6c7335e0
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: csrc/kernels/comm/symmetric.hpp:L37 @ b5a33ee
+    quote: return build_alloc_prop(CU_MEM_LOCATION_TYPE_HOST_NUMA, numa_idx, skip_fabric);
+    quote_sha256: da80a963f03995331f924deecf6b30fd383a70e140a4c01d7d98dcf5f7e6a707
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: csrc/buffers/engram.hpp:L125 @ b5a33ee
+    quote: EP_HOST_ASSERT(storage.is_cuda() and storage.is_contiguous());
+    quote_sha256: b0fc54334f7b24a924663aeda8132fc5f56245d80b7e6f2901e4033ea02741c5
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: deep_ep/include/deep_ep/impls/engram/engram_fetch.cuh:L124 @ b5a33ee
+    quote: gin.get<ncclTeamTagWorld, ncclCoopThread, ncclGin_SegmentMixed>(
+    quote_sha256: 6afe2ebdd0f0813020033a3e39423ae5734d98ca66efb2d1fcf4af3a8004b3a2
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: csrc/buffers/engram.hpp:L164 @ b5a33ee
+    quote: EP_HOST_ASSERT(indices.is_cuda() and indices.is_contiguous());
+    quote_sha256: 06b58153e43836cff982d8690bcf16872e3cb92b81083c9be4496d225dfb2aa0
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: deep_ep/buffers/engram.py:L160 @ b5a33ee
+    quote: Issue the RDMA gets for all layers and return one wait hook per layer.
+    quote_sha256: 612472c5844170cbaa222b5f94f220cba83f5514e5a6526d2921dd3a02e0e8ea
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: csrc/buffers/engram.hpp:L237 @ b5a33ee
+    quote: launch_engram_fetch_wait(
+    quote_sha256: d1a2429345b0d4a4a4c3905143af0ea1d1f6147e7eccda98d6ffae7a4da90054
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tests/engram/test_engram.py:L121 @ b5a33ee
+    quote: 'f''issue: {issue_t * 1e6:.1f} us, '''
+    quote_sha256: 8ae4967e90c4967742cd8f4c66874bc2dc5137c0ca9fcfdf9374d7cc0f6fe399
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: csrc/buffers/engram.hpp:L279 @ b5a33ee
+    quote: constexpr float kReadRTTSeconds = 10e-6f;
+    quote_sha256: db1fcd494869c737e2e471b9321e7980dd25b2573bb3a25cae6138dc79607407
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: csrc/buffers/engram.hpp:L287 @ b5a33ee
+    quote: nic_read_mpps * 1e6f * kReadRTTSeconds / num_max_read_requests_per_qp / num_rdma_peers)), 1);
+    quote_sha256: fe0853c22810f7fdbb26f5a7f7e8c2b9c6f64b8b68dfed22371a0106031c7f52
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: tests/engram/test_engram.py:L48 @ b5a33ee
+    quote: '# Replicate the scaling factors so any rank can fetch any entry''s factors locally'
+    quote_sha256: 9a29be42ca9885398cb617a5ad8105de40038729b28131d9f2c36eecf4fd1a1b
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md §Example use in model training and inference ¶1 @ b5a33ee
+    quote: Training, inference prefilling, and inference decoding use the same `EPBuffer` dispatch and combine APIs.
+    quote_sha256: 681d0e2daf839e1190b7ced838a37e7677789e2bad1bfa72f452de901ab2e3e2
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md §Example use in model training and inference ¶2 @ b5a33ee
+    quote: Set it to `False` when using GPU-side receive counts, as in decoding
+    quote_sha256: 4baaf4f101d57662ca0df9a71fc815daca1ea9036190cffdc77fc327f7d1f857
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: README.md §Notes @ b5a33ee
+    quote: EP dispatch and combine require GPU SMs; zero-SM RDMA EP is not supported
+    quote_sha256: 0f81159fb9b344cc9a3050add14a32ea9ac898de994c25ecdc063ab2d119bff0
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: README.md §Expert load balancing @ b5a33ee
+    quote: '`lb_prefetch_weights(redundant_expert_weights, expert_weights, redundancy_mapping)` pushes original expert weights
+      to the requested redundant slots before expert computation.'
+    quote_sha256: 02646f535f2a760f0e080913c1cafb806e99364483ac1ffa668de73684da527d
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: README.md §Notes @ b5a33ee
+    quote: Engram requires a NCCL build providing `ncclGinOptFlagsWarpGet`
+    quote_sha256: 986abd5cee90ef0232af7f505633ea9becdb400b567f702d758a74b1daf3c22c
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: deep_ep/include/deep_ep/common/compiled.cuh:L68 @ b5a33ee
+    quote: constexpr int kNumRDMAAlignmentBytes = 64;
+    quote_sha256: 43e3d75bf11ceb20ea2c8d55bacab37b768b89a6c77acd42c8731d9d170296de
+    source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: D4 read the README phrase as storage support; code shows it is a NIC-registered host-NUMA allocation with no paging,
+      pinning policy, eviction or cache, and tables are loaded through the device.
+  - claim_index: 1
+    effect: unaffected
+    note: Mechanism read in engram_fetch.cuh and engram.hpp.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirms D4 finding of intra-forward overlap and no cross-step prefetch.
+  - claim_index: 3
+    effect: unaffected
+    note: Constants read from engram.hpp:get_theoretical_config.
+  - claim_index: 4
+    effect: unaffected
+    note: Test and kernel read.
+  - claim_index: 5
+    effect: narrowed
+    note: 'Low-latency design only partly readable: unification and no-CPU-sync mode confirmed from README; kernel protocol
+      not read.'
+  - claim_index: 6
+    effect: unaffected
+    note: README only; lb_prefetch kernels not read (tests/ep/test_prefetch_weights.py not read).
+  - claim_index: 7
+    effect: unaffected
+    note: README and compiled.cuh.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled the D4-flagged EngramBuffer: CPU
+    storage = NIC-registered host-NUMA CUDA VMM allocation, rows fetched by GPU-issued one-sided gets in a single multi-layer
+    launch with a per-layer wait hook, no cross-step prefetch and no paging/cache policy; low-latency EP = same EPBuffer in
+    no-CPU-sync mode (kernel protocol not read).
+
+
+    2026-10-20 second reader (independent agent): re-find 17/17; support yes 8 / partial 0 / no 0; corrections applied: none
+    required.'
+- id: intake-2136
+  arxiv_id: null
+  url: https://zhuanlan.zhihu.com/p/2095560295930508953
+  source_type: blog
+  title: DeepSeek V4.1 Flash 大规模推理部署实践 (DeepSeek V4.1 Flash large-scale inference deployment practice; Zhihu post by DeepSeek-AI
+    accompanying the DeepInfer release)
+  categories:
+  - inference_serving
+  - kv_cache
+  - speculative_decoding
+  - cost_aware_routing
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2116
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - DeepSeek-AI
+  key_claims:
+  - 'KV cache store placement and hit path (vendor design, matches the Q&A). Block KV (128-token pages) lives on a dedicated
+    3FS storage cluster, not on compute-node memory, so every prefill machine can hit any prefix with no prefix-affinity routing,
+    storage scales independently of compute, and cache survives compute failures (compute fails more than an order of magnitude
+    more often than storage). The hit path has three stages and only the first is on the critical path: hash-chain prefix
+    match over metadata only on the local CHECK-role kvcache-store (hit length must be known BEFORE routing, so it cannot
+    be hidden), then asynchronous fetch 3FS to host shm in a separate process, then per-layer H2D swap-in overlapped with
+    forward compute (done with GDR/RDMA-NIC because the CUDA copy engine is slow on fine-grained KV block copies).'
+  - 'NEW vs Q&A (vendor-reported online data): the SWA window KV is deliberately NOT persisted. It stays in the memory of
+    the machine that produced it, indexed by a logically unified, key-partitioned in-memory directory on the Entrypoints;
+    a miss locally pulls cross-machine. The post reports the SWA pool turns over with TTL about 180 s and hit rate above 98%
+    (online data; no denominator, window or traffic mix given), and misses are repaired by Encoder SWA Bounded Replay.'
+  - 'NEW vs Q&A: the V4 to V4.1 change is motivated by cost. In V4 the SWA KV was persisted at two positions and a miss recomputed
+    layers x window tokens exactly, so SWA ate nearly half of persistent KV capacity while giving little hit benefit (block
+    KV is long-tail reused for days, SWA only for minutes inside a live session). The V4 report Zero SWA Caching (no persistence,
+    exact recompute) was judged too expensive in production and NOT adopted; V4.1 uses SWA Bounded Replay instead.'
+  - 'SWA Bounded Replay: replay only the last 128 tokens and truncate the attention window to the replay segment (from position
+    s, query i attends keys max(s, i-127)..i), giving an APPROXIMATE SWA KV at constant cost independent of context length
+    and layer count. Encoder form: on an SWA miss recompute the last 128 tokens of the hit prefix with the uncached suffix;
+    block KV reused untouched. Decoder form (CED): exact rebuild would run the last 2560 tokens through 20 decoder layers;
+    instead only the last 128 prompt tokens are recomputed there, used for decode only, never entering the prefix cache, which
+    nearly halves total prefill compute (qualitative, no number). The post gives NO quality measurement of the approximation.'
+  - 'Hit policy (identical to the Q&A): hit length is capped at L-134 (128 window + 6 speculative backtrack); block KV gives
+    hit length L1 (multiple of 128); if an SWA KV exists in [L1-128, L1] the hit is L1, otherwise L1-128 and the last block
+    is recomputed.'
+  - 'Prefill load balancer (4 layers): requests bucketed by total input length into <16K / 16-64K / 64-256K / >=256K with
+    engines per tier re-split each round by that tier compute-quota demand share; across DP groups engines PULL by remaining
+    compute-quota with no prefix affinity; inside a group each request goes to the lowest-quota DP rank; inside a GPU requests
+    are FIFO and the chunk size is not fixed but solved from a per-step time budget (ns) by inverting a pre-fitted quadratic
+    cost(q,c). The post defines q as the number of UNCACHED tokens of the sequence and c as the prefix length already computed;
+    no coefficients, fit procedure, budget value or round length are given.'
+  - 'Decode load balancer: routes uniformly across all GPUs of all decode instances and balances two dimensions, request count
+    (sets per-step batch size) and total KV length (sets attention cost); heuristic is short requests to low-concurrency high-total-KV
+    GPUs and long requests to low-total-KV GPUs, with the algorithm given only by citation to DualPath intra-group scheduling.
+    No code is open.'
+  - 'Autoscaling and fault tolerance: prefill instance count follows uncached-token volume, decode follows running-request
+    count, adjustments rate-limited and bounded; a decode instance told to go down gets a 1 min grace, then unfinished requests
+    plus their KV are forwarded to other instances in one shot; redundancy is held as ready spare machines plus a hysteresis
+    rule (no scale-in while quota utilisation exceeds 0.8); restarts take minutes so fault tolerance comes from quota redundancy
+    plus request-level rerouting, and a large-EP instance with a failed GPU restarts with EP resized to its healthy GPU count.
+    Numeric rate limits and bounds are not stated.'
+  - 'DSpark: relative to DFlash the drafter adds a low-rank logit bias that depends only on the previous token id (verified
+    in the official reference model.py: a rank-256 Markov head fed with the previous output id, whose embedding also feeds
+    the confidence head). In serving, variable-length verification: draft emits 5 tokens, a Confidence Head predicts each
+    draft-token acceptance rate, tokens are sorted by expected acceptance and the prefix subset with maximum effective throughput
+    against a profiled hardware throughput curve is verified. With async scheduling the CPU fixes only the total budget and
+    a TileLang GPU kernel (cumulative product, global top-k sort, fused remap scatter) recomputes per-request lengths into
+    a pinned buffer.'
+  - The post headline for variable-length verification is +6% throughput over fixed-5 verification in the online deployment
+    scenario. The vendor Q&A labels the supporting table as estimated throughput computed from EP64/DP64 benchmark data (+4
+    to +7% near 60 sequences per rank, -1.5% at 16, +11.0% at 96), so the word online in the post is not backed by a live
+    A/B in anything we hold, and the post omits that the gain is negative at low concurrency.
+  - 'Storage numbers (vendor, DeepSeek 3FS cluster): about 100 PiB of SSD for KV cache; TTL 3 days for agent traffic and 7
+    days for chatbot; chatbot has the heavier long tail (a few entries read very many times), and a TTL near 3 days costs
+    chatbot 0.5-1% hit rate by experience; KV block granularity about 112 KiB; peak aggregate read about 10 TiB/s and write
+    about 850 GiB/s; data stored 10+2 erasure coded, reads fan out to 11 nodes and decode from any 10; per-node GC worker
+    does LRU eviction under a disk-usage watermark. Block KV is written back by decode instances so decode output is reused
+    too.'
+  - 'CONTRADICTION with the vendor Q&A (both vendor text, neither verified): measured prefill moe_lb is 1.0320 (EP2/DP2) and
+    1.0618 (EP4/DP4) in the post but 1.045 and 1.074 in the Q&A; the decode figure 1.090 and every EPLB setting (4/1 redundant
+    experts, windows 100/1000 steps, re-assignment every 1000/10000 steps) agree.'
+  - 'Economics claim: one cluster serves 155 trillion tokens/day with revenue 38 USD per card-hour at valley price. No cluster
+    size, token mix (cached vs uncached), price table or definition of revenue is given, so it is a vendor marketing figure,
+    not a throughput or efficiency measurement.'
+  techniques:
+  - independent block-KV store with hash-chain prefix match on metadata and routing-before-hit-length
+  - three-stage KV hit path (match, async fetch, overlapped per-layer swap-in)
+  - non-persisted window (SWA) state with producer-local memory, key-partitioned directory and bounded replay on miss
+  - hit policy cap L-134 with one-block back-off when window state is missing
+  - length-tiered prefill balancing with compute-quota pull and time-budget chunk solving from a quadratic cost(q,c)
+  - two-dimension decode balancing (request count, total KV length)
+  - autoscaling with quota-utilisation hysteresis, drain grace, request-level reroute
+  - DSpark previous-token low-rank logit bias plus confidence-scheduled variable-length verification
+  - per-class cache TTL (agent 3 d, chatbot 7 d, window state minutes)
+  reported_results:
+  - 'Vendor-reported (DeepSeek production cluster; single cluster, size and token mix not stated): 155 trillion tokens/day,
+    revenue 38 USD per card-hour at valley price. Not an EPYC number and not a reproducible throughput.'
+  - 'Vendor-reported online data (no window, denominator or traffic mix): SWA KV pool TTL about 180 s, hit rate above 98%.'
+  - 'Vendor-reported experience: chatbot KV cache hit rate drops 0.5-1% when TTL is about 3 days; TTLs are 3 days (agent)
+    and 7 days (chatbot); about 100 PiB SSD.'
+  - 'Vendor-reported 3FS cluster: KV block about 112 KiB random IO, peak aggregate read about 10 TiB/s, write about 850 GiB/s;
+    10+2 EC. Cluster-scale hardware; no single-host analogue.'
+  - 'Vendor-reported online EPLB imbalance (slowest rank over mean, token count, production traffic): prefill 1.0320 at EP2/DP2
+    and 1.0618 at EP4/DP4 (post) versus 1.045 and 1.074 (Q&A, conflicting); decode 1.090 with EP64 giving 7 experts per GPU
+    after rounding.'
+  - 'Vendor-reported, labelled online in the post: variable-length verification +6% over fixed-5; the Q&A shows the underlying
+    table is estimated from EP64/DP64 benchmark data, +4 to +7% near 60 sequences per rank and -1.5% at 16. Treat as derived
+    GPU-cluster mechanism evidence, not an EPYC number.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - heterogeneous-slot-fabric-residency.md
+    - deepseek-v41-flash-evaluation.md
+    - kv-unified-stack-rollout.md
+    - sarathi-serve-cpu-evaluation.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2116
+    - intake-2117
+    - intake-2119
+    - intake-738
+  recommended_actions:
+  - Cite for the NEW facts only (SWA state non-persisted with about 180 s TTL and above 98% hit, V4 SWA near half of persistent
+    capacity, q = uncached tokens in the prefill cost model, the DSpark previous-token logit-bias definition); everything
+    else repeats the vendor Q&A already carried by intake-2116.
+  - Feed the traffic-class TTL structure into the HSF-3 gap-distribution consumers (ledger NEW-zhihu-A1).
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Internal to the vendor texts: moe_lb figures differ between this post and the Q&A (1.0320/1.0618 vs 1.045/1.074). The
+    post +6% is labelled online while the Q&A table behind it is labelled estimated from benchmark data. The Q&A recommends
+    storage capacity for 24 hours of data while this post states a goal of retaining KV 72 hours or more (TTL 3 and 7 days).
+    The post bracket citations are mis-numbered: the 3FS sentence cites [2] (the V4.1 report) and the Encoder SWA Bounded
+    Replay sentence cites [3] (3FS). No independent corroboration of any production number exists in this lane.'
+  referenced_arxiv_ids:
+  - '2609.19969'
+  - '2607.05147'
+  notes: 'Stage 2b (wave 2), 2026-10-20. Source = DeepSeek Zhihu column post, canonical https://zhuanlan.zhihu.com/p/2095560295930508953
+    (direct curl returns 403). Text obtained by the main session through the r.jina.ai text extraction proxy (NOT a model
+    digest) and saved to /mnt/raid0/llm/tmp/dive-deepinfer-zhihu/zhihu.md, 49841 bytes, sha256 a7c0e06a3df362bd1c580ee338af69a0868b7fae5e81006e98603cccb3242130;
+    read in full from disk (197 lines) with the zhida.zhihu.com entity-link wrappers stripped only for display. Quotes are
+    re-findable in that file modulo whitespace. NOT READ: the four images (architecture diagram, online-system statistics
+    chart, two offline pareto charts); an attempt to fetch the online-statistics image returned an HTTP 567 anti-hotlink page,
+    so no figure from that chart is used. Publication date is not present in the extracted text. Compared line by line against
+    the vendor Q&A (src/doc/inference_deployment_qa.md, in intake-2116) and against the seed dive patches D1 (DSpark varlen),
+    D2 (SWA/YOCO), D3 (scheduler), D4 (EPLB). References observed in the page: DualPath (SIGCOMM 2026, cited by title only,
+    in the lane as intake-2119), V4.1 report arXiv 2609.19969 (intake-2117), DSpark arXiv 2607.05147 (intake-738), 3FS github.com/deepseek-ai/3FS,
+    SGLang and NanoFlow. The post is largely the parent of the Q&A: the Q&A repeats most of it and adds detail (32768-token
+    budget, all-reduce MIN, per-tier quota caps, byte sizes, tables), so the unique content here is small. Observed differences:
+    Q&A wording for q is number of sequence tokens, post says uncached tokens; post gives SWA 180 s / 98%; post gives V4 versus
+    V4.1 persistence cost and 3FS read/write bandwidth and block size; moe_lb figures differ; Q&A omits the phrase 4 layers
+    of main KV and indexer K that the post uses for the block KV content, unexplained in either text. Arithmetic note (derived,
+    not vendor): 112 KiB per 128-token block is about 896 B per context token, within 1% of the 890 B per context token that
+    intake-2116 derived from code for FP4 main plus indexer KV, which is consistent with but not proof of the page layout.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'Zhihu article p/2095560295930508953; text via r.jina.ai text extraction, not a model digest; saved /mnt/raid0/llm/tmp/dive-deepinfer-zhihu/zhihu.md
+    sha256 a7c0e06a3df362bd1c580ee338af69a0868b7fae5e81006e98603cccb3242130 (49841 B); publication date absent from extract;
+    code cross-checks: official reference model.py in DeepSeek-V4.1-Flash/inference (sha256-12 4e9ae23620ed) and llama.cpp
+    dd3d9721c'
+  reader_should_conclude: 'This post is the parent text of the vendor Q&A in intake-2116 and adds little engine detail; cite
+    it for (a) the SWA-state-not-persisted design with the vendor-reported 180 s / above 98% figures and the V4-versus-V4.1
+    capacity argument, (b) the definition q = uncached tokens in the prefill cost(q,c) model, (c) the DSpark previous-token
+    low-rank logit-bias definition (confirmed against model.py and our port), and (d) the traffic-class TTL structure (agent
+    3 d, chatbot 7 d, window state minutes) as a prompt for our own HSF-3 gap data. Do NOT carry: the 155 trillion tokens/day
+    or 38 USD per card-hour as efficiency evidence, the +6% as an online or live A/B result, either moe_lb prefill figure
+    to three decimals (the two vendor texts disagree), or any 3FS bandwidth number as relevant to a single host. No source
+    claim here is an EPYC measurement; the cost(q,c) model, decode balancing heuristic and bounded-replay quality remain unverifiable
+    from open code.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: zhihu.md:L132 (section KVCache Storage / Block KVCache)
+    quote: 相比多级存储系统，独立的存储集群使得所有 prefill 机器能命中任何前缀，避免前缀亲和和负载均衡路由策略冲突
+    quote_sha256: fbb5e876d28bdaf981a1ec340fb3ce4eb9fedadd922ac36c234b51a62e7101ca
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: zhihu.md:L136 (hit path)
+    quote: 只查元数据，但命中长度需在路由前进行计算，无法掩盖
+    quote_sha256: 8db6a45f67c7074235d2a5e05cb977794954ab4bc874bfa2b101fc32df652903
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: zhihu.md:L136 (swap-in)
+    quote: 由于 CUDA copy engine 对于 KVCache Block 细粒度的拷贝性能不佳，换入使用 GDR 实现，用 RDMA 网卡就能打满 PCIe 带宽，并且不占 SM
+    quote_sha256: a75e48b4929a69fe5f0ce0ba29bacba9aca9733a6f710419f2ef725b1288abbe
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: zhihu.md:L140 (section SWA KVCache)
+    quote: 线上数据显示，其TTL约 180 秒，命中率在 98% 以上
+    quote_sha256: 844b3b521c905406c4a2d1d4b1e3d9c6dc43a7353989a7775b5913140a723887
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: zhihu.md:L158 (section SWA Bounded Replay)
+    quote: SWA KVCache 占去持久 KVCache 近一半容量
+    quote_sha256: 28a2fc047886c4628472b8f2c159752e70227b4acf541db45f4d932c6e3c0ca4
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: zhihu.md:L158
+    quote: 因其代价在生产部署中过高，在V4.1推理系统中未实际采用
+    quote_sha256: f87b005d19c4018da5f84aa9fcfd90645ad613efa2336f1586b84da9da7055c6
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: zhihu.md:L160
+    quote: 从位置 s 起回放，位置 i 的 query 只和 max(s, i − 127) 到 i 区间的 key 计算，重算得到近似的 SWA KVCache
+    quote_sha256: 2b7baf4929cc4fc6ea6cb9575a6e2d73ee9f5bbccc3431eab9253449ec5999b5
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: zhihu.md:L163 (Decoder SWA Bounded Replay)
+    quote: 精确重建要 20 个 decoder 层跑最后 2560 个 token；改为每次 prefill 在 decoder 层只重算 prompt 末尾 128 个 token，产出仅供 decode、不进前缀缓存，总 prefill
+      计算量近乎减半
+    quote_sha256: 167c09074b364b82a946577cf041982cd0dd627e47ce820b7f212849427bc2b2
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: zhihu.md:L146 (section 命中策略)
+    quote: 最大的命中长度最多为 L - 134（窗口 128 + 投机回退 6）
+    quote_sha256: ce78c7f70a087fa9360c4bc462d9b50e008260cec095d00f63e4cd458ad5184f
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: zhihu.md:L146
+    quote: 假如在 L1 - 128 至 L1 长度范围内，存在 SWA KVCache 则命中长度为 L1，否则命中长度为 L1 - 128
+    quote_sha256: 5e2a9f5c589608266463ed8c68ce82e19a7c68e71521c5cdbe5a417de8e6869f
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: zhihu.md:L88 (section Prefill Load Balancer)
+    quote: '`q` = 序列中未命中的 token 数，`c` = 这条序列已经算完的前缀长度'
+    quote_sha256: d485257fba442900e850664d76c5ed137c8d7b6d6392c69e86f113e99598ae7c
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: zhihu.md:L90
+    quote: 按输入总长分桶为 4 档：<16K / 16-64K / 64-256K / ≥256K，每档分到的引擎台数按该档上一轮的 compute-quota 需求占比动态重分
+    quote_sha256: 249578384c11f9cdaf3b22ae06b17ba16d769c877917701ba65af166ee6e31e6
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: zhihu.md:L91
+    quote: 由于任何引擎都能命中任何前缀，不做前缀亲和路由
+    quote_sha256: 06f892a030ec828973c341d3602d4a265904bf206ea635ae88571aa461002151
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: zhihu.md:L97 (section Decode Load Balancer)
+    quote: 同时均衡请求数和 KVCache 总长度两个维度，前者决定每步批大小，后者决定注意力部分的代价
+    quote_sha256: 82c72fbc6432180bda5b1339fa9485eb6dda4ce8fa72ffccdfa1d0d8de9167f9
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: zhihu.md:L97
+    quote: 启发式地将短请求发给并发较小且 KVCache 总长偏大的卡，长请求发给 KVCache 总长较小的卡
+    quote_sha256: da004a503a0992a334607b4ba463d74a4d9edb215aa68a8df8ef4e488a6e8425
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: zhihu.md:L114 (section 自动扩缩容)
+    quote: Prefill 通过统计未命中 token 数判断所需实例数目，decode 通过在计算的请求数判断所需实例数目，调整有限速和上下界
+    quote_sha256: ccb81c718d286e80a9533e0e27e7c99695dc9e9180aa093e69fffe047b5a086e
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: zhihu.md:L115
+    quote: 配额占用率高于 0.8 时禁止缩容
+    quote_sha256: 7bdcd9e81bbe4e14f036dd786d4ed82704301f4f5b473ed46bf61e5105420b60
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: zhihu.md:L116
+    quote: 错误重启在分钟量级，容错依赖配额冗余 + 请求级重新路由的组合机制，而不是靠缩短实例重启时间
+    quote_sha256: bf655d27a688c42766e9b1faa61878c423d8a6525596fe33d46498239db993d0
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: page-and-quote
+    locator: zhihu.md:L167 (section DSpark投机解码)
+    quote: 相比 DFlash 在输出的 base logits 上叠加只依赖前一 token id 的低秩 logit bias
+    quote_sha256: 14dd2ccb62840518ab4c1faf36b5b92bad2cb5d906fcb5994b379e70f01d1bc7
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: line-range
+    locator: DeepSeek-V4.1-Flash/inference/model.py:L1077-L1089 and L1148-L1155 (sha256-12 4e9ae23620ed); mirrored in llama.cpp
+      dd3d9721c src/models/dflash-dspark41.cpp:L455-L458
+    quote: logits_bias, markov_embed = self.markov_head(output_ids[:, i])
+    quote_sha256: e41059b0ea90120eb0c6d0c15a4067088cbcee3000f0c53e5f7d8081461bf566
+    source_revision: model.py sha256-12 4e9ae23620ed; llama.cpp dd3d9721c
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: page-and-quote
+    locator: zhihu.md:L169
+    quote: draft 一次生成 5 个 token，根据 profile 出来的硬件吞吐曲线和每个请求的每个 draft-token 的接受率，把各 draft-token 按预期接受率排序，选取有效吞吐最大的前缀子集进行验证
+    quote_sha256: 6a4c79da3f8dd9c423c182cd07f564a41afb3a07a06bb0160de3d5417042532b
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: page-and-quote
+    locator: zhihu.md:L171
+    quote: CPU 调度时只确定总预算，逐请求长度在 GPU 上由一个 tilelang kernel 重算
+    quote_sha256: a17b1e690cd2231b40cbfaa811149904f68cb3bfe0d867f2294731c242054a0f
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 9
+    kind: page-and-quote
+    locator: zhihu.md:L169
+    quote: 相比于固定验证 5 个 token，变长验证在线上部署场景吞吐提升 6%
+    quote_sha256: 80d52413cb642ac77ad9b96d4a54121d6b4ecd642d1c0931801790757bc8d4b5
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: page-and-quote
+    locator: zhihu.md:L134
+    quote: 根据经验，3 天左右的 TTL 会造成 chatbot 流量的 KVCache 命中率下降 0.5%-1%
+    quote_sha256: 306d34ee89fb7e21b37396565482069c86371e913013a296e3eee2fbb2b91506
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: page-and-quote
+    locator: zhihu.md:L134
+    quote: 峰值聚合读带宽达到 10 TiB/s，峰值聚合写带宽约 850 GiB/s
+    quote_sha256: f4fae2916ecb6fe2acccb85c082dd887983affed3caa0250a1b21ef152eb25b7
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: page-and-quote
+    locator: zhihu.md:L134
+    quote: 对于 chatbot，其长尾命中更严重，少量 KVCache 会极多次读取，缺失后对整体命中率损失较大
+    quote_sha256: 10487b3af641555a2ddf7a9314ddc08df42d09471f2099a9b4a876c9d6443b50
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: page-and-quote
+    locator: zhihu.md:L107 (section Expert-Parallel Load Balancer, Prefill)
+    quote: 线上数据实测 moe_lb（最慢 rank / 均值）= 1.0320（EP2/DP2）/ 1.0618（EP4/DP4）
+    quote_sha256: ac27f89ddb70b869f47b05f788ec339fd428dbf2f31ab671a8c2697070939df8
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  - claim_index: 12
+    kind: page-and-quote
+    locator: zhihu.md:L18
+    quote: 目前单一集群的服务吞吐是 155 万亿 Tokens/天，整体收入是每卡每小时 38 美金（按谷价）
+    quote_sha256: 924ed6fbb9f2b27e0acd3815d3d7dc70974e47bc742cb704bae160e2e5383919
+    source_revision: zhihu.md sha256 a7c0e06a3df3
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Matches the Q&A KV-store section; carried once, no new content beyond the Q&A except the explicit statement that
+      match must precede routing.
+  - claim_index: 1
+    effect: unaffected
+    note: 'New to the lane: not in the Q&A. Vendor online data without denominators.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'New to the lane: the V4 versus V4.1 capacity and Zero-SWA-Caching rationale is not in the Q&A; the V4.1 report
+      (intake-2117) is the primary for the architectural side, this post is the serving-side motive.'
+  - claim_index: 3
+    effect: unaffected
+    note: Same as Q&A and seed D2. Post adds no quality measurement, so D2 finding that approximation quality is unmeasured
+      stands.
+  - claim_index: 4
+    effect: unaffected
+    note: Identical to the Q&A hit policy; no implementing code is open (seed D2/D3).
+  - claim_index: 5
+    effect: narrowed
+    note: 'Narrows the Q&A wording: the Q&A says q is the number of sequence tokens, the post says uncached tokens (q) versus
+      already-computed prefix (c). Q&A-only details: 32768-token cap, all-reduce MIN, per-tier quota caps. Post-only: nothing
+      on coefficients. Seed D3 NOT-FOUND-IN-CODE finding for the cost model stands: neither text gives coefficients or the
+      fit procedure.'
+  - claim_index: 6
+    effect: unaffected
+    note: Identical to the Q&A; algorithm only by DualPath citation (already in the lane as intake-2119).
+  - claim_index: 7
+    effect: unaffected
+    note: Matches the Q&A; both omit the numeric rate limits and bounds.
+  - claim_index: 8
+    effect: unaffected
+    note: 'Previous-token low-rank logit bias is confirmed in model.py and mirrored in our port; the varlen mechanism and
+      GPU-recompute split match seed D1 (which found the open-release varlen path default off, not contradicted: the post
+      describes the production deployment where it is evidently on).'
+  - claim_index: 9
+    effect: narrowed
+    note: 'Narrows the headline: post says online deployment scenario; the Q&A table is estimated from benchmark data and
+      shows -1.5% at concurrency 16. Same +4-7% band, different provenance label.'
+  - claim_index: 10
+    effect: unaffected
+    note: Q&A carries the same TTL and hit-loss numbers; post adds block size and bandwidths.
+  - claim_index: 11
+    effect: reattributed
+    note: Seed D4 recorded the Q&A prefill moe_lb pair (1.074/1.045) as vendor-reported; this post gives a different pair
+      (1.0618/1.0320). Neither is verifiable; cite as a vendor range, not to three decimals.
+  - claim_index: 12
+    effect: unaffected
+    note: Identical in the Q&A; marketing-grade, conditions undefined.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 2, Stage-2b): ingested and dived in one pass; settled that the post is the parent of
+    the Q&A and mostly restated by it (read in full from disk, images not read). New facts: SWA state not persisted with vendor-reported
+    about 180 s TTL and above 98% hit; V4 SWA persisted near half of capacity; q in cost(q,c) is uncached tokens (narrows
+    the Q&A wording); the +6% is labelled online here but estimated-from-benchmark in the Q&A; prefill moe_lb figures conflict
+    with the Q&A; DSpark previous-token logit-bias definition confirmed in model.py and our port. No contradiction found with
+    seed D1 (varlen default off applies to the open release) or D3 (cost model absent from code; the post gives no coefficients
+    either).
+
+
+    2026-10-20 second reader (independent agent): re-find 28/28; support yes 13 / partial 0 / no 0 (claims 9 and 11 compare
+    with the DeepInfer Q&A outside their anchors; unchecked part noted). Main dropped a malformed bare-list depends_on [intake-2116]:
+    the post is the Q&A''s parent text, so its claims do not rest on intake-2116''s.'
