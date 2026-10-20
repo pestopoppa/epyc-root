@@ -259,6 +259,13 @@ is olympiad-style reasoning.
 - [ ] **KVU-12 — np × ctx on CPU (TB-6 successor, Flash-Next) only if needed.** The operator skipped C2 at 17:25Z
   because the GPU matrix showed no unified-KV throughput cost. Reopen only if a CPU role shows qualitatively
   different relative behaviour.
+  - **Reopened 2026-10-20 (operator):** measure the CPU concurrency x context tradeoffs before any frontdoor
+    `--kv-unified` stack change, and reuse the matrix for the other models in the stack. Prompted by a vLLM
+    deployment of the same 35B-A3B (NVFP4) that serves 8 x 64K from one shared pool, while :8070 caps each request at
+    65,536 (`-np 4 -c 262144`, split KV). Matrix: KV {split, unified 512K/1M} x np {1,2,4,8} x L {8k..128k} x prompts
+    {independent, shared-prefix}, fixed-length generation, >=3 waves, one deliberate pool-full cell. Spec and driver:
+    `epyc-inference-research/artifacts/np_context_kvu_cpu_study_20261020/`. The timing half needs an exclusive
+    full-host window.
 - [ ] **HYBRID-PREFIX-REUSE — make multi-turn prefix caching actually hit on hybrid (GDN/recurrent) production models via a prefill-only boundary checkpoint.** (filed 2026-10-07) — Owner: workspace-ec.
   - Finding: on hybrid models llama-server reuses a prefix ONLY via context checkpoints, and v10 creates them only at n-4/n-16 of each request's prompt. So a follow-up request that diverges inside the previous prompt's tail forces a full re-prefill (observed: prompt_n = full, "forcing full prompt re-processing (hybrid/recurrent)").
   - Workaround PROVED on CPU, Qwen3.8-27B: a prefill-only request (n_predict 0) of the shared prefix ending at a turn boundary puts checkpoints at prefix-4/-16. Later questions re-decode only their tail (prompt_n 58 and 74 vs 3556), and slot save/restore plus extension gives prompt_n == the delta with byte-identical output. Evidence: `/mnt/raid0/llm/tmp/jetlong-gpu27b-20261006/SAVE_RESTORE_TEST.md` and `saverestore5/` (copy `SAVE_RESTORE_TEST.md` to `artifacts/hybrid-prefix-reuse-20261007/` and cite the copy).
