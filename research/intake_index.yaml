@@ -267076,3 +267076,1169 @@
   notes: "Expansion from intake-2061 / intake-2062 bodies, which cite RFC #45702; retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (RFC never cited). Most useful for us as the design-alternatives record: it names the async-scheduling/spec-decode interaction as an open question (relevant to MTP/DFlash2 and our KPF design) and the memory-vs-hit-rate argument for tail-only checkpoints. Comments only partially read."
   recommended_actions:
   - "Operator-review candidate: dive the full RFC thread for the spec-decode / async scheduling resolution."
+- id: intake-2072
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/53945
+  source_type: repo
+  title: '[Bugfix][Spec Decode] Cache the Mamba state at the block-grid position of EAGLE resume (vLLM PR #53945)'
+  categories:
+  - kv_cache
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  key_claims:
+  - 'Defect: under --mamba-cache-mode align with EAGLE/MTP, the full-attention group hits at a position it holds a key for, EAGLE drops one hash unit off that candidate, and the Mamba group only holds state on its own block grid, so nothing exists at the resulting position and the hit floors to the previous block boundary. Two such defects were pinned by #52371; this PR fixes the second.'
+  - 'Mechanism (junction checkpoint): the scheduler''s _mamba_block_aligned_split ends a prompt chunk exactly at request.shared_prefix_boundary (the junction a sibling was observed to stop at) instead of flooring it to the block grid, and MambaManager._cache_partial_tail_block additionally accepts a state publish at that junction. Past the prompt end the scheduler falls back to the block-floored stop. The junction is therefore reactive (a sibling must already have stopped there) and the checkpoint lives only in the prompt chunk being computed.'
+  - 'Under EAGLE the replay boundary and the prompt-tail checkpoint are both moved one unit down: get_replay_boundary returns the prompt''s last aligned position minus one scheduler block, and the tail checkpoint is registered one hash unit lower, because the group matches one unit past the candidate and drops it. The PR keeps the drop and moves the stored state to where the post-drop hit lands.'
+  - 'The feature is gated by one predicate computed in KVCacheManager and read by both scheduler and manager: flag on AND an EAGLE-annotated group AND fine-grained partial hash hits (prefix_match_unit smaller than the Mamba block) AND no multi-module MTP (num_reprefillable_tokens == 0). The stated reason is that a stop the manager then refuses costs a forward pass and displaces the block-boundary stop.'
+  - 'The junction publish is bounded to num_computed_tokens < position <= num_prompt_tokens. The in-code reason: during decode the target is the running state block, mutated in place, which equals what its key promises only after that step''s forward. No decode-time checkpoint exists in this design.'
+  - 'Opt-in and default off: --enable-mamba-fine-grained-prefix-cache (CacheConfig.enable_mamba_fine_grained_prefix_cache, excluded from compute_hash). Name drift: wave-1 dive-2071 found the flag renamed to --enable-mamba-shared-prefix-checkpoint at b272cff (#57382); the name in this PR is the pre-rename one.'
+  - 'Author-reported benefit (measured by driving the real Scheduler and KVCacheManager, not wall-clock serving): 0 of 84 configs reduce reuse, and the saving is a constant block minus hash_unit tokens per request, e.g. ATHENA workload (57,600 shared, 6,400 suffix, hash unit 64) uncached prefill 8,704 to 6,720 at served block 2,048 and 21,760 to 13,376 at block 8,448. Self-reported by the PR author, AI assistance disclosed; not independently reproduced here.'
+  techniques:
+  - shared-prefix junction checkpoint
+  - EAGLE block-drop-aware tail checkpoint
+  - single scheduler/manager predicate
+  - prefix_match_unit sub-block hash granularity
+  reported_results:
+  - 'Author-reported: 0 of 84 simulated configs where the flag reduces prefix reuse; saving is constant block minus hash_unit tokens per request.'
+  - 'Author-reported: at 57,600 shared and 6,400 suffix tokens with hash unit 64, uncached prefill 8,704 to 6,720 (served block 2,048), 13,312 to 9,152 (4,224), 21,760 to 13,376 (8,448).'
+  - 'Author-reported: 229 targeted tests passed; full tests/v1/core/ failure set identical to main.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2071
+    intake_entry_notes:
+    - intake-2061 (survey of vLLM hybrid prefix caching; this PR is the junction checkpoint it names)
+    - 'intake-2071 (RFC #45702 partial cache hits for hybrid models)'
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: 'vllm-project/vllm PR #53945, state MERGED 2026-09-08T13:59:59Z, merge commit 263c4ff95fadb62d80f315171b17d4f623494e56 (sha7 263c4ff); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w2a/pr53945.json,.diff,.body.md'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Read FULL from disk: pr53945.json (body + comments), pr53945.diff (12 files; production hunks in scheduler.py, kv_cache_manager.py, kv_cache_coordinator.py, single_type_kv_cache_manager.py, cache.py, arg_utils.py; the 359-line new test file and edits to 4 test files read for intent). Review comments contain a maintainer request to cut about 1000 lines of tests (author trimmed), CI notes and a bot walkthrough; no substantive design objection recorded. Merged 2026-09-08. Not read: the Reuse-Pareto figure and 84-config grid the body says are attached in a comment below (not present in fetched comments). Bearing on our fork: KPF-15 (explicit junction checkpoint_at) converges on the same shape (end the chunk exactly at the junction, publish state there) but removes vLLM''s two limits: reactive junction discovery and the hash-unit drop. This PR contains no drafter-state restore or recompute logic.'
+  reader_should_conclude: Cite the junction-stop and prompt-bounded-publish mechanics and the one-predicate-both-sides gating when reviewing KPF-15/KPF-17; cite the 0-of-84 and block-minus-hash-unit figures only as author-reported simulation results. Do not cite this PR as evidence that vLLM recomputes drafter hidden state (it says only that EAGLE drops one hash unit); do not use the flag name --enable-mamba-fine-grained-prefix-cache as current (renamed to --enable-mamba-shared-prefix-checkpoint).
+  recommended_actions:
+  - 'Operator-review candidate: use the junction/tail/drop design as the comparison baseline in KPF-18 item 1 and as support for keeping checkpoint_at explicit; see LEDGER rows.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr53945.body.md:L6 @ 263c4ff
+    quote: Full attention hits at a position it holds a key for. EAGLE prunes one hash unit off that
+    quote_sha256: 6dee5da55c6ff78da683a01009b35a647b556decbd4cfbe93cae41205e840a62
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr53945.diff:L936 hunk '-462,12 +493,9' @ 263c4ff
+    quote: junction_stop if start < junction < end else 0,
+    quote_sha256: a1c8e007bced9ca3f3f92aa3f1cd0bb296208c679b70386e0e9e3f84b047a6cf
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr53945.diff:L1035 hunk '-1896,7 +1916,22' @ 263c4ff
+    quote: and num_tokens == request.shared_prefix_boundary
+    quote_sha256: c86f54dbe529c78cd6ee0a6fee47d463b7f357e63b0ee6a4399716748fcc93b2
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr53945.diff:L789 hunk '-303,6 +303,28' @ 263c4ff
+    quote: return max(aligned - self.scheduler_block_size, 0)
+    quote_sha256: a4e0ec8b390ace3dd783fb20c348b9695f51ba2c71bc6b2c9144367ecffea519
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr53945.diff:L859 hunk '-164,6 +166,21' @ 263c4ff
+    quote: and self.coordinator.num_reprefillable_tokens == 0
+    quote_sha256: f05e1b25557df5b2079430b7db4eb5c9d220772577cf54b9ad25f8670c139964
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: pr53945.diff:L1036 hunk '-1896,7 +1916,22' @ 263c4ff
+    quote: and request.num_computed_tokens < num_tokens <= request.num_prompt_tokens
+    quote_sha256: 940e68af0e9d532cfebdd124c257e6937c0ff7dcfb4a95850a2caa8a78b965bf
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: pr53945.diff:L1031 hunk '-1896,7 +1916,22' @ 263c4ff
+    quote: '# running state block, mutated in place, which equals what its key'
+    quote_sha256: 5d941821305cbd5a1cefd19e9cbbe757c61b6007d65f83ff51854b465493729a
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: pr53945.diff:L709 hunk '-195,6 +195,12' @ 263c4ff
+    quote: 'enable_mamba_fine_grained_prefix_cache: bool = False'
+    quote_sha256: 90313e6e6fc57cbb7bf9f9361e04b83bc8e64e2091393e7d87df9ce02eab7b8b
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: pr53945.body.md:L90 @ 263c4ff
+    quote: '- **0 of 84 configs where enabling the flag reduces reuse.**'
+    quote_sha256: 5f6276e5cdc0b4b532c45a4fa9432bc340aaabbb002b0b220d5defba4c26245b
+    source_revision: 'vllm PR #53945 @ 263c4ff'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-20 (Stage-2b, wave 2a): read FULL from disk at merge 263c4ff. Defect and mechanism CONFIRMED from diff. Wave-1 claim ''vLLM recomputes rather than restores drafter state'' is PARTIAL against this PR: the one-hash-unit drop under EAGLE is confirmed (diff comment ''Eagle groups match one hash unit past the candidate and drop it''), but no passage mentions drafter or hidden state; the reason for recompute is inference, not stated. KPF-15 handoff text names ''--enable-mamba-shared-prefix-checkpoint'': NOT-FOUND-IN-SOURCE at this commit (name used here is the pre-rename one; rename per dive-2071), consistent, not a handoff error.
+
+    2026-10-20 second reader (independent agent): re-find 9/9; hash fixed to canonical normalization where it differed; support yes 4 / partial 5 / no 0; disagreements carried to the Stage-3 plan: idx 1, idx 2, idx 4, idx 7, idx 8
+
+    '
+- id: intake-2073
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/58368
+  source_type: repo
+  title: '[Bugfix][Mamba] Restore prompt-tail prefix-cache hits with MTP (vLLM PR #58368)'
+  categories:
+  - kv_cache
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  key_claims:
+  - 'Defect (regression, author attributes it to #55390): with hybrid Mamba/GDN models, MTP, prefix caching, --mamba-cache-mode align and hash_block_size smaller than the Mamba block, the scheduler ends the prompt chunk one hash unit early (the EAGLE-drop shift) but _cache_partial_tail_block saved the state at the unshifted prompt tail because it gated the shift on use_eagle; the Mamba group had received use_eagle only from an all-groups fallback in the coordinator, which stopped running once #55390 marked the MTP group. Example in the PR: prompt A 1600 tokens, hash unit 64, sibling B reuses 0 tokens instead of 1536.'
+  - 'Fix: one-line predicate change in _cache_partial_tail_block, from self.use_eagle to self.drop_eagle_checkpoint_block, a per-manager bit the coordinator sets exactly when the scheduler shifts the chunk end. The lesson for any fork: the position at which the scheduler ends a chunk and the position at which the cache publishes state must be read from one flag, not two derivations.'
+  - 'Author-reported cost of the mismatch (GSM8K accuracy flat): Nemotron 3.5 Lightning NVFP4 prefix-cache hit 95.72% before #55390, 92.02% on main, 95.71% with fix, output TPS/GPU 2846, 2228, 2833; Qwen3.5-122B NVFP4 hit 95.47, 89.80, 95.57 and TPS/GPU 687, 480, 688. Workload: 50K shared prefix, 20 turns of 2K in and 1K out, concurrency 32, synthetic MTP acceptance length 3.0. Single run per cell, no variance reported.'
+  - 'Regression test: test_mamba_prefix_cache_drops_hash_block parametrized on whether the MTP draft group is identified; the PR says the annotated-draft cases fail on main and pass with the fix.'
+  techniques:
+  - single predicate for scheduler stop and cache publish
+  - EAGLE/MTP block-drop checkpoint shift
+  reported_results:
+  - 'Author-reported: Lightning hit 95.72 to 92.02 to 95.71 percent (before #55390, main, fixed); output TPS/GPU 2846 to 2228 to 2833.'
+  - 'Author-reported: Qwen3.5-122B hit 95.47 to 89.80 to 95.57 percent; output TPS/GPU 687 to 480 to 688.'
+  - 'Author-reported: GSM8K on par across builds (Lightning 91.7+-0.6, Qwen3.5 80.4+-0.2).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2071
+    intake_entry_notes:
+    - intake-2061 (vLLM hybrid prefix-cache survey; A3 cites this regression)
+    - 'intake-2071 (RFC #45702)'
+  expanded_from: intake-2071
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: 'vllm-project/vllm PR #58368, state MERGED 2026-09-24T23:46:43Z, merge commit d5051abaf19a1cce19159756a79d27ccb0b2fccf (sha7 d5051ab); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w2a/pr58368.json,.diff,.body.md'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Read FULL from disk: pr58368.json (body, 6 comments: CI triggers only), pr58368.diff (2 files, whole diff). Not independently checked: that #55390 is the cause (author statement; #55390 not in index), and the benchmark numbers (single-run, author-reported; images and commands given in the PR, not reproduced). Bearing on our fork: the failure class is two derivations of one position. KPF-15''s explicit checkpoint_at is one source by construction; KPF-18 must still prove MTP-on and MTP-off report identical n_fork_tokens.'
+  reader_should_conclude: Cite the predicate-mismatch lesson and the existence of a measured cost; cite the hit and TPS numbers only as author-reported single-run values. Do not cite this as a vLLM design for restoring drafter state; the diff touches no drafter state.
+  recommended_actions:
+  - 'Operator-review candidate: KPF-18 MTP-on versus MTP-off n_fork_tokens parity control (already derived in dive-2061 A3); no new task from this entry.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr58368.body.md:L92 @ d5051ab
+    quote: '#55390 marks the MTP group, so the all-groups fallback no longer runs. The Mamba state is saved at 1600, and B reuses 0 tokens instead of 1536.'
+    quote_sha256: 18bf80720fd7f1456277f4f76f46f7bc8ab99387a62bb56cb30d86b4f6a59484
+    source_revision: 'vllm PR #58368 @ d5051ab'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr58368.diff:L43 hunk '-2078,7 +2078,7' @ d5051ab
+    quote: '+        if self.drop_eagle_checkpoint_block:'
+    quote_sha256: 9df62c46e8a51d329ba270b4924761e60e6a5e13eef6e1f942a733a868593533
+    source_revision: 'vllm PR #58368 @ d5051ab'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr58368.body.md:L6 @ d5051ab
+    quote: '| [Nemotron 3.5 Lightning NVFP4][l] (Mamba, TP1) | 95.72 → 92.02 → **95.71**'
+    quote_sha256: 19728fddfe8d94ad4fffd6879e9507d2da094c74830f6a61374ebee467101f58
+    source_revision: 'vllm PR #58368 @ d5051ab'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr58368.body.md:L7 @ d5051ab
+    quote: '| [Qwen3.5-122B NVFP4][q] (GDN, TP2)             | 95.47 → 89.80 → **95.57**'
+    quote_sha256: b396228e0f130b4278c29cc21d98283b34d30b5ad58faa27f3f917c5372d93dc
+    source_revision: 'vllm PR #58368 @ d5051ab'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr58368.diff:L10 hunk '-196,6 +196,28' @ d5051ab
+    quote: 'def test_mamba_prefix_cache_drops_hash_block(mtp_draft_group_identified):'
+    quote_sha256: 2548642d173936bf9bb0247535bd7eecba2d09cfb2dd5d0c3fd6c23fa2fb6b7a
+    source_revision: 'vllm PR #58368 @ d5051ab'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2072
+    claim_index: 0
+    why: 'The one-hash-unit-lower tail checkpoint and the scheduler''s matching chunk-end shift that this regression breaks were introduced by PR #53945; if its claim 2 (shift both) were retracted, the failure description here would change.'
+  dive_corrections: '2026-10-20 (Stage-2b, wave 2a): read FULL from disk at merge d5051ab. CONFIRMED: the diff is the single-line predicate swap quoted. Wave-1 secondary figure ''-3.7pp hit, -22..-30% TPS'' (dive-2061 A3) checks against the table: hit 95.72 to 92.02 is -3.70pp; TPS 2846 to 2228 is -21.7%, 687 to 480 is -30.1%; author-reported. Wave-1 recompute-not-restore claim: NOT-FOUND-IN-SOURCE in this PR (no drafter text). Cause attribution to #55390 is the author''s; not verified.
+
+    2026-10-20 second reader (independent agent): re-find 5/5; hash fixed to canonical normalization where it differed; support yes 3 / partial 2 / no 0; disagreements carried to the Stage-3 plan: idx 1, idx 3, idx 4
+
+    '
+- id: intake-2074
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/59759
+  source_type: repo
+  title: '[Bugfix][Core] Retire stale Mamba spec blocks in prefill checkpoint steps (vLLM PR #59759)'
+  categories:
+  - kv_cache
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  key_claims:
+  - 'Defect: with MTP and prefix caching on, hybrid models (GLM-5.3-Flash named) can produce garbage after reusing a cached prompt prefix. In a prefill checkpoint step the scheduler leaves an unused MTP scratch block in the slot that belongs to the checkpoint; that block is never written, yet it is registered in the prefix cache ahead of the real checkpoint, so later requests resume from it. The bad entry persists until eviction and affects every request sharing the prefix.'
+  - 'Exact mechanism: in align mode a request keeps running state in the block after the last computed one plus num_speculative_blocks scratch blocks. Under MTP the checkpoint position P is shifted one block down; when a previous step''s scratch block sits at index P//block_size - 1 it occupies P''s natural slot, cache_full_blocks registers the unwritten scratch block under hash(P), then _cache_partial_tail_block adds the real checkpoint block under the same hash, and get_one_block returns the first registered. The skip of scratch relocation in checkpoint steps came with #53614.'
+  - 'Fix: relocate scratch blocks strictly below the checkpoint index (block_idx < num_skipped_blocks - checkpoint_block) in checkpoint steps too; a scratch block exactly at the checkpoint index stays and becomes the checkpoint block because the worker exports the checkpoint into that column. As relocated blocks are reused, checkpoint steps no longer need num_speculative_blocks extra new blocks, so the allocation cap and admission estimate both drop that term and stay equal.'
+  - 'Trigger is length-and-schedule dependent: it fires when a prompt''s final prefill chunk starts one block below the shifted checkpoint, so it depends on prompt length and on how much of the step token budget other requests use. Author example: with a second request of 22,350 tokens, a first request up to 23,424 tokens triggers (3/3) and 23,440 does not (0/3).'
+  - 'Author-reported evidence on RedHatAI/GLM-5.3-Flash-NVFP4 on 2 H200: second answer garbage 3 of 3 trials before and normal 3 of 3 after; a single long prompt sent twice at about 25k tokens broke 4 of 7 before and 0 of 12 after; in an 8-agent run 2 agents turned to word salad after reusing cached history before the fix, none after or with MTP off. Disabling MTP or prefix caching avoids the bug on unfixed builds.'
+  - 'Detection gap and proposed check: no existing CI job catches the class (the Kimi-K3 spec-decode GSM8K job uses about 640-token prompts and accuracy does not move). The author proposes about 15 long prompts with lengths spread over one chunk-budget period, each sent twice, checking the cached answer starts like a fresh computation; reported failing 3 of 3 on unfixed main. A third-party commenter says this may duplicate #56525, which they used as a patch.'
+  techniques:
+  - scratch-block relocation in checkpoint steps
+  - publish-before-written hazard
+  - chunk-budget-period prompt-length sweep as detector
+  reported_results:
+  - 'Author-reported: second answer garbage 3 of 3 before, normal 3 of 3 after (GLM-5.3-Flash-NVFP4, 2xH200, MTP k=1).'
+  - 'Author-reported: 4 of 7 broken runs before and 0 of 12 after at about 25k-token prompts sent twice.'
+  - 'Author-reported: trigger boundary 23,424 tokens (3/3) versus 23,440 (0/3) with a 22,350-token second request.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    - intake-2071
+    intake_entry_notes:
+    - intake-2061 (vLLM hybrid prefix-cache survey; Q4 asked about MTP scratch published as checkpoint)
+    - 'intake-2071 (RFC #45702)'
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: 'vllm-project/vllm PR #59759, state MERGED 2026-10-06T03:01:20Z, merge commit 6fa67afed999d7cbab6a9a7492b2538dd8c2aff0 (sha7 6fa67af); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w2a/pr59759.json,.diff,.body.md'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Read FULL from disk: pr59759.json (body incl. repro.py, 7 comments: CI, bot selector shadow, one third-party duplicate remark), pr59759.diff (2 files, whole diff). Not reproduced: any GLM-5.3-Flash trial (author-reported, small n). The #56525 duplicate remark is a third-party comment in pr59759.json, unverified; #56525 not in index. Scoping: the scratch block here is a target-model state slot used by MTP speculation; the PR is about a never-written block being published under a checkpoint hash, NOT about drafter hidden state. Bearing on our fork: the failure class (publish a position before the state at it has been written, then serve hits from it) is relevant wherever a KPF checkpoint is captured in a step that also holds speculative or rollback-ring rows, and the trigger is chunk-alignment-dependent, so a trunk-length sweep over one ubatch period is the right control.'
+  reader_should_conclude: Cite the publish-before-written failure class and the chunk-alignment-dependent trigger; cite counts as author-reported small-n. Do not describe this as a drafter-state bug and do not claim our llama.cpp fork shares the defect (different data structures); it motivates a test, not a finding about us.
+  recommended_actions:
+  - 'Operator-review candidate: add a trunk-length sweep over one ubatch period and a restore-equals-fresh check to KPF-17/KPF-18; see LEDGER rows.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr59759.body.md:L6 @ 6fa67af
+    quote: That block is never written, yet it is registered in the prefix cache ahead of the real checkpoint, so later requests resume from it.
+    quote_sha256: f88e7091668a574f93bcd9629f1be7fb4f108a52ccf37318594d926b844dfa7e
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr59759.body.md:L142 @ 6fa67af
+    quote: In the same step, `cache_full_blocks` registers the unwritten scratch block under hash(P), and `_cache_partial_tail_block` then adds the real checkpoint block under the same hash.
+    quote_sha256: 1463781d7e116b96daad22c982f5534c0009f85d9223da4c943b58dbdd97ff44
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr59759.diff:L127 hunk '-1885,12 +1885,14' @ 6fa67af
+    quote: '+                        if block_idx < num_skipped_blocks - checkpoint_block:'
+    quote_sha256: 64b825e93c5394dca04b04cbd7531e1d7efa6de70e8e24336b034ef843170242
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr59759.diff:L109 hunk '-1812,7 +1812,7' @ 6fa67af
+    quote: '+                if not blocks_allocated:'
+    quote_sha256: 1f2ad15087a50f678faab8f83ba4e262d0006f1c14d804f13672c205d4320a7a
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr59759.body.md:L144 @ 6fa67af
+    quote: It happens when a prompt's final prefill chunk starts one block below the shifted checkpoint, so it depends on prompt length
+    quote_sha256: 1ede0908693bfb7ed60630b3497fcde1cacf3aa6008745af9d7510128c19a6ed
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: pr59759.body.md:L26 @ 6fa67af
+    quote: '- Before the fix, the second answer was garbage in 3 of 3 trials'
+    quote_sha256: a39d05c4b6303509530acc3ee15861bac38d7255a0caf6f30bb5bfa8856918e2
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: pr59759.body.md:L30 @ 6fa67af
+    quote: also came back broken in 4 of 7 runs at about 25k tokens before the fix, and in 0 of 12 runs after.
+    quote_sha256: a1e0be6feab69beca455133b05bce92c30fd294c02597f6ef163cfc1bb8ab2d0
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: pr59759.body.md:L150 @ 6fa67af
+    quote: 'Possible CI follow-up: no current job would catch this.'
+    quote_sha256: 891dcf88e1648d866edfaf9f54f99932ba854ec7e6c2b4194ce06493f4cdda27
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: pr59759.body.md:L150 @ 6fa67af
+    quote: After the GSM8K pass, it would send about 15 long prompts with lengths spread over one chunk-budget period
+    quote_sha256: 1bdc9f0890f4bd7c4f1b3c531b5bde9fdbd7cac19c2eba1f676bc539dbf34df4
+    source_revision: 'vllm PR #59759 @ 6fa67af'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2072
+    claim_index: 1
+    why: 'The ''checkpoint position shifted one block down under MTP'' premise in this entry''s mechanism is the tail/junction shift introduced by PR #53945 (and made predicate-correct by #58368); if that claim were retracted the described slot collision would need re-derivation.'
+  dive_corrections: '2026-10-20 (Stage-2b, wave 2a): read FULL from disk at merge 6fa67af. CONFIRMED: mechanism and fix match the diff (relocation bound num_skipped_blocks - checkpoint_block; speculative-block term removed from cap and estimate on checkpoint steps). Wave-1 framing ''MTP scratch block published as a checkpoint'' CONFIRMED, with the scoping that it concerns target-state slots, not the drafter.
+
+    2026-10-20 second reader (independent agent): re-find 9/9; hash fixed to canonical normalization where it differed; support yes 6 / partial 2 / no 1; disagreements carried to the Stage-3 plan: idx 2, idx 3, idx 5
+
+    '
+- id: intake-2075
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/51113
+  source_type: repo
+  title: '[Bugfix] Keep mamba align prefill chunks block-aligned past last_cache_position (vLLM PR #51113)'
+  categories:
+  - kv_cache
+  - ssm_hybrid
+  - inference_serving
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - ivanium
+  - 'co-authors credited in body: kodek (#45477), yanghui1-arch (#47861)'
+  key_claims:
+  - 'Defect and mechanism: in mamba_cache_mode "align", cache_blocks hashes block-table slot p as the recurrent state at exactly (p + 1) * block_size tokens, but state is written at CHUNK ENDS. _mamba_block_aligned_split enforced block-aligned chunk ends only below last_cache_position (which EAGLE/MTP backs off by one block, and zeroes for prompts under two mamba blocks); past it any chunk end was accepted. Under concurrent prefills sharing the token budget a chunk ends mid-block (slot holds state@364); a later chunk crosses 1600 and cache_blocks hashes that same slot as state@1600; every request resuming from that hash restores a truncated state silently, and the entry persists until restart.'
+  - 'Fix: gate end-alignment on prefill_end instead of last_cache_position (only the prompt final chunk may end unaligned; decode completes that slot), and drop the last_cache_position condition on the mid-block realign stop (an unaligned START, e.g. finer prefix_match_unit or KV-connector external tokens, could also run through a boundary). last_cache_position stays a mandatory stop.'
+  - 'Reach: a single request is accidentally safe because its low slots are null blocks that cache_full_blocks skips, so the poisoning needs concurrency, which is why it was hard to pin down.'
+  - 'Evidence reported by the author (not reproduced by us): the new CPU test file goes 14 failed / 6 passed on pristine main to 20 passed; a runtime audit on 200 real 20-shot gsm8k prompts (Qwen3.5-0.8B, MTP 3 tokens, max_num_seqs=32) published 1 poisoned entry on pristine main and 0 with the PR; an end-to-end accuracy matrix on Qwen3.6-27B (0.814/0.814/0.804/0.802, n=500, 1 sigma ~ 1.7 points) is explicitly disclaimed by the author as neither confirming nor refuting an end-to-end effect.'
+  - 'The 5/10 corrupted-to-clean end-to-end result (10 identical 2002-token requests, Qwen3.6-27B-FP8) belongs to the closed predecessor PR #45477 and is quoted second-hand in this body ("this PR cannot reproduce locally"); #45477 and #47861 went stale on rebase and were not merged. This PR does not close the umbrella issue #43559.'
+  techniques:
+  - chunk-end alignment gated on prefill end
+  - oracle test mirroring recurrent-state writes against hashed offsets
+  - runtime audit hook flagging slots published under a different offset
+  reported_results:
+  - 'PR body, author-reported: test_mamba_align_chunk_split.py 14 failed / 6 passed on pristine main, 20 passed with the PR; scheduling cost 0/85 configs with extra forward steps, 0/85 with fewer cacheable snapshots; gsm8k poisoning audit 1 entry (main) vs 0 (PR) in 200 questions. Single author, own harness, no independent replication read.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    intake_entry_notes:
+    - 'intake-2061 (expanded_from; vLLM #46384, the partial-hit PR whose prefix_match_unit this PR also names)'
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Cite the mechanism (a state is keyed by a position it was not captured at because a later chunk crossed the boundary) and the test oracle shape (assert every published key equals the offset the state actually holds). Do NOT cite it as evidence that our llama.cpp checkpoints are poisoned: our checkpoint records n_tokens at capture, so the same defect is not structurally present for chunk ends (see notes). Do NOT cite the 5/10 corruption figure: it is second-hand from a closed PR.'
+  dive_corrections: '2026-10-20 Stage-2b: read body, comments and full diff from disk. CONFIRMED mechanism and fix against the diff. NARROWED claim 4: the 5/10 corrupted result is #45477''s, not this PR''s. Our-fork mapping PARTIAL: same class NOT reproduced structurally for chunk-end/mid-prefill checkpoints, residual exposures named in notes. Declined sources, recorded so they are not re-derived: https://github.com/vllm-project/vllm/pull/45477 and https://github.com/vllm-project/vllm/pull/47861 (closed, superseded by this PR which credits both and re-derives the same fix); https://github.com/vllm-project/vllm/pull/44927 (a structured-output should_advance off-by-one for MTP, not a cache defect, despite being listed by this body under #43559).
+
+    2026-10-20 second reader (independent agent): re-find 9/9; hash fixed to canonical normalization where it differed; support yes 6 / partial 3 / no 0; disagreements carried to the Stage-3 plan: idx 2, idx 3, idx 7
+
+    '
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'PR body, ## Purpose, para 2'
+    quote: '`MambaManager.cache_blocks` hashes block-table slot `p` as the recurrent state at exactly `(p + 1) * block_size` tokens.'
+    quote_sha256: 691272e49eddd3fb76653e3a596e6190aa4cb130bed907ceaa19fbc17b64cd61
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'PR body, ## Purpose, numbered step 2'
+    quote: A later chunk crosses `1600`, so `cache_blocks` hashes that same slot as `state@1600`.
+    quote_sha256: 6dfa70d0f65c61fcec83d440a0abebdca8a902d73229451b264f2fdd3b664971
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/sched/scheduler.py hunk @@ -394,10 +395,12 @@ _mamba_block_aligned_split @ c56f169
+    quote: 'if end < prefill_end:'
+    quote_sha256: 6ca23725e34e17f765d831ac0156ec29abc0eaae5d03514c12add50f8735f7c9
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/sched/scheduler.py hunk @@ -413,12 +416,9 @@ stops tuple @ c56f169
+    quote: next_block_boundary if start % block_size != 0 else 0,
+    quote_sha256: a3e45f8cd74edba182ab5c44f127ded9f7004fae569004aef79ea0b9d76b7a8d
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'PR body, ## Purpose, para after numbered list'
+    quote: A single request is accidentally safe — its low slots are null blocks, which `cache_full_blocks` skips — which is why this only appears under concurrency and was hard to pin down.
+    quote_sha256: 6a84f28ae9ff4910c11fc43d18a7ee76330529bf474a5850e1017ece3faf0e9b
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'PR body, ## Test Result table'
+    quote: '| `test_mamba_align_chunk_split.py` | **14 failed** / 6 passed | **20 passed** |'
+    quote_sha256: ce7d68d2ab628b83fd4ee892bf56de77a3a8b18f0cb02bcb50fd5dc508168da7
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'PR body, ### Real-workload audit, log line'
+    quote: '[UNPATCHED] publish req=11-9496b671 slot=6 hashed as state@3920 but holds state@3662'
+    quote_sha256: 7484b3c93b389e2ecb69812b84619cb895e82d077c1e7e06e1ffd1d9306ec1c5
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'PR body, ### Model evaluation'
+    quote: At n=500 the 1σ band is ±1.7 points, so this matrix neither confirms nor refutes an end-to-end effect and I am not claiming an accuracy delta from it.
+    quote_sha256: 51e91b40a03f5718d6b23713b72ea7c8844c2741b7edac53d2c8d778a3f9cf53
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'PR body, ### Credit and prior work, bullet #45477'
+    quote: It also carries the end-to-end validation this PR cannot reproduce locally (10 identical 2002-token requests on Qwen3.6-27B-FP8, 5/10 corrupted -> clean, decode throughput unchanged).
+    quote_sha256: 6e50f85bd5f9970c62db6f68bdf9ea853522770359ef22e35376fec05634d771
+    source_revision: 'vllm-project/vllm PR #51113 MERGED 2026-08-06T17:21:00Z, merge c56f169 (c56f169d9ae46ca420617e2cf5f0c9135da0f651); body, 2 comments, 12 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Mechanism text matches the diff and the test docstring (slot p holds state after exactly (p+1)*block_size tokens; state written at chunk ends).
+  - claim_index: 1
+    effect: unaffected
+    note: Both diff hunks read; the end gate and the mid-block realign stop changed as stated.
+  - claim_index: 2
+    effect: unaffected
+    note: Stated by the author; we did not run it. Consistent with the unit-test construction (single prefill with null low slots).
+  - claim_index: 3
+    effect: unaffected
+    note: Author-reported counts quoted as such; we did not run the tests. Author himself disclaims any accuracy delta.
+  - claim_index: 4
+    effect: reattributed
+    note: 'The 5/10 end-to-end corruption belongs to closed PR #45477, not to #51113.'
+  depends_on:
+  - entry: intake-2061
+    claim_index: 0
+    why: 'The unit hash_block_size/prefix_match_unit and finer-than-block resume (unaligned START) that this PR guards against are introduced by #46384; if that entry''s granularity claim were retracted, claim 1''s second half (unaligned start) would change.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Dedup: exact URL not in research/intake_index.yaml (lane worktree kpf-takeover-20261020, unbounded grep). Not read: nothing in this PR (body, comments, diff FULL); the predecessor PRs #45477/#47861 were NOT read (declined). No second-reader pass has been run on the anchors. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333.
+    MAPPING TO OUR CODE (PARTIAL). vLLM publishes a state under a key (position) assigned AFTER the state was written; our checkpoint carries its offset from capture: create_checkpoint is called during batch assembly BEFORE llama_decode and stamps n_tokens = prompt.n_tokens() - n_tokens_cur (the chunk START) while update_tgt reads the slot''s own seq state, so co-batched slots in a mixed ubatch cannot change what is captured, and a later chunk cannot re-label it. The consumer additionally rejects a checkpoint whose pos_max + 1 != p. Residual exposures (each becomes a test, not a finding): (a) the "end" kind in find_fork_source snapshots an idle source''s LIVE recurrent state and trusts src_pos_max == lcp - 1; if MTP rollback-ring rows or draft scratch rows are visible to the PARTIAL_ONLY read, the state is not the state at lcp (this is the #59759 shape from intake-2061''s ledger A1 case 1); (b) the guard checks attention positions only, so it cannot detect a recurrent state that is internally
+    at a different token count; (c) KPF-18 item 4 compares fork vs fresh against a noise floor, which cannot isolate a one-checkpoint poisoning from unified-KV numerical noise, whereas an offset oracle (restore the checkpoint into a fresh seq, decode, compare to cold prefill at n_tokens) can.'
+  recommended_actions:
+  - 'Operator-review candidate (derived-actionables W2B-A1, see LEDGER): amend the existing KPF-17 case from intake-2061 ledger A1 so its offset oracle runs under np>=2 concurrent prefills with fragmented n_batch, rather than adding a second row.'
+- id: intake-2076
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/54713
+  source_type: repo
+  title: '[BugFix] Retain both replay boundaries so an EAGLE resend of a block-aligned prompt still hits (vLLM PR #54713)'
+  categories:
+  - kv_cache
+  - ssm_hybrid
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - tobymao
+  key_claims:
+  - 'Defect: after #53945 moved the replay boundary to where a lookup lands after the EAGLE drop, an IDENTICAL resend still lands one alignment unit lower than a longer sibling, because get_computed_blocks caps a lookup at num_tokens - 1 (the last token must be recomputed to obtain logits). The two positions coincide except when the prompt length is an exact multiple of the scheduler block size; there retention kept only the higher one, every retained state sat above every candidate the resend could produce, and the reconciled hit collapsed to 0.'
+  - 'Fix: get_replay_boundary became get_replay_boundaries and returns both positions (resend = (num_prompt_tokens - 1) // block * block, extension = num_prompt_tokens // block * block, each backed off one block under EAGLE); cache_blocks retains each; the change only ever adds a reachable position, so at most one extra retained state per request.'
+  - 'Author-reported evidence: new test test_hybrid_mamba_retention_mtp_resend_of_aligned_prompt fails on main with assert 0 == 64 and passes with the change; a sweep of 136 configurations gave 8 cases going from a 0-token hit to a real hit and 0 getting shorter.'
+  - The boundary is deliberately computed at scheduler_block_size, not the finer hash alignment, because fine-grained hits extend into a non-full block only when a partial tail was registered there, so a hash-granular boundary names a position above the real candidate (author measured regressions at prompt lengths 160/176/224/240).
+  - Two third-party comment data points on different hybrid families (Qwen3.6-35B-A3B W4A16 and Qwen3.8-27B-FP8, n=1 per arm, vendor-neutral users) report first-repeat hits appearing with the patch, BUT they were measured on the superseded first-cut mechanism (reachable_hit_positions / lookup_drops_eagle_block), before the author repointed the PR; they are not evidence for the merged diff.
+  techniques:
+  - retain both identical-resend and longer-sibling replay boundaries
+  - exhaustive small-config sweep for no-regression of hit length
+  reported_results:
+  - 'PR body, author-reported: resend assert 0 == 64 on main; 136-config sweep 8 improved, 0 shortened. Comment data points are single-run, n=1 per arm, and apply to the superseded first cut.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    intake_entry_notes:
+    - intake-2061 (expanded_from)
+    - 'intake-2077 (PR #60533 rewrites this PR test expectation, resend hit 64 -> 96)'
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence:
+  - 'PR #60533 (merged 2026-10-08) changes this PR''s own test expectation for the identical resend of a 128-token prompt from 2 blocks (64 tokens) to 3 blocks (96 tokens): the resend is not a full unit lower than the extension once the P-1 cap and the EAGLE drop are no longer double-applied. The premise "resend lands one alignment unit below the longer sibling" held only until then.'
+  source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Cite the hazard (the cap that protects the last logit and the drop that protects the drafter are separate bounds; stacking both on the identical-resend path costs a whole unit and can hit 0) and the exact-multiple condition. Do NOT cite 64 as the resend hit for a 128-token prompt: #60533 changed it to 96. Do NOT treat the comment-thread numbers as evidence for the merged code.'
+  dive_corrections: '2026-10-20 Stage-2b: read body, all 13 comments and full diff. CONFIRMED defect, fix and test. PARTIAL on currency: the follow-up #60533 rewrites this PR''s resend expectation (64 -> 96). NARROWED claim 4: the comment-thread measurements predate the author repointing the PR and describe the first-cut mechanism. Out-of-scope item named in the body, declined here: the OffloadingConnectorScheduler reachable_boundaries site ("same class of bug at a third site") - connector-specific, we have no KV offload connector.
+
+    2026-10-20 second reader (independent agent): re-find 8/8; hash fixed to canonical normalization where it differed; support yes 6 / partial 2 / no 0; disagreements carried to the Stage-3 plan: idx 6, idx 7
+
+    '
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'PR body, ## Purpose, para 2'
+    quote: '`get_computed_blocks` caps a lookup at `num_tokens - 1`, because the last token has to be recomputed to obtain logits.'
+    quote_sha256: 7d3132e1e791c616308264aa4bcc8643512f11f05fedbb3721bedffe774045a5
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'PR body, ## Purpose, after the table'
+    quote: With retention keeping only the higher position, every retained state sits above every candidate the resend's lookup can produce, and the reconciled hit collapses to **0**
+    quote_sha256: d20761113d3f2a8a98f05100166af6f71b74eaa653b904422889d2610453d228
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/core/kv_cache_coordinator.py get_replay_boundaries @ b28c3e1
+    quote: return tuple(sorted({max(resend - block, 0), max(extension - block, 0)}))
+    quote_sha256: 47a654fc4dd076142e7c950d6a4df670bccb22db9888a8d1b330eccf85e3487b
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'PR body, ## Fix, para 2'
+    quote: '**8 cases go from a 0-token hit to a real hit, 0 cases get shorter.**'
+    quote_sha256: 084e642af6f92301a90037aa819ee47b99636195a61e341877894c77845ccddf
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'PR body, ## Test Result'
+    quote: Fails on `main` with `assert 0 == 64` — the resend gets no cache hit at all.
+    quote_sha256: 59e8f72dbf39ce7af2b891dfc7c55f1f26863c0f0cbf9bdf4af7212ae1815a0a
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'PR body, ## On the alignment'
+    quote: 'Measured: doing that regresses prompt lengths 160/176/224/240 from a real hit to 0.'
+    quote_sha256: 878d3f393bea7b43cf8ba8f151a610d458635cb013bfd3352299ecbd424f0d4e
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: comment by twu3202 (predates the repoint comment)
+    quote: 'Independent data point on a different hybrid family: Qwen3.6-35B-A3B W4A16'
+    quote_sha256: b7f4f7629ac26fa1930d57bc416903495dd4792556b69ff823d2fec21cd7b533
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: comment by tobymao, "Rebased onto main, and the PR has been repointed"
+    quote: the old mechanism (`reachable_hit_positions`, `lookup_drops_eagle_block`) is gone entirely
+    quote_sha256: 2619a6e01ebf1d5205c6953eb4b961cb629df420bb0a7a6e43ddf2206e4e4bcc
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Body, test docstring and diff agree on the cap/exact-multiple condition.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Diff read in full; the formula is as stated. Superseded in effect for the identical-resend hit length by #60533 (see claim 2 and contradicting_evidence), not wrong.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'The 64-token resend hit was true for this merge; #60533 later makes it 96 in the same test. Author-reported; not run by us.'
+  - claim_index: 3
+    effect: unaffected
+    note: Stated in body; plausible against the diff comment "The alignment is the scheduler block size, not the finer hash granularity". Not run.
+  - claim_index: 4
+    effect: reattributed
+    note: Comment data points describe the first-cut mechanism that the author removed; they do not measure the merged diff.
+  depends_on:
+  - entry: intake-2061
+    claim_index: 0
+    why: 'The EAGLE drop expressed in hash-unit/alignment terms (prefix_match_unit) is #46384''s construct; claim 0 is about a boundary computed from it.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry; PR and #60533 are a pair but kept as two entries per instruction. Dedup: exact URL not in the index. Read FULL. Not read: PR #53945 (predecessor, already in the intake-2061 dive-surfaced list S1) beyond what this PR quotes. No second-reader pass run. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333. MAPPING TO OUR CODE (PARTIAL,
+    by construction). The vLLM double-penalty (cap AND drop) has no direct analogue: we have no block-granular drop; drafter state travels in the checkpoint (KPF-13). The cap does map: KPF-11 requires p < task.tokens.size() (handoff L230), find_fork_source enforces p >= n_task -> skip (L1787) and the "end" kind needs lcp < n_task (L1781). Consequence: an identical resend, or a fan-out child whose prompt EQUALS the trunk (empty suffix), can never use a checkpoint at the end of the prompt, including a pinned checkpoint_at [-1]. It falls back to the ordinary pre-end checkpoints at n-4 and n-4-n_ubatch (L4219), which are not pinned and are subject to checkpoint_min_step eviction, or to 0. The cost is a few tokens when those checkpoints exist, but nothing in KPF-17/18 asserts that they do. This is a test gap, not a demonstrated defect.'
+  recommended_actions:
+  - 'Operator-review candidate (W2B-A2, see LEDGER): add an identical-resend / empty-suffix arm to the KPF-18 trunk set already proposed as intake-2061 ledger A2, instead of a new row.'
+- id: intake-2077
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/60533
+  source_type: repo
+  title: '[Bugfix][Prefix caching] Fix inconsistent hybrid Mamba prefix cache boundaries (vLLM PR #60533)'
+  categories:
+  - kv_cache
+  - ssm_hybrid
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - wzhao18
+  - 'extracted from #59826'
+  key_claims:
+  - 'Scope per the body: three fixes extracted from #59826 (Mooncake-specific changes excluded): (1) the Mamba prompt-checkpoint boundary no longer applies both the P - 1 cap and the EAGLE block drop; (2) attention lookup may inspect the cached EAGLE proof beyond the final hit limit; (3) Mamba checkpoint calculation and registration are made consistent across scheduler and workers.'
+  - 'Mechanism of (1): get_mamba_prefill_checkpoint_position now sets proof_limit = num_tokens when the EAGLE drop is on, else num_tokens - 1, then floors to the hash unit and subtracts one unit for the drop, so the two bounds are never stacked. The new Kimi-K3 serving test pins it: for P=7296 (an exact multiple of the 128-token match unit, blocks 6144) the checkpoint must be 7168, not 7040.'
+  - 'Mechanism of (2) and (3): the attention lookup length is extended by an eagle_proof_margin (one hash unit for fine-grained lookups, otherwise one cache block) up to len(block_hashes) * hash_block_size; hash_block_size and cache_hit_alignment_tokens are resolved ONCE in the engine core and shipped to workers in KVCacheConfig, replacing a worker-side read of prefix_match_unit or block_size that could disagree with the scheduler grid.'
+  - 'Relation to #54713: this PR rewrites that PR''s test expectation for the identical resend of a 128-token prompt from 2 blocks to 3 blocks (64 -> 96 tokens) while both retained checkpoints are still materialised, so the two PRs are sequential, not duplicate: #54713 stops the zero-hit collapse, this one removes the remaining double penalty.'
+  - The PR body carries no measurements at all; its evidence is new unit tests plus a GPU serving test (test_dspark_exact_resend_reuses_prompt_checkpoint, with a logprob-closeness check resend vs recompute) that we did not run and whose CI outcome we did not read.
+  techniques:
+  - single helper for the reusable checkpoint position
+  - engine-core-resolved cache_hit_alignment_tokens shipped to workers
+  - EAGLE proof margin in attention lookup
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    intake_entry_notes:
+    - intake-2061 (expanded_from)
+    - 'intake-2076 (PR #54713, whose test this PR edits)'
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence: null
+  source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite the lesson that two independently correct safety bounds (do not reuse the last token; drop the drafter-reachable unit) must be derived once in one helper and applied once, and that a checkpoint grid must be resolved in one place for producer and consumer. Do NOT cite any performance or accuracy number for this PR: it reports none. Do NOT treat it as superseding #54713.'
+  dive_corrections: '2026-10-20 Stage-2b: read body, 13 comments (CI chatter only) and the non-test source diff in full (10 files); test diffs read only for the two tests that bear on the claims (Kimi-K3 resend test, #54713 test edit). PARTIAL: tests/v1/attention/*, test_amd_kda_checkpoint.py, test_kda_metadata.py and the bulk of test_partial_prefix_cache_hits.py not read. CONFIRMED the three scope items against the diff. OVERTURNED nothing. Declined sources, recorded so they are not re-derived: https://github.com/vllm-project/vllm/pull/59826 (the closed parent; Mooncake-specific and its core fixes are exactly this PR, which is the part that landed).
+
+    2026-10-20 second reader (independent agent): re-find 9/9; hash fixed to canonical normalization where it differed; support yes 7 / partial 2 / no 0; disagreements carried to the Stage-3 plan: idx 7, idx 8
+
+    '
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body, bullet 1
+    quote: Fix the Mamba prompt checkpoint boundary to avoid applying both the `P - 1` cap and EAGLE’s block drop.
+    quote_sha256: 0f0e005beb8d449a777efa0a1940ea0599747bc792f920c7be338a3de359a7b7
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body, first line
+    quote: 'This PR extracts the core prefix-caching fixes from #59826, excluding the Mooncake-specific changes.'
+    quote_sha256: 2abbd8887b3caabab484b63bc5d630634e69a0e3cb0381e8e1ea72807ffa9a25
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: vllm/v1/kv_cache_interface.py hunk @@ -1127,7 +1127,10 @@ get_mamba_prefill_checkpoint_position @ d8fa463
+    quote: proof_limit = num_tokens if drop_eagle_block else num_tokens - 1
+    quote_sha256: 74bd3dd324c9bbd0facc864bbb3ffc8b5010d9155bcb15c5fe72ac80bef79c33
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tests/models/kimi_k3/test_prefix_cache.py test_dspark_exact_resend_reuses_prompt_checkpoint param eagle-double-cap @ d8fa463
+    quote: ensure the Mamba checkpoint is 7168, not 7040 from applying both
+    quote_sha256: ed9f67c3e2fa31a49a168eacbefc4e50a9ff424a18d43e9fba3a65d5850df567
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: vllm/v1/core/kv_cache_utils.py eagle_proof_margin docstring @ d8fa463
+    quote: Fine-grained lookups drop one hash unit; others drop one cache block.
+    quote_sha256: fbec7323128b6f102e7e04eedcc0fdfe075b27bd2b1f18916539ef74b6f23f53
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: vllm/v1/core/kv_cache_coordinator.py find_longest_cache_hit_per_group lookup_length @ d8fa463
+    quote: len(block_hashes) * self.hash_block_size,
+    quote_sha256: 35366643b2277be362589f1d1f0ee0afbdfd7e63f0a1bcd3a8a12caedd0ca312
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: vllm/model_executor/layers/mamba/checkpoint.py build(), removed line @ d8fa463
+    quote: hash_block_size = self.vllm_config.cache_config.prefix_match_unit or block_size
+    quote_sha256: 4a11400d4581134facd4feb102dcb5077dea07c4f7f2f063b5e5cb193306efc8
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: vllm/v1/engine/core.py _initialize_kv_caches @ d8fa463
+    quote: kv_cache_config.cache_hit_alignment_tokens = cache_hit_alignment_tokens
+    quote_sha256: c157be37a174e2a70d8f9095bcfeb57d138b83617bd477dd6104352ee424c866
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: tests/v1/core/test_prefix_caching.py test_hybrid_mamba_retention_mtp_resend_of_aligned_prompt, removed line (replaced by 3 * block_size) @ d8fa463
+    quote: assert num_computed_tokens == 2 * block_size
+    quote_sha256: 34a44b54e766753b6566031cc111c8470bdd778e5e332eee4441d8bb85570dff
+    source_revision: 'vllm-project/vllm PR #60533 MERGED 2026-10-08T18:33:50Z, merge d8fa463 (d8fa463e2ba751759a3534dd3ce11af92f1eed83); body, 13 comments, 67 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Matches the diff file list and hunks.
+  - claim_index: 1
+    effect: unaffected
+    note: Helper and test comment quoted verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Read in the coordinator, utils, engine core and worker hunks. The inconsistency it fixes (worker reading prefix_match_unit while scheduler used a resolved alignment) is inferred from the removed line plus the added docstring, not from a reported failure.
+  - claim_index: 3
+    effect: unaffected
+    note: Both sides of the edited assertion read in the diff.
+  - claim_index: 4
+    effect: unaffected
+    note: Body has no numbers; CI result not read.
+  depends_on:
+  - entry: intake-2076
+    claim_index: 3
+    why: 'Claim 3 (resend hit 64 -> 96) is only meaningful relative to #54713''s test and retained-boundary design; if that design were retracted the comparison would change.'
+  - entry: intake-2061
+    claim_index: 2
+    why: 'The hash unit and fine-grained lookup this PR''s eagle_proof_margin refers to are #46384 constructs.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry; second of the #54713/#60533 pair, kept as its own entry. Dedup: exact URL not in the index. PARTIAL read, see dive_corrections for what was not read. No second-reader pass run. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333. MAPPING TO OUR CODE (NOT-FOUND-IN-SOURCE as a defect; one transferable lesson). Our producer and
+    consumer of checkpoint positions live in one process and one file, so the scheduler-vs-worker grid disagreement has no direct analogue. The "derive the bound in one helper" lesson applies loosely: the n-4 / n-4-n_ubatch offsets (L4219), the is_ckpt_at positions (L4160-4170) and find_fork_source''s p >= n_task rule (L1787) are three separate statements of which positions are reusable. We judge a refactor not worth a task; the identical-resend consequence is covered by W2B-A2 on intake-2076.'
+  recommended_actions: []
+- id: intake-2078
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/52371
+  source_type: repo
+  title: 'test(prefix cache): pin two mamba "align" + EAGLE prefix-cache defects (vLLM PR #52371, open, test-only)'
+  categories:
+  - kv_cache
+  - ssm_hybrid
+  - speculative_decoding
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - akshaver
+  key_claims:
+  - 'Identity: #52371 is a PULL REQUEST (open since 2026-08-14, one commit, last updated 2026-08-17, never merged), tests only, no production change: 3 files, "11 passed, 7 xfailed" per the author, using xfail(strict=True) so a future fix must remove the marker.'
+  - 'Section 1 (EAGLE drop costs a whole block, not one hash unit): block 16, hash unit 4, producer caches 48 tokens, consumer shares all 48. Full attention alone gives up 4 (hit 44), mamba alone reaches 48, but the reconciled joint hit is 32 because mamba state exists only at 16/32/48 and is capped at the attention candidate 44.'
+  - 'Section 3 (shared system prompt + private suffix gives joint hit 0): producer prompt 40 = 24 shared + 16 private, consumer shares the first 24. Full attention stops at 16 and the drop takes it to 12; mamba has state at 0 and 16 only, so capped at 12 it falls to 0 and the joint hit is nothing. The author concludes a checkpoint at the producer prompt TAIL cannot serve this shape (40 and 36 are over the private suffix); the state must exist one hash unit below the shared block boundary.'
+  - 'Section 2 (KV-event stream): emit_cached_block_events walks the mamba hit list as a dense grid and publishes keys that were never stored plus an IndexError on unaligned prompts. This concerns the event/reporting stream, not hit length, and has no counterpart in our fork.'
+  - 'Currency: the tests were written against main of 2026-08-14 and were never merged; a shared-prefix junction mechanism (request.shared_prefix_boundary in the sparse-retention path) is visible in the later merged #54713 diff, so the section-3 defect is plausibly already addressed upstream. Whether the xfail strict markers would now XPASS was not run.'
+  techniques:
+  - strict-xfail executable defect pinning
+  - producer/follower hit-length probe through a real KVCacheManager (CPU only)
+  - per-group vs reconciled hit-length decomposition
+  reported_results:
+  - 'PR body, author-reported: 11 passed, 7 xfailed. Not re-run by us.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2061
+    intake_entry_notes:
+    - intake-2061 (expanded_from; its ledger rows A2 and A3 are the rows this source supports)
+  expanded_from: intake-2061
+  credibility_score: null
+  contradicting_evidence:
+  - 'Merged #54713 retains request.shared_prefix_boundary alongside the replay boundaries (reachable_boundaries.append(request.shared_prefix_boundary) in its diff), i.e. an explicit junction exists in the sparse-retention path after this PR was written.'
+  source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Cite section 3 as the clearest published statement that a tail-only checkpoint cannot serve "shared trunk + private suffix" and that a state must sit at the trunk boundary (our checkpoint_at, KPF-15). Do NOT cite it as current upstream behaviour: it is an unmerged test PR and the defect may already be fixed. Do NOT cite its pass/xfail counts as ours.'
+  dive_corrections: '2026-10-20 Stage-2b: RESOLVED identifier: #52371 is a pull request (gh pr view succeeds; state OPEN), not an issue; the ledger/brief wording "issue/PR" is settled as PR. Read body, 1 comment (bot greeting) and the full diff of all three test files. CONFIRMED that the tests assert the stated numbers (44 vs 32; 0 vs 12); NOT executed. PARTIAL on currency (see claim 4). Section 2 recorded as outside our scope. No dive-surfaced sources declined here beyond those already listed for intake-2061.
+
+    2026-10-20 second reader (independent agent): re-find 8/8; hash fixed to canonical normalization where it differed; support yes 7 / partial 1 / no 0; disagreements carried to the Stage-3 plan: idx 4
+
+    '
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body, first line
+    quote: Tests only, no production change.
+    quote_sha256: ec7f6e5ac548107b7007cfa1797e7584a7e662e00ed7e0b9e4db90d9c8c13578
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body, code block
+    quote: 11 passed, 7 xfailed
+    quote_sha256: 81e102aa8df5949a9b96dcb164ae6546eb243479eece4fdd9238f693ad6930a3
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR body, section 1 table, row test_reconciled_hit_should_not_give_up_a_whole_block
+    quote: joint hit should be `44`; it is `32`.
+    quote_sha256: 579c5766836a36a1b44c67229c23c6c446914d0ec6b2da788f1f47f426bff050
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tests/v1/core/prefix_cache/test_eagle_mamba_shared_system_prompt.py test_reconciled_hit_is_currently_nothing @ da79a4f
+    quote: 'Today the two groups reconcile to zero: the follower recomputes it all.'
+    quote_sha256: 2b8f527bf0de21d6c2d8613582a1462fa7da2e9dfe78ac77a07f7d373f768ae7
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tests/v1/core/prefix_cache/test_eagle_mamba_shared_system_prompt.py test_reconciled_hit_should_reach_the_resume_point docstring @ da79a4f
+    quote: so the state has to exist one hash unit below the shared block boundary.
+    quote_sha256: f541a16be3379e56b4fab437b13c5f7fbad72f0750774495445f7a1d1426b90e
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: PR body, section 3
+    quote: Here the drop does not cost a block — it costs the **entire** hit, while both groups independently reach at least 12.
+    quote_sha256: 73e37cb12fb48847c1649bd11363eb56ff5bd63dfe3893cfd65bc49e0825fc7d
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: PR body, section 2
+    quote: emit_cached_block_events` walks the hit list positionally, as though every index carried a key.
+    quote_sha256: e38fc3dc7445120276e766cdfdf15ef042ffb85066ef3d4974a24628db5bfee9
+    source_revision: 'vllm-project/vllm PR #52371 (a PULL REQUEST, not an issue) OPEN, test-only, never merged; head da79a4f (da79a4ffca9e05023fae39db16c5af384f084e14), single commit, last updated 2026-08-17T19:26:05Z; body, 1 comment, full 23 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: 'vllm/v1/core/single_type_kv_cache_manager.py cache_blocks (PR #54713 diff) @ b28c3e1 - the later-merged junction path cited by claim 4'
+    quote: reachable_boundaries.append(request.shared_prefix_boundary)
+    quote_sha256: b3d26292be00b0743deb50669a30fb6db912981d76d0ac7d5de87817e542b33b
+    source_revision: 'vllm-project/vllm PR #54713 MERGED 2026-09-10T08:39:25Z, merge b28c3e1 (b28c3e1568bfae930f61d4b24940e47528c85d4a); body, 13 comments, 13 KB diff read from disk via gh 2026-10-20'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: State and identity verified through gh.
+  - claim_index: 1
+    effect: unaffected
+    note: Numbers read from the test assertions and docstring; not executed.
+  - claim_index: 2
+    effect: unaffected
+    note: Test assertions and docstrings read; the xfail test asserts 12, the passing test pins 0.
+  - claim_index: 3
+    effect: unaffected
+    note: Read in test_mamba_align_sparse_keys.py; irrelevant to hit length.
+  - claim_index: 4
+    effect: narrowed
+    note: Inference from a different PR's diff; XPASS status on current main not tested.
+  depends_on:
+  - entry: intake-2061
+    claim_index: 2
+    why: The tail-only checkpoint rule that section 3 shows cannot serve a trunk+suffix prompt is the rule intake-2061 claim 2 records.
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Dedup: exact URL not in the index. FULL read. Not run: the tests. No second-reader pass run. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333. MAPPING TO OUR CODE (CONFIRMED as design rationale for KPF-15, NOT-FOUND as a defect in our code). Section 3 is the failure our explicit checkpoint_at exists to prevent: with a tail-only
+    checkpoint a child sharing only the trunk gets ~0. vLLM detects the junction automatically from observed sibling behaviour; ours is named by the caller, so the residual risk is the CALLER omitting checkpoint_at (KPF-21 / orchestrator), and the engine''s silent fallback is then exactly the tail-only case. Section 1 (reconciliation floors to a lower common boundary) has no analogue: we have no per-group hit reconciliation, one cell-granular attention share and one checkpoint-restored recurrent state at p (KPF-12/13). The strict-xfail style (a defect pinned as an executable assertion that turns red when fixed) is itself reusable for KPF-18 expected-miss arms.'
+  recommended_actions:
+  - 'Operator-review candidate (W2B-A3, see LEDGER): a KPF-21 acceptance test that an orchestrator fan-out of >=2 children with a common trunk always sends the trunk-first request with checkpoint_at = [len(trunk)].'
+- id: intake-2079
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/23269
+  source_type: repo
+  title: 'llama : MTP clean-up (ggml-org/llama.cpp #23269)'
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2068
+  ingested_date: 2026-10-20
+  verdict: already_integrated
+  verification: dive-overturned
+  read_depth: FULL
+  source_revision: 'PR #23269 MERGED 2026-05-19T12:32:59Z, merge commit d14ce3dab4de197adec5166faa54ac5db8262f26; ancestor of v10 ffc1bac82, champion e332293, fork a1f0c8c'
+  key_claims:
+  - 'A merged MTP/speculative clean-up, not a checkpoint-invalidation fix: it fixes a bug in parallel decoding using recurrent rollback (n_rs_seq > 0) and touches llama-memory-recurrent/hybrid/hybrid-iswa.'
+  - 'It changes speculative defaults: --spec-draft-n-max 16 -> 3 and --spec-draft-p-min default 0.75 -> 0.0 (common.h), makes p-min functional again, and lets every chained speculative impl see accepted tokens.'
+  - A third-party commenter (not the author) reports that rollback_distance went to zero after this PR in a hybrid checkpoint-restore trace; the reporter hedges with "I think".
+  - 'Unconfirmed third-party reports in the thread: -14% TG with p-min 0.75 (traced by the reporter to p-min now being honoured), and a 15-20% throughput drop since b9235 on Windows/CUDA with no root cause given.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr23269.json body, bullet 1
+    quote: Fix bug in parallel decoding using recurrent rollback (`n_rs_seq > 0`)
+    quote_sha256: 986c4596180e933c09894b49cf4f0719e062fe78484cf7a35d7a59faee0f918e
+    source_revision: 'PR #23269 body @ 2026-10-20 fetch'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: 'pr23269.diff hunk common/common.h: p_min default'
+    quote: float p_min   = 0.0f; // minimum speculative decoding probability (greedy)
+    quote_sha256: d7ac08d6c8cd3edece5a031b5d8e40910a582b163150f00780fdd6cb623bf89d
+    source_revision: 'PR #23269 diff'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: pr23269.json comments[jacekpoplawski 2026-05-19T13:46:11Z]
+    quote: I think this fixed the issue I encountered while debugging checkpoints
+    quote_sha256: 360656433f9d0037aba9137eeb7c73724ea166835dac85712d0f2e830553f5d8
+    source_revision: 'PR #23269 comments'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: json-pointer
+    locator: pr23269.json comments[cmp-nct 2026-05-19T02:58:29Z]
+    quote: Using p-min = 0.0 on the other hand brings a boost
+    quote_sha256: 7504405b17629f2f7d056bba4e0d31f5880d0a7a03d3fa4e372f9c5dcac59498
+    source_revision: 'PR #23269 comments'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Body text and diff agree (llama-memory-recurrent.* and delta-net-base.cpp in file list).
+  - claim_index: 2
+    effect: narrowed
+    note: Intake-2068 ledger framed this PR as a "checkpoint-invalidation fix"; the PR itself is MTP clean-up and only a commenter ties it to a checkpoint trace. Treat as a hedged third-party observation.
+  - claim_index: 3
+    effect: narrowed
+    note: Anecdotal; one reporter identified the cause as p-min semantics, the Windows report has no cause and was redirected to a new issue.
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  reader_should_conclude: Cite as an MTP/speculative clean-up already present in v10, champion and fork. Do NOT cite it as a checkpoint-invalidation fix. Do NOT cite the 14% or 15-20% figures as measurements of any kernel of ours; they are unverified third-party anecdotes on other hardware.
+  dive_corrections: '2026-10-20 (Stage-2b): Stage-1 premise (from the intake-2068 ledger, source: a comment on #22929) called this a checkpoint-invalidation fix. Read in full: title and body are an MTP clean-up; the checkpoint link is one commenter hedged remark. Verdict set to already_integrated (ancestry confirmed in v10, champion, fork). Claims 0-1 verified against body and diff.
+
+    2026-10-20 second reader (independent agent): re-find 4/4; hash fixed to canonical normalization where it differed; support yes 1 / partial 3 / no 0; disagreements carried to the Stage-3 plan: idx 1, idx 2, idx 3
+
+    '
+- id: intake-2080
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/24411
+  source_type: repo
+  title: 'server : skip checkpoints beyond pos_next (ggml-org/llama.cpp #24411)'
+  categories:
+  - speculative_decoding
+  - kv_cache
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2068
+  ingested_date: 2026-10-20
+  verdict: worth_investigating
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'PR #24411 MERGED 2026-06-11T07:18:12Z, merge commit db94854ff56549f62b84d2f31608259a9e5e0e9f; ancestor of v10 ffc1bac82, champion e332293, fork a1f0c8c'
+  key_claims:
+  - 'Merged workaround: when selecting a checkpoint to restore, any checkpoint with cur.pos_max > pos_next is skipped (find_if lambda returns false). It fixes corrupted output after cache reuse on Gemma 4 SWA models in the author repro script.'
+  - 'The same diff leaves an open TODO tagged [TAG_CHECKPOINTS_FIX_POS_MIN]: create_checkpoint records the saved checkpoint as covering [pos_min, pos_max], which is not true for SWA models.'
+  - 'The maintainer attributes the bug to a regression from #23981: the checkpoint claims a larger position range than it covers (new masking while saving). He proposes recording pos_max - n_swa as pos_min and says a follow-up needs unit tests and a more robust range determination. A tester reports the proposal also fixes the case and selects checkpoints closer to the end ("limited testing").'
+  - The TODO and the workaround are present, unchanged, in v10, the champion and the KPF fork; the fork has no fix for the TODO.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr24411.diff hunk @@ -2860,6 +2863,10 @@ tools/server/server-context.cpp
+    quote: +                            if (cur.pos_max > pos_next) {
+    quote_sha256: 298e27cf9f9596f7d38549fcd907afffd68ba90481b77fa483da56ce72c4b6fa
+    source_revision: 'PR #24411 diff'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/server/server-context.cpp:L2865 @ a1f0c8c (fork); champion e332293 L2430; pr24411.diff first hunk
+    quote: '// TODO: here we incorrectly deterimne that the saved checkpoint data covers the [pos_min, pos_max] range'
+    quote_sha256: b5edf95d7bbe35eaa4348fdb50694ee77cf46552c48e5138d4d3e0472ea29824
+    source_revision: experimental/kv-prefix-fork-p1r-20261020 @ a1f0c8c
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: pr24411.json comments[ggerganov 2026-06-11T06:56:29Z]
+    quote: After the change, the checkpoint server information claims to cover a larger position range than it actually does
+    quote_sha256: 3d9b511c85d107d418214b18f5155710565695ff9cd0380873daae54ba2a82da
+    source_revision: 'PR #24411 comments'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: tools/server/server-context.cpp:L4153-L4156 @ a1f0c8c (fork); v10 L3458-L3461; champion L3590-L3593
+    quote: // workaround for [TAG_CHECKPOINTS_FIX_POS_MIN]
+    quote_sha256: d0a592ec2458dd419166ba05828a3b518ed6620a63fe713a31543823aebb4f30
+    source_revision: experimental/kv-prefix-fork-p1r-20261020 @ a1f0c8c
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Diff shows exactly the added guard.
+  - claim_index: 2
+    effect: narrowed
+    note: 'The #23981 attribution and the proposed pos_max - n_swa fix are the maintainer opinion in a comment, not merged code.'
+  depends_on:
+  - entry: intake-2068
+    claim_index: 1
+    why: Intake-2068 (#22929) checkpoint placement/pinning logic selects and erases checkpoints using the same pos_min/pos_max fields whose meaning is wrong for SWA here.
+  handoffs_updated: []
+  handoffs_created: []
+  reader_should_conclude: 'The pos_min/pos_max range of a saved checkpoint is KNOWN-WRONG for SWA models in v10, champion and fork (open upstream TODO). Any KPF design that trusts pos_min for coverage on an SWA cache (drafter or Gemma-class) must not. Do not claim the pos_max - n_swa proposal is merged; it is not. Do not claim hybrid-recurrent (single-position state) is affected: it is not shown to be.'
+  dive_corrections: '2026-10-20 (Stage-2b): Stage-1 listed #24411 only as a code-comment citation. Full read: it is a merged workaround plus a left-open TODO, not a fix. Ancestry confirmed in all three trees; TODO quoted in champion (L2429-2431) and fork (L2864-2866), and the workaround at fork L4153-4156. Analysis in LEDGER.md (A-6).
+
+    2026-10-20 second reader (independent agent): re-find 4/4; hash fixed to canonical normalization where it differed; support yes 3 / partial 1 / no 0; disagreements carried to the Stage-3 plan: idx 2
+
+    '
+- id: intake-2081
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/20288
+  source_type: repo
+  title: 'server : make 2 checkpoints near the end of the prompt (ggml-org/llama.cpp #20288)'
+  categories:
+  - kv_cache
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2068
+  ingested_date: 2026-10-20
+  verdict: already_integrated
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'PR #20288 MERGED 2026-03-10T12:28:23Z, merge commit a7b3dee7a5df8fa2e2f8faae9792d2cab5112c6f; ancestor of v10, champion, fork'
+  key_claims:
+  - Replaces the single end-of-prompt checkpoint (last min(n_batch,512) tokens) with two near-end checkpoints at offsets {4 + n_ubatch, 4} tokens before the prompt end, and always checkpoints when within n_ubatch of the end.
+  - 'Rationale from the maintainer: no "reasoning" tokens may be in the checkpoint because they are removed on the next user message; a begin-thinking incantation is at most 3 tokens (gpt-oss), so 4 is safe. The 64 -> 4 secondary offset was confirmed by one tester on Qwen3.5 only.'
+  - Present unchanged in v10, champion and fork (fork has checkpoint_offsets at L4369).
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr20288.diff hunk @@ -2520,9 +2520,24 @@
+    quote: static const int checkpoint_offsets[] = {4 + n_ubatch, 4};
+    quote_sha256: 3d94ae94e319fe783dffd1d9d3eec679300d083d9bc4bb593f95c876e5d0ffec
+    source_revision: 'PR #20288 diff'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: pr20288.json comments[ggerganov 2026-03-09T15:54:55Z]
+    quote: The main restriction is to guarantee that no "reasoning" tokens will get included in the checkpoint because they will be removed for the next user message.
+    quote_sha256: e7aba4de5437c6451e63818f403438ae31836a48c60436595b4a59a2b811c63e
+    source_revision: 'PR #20288 comments'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tools/server/server-context.cpp:L4369 @ a1f0c8c (fork)
+    quote: static const int checkpoint_offsets[] = {4 + n_ubatch, 4};
+    quote_sha256: 3d94ae94e319fe783dffd1d9d3eec679300d083d9bc4bb593f95c876e5d0ffec
+    source_revision: experimental/kv-prefix-fork-p1r-20261020 @ a1f0c8c
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: The 4-token bound rests on the maintainer and aldehir recollection of known templates; a model with a longer begin-thinking prefix would break it.
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  reader_should_conclude: 'Provenance only: the near-end checkpoint offsets in our trees come from this PR. Nothing to port. The "<=4 begin-thinking tokens" assumption is an upstream assumption, not verified for our model lineup.'
+  dive_corrections: '2026-10-20 (Stage-2b): Read in full (diff 4 KB, 7 comments). Ancestry confirmed in all three trees. No adoption work.
+
+    2026-10-20 second reader (independent agent): re-find 3/3; hash fixed to canonical normalization where it differed; support yes 3 / partial 0 / no 0; disagreements carried to the Stage-3 plan: none
+
+    '
+- id: intake-2082
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/22826
+  source_type: repo
+  title: 'server: preserve context checkpoint coverage (ggml-org/llama.cpp #22826)'
+  categories:
+  - kv_cache
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2068
+  ingested_date: 2026-10-20
+  verdict: worth_investigating
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: 'PR #22826 CLOSED unmerged (closed by author 2026-07-15 for the open-PR limit); no merge commit; diff read as of 2026-10-20'
+  key_claims:
+  - NOT MERGED. Proposes replacing FIFO checkpoint eviction at the --ctx-checkpoints limit with removal of the interior checkpoint whose two neighbours are closest together (smallest n_tokens gap).
+  - 'Motivating log (author setup: --ctx-checkpoints 24, --checkpoint-every-n-tokens 8192, pi coding agent): all retained checkpoints were at 20479-32656 while the request needed n_past = 3579, forcing full re-processing. The author attributes it to dense near-boundary checkpoints evicting older ones under FIFO. Single-user anecdote; the fix was tested only with --ctx-checkpoints 8.'
+  - 'The maintainer called it an OK idea but a "poor-man" solution and pointed to structure-aware checkpointing (#21885 and later #22929).'
+  - 'Our fork already differs: eviction removes the oldest UNPINNED checkpoint and a min-step eviction runs first (fork server-context.cpp L2828-2856); the gap-based policy is neither in v10, the champion nor the fork.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr22826.json body, first paragraph
+    quote: Instead of always removing the oldest context checkpoint when the checkpoint limit is reached, remove the checkpoint that appears most redundant based on the distance between its neighbors.
+    quote_sha256: b97b07ddea544e7fd24663c3b2eb340821fa62e8f200414ebdf6cb7df5a5a450
+    source_revision: 'PR #22826 body'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: pr22826.json comments[ggerganov 2026-05-08T03:47:58Z]
+    quote: The idea is OK, but it is still a "poor-man" solution.
+    quote_sha256: 5740ff3754b3b9ba0c8ca33bfb9e175e989856d1b60e59d9f73df8418fda3e33
+    source_revision: 'PR #22826 comments'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tools/server/server-context.cpp:L2844 @ a1f0c8c (fork)
+    quote: // make room for the new checkpoint, if needed - the oldest unpinned one [KPF-15]
+    quote_sha256: a99df451d7f54ba9dc49af82dc98a24ff8e9b688f1686ba0836dadffd6a29f95
+    source_revision: experimental/kv-prefix-fork-p1r-20261020 @ a1f0c8c
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr22826.diff hunk @@ -1833,13 +1833,34 @@ create_checkpoint
+    quote: erasing redundant context checkpoint
+    quote_sha256: 2fb7d4836c20c778e771b4be8fa7f4ef9d55b1673ad62715489d75521087a108
+    source_revision: 'PR #22826 diff'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Single anecdote with one config; the cause attribution is the author inference.
+  depends_on: []
+  handoffs_updated: []
+  handoffs_created: []
+  reader_should_conclude: Unmerged and closed; do not cite as upstream behaviour. Cite only as a reported failure mode (dense recent checkpoints evict older ones under FIFO, forcing a full re-process) and one candidate eviction policy. The fork already pins and uses oldest-unpinned eviction; whether gap-based eviction beats it is untested.
+  dive_corrections: '2026-10-20 (Stage-2b): Stage-1 description of this as the request that spawned #22929 is correct; the PR itself did not land. Merge state verified from json (CLOSED, mergedAt null).
+
+    2026-10-20 second reader (independent agent): re-find 4/4; hash fixed to canonical normalization where it differed; support yes 1 / partial 1 / no 2; disagreements carried to the Stage-3 plan: idx 1, idx 2, idx 3
+
+    '

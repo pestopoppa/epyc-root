@@ -18,10 +18,21 @@
     "intake-2068",
     "intake-2069",
     "intake-2070",
-    "intake-2071"
+    "intake-2071",
+    "intake-2072",
+    "intake-2073",
+    "intake-2074",
+    "intake-2075",
+    "intake-2076",
+    "intake-2077",
+    "intake-2078",
+    "intake-2079",
+    "intake-2080",
+    "intake-2081",
+    "intake-2082"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2072,
+  "next_intake_id": 2083,
   "expansion_cap": 10,
   "expansion_count": 2,
   "expansion_entries": [
@@ -9780,6 +9791,24 @@
           "/mnt/raid0/llm/tmp/dive-2063",
           "/mnt/raid0/llm/tmp/dive-2068"
         ]
+      },
+      {
+        "wave": 2,
+        "entries": [
+          "intake-2072",
+          "intake-2073",
+          "intake-2074",
+          "intake-2075",
+          "intake-2076",
+          "intake-2077",
+          "intake-2078",
+          "intake-2079",
+          "intake-2080",
+          "intake-2081",
+          "intake-2082"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20"
       }
     ]
   }
