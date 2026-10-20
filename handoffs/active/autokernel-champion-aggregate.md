@@ -8,6 +8,8 @@ fixed production anchor.
 
 ## Start here — open work (2026-09-29)
 
+**Pending fold for the champion owner (2026-10-20, REPL-EMB-2.6 session):** the EmbeddingGemma 2 model support is prepared on `experimental/champion-plus-gemma-embedding2-20261020` @ `e94cc2b50f6573677f951cce426fedb6b29416c8` (local branch, worktree `/mnt/raid0/llm/worktrees/llama-champ-gemma-embedding2-20261020`), cut from the champion tip `e33229348` (the branch tip is 10 AK keeps past the ledgered `b0ba1d427`). Two commits, cherry-picks of `d871e67e0`/`966c24d6e`, zero conflicts (disjoint files: `src/` model files vs the champion's `ggml-cpu.c`/`iqk_dispatch.cpp`/`sgemm.cpp`). Parity vs the ST FP32 reference: BF16 min cos 0.999990, Q8_0 0.999323 (gates 0.99/0.98), no non-finite; `test-backend-ops` CPU RMS_NORM/ROPE/SOFT_MAX/FLASH_ATTN_EXT/GET_ROWS/MUL_MAT pass; linkage PASS. Additive; ready to merge at the next consolidation (this session did not touch the champion branch). Detail: `repl-embedding-retrieval.md` REPL-EMB-2.6.
+
 **The champion is `b0ba1d427` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 four times:
 KVU-19 `90c12df42` → `1bceceb05`; all-keeps `1bceceb05` → `61bdb185c`; CPU FA overflow `61bdb185c` → `9a3f1392a`; W
 `9a3f1392a` → `b0ba1d427`; see the fold ledger entries below). This is the GLOBAL champion branch. Builds:
