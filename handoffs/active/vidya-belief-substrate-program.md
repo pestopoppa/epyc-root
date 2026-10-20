@@ -1918,6 +1918,13 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
     whose depth-4 figure is a truncation **projection**: if a script produces it, its rows must mark the
     projection as a model (`estimate_kind: projection`), never as a measured arm, and carry the log window and
     the organic/probe split.
+- [ ] **VB-KVU-CPU — write side + projection for the CPU np × ctx × KV-mode study (KVU-12, reopened 2026-10-20).**
+  - Producer: research `artifacts/np_context_kvu_cpu_study_20261020/driver/kvu_cpu_matrix.py`. Its per-cell rows are being given
+    the VB-KVU-1 schema (`epyc.vidya.np_ctx_kvu_capture.v1`, self-hashed) before the first timing cell runs; the source row is in
+    `scripts/vidya/adapters/README.md`.
+  - Then reuse VB-KVU-1's adapter (`np-ctx-kvu-measurement`) for these rows, not a second one: one source class, one ladder.
+    Project, do not grade.
+  - Done when the first Tier-0 timing window's rows ingest and `claim_tuple.grade()` returns a tier for each.
 - [x] **VB-READBW-DS41 — route ad-hoc `bench_readbw` runs into the INF-70 corpus.** Point `readbw_gap.sh` (and future AK readbw probes) at `/mnt/raid0/llm/tmp/inf70/results-<tag>-<UTC>/c0-readbw.txt` and emit `OMP stack ON` in banners when the stack is set; then ingest the 2026-09-26T10:55:35Z run (raw bytes unchanged; the directory stamp equals the file header) via `cli.py ingest inf70 --as-of <ts>`. Acceptance: 24 readbw claims, `omp_stack=ON`, source sha matches the raw file. No new adapter or ladder.
   - [x] Producer fixed ✅ 2026-09-26: `readbw_gap.sh` now writes `/mnt/raid0/llm/tmp/inf70/results-ds41scope-<UTC>/c0-readbw.txt` and banners carry `OMP stack ON`.
   - [x] 2026-09-26T10:55:35Z run ingested ✅ 2026-09-26 (operator-authorized): 24 readbw claims, 72 frames, via an isolated root `/mnt/raid0/llm/tmp/inf70-ingest-ds41scope` (symlink to the corpus run; the ingest does not dedupe, so the full corpus was not re-walked). `omp_stack` projects `unstated` because the raw banners predate the fix — raw bytes kept unchanged rather than rewritten.
@@ -2383,6 +2390,17 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let
   `claim_tuple.grade()` decide — one ladder, no new grading rule. Done when KPF-18's runner emits the record and the
   adapter projects it.
+  - Record (`epyc.kpf.run.v1`, one JSON per run, appended to a `belief_measurements.jsonl` by the runner): `binary_sha256`,
+    `argv` (full list; `--slot-fork-min-tokens`, `-b/-ub`, KV mode read back from the launch log), `arm` in
+    {`fork_off`,`fork_on`}, `prompt_set_sha256`, `equivalence` COUNTS vs the fresh-vs-fresh control floor, `ttft_ms`,
+    `prompt_tokens_processed`, `cache_n`/`n_fork_tokens`, `unique_cells_peak`, `decode_tok_s`, `window_id`,
+    `gpu_window_id`, `start_utc`/`end_utc`, `host`. Source class `measurement`; n=1 without a cited protocol grades
+    `Judged/Located`; no backfill. Unchanged ladder, no new rule.
+  - Done-when addendum: the adapter test projects a KPF-18 dry-run record (not a hand-written one) and the
+    source-table row (`KV prefix fork / cache-aware dispatch` in `scripts/vidya/adapters/README.md`) is amended to name the locator and the window ids.
+  - Producers (2026-10-20): the P1 branch is `experimental/kv-prefix-fork-p1r-20261020` (worktree
+    `/mnt/raid0/llm/worktrees/kv-prefix-fork-p1r-20261020`); the KPF-18 runner is
+    `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf18/kpf18_gate.py` (not yet run; emits the record above).
 
 ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4)
 

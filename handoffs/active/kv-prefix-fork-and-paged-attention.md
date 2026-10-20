@@ -12,6 +12,12 @@ owning session)
 **Scratch**: `/mnt/raid0/llm/tmp/kv-prefix-fork/` · worktrees: `/mnt/raid0/llm/worktrees/kv-prefix-fork-*`
 **Owners**: **workspace-ec** executes every phase: P1 server/KV side, P2 orchestrator side (as stack owner), P3, P4
 and P5. **ak-ds41-main** keeps this handoff and its index row.
+**Owner change, 2026-10-20 (operator):** P1 is reassigned to the 2026-10-20 operator session. workspace-ec has had no
+bus heartbeat since at least 2026-10-08, and the P1 code (KPF-11..16, `experimental/kv-prefix-fork-p1-20261004` @
+`857d7ec1f`) had sat ungated for 16 days. Re-cut onto the live champion tip in progress:
+`experimental/kv-prefix-fork-p1r-20261020`, worktree `/mnt/raid0/llm/worktrees/kv-prefix-fork-p1r-20261020`, notes in
+`/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/`. The CPU correctness half of KPF-18 runs first, on the frontdoor
+35B-A3B on one quarter; the GPU and timing halves wait for windows. P2-P5 stay with workspace-ec unless reassigned.
 **Depends on**: RTG-57 [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) (KVU-19a/19b and the
 prefill budget), RTG-27 [`prompt-construction-determinism.md`](prompt-construction-determinism.md) (byte-stable
 prompts, load-bearing for P2), INF-65 [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (the
