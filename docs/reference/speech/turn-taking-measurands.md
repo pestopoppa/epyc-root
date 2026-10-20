@@ -13,7 +13,8 @@
 4. **Era.** Scorers run through the pinned instrument set (`pins.json`): one Silero VAD (sha256 `4cbf549b…17d2`), Full-Duplex-Bench `3e799c45`, TurnBench `38a6f87`, one CPU ASR for word timestamps. Each substitution of an upstream script is a measurement-era boundary (`measurement_era_changes.json`). Numbers produced by patched scorers are **not comparable** to the organisers' published numbers or to any pre-CS-45 number.
 5. **Published rows are reference rows only.** TurnBench's published baselines, the VAP paper's weighted F1 and ECHO's published PASR/PKC are quoted as tagged reference rows, never mixed with measured rows or with each other.
 6. **No cloud judge.** The Full-Duplex-Bench GPT-4o behaviour classifier and gpt-4-turbo interruption rating are never invoked; anything they would produce is replaced by deterministic, event-log-derived labels and is labelled **non-comparable**.
-7. Correctness legs (scoring, parity, label arithmetic) run under `region-lock` **build** claims; timing legs (per-decision CPU latency) need an exclusive window. This note defines quantities; it measures nothing.
+7. **Corpus admission is by independent gates, not by the builder's own checks.** A clip enters the corpus only if `tt_qa_gates.py` (ASR-B = faster-whisper large-v3, a model that neither places the cuts nor scores) passes it: exact expected word sequence, exact suffix after the cut, cut-point energy, non-empty speech, and (context pairs) an assistant that runs to its natural end. `tt_verify.py` check 13 binds the report to each clip's PCM-SHA-256. (v1 of the corpus lacked this and 12 of 20 sampled pairs were defective; see `qa_evidence_pre_fix/` in the corpus directory.)
+8. Correctness legs (scoring, parity, label arithmetic) run under `region-lock` **build** claims; timing legs (per-decision CPU latency) need an exclusive window. This note defines quantities; it measures nothing.
 
 ## 1. Corpus-level contract (what the labels mean)
 
