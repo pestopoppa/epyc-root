@@ -1,0 +1,11 @@
+== prod
+[Perf] Total 51953.9 ms (24 frames, 1929.21 ms/frame AR, audio 1.92 s, RTF 27.059)
+[count_pthread] pthread_create calls: 373
+== exp_pool
+[Perf] Total 54839.7 ms (24 frames, 2051.66 ms/frame AR, audio 1.92 s, RTF 28.562)
+[count_pthread] pthread_create calls: 9
+== exp_nopool
+[Perf] Total 53366.8 ms (24 frames, 2078.78 ms/frame AR, audio 1.92 s, RTF 27.795)
+[count_pthread] pthread_create calls: 373
+
+[exited with code 0]

@@ -1,0 +1,2 @@
+final claim 0-23 2026-10-20T22:01:25Z load 56.59 77.57 100.49;   q0  HELD   bench-cpu[None] qwentts-threadpool-final;  q1  HELD   build[None] cs45-realign;  q2  HELD   bench-cpu[None] qwentts-threadpool-timing;  q3  HELD   kpf18[None] kpf18:f8-w1-20261020;gpu-quiet  EXCL   kpf18-gpu-w1b[pid 1319068] kpf18-w1b;
+final done 2026-10-20T22:55:43Z

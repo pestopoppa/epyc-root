@@ -1,0 +1,26 @@
+qts prod cont_8T_1spin 1 777.62 
+qts prod cont_8T_1spin 2 613.67 
+qts prod cont_8T_1spin 3 679.57 
+qts prod cont_8T_1spin 4 740.43 
+qts prod cont_8T_1spin 5 715.61 
+qts exp_pool cont_8T_1spin 1 480.0 
+qts exp_pool cont_8T_1spin 2 537.89 
+qts exp_pool cont_8T_1spin 3 580.3 
+qts exp_pool cont_8T_1spin 4 757.5 
+qts exp_pool cont_8T_1spin 5 657.81 
+qts exp_default cont_8T_1spin 1 63.94 
+qts exp_default cont_8T_1spin 2 63.27 
+qts exp_default cont_8T_1spin 3 60.2 
+qts exp_default cont_8T_1spin 4 65.12 
+qts exp_default cont_8T_1spin 5 63.63 
+qts exp_default cont_1T_1spin 1 178.7 
+qts exp_default cont_1T_1spin 2 189.76 
+qts exp_default cont_1T_1spin 3 179.55 
+qts exp_default cont_1T_1spin 4 180.23 
+qts exp_default cont_1T_1spin 5 185.93 
+nb_alone nb_1T 14.222382
+nb_alone nb_8T 27.504517
+qts prod nb_1T 1 None TIMEOUT
+nb_alone nb_1T 14.591464
+nb_alone nb_8T 26.342445
+qts prod nb_8T 1 13337.74 

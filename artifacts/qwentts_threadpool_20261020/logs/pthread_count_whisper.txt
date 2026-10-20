@@ -1,0 +1,6 @@
+== whisper prod
+whisper_print_timings:    total time =  9215.32 ms
+[count_pthread] pthread_create calls: 86
+== whisper exp
+whisper_print_timings:    total time =  9083.80 ms
+[count_pthread] pthread_create calls: 44

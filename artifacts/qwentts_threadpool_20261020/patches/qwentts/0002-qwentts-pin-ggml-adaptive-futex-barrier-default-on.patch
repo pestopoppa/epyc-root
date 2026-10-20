@@ -1,0 +1,20 @@
+From b1a1ec7595a6105bbca34c67f7320fa007caed6c Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 20 Oct 2026 21:59:51 +0000
+Subject: [PATCH 2/2] qwentts: pin ggml adaptive futex barrier (default on)
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+---
+ ggml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ggml b/ggml
+index 1310f48..05e1ad6 160000
+--- a/ggml
++++ b/ggml
+@@ -1 +1 @@
+-Subproject commit 1310f48782b8a3d47d886bd201fc7d25c8d181f2
++Subproject commit 05e1ad6cb9defdf3db0d4bde60c0d7f9c6280c6a
+-- 
+2.51.0
+

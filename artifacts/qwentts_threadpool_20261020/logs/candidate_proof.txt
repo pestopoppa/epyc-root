@@ -1,0 +1,73 @@
+== qwen-tts candidate (build2)
+binary : /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/qwen-tts
+expect : libraries under /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2
+
+  OK   libggml.so.0                 -> /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/libggml.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/libggml-hip.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/libggml-base.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2
+         2	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+
+== whisper-cli candidate (build2)
+binary : /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/whisper-cli
+expect : libraries under /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin
+
+  OK   libwhisper.so.1              -> /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libwhisper.so.1
+  OK   libggml.so.0                 -> /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libggml.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libggml-hip.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libggml-base.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin
+         2	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+
+== binary identity
+5a22dd069c6c441aeb4747e09379c5326f9668da4f2837a8cbde033c757f583b  /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/qwen-tts
+2b2bac5429d353639c96e4c7bb98fbab7fa92661f796d128646853c8f409f09f  /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/libggml-cpu.so.0.17.0
+6a0538f753d51352fdc66c163f3f1f717b380a09664827043ad7991e9e0acd8e  /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/whisper-cli
+e88a0fce74cc5899d5389e80bfa85468b3bc3294b63b10a88512d30d62ce8726  /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libggml-cpu.so.0.18.0
+2afe176cc98097c90c3b8224ea318728c747ac8fa7db99b24724144d3641b715  /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libwhisper.so.1.9.1
+2026-10-20 21:59:04.992399912 /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/libggml-cpu.so.0.17.0
+2026-10-20 21:59:05.510406106 /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2/qwen-tts
+2026-10-20 21:59:06.598419113 /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/libggml-cpu.so.0.18.0
+2026-10-20 21:59:06.990396420 /mnt/raid0/llm/worktrees/whisper-threadpool-20261020/build2/bin/whisper-cli
+== strings (knobs compiled in)
+GGML_CPU_BARRIER_SPIN
+GGML_CPU_BARRIER_SPIN_LO
+GGML_CPU_BARRIER_ADAPT
+GGML_CPU_BARRIER
+GGML_CPU_BARRIER_SPIN
+GGML_CPU_BARRIER_SPIN_LO
+GGML_CPU_BARRIER_ADAPT
+GGML_CPU_BARRIER
+QT_THREADPOOL_POLL
+QT_CPU_THREADS
+QT_THREADPOOL
+WHISPER_THREADPOOL_POLL
+WHISPER_THREADPOOL
+== git
+qwentts b1a1ec7595a6105bbca34c67f7320fa007caed6c qwentts: pin ggml adaptive futex barrier (default on)
+ggml 05e1ad6cb9defdf3db0d4bde60c0d7f9c6280c6a cpu: adaptive barrier spin budget; futex barrier is now the default (GGML_CPU_BARRIER=spin restores stock)
+whisper fa5321e49faa84f2ee543f0167d22ccc5b4ee579 whisper: adaptive futex barrier, default on (GGML_CPU_BARRIER=spin restores stock)
+== LD_LIBRARY_PATH note: GPU gfx90a patches kept: 
+qwentts ggml: b86f6602 is ancestor (G-ANC ok)
+whisper: b3073792 is ancestor (G-ANC ok)
+247:#if HIP_VERSION >= 60300000

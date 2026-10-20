@@ -1,0 +1,52 @@
+[
+ {
+  "id": "rec-a-question-00",
+  "text": "Would you like me to book that table for Friday evening?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-01",
+  "text": "Do you want me to send the summary to your email?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-02",
+  "text": "Should I set the reminder for eight in the morning?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-03",
+  "text": "Is that the address you want me to use for the delivery?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-04",
+  "text": "Shall I go ahead and cancel the second appointment?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-05",
+  "text": "Do you want the short version or the full explanation?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-06",
+  "text": "Would it help if I read the instructions out loud?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-07",
+  "text": "Should I add those three items to your shopping list?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-08",
+  "text": "Are you ready for me to start the timer now?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ },
+ {
+  "id": "rec-a-question-09",
+  "text": "Do you want me to keep going with the next step?",
+  "ref": "/mnt/raid0/llm/data/asr-eval/librispeech-test-clean-strat300/wav/3729-6852-0044.wav"
+ }
+]

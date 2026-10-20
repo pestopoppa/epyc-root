@@ -1,0 +1,7 @@
+prod_w_t8 n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []
+exp_w_t1 n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []
+exp_w_t8_spin n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []
+exp_w_t8_futex n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []
+exp_w_t8_yield n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []
+exp_w_t8_futex_spin1 n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []
+exp_w_t8_nopool n= 10 rc!=0: [] canon(text,token ids,p,offsets) mismatches vs prod_w_t1: [] raw-json mismatches: []

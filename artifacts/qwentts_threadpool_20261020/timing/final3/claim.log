@@ -1,0 +1,2 @@
+final3 claim 0-23 2026-10-20T23:27:15Z load 212.48 244.24 262.53;   q0  HELD   bench-cpu[None] qwentts-threadpool-final3;  q1  HELD   build[None] f8q-pair-takeover-q1;  q2  HELD   build[None] cs-47-latency-now;  q3  HELD   kpf18[None] kpf18:f8-w1c-20261020-hostthreads;gpu-quiet  free   ;
+final3 done 2026-10-20T23:31:31Z

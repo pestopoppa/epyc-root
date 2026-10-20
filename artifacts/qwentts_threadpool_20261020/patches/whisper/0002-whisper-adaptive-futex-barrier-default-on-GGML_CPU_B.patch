@@ -1,0 +1,135 @@
+From fa5321e49faa84f2ee543f0167d22ccc5b4ee579 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 20 Oct 2026 21:59:51 +0000
+Subject: [PATCH 2/2] whisper: adaptive futex barrier, default on
+ (GGML_CPU_BARRIER=spin restores stock)
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+---
+ ggml/src/ggml-cpu/ggml-cpu.c | 62 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 55 insertions(+), 7 deletions(-)
+
+diff --git a/ggml/src/ggml-cpu/ggml-cpu.c b/ggml/src/ggml-cpu/ggml-cpu.c
+index 9cb7a39f..caf919f4 100644
+--- a/ggml/src/ggml-cpu/ggml-cpu.c
++++ b/ggml/src/ggml-cpu/ggml-cpu.c
+@@ -493,6 +493,8 @@ struct ggml_threadpool {
+     // barrier wait policy (see ggml_barrier). Read-only after pool creation, except n_barrier_sleepers.
+     int        barrier_mode;          // GGML_BARRIER_{SPIN,YIELD,FUTEX}
+     int        barrier_spin;          // _mm_pause iterations spent spinning before backing off (YIELD/FUTEX)
++    int        barrier_spin_lo;       // reduced budget used while this thread sees a contended barrier (adaptive mode)
++    int        barrier_adapt;         // 1: switch between barrier_spin and barrier_spin_lo from the recent miss rate
+     atomic_int GGML_CACHE_ALIGN n_barrier_sleepers; // threads currently parked in a futex wait on n_barrier_passed
+ 
+     // these are atomic as an annotation for thread-sanitizer
+@@ -585,24 +587,35 @@ static struct ggml_state g_state = {0};
+ // the barrier until its scheduler slice comes back, and every other thread burns its own core
+ // waiting: on a loaded host an 8-thread pool measured ~100x slower per op than 1 thread.
+ //
+-//   GGML_CPU_BARRIER=spin   stock behaviour, pure _mm_pause spin (default until validated)
++//   GGML_CPU_BARRIER=spin   stock behaviour, pure _mm_pause spin
+ //   GGML_CPU_BARRIER=yield  spin GGML_CPU_BARRIER_SPIN iterations, then sched_yield() between re-checks
+-//   GGML_CPU_BARRIER=futex  spin GGML_CPU_BARRIER_SPIN iterations, then park in a futex wait on
+-//                           n_barrier_passed; the last arriving thread wakes sleepers (Linux only,
+-//                           falls back to yield elsewhere)
++//   GGML_CPU_BARRIER=futex  (DEFAULT on Linux, yield elsewhere) spin GGML_CPU_BARRIER_SPIN iterations, then
++//                           park in a futex wait on n_barrier_passed; the last arriving thread wakes sleepers
+ //   GGML_CPU_BARRIER_SPIN=N spin budget in _mm_pause iterations (default 2000, i.e. a few tens of us
+ //                           on Zen; the uncontended barrier wait is far shorter, so the fast path is
+ //                           the same load/pause loop as stock, plus one counter compare per iteration)
++//   GGML_CPU_BARRIER_SPIN_LO=N  reduced budget (default 200) used by the adaptive policy while contended
++//   GGML_CPU_BARRIER_ADAPT=0|1  adaptive policy (default 1 for yield/futex): each waiting thread keeps an EMA
++//                           (alpha 1/16) of "this barrier outlasted the spin budget". Above 25% the thread is
++//                           treated as contended (a neighbour or a descheduled pool thread is holding the barrier
++//                           for far longer than the compute imbalance of an idle host) and spins only
++//                           SPIN_LO before sleeping, so it stops stealing the straggler's core; below 3% it
++//                           goes back to SPIN, and every 8192 barriers it re-probes SPIN. 0 = fixed SPIN budget.
+ // ---------------------------------------------------------------------------
+ enum { GGML_BARRIER_SPIN = 0, GGML_BARRIER_YIELD = 1, GGML_BARRIER_FUTEX = 2 };
+ #define GGML_BARRIER_SPIN_DEFAULT 2000
+ 
+ static void ggml_barrier_policy_from_env(int * mode, int * spin) {
+-    *mode = GGML_BARRIER_SPIN;
++#if defined(__linux__)
++    *mode = GGML_BARRIER_FUTEX;
++#else
++    *mode = GGML_BARRIER_YIELD;
++#endif
+     *spin = GGML_BARRIER_SPIN_DEFAULT;
+     const char * m = getenv("GGML_CPU_BARRIER");
+     if (m) {
+-        if      (strcmp(m, "yield") == 0) { *mode = GGML_BARRIER_YIELD; }
++        if      (strcmp(m, "spin") == 0)  { *mode = GGML_BARRIER_SPIN; }
++        else if (strcmp(m, "yield") == 0) { *mode = GGML_BARRIER_YIELD; }
+         else if (strcmp(m, "futex") == 0) {
+ #if defined(__linux__)
+             *mode = GGML_BARRIER_FUTEX;
+@@ -618,6 +631,25 @@ static void ggml_barrier_policy_from_env(int * mode, int * spin) {
+     }
+ }
+ 
++static void ggml_barrier_adapt_from_env(int spin, int * spin_lo, int * adapt) {
++    *spin_lo = 200 < spin ? 200 : spin;
++    *adapt   = 1;
++    const char * n = getenv("GGML_CPU_BARRIER_SPIN_LO");
++    if (n) {
++        long v = strtol(n, NULL, 10);
++        if (v > 0 && v < INT_MAX) { *spin_lo = (int) v; }
++    }
++    const char * a = getenv("GGML_CPU_BARRIER_ADAPT");
++    if (a && strcmp(a, "0") == 0) { *adapt = 0; }
++}
++
++// per waiting thread adaptive state (thread-local: the barrier does not know its thread index)
++#define GGML_BARRIER_EMA_ONE   4096
++#define GGML_BARRIER_EMA_ENTER 1024   // 25%
++#define GGML_BARRIER_EMA_EXIT   128   // 3%
++#define GGML_BARRIER_REPROBE   8192
++static __thread struct { int ema; int lo; int since; } g_barrier_ad;
++
+ #if defined(__linux__)
+ #include <linux/futex.h>
+ static inline void ggml_futex_wait(atomic_int * addr, int expected) {
+@@ -683,15 +715,30 @@ void ggml_barrier(struct ggml_threadpool * tp) {
+             ggml_thread_cpu_relax();
+         }
+     } else {
+-        const int spin = tp->barrier_spin;
++        const int adapt = tp->barrier_adapt;
++        const int spin  = (adapt && g_barrier_ad.lo) ? tp->barrier_spin_lo : tp->barrier_spin;
+         int i = 0;
++        int missed = 0;
+         while (atomic_load_explicit(&tp->n_barrier_passed, memory_order_relaxed) == n_passed) {
+             ggml_thread_cpu_relax();
+             if (++i >= spin) {
++                missed = 1;
+                 ggml_barrier_backoff(tp, n_passed);
+                 i = 0;
+             }
+         }
++        if (adapt) {
++            g_barrier_ad.ema += ((missed ? GGML_BARRIER_EMA_ONE : 0) - g_barrier_ad.ema) >> 4;
++            if (!g_barrier_ad.lo) {
++                if (g_barrier_ad.ema > GGML_BARRIER_EMA_ENTER) { g_barrier_ad.lo = 1; g_barrier_ad.since = 0; }
++            } else if (g_barrier_ad.ema < GGML_BARRIER_EMA_EXIT) {
++                g_barrier_ad.lo = 0;
++            } else if (++g_barrier_ad.since >= GGML_BARRIER_REPROBE) {
++                g_barrier_ad.lo = 0;
++                g_barrier_ad.ema = GGML_BARRIER_EMA_ENTER / 2;
++                g_barrier_ad.since = 0;
++            }
++        }
+     }
+ 
+     // exit barrier (full seq-cst fence)
+@@ -3388,6 +3435,7 @@ static struct ggml_threadpool * ggml_threadpool_new_impl(
+         threadpool->ec               = GGML_STATUS_SUCCESS;
+         threadpool->n_barrier_sleepers = 0;
+         ggml_barrier_policy_from_env(&threadpool->barrier_mode, &threadpool->barrier_spin);
++        ggml_barrier_adapt_from_env(threadpool->barrier_spin, &threadpool->barrier_spin_lo, &threadpool->barrier_adapt);
+     }
+ 
+     // Allocate and init workers state
+-- 
+2.51.0
+

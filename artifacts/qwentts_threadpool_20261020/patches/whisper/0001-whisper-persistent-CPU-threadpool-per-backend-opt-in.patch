@@ -1,0 +1,289 @@
+From 753e7df8272aece57240cca260bd4b4be9d8b019 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 20 Oct 2026 21:00:32 +0000
+Subject: [PATCH 1/2] whisper: persistent CPU threadpool per backend + opt-in
+ non-spinning ggml_barrier
+
+whisper_backend_ensure_pool attaches a persistent ggml_threadpool (poll 0) sized to n_threads, freed with the
+backend; WHISPER_THREADPOOL=0 opts out. ggml-cpu.c: GGML_CPU_BARRIER=spin|yield|futex (default spin),
+GGML_CPU_BARRIER_SPIN=<n>.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+---
+ ggml/src/ggml-cpu/ggml-cpu.c | 100 ++++++++++++++++++++++++++++++++++-
+ src/whisper.cpp              |  95 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 191 insertions(+), 4 deletions(-)
+
+diff --git a/ggml/src/ggml-cpu/ggml-cpu.c b/ggml/src/ggml-cpu/ggml-cpu.c
+index 491316f7..9cb7a39f 100644
+--- a/ggml/src/ggml-cpu/ggml-cpu.c
++++ b/ggml/src/ggml-cpu/ggml-cpu.c
+@@ -490,6 +490,11 @@ struct ggml_threadpool {
+     atomic_int GGML_CACHE_ALIGN n_barrier_passed;
+     atomic_int GGML_CACHE_ALIGN current_chunk; // currently processing chunk during Mat_Mul, shared between all the threads.
+ 
++    // barrier wait policy (see ggml_barrier). Read-only after pool creation, except n_barrier_sleepers.
++    int        barrier_mode;          // GGML_BARRIER_{SPIN,YIELD,FUTEX}
++    int        barrier_spin;          // _mm_pause iterations spent spinning before backing off (YIELD/FUTEX)
++    atomic_int GGML_CACHE_ALIGN n_barrier_sleepers; // threads currently parked in a futex wait on n_barrier_passed
++
+     // these are atomic as an annotation for thread-sanitizer
+     atomic_bool stop;         // Used for stopping the threadpool altogether
+     atomic_bool pause;        // Used for pausing the threadpool or individual threads
+@@ -572,6 +577,77 @@ struct ggml_state {
+ 
+ static struct ggml_state g_state = {0};
+ 
++// ---------------------------------------------------------------------------
++// Barrier wait policy.
++//
++// Stock ggml spins on n_barrier_passed with _mm_pause forever (GGML_BARRIER_SPIN). When another
++// runnable task shares a core with one of the pool threads, the descheduled thread cannot reach
++// the barrier until its scheduler slice comes back, and every other thread burns its own core
++// waiting: on a loaded host an 8-thread pool measured ~100x slower per op than 1 thread.
++//
++//   GGML_CPU_BARRIER=spin   stock behaviour, pure _mm_pause spin (default until validated)
++//   GGML_CPU_BARRIER=yield  spin GGML_CPU_BARRIER_SPIN iterations, then sched_yield() between re-checks
++//   GGML_CPU_BARRIER=futex  spin GGML_CPU_BARRIER_SPIN iterations, then park in a futex wait on
++//                           n_barrier_passed; the last arriving thread wakes sleepers (Linux only,
++//                           falls back to yield elsewhere)
++//   GGML_CPU_BARRIER_SPIN=N spin budget in _mm_pause iterations (default 2000, i.e. a few tens of us
++//                           on Zen; the uncontended barrier wait is far shorter, so the fast path is
++//                           the same load/pause loop as stock, plus one counter compare per iteration)
++// ---------------------------------------------------------------------------
++enum { GGML_BARRIER_SPIN = 0, GGML_BARRIER_YIELD = 1, GGML_BARRIER_FUTEX = 2 };
++#define GGML_BARRIER_SPIN_DEFAULT 2000
++
++static void ggml_barrier_policy_from_env(int * mode, int * spin) {
++    *mode = GGML_BARRIER_SPIN;
++    *spin = GGML_BARRIER_SPIN_DEFAULT;
++    const char * m = getenv("GGML_CPU_BARRIER");
++    if (m) {
++        if      (strcmp(m, "yield") == 0) { *mode = GGML_BARRIER_YIELD; }
++        else if (strcmp(m, "futex") == 0) {
++#if defined(__linux__)
++            *mode = GGML_BARRIER_FUTEX;
++#else
++            *mode = GGML_BARRIER_YIELD;
++#endif
++        }
++    }
++    const char * n = getenv("GGML_CPU_BARRIER_SPIN");
++    if (n) {
++        long v = strtol(n, NULL, 10);
++        if (v > 0 && v < INT_MAX) { *spin = (int) v; }
++    }
++}
++
++#if defined(__linux__)
++#include <linux/futex.h>
++static inline void ggml_futex_wait(atomic_int * addr, int expected) {
++    syscall(SYS_futex, (int *) addr, FUTEX_WAIT_PRIVATE, expected, NULL, NULL, 0);
++}
++static inline void ggml_futex_wake_all(atomic_int * addr) {
++    syscall(SYS_futex, (int *) addr, FUTEX_WAKE_PRIVATE, INT_MAX, NULL, NULL, 0);
++}
++#endif
++
++// slow path of the barrier wait: called after the spin budget is exhausted
++static void ggml_barrier_backoff(struct ggml_threadpool * tp, int n_passed) {
++#if defined(__linux__)
++    if (tp->barrier_mode == GGML_BARRIER_FUTEX) {
++        // Dekker pairing with the last thread: it bumps n_barrier_passed (seq_cst) and then reads
++        // n_barrier_sleepers (seq_cst); we bump n_barrier_sleepers (seq_cst) and futex_wait only
++        // if n_barrier_passed is still the value we saw. Either the wait returns immediately
++        // or the last thread sees us and wakes us.
++        atomic_fetch_add_explicit(&tp->n_barrier_sleepers, 1, memory_order_seq_cst);
++        if (atomic_load_explicit(&tp->n_barrier_passed, memory_order_seq_cst) == n_passed) {
++            ggml_futex_wait(&tp->n_barrier_passed, n_passed);
++        }
++        atomic_fetch_sub_explicit(&tp->n_barrier_sleepers, 1, memory_order_seq_cst);
++        return;
++    }
++#endif
++    GGML_UNUSED(n_passed);
++    sched_yield();
++}
++
+ void ggml_barrier(struct ggml_threadpool * tp) {
+     int n_threads = atomic_load_explicit(&tp->n_graph, memory_order_relaxed) & GGML_THREADPOOL_N_THREADS_MASK;
+     if (n_threads == 1) {
+@@ -592,12 +668,30 @@ void ggml_barrier(struct ggml_threadpool * tp) {
+ 
+         // exit barrier (full seq-cst fence)
+         atomic_fetch_add_explicit(&tp->n_barrier_passed, 1, memory_order_seq_cst);
++#if defined(__linux__)
++        if (tp->barrier_mode == GGML_BARRIER_FUTEX &&
++            atomic_load_explicit(&tp->n_barrier_sleepers, memory_order_seq_cst) > 0) {
++            ggml_futex_wake_all(&tp->n_barrier_passed);
++        }
++#endif
+         return;
+     }
+ 
+     // wait for other threads
+-    while (atomic_load_explicit(&tp->n_barrier_passed, memory_order_relaxed) == n_passed) {
+-        ggml_thread_cpu_relax();
++    if (tp->barrier_mode == GGML_BARRIER_SPIN) {
++        while (atomic_load_explicit(&tp->n_barrier_passed, memory_order_relaxed) == n_passed) {
++            ggml_thread_cpu_relax();
++        }
++    } else {
++        const int spin = tp->barrier_spin;
++        int i = 0;
++        while (atomic_load_explicit(&tp->n_barrier_passed, memory_order_relaxed) == n_passed) {
++            ggml_thread_cpu_relax();
++            if (++i >= spin) {
++                ggml_barrier_backoff(tp, n_passed);
++                i = 0;
++            }
++        }
+     }
+ 
+     // exit barrier (full seq-cst fence)
+@@ -3292,6 +3386,8 @@ static struct ggml_threadpool * ggml_threadpool_new_impl(
+         threadpool->poll             = tpp->poll;
+         threadpool->prio             = tpp->prio;
+         threadpool->ec               = GGML_STATUS_SUCCESS;
++        threadpool->n_barrier_sleepers = 0;
++        ggml_barrier_policy_from_env(&threadpool->barrier_mode, &threadpool->barrier_spin);
+     }
+ 
+     // Allocate and init workers state
+diff --git a/src/whisper.cpp b/src/whisper.cpp
+index 2a95bdb1..039dd5e1 100644
+--- a/src/whisper.cpp
++++ b/src/whisper.cpp
+@@ -27,6 +27,7 @@
+ #include <fstream>
+ #include <functional>
+ #include <map>
++#include <mutex>
+ #include <random>
+ #include <regex>
+ #include <set>
+@@ -165,6 +166,93 @@ static std::string format(const char * fmt, ...) {
+ // ggml helpers
+ //
+ 
++//
++// Persistent CPU threadpool (one per CPU backend), attached lazily by ggml_graph_compute_helper.
++//
++// Stock ggml builds and frees a disposable threadpool (n-1 pthread_create + join) on every
++// ggml_backend_graph_compute when the CPU backend has none attached. We create one pool sized to the
++// requested n_threads, attach it with ggml_backend_cpu_set_threadpool, reuse it for every compute
++// and free it with the backend (whisper_backend_free). If n_threads changes between computes the
++// pool is rebuilt (a plan asking for more threads than the pool has would be silently clamped).
++//
++//   WHISPER_THREADPOOL=0        disable (stock behaviour)
++//   WHISPER_THREADPOOL_POLL=<p> ggml_threadpool_params.poll (0-100). Idle workers busy-poll for
++//                               1024*128*p _mm_pause rounds before sleeping on the condvar. Default 0:
++//                               workers sleep immediately between computes. Other fields: paused=false,
++//                               strict_cpu=false, all-zero cpumask (inherits the caller's affinity),
++//                               prio=normal.
++//
++// One compute at a time per backend (already true: each whisper_state owns its backends).
++//
++struct whisper_cpu_pool {
++    ggml_threadpool_t pool = nullptr;
++    int               n_threads = 0;
++};
++
++static std::mutex & whisper_pool_mu() { static std::mutex m; return m; }
++static std::map<ggml_backend_t, whisper_cpu_pool> & whisper_pools() { static std::map<ggml_backend_t, whisper_cpu_pool> m; return m; }
++
++static void whisper_pool_free_locked(ggml_backend_reg_t reg, whisper_cpu_pool & p) {
++    auto * free_fn = (void (*)(ggml_threadpool_t)) ggml_backend_reg_get_proc_address(reg, "ggml_threadpool_free");
++    if (free_fn && p.pool) {
++        free_fn(p.pool);
++    }
++    p = {};
++}
++
++static void whisper_backend_ensure_pool(ggml_backend_t backend, ggml_backend_reg_t reg, int n_threads) {
++    const char * on = getenv("WHISPER_THREADPOOL");
++    if ((on && strcmp(on, "0") == 0) || n_threads < 2 || !reg) {
++        return;
++    }
++    auto * new_fn = (ggml_threadpool_t (*)(struct ggml_threadpool_params *)) ggml_backend_reg_get_proc_address(reg, "ggml_threadpool_new");
++    auto * set_fn = (void (*)(ggml_backend_t, ggml_threadpool_t)) ggml_backend_reg_get_proc_address(reg, "ggml_backend_cpu_set_threadpool");
++    if (!new_fn || !set_fn || !ggml_backend_reg_get_proc_address(reg, "ggml_threadpool_free")) {
++        return;
++    }
++
++    std::lock_guard<std::mutex> lk(whisper_pool_mu());
++    whisper_cpu_pool & p = whisper_pools()[backend];
++    if (p.pool && p.n_threads == n_threads) {
++        return;
++    }
++    if (p.pool) {
++        set_fn(backend, nullptr);
++        whisper_pool_free_locked(reg, p);
++    }
++
++    struct ggml_threadpool_params tpp = ggml_threadpool_params_default(n_threads);
++    tpp.poll = 0;
++    if (const char * e = getenv("WHISPER_THREADPOOL_POLL")) {
++        const int v = atoi(e);
++        if (v >= 0 && v <= 100) {
++            tpp.poll = (uint32_t) v;
++        }
++    }
++    p.pool = new_fn(&tpp);
++    if (p.pool) {
++        p.n_threads = n_threads;
++        set_fn(backend, p.pool);
++    } else {
++        whisper_pools().erase(backend);
++    }
++}
++
++// Free the backend and the persistent pool attached to it (the backend never owns the pool).
++static void whisper_backend_free(ggml_backend_t backend) {
++    ggml_backend_dev_t dev = ggml_backend_get_device(backend);
++    ggml_backend_reg_t reg = dev ? ggml_backend_dev_backend_reg(dev) : nullptr;
++    ggml_backend_free(backend);
++    std::lock_guard<std::mutex> lk(whisper_pool_mu());
++    auto it = whisper_pools().find(backend);
++    if (it != whisper_pools().end()) {
++        if (reg) {
++            whisper_pool_free_locked(reg, it->second);
++        }
++        whisper_pools().erase(it);
++    }
++}
++
+ static bool ggml_graph_compute_helper(
+           struct ggml_cgraph * graph,
+                          int   n_threads,
+@@ -201,6 +289,9 @@ static bool ggml_graph_compute_helper(
+         if (fn_set_n_threads) {
+             fn_set_n_threads(backend, n_threads);
+         }
++        if (dev && ggml_backend_dev_type(dev) == GGML_BACKEND_DEVICE_TYPE_CPU) {
++            whisper_backend_ensure_pool(backend, reg, n_threads);
++        }
+     }
+ 
+     const bool t = (ggml_backend_sched_graph_compute(sched, graph) == GGML_STATUS_SUCCESS);
+@@ -3843,7 +3934,7 @@ void whisper_free_state(struct whisper_state * state) {
+         ggml_backend_sched_free(state->sched_decode.sched);
+ 
+         for (auto & backend : state->backends) {
+-            ggml_backend_free(backend);
++            whisper_backend_free(backend);
+         }
+ 
+         // [EXPERIMENTAL] Token-level timestamps with DTW
+@@ -5473,7 +5564,7 @@ void whisper_vad_free(whisper_vad_context * ctx) {
+         ggml_backend_sched_free(ctx->sched.sched);
+ 
+         for (auto & backend : ctx->backends) {
+-            ggml_backend_free(backend);
++            whisper_backend_free(backend);
+         }
+ 
+         delete[] ctx->model.hparams.encoder_in_channels;
+-- 
+2.51.0
+

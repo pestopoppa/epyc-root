@@ -1,0 +1,9 @@
+== env: <defaults>
+Test project /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2
+No tests were found!!!
+== env: GGML_CPU_BARRIER=spin
+Test project /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2
+No tests were found!!!
+== env: GGML_CPU_BARRIER_SPIN=2 GGML_CPU_BARRIER_SPIN_LO=1
+Test project /mnt/raid0/llm/worktrees/qwentts-threadpool-20261020/build2
+No tests were found!!!

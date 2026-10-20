@@ -1,0 +1,2 @@
+final2 claim 0-23 2026-10-20T22:55:44Z load 190.85 211.49 234.62;   q0  HELD   bench-cpu[None] qwentts-threadpool-final2;  q1  HELD   build[None] f8q-pair-takeover-q1;  q2  free   ;  q3  free   ;gpu-quiet  EXCL   bench[pid 3313525] champ-consolidation-gpu-gates;
+final2 done 2026-10-20T23:27:13Z

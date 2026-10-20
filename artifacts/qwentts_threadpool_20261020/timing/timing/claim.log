@@ -1,0 +1,4 @@
+gpu-quiet at start:   q0  HELD   build[None] cs45-prerender-v3;  q1  free   ;  q2  HELD   bench-cpu[None] qwentts-threadpool-timing;  q3  HELD   kpf18[None] kpf18:f8-w1-20261020;gpu-quiet  EXCL   kpf18-gpu-w1b[pid 1319068] kpf18-w1b;
+claim region 48-71 started 2026-10-20T21:02:12Z loadavg 150.18 182.95 188.04
+22:01:00 killed qts main stage (old-code builds) at exp_ctl nb_8T rep1; superseded by final matrix on build2
+claim finished 2026-10-20T22:15:12Z
