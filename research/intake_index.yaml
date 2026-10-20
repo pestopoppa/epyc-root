@@ -276570,7 +276570,12 @@
     2026-10-20 second reader (independent agent): re-find 15/15; support yes 3 / partial 6 / no 0. All 6 partials arose because
     the reader was not given the YOCO paper text path (only YOCO++/SambaY); main spot-checked the disputed numbers (71.8,
     2.87, 9.6, 0.636, 3.530, 12.4) present in the saved paper text /mnt/raid0/llm/tmp/dive-deepinfer-main/s1/yoco/p.txt. Remaining
-    disagreement: none of substance; anchors for those numbers are thin (carried to Stage 3 as anchor gaps).'
+    disagreement: none of substance; anchors for those numbers are thin (carried to Stage 3 as anchor gaps).
+
+
+    2026-10-20 STAGE-2 CLOSE-OUT: dive-surfaced arXiv 2507.06607 (SambaY / Decoder-Hybrid-Decoder) DECLINED per the dive recommendation:
+    no served checkpoint of this family; its YOCO-relevant content is recorded in this entry''s claims. Carried to the Stage-3
+    plan for operator confirmation.'
 - id: intake-2126
   arxiv_id: '2408.12757'
   url: https://arxiv.org/abs/2408.12757
@@ -279248,7 +279253,13 @@
 
     2026-10-20 second reader (independent agent): re-find 28/28; support yes 13 / partial 0 / no 0 (claims 9 and 11 compare
     with the DeepInfer Q&A outside their anchors; unchecked part noted). Main dropped a malformed bare-list depends_on [intake-2116]:
-    the post is the Q&A''s parent text, so its claims do not rest on intake-2116''s.'
+    the post is the Q&A''s parent text, so its claims do not rest on intake-2116''s.
+
+
+    2026-10-20 STAGE-2 CLOSE-OUT: dive-surfaced github.com/deepseek-ai/3FS DECLINED per the dive recommendation: distributed
+    RDMA filesystem at 100 PiB scale has no single-host consumer; the transferable lessons (EC read fan-out, LRU GC under
+    a watermark, SWA state RAM-only with a short TTL) are recorded in this entry. Carried to the Stage-3 plan for operator
+    confirmation.'
 - id: intake-2137
   arxiv_id: '2601.04426'
   url: https://arxiv.org/abs/2601.04426
@@ -279766,6 +279777,10 @@
   - claim_index: 6
     effect: unaffected
     note: New entry; claims written from the saved paper text.
+  - claim_index: 6
+    effect: narrowed
+    note: 'Wave 4 (intake-2141 repo dive): the released planner overrides the paper 1024-token quota floor with a hard-coded
+      dynamic floor (placement.cu:L434/L821 @ 1474022); decode untested in paper and repo.'
   depends_on: []
   dive_corrections: '2026-10-20 (wave 3, Stage-2b): ingested and dived in one pass; settled that UltraEP plans from current
     post-gating load (not a history window), is replication-only with a threshold-search quota planner at ~0.11 ms per layer
@@ -279775,7 +279790,12 @@
 
     2026-10-20 second reader (independent agent): re-find 18/18; support yes 5 / partial 2 / no 0. Partials carried to Stage
     3 as anchor gaps (claims 3 and 4: planner timing/replica counts and the §8.2 prefill serving ratios are in the paper but
-    not in the quotes); no contradiction.'
+    not in the quotes); no contradiction.
+
+
+    2026-10-20 (wave 4, from the intake-2141 repo dive, UER-A3): claim 6''s 1024-token replica quota floor is NARROWED - the
+    released planner overrides the paper''s floor with a hard-coded dynamic floor (placement.cu:L434/L821 @ 1474022); decode
+    behaviour remains untested in both paper and repo.'
 - id: intake-2139
   arxiv_id: null
   url: https://github.com/MoonshotAI/MoonEP
@@ -280250,3 +280270,485 @@
     3 as anchor gaps (claims 0, 2, 4, 5, 7: README-table and news specifics not quoted; claim 0''s ''DeepEP README names MORI''
     rests on the DeepEP tree, intake-2135). The reader confirmed by grep that the tree has no MI210/MI250/gfx90a mention (claim
     1).'
+- id: intake-2141
+  arxiv_id: null
+  url: https://github.com/Dots-Infra/UltraEP
+  source_type: repo
+  title: Dots-Infra/UltraEP - exact-load expert replication and token-reroute library (reference implementation of arXiv 2606.04101)
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2138
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Xinming Wei
+  - Chao Jin
+  - Tuo Dai
+  - Yinmin Zhong
+  - Shan Yu
+  - Chengxu Yang
+  - Bingyang Wu
+  - Zili Zhang
+  - Jing Mai
+  - Qianchao Zhu
+  - Zhouyang Li
+  - Yuliang Liu
+  - Guojie Luo
+  key_claims:
+  - 'Planner kernel: the paper''s quota solver ships as one CUDA kernel, quota_placement_solve_kernel (csrc/kernels/placement.cu),
+    launched with ONE thread block of 128 threads per NVLink domain (grid = number of domains), per-domain loads and replica-occupancy
+    bitmaps in dynamic shared memory. Inside it, thread 0 sets the binary-search bounds (lo = ceil(mean rank load x balance
+    threshold), hi = current max rank load) and warps run the greedy feasibility oracle; default tolerance ULTRA_EP_QUOTA_ORACLE_EPS=0.01
+    gives the 1.01 final imbalance. This matches the paper''s description (paper claim 2 of NEW-ultraep) and is the only quota-producing
+    planner in the repo.'
+  - No host/CPU fallback for the quota planner. The only CPU code is csrc/kernels/legacy/placement_cpu.cpp, an EPLB-style
+    greedy (repeatedly add a replica to the expert with the highest load/replica-count, then place replicas heaviest-first
+    on the least-loaded rank without a duplicate), reached only via the legacy_placement flag (default false). It copies the
+    loads device-to-host, solves, copies back, ignores min_tokens_per_replica/oracle_eps/locality/kernel_stage, and writes
+    ZERO quotas. It is a different (history-style) algorithm, not a host build of the paper's planner. Everything else (reroute,
+    weight_sync, grad_reduce) is CUDA; install requires NVIDIA SM90 or SM100 and NVLink/P2P.
+  - 'Small-token / decode behaviour is NOT documented and NOT tested: README and blog scope the system to training and serving
+    PREFILL, every shipped test uses synthetic Zipf loads at 8k tokens per rank, and the SGLang serving integration is stated
+    to be experimental and unreleased. One refinement of the paper''s quota-floor premise: the 1024-token ULTRA_EP_QUOTA_MIN_TOKENS_PER_REPLICA
+    default exists, but the shipped kernel hard-codes use_dynamic_q_floor = true and in the main oracle loops replaces the
+    floor by max(1, ceil(need / feasible_slots)), so the floor is not a fixed 1024 in the code path. What the code does at
+    1-3 tokens per step is therefore unknown; it would be a planner over loads of 0/1/2 tokens per expert with GPU weight-copy
+    replicas, which is not evidence for a CPU decode policy.'
+  - License is MIT (Copyright 2026 PKU-DASYS and Dots-Infra), so the algorithm may be re-implemented or ported with notice.
+    The repo states v1.0.0 (2026-07-15) is deployed in the authors' production MoE training; the HEAD commit (2026-10-15)
+    swaps NVSHMEM for PyTorch symmetric memory, i.e. the code is still moving.
+  - 'Usable as a standalone offline replay reference for RT-6? Not as shipped: tests/test_solving.py imports the compiled
+    CUDA extension ultra_ep._C and calls torch.cuda, so running it needs an NVIDIA SM90/SM100 GPU and a build (not available
+    here, and we do not execute source code in any case). As a READING reference it is good: the algorithm is fully in placement.cu
+    plus paper section 5, and a numpy port of the threshold search with a greedy oracle is small enough to be an ORACLE arm
+    beside the history-window EPLB policies. The legacy host solver (about 150 lines of pure C++, solve_on_host) is extractable
+    but is the EPLB-like arm we already plan to port from deepseek-ai/EPLB policy.py, so it adds nothing.'
+  - 'Repo-reported planner cost (vendor-reported, EP64, 256 experts, 4 master + 2 redundant per rank, topk 8, 8k tokens per
+    rank, bf16, NVIDIA SM90): update_placement 0.067 / 0.072 / 0.078 ms for initial imbalance 1.51 / 2.01 / 3.03, final imbalance
+    1.01 in all three, 38 / 46 / 51 replicas; weight_sync 0.19-0.32 ms at about 706-715 GB/s critical-path bandwidth; README
+    states exposed overhead under 300 us at large EP. Planner time grows only mildly with imbalance but the weight copy is
+    the larger and bandwidth-priced term, which is the part that has no cheap CPU analogue except a memcpy between node-local
+    expert buffers.'
+  techniques:
+  - Quota-driven replication planner as a single-block device kernel (threshold binary search + greedy oracle)
+  - Per-domain (NVLink-domain-local) planning with replica-occupancy bitmaps
+  - Dynamic per-replica quota floor
+  - Exact-load reroute with locality-aware quota decomposition
+  - Legacy EPLB-style host planner kept as a comparison path
+  reported_results:
+  - 'vendor-reported (repo README, test_e2e, EP64, 256 experts, 4 master + 2 redundant per rank, topk 8, 8k tokens per rank,
+    bf16, NVIDIA SM90, 42 SMs for grad-reduce): update_placement 0.067/0.072/0.078 ms and reroute 0.039/0.037/0.036 ms for
+    initial imbalance 1.51/2.01/3.03; final imbalance 1.01; replicas 38/46/51; weight_sync direct 0.214-0.317 ms (706-715
+    GB/s), adaptive relay 0.188-0.195 ms; grad_reduce 1.9-2.4 ms overlapped.'
+  - 'vendor-reported: README says exposed overhead is under 300 us at large-scale EP, typically 1-2% of step time; no decode,
+    CPU, AMD or quantised-weight number exists in the repo.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - moe-routing-tap-and-locality-measurement.md
+    - large-moe-expert-parallelism.md
+    - deepseek-v41-flash-evaluation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-2138
+    - intake-2134
+    - intake-2135
+  recommended_actions:
+  - 'RT-6a: add the exact-load oracle arm (numpy port of placement.cu logic) to the RT-6 replay'
+  - Knowledge-only for the runtime; no port of weight_sync/grad_reduce
+  credibility_score: null
+  contradicting_evidence:
+  - No independent reproduction; the repo's own README numbers are author-run on SM90. Contradiction search not run beyond
+    reading the repo.
+  referenced_arxiv_ids:
+  - '2606.04101'
+  notes: 'Cloned depth 1 to /mnt/raid0/llm/tmp/dive-deepinfer-ultraep-repo/src, HEAD 1474022d7e19b30d931d43364fe814c478b9fb3a
+    (2026-10-15). READ: README.md whole; csrc/kernels/legacy/placement_cpu.cpp whole; placement.cu kernel signature, launch
+    site, binary-search setup and the dynamic-floor loops (L110-135, L405-440, L780-830, L940-1000, L1615-1635); tests/test_solving.py
+    head and argparse; ultra_ep/config.py floor default; docs/blog_v1.md grep for decode/serving plus design-principles section.
+    NOT READ: weight_sync.cu, grad_reduce.cu, reroute.cu bodies, load_compute.cu, barrier.cu, ptx.cuh, python runtime modules
+    beyond greps, docs/blog_v1_zh.md, examples/, test_e2e.py; the rest of placement.cu (lines 136-410 oracle helpers, 440-780,
+    1000-1480) was skimmed by grep only. Nothing built or run.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 1474022d7e19b30d931d43364fe814c478b9fb3a (Dots-Infra/UltraEP, 2026-10-15)
+  reader_should_conclude: 'Cite for: (a) the planner is a single-block GPU kernel with no CPU build of the quota algorithm,
+    and the only host code is an EPLB-style legacy greedy; (b) MIT license, readable algorithm, so RT-6a can port the oracle
+    to numpy; (c) the 1024-token floor is a default overridden by a dynamic floor in the shipped kernel. Do NOT cite for any
+    decode, CPU, AMD or small-batch behaviour (none exists in the repo), and do not treat the repo as runnable here (SM90/SM100
+    only).'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: csrc/kernels/placement.cu:L1625 @ 1474022
+    quote: const dim3 grid(num_nvl_domains);
+    quote_sha256: 512ab4daaa26a5357b4863570b5794ed2f64c8dad27b1946e87f7985bdbab740
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: csrc/kernels/placement.cu:L19 @ 1474022
+    quote: static constexpr int QUOTA_SOLVER_THREADS = 128;
+    quote_sha256: 097182fac43b2205fa3e640eb8e6ce7e67575a081b1cebe88ad04d9cd77b2fdb
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: csrc/kernels/placement.cu:L963 @ 1474022
+    quote: smem_bs_hi = max(max_rank_load, smem_bs_lo);
+    quote_sha256: fd47f01db13c3df7ad6d285ee1907deb0da949de966291a5571791497502ff38
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: csrc/kernels/legacy/placement_cpu.cpp:L238 @ 1474022
+    quote: CUDA_RUNTIME_CHECK(cudaMemsetAsync(logical_instance_quota, 0, quota_bytes, stream));
+    quote_sha256: 60c5559b3fa587c937371bfab3115d278718191622da0f95060280b3ce238947
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: csrc/kernels/legacy/placement_cpu.cpp:L198 @ 1474022
+    quote: (void)min_tokens_per_replica;
+    quote_sha256: 309473b675443797bd0e8b17ad8a9734855948d18007ce3422f9fc2913ae0ff5
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L35 @ 1474022
+    quote: NVIDIA GPUs with SM90 or SM100
+    quote_sha256: 5503c263a30c3f30c881d37356aeff1e9ac5958e08ec92364fb61b862b060e2c
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: csrc/kernels/placement.cu:L821 @ 1474022
+    quote: const bool use_dynamic_q_floor = true;
+    quote_sha256: 1fb0db86043374fc528bda37ced0899d5df502d1e00708c36e562bf41cc628a9
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: csrc/kernels/placement.cu:L434 @ 1474022
+    quote: effective_min_tokens = max(1, (need + feasible_slots - 1) / feasible_slots);
+    quote_sha256: e69b7761bc0697e2bbc61733327dc5cf5f2d13f6805c69fc5f62e1256a80df00
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L25 @ 1474022
+    quote: SGLang inference integration is currently experimental and will be released once production-ready.
+    quote_sha256: d29de1a00ec252aeffdf55dbb0a88100add9c99bbee002ffad315c84e69b9ecd
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: docs/blog_v1.md:L153 @ 1474022
+    quote: Inference focuses on prefill, using EP64 or EP40 depending on the model's expert count.
+    quote_sha256: de0b47f27564f14fab9d39200e506601057fa04f3d012d236834d2fe5ec94d83
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: LICENSE:L3 @ 1474022
+    quote: Copyright (c) 2026 PKU-DASYS and Dots-Infra
+    quote_sha256: 15ccaaeae0c7b96f1c8044b965c0efc1a75be2d3f967db755317cc74c98c2c3a
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L160 @ 1474022
+    quote: '`test_solving.py` runs a single-GPU placement/reroute solving with synthesized Zipf-distributed expert loads at
+      target rank-level imbalance ratios (max/mean).'
+    quote_sha256: 6e9e63180f3cedade68b1c85b2b5d45354f84a9bcfb716506ef33f604ca69344
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: README.md:L13 @ 1474022
+    quote: Exposed overhead is under 300 µs at large-scale EP, typically 1%–2% of end-to-end step time.
+    quote_sha256: 39d220a028208b435ee53e3605a26f44b63c045864fd192a158ca0d3e84ff13a
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: README.md:L178 @ 1474022
+    quote: '| `update_placement` | 0.067 ms | 0.072 ms | 0.078 ms |'
+    quote_sha256: ead1c876f4c92b5141ab0ecc2efde19d72698447b479e2d9eddc079f0197f729
+    source_revision: Dots-Infra/UltraEP @ 1474022 (2026-10-15, v1.0.0 line)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirms intake-2138 claim 3 (quota-driven planner) in code and adds the launch geometry (one 128-thread block per
+      NVLink domain).
+  - claim_index: 1
+    effect: unaffected
+    note: 'New fact: no CPU/host quota planner exists; legacy host path is a different EPLB-like algorithm with zero quotas.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Narrows intake-2138 claim 6 / paper claim: the 1024-token floor is overridden by a hard-coded dynamic floor in
+      the shipped kernel (placement.cu:L821, L434); the decode-regime exclusion still stands on the authors'' own scope statement
+      and on weight-copy cost, but no small-token behaviour is documented.'
+  - claim_index: 3
+    effect: unaffected
+    note: License fact for the port.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Answers the RT-6 reference question: readable, not runnable here.'
+  - claim_index: 5
+    effect: unaffected
+    note: Repo-side planner timings (0.067-0.078 ms) differ from the paper's simulation figure (0.111 ms) because settings
+      differ; neither is an EPYC number.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 4, Stage-2b): ingested and dived in one pass; settled that the quota planner is GPU-only
+    with no host build, that the 1024 quota floor is overridden by a dynamic floor in code (narrowing intake-2138 claim 6),
+    license MIT, and that it is a reading reference (not a runnable replay) for RT-6.
+
+
+    2026-10-20 second reader (independent agent): re-find 14/14; support yes 6 / partial 0 / no 0; corrections applied: none
+    required. Main dropped a malformed bare-list depends_on [intake-2138]: the repo claims rest on the repo, not on the paper
+    entry. STAGE-2 CLOSE-OUT (wave budget of 4 exhausted): dive-surfaced github.com/Dots-Infra/Megatron-LM-UltraEP DECLINED
+    (training integration, EPYC does not train; planner already read here) and github.com/deepseek-ai/DeepEP/tree/hybrid-ep
+    DECLINED (branch of indexed intake-2135; NVLink/RDMA hybrid dispatch has no single-host consumer; monitor only if RT-6a
+    shows a dispatch-side gap) - both carried to the Stage-3 plan for operator confirmation.'
+- id: intake-2142
+  arxiv_id: null
+  url: https://github.com/deepseek-ai/LPLB
+  source_type: repo
+  title: deepseek-ai/LPLB - Linear-Programming-Based Load Balancer for MoE expert parallelism
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2138
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - DeepSeek-AI
+  key_claims:
+  - 'LP formulation (read from the NVRTC-compiled solver template minilp.cu): one small LP per redundancy group of ranks.
+    Variables per (rank, redundant slot): the share x of that expert''s current workload kept on its original rank and the
+    share y sent to its replica, with x + y = 1; plus per-rank slack and one scalar t. Constraints: for every rank, fixed
+    (non-replicated) load + kept shares + received replica shares + slack = t, so t bounds every rank''s load. Objective:
+    minimise t (cost 1 on t), i.e. min-max rank load over total token count. Each redundant expert is shared between exactly
+    TWO ranks (planner.py asserts at most one replica per expert, max_logcnt == 2), so the flow graph is the redundancy topology
+    (cube / hypercube / torus).'
+  - 'Solver and cost: a hand-written primal interior-point style method on a fixed sized dense system, run inside ONE CUDA
+    block per redundancy group with cuSolverDx (Cholesky posv) and cuBLASDx matmuls; exactly 5 iterations are executed (no
+    convergence loop), with a Big-M column (cost 1000). A group is accepted only if d_max < 0.1 and residual < 0.05 and the
+    Big-M variable is near zero; otherwise the group falls back to a fixed 0.5 / 0.5 split, and a counter of accepted groups
+    is returned (the test asserts it equals the group count). README states about 100 us for intra-node solving, longer inter-node,
+    and calls this possibly non-negligible for small batches.'
+  - 'Per-microbatch mechanics: (1) count selected logical experts per SM from the current batch''s index tensor (count_idx),
+    (2) sum workloads across the EP group by all-reduce or by DeepEP/NVSHMEM internal communicators, (3) solve the LP for
+    the replica split ratios, (4) map_idx assigns each token''s expert to the original or replica physical expert so that
+    cumulative per-SM counts follow the ratio. Which experts get replicas is decided separately by EPLB reordering on a history
+    (the heaviest, per topology); replicas are static between reorderings, only the SPLIT is per batch.'
+  - 'Authors'' own limitations (README, no benchmark numbers given anywhere in the repo): ''early research stage, performance
+    improvements still under evaluation''; balances only total token count and ignores the non-linearity of grouped-GEMM time;
+    solver time may matter for small batches; under extreme global imbalance LPLB may do worse than EPLB because it never
+    assigns multiple replicas of one expert. Topologies require at least 2 experts per GPU (Cube/Torus) or 16 GPUs (Hypercube).'
+  - 'Evidence quality: the repo is a single initial commit (2025-11-19), MIT-licensed (DeepSeek), NVIDIA-only (CUDA >= 12.6.3
+    with cuSolverDx/cuBLASDx via download-mathdx.sh, SM version baked into the template), and its tests assert only synthetic
+    balance coefficients (tolerances 1.01-1.1 on normal-distributed loads), not throughput. The only throughput number about
+    LPLB anywhere in this intake is a competitor''s: UltraEP''s paper reports +12% over Megatron-LM in training versus +42%
+    for UltraEP (vendor-reported, cited from the UltraEP patch, not from this repo).'
+  - 'EPYC mapping verdict: an LP reroute is not meaningful for single-socket CPU decode as built. (a) Under the canonical
+    interleave recipe every thread computes every selected expert, so there are no ranks to balance; the NUMA-placement alternative
+    (CPU15 style) has 4-12 bins, tokens per step T = 1-3, and per-expert loads in {0,1,2}, where a fractional split is meaningless
+    and the one-replica-per-expert choice reduces to picking the less loaded of two copies (power-of-two-choices) per token.
+    (b) For a CPU + MI210 split the reroute is one scalar: given a GPU-resident subset with hit share h, the split that equalises
+    CPU and GPU time has a closed form (the A7 ceiling h* = 1.6 TB/s / (1.6 TB/s + 165 GB/s) = 0.91 is unreachable at 39-63
+    resident experts per layer), so the LP degenerates to ''send resident hits to the GPU''. The meaningful content is the
+    formulation (min-max over a replica-edge graph), not the solver.'
+  techniques:
+  - Per-batch LP over replica edges minimising maximum rank load
+  - Single-block fixed-iteration interior-point solver on device
+  - Static EPLB reordering + per-batch split-ratio reroute (one replica per expert)
+  - Cube / hypercube / torus replica topologies
+  - Fallback to a fixed 0.5 split when the LP result fails feasibility checks
+  reported_results:
+  - 'No throughput or accuracy number in the repo. Only stated figure: solver takes about 100 us for intra-node optimisation
+    (README, authors, hardware unspecified, ''longer for inter-node'').'
+  - 'Test tolerances (not results): synthetic balance coefficient asserted below 1.01-1.1 on normal-distributed loads, for
+    8-16 GPU cube/hypercube/torus topologies (tests/test_solve.py).'
+  - 'Competitor-reported (UltraEP paper, training, not from this repo): LPLB +12% over Megatron-LM versus +42% for UltraEP;
+    see NEW-ultraep.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - moe-routing-tap-and-locality-measurement.md
+    - large-moe-expert-parallelism.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-2138
+    - intake-2134
+  recommended_actions:
+  - 'RT-6b: fractional LP floor arm in the RT-6 replay (bound only)'
+  - Knowledge-only otherwise; do not port the solver
+  credibility_score: null
+  contradicting_evidence:
+  - Authors flag their own limitation (worse than EPLB under extreme global imbalance). The only throughput comparison is
+    by a competing library's authors.
+  referenced_arxiv_ids: []
+  notes: 'Cloned depth 1 to /mnt/raid0/llm/tmp/dive-deepinfer-lplb/src, HEAD 0490f79452f7ef277e814449600b1b1dd4c663b3 (2025-11-19,
+    single commit). READ: README.md whole; lplb/planner.py whole; minilp.cu (LP matrix construction L195-L300, IPM loop and
+    feasibility check L325-L400, header L15-L60); tests/test_solve.py first 90 lines; tests/utils.py not read; scripts/run_ep16_cube8p2e.py
+    first 40 lines. NOT READ: csrc/plugin.cpp beyond greps (NVRTC compile, map_idx launch), lplb/eplb.py (an embedded copy
+    of the EPLB planner, already covered by intake-2134), minilp.cu kernel_count_idx/kernel_map_idx bodies and the NVSHMEM
+    communication section (L100-L190), download-mathdx.sh. Nothing built or run. The exact interior-point update formulas
+    (lines 345-372) were skimmed by grep; the iteration count, Big-M cost and acceptance test are read directly.'
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 0490f79452f7ef277e814449600b1b1dd4c663b3 (deepseek-ai/LPLB, 2025-11-19)
+  reader_should_conclude: 'Cite for: the min-max replica-edge LP formulation, the at-most-one-replica-per-expert constraint,
+    the authors'' stated limitations, and a fixed-5-iteration on-device IPM costing about 100 us. Do NOT cite for any throughput
+    claim (none exists), and do not carry the LP to CPU decode: with 4-12 bins and 1-3 tokens per step the decision is integral
+    and trivial. It does change RT-6: report the fractional LP floor beside the integral policy as a bound.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: lplb/resources/csrc-tmpl/minilp.cu:L258-L259 @ 0490f79
+    quote: // Slack variable representing difference between max load in group and // current rank's load (coefficient 1)
+    quote_sha256: 63b5020f276a5a18cc0ce61641caeff4809a939fb18cd9083cbd67817a49d7ee
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: lplb/resources/csrc-tmpl/minilp.cu:L262 @ 0490f79
+    quote: // Max value variable (coefficient -1)
+    quote_sha256: f954cec6e2e3111feb695e4b3f20f469b7eee303febe495c68141411b8cc52a7
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: lplb/planner.py:L173 @ 0490f79
+    quote: assert max_logcnt == 2
+    quote_sha256: b7765bb5aac6b2e51efc7adcfcc391c3d5dbdfd1aff9b85548d01e4b1b723596
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: lplb/planner.py:L55 @ 0490f79
+    quote: This ensures that each redundant expert is shared between exactly two ranks.
+    quote_sha256: d04faaba0dffc51ac3604001823ca0f28d47954570073f2dca5c1c6c79c7ecf4
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: lplb/resources/csrc-tmpl/minilp.cu:L335 @ 0490f79
+    quote: for (int step = 0; step < 5; step++) {
+    quote_sha256: daa72ea0feaa8574df16297c9b6c18a1005d7b7d7e2b00362dbd69fd0e51e475
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: lplb/resources/csrc-tmpl/minilp.cu:L291 @ 0490f79
+    quote: c[iv] = 1000;
+    quote_sha256: cc0e7119e1eb8188f026e05195d2382b42a0995a75d895d4785bd3d414655941
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: lplb/resources/csrc-tmpl/minilp.cu:L397 @ 0490f79
+    quote: result[i] = 0.5;
+    quote_sha256: e811e8a17303f6b22146e4c366f677043a83fc09a99ad95cbbe8d80f78c556da
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L70 @ 0490f79
+    quote: The solver takes ~100 µs for intra-node optimization (longer for inter-node), which may be non-negligible for small
+      batches.
+    quote_sha256: c7279d097f8d023fb7565f7ec85307a7eadd9cbe49cfcecc093cb17ecf1f61d8
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L65 @ 0490f79
+    quote: Experts to be replicated are selected via EPLB (reordering only, no replication).
+    quote_sha256: 8f9e88f7dfa23365c7a5a8ffd4b005a1df1fb68d729c3104f1e0b652cfc51716
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: lplb/planner.py:L235 @ 0490f79
+    quote: return self.solver.map_idx(
+    quote_sha256: a5e60d0ce9bb482a0a930aa923e7fd220107c1c5893827efdb6bd4d7dcdff7f5
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L5 @ 0490f79
+    quote: LPLB is currently in the early research stage, and performance improvements are still under evaluation.
+    quote_sha256: 7f0f0458c42a04095e14b9c0313a6136c95f41d72a22e2e1ebeb359e7774269d
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L71 @ 0490f79
+    quote: Under extreme global load imbalance, LPLB may perform worse than EPLB due to differences in assigning redundant
+      experts (LPLB avoids assigning multiple replicas to the same original expert).
+    quote_sha256: c4275c1af3ffcc155f12e4ed62fa458a49e026cdf4a608a760374b6576b2c8d2
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L69 @ 0490f79
+    quote: The current planner balances only total token count, not accounting for non-linearity in grouped matrix multiplication
+      time costs, which may lead to suboptimal performance.
+    quote_sha256: ce41baff506fe84a8fd680b1d9ef9249c66e43efa0006a04b31f171fa06f3fb6
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L11 @ 0490f79
+    quote: CUDA Toolkit >= 12.6.3 (with cuSolverDx dependencies).
+    quote_sha256: 7ae9853a81527a3110180a20732ed2a685381d99d06d58bde7c002ab7172f051
+    source_revision: deepseek-ai/LPLB @ 0490f79 (2025-11-19, single Initial commit)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirms the min-max LP and the at-most-one-replica constraint, read from the solver template.
+  - claim_index: 1
+    effect: unaffected
+    note: Adds solver internals (5 fixed IPM iterations, Big-M, fallback 0.5) that the README does not state.
+  - claim_index: 2
+    effect: unaffected
+    note: Replicas are chosen by EPLB-style reordering on history; only the split is per batch.
+  - claim_index: 3
+    effect: unaffected
+    note: Author-stated limitations.
+  - claim_index: 4
+    effect: unaffected
+    note: No numbers; the only throughput figure is a competitor's.
+  - claim_index: 5
+    effect: unaffected
+    note: EPYC mapping verdict is derived, not from source.
+  depends_on: []
+  dive_corrections: '2026-10-20 (wave 4, Stage-2b): ingested and dived in one pass; settled the LP formulation, the fixed-iteration
+    IPM and its feasibility fallback, that replicas are history-selected with only the split per batch, and that the repo
+    contains no performance numbers.
+
+
+    2026-10-20 second reader (independent agent): re-find 14/14; support yes 5 / partial 1 / no 0. The partial (claim 4''s
+    LPLB ''+12% over Megatron-LM'') was checked by main: the figure is in the UltraEP paper (intake-2138, saved paper text:
+    ''EPLB, LPLB, EPLB++, and UltraEP improve throughput by 20%, 12%, 29%, and 42% over Megatron-LM''), and the claim already
+    attributes it as competitor-reported; claim stands. Main dropped a malformed bare-list depends_on [intake-2138] (counterfactual
+    test fails). STAGE-2 CLOSE-OUT: surfaced github.com/deepseek-ai/EPLB is already intake-2134 (not a new source).'

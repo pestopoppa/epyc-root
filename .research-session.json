@@ -1,8 +1,8 @@
 {
   "session_id": "intake-deepinfer-20261020",
   "started_at": "2026-10-20T19:40:00Z",
-  "last_checkpoint": "2026-10-20T20:55:59Z",
-  "stage": "stage2-wave3-applied",
+  "last_checkpoint": "2026-10-20T20:59:51Z",
+  "stage": "stage2-complete",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepinfer-20261020",
   "branch": "intake/deepinfer-20261020",
@@ -33,10 +33,12 @@
     "intake-2137",
     "intake-2138",
     "intake-2139",
-    "intake-2140"
+    "intake-2140",
+    "intake-2141",
+    "intake-2142"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2141,
+  "next_intake_id": 2143,
   "expansion_cap": 10,
   "expansion_count": 10,
   "expansion_entries": [
@@ -238,8 +240,66 @@
           "github Dots-Infra/UltraEP",
           "github deepseek-ai/LPLB"
         ]
+      },
+      {
+        "wave": 4,
+        "kind": "Stage-2b ingest+dive (final)",
+        "entries": [
+          "intake-2141",
+          "intake-2142"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20",
+        "second_reader": {
+          "anchors_refound": "28/28",
+          "support": {
+            "yes": 11,
+            "partial": 1,
+            "no": 0
+          }
+        }
       }
-    ]
+    ],
+    "closeout": {
+      "waves_run": 4,
+      "wave_budget": "exhausted (operator steering seq 1: up to four Stage-2 waves)",
+      "final_wave_surfaced_sources": [
+        {
+          "source": "github.com/Dots-Infra/Megatron-LM-UltraEP",
+          "bears_on": "intake-2141",
+          "disposition": "declined (training integration; no EPYC consumer)"
+        },
+        {
+          "source": "github.com/deepseek-ai/DeepEP/tree/hybrid-ep",
+          "bears_on": "intake-2141",
+          "disposition": "declined; monitor only if RT-6a shows a dispatch-side gap"
+        },
+        {
+          "source": "github.com/deepseek-ai/EPLB",
+          "bears_on": "intake-2142",
+          "disposition": "already indexed as intake-2134"
+        }
+      ],
+      "earlier_declines": [
+        {
+          "source": "arXiv 2507.06607 SambaY",
+          "bears_on": "intake-2125"
+        },
+        {
+          "source": "github.com/deepseek-ai/3FS",
+          "bears_on": "intake-2136"
+        }
+      ],
+      "ledger_rows": 149,
+      "ledger_file": "/mnt/raid0/llm/tmp/dive-deepinfer-main/patches/LEDGER.jsonl",
+      "second_reader_totals": {
+        "anchors_refound": "516/516",
+        "yes": 205,
+        "partial": 47,
+        "no": 4,
+        "no_resolved": "intake-2116 c21 overturned+corrected by main; intake-2133 c2-c4 rotated anchors re-indexed by main"
+      }
+    }
   },
   "prior_sessions": [
     {
