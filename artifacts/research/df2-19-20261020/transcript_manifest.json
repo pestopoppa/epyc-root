@@ -1,0 +1,149 @@
+{
+ "runs": {
+  "C2/cxf1/r1": {
+   "bytes": 2203854,
+   "dolma2_scored_tokens": 52580,
+   "nonprefix_requests": 0,
+   "qwen_predicted_n": 58802,
+   "recovered": {
+    "aborted": 0,
+    "full": 20,
+    "lost_compaction": 0,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "5d66b9ea64a4285dd575ceca29620ed560da174b4827d08b5da2ac64b43d180e",
+   "turns": 21,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C2/cxf1/r1/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "4c64d683e97467454990b69771a4bcdac9b4a51058485371666cb606432655c8"
+  },
+  "C2/cxf1/r2": {
+   "bytes": 2814700,
+   "dolma2_scored_tokens": 77645,
+   "nonprefix_requests": 1,
+   "qwen_predicted_n": 96584,
+   "recovered": {
+    "aborted": 1,
+    "full": 28,
+    "lost_compaction": 1,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "ee2f35ab1ddd0b78eabacea5917853cfe79231d5474d3535d9d9cb125067d477",
+   "turns": 31,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C2/cxf1/r2/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "ea1f800ebebaa61e135573d11e91333ac5eba1b3ae3f8634a11e6db16e3f4e8c"
+  },
+  "C2/cxf12/r1": {
+   "bytes": 1964771,
+   "dolma2_scored_tokens": 37728,
+   "nonprefix_requests": 0,
+   "qwen_predicted_n": 44640,
+   "recovered": {
+    "aborted": 0,
+    "full": 19,
+    "lost_compaction": 0,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "7d5f8f5dccf0fbf2283cf5d492c2ffc2c775cf57ce09a110291571738a0afb04",
+   "turns": 20,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C2/cxf12/r1/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "40b3a5e567799d1270f5de7178473d4a17851c935bb763c28d892a3d74f63a17"
+  },
+  "C2/cxf12/r2": {
+   "bytes": 3618888,
+   "dolma2_scored_tokens": 70961,
+   "nonprefix_requests": 1,
+   "qwen_predicted_n": 91833,
+   "recovered": {
+    "aborted": 1,
+    "full": 31,
+    "lost_compaction": 1,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "b6d5804d12a64cf8a7b085577efa81b12ce458241336792ca94729c6d31a22f4",
+   "turns": 34,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C2/cxf12/r2/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "d9f6cba4114ab6386f434d67202d26c809ab9223a2d5f509d8760f1f0eb8fd5d"
+  },
+  "C4/cxf1/r1": {
+   "bytes": 3740392,
+   "dolma2_scored_tokens": 63974,
+   "nonprefix_requests": 1,
+   "qwen_predicted_n": 89257,
+   "recovered": {
+    "aborted": 1,
+    "full": 34,
+    "lost_compaction": 1,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "46e9c9b9867c2e39b8f257f494d8bb16caad27c461e1f170ee5b177c0fa11fbb",
+   "turns": 37,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C4/cxf1/r1/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "3e7e24a223ac575d137322d04c31deb993cbeca3675e7bf130e060b0a36ff066"
+  },
+  "C4/cxf1/r2": {
+   "bytes": 4210863,
+   "dolma2_scored_tokens": 65390,
+   "nonprefix_requests": 1,
+   "qwen_predicted_n": 79985,
+   "recovered": {
+    "aborted": 0,
+    "full": 41,
+    "lost_compaction": 1,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "da96aa551cf9ef193f24004b8876872134a2bb801e4a15bc135e65361492e8aa",
+   "turns": 43,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C4/cxf1/r2/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "3c6089cca3cce944fd4d08c35043dfbe9da3c5fe20f42615cd7f2a6a4727b7ae"
+  },
+  "C4/cxf12/r1": {
+   "bytes": 1587454,
+   "dolma2_scored_tokens": 37867,
+   "nonprefix_requests": 0,
+   "qwen_predicted_n": 45111,
+   "recovered": {
+    "aborted": 0,
+    "full": 19,
+    "lost_compaction": 0,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "b8d79aca07e1502dcdfa0bd59fcacb0c0ac1a7dee6237d6e4128b9cc7bab9b86",
+   "turns": 20,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C4/cxf12/r1/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "f1440c2e9a5471d04cbfc824f9a9ab7cf04dafabbd0fa11683d5e54a2a66d566"
+  },
+  "C4/cxf12/r2": {
+   "bytes": 3572038,
+   "dolma2_scored_tokens": 66464,
+   "nonprefix_requests": 1,
+   "qwen_predicted_n": 76779,
+   "recovered": {
+    "aborted": 0,
+    "full": 33,
+    "lost_compaction": 1,
+    "message_only": 1,
+    "none": 0
+   },
+   "sha256": "61a7dea601e5af67ab6fe569d32b1107fe75425c698005ad7f489d3853b41ef3",
+   "turns": 35,
+   "wire_bodies_gz": "/mnt/raid0/llm/tmp/ds41-c95/results/C4/cxf12/r2/wire/wire-bodies.jsonl.gz",
+   "wire_jsonl_sha256": "9caf636afcc6a889976eba0af81cdeb1f49393e26e54753f2d2360bf8cb9bc68"
+  }
+ },
+ "tokenizer_files": {
+  "README.md": "b13cc8833e5be04751884116318adbcf08ea37bd6105b1e94ef7363a7938a968",
+  "merges.txt": "b6fe424e334903f7fb84d3a106d9730455f4744b9fe3c21ee136d97a00e72502",
+  "special_tokens_map.json": "78afb564e81264029b25f9caf24bda2521d5bdaeff5cd3fdbc01d3da2e8ce2f2",
+  "tokenizer.json": "969c214487b744f1457d8a4f2055fd4ad348edff5322d4f21f2906ceb158a636",
+  "tokenizer_config.json": "f820eb9a838bd1c87cb14ceee85a4d443efad3a380f666befd41ad18b0ac4f76",
+  "vocab.json": "9e14712c91b37c7aab74b1306baa46ac342d620637a4b44523cdc3aec7d24195"
+ },
+ "tokenizer_vocab_size": 100278
+}

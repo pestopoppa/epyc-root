@@ -1,0 +1,21 @@
+    0.1s turns scored=233 eligible=225 const(unrecovered/ineligible)=16
+    0.3s coverage done
+    2.9s [C2->C4] b gate=(5, 0.9, 1) cal_gain=-0.0001 hold fit/realistic=-0.0000 indep/oracle=+0.0002
+   10.4s [C2->C4] c gate=(5, 0.9, 5) cal_gain=-0.0005 hold fit/realistic=-0.0004 indep/oracle=+0.0066
+   18.0s [C2->C4] cg gate=(3, 0.9, 5) cal_gain=+0.0001 hold fit/realistic=+0.0002 indep/oracle=+0.0113
+   20.3s [C4->C2] b gate=(5, 0.9, 1) cal_gain=-0.0000 hold fit/realistic=-0.0001 indep/oracle=+0.0002
+   28.0s [C4->C2] c gate=(4, 0.9, 5) cal_gain=-0.0010 hold fit/realistic=-0.0014 indep/oracle=+0.0096
+   35.7s [C4->C2] cg gate=(5, 0.9, 5) cal_gain=-0.0007 hold fit/realistic=-0.0008 indep/oracle=+0.0055
+   35.7s VERDICT STOP {'b': np.float64(-1.6940974932766473e-05), 'c': np.float64(-0.0004141161238730984)}
+   44.7s done
+    0.1s turns scored=233 eligible=225 const(unrecovered/ineligible)=16
+    0.4s coverage done
+    3.0s [C2->C4] b gate=(5, 0.9, 1) cal_gain=-0.0001 hold fit/realistic=-0.0000 indep/oracle=+0.0002
+   11.0s [C2->C4] c gate=(5, 0.9, 5) cal_gain=-0.0005 hold fit/realistic=-0.0004 indep/oracle=+0.0066
+   18.7s [C2->C4] cg gate=(3, 0.9, 5) cal_gain=+0.0001 hold fit/realistic=+0.0002 indep/oracle=+0.0113
+   21.0s [C4->C2] b gate=(5, 0.9, 1) cal_gain=-0.0000 hold fit/realistic=-0.0001 indep/oracle=+0.0002
+   28.8s [C4->C2] c gate=(4, 0.9, 5) cal_gain=-0.0010 hold fit/realistic=-0.0014 indep/oracle=+0.0096
+   36.6s [C4->C2] cg gate=(5, 0.9, 5) cal_gain=-0.0007 hold fit/realistic=-0.0008 indep/oracle=+0.0055
+   55.3s bounds {"b": {"loosest|indep|realistic|perpos": -0.5630470472983617, "loosest|indep|oracle|perpos": 0.08040908793458579, "loosest|fit|realistic|perpos": -0.5431275106332702, "loosest|fit|oracle|perpos": 0.005014422684872288, "chosen_on_cal|indep|realistic|perpos": 0.0004254809555006567, "chosen_on_cal|indep|oracle|perpos": 0.0005129348313051008, "chosen_on_cal|fit|realistic|perpos": -3.971042351502696e-05, "chosen_on_cal|fit|oracle|perpos": 4.129586421930398e-05, "holdout_best_gate_indep_oracle_perpos": {"gate": [1, 0.0, 1], "gain_diluted": 0.08059794097289341}}, "c": {"loosest|indep|realistic|perpos": -0.4711830048615414, "loosest|indep|oracle|perpos": 0.20166257838284185, "loosest|fit|realistic|perpos": -0.4598350525583138, "loosest|fit|oracle|perpos": 0.0901700469332598, "chosen_on_cal|indep|realistic|perpos": 0.008856246363767362, "chosen_on_cal|indep|oracle|perpos": 0.010331689335382865, "chosen_on_cal|fit|realistic|perpos": 0.0003545557024600132, "chosen_on_cal|fit|oracle|perpos": 0.0018911396298353367, "holdout_best_gate_indep_oracle_perpos": {"gate": [1, 0.0, 1], "gain_diluted": 0.20153474674251992}}, "cg": {"loosest|indep|realistic|perpos": -0.46900232152157806, "loosest|indep|oracle|perpos": 0.1984787115540665, "loosest|fit|realistic|perpos": -0.4580703269080514, "loosest|fit|oracle|perpos": 0.08820809796297646, "chosen_on_cal|indep|realistic|perpos": 0.0153724280085481, "chosen_on_cal|indep|oracle|perpos": 0.019373845088622277, "chosen_on_cal|fit|realistic|perpos": 0.0007746922109146404, "chosen_on_cal|fit|oracle|perpos": 0.004537569233984851, "holdout_best_gate_indep_oracle_perpos": {"gate": [1, 0.0, 1], "gain_diluted": 0.1982405888443859}}}
+   55.3s VERDICT STOP {'b': np.float64(-1.6940974932766473e-05), 'c': np.float64(-0.0004141161238730984)}
+   64.8s done

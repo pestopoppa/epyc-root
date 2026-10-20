@@ -1,0 +1,45 @@
+{
+ "dataset": {
+  "repo": "IanMagnusson/count-ngram-tables",
+  "revision": "5a284fd648f90a45add297fe077233721796e062",
+  "table": "tables/general-17gb",
+  "files": {
+   "forward_index_topk.bin": {
+    "bytes": 17113892384,
+    "sha256": "e32a6f3a4e59dbcc87db79d0b6544b8006f7f0feaa17ecff261c30bf4b893ea4",
+    "matches_hf_lfs_and_SHA256SUMS": true
+   },
+   "SHA256SUMS": {
+    "sha256": "dfa1f99ba0ea449750d949c03a56520b8b673a81e2feb0e7067f351ba7c6a761"
+   },
+   "build_manifest.json": {
+    "sha256": "2d42d189b91bea085ebc08816b49a16c7bcda67b33d6ff40658de7370f79f9ae"
+   },
+   "README.md": {
+    "sha256": "904403c58f1db60077748404ee7623fd1efb13971d3d32e1768fd7ccecbfba78"
+   }
+  },
+  "local_path": "/mnt/raid0/llm/tmp/df2-19-20261020/dl/tables/general-17gb/forward_index_topk.bin"
+ },
+ "tokenizer": {
+  "repo": "allenai/dolma2-tokenizer",
+  "revision": "5292e5d6c0f40b67cc765fe41bec991cf4345b5c",
+  "files": {
+   "README.md": "b13cc8833e5be04751884116318adbcf08ea37bd6105b1e94ef7363a7938a968",
+   "merges.txt": "b6fe424e334903f7fb84d3a106d9730455f4744b9fe3c21ee136d97a00e72502",
+   "special_tokens_map.json": "78afb564e81264029b25f9caf24bda2521d5bdaeff5cd3fdbc01d3da2e8ce2f2",
+   "tokenizer.json": "969c214487b744f1457d8a4f2055fd4ad348edff5322d4f21f2906ceb158a636",
+   "tokenizer_config.json": "f820eb9a838bd1c87cb14ceee85a4d443efad3a380f666befd41ad18b0ac4f76",
+   "vocab.json": "9e14712c91b37c7aab74b1306baa46ac342d620637a4b44523cdc3aec7d24195"
+  }
+ },
+ "count_repo": {
+  "url": "https://github.com/IanMagnusson/COUNT",
+  "commit": "31fd41ef4be88327d656af48463883628ceb8598",
+  "reader": "olmo-core/src/olmo_core/data/count_table.py",
+  "reader_sha256": "1d5645097b9b65c6dc685dcb823f6220be1c529859ced4dec513531bee638e80"
+ },
+ "positions_csv_gz_sha256": "343f4a1d15d0fb71feded447ebaf41174f351eeff34f34c0b7272229fbf29cab",
+ "results_json_sha256": "4316c2a0b1989efdd86ac11992a71a7b6a5ab01ac052ee42295cdfdecd50ca5d",
+ "download": "single curl stream (resumable, nice 10), 2026-10-20 16:38-17:37 UTC; sha256 recomputed locally after download"
+}
