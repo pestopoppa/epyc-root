@@ -118,6 +118,7 @@ The interlocutor and the orchestrator split the work like this.
   - Runtime voice registration exists; no voice is registered at start-up.
   - It supports 10 languages, including en/it/de/fr, **so the cascade already covers D2 in full**.
   - GPU figures at freeze: RTF 0.169, TTFA 37.8 ms, round-trip WER 1.49%.
+  - v-next speech kernel: persistent threadpool + non-spinning barrier for qwentts (`ggml_barrier` pure `_mm_pause` spin, per-compute pool create/free; 13x loss under core sharing); evidence in the CS-45 note.
 
 **Candidates.** Primary sources were checked on 2026-09-24; URLs are in *Sources* below.
 
