@@ -29,10 +29,30 @@
     "intake-2079",
     "intake-2080",
     "intake-2081",
-    "intake-2082"
+    "intake-2082",
+    "intake-2083",
+    "intake-2084",
+    "intake-2085",
+    "intake-2086",
+    "intake-2087",
+    "intake-2088",
+    "intake-2089",
+    "intake-2090",
+    "intake-2091",
+    "intake-2092",
+    "intake-2093",
+    "intake-2094",
+    "intake-2095",
+    "intake-2096",
+    "intake-2097",
+    "intake-2098",
+    "intake-2099",
+    "intake-2100",
+    "intake-2101",
+    "intake-2102"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2083,
+  "next_intake_id": 2103,
   "expansion_cap": 10,
   "expansion_count": 2,
   "expansion_entries": [
@@ -9806,6 +9826,41 @@
           "intake-2080",
           "intake-2081",
           "intake-2082"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20"
+      },
+      {
+        "wave": 3,
+        "entries": [
+          "intake-2083",
+          "intake-2084",
+          "intake-2085",
+          "intake-2086",
+          "intake-2087",
+          "intake-2088",
+          "intake-2089",
+          "intake-2090",
+          "intake-2091",
+          "intake-2092",
+          "intake-725"
+        ],
+        "dispatched": "2026-10-20",
+        "applied": "2026-10-20"
+      },
+      {
+        "wave": 4,
+        "entries": [
+          "intake-2093",
+          "intake-2094",
+          "intake-2095",
+          "intake-2096",
+          "intake-2097",
+          "intake-2098",
+          "intake-2099",
+          "intake-2100",
+          "intake-2101",
+          "intake-2102"
         ],
         "dispatched": "2026-10-20",
         "applied": "2026-10-20"
