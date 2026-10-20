@@ -1304,6 +1304,63 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   At long context this is plausibly the dominant host term. Patch 0002 accumulates host phases per
   graph-input class; apply and verify it reconciles (attributed + unattributed within 5%).
 
+### W — 1017 weight swap (operator 2026-10-20)
+
+`deepseek-ai/DeepSeek-V4.1-Flash-1017` (HF `1bae0e10`) is a drop-in finetune: config.json and the
+96,085-tensor shard map are byte-identical to the September release, and all 48 shards changed,
+including the DSpark shards 44-46. Operator: swap the served weights, same quantization. There is no
+published 1017 build with Q4_K experts in the antirez layout. Every unsloth 1017 GGUF uses the
+upstream PR #30817 layout and does not load in the port. Plan: download antirez's 1017
+**MXFP4-experts** build and requantize only the experts to Q4_K with unsloth's 1017 activation
+imatrix. Working notes (scratch): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`alt-quants.md`,
+`requant-feasibility.md`, `requant-types.txt`).
+
+- [ ] DS41-W1 — **Download** `antirez/deepseek-v4.1-flash-gguf`
+  `DeepSeek-V4.1-Flash-1017-MXFP4-experts-0000{1..9}-of-00009.gguf` (501,602,535,360 B) into the
+  served model dir. Running since 2026-10-20 15:25 UTC: `tmp/ds41-1017-swap/download_1017.sh`, one file
+  at a time, resumable, each file checked against its HF LFS sha256 before rename. Progress is in
+  `download_1017.log`; the flag file is `download_1017.{done,failed}`. ~11 MB/s, about 12.5 h. The unsloth
+  imatrix `models/unsloth/DeepSeek-V4.1-Flash-1017-GGUF/imatrix_unsloth.gguf_file` (sha256
+  `22ed7e8f...`) is done. Verified: all 120 expert tensors of our file have an imatrix entry under
+  the same name. Layer 21 expert 207 has count 0, so it gets uniform weights.
+- [ ] DS41-W2 — **Disk: operator confirms before the requant.** The MXFP4 input (467.15 GiB) and the
+  Q4_K output (about 482.97 GiB) must coexist, which is about 27 GB more than is free while the Sept Q4
+  `DeepSeek-V4.1-Flash-Q4.gguf` (518,596,067,328 B) stays. Recommendation: delete the Sept Q4. It can
+  be re-downloaded from antirez, and the 1017 MXFP4 build itself serves as the rollback.
+- [ ] DS41-W3 — **Requant** with `kernels/builds/cpu-20261006-4348de400/bin/llama-quantize` (the port
+  build dirs have none; its quant/imatrix/loader sources equal port HEAD `3376147f8`):
+  `--allow-requantize --pure --imatrix <unsloth> --include-weights ffn_{gate,up,down}_exps
+  --tensor-type-file requant-types.txt`, plus `--override-kv` for `deepseek41.quantization`,
+  `deepseek41.calibration` and `quantize.imatrix.sha256`, with nominal ftype `Q4_K_M`, single-file output.
+  **A bare Q4_K run is destructive**: every 2-D weight is quantizable, so it would requantize the Q8_0
+  and F16 tensors and abort on the I8 engram. The 10-rule file pins every non-expert class to its
+  current type, so those tensors are byte-copied. Run `--dry-run` first: exactly 120 `(q4_K)` lines.
+  Run under the region lock (`--cpu-list 0-95`).
+- [ ] DS41-W4 — **Validate the requant**: 1046 tensors; exactly 120 Q4_K tensors of 2,548,039,680 B each;
+  SHA-256 byte identity of all 926 non-expert tensors against the MXFP4 source (zero mismatches); size
+  within a few MB of 518,589,466,560 B; sampled per-expert NMSE vs MXFP4, including L21/E207.
+- [ ] DS41-W5 — **Q4_K vs MXFP4: measure both before choosing what to serve.** Q4_K keeps the AK
+  keeps, all of which target the Q4_K X4_T kernel (+7.11% serving). MXFP4 runs through the AVX2
+  `mxfp4_8x8_q8_0` repack, which was x1.00 at N=1 and x1.04 at N=3 against Q4_K iqk *before* the
+  keeps (DS41-C114a). Quality cuts the other way: on DS4-Flash the public KLD was 0.0290 for the
+  FP4->Q4_K requant and 0.0102 for native MXFP4 (DS41-C114). The Sept Q4 is in that Q4_K class and used
+  a weight-energy bootstrap imatrix, not activations. Gates: KLD of Q4_K against the MXFP4 file as base,
+  ppl, NMSE, the coherence gate at production prompt length, and the AK serving headline on each file.
+  Serve the winner and retire the other (operator confirms the delete).
+- [ ] DS41-W6 — **DSpark drafter for 1017.** The 1017 MTP shards changed, so the Sept drafter
+  `models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` no longer matches. unsloth's
+  `dspark-DeepSeek-V4.1-Flash-1017-Q8_0.gguf` (7,976,914,240 B) is arch `dflash`: it lacks
+  `token_embd`/`output`, `hc_head_*` and `dspark_variant`, and has an `add_bos` mismatch, so it does
+  not load as is. It is convertible with gguf-py: rename `fc`, `enc.output_norm`, `markov_w{1,2}` and
+  `conf_proj` to the `dspark_*` names, copy `token_embd`/`output` from the **1017** target, and rewrite
+  the KVs to `deepseek41-dspark.*`. Our loader's BF16 acceptance for the markov tables is unverified.
+  The original safetensors converter (`tmp/ds41-dspark-convert`) is lost. Gate: the DS41-B13 conversion
+  checks plus an alpha A/B.
+- [ ] DS41-W7 — **Cut over.** Update `epyc-inference-research/scripts/lib/deepseek_v41_flash_recipe.py`
+  (`TRUNK_GGUF`, `TRUNK_GGUF_VERSION`, `TRUNK_PART_SHA256`, `DRAFT_GGUF`; `assert_artifacts_exist`
+  assumes a single file), re-baseline the AK serving anchor (new DS41 measurement era), and record
+  graveyard rows for whatever the operator deletes.
+
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
 - [ ] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
