@@ -4,15 +4,33 @@
     "handoff-active": 180,
     "handoff-blocked": 2,
     "handoff-completed": 211,
-    "progress": 644,
+    "progress": 645,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-08T13:21:17Z",
-  "mode": "touch",
-  "scan_time": "2026-10-08T13:21:17Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 6,
+      "removed": 0
+    },
+    "at": "2026-10-20T15:45:43Z",
+    "scope_paths": [
+      "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "handoffs/active/autokernel-research-loop.md",
+      "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "handoffs/active/repl-embedding-retrieval.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-10/2026-10-20.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-20T15:45:43Z",
   "schema_version": 1,
-  "source_set_hash": "d01baaad5380b8e8d0a465fe3c53d27b6c407c787e9ec6256b56964720fa5b93",
+  "source_set_hash": "a5c5fcfadfdb90e1d6debb1a103cade73b8076dd0e89fb9bd8b1d856b6e1c3eb",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -95,10 +113,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4c8cc74c99553294a41020f27100c756679c4d8b9094681bdf0ebc6b2bbd2e36",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "e58f09ef1f920cc8b3f9c4fafecc9afc4182dc2d2bec99a6698980285a98a550",
+      "modified": "2026-10-20T15:43:31Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 43977,
+      "size": 52121,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
@@ -119,10 +137,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "960fef1b8cd9d84feadc2dc3989b5af6f82008e8f7ff863c99ebba7a9014f6d3",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "bca324b88e6e980d7b10dafe54d251e7bf2d8cca47abb55acb20f0bd86acb8a5",
+      "modified": "2026-10-20T15:43:31Z",
       "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
-      "size": 77057,
+      "size": 78670,
       "title": "AutoKernel Cross-Workload Keep Gate \u2014 census, blast-radius screen, multi-workload non-regression",
       "type": "handoff-active"
     },
@@ -143,10 +161,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b6d0bafc270e201f0c64c6a3e5dc43fbbe034f5784ed6da1d3103d54c1148319",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "938b9f4e33f0ea20cab81fc50f339aa14fc0063516026b75677298547c45a65a",
+      "modified": "2026-10-20T15:43:31Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 491793,
+      "size": 503105,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -399,10 +417,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "77437f78c9b24ca684a78e36b333c4a1f24f45d0cd73aa25a563ac0b004c4957",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "cc3104ecdd5debe8fd6eb094a93d1faa74446fbb769295004f2beac69448d82d",
+      "modified": "2026-10-20T15:43:31Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 57742,
+      "size": 64809,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -1095,10 +1113,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "06167c7b289b9f9062679fba69b8ef0318caca29ea71d40741bace25d1b64861",
-      "modified": "2026-10-07T21:10:41Z",
+      "content_hash": "50e3ce31876452e0a7b6bf3856811f1beed77a1dd8543a549bdc7dba219064c6",
+      "modified": "2026-10-20T15:43:31Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 25122,
+      "size": 32963,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
@@ -1407,10 +1425,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "da048055163870886b39e1229cecf1400afbd8fb00a9636939516022d1005713",
-      "modified": "2026-10-08T13:16:09Z",
+      "content_hash": "0c396cb852ddc58cb7a409d0dd9c891d32cffdc6fa59a7e11991eb0883140463",
+      "modified": "2026-10-20T15:45:36Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 410059,
+      "size": 412642,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9431,6 +9449,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "e2f5e4e8a0398d9b6f90f76e76d7a97221fb031fc8d62a631258155d66e2c48e",
+      "modified": "2026-10-20T15:45:36Z",
+      "path": "progress/2026-10/2026-10-20.md",
+      "size": 6807,
+      "title": "2026-10-20",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-10-07T21:10:41Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -10863,7 +10889,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1356,
+  "total_new": 1357,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -594,6 +594,11 @@ After distillation, build ONE plan covering:
 - Every `monitor`, `knowledge-only` or `decline` closure has an explicit outcome review with a
   grounded basis; referenced K/M packets also require opportunity reviews. Main review must
   verify its premises, including fulfilled existing work and the scope of actual execution gates.
+  **Decline/closure terminal text is parsed, not read:** any packet token (`P1`, `K2`, `M3`) or task ID in a
+  terminal mapping counts as a binding. A `P` token demands a preserved outcome plus `task_refs`; a task ID
+  demands an owner-bound `task_ref`; an explicit decline with a `task_ref` fails. Write a decline's reopen
+  condition without naming an ID (e.g. "reopen only if the width probe shows..."), and keep sibling IDs in
+  the basis prose of the outcome review, not the terminal mapping. (Hit 2026-10-20 Stage 3.)
 - Operational follow-through and enabling wiring retain their distinct recommendation mappings.
 - Every immediate empirical experiment or replay names all six minimum-rigor controls, or gives a
   concrete reason why a control is inapplicable and names the replacement conformance/provenance check.
