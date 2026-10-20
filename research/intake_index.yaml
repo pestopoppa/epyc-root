@@ -40632,10 +40632,15 @@
   verdict_justification: 'adopt_patterns/component: porting in progress on the experimental branch; EAGLE-3 (#18039) deferred to the MI210 GPU (~July). Production untouched.'
   notes: Operator-directed MTP/spec-dec review 2026-06-22; tracked in handoffs/active/speculative-decoding-mtp-refresh.md. Web/vendor numbers are observations (MEASUREMENT.md).
   handoffs_updated:
-  - speculative-decoding-mtp-refresh.md
-  - inference-acceleration-index.md
+  - 'speculative-decoding-mtp-refresh.md'
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'kv-unified-stack-rollout.md'
+  - 'autokernel-champion-aggregate.md'
   handoffs_created:
-  - speculative-decoding-mtp-refresh.md
+  - 'speculative-decoding-mtp-refresh.md'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Drafter-state findings (set_state no-op for MTP/DFlash2, pending_h uncarried, slot save omits ctx_dft) feed KPF-13.1, KPF-19.1, KVU-12.2 and CH-18 (packets P2-P4); the stale pointer to inference-acceleration-index.md (not an active handoff) is dropped from handoffs_updated.'
   verification: dive-overturned
   read_depth: PARTIAL
   source_revision: 'PR #22673 MERGED 2026-05-16T12:06:24Z, merge commit 255582687b8dd211fdbc582e43ab842491554e94 (54 files); #23398 MERGED 2026-06-07T12:50:55Z (04eb4c446d22b63449d5dc41c038987d4d8cc3a6); #18039 MERGED 2026-06-12T07:21:07Z (88a39274ecf88ba11686acd357b59685b1cbf03d); #22400 CLOSED 2026-05-16T13:49:56Z unmerged; all three merged PRs are ancestors of v10 ffc1bac82, champion e332293, fork a1f0c8c. Read from gh pr view/diff JSON on disk, retrieved 2026-10-20. ik #1744 NOT read.'
@@ -266397,8 +266402,12 @@
   dive_corrections: |-
     2026-10-20 (Stage-2 dive, read from disk at 481e481). Q1 recurrent state COPIED vs SHARED: PARTIAL, by path. Partial hit on a new request: whole-block page COPIED source->private block by the worker (allocate_new_blocks/_apply_cow queue it, copy_kv_cache_blocks_inplace executes it before forward). Running aligned-Mamba owner: the cache entry is moved to a COPY (move_block_hashes + queued copy) and the owner keeps its block. Block-aligned Mamba hit (no partial): NOT copied by this PR; the hit block is shared by reference ('When a new request hits the prefix cache, the last block saves the hit state', single_type:L1527-L1530) and the model kernel reads it (kernel side not in these PRs: NOT-FOUND-IN-SOURCE). Q2 lifetime: both endpoints retained via refcount until end of the schedule() call; deferred past the copy step only when defer_block_free (KV-consumer connector + >1 in-flight batch); claim 4 narrowed. Q3 granularity: claims 0-2 narrowed (rename not new; EAGLE one-unit only for non-Mamba; tail-only checkpoint misses the system-prompt+private-suffix shape, fixed upstream later by a junction checkpoint, opt-in). Q4: #46384 contains no MTP-specific recurrent/draft state handling: the draft model has no mamba layers (coordinator:L737-L743) and the drafter's attention KV is rebuilt by dropping one hash unit (single_type:L527 'drop the last matched block to force recompute... hidden states for eagle drafting head'); computed-token counts untouched. A within-PR regression test (test_hybrid_partial_hit_with_eagle_stays_within_group_blocks) shows the first draft crashed CoW with block_idx >= len(req_blocks). Q5 later fixes: see LEDGER.md dive-surfaced list; MTP+align+partial hits was the defect-rich area (poisoning #45477/#47861 -> #51113; #52419; #53945; #54713; #58368 regression; #59759 spec scratch block published as checkpoint; #60533). Declined/not-read: tests/v1/core/test_deferred_block_free.py, mooncake store coordinator files. Survey kv-serving-survey-REPORT.md:116 stands (take_pending_cow_copies exists) and line 143 misattributes the flag to #45939.
     2026-10-20 second reader (independent agent): re-find 22/23 exact (1 whitespace-normalized); support yes 17 / partial 6 / no 0; disagreements carried to the Stage-3 plan: intake-2061#1.4, intake-2061#3.10, intake-2061#1.12, intake-2061#4.18, intake-2061#1.21, intake-2061#2.22
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to KPF-17.1 (n_tokens binding), KPF-17.2 (same-iteration purge), KPF-18.1/18.2 (trunk-then-suffix and MTP parity), KPF-04 (copy-vs-share table) in packet P1; KVU-12.1 hit-length curve in P3 (Stage-3 plan intake-hybrid-prefix-cache-20261020).'
   notes: "Retrieved 2026-10-20 via gh pr view (body + file list only; code not read).  Survey cross-reference: kv-serving-survey 2026-10-04 section 2.1 already cites #46384 for take_pending_cow_copies and #45939 for prefix-match-unit; NOT covered by the survey: the hit-length convergence rule, the two CoW paths (private-destination vs cache-owned-destination), deferred-free lifetime fencing, and the single-tail-checkpoint rule. Design pointers for our fork (hypotheses, unverified): our recurrent half cannot share a block the way attention KV can, so the vLLM 'copy the recurrent state from the shared block into a private one' step corresponds to our checkpoint restore (KPF-13); the tail-only checkpoint rule corresponds to the explicit junction checkpoint (KPF-15). Whether vLLM shares versus copies recurrent state is settled only for the CoW-on-hit case here; running-request behaviour needs the code. Test files listed include tests/v1/core/prefix_cache/test_partial_prefix_cache_hits.py and test_deferred_block_free.py (not read). Read depth DIGEST-equivalent: PR description only."
   recommended_actions:
   - "Operator-review candidate: dive the diff (kv_cache_coordinator.py, single_type_kv_cache_manager.py, scheduler.py, gpu_model_runner.py) for the recurrent-state copy path, async scheduling and spec-decode interaction."
@@ -266504,8 +266513,12 @@
   dive_corrections: |-
     2026-10-20 (Stage-2 dive, read from disk at 6bc6f2d). Claim 0 narrowed (BlockHashListWithBlockSize pre-existed; PR switched concatenation to end-hash selection). Claims 1-3 confirmed with line anchors. Refcount/alias lifecycle: a block is the only refcounted object; aliases live in BlockPool.cached_block_hashes_by_block and die on eviction-by-reallocation, reset or promotion, never on ref_cnt reaching 0 (free_blocks leaves keys live). Survey misattribution: --prefix-match-unit flag is #46384 not #45939.
     2026-10-20 second reader (independent agent): re-find 6/6 exact; support yes 6 / partial 0 / no 0; disagreements carried to the Stage-3 plan: none
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Alias-lifecycle comparison becomes the lifecycle cases in KPF-17.2 and the KPF-04 wiki compile (packet P1).'
   notes: "[1/N] predecessor found by name in the body of intake-2061 (#45939 is cited there as the source of the primitives). Retrieved 2026-10-20.  Survey cross-reference: survey section 2.1 cites #45939 only as the origin of --prefix-match-unit; the alias-map/refcount lifecycle (a block is the refcounted resource, aliases are metadata) is NOT covered by the survey and is the part most relevant to KPF refcount/lifetime questions. Our analogue: slot-level checkpoints are the 'aliases', cells are the refcounted resource."
   recommended_actions:
   - "Operator-review candidate: read block_pool.py diff for the alias lifecycle and compare to our seq_cp / checkpoint lifetime rules (KPF-14)."
@@ -266692,8 +266705,12 @@
   dive_corrections: |-
     2026-10-20 Stage-2 dive (research-intake, read_depth PARTIAL). Read in full: PR body, diff, all six comments (gh JSON), pr.diff. Read at merge 430a95a in named sections: single_type_kv_cache_manager.py, kv_cache_coordinator.py, envs.py. (1) Mechanism CONFIRMED. (2) OVERTURNED premise: the PR body has NO end-to-end numbers; the only figures are the author-asserted ~80% of blocks at block_size 128 and 10 passed CPU unit tests. The E2E (Kimi-Linear-48B-A3B-Instruct, block_size 512, interval 2048) is described as "validated ... with the config above" with no values. (3) The E2E block_size 512 is the regime the body itself describes as unaffected ("while larger block sizes (256/512) are unaffected"), so the E2E cannot be evidence for the benefit it is cited for. (4) Spacing: per_segment = segment_tokens // block_size and per_segment <= 1 returns None (dense); the validator checks only interval % scheduler_block_size, so interval 768 at block_size 512 is silently dense and 1280 gives 1024-token spacing. (5) Merged vllm/envs.py still reads "Applies to sliding-window attention for now but not yet Mamba/linear attention."; reviewer request (comment IC_kwDOI7xefs8AAAABGYYP0g) not applied in this PR. (6) Merged base cache_blocks docstring still reads "Only SWA acts on it." (7) depends_on: none. The PR builds on #43447 (merged, sliding-window predecessor) which is not an intake entry; not a claim dependency for this entry. (8) Trade-off numbers for KVU-12 memory sizing are NOT in the source; only the ratio floor(interval/block_size) and the resume bound are derivable.
     2026-10-20 second reader (independent agent): re-find 17/17 exact; support yes 14 / partial 3 / no 0; disagreements carried to the Stage-3 plan: intake-2063#0.4, intake-2063#0.6, intake-2063#2.13
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Retention design informs the KVU-12.1 checkpoint-policy arms (counts and bytes from our own matrix; no external figure imported) in packet P3.'
   notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (it names no retention interval). Directly relevant to checkpoint-density policy: our per-slot checkpoints are large and the survey's lesson is snapshots at branch points, not a dense grid; this PR is the vLLM answer for the dense-grid case. Note the PR was written with AI assistance (stated in its body). Relevant to KVU-12 np x ctx memory arithmetic: snapshot count per context is the cost knob."
   recommended_actions:
   - "Operator-review candidate: compare retention-interval policy to our --ctx-checkpoints / checkpoint-min-step density when sizing np x ctx."
@@ -266738,6 +266755,9 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Stage1-unverified; hit-length-vs-spacing is measured on our fork by KVU-12.1. Trigger: an owner needs the reporter''s data that our measurement cannot supply; dive then. Plan item M1.'
   notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (it does not mention this issue or the 528-token floor). Value for us: it quantifies the granularity cliff that block-aligned recurrent state creates; our checkpoint-based design has the analogue that a fork can only start at a checkpointed position, so a prompt shorter than checkpoint spacing gets nothing. Low novelty on its own; the fix lives in intake-2061/2071."
   recommended_actions:
   - "Operator-review candidate: derive the equivalent hit-length-vs-checkpoint-spacing curve for our fork as a KPF-18 gate row."
@@ -266783,6 +266803,9 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage1-unverified design-doc digest that adds little beyond the survey; retained as background (plan item K1).'
   notes: "Retrieved 2026-10-20 via WebFetch (DIGEST, so claims stay unverified).  Survey cross-reference: ADDS LITTLE beyond the survey: section 2.1 already covers HybridKVCacheCoordinator, the fixed-point shrink and the page-size padding. Rank low for a dive. Minor new items: the 'exactly two attention types' limit and the shared single LRU across groups."
   recommended_actions:
   - "No separate action; use the survey for this content."
@@ -266888,6 +266911,9 @@
     2026-10-20 second reader (independent agent): re-find 7/7 exact; support yes 2 / partial 3 / no 2; disagreements carried to the Stage-3 plan: intake-2066#0.0, intake-2066#2.3, intake-2066#2.4, intake-2066#3.5, intake-2066#3.6
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Dived: the junction checkpoint exists because EAGLE-style hits drop one hash unit; retained as design rationale, no fork task depends on it (plan item K1).'
   notes: "Retrieved 2026-10-20 via WebFetch (DIGEST).  Survey cross-reference: Mostly covered: survey section 2.1 quotes --enable-mamba-shared-prefix-checkpoint and --prefix-match-unit. NOT covered: the explicit statement that the junction checkpoint is gated on EAGLE/MTP on the Mamba group, which is the key spec-decode coupling question for our KPF-15 junction checkpoint with DFlash2/MTP; rank low-medium, worth a one-pass read of the source gate. The mamba-cache-mode option is NOT on this page as fetched; do not cite its values from here."
   recommended_actions:
   - "Operator-review candidate: read the code gate for the MTP condition to learn why a junction checkpoint needs spec decode."
@@ -266930,6 +266956,9 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage1-unverified provenance for the llama_state_seq_*_ext API the fork relies on; no task (plan item K1).'
   notes: "Retrieved 2026-10-20.  Survey cross-reference: survey section 2.4 describes the resulting --ctx-checkpoints behaviour and cites #24176/#25592 etc. but does not cite this origin PR; this entry is provenance for the *_ext state API only (ADDS LITTLE). Rank low."
   recommended_actions:
   - "No new action; provenance record for the llama_state_seq_*_ext API the fork's checkpoint copy relies on (KPF-13)."
@@ -267080,8 +267109,12 @@
     2026-10-20 intake-2068 Stage-2 dive. (1) The entry's key_claims do not name a bug; the PR body frames the change as a step toward fixing 'forcing full prompt re-processing' (A04). (2) The secondary-source claim that --checkpoint-every-n-tokens was removed here is CONFIRMED (A08). (3) The Stage-1 'operator-review candidate' (confirm v10 carries this placement logic) is RESOLVED: v10 carries it. Adoption of #22929 is not new work. (4) Found a pin gap on the KPF branch: the same-slot divergence erase (A21, A22) does not check pinned, so a pinned junction checkpoint with pos_max > pos_next is erased. KPF-15's claim is limited to create_checkpoint's erase loops (A24), so it is not contradicted, but the gap is undocumented. (5) Champion spacing gate (A17) has no last-user-message exemption; the KPF branch adds one (A23). (6) Handoff line references in 'What already exists in our tree' match v10 ffc1bac82 (create_checkpoint at L2365, pre_decode at L2984, user-start placement at L3641-3679 in v10), so they are accurate for v10 and not for the champion. The champion has moved them (create_checkpoint L2396, pre_decode L3105, user-start placement L3772-3864). Any citation must name its tree.
     2026-10-20 Verdict summary: CONFIRMED on the mechanism and ancestry; PARTIAL on the goal (narrowed); one dive-surfaced gap on the KPF branch (pin vs divergence erase).
     2026-10-20 second reader (independent agent): re-find 11/11 exact; support yes 9 / partial 1 / no 1; disagreements carried to the Stage-3 plan: A13, A15
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Dive confirmed v10 carries the placement logic; departures and tree-tagged line references recorded by KPF-DOC-1; the proposed pin-aware erase was rejected and replaced by the KPF-17.2 post-divergence fork case (packet P1).'
   notes: "Retrieved 2026-10-20.  Survey cross-reference: survey section 2.4 mentions checkpoints 'created at user-message boundaries (#24176) and near the end of the prompt'; #22929 itself (and the span-extraction mechanism) is NOT cited by the survey. Relevance: this is the checkpoint-placement policy a cross-slot fork's junction checkpoint (KPF-15 checkpoint_at) has to coexist with. Rank low-medium."
   recommended_actions:
   - "Operator-review candidate: confirm our v10 tree carries this placement logic and how it interacts with KPF-15 checkpoint_at."
@@ -267123,6 +267156,9 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Stage1-unverified; the diverge-below-junction case is tested by KPF-17.2 on independent grounds. Trigger: a gate run shows reuse loops after divergence; dive then. Plan item M1.'
   notes: "Retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey as an issue; the survey's section 2.4 states the contested checkpoint-reuse PR tail but not this symptom. Relevance: shows that checkpoint-only recurrent reuse is exact-prefix-position limited, which bounds what a fork can recover when prompts diverge before the checkpoint. Closed without fix, ranking low-medium. Reporter statements are unverified."
   recommended_actions:
   - "No action beyond noting the divergence-before-checkpoint case in KPF-18's prompt mix (operator-review candidate)."
@@ -267164,6 +267200,9 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage1-unverified provenance for the attention-only vs recurrent split; no task (plan item K1).'
   notes: "Retrieved 2026-10-20.  Survey cross-reference: ADDS LITTLE: the survey takes this memory split as given (our fork's 'What already exists' section describes the attention/recurrent halves). Provenance only; the class has since been renamed (llama-memory-hybrid in later file lists). Rank lowest."
   recommended_actions:
   - "No action; provenance for the attention-only vs recurrent split used in KPF-12/KPF-13."
@@ -267275,8 +267314,13 @@
   dive_corrections: |-
     2026-10-20 RFC outcome vs code @ b272cff: partial hits + tail checkpoint shipped (#45939, #46384, #49502); spec-decode/async question answered only by assertion in the RFC, resolved structurally in code; granularity flag renamed to --prefix-match-unit; competing allocation-decoupling #46251 still open draft. Junction checkpoint for EAGLE/MTP (#53945) is the later, separate mechanism and is what intake-2066 documents.
     2026-10-20 second reader (independent agent): re-find 7/7 exact; support yes 1 / partial 3 / no 3; disagreements carried to the Stage-3 plan: intake-2071#3.7, intake-2071#3.8, intake-2071#1.9, intake-2071#3.11, intake-2071#1.12, intake-2071#1.13
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'RFC dive feeds the restore-vs-recompute A/B (KPF-13.1), lifecycle cases (KPF-17.2) and the tail-plus-junction arm (KVU-12.1) in packets P1-P3.'
   notes: "Expansion from intake-2061 / intake-2062 bodies, which cite RFC #45702; retrieved 2026-10-20.  Survey cross-reference: NOT covered by the survey (RFC never cited). Most useful for us as the design-alternatives record: it names the async-scheduling/spec-decode interaction as an open question (relevant to MTP/DFlash2 and our KPF design) and the memory-vs-hit-rate argument for tail-only checkpoints. Comments only partially read."
   recommended_actions:
   - "Operator-review candidate: dive the full RFC thread for the spec-decode / async scheduling resolution."
@@ -267330,8 +267374,12 @@
   source_revision: 'vllm-project/vllm PR #53945, state MERGED 2026-09-08T13:59:59Z, merge commit 263c4ff95fadb62d80f315171b17d4f623494e56 (sha7 263c4ff); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w2a/pr53945.json,.diff,.body.md'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Junction/tail/drop design is the comparison baseline for KPF-18.1 trunk-then-suffix arms and supports keeping checkpoint_at explicit (packet P1).'
   notes: 'Read FULL from disk: pr53945.json (body + comments), pr53945.diff (12 files; production hunks in scheduler.py, kv_cache_manager.py, kv_cache_coordinator.py, single_type_kv_cache_manager.py, cache.py, arg_utils.py; the 359-line new test file and edits to 4 test files read for intent). Review comments contain a maintainer request to cut about 1000 lines of tests (author trimmed), CI notes and a bot walkthrough; no substantive design objection recorded. Merged 2026-09-08. Not read: the Reuse-Pareto figure and 84-config grid the body says are attached in a comment below (not present in fetched comments). Bearing on our fork: KPF-15 (explicit junction checkpoint_at) converges on the same shape (end the chunk exactly at the junction, publish state there) but removes vLLM''s two limits: reactive junction discovery and the hash-unit drop. This PR contains no drafter-state restore or recompute logic.'
   reader_should_conclude: Cite the junction-stop and prompt-bounded-publish mechanics and the one-predicate-both-sides gating when reviewing KPF-15/KPF-17; cite the 0-of-84 and block-minus-hash-unit figures only as author-reported simulation results. Do not cite this PR as evidence that vLLM recomputes drafter hidden state (it says only that EAGLE drops one hash unit); do not use the flag name --enable-mamba-fine-grained-prefix-cache as current (renamed to --enable-mamba-shared-prefix-checkpoint).
   recommended_actions:
@@ -267452,8 +267500,12 @@
   source_revision: 'vllm-project/vllm PR #58368, state MERGED 2026-09-24T23:46:43Z, merge commit d5051abaf19a1cce19159756a79d27ccb0b2fccf (sha7 d5051ab); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w2a/pr58368.json,.diff,.body.md'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'MTP-on vs MTP-off hit parity becomes KPF-18.2 item 1 (packet P1); vendor-reported numbers are not cited.'
   notes: 'Read FULL from disk: pr58368.json (body, 6 comments: CI triggers only), pr58368.diff (2 files, whole diff). Not independently checked: that #55390 is the cause (author statement; #55390 not in index), and the benchmark numbers (single-run, author-reported; images and commands given in the PR, not reproduced). Bearing on our fork: the failure class is two derivations of one position. KPF-15''s explicit checkpoint_at is one source by construction; KPF-18 must still prove MTP-on and MTP-off report identical n_fork_tokens.'
   reader_should_conclude: Cite the predicate-mismatch lesson and the existence of a measured cost; cite the hit and TPS numbers only as author-reported single-run values. Do not cite this as a vLLM design for restoring drafter state; the diff touches no drafter state.
   recommended_actions:
@@ -267555,8 +267607,12 @@
   source_revision: 'vllm-project/vllm PR #59759, state MERGED 2026-10-06T03:01:20Z, merge commit 6fa67afed999d7cbab6a9a7492b2538dd8c2aff0 (sha7 6fa67af); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w2a/pr59759.json,.diff,.body.md'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Publish-before-written class becomes KPF-17.1 case 1 and the ubatch-period sweep in KPF-18.1 (packet P1).'
   notes: 'Read FULL from disk: pr59759.json (body incl. repro.py, 7 comments: CI, bot selector shadow, one third-party duplicate remark), pr59759.diff (2 files, whole diff). Not reproduced: any GLM-5.3-Flash trial (author-reported, small n). The #56525 duplicate remark is a third-party comment in pr59759.json, unverified; #56525 not in index. Scoping: the scratch block here is a target-model state slot used by MTP speculation; the PR is about a never-written block being published under a checkpoint hash, NOT about drafter hidden state. Bearing on our fork: the failure class (publish a position before the state at it has been written, then serve hits from it) is relevant wherever a KPF checkpoint is captured in a step that also holds speculative or rollback-ring rows, and the trigger is chunk-alignment-dependent, so a trunk-length sweep over one ubatch period is the right control.'
   reader_should_conclude: Cite the publish-before-written failure class and the chunk-alignment-dependent trigger; cite counts as author-reported small-n. Do not describe this as a drafter-state bug and do not claim our llama.cpp fork shares the defect (different data structures); it motivates a test, not a finding about us.
   recommended_actions:
@@ -267774,8 +267830,12 @@
   - entry: intake-2061
     claim_index: 0
     why: 'The unit hash_block_size/prefix_match_unit and finer-than-block resume (unaligned START) that this PR guards against are introduced by #46384; if that entry''s granularity claim were retracted, claim 1''s second half (unaligned start) would change.'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Offset oracle under concurrent fragmented prefill becomes KPF-17.1 case 2 (packet P1).'
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Dedup: exact URL not in research/intake_index.yaml (lane worktree kpf-takeover-20261020, unbounded grep). Not read: nothing in this PR (body, comments, diff FULL); the predecessor PRs #45477/#47861 were NOT read (declined). No second-reader pass has been run on the anchors. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333.
     MAPPING TO OUR CODE (PARTIAL). vLLM publishes a state under a key (position) assigned AFTER the state was written; our checkpoint carries its offset from capture: create_checkpoint is called during batch assembly BEFORE llama_decode and stamps n_tokens = prompt.n_tokens() - n_tokens_cur (the chunk START) while update_tgt reads the slot''s own seq state, so co-batched slots in a mixed ubatch cannot change what is captured, and a later chunk cannot re-label it. The consumer additionally rejects a checkpoint whose pos_max + 1 != p. Residual exposures (each becomes a test, not a finding): (a) the "end" kind in find_fork_source snapshots an idle source''s LIVE recurrent state and trusts src_pos_max == lcp - 1; if MTP rollback-ring rows or draft scratch rows are visible to the PARTIAL_ONLY read, the state is not the state at lcp (this is the #59759 shape from intake-2061''s ledger A1 case 1); (b) the guard checks attention positions only, so it cannot detect a recurrent state that is internally
     at a different token count; (c) KPF-18 item 4 compares fork vs fresh against a noise floor, which cannot isolate a one-checkpoint poisoning from unified-KV numerical noise, whereas an offset oracle (restore the checkpoint into a fresh seq, decode, compare to cold prefill at n_tokens) can.'
@@ -267910,8 +267970,12 @@
   - entry: intake-2061
     claim_index: 0
     why: 'The EAGLE drop expressed in hash-unit/alignment terms (prefix_match_unit) is #46384''s construct; claim 0 is about a boundary computed from it.'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Identical-resend / empty-suffix arm becomes KPF-18.1 arm B (packet P1).'
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry; PR and #60533 are a pair but kept as two entries per instruction. Dedup: exact URL not in the index. Read FULL. Not read: PR #53945 (predecessor, already in the intake-2061 dive-surfaced list S1) beyond what this PR quotes. No second-reader pass run. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333. MAPPING TO OUR CODE (PARTIAL,
     by construction). The vLLM double-penalty (cap AND drop) has no direct analogue: we have no block-granular drop; drafter state travels in the checkpoint (KPF-13). The cap does map: KPF-11 requires p < task.tokens.size() (handoff L230), find_fork_source enforces p >= n_task -> skip (L1787) and the "end" kind needs lcp < n_task (L1781). Consequence: an identical resend, or a fan-out child whose prompt EQUALS the trunk (empty suffix), can never use a checkpoint at the end of the prompt, including a pinned checkpoint_at [-1]. It falls back to the ordinary pre-end checkpoints at n-4 and n-4-n_ubatch (L4219), which are not pinned and are subject to checkpoint_min_step eviction, or to 0. The cost is a few tokens when those checkpoints exist, but nothing in KPF-17/18 asserts that they do. This is a test gap, not a demonstrated defect.'
   recommended_actions:
@@ -268057,6 +268121,9 @@
     why: 'The hash unit and fine-grained lookup this PR''s eagle_proof_margin refers to are #46384 constructs.'
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'No defect in our fork (producer and consumer share a process); the loose lesson is covered by the resend arm in KPF-18.1; no separate task (plan item K1).'
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry; second of the #54713/#60533 pair, kept as its own entry. Dedup: exact URL not in the index. PARTIAL read, see dive_corrections for what was not read. No second-reader pass run. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333. MAPPING TO OUR CODE (NOT-FOUND-IN-SOURCE as a defect; one transferable lesson). Our producer and
     consumer of checkpoint positions live in one process and one file, so the scheduler-vs-worker grid disagreement has no direct analogue. The "derive the bound in one helper" lesson applies loosely: the n-4 / n-4-n_ubatch offsets (L4219), the is_ckpt_at positions (L4160-4170) and find_fork_source''s p >= n_task rule (L1787) are three separate statements of which positions are reusable. We judge a refactor not worth a task; the identical-resend consequence is covered by W2B-A2 on intake-2076.'
   recommended_actions: []
@@ -268189,8 +268256,12 @@
   - entry: intake-2061
     claim_index: 2
     why: The tail-only checkpoint rule that section 3 shows cannot serve a trunk+suffix prompt is the rule intake-2061 claim 2 records.
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Tail-only miss reproduction becomes KPF-18.1 arm A control; orchestrator-side checkpoint_at assertion is KPF-21''s test (packet P1).'
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Dedup: exact URL not in the index. FULL read. Not run: the tests. No second-reader pass run. Our-code reads: llama.cpp experimental/kv-prefix-fork-p1-20261004 @ 857d7ec1f tools/server/server-context.cpp (create_checkpoint L2763-L2830; cur.update_pos(slot.prompt.n_tokens() - n_tokens_cur, ...) L2818; chunk break is_ckpt_at L4199; checkpoint_offsets {4 + n_ubatch, 4} L4219; ckpt_pinned L4270; find_fork_source L1725-L1815, "end" kind L1781, p >= n_task exclusion L1787, ckpt.pos_max + 1 != p guard L1794) and branch p1r-20261020 @ a1f0c8cf9 (same guards at L1818/L1825/L4369/L4433). Handoff lines from lane worktree kpf-takeover-20261020 @ 7de5c16d1: KPF-11 L225-L232 (p < task.tokens.size() at L230), KPF-15 L256, KPF-17 L271, KPF-18 L293 (item 4 L304), KPF-21 L333. MAPPING TO OUR CODE (CONFIRMED as design rationale for KPF-15, NOT-FOUND as a defect in our code). Section 3 is the failure our explicit checkpoint_at exists to prevent: with a tail-only
     checkpoint a child sharing only the trunk gets ~0. vLLM detects the junction automatically from observed sibling behaviour; ours is named by the caller, so the residual risk is the CALLER omitting checkpoint_at (KPF-21 / orchestrator), and the engine''s silent fallback is then exactly the tail-only case. Section 1 (reconciliation floors to a lower common boundary) has no analogue: we have no per-group hit reconciliation, one cell-granular attention share and one checkpoint-restored recurrent state at p (KPF-12/13). The strict-xfail style (a defect pinned as an executable assertion that turns red when fixed) is itself reusable for KPF-18 expected-miss arms.'
   recommended_actions:
@@ -268256,8 +268327,12 @@
     effect: narrowed
     note: Anecdotal; one reporter identified the cause as p-min semantics, the Windows report has no cause and was redirected to a new issue.
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'autokernel-champion-aggregate.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Dive-overturned as a checkpoint fix; only the explicit draft n-max/p-min launch-recipe check is retained, in CH-18 (packet P4).'
   reader_should_conclude: Cite as an MTP/speculative clean-up already present in v10, champion and fork. Do NOT cite it as a checkpoint-invalidation fix. Do NOT cite the 14% or 15-20% figures as measurements of any kernel of ours; they are unverified third-party anecdotes on other hardware.
   dive_corrections: '2026-10-20 (Stage-2b): Stage-1 premise (from the intake-2068 ledger, source: a comment on #22929) called this a checkpoint-invalidation fix. Read in full: title and body are an MTP clean-up; the checkpoint link is one commenter hedged remark. Verdict set to already_integrated (ancestry confirmed in v10, champion, fork). Claims 0-1 verified against body and diff.
 
@@ -268326,8 +268401,13 @@
   - entry: intake-2068
     claim_index: 1
     why: Intake-2068 (#22929) checkpoint placement/pinning logic selects and erases checkpoints using the same pos_min/pos_max fields whose meaning is wrong for SWA here.
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'autokernel-champion-aggregate.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Open SWA pos_min TODO becomes KPF-17.4; the upstream follow-up is on the CH-18 watch list (packets P1, P4).'
   reader_should_conclude: 'The pos_min/pos_max range of a saved checkpoint is KNOWN-WRONG for SWA models in v10, champion and fork (open upstream TODO). Any KPF design that trusts pos_min for coverage on an SWA cache (drafter or Gemma-class) must not. Do not claim the pos_max - n_swa proposal is merged; it is not. Do not claim hybrid-recurrent (single-position state) is affected: it is not shown to be.'
   dive_corrections: '2026-10-20 (Stage-2b): Stage-1 listed #24411 only as a code-comment citation. Full read: it is a merged workaround plus a left-open TODO, not a fix. Ancestry confirmed in all three trees; TODO quoted in champion (L2429-2431) and fork (L2864-2866), and the workaround at fork L4153-4156. Analysis in LEDGER.md (A-6).
 
@@ -268383,6 +268463,9 @@
   depends_on: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Near-end checkpoint change is already an ancestor of v10, the champion and the fork (dive-w2c ancestry check); no work.'
   reader_should_conclude: 'Provenance only: the near-end checkpoint offsets in our trees come from this PR. Nothing to port. The "<=4 begin-thinking tokens" assumption is an upstream assumption, not verified for our model lineup.'
   dive_corrections: '2026-10-20 (Stage-2b): Read in full (diff 4 KB, 7 comments). Ancestry confirmed in all three trees. No adoption work.
 
@@ -268446,6 +268529,9 @@
   depends_on: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Closed upstream; the fork''s eviction already differs; revisit only if a gate run shows older junctions evicted under pressure.'
   reader_should_conclude: Unmerged and closed; do not cite as upstream behaviour. Cite only as a reported failure mode (dense recent checkpoints evict older ones under FIFO, forcing a full re-process) and one candidate eviction policy. The fork already pins and uses oldest-unpinned eviction; whether gap-based eviction beats it is untested.
   dive_corrections: '2026-10-20 (Stage-2b): Stage-1 description of this as the request that spawned #22929 is correct; the PR itself did not land. Merge state verified from json (CLOSED, mergedAt null).
 
@@ -268564,8 +268650,13 @@
   - entry: intake-2080
     claim_index: 2
     why: 'Claim 2 restates the #24411 maintainer comment and the TODO that wave-2 entry intake-2080 verified; if that comment were retracted, claim 2 must change. The applying session replaces intake-2080 with the assigned intake id.'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'autokernel-champion-aggregate.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'SWA saved-state masking exposure is tested by KPF-17.4; the related reuse-threshold fix rides the CH-18 pull (packets P1, P4).'
   reader_should_conclude: 'Cite as the origin of the SWA checkpoint range bug, already present in v10, champion and fork. Do NOT assume qwen35 hybrid/MTP lanes are exposed: the masking acts only where swa_type is not NONE (Gemma-class targets, SWA drafters). Do NOT cite the 71-versus-23 token figure as ours. Any design that trusts a checkpoint or restored-state pos_min on an SWA cache must use the window start (pos_max - n_swa + 1), not the live-cache pos_min.'
   dive_corrections: '2026-10-20 (Stage-2b): Stage-1 (wave-2 ledger) listed this only as a maintainer-comment citation, "not yet checked for presence in our trees". Read in full from disk (diff 1.5 KB, body, no comments). Ancestry of the merge commit confirmed in v10, champion and fork. Found the full scope is wider than the checkpoint: the masking sits in state_write for ANY seq_id != -1, so slot save files and the RAM prompt cache are affected too, which #30580 (post-freeze) corroborates and fixes on the server side. Surfaced #30580, #29480, #30514 as follow-on sources (see ledger). No claim overturned.
 
@@ -268696,8 +268787,12 @@
     effect: narrowed
     note: 'v10 and fork code read; the sentence that follow-ups explain the difference is inferred from #25472 appearing in git log -S, not from reading that PR.'
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'User-start checkpoints exist only on the chat lane; KPF-18.3 item 3 records the request lane per trunk request (packet P1).'
   reader_should_conclude: 'Provenance and behaviour reference for how checkpoints are placed in v10/champion/fork: near-prompt-end offsets, user-message starts when the request carries message_delimiters, spacing 8192 with the last user message exempt. Do NOT assume user-start checkpoints exist on the orchestrator /completion lane (raw prompt, no delimiters). Do NOT cite the 4096-token figure as measured; it is the maintainer estimate.'
   dive_corrections: '2026-10-20 (Stage-2b): Wave-2 and the intake-2068 ledger cited #24176 only as the origin of "user-message starts" in the placement policy. Read in full from disk (diff 30 KB, body, 18 comments). Ancestry confirmed in all three trees. Confirmed the handoff statement about placement; added that placement requires message_delimiters in the request and that v10 carries later follow-ups. No claim overturned.
 
@@ -268752,6 +268847,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Cautionary example for drafter-state review (bind by explicit id, never by position); no implementation action (plan item K1).'
   notes: 'Read FULL from disk: pr55390.json (body, 10 comments), pr55390.diff (2 files, 237 lines), comments dumped to pr55390.comments.md. Not read: #56026, #52771, #52047, #56791. Third-party measurements (GB10 A/B, CMP 170HX, Qwen3.8-Flash-Next live replay) are comment text, not independently verified. gh reports headRefOid ccda95b (the CI-triggered commit) and merge commit 0bce411.'
   reader_should_conclude: 'Cite for: the exact-partition guard before a positional drafter-identification rule, and the stated failure mode of a positional rule when drafter caches span groups. Do NOT cite as primary evidence that this PR caused the #58368 hit-rate regression (it never mentions hit rate); cite #58368 for that and this PR only for the precondition. Our fork binds the drafter by explicit context (ctx_dft / checkpoint_at), so no positional inference is needed.'
   recommended_actions:
@@ -268908,8 +269006,12 @@
   source_revision: 'vllm-project/vllm PR #53614, MERGED 2026-09-06T05:18:16Z, merge commit 144e79c8106da23141ac010394b782f730cc7fe8 (head 80cd58db5ee1f04094e29f66300912ff095bb050); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w3b/pr53614.json,.diff,.body.md,.comments.md'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Position-binding re-key class becomes KPF-17.1 case 1 (packet P1).'
   notes: 'Read FULL from disk: pr53614.json (body, 10 comments), pr53614.diff (11 files, 1077 lines). Production hunks read: scheduler.py, single_type_kv_cache_manager.py, kv_cache_interface.py, kv_cache_coordinator.py, block_pool.py, kda_metadata.py. Not read: MooncakeStore connector code, the OCR-Bench artifacts, the review thread beyond the two quoted comments. Performance workload is exact token-ID prompts on a 2-node Kimi-K3 deployment: idealised, single operator, unreplicated.'
   reader_should_conclude: 'Cite for: (1) manager and worker must share one checkpoint-validity predicate; (2) the checkpoint must be keyed at the position actually captured, not the provisional boundary (re-key bug); (3) a checkpoint step that skips scratch relocation is a source of unwritten registered blocks (#59759). Cite performance and OCR figures only as author-reported. No baseline accuracy arm exists in the body.'
   recommended_actions:
@@ -269070,8 +269172,12 @@
   source_revision: 'vllm-project/vllm PR #52789, MERGED 2026-08-22T17:32:40Z, merge commit 9eb9d9d3953959695108600c8ed33d36bc6a1e5f (head d46f5a4e9b71c5f1809801953be297c90c2a863f); body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w3b/pr52789.json,.diff,.body.md,.comments.md'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Forced chunk-end split cost is measured by KPF-18.3 item 1 before any intra-batch capture (packet P1); author-reported figures not cited.'
   notes: 'Read FULL from disk: pr52789.json (body, 25 comments: mostly CI triggers; reviewer test proposal and multimodal note), pr52789.diff (12 files, 1021 lines; production hunks in scheduler.py, single_type_kv_cache_manager.py, kv_cache_interface.py, kda.py, kda_metadata.py). Not read: the three attached guidellm JSON files, FlashKDA source. The kernel''s export semantics are inferred from the metadata hunks, not from kernel source.'
   reader_should_conclude: 'Cite for: splitting a prefill at a state-capture boundary costs a second full forward, and a kernel that exports an intermediate state inside one forward avoids it. All TTFT figures are author-reported single runs on Kimi-K3 with a FlashKDA kernel and are NOT transferable to llama.cpp CPU/HIP prefill. Do not cite as accuracy evidence; none is in the PR.'
   recommended_actions:
@@ -269218,8 +269324,12 @@
   source_revision: 'vllm-project/vllm PR #56525, OPEN (draft pending CI + unit tests, mergedAt null), head 557596bf7aa40b315d1b743f44e296cab3c423e7; no merge commit, ; body, comments, file list via gh pr view and full diff via gh pr diff, retrieved 2026-10-20, read from disk /mnt/raid0/llm/tmp/dive-w3b/pr56525.json,.diff,.body.md,.comments.md'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Abort-then-retry becomes KPF-17.1 case 3 (packet P1); the fence mechanism is not ported.'
   notes: 'Read FULL from disk: pr56525.json (body, 3 comments), pr56525.diff (4 files, 215 lines, pinned at head 557596b because the PR is OPEN and may change). The body heading differs from the API title (body: ''Guard mamba prefix-cache hits against state not yet committed by its writing step (abort/race poisoning)''). Not read: sister PR #56524, #35219, the author''s repro scripts. Open PR: content may change or be closed; re-pin before any citation in a plan.'
   reader_should_conclude: 'Cite for: the failure CLASS (a hash published at schedule time before the state is written, with abort as the trigger) and the two rejected remedies. Do NOT cite as a landed vLLM design or as validated: it is an unmerged AI-assisted draft validated on one machine, and it is not a substitute for #59759.'
   recommended_actions:
@@ -269399,6 +269509,9 @@
     '
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Dive-overturned and closed unmerged; its needle-recall oracle is rejected; the replacement test pull request is a separate dived entry (intake-2099).'
   notes: 'Identity resolved via gh pr view and gh api: PR (not an issue), state CLOSED, mergedAt null. Read: body, all 5 comments (the 2nd in two chunks), test-file hunks from the diff (grep of symbols: _mamba_block_size, _build_needle_manual, _recall, test_multi_turn_decode_written_mamba_prefix_cache, CorruptionDetected). NOT read: full diff text, #53189, #48198, #48668, #46384, #47782 (named by the body; not fetched). Our own fork is not fully mapped to the test; the cold-race arm is absent in this PR, so the no-arm finding only bears on the W2B-A1 cold-race case if the replacement reinstates it.'
   reader_should_conclude: 'Do NOT treat PR #48970 as an available oracle or as merged upstream coverage. It is a closed, superseded test PR whose recall-based grading was judged flaky by its own author. For KPF-17 use an offset/logit oracle (W2B-A1), not this test. Check the replacement (#53189) before citing any e2e result.'
   recommended_actions:
@@ -269500,6 +269613,9 @@
     '
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Field reports are one-setup and unquantified; the mechanism is covered by the KPF-17.1 offset oracle; the headline figure is not cited (plan item K1).'
   notes: 'Read: issue body (full), comments via gh api: each comment digested to 260 chars; ~10 read in full (puririshi98, amittell, shaharmor98, estrella159 x3, dribnet, cduk). 114 KB of comments; not every comment read in full. The 20% figure is reporter-internal and was not reproduced in our harness (we have none for this model). NOT read: #48198 (named by puririshi98 for corruption details), #45614, #46281, #47087, #47194, #52897.'
   reader_should_conclude: 'This is the umbrella report for MTP + prefix-caching corruption. Its magnitude is not established: do NOT cite 20 percent as a measured rate. Cite it only as the reporter''s claim. Fix attribution must come from the individual PRs, not this thread.'
   recommended_actions:
@@ -269580,6 +269696,9 @@
     '
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Reactive shared-prefix admission is superseded by explicit checkpoint_at; retained as design lineage (plan item K1).'
   notes: 'Read: PR body (full), diff (+/- lines for kv_cache_coordinator.py and scheduler.py fully; test file read by symbol grep only), 7 comments (read in full, bot comments skimmed). NOT read: arXiv 2411.19379 (id unverified), the full test file, CI results. Because this is merged main code, the "Marconi lineage" framing in the ledger is the PR author''s own description; the paper is not dived.'
   reader_should_conclude: Shared-prefix admission on hybrid caches is detected reactively and split at block_size floors. It is a vLLM design fact, not a measurement. Our KPF-15 explicit checkpoint_at is the non-reactive analogue; do not treat the PR body's latency figures as a result for our fork.
   recommended_actions:
@@ -269660,8 +269779,12 @@
     2026-10-20 second reader (independent agent): re-find 4/4; support yes 2 / partial 2 / no 0; disagreements carried to the Stage-3 plan: idx 106, idx 108
 
     '
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Fixed-interval checkpoint arm is part of KVU-12.1 (packet P3); the 0% figure is overturned and not cited.'
   notes: 'Identity: ISSUE (not a PR), state OPEN. Read: body (full), correction comment (full), other comments digested to 700 chars each. NOT read: the gist with full methodology (external link), the #52527 retention PR, #53596, #52897, #35703 (block packing), #48815, #50409.'
   reader_should_conclude: 'Do NOT cite the 0%-hit figure as current behavior. Current main with #37898 gets 40/64 on the same workload (author). The residual problem is the block-granularity floor and detection lag; these bear on checkpoint-spacing design, not on a corruption defect.'
   recommended_actions:
@@ -269671,8 +269794,13 @@
   ingested_date: '2026-10-20'
   discovered_via: expansion
   expanded_from: intake-725
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'autokernel-champion-aggregate.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Fork drafter restore is made independent of PARTIAL_ONLY semantics in KPF-19.1 and the fix enters via the CH-18 pull (packets P2, P4).'
   claim_corrections: []
   verification: dive-verified
   read_depth: FULL
@@ -269758,6 +269886,9 @@
   expanded_from: intake-725
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Open pull request, does not apply to v10/champion/fork, author measured no benefit. Trigger: the restore-vs-recompute A/B shows an acceptance drop after fork restore, or it merges into a pull-fresh list (plan item M1).'
   claim_corrections: []
   verification: dive-verified
   read_depth: FULL
@@ -269840,8 +269971,12 @@
   ingested_date: '2026-10-20'
   discovered_via: expansion
   expanded_from: intake-725
-  handoffs_updated: []
+  handoffs_updated:
+  - 'autokernel-champion-aggregate.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'SWA reuse-threshold fix enters via the CH-18 pull with a Gemma-class restored-token check (packet P4).'
   claim_corrections: []
   verification: dive-verified
   read_depth: FULL
@@ -269999,8 +270134,13 @@
     verified_by: research-intake/stage2
   claim_corrections: []
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'autokernel-champion-aggregate.md'
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Slot-file checkpoint change is on the CH-18 pull list and sets the KVU-12.2 bank policy (packets P3, P4).'
   dive_corrections: '2026-10-20 STAGE-2b (wave 4b, dive of PR #26004). Supersedes the PR status recorded in intake-1292 (its 2026-08-22 dive read PR 26004 as OPEN, unmerged, head 06d9d0ff54b5): the PR is now MERGED at 033df86b on 2026-10-08. intake-1292 is not edited here. The w3a dive (intake-725 A-2) stated that the upstream merge "adds checkpoints to the file but still not the live draft context"; the diff confirms it (anchor A03: the draft sequence is cleared on load, and the appendix carries data_dft but no live ctx_dft KV). Not a duplicate of intake-1292 (a mention of PR 26004 in another entry is not a collision): this entry is the PR itself.
 
 
@@ -270111,6 +270251,9 @@
   depends_on: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Open pull request; exposure is Gemma-class only. Trigger: merge, or a gate run shows a partial seq_rm below the window before a checkpoint restore (plan item M1).'
   dive_corrections: '2026-10-20 STAGE-2b (wave 4b). Resolved as a PR, not an issue: #29480 is pull request, OPEN, unmerged. The PR body is stale: it describes the max() fix, which the author dropped on 2026-10-05 (anchor A04); the head diff is the assertion. Read the diff, not the body. Our tree (v10) carries the unfixed one-line SWA-only return (anchor A06), and the slot-processing call site at L3704 (anchor A07). Not a duplicate of any entry; intake-725 A-5 and intake-2083 mention the same iSWA family and are not collisions.
 
 
@@ -270202,6 +270345,9 @@
   depends_on: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Closed upstream and superseded by the merged message-span work that is an ancestor of v10.'
   dive_corrections: '2026-10-20 STAGE-2b (wave 4b). Resolved as a PR (pull request, closed, merged=false), not an issue. Its role-span idea is superseded in the tree by the merged template-autoparser message-span work recorded in intake-2068 (PR #22929, ancestor of v10 ffc1bac82 per git merge-base). Declined as work: prior art only.
 
 
@@ -270218,8 +270364,12 @@
   ingested_date: '2026-10-20'
   credibility_score: null
   contradicting_evidence: null
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Structural assertions (in-process cold control, hit counters) become KPF-18.2 items 3-4 (packet P1); the logits oracle stays.'
   referenced_arxiv_ids: []
   verification: dive-verified
   read_depth: FULL
@@ -270337,8 +270487,12 @@
   ingested_date: '2026-10-20'
   credibility_score: null
   contradicting_evidence: null
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Record which checkpoints exist before comparing logits: KPF-18.2 item 3 (packet P1).'
   referenced_arxiv_ids: []
   verification: dive-verified
   read_depth: FULL
@@ -270442,8 +270596,12 @@
   ingested_date: '2026-10-20'
   credibility_score: null
   contradicting_evidence: null
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Counter triad (checkpoint exists, hit tokens, lost tokens) becomes KPF-18.2 item 3 (packet P1).'
   referenced_arxiv_ids: []
   verification: dive-verified
   read_depth: FULL
@@ -270588,8 +270746,13 @@
   - '2403.19887'
   - '2406.07887'
   contradicting_evidence: null
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'End-checkpoint position check in KPF-18.3, per-slot pinned cap in KPF-17.3, two-states cap in KVU-12.1; FLOP-aware eviction is a monitor trigger (packets P1, P3, M1); paper gains not cited.'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -270726,8 +270889,13 @@
   ingested_date: '2026-10-20'
   discovered_via: expansion
   referenced_arxiv_ids: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'autokernel-champion-aggregate.md'
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Draft-state-in-slot-file change is on the CH-18 pull list; KVU-12.2 sets the bank policy meanwhile (packets P3, P4); author-reported figures not cited.'
   claim_corrections: []
   id: intake-2103
   url: https://github.com/ggml-org/llama.cpp/pull/30574
@@ -270828,6 +270996,9 @@
   referenced_arxiv_ids: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Issue closed by the merged fix with its own routed entry (intake-2103); no separate task (plan item K1).'
   claim_corrections: []
   id: intake-2104
   url: https://github.com/ggml-org/llama.cpp/issues/28619
@@ -270911,8 +271082,12 @@
   ingested_date: '2026-10-20'
   discovered_via: expansion
   referenced_arxiv_ids: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'autokernel-champion-aggregate.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Slot-file format hazard recorded in the CH-18 promotion-checklist note; no port (packet P4).'
   claim_corrections: []
   id: intake-2105
   url: https://github.com/ggml-org/llama.cpp/pull/26640
@@ -271010,6 +271185,9 @@
   referenced_arxiv_ids: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Fix rejected upstream and v10''s checkpoint code differs; failure-mode label only.'
   claim_corrections: []
   id: intake-2106
   url: https://github.com/ggml-org/llama.cpp/issues/22384
@@ -271097,6 +271275,9 @@
   referenced_arxiv_ids: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'EAGLE3 state hooks already present in all three trees (plan item K1).'
   claim_corrections: []
   id: intake-2107
   url: https://github.com/ggml-org/llama.cpp/pull/24593
@@ -271302,8 +271483,12 @@
 
     '
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Diff not adopted (superseded); its reach-margin argument becomes KPF-18.1 arm B/D; refresh tracked under monitor trigger M1 (packet P1).'
   notes: 'Dive-round wave 5, 2026-10-20. Read depth PARTIAL: read from disk via gh = PR JSON (body, comments, file list) and the PR diff. NOT read: the test-file hunks (tests/v1/core/test_mamba_align_chunk_split.py and others), full files beyond diff context, and any repo clone at b99d152. Harness numbers are author-reported. Relevance to us: the EAGLE/MTP reach margin is the analogue of our checkpoint position vs the MTP draft drop (KPF-17 case candidates in LEDGER.md); the vLLM mechanism itself is block-hash based and does not transfer as code.'
   recommended_actions:
   - Do not adopt the diff; the PR is superseded. Use its reach-margin argument as the basis of a KPF-18 identical-resend row (LEDGER A-1/A-2).
@@ -271396,8 +271581,12 @@
 
     '
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Marconi-retention mechanism is the reference shape for KPF-18.1 arm A (packet P1).'
   notes: 'Read depth PARTIAL (diff hunks and PR body from disk; no repo clone). Not read: tests/v1/core/test_prefix_caching.py (+330/-86) and the Mooncake coordinator hunk beyond the one-line mask change. The junction-pin mechanism is the vLLM counterpart of KPF-15 (junction checkpoint) in our fork; it is block-hash based, so only the policy transfers.'
   recommended_actions:
   - Feed LEDGER A-3 (trunk-then-private-suffix KPF-18 row) with this mechanism as the reference shape.
@@ -271496,8 +271685,12 @@
 
     '
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Compare-to-cold with negative control becomes KPF-17.1 case 4; merge state is a monitor trigger (packets P1, M1).'
   notes: Read depth PARTIAL (PR JSON and diff from disk; no repo clone). The draft-KV compare-against-cold design is the transferable part for KPF-17 (checkpoint correctness). Our fork has no hashed prefix blocks; the key-extension idea transfers only as a restore-time check.
   recommended_actions:
   - Use the compare-to-cold plus negative-control design as KPF-17 case (LEDGER A-4).
@@ -271598,8 +271791,12 @@
 
     '
   depends_on: []
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Junction-with-drafter-window mechanism informs KPF-18.1 arm A and the KPF-04 wiki rule (packet P1).'
   notes: 'Read depth PARTIAL: PR JSON (body, comments, file list) and the full PR diff read from disk; test-suite not run; no repo clone. Our relevance is the drafter SWA window travelling in the checkpoint (kv-prefix-fork L243), i.e. the window one block below the junction must be retained for a sibling hit.'
   recommended_actions:
   - Feed LEDGER A-3 as the junction-minus-one-block expectation for the trunk-then-suffix KPF-18 row.
@@ -271608,8 +271805,13 @@
   discovered_via: expansion
   expanded_from: intake-2108
   ingested_date: '2026-10-20'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
+  - 'kv-unified-stack-rollout.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Per-drafter drop in KPF-18.1, warm-vs-cold logprob compare in KPF-18.3, cadence-vs-ubatch positions in KVU-12.1 (packets P1, P3).'
   claim_corrections:
   - claim_index: 0
     effect: narrowed
@@ -271748,8 +271950,12 @@
   discovered_via: expansion
   expanded_from: intake-2111
   ingested_date: '2026-10-20'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Per-drafter drop rule and ''unidentified drafter must not disable reuse'' become KPF-18.1 item D (packet P1).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -271864,8 +272070,12 @@
   discovered_via: expansion
   expanded_from: intake-2108
   ingested_date: '2026-10-20'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Retention-policy control arm becomes KPF-18.2 item 5 (packet P1).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -271971,8 +272181,12 @@
   discovered_via: expansion
   expanded_from: intake-2111
   ingested_date: '2026-10-20'
-  handoffs_updated: []
+  handoffs_updated:
+  - 'kv-prefix-fork-and-paged-attention.md'
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'DFlash2 sparse-checkpoint arm and per-component hit record become KPF-18.2 items 2 and 5 (packet P1).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
