@@ -301,4 +301,23 @@ class RecordStatusTests(unittest.TestCase):
         finally: fixture.doCleanups()
 
 
+class IngestedDateCoercionTests(unittest.TestCase):
+    """An unquoted YAML date must reach the source frame as its ISO string, not a date object."""
+    def test_unquoted_yaml_date_is_coerced_to_iso_string(self):
+        entry = yaml.safe_load("id: intake-9999\ntitle: t\nurl: https://example.org/x\n"
+                               "ingested_date: 2026-10-20\n")
+        self.assertNotIsInstance(entry['ingested_date'], str)  # fixture reproduces the YAML parse
+        frames = a._frames_for_entry(entry, AS_OF)
+        source = next(f for f in frames if f['frame_type'] == a.FT_SOURCE)
+        self.assertEqual(source['assertion']['revision_observed'], '2026-10-20')
+        self.assertIsInstance(source['assertion']['revision_observed'], str)
+
+    def test_quoted_yaml_date_is_unchanged(self):
+        entry = yaml.safe_load("id: intake-9998\ntitle: t\nurl: https://example.org/y\n"
+                               "ingested_date: '2026-10-20'\n")
+        frames = a._frames_for_entry(entry, AS_OF)
+        source = next(f for f in frames if f['frame_type'] == a.FT_SOURCE)
+        self.assertEqual(source['assertion']['revision_observed'], '2026-10-20')
+
+
 if __name__ == '__main__': unittest.main()

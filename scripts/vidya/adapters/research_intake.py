@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import sys
 from collections import Counter
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -253,6 +254,10 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
     # contract (2026-08-09) requires this; many older entries predate it, and their absence here is
     # itself worth surfacing rather than papering over with a default.
     revision = entry.get("ingested_date")
+    # An unquoted `ingested_date: 2026-10-20` is parsed by YAML as a date, which the canonicalizer
+    # refuses inside an assertion. Coerce it to the ISO string the quoted form would have carried.
+    if isinstance(revision, date):
+        revision = revision.isoformat()[:10]
 
     out.append(
         make_frame(

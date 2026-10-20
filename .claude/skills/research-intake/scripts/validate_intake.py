@@ -577,6 +577,24 @@ def check_duplicate_locators(entries: list[dict]) -> list[str]:
     ]
 
 
+def check_ingested_date_types(entries: list[dict]) -> list[str]:
+    """WARNINGS (not errors) for an ingested_date YAML parsed as a date rather than a string.
+
+    An unquoted `ingested_date: 2026-10-20` loads as datetime.date. The vidya adapter coerces it
+    back to ISO text, so nothing breaks, but the quoted form is what the index is written to carry.
+    A warning names the entry so the quoting gets fixed at the source instead of relied on.
+    """
+    out = []
+    for entry in entries:
+        value = entry.get("ingested_date")
+        if value is not None and not isinstance(value, str):
+            out.append(
+                f"{entry.get('id')}: ingested_date {value!r} parsed as {type(value).__name__}, "
+                "not a string — quote it in intake_index.yaml"
+            )
+    return out
+
+
 def check_merge_map(entries: list[dict]) -> list[str]:
     """The redirect map must list every absorbed id.
 
@@ -1319,6 +1337,8 @@ def main() -> int:
         errors.extend(check_laundered_arxiv_ids(entries))
         errors.extend(check_merge_map(entries))
         for warning in check_duplicate_locators(entries):
+            print(f"WARNING: {warning}")
+        for warning in check_ingested_date_types(entries):
             print(f"WARNING: {warning}")
 
     if args.plan_file is not None:
