@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T14:04:25+00:00",
-  "stage": "stage2-wave6-running",
+  "last_checkpoint": "2026-10-20T14:08:06+00:00",
+  "stage": "stage2-closeout-gate-closed",
   "phase": 2,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
@@ -101,10 +101,14 @@
     "intake-2053",
     "intake-2054",
     "intake-2055",
-    "intake-2056"
+    "intake-2056",
+    "intake-2057",
+    "intake-2058",
+    "intake-2059",
+    "intake-2060"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2057,
+  "next_intake_id": 2061,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -2290,6 +2294,72 @@
       "project_decision": null,
       "wave": 5,
       "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W6-DSM-01",
+      "source": "intake-2057",
+      "action": "In CS-22, add the Kyutai stt-1b-en_fr semantic-VAD (head index 2, threshold sweep) as an optional arm: run the stt-rs standalone with --cpu --vad (or the PyTorch --vad script) on the CS-4 hesitation clips and record per-clip end-of-turn time and false-cut rate vs Silero+silence; log ms per 80 ms frame on the EPYC under region-lock to establish whether real-time is even reachable on CPU.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "the repo proves a CPU candle path and a PyTorch path exist; the only missing fact is CPU speed, cheap to measure and decisive for whether the arm can run beside whisper.cpp",
+      "project_decision": "whether CS-22 uses a learned semantic end-of-turn signal and whether it can share the CPU with the cascade",
+      "wave": 6,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W6-DSM-02",
+      "source": "intake-2057",
+      "action": "Port or reference the pause-head protocol for our own cascade: sweep thresholds on all four horizons (0.5/1/2/3 s) rather than index 2 only, since only index 2 is documented as used.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "needs the model running first (W6-DSM-01); do not design before CPU feasibility is known",
+      "project_decision": null,
+      "wave": 6,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W6-VAPO-01",
+      "source": "intake-2058",
+      "action": "When writing the CS-22 evaluation note, tag VAP-family numbers by source: Table 1 weighted F1 (Switchboard, zero-shot, event-level) vs TurnBench EOT recall/FPR/latency (fine-tuned checkpoint); never mix the two.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "the two metric families measure different things and the abstract-level framing invites conflation",
+      "project_decision": "which VAP number may be cited as expected CS-22 performance",
+      "wave": 6,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W6-VAPC-01",
+      "source": "intake-2059",
+      "action": "If CS-22 adopts a VAP arm, load oto.ckpt only via a pinned HF revision (b9aa0ba1) and record the sha256 of the file in the lane; also run the public pretrained example checkpoint as the control row.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "no card means the revision pin is the only provenance we can have; having both rows separates fine-tune gain from architecture Caveat (second reader): the meaning of 'oto' and that it produced the leaderboard row are inferred.",
+      "project_decision": "which VAP checkpoint is the CS-22 reference arm",
+      "wave": 6,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W6-HUMD-01",
+      "source": "intake-2060",
+      "action": "Reuse the rule-based HumDial metrics (first_response_delay, timing rejection rate: first model word after user segment end) as a CS-23/CS-22 harness metric on our CS-4/barge-in clips, computing from whisper.cpp word timestamps instead of Parakeet.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "metrics are trivial deterministic functions of timestamps and match the CS-22 false-cut and CS-23 cancel-latency questions; no cloud dependency Caveat (second reader): get_timing.py (stop/response latency) was not read; feasibility from whisper.cpp timestamps is unverified.",
+      "project_decision": "which offline metrics the CS-22/CS-23 harness reports",
+      "wave": 6,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W6-HUMD-02",
+      "source": "intake-2060",
+      "action": "Run the LLM-judged RESPOND/RESUME labelling with a local judge model and the unmodified behavior.txt prompt, reporting it as non-comparable to the challenge leaderboard.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "content-level judging is outside CS-22/CS-23 scope (end-of-turn and cancel latency); the data is also not obtainable from the repo",
+      "project_decision": null,
+      "wave": 6,
+      "verification": "dive-verified"
     }
   ],
   "state": {
@@ -4115,9 +4185,79 @@
           }
         ],
         "cap_note": "Wave 6 is the operator cap (seq 9); any sources it surfaces are recorded as declined-at-cap in the bearing entries' dive_corrections.",
-        "status": "running"
+        "status": "applied",
+        "applied": "2026-10-20T14:08:06+00:00",
+        "new_entries": {
+          "NEW-DSM-REPO": "intake-2057",
+          "NEW-VAP-ORIG": "intake-2058",
+          "NEW-VAP-CKPT": "intake-2059",
+          "NEW-HUMDIAL-REPO": "intake-2060"
+        },
+        "surfaced": [
+          {
+            "id_or_url": "https://github.com/kyutai-labs/moshi (rust/moshi-server and moshi crate)",
+            "what_it_would_settle": "where the extra-head loss/targets are defined and how prs is computed (head training recipe)",
+            "bears_on": "NEW-DSM-REPO",
+            "recommend": "decline",
+            "reason": "wave cap reached (final wave); head training recipe is a nice-to-have, the arm is measured black-box anyway",
+            "from_entry": "intake-2057",
+            "wave": 6
+          },
+          {
+            "id_or_url": "arXiv:2403.06487 Multilingual Turn-taking Prediction Using Voice Activity Projection",
+            "what_it_would_settle": "how VAP generalises across languages and whether English-trained weights transfer",
+            "bears_on": "NEW-VAP-ORIG",
+            "recommend": "decline",
+            "reason": "wave cap reached; English-only use is acceptable for a first CS-22 arm",
+            "from_entry": "intake-2058",
+            "wave": 6
+          },
+          {
+            "id_or_url": "arXiv:2209.05161 How Much Does Prosody Help Turn-taking? (cited in VAP project README)",
+            "what_it_would_settle": "whether prosody vs lexical content drives VAP gains",
+            "bears_on": "NEW-VAP-ORIG",
+            "recommend": "decline",
+            "reason": "wave cap reached; background only",
+            "from_entry": "intake-2058",
+            "wave": 6
+          },
+          {
+            "id_or_url": "https://huggingface.co/datasets/otoearth/otoSpeech-full-duplex-turn-104h",
+            "what_it_would_settle": "the exact data behind the oto fine-tune and usable labelled full-duplex clips for CS-22 evaluation",
+            "bears_on": "NEW-VAP-CKPT",
+            "recommend": "decline",
+            "reason": "wave cap reached; gated dataset (gated: auto per API)",
+            "from_entry": "intake-2059",
+            "wave": 6
+          },
+          {
+            "id_or_url": "https://github.com/DanielLin94144/Full-Duplex-Bench",
+            "what_it_would_settle": "the upstream v1.5 stop/response latency and RESPOND/RESUME definitions HumDial reuses (readme names it)",
+            "bears_on": "NEW-HUMDIAL-REPO",
+            "recommend": "decline",
+            "reason": "wave cap reached; HumDial scripts already carry the needed pieces",
+            "from_entry": "intake-2060",
+            "wave": 6
+          }
+        ],
+        "second_reader": "second-reader-SR-W6.yaml; no 'no'; 2 inference-as-fact corrections, 1 anchor re-index"
       }
     ],
-    "placeholder_resolution": "36 NEW-* placeholders in the campaign block replaced by real intake IDs after wave-5 apply; all 585 anchor hashes re-verified."
+    "placeholder_resolution": "36 NEW-* placeholders in the campaign block replaced by real intake IDs after wave-5 apply; all 585 anchor hashes re-verified.",
+    "stage2_closeout_20261020": {
+      "gate_closed": "2026-10-20T14:08:06+00:00",
+      "waves_run": 6,
+      "wave_cap": 6,
+      "entries_campaign": 98,
+      "verification": {
+        "dive-verified": 84,
+        "stage1-unverified": 14
+      },
+      "dive_surfaced_declined": 40,
+      "declines_recorded_in": "bearing entries' dive_corrections (31 entries) + intake-1974 re-encounter",
+      "anchors_total": 607,
+      "actionable_ledger_rows": 195,
+      "stage3_started": false
+    }
   }
 }

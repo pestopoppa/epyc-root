@@ -249512,7 +249512,7 @@
     note: 'Split retrieval prompt guidance from the context-window claim; source shows asymmetric query/document
       formatting and task prefixes. Root review: split is history, not an allowed correction effect; the
       newly explicit, supported prompt claim is unaffected.'
-  dive_corrections: '2026-10-07 Stage 2: confirmed claims 0, 3 and 4 from the pinned Google revision.
+  dive_corrections: '2026-10-20 Stage-2 close-out (folded 10-07 session), dive-surfaced sources declined: https://s5labs.io/resources/insights/google-embeddinggemma-2-multimodal-embeddings/ - Third-party blog restating publisher figures; restatement is not corroboration. [10-07 lead]; https://www.codesota.com/benchmarks/mteb - Aggregator mirroring MTEB; the MTEB leaderboard itself (recommended) is the primary. [10-07 lead]; https://github.com/embeddings-benchmark/mteb/pull/5588 - Already ingested as intake-1974 (exact URL collision) - re-encounter, not a new source. [wave2 declined]; https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/ - HTTP 403 on old/www reddit .json with browser UA; no digest substituted. Operator may paste the thread text if wanted. [wave2 declined]. 2026-10-07 Stage 2: confirmed claims 0, 3 and 4 from the pinned Google revision.
     Narrowed claim 1 to publisher-reported full-precision comparison against EmbeddingGemma 1; saved MTEB
     PR/review data at this retrieval date show the reference implementation and exact evaluation setup
     were unresolved. Narrowed claim 2: documented usable context is 8,192 while config positional metadata
@@ -251625,7 +251625,7 @@
     comment. Material threads include synthetic model IDs/metadata and score reproducibility; no execution.
     Evidence boundary: Publisher and contributor assertions are source claims, not independent reproduction
     or local consumer compatibility. Full source packet and artifact hashes remain in /mnt/raid0/llm/tmp/dive-1974/proposed.json.'
-  dive_corrections: '2026-10-07: Replaced the unsupported acceptance/reproducibility claim with the PR
+  dive_corrections: 'Re-encountered 2026-10-20: surfaced again by the intake-1964 MTEB Stage-2b dive (Google''s withdrawn results PR #745 cites it); recorded here, no new entry (dedup rule 2b). 2026-10-07: Replaced the unsupported acceptance/reproducibility claim with the PR
     discussion’s exact setup disclosure and maintainer acceptance condition. PR is open and requested
     changes; no reproduction was run.'
   depends_on: []
@@ -252259,7 +252259,9 @@
     wrong (AK has one); early-reject is a session budget rule, not a verdict. Main correction 2026-10-20
     after second reader: claim 3''s ''gfx90a/gfx908 not named in any file'' was FALSE for the TileLang
     fork (9 files name gfx90a, e.g. targets.md L18, hip/common.h L128, Dockerfile.rocm L20); rewritten.
-    5/7/9 vs 7/9/13 rounds-to-Lead and the power Monte Carlo are agent-computed (pass2/), not source text.'
+    5/7/9 vs 7/9/13 rounds-to-Lead and the power Monte Carlo are agent-computed (pass2/), not source text.
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    arXiv 2504.17577 TileLang paper - Already in the index; cross-referenced instead. [wave3 declined].'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -254522,7 +254524,10 @@
     numbers (0.78/0.47/0.54; ablation 0.71/0.57/0.55/0.45). Corrected: 11 vs 13 = ablation vs main table;
     "kernel" = Anthropic VLIW take-home, not hardware kernel work; added exact schedule (K=4, 33%/66%,
     ~0.06B per branch, opening round from empty workspaces) and the 2-of-K "different approach" directive;
-    baseline n=8 vs FF n=5; no code release; Table 3 flush-only p150 anomaly (160.80 vs max 135.37 elsewhere).'
+    baseline n=8 vs FF n=5; no code release; Table 3 flush-only p150 anomaly (160.80 vs max 135.37 elsewhere).
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    arXiv:2507.14417 - Cited only in Fork-and-Flush related work (long-context degradation); does not
+    change a conclusion. [wave2 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -256622,7 +256627,10 @@
     and diffed Table 1/2/3 and abstract against v1 and v2 (v3 inspected via streamed html text only).
     Found: Table 3 changed (v1/v2 two models, avg 67.7->68.3 +0.6; v3/v4 three models, 63.2->63.2 +0.0).
     Table 2 averages changed likewise. v1/v2 had no games section; v3 abstract 80.0%/10.9%, v4 rounded
-    80%/11%.'
+    80%/11%. 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost
+    or re-derived): github.com/rethinking-harness-evolution - Reproducibility of the K=5 setup does not
+    change the version-staleness finding the dive settled. [wave2 declined]; VISTA visual harness (Han
+    et al. 2026) - ARC-AGI-3 baseline provenance only; no arXiv ID observed. [wave2 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -257332,7 +257340,10 @@
     S_t flat vs H_t / C_t collapsing), the mitigation effect sizes and their attribution (revert gate
     vs ccr+pem), and found an early performance-engineering probe (App M) but no kernel-search loop. Repo
     cloned and README/LICENSE read, nothing executed. Main correction 2026-10-20 after per-claim second
-    reader: +1.4% wall-clock is a T2-only figure, not a four-task average.'
+    reader: +1.4% wall-clock is a T2-only figure, not a four-task average. 2026-10-20 Stage-2 close-out,
+    dive-surfaced sources declined (named so they are not lost or re-derived): arXiv:2602.13103 R-Diverse
+    - Origin of the surface-vs-semantic dissociation only; would not change an AK decision (dive rec).
+    [wave3 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -258522,7 +258533,10 @@
     accuracy or downstream WER. Do not carry ''16 ms latency'' as end-to-end: it is algorithmic hop latency,
     excluding buffering/alignment of reference to mic.'
   dive_corrections: '2026-10-20 Stage-2b: new entry. Settled sizes, builds (GGML+PyTorch reference, GGUF
-    f32/bf16), per-hop CPU latency, AECMOS/ERLE tables, test set; HF weights and the Space not fetched.'
+    f32/bf16), per-hop CPU latency, AECMOS/ERLE tables, test set; HF weights and the Space not fetched.
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    https://huggingface.co/LocalAI-io/LocalVQE - Weights hashes/card only; GitHub repo already dived.
+    [wave3 declined].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -258769,7 +258783,9 @@
     Weights not downloaded.'
   dive_corrections: '2026-10-20 Stage-2b: new entry. Settled that the standard 1B baseline exists at matched
     D/N and batch, tokenizer = dolma2, and that the Track B COUNT arm is executable w/o pretraining but
-    off-recipe on table size.'
+    off-recipe on table size. 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they
+    are not lost or re-derived): https://github.com/IanMagnusson/COUNT - Already ingested and dived as
+    intake-1989 (wave 1 answered: NumPy mmap/searchsorted reader, no compiled lookup). [wave3 declined].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -258976,7 +258992,10 @@
     the thread and that the one ROCm report was retracted. Main correction 2026-10-20 after per-claim
     second reader: removed ''thc1006 repo BF16 9B diverging 36/75'' from claim 4 (cross-contaminated from
     intake-2004; not in the #25618 files); fixed sjvrensburg test attribution in claim 6; claim_anchors
-    re-indexed to the 7 corrected claims (claim 0 = issue metadata, unanchored).'
+    re-indexed to the 7 corrected claims (claim 0 = issue metadata, unanchored). 2026-10-20 Stage-2 close-out,
+    dive-surfaced sources declined (named so they are not lost or re-derived): https://github.com/ggml-org/llama.cpp/pull/28489
+    - Initially declined at wave-3 close; overridden and ingested in wave 4 as intake-2045 (Vulkan MI210
+    relevance). [wave3 decline revised].'
   claim_anchors:
   - claim_index: 1
     kind: page-and-quote
@@ -259198,7 +259217,9 @@
     not PTQ (QAT+KD, identical training config, repo trains per model), no cheaper-training claim (only
     a ~3 s/layer init overhead; no GPU budget or init-only ppl), no kernel release; quantified the quality
     delta vs LittleBit and OneBit at matched BPW. Main correction 2026-10-20 after per-claim second reader:
-    claim_anchors re-indexed to the 5 corrected claims; claim 3 unanchored.'
+    claim_anchors re-indexed to the 5 corrected claims; claim 3 unanchored. 2026-10-20 Stage-2 close-out,
+    dive-surfaced sources declined (named so they are not lost or re-derived): LittleBit end-to-end 2.46x
+    figure (arXiv 2506.13771) - Already in intake-1977; inherited, not re-measured. [wave3 declined].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -260051,7 +260072,9 @@
     is the v1/v2 title; current v3 title is "Draft-then-Verify". The wall-clock saving is 16-25%, not
     the 2.6-4.8x headline (which is time-to-quality). Main correction 2026-10-20 after per-claim second
     reader: 84.1% is TITAN V only; replaced ''~50 of ~85-125 min'' with Table 1 Orin figures; re-indexed
-    two anchors (8,000->512 -> claim 0; TLP-crash -> claim 2).'
+    two anchors (8,000->512 -> claim 0; TLP-crash -> claim 2). 2026-10-20 Stage-2 close-out, dive-surfaced
+    sources declined (named so they are not lost or re-derived): Roller (Zhu et al. 2022) - No arXiv/venue
+    ID observed; TileLang carver already covers the analytic-tile idea. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -260225,7 +260248,9 @@
   dive_corrections: '2026-10-20 Stage-2b: new entry. "Up to 10x" holds only on CPUs; GPU gains 1.9-6.7x
     (Fig 6a labels, order inferred). Paper Table 1 and text disagree on record total. Main correction
     2026-10-20 after per-claim second reader: dropped README-license anchor (supports no claim); re-indexed
-    the §5.3 anchor to claim 3; corrected actionable reasons (TenSet does include AVX-512 CPU data).'
+    the §5.3 anchor to claim 3; corrected actionable reasons (TenSet does include AVX-512 CPU data). 2026-10-20
+    Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived): https://github.com/zhaiyi000/tlp
+    - Another Intel-CPU TVM dataset; no AMD/CDNA content. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -260328,9 +260353,9 @@
     or carver. Inference (not in tree): (a) a TileLang AK path would author standalone HIP kernels, not
     ggml-hip kernels, so a ggml integration/numerics bridge would be new work; (b) its per-config hipcc
     compile replaces a full llama.cpp rebuild per candidate and therefore attacks AK''s build share (75.7%
-    of iteration, handoff-recorded via W2 intake-2012); (c) its LLVM CPU backend is "Experimental" and gives
-    no AVX-512/VNNI quant-kernel route for EPYC; (d) no tree evidence on IQ2/IQ3 grid-decode support (a
-    dequant GEMM example exists under examples/dequantize_gemm but was not read).'
+    of iteration, handoff-recorded via W2 intake-2012); (c) its LLVM CPU backend is "Experimental" and
+    gives no AVX-512/VNNI quant-kernel route for EPYC; (d) no tree evidence on IQ2/IQ3 grid-decode support
+    (a dequant GEMM example exists under examples/dequantize_gemm but was not read).'
   - 'Cross-reference: the TileLang paper (arXiv:2504.17577, title confirmed this run from arxiv.org/abs:
     "TileLang: A Composable Tiled Programming Model for AI Systems") is not a standalone entry in the
     lane index; it appears only as a cited ID inside intake-966 (lane line 60994, a prior-art citation
@@ -260378,7 +260403,9 @@
   dive_corrections: '2026-10-20 Stage-2b: new entry. Refines wave-2 note: gfx90a is not absent from the
     tree (compile-only test, docker arch list, HIP template guards, docs example), but it is not runtime-tested;
     MI210/CDNA2 named only in a code comment. Main correction 2026-10-20 after per-claim second reader:
-    claim 1 ''only as'' overstated; added carver test and docstring mentions.'
+    claim 1 ''only as'' overstated; added carver test and docstring mentions. 2026-10-20 Stage-2 close-out,
+    dive-surfaced sources declined (named so they are not lost or re-derived): https://github.com/tile-ai/tilelang/releases/tag/v0.1.13
+    - Release notes; the tree itself was read at HEAD. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -260533,7 +260560,11 @@
     human ratings on our own sessions before it gates anything.'
   dive_corrections: '2026-10-20 Stage-2b: new entry. Narrowed the FDB-v2 linkage: the paper provides no
     turn-taking agreement numbers; its 0.677 is for temporal instruction tasks. Main correction 2026-10-20
-    after per-claim second reader: audio-LLM judge was ''also effective but more costly'', not rejected.'
+    after per-claim second reader: audio-LLM judge was ''also effective but more costly'', not rejected.
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    https://ga642381.github.io/Game-Time - JS-only site; content not readable from disk. [wave4 declined];
+    arXiv:2506.05984 - Audio-LLM judge protocol; FDB-v2''s judge is text-only so it does not change the
+    local-judge conclusion. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -260692,9 +260723,9 @@
     NOT a paired same-words benchmark (ECHO remains the closest) and it does not score full-duplex interruption.
     Carry the Table IV numbers as reference points for English endpointers (SmartTurn v3, VAP, Kyutai
     SVAD), not as our own results. Data is gated; the dev split is enough to score an arm.
-  dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected expansion framing (intake-2016): not
-    paired/same-words; conversation-type-controlled. Confirmed cascade scoring is by-design. Main correction
-    2026-10-20 after per-claim second reader: RMS VAD statement restated from the table (FPR .632 overall).'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected expansion framing (intake-2016): not paired/same-words;
+    conversation-type-controlled. Confirmed cascade scoring is by-design. Main correction 2026-10-20 after
+    per-claim second reader: RMS VAD statement restated from the table (FPR .632 overall).'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -260996,7 +261027,10 @@
     table as evidence about English turn-end quality.'
   dive_corrections: '2026-10-20 Stage-2b: new entry. Language narrowed to Mandarin (paper and test list),
     "850 MB" read as ~0.86 B params. Main correction 2026-10-20 after per-claim second reader: removed
-    unsaved checkpoint byte count; swapped anchors/verdicts for claims 3 and 4 (language vs ablation).'
+    unsaved checkpoint byte count; swapped anchors/verdicts for claims 3 and 4 (language vs ablation).
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    https://github.com/ten-framework/ten-turn-detection - 7B text-only labeller/baseline; not a CPU-cheap
+    CS-22 arm. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -261164,7 +261198,9 @@
     numbers. Never carry a claim of having run anything: nothing was executed.'
   dive_corrections: '2026-10-20 Stage-2b: new entry. Settled from code that scorers are local except named
     judge calls; found asr.py is CUDA-hardcoded and that get_timing.py inline comments contradict its
-    constants.'
+    constants. 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost
+    or re-derived): https://drive.google.com/drive/folders/1DtoxMVO9_Y_nDs2peZtx3pw-U2qYgpd3 - Dataset
+    download, not a source to dive; belongs to execution. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -261488,13 +261524,12 @@
     neither is validated against NeMo in what was read.'
   - 'CS-22 cheapest-route judgement: this package is NOT the cheapest turnkey route as shipped (no documented
     cache contract, no Python reference, frontend missing). It is, however, the best-parity artifact set
-    (fp32/fp16 exact on the card''s fixture), and the NeMo reference (intake-2035) supplies the
-    state-reset-on-EOU and 80 ms chunk discipline. The lowest-risk path is: inspect the ONNX I/O signatures
-    (shape metadata only), implement the 128-bin NeMo log-mel in numpy, drive fp32 encoder + int8 decoder_joint
-    with onnxruntime CPU in 80-160 ms chunks, and check token parity against a NeMo CPU run on the same
-    clips before measuring EOU latency and false-cut rate on CS-4. CPU latency is unknown: the only figure
-    found (soniqo: encoder RTF ~67x, macOS arm64, int8) is vendor-style, a different platform, and not
-    for these files.'
+    (fp32/fp16 exact on the card''s fixture), and the NeMo reference (intake-2035) supplies the state-reset-on-EOU
+    and 80 ms chunk discipline. The lowest-risk path is: inspect the ONNX I/O signatures (shape metadata
+    only), implement the 128-bin NeMo log-mel in numpy, drive fp32 encoder + int8 decoder_joint with onnxruntime
+    CPU in 80-160 ms chunks, and check token parity against a NeMo CPU run on the same clips before measuring
+    EOU latency and false-cut rate on CS-4. CPU latency is unknown: the only figure found (soniqo: encoder
+    RTF ~67x, macOS arm64, int8) is vendor-style, a different platform, and not for these files.'
   techniques:
   - encoder/decoder_joint ONNX split
   - fp32/fp16/int8 variants
@@ -261537,7 +261572,10 @@
   dive_corrections: '2026-10-20 Stage-2b: new entry. W2 summary ''decoder-only INT8 token-exact, encoder
     INT8 not exact'' confirmed; added that decoder and joint are one graph, the frontend is absent from
     the package, and the cache contract is undocumented. Main correction 2026-10-20 after per-claim second
-    reader: per-file sizes removed (not in saved files).'
+    reader: per-file sizes removed (not in saved files). 2026-10-20 Stage-2 close-out, dive-surfaced sources
+    declined (named so they are not lost or re-derived): https://huggingface.co/soniqo/Parakeet-EOU-120M-ONNX-INT8
+    - Card makes an unreliable 25-language claim for an English-only base; parakeet-rs chosen instead.
+    [wave4 declined].'
   claim_anchors:
   - claim_index: 1
     kind: line-range
@@ -262143,7 +262181,9 @@
     not as a rationale for the REPL-EMB-2.1 margin.
   dive_corrections: '2026-10-20 Stage-2b: new entry; flagged label provenance (same LLM generates and
     judges), absence of CIs, simulated rather than live agent eval, and ablation showing BM25+ranking
-    0.838 vs hybrid 0.855.'
+    0.838 vs hybrid 0.855. 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they
+    are not lost or re-derived): https://github.com/zvec-ai/zvec-grep - Semble''s own table already contrasts
+    it; no new decision. [wave4 declined].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -262290,8 +262330,8 @@
     tokens_so_far, score). Reimplement from these functions; do not expect data or the inflection rule
     here. Do not carry any headline Elo number from this entry; the repo has none that can be regenerated.'
   dive_corrections: '2026-10-20 Stage-2: confirmed repo is the Elo-per-token code release (title match
-    only); resolved the App. B estimator details left open in intake-2023; found the inflection rule
-    is not in the code. Main correction 2026-10-20 after per-claim second reader: claim_anchors re-indexed
+    only); resolved the App. B estimator details left open in intake-2023; found the inflection rule is
+    not in the code. Main correction 2026-10-20 after per-claim second reader: claim_anchors re-indexed
     per second reader (positions->claims {4: 3}).'
   claim_anchors:
   - claim_index: 0
@@ -262463,7 +262503,10 @@
   dive_corrections: '2026-10-20 Stage-2: narrowed the intake-2023 follow-up: corroboration is PARTIAL
     (k-shot vs agent, not restart policy), single framework, private evaluator, figures only. Main correction
     2026-10-20 after per-claim second reader: claim_anchors re-indexed per second reader (positions->claims
-    {3: 1, 4: 3, 5: 4}).'
+    {3: 1, 4: 3, 5: 4}). 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are
+    not lost or re-derived): W4-A surfaced (princeton-pli/competitive-programming-agents, agentpatterns.ai
+    restatement, zhaiyi000/tlm, SLA repo) - All dive-recommended decline (restatement, duplicate of intake-2024,
+    or code without new decision value). [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -262814,7 +262857,9 @@
     lists ROCm runtime 10.0.0, HIP SDK 7.2.0), replication ROCm 7.2.4. Main correction 2026-10-20 after
     per-claim second reader: claim_anchors re-indexed per second reader (positions->claims {2: 1, 3: 2,
     4: 3, 5: 4}). Main correction 2026-10-20 after per-claim second reader: claim 1 setup corrected (b10327/Qwen3.8-27B);
-    #28211 details moved to notes (not in this thread).'
+    #28211 details moved to notes (not in this thread). 2026-10-20 Stage-2 close-out, dive-surfaced sources
+    declined (named so they are not lost or re-derived): W4-B surfaced (#28211, LMR-P4-UPSTREAM-REPRO.zip)
+    - #28211 is a different bug (host-buffer defect); zip has no URL. [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: json-pointer
@@ -263299,7 +263344,11 @@
     wrapper''s 1000 ms silence gate and v3.1 weights, not v3.2/model speed. Main correction 2026-10-20
     after per-claim second reader: claim_anchors re-indexed per second reader (positions->claims {6: 4}).
     Main correction 2026-10-20 after per-claim second reader: TurnBench threshold is the swept 0.0082
-    (0.05 is only the fallback default); added README anchor; removed superlative in W4-SMARTTURN-01.'
+    (0.05 is only the fallback default); added README anchor; removed superlative in W4-SMARTTURN-01.
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    https://huggingface.co/datasets/pipecat-ai/smart-turn-data-v3.2-test - Vendor test-set card; clip-level
+    accuracy meaning only. [wave4 declined_surfaced]; https://www.daily.co/blog/announcing-smart-turn-v3-with-cpu-inference-in-just-12ms/
+    - Already read in the dive (v3.0 CPU latency table). [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -263506,7 +263555,10 @@
     505 ms as a gain for the whisper.cpp cascade.
   dive_corrections: '2026-10-20 Stage-2b: new entry. Clarified that "28.4% increase in speculative computation"
     is the ERC ratio, and that speculation (not endpointing) is what is accelerated. Main correction 2026-10-20
-    after per-claim second reader: claim_anchors re-indexed per second reader (positions->claims {6: 6}).'
+    after per-claim second reader: claim_anchors re-indexed per second reader (positions->claims {6: 6}).
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    https://huggingface.co/viks66/endpoint-anticipation - Model card/config only; weights not to be downloaded.
+    [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -263672,7 +263724,9 @@
     dump diff vs NeMo preprocessor, CPU ms/chunk on EPYC).
   dive_corrections: '2026-10-20 Stage-2b: new entry. No NeMo parity/latency evidence exists; author flags
     reset_on_eou as weak. Main correction 2026-10-20 after per-claim second reader: W4-PARAKEET-RS-02
-    rewritten: with reset off the EOU is not surfaced.'
+    rewritten: with reset off the EOU is not surfaced. 2026-10-20 Stage-2 close-out, dive-surfaced sources
+    declined (named so they are not lost or re-derived): https://huggingface.co/nvidia/parakeet_realtime_eou_120m-v1
+    - Already ingested and dived as intake-2017. [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 1
     kind: line-range
@@ -263821,7 +263875,9 @@
     accuracy numbers, and do not plan to run its NeMo/CUDA services.
   dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected expectation: no new turn-taking model;
     successor = same pipeline relocated. Main correction 2026-10-20 after per-claim second reader: CPU
-    support overstated; installation.md lists a cpu torch backend.'
+    support overstated; installation.md lists a cpu torch backend. 2026-10-20 Stage-2 close-out, dive-surfaced
+    sources declined (named so they are not lost or re-derived): https://github.com/NVIDIA-NeMo/Speech/tree/main/examples/voice_agent
+    - Deprecated predecessor; already dived as intake-2035. [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -264006,7 +264062,9 @@
   dive_corrections: '2026-10-20 Stage-2: confirmed 89.7/57.8 as the paper''s test row; found repo HEAD
     diverges from the paper (cloud DashScope ASR/omni/TTS, extra SHIFT prompt, 4-way TP in README vs two
     A100 in paper); no ablation or scenario split exists. Main correction 2026-10-20 after per-claim second
-    reader: SHIFT prompt is a topic-shift detector, not a repeat-request detector.'
+    reader: SHIFT prompt is a topic-shift detector, not a repeat-request detector. 2026-10-20 Stage-2
+    close-out, dive-surfaced sources declined (named so they are not lost or re-derived): arXiv:2604.21406
+    - Already dived as intake-2032. [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -264325,7 +264383,10 @@
     only in the Semble repo; standalone CoIR average (39.08) is below BM25, so Semble''s 0.855 is mostly
     its ranking layer plus hybrid, not the embedding alone. Params 16.24M F16, file 32.49 MB. Main correction
     2026-10-20 after per-claim second reader: claim_anchors re-indexed per second reader (positions->claims
-    {4: 3}).'
+    {4: 3}). 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost
+    or re-derived): https://github.com/MinishLab/model2vec - Already ingested and dived as intake-2019.
+    [wave4 declined_surfaced]; https://github.com/CoIR-team/coir - Benchmark harness; potion''s CoIR numbers
+    already read from its card. [wave4 declined_surfaced].'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -264454,8 +264515,8 @@
   - 'none surfaced in bounded search (provisional): one search found no independent Unmute-specific echo
     or semantic-VAD failure reports; only vendor restatements (kyutai.org, speechmatics/livekit blogs,
     restatement)'
-  - 'TurnBench (independent third party, intake-2031) scores the Kyutai SVAD head below VAP and with
-    1007 ms median EOT latency (EOT recall .773 / FPR .059): the head is mid-pack, not state of the art'
+  - 'TurnBench (independent third party, intake-2031) scores the Kyutai SVAD head below VAP and with 1007
+    ms median EOT latency (EOT recall .773 / FPR .059): the head is mid-pack, not state of the art'
   source_revision: kyutai-labs/unmute@e348e567c7020d40020412024f7aa03c38a3bc3e
   verification: dive-verified
   read_depth: PARTIAL
@@ -264469,7 +264530,9 @@
   dive_corrections: '2026-10-20 Stage-2b: new entry. Semantic VAD is an STT-model output head (prs[2])
     thresholded at 0.6/0.4 in the backend, not a standalone VAD; TurnBench''s 1007 ms median EOT latency
     for this head qualifies the ''low latency'' framing. Main correction 2026-10-20 after per-claim second
-    reader: W5-UNMUTE-01 guard semantics and threshold calibration caveat corrected.'
+    reader: W5-UNMUTE-01 guard semantics and threshold calibration caveat corrected. 2026-10-20 Stage-2
+    close-out, dive-surfaced sources declined (named so they are not lost or re-derived): https://arxiv.org/abs/2606.13450
+    - Already dived as intake-2048. [wave6 declined].'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -264770,7 +264833,11 @@
     ''Cascade'' row as evidence about cascades in general.'
   dive_corrections: '2026-10-20 Stage-2b: new entry. Site is readable; abbreviations and team descriptions
     are not on it (they must come from the overview paper intake-2052 or team papers). Main correction
-    2026-10-20 after per-claim second reader: gating applies to train/dev; test set described as released.'
+    2026-10-20 after per-claim second reader: gating applies to train/dev; test set described as released.
+    2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived):
+    https://github.com/DanielLin94144/Full-Duplex-Bench - Already dived as intake-2034. [wave6 declined];
+    HumDial Track 2 train/dev data - Gated to institutional e-mail; a data request, not a source. [wave6
+    declined].'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -264833,3 +264900,548 @@
     prompt.yaml head; NOT read: evaluation scripts, baseline code, PNGs (eval_results.png, total_score.png).
     No LICENSE file seen in repo root listing. Nothing executed. Baseline weights live at HF ASLP-lab/ICASSP2026-HumDial-Challenge-Track2-Baseline
     (URL from baseline/readme.txt); not opened.'
+- id: intake-2057
+  arxiv_id: null
+  url: https://github.com/kyutai-labs/delayed-streams-modeling
+  source_type: repo
+  title: delayed-streams-modeling (Kyutai STT / TTS inference code)
+  categories:
+  - multimodal
+  - local_inference
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Kyutai (kyutai-labs)
+  key_claims:
+  - Semantic VAD = 4 extra pause-prediction heads on kyutai/stt-1b-en_fr (not on the 2.6B English model).
+    The STT emits a per-step "Step" message whose prs field holds P(no voice activity) at horizons 0.5,
+    1, 2, 3 s (indices 0-3).
+  - 'Index 2 (2.0 s horizon) is the reference end-of-turn signal in every shipped consumer: Rust standalone
+    (prs[2][0] > 0.5), websocket demo script (index 2, > 0.5), PyTorch script (vad_heads[2], > 0.5); Unmute
+    smooths prs[2] and uses 0.6 / 0.4 hysteresis. Index 2 is a default chosen by Kyutai, not a documented
+    optimum; no per-head accuracy is published in the repo.'
+  - The PyTorch implementation exposes the heads via step_with_extra_heads (--vad), so the semantic VAD
+    is not Rust-only (the README lists --vad only under the Rust standalone; a kyutai.org statement was
+    not saved to disk). The Rust standalone has an explicit --cpu flag; there is no ROCm/HIP backend in
+    the repo (CUDA, cuDNN, Metal features; MLX for Apple).
+  - Training of the heads is undocumented in this repo; the model card gives only the data mix (Fisher
+    2000 h + proprietary). No training code for STT is released.
+  - As a CS-22 arm on EPYC CPU the STT would be a second ~1B-parameter streaming model (Mimi + 16-layer
+    2048-d LM) running alongside or instead of whisper.cpp; CPU speed is not stated anywhere in the repo
+    (README only quotes H100/L40S batch throughput), so feasibility is unmeasured, not shown.
+  techniques:
+  - semantic VAD / pause-prediction extra heads on a streaming STT
+  - delayed-streams multimodal LM (Mimi codec tokens + text)
+  - candle Rust CPU inference
+  reported_results:
+  - Repo reports no pause-prediction accuracy numbers; README.md L24-L33 only states the 1B en_fr model
+    has "a semantic Voice Activity Detection (VAD) component". Third-party TurnBench scores the head at
+    EOT recall .773 / FPR .059 / 1007 ms median (NEW-TURNBENCH, previously read; not re-read this wave).
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-UNMUTE (expanded_from; consumes prs[2])
+    - NEW-TURNBENCH (scores the Kyutai SVAD head)
+    - NEW-VAP-ORIG (alternative learned EOT arm)
+  expanded_from: intake-2054
+  credibility_score: null
+  contradicting_evidence:
+  - 'TurnBench (independent third party): Kyutai SVAD recall .773, FPR .059, 1007 ms median EOT latency,
+    below VAP (.845 / .055 / 368 ms) (https://turnbench.sesame.com/ via web search; independent). No Kyutai-authored
+    accuracy evaluation of the pause heads surfaced in bounded search (provisional).'
+  source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 6
+  reader_should_conclude: 'Head index 2 = 2.0 s no-voice-activity horizon is the end-of-turn signal; the
+    signal is available in PyTorch and Rust-candle (CPU), not CUDA-only. Do NOT carry "Rust-only" from
+    the README, and do NOT carry any claim about how the heads are trained or what accuracy each head
+    has: neither is documented here. CPU real-time capability on EPYC is unmeasured.'
+  dive_corrections: '2026-10-20 Stage-2: README/kyutai.org "Rust only" is wrong for the pause heads (PyTorch
+    script uses step_with_extra_heads); Rust standalone runs on CPU via --cpu; horizons 0.5/1/2/3 s confirmed
+    from main.rs comment; head training undocumented. Main correction 2026-10-20 after per-claim second
+    reader: README does not literally say Rust-only; kyutai.org statement not on disk. 2026-10-20 Stage-2
+    close-out, dive-surfaced sources declined (named so they are not lost or re-derived): https://github.com/kyutai-labs/moshi
+    (rust/moshi-server and moshi crate) - Declined at the operator''s 6-wave cap (steering seq 9). Dive
+    note: wave cap reached (final wave); head training recipe is a nice-to-have, the arm is measured black-box
+    anyway [wave6 surfaced (cap)].'
+  claim_anchors:
+  - claim_index: 1
+    kind: line-range
+    locator: scripts/stt_from_mic_rust_server.py:L22-L24 @ 4c4f65e
+    quote: Lower indices predict pauses more aggressively. In Unmute, we use 2.0 seconds = index 2.
+    quote_sha256: 85e8a93054e4a41945fb610f940bb6e9b0754000e97d52c5834d96b629a43354
+    source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: stt-rs/src/main.rs:L193-L195 @ 4c4f65e
+    quote: In kyutai/stt-1b-en_fr-candle, these horizons are 0.5s, 1s, 2s, and 3s.
+    quote_sha256: f11244aed5d87be63f7c3e5ac3da4b3e60d6751ebc5b7d8621327d9881b6c64f
+    source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: scripts/stt_from_file_pytorch.py:L185 @ 4c4f65e
+    quote: text_tokens, vad_heads = lm_gen.step_with_extra_heads(audio_tokens)
+    quote_sha256: c772fa8c0b083f4057cc8a0637e0dbc767bc6d0aa2d913297bb1b24be69eca86
+    source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: stt-rs/src/main.rs:L22 @ 4c4f65e
+    quote: /// Run the model on cpu.
+    quote_sha256: 8d4c3312751bbd1e95f386975e04884f6592ad4c6fa2660acb6be3886752f8f6
+    source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: configs/config-stt-en_fr-hf.toml:L44-L46 @ 4c4f65e
+    quote: '[modules.asr.model.extra_heads] num_heads = 4 dim = 6'
+    quote_sha256: cf346a6cea3673d22ee27a4cf0a4caa23fe1f81e56befc7870d5f7ff5a86c8be
+    source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: HF kyutai/stt-1b-en_fr README.md "Training Data" L74 (sha256 095cb8ad...)
+    quote: We finetune on the Fisher dataset of 2000 hours of English audio, plus proprietary data (1000
+      hours in English, 600 hours in French).
+    quote_sha256: f656ad11deda26961c40b24af13d50e988ccba6a4fa6c337e9bab35b7e8c4400
+    source_revision: HF kyutai/stt-1b-en_fr@1c34c6b4f7e9299bb61985f145052ff131005dde
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: FAQ.md:L50-L54 @ 4c4f65e
+    quote: Some finetuning code can be found in the [kyutai-labs/moshi-finetune repo]
+    quote_sha256: 543bdeb8505fc1886bf19c354c3332fa6cf257947010e60645596f6f810f8708
+    source_revision: kyutai-labs/delayed-streams-modeling@4c4f65e147df056adf3346290d64c7b9649b18c9
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2054
+    claim_index: 1
+    why: the 0.6/0.4 hysteresis and head-2 choice quoted from Unmute; this entry confirms the head index
+      and horizon but not the thresholds
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 3
+      partial: 2
+    flags_for_operator:
+    - 'k1 partial: Rust, websocket script, PyTorch index 2 >0.5 verified on disk; Unmute smoothing and
+      0.6/0.4 hysteresis are not in this repo (cross-source, intake-2054).'
+    - 'k2 partial: step_with_extra_heads, --cpu, no HIP feature verified; README never says VAD is Rust-only
+      (only lists --vad under Rust standalone); kyutai.org not on disk.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Read from disk: README.md (all 345 lines), FAQ.md
+    L45-L60, scripts/stt_from_mic_rust_server.py L15-L60, scripts/stt_from_file_rust_server.py L25-L50,
+    scripts/stt_from_file_pytorch.py L100-L200, stt-rs/src/main.rs L20-L45 and L86-L210, stt-rs/Cargo.toml,
+    configs/config-stt-en_fr-hf.toml L20-L46, plus HF kyutai/stt-1b-en_fr README (sha256 095cb8ad...,
+    model sha 1c34c6b4). NOT read: stt_pytorch.ipynb body, TTS scripts, moshi crate source (where the
+    head loss lives), moshi-finetune. Shallow clone at /mnt/raid0/llm/tmp/dive-w6-dsm-repo/repo @ 4c4f65e
+    (commit date 2026-01-26). License: Apache-2.0 / MIT (code). Nothing run.'
+- id: intake-2058
+  arxiv_id: '2205.09812'
+  url: https://arxiv.org/abs/2205.09812
+  source_type: paper
+  title: 'Voice Activity Projection: Self-supervised Learning of Turn-taking Events'
+  categories:
+  - multimodal
+  - local_inference
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Erik Ekstedt
+  - Gabriel Skantze
+  key_claims:
+  - 'VAP objective: predict the joint future voice activity of both speakers over a 2 s window discretised
+    into 4 bins per speaker of 200/400/600/800 ms (8 bits = 256 states), modelled as one categorical distribution
+    so bin dependencies are kept (vs. 60 or 40 independent 50 ms bins in earlier work).'
+  - 'Training data: Switchboard only (English telephone, 2205 train / 135 test dialogs, mixed to mono,
+    10 s chunks with 2 s overlap). Fisher and Candor appear only in the later stereo repo README, not
+    in this paper.'
+  - 'Event metrics (weighted F1, Switchboard test, Discrete model): shift/hold .899 (shift-class F1 .510
+    vs majority-class .843), short/long .786, shift-prediction .733, backchannel-prediction .723. Discrete
+    is significantly better than Independent only on the two prediction tasks (p<0.025); on S/H and S/L
+    the gain over Independent is +0.002/0.000 and not significant. These numbers are NOT end-of-turn latency/false-cut
+    numbers.'
+  - 'Model: CPC-feature encoder + 4-layer, 256-d, 4-head causal transformer; no parameter count given.
+    The 2022 model consumes 16 kHz mono plus VA features (not stereo audio alone), so a cascade must supply
+    VAD frames from both channels.'
+  techniques:
+  - Voice Activity Projection (discrete 256-state future-VA objective)
+  - self-supervised turn-taking training
+  - zero-shot event classification (shift/hold, shift-prediction, backchannel-prediction, short/long)
+  - CPC features + causal transformer
+  reported_results:
+  - '§5 Table 1 (avg weighted F1 over 11 k-fold splits, Switchboard test 135 dialogs): Discrete S/H .899
+    (shift-label .510), S/L .786, S-pred .733, BC-pred .723; Independent .897/.786/.718/.685; Independent-40
+    .896/.778/.712/.661; Comparative .893/.546/.714/N/A; majority class .843/.565/.333/.333.'
+  - '§5: S-pred and BC-pred gains of Discrete are statistically significant (p<0.025); S/H and S/L show
+    no significant difference between Discrete and Independent.'
+  referenced_arxiv_ids:
+  - '1810.04805'
+  - '2106.07447'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-VAP (expanded_from; the 2024 real-time VAP paper)
+    - NEW-TURNBENCH (scores a fine-tuned VAP)
+    - NEW-VAP-CKPT (fine-tuned weights)
+  expanded_from: intake-2055
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Cross-language transfer is poor (Inoue et al., arXiv 2403.06487, seen in search result; independent)
+    so English-only Switchboard numbers should not be read as general. No English re-evaluation by independent
+    authors surfaced besides TurnBench (NEW-TURNBENCH, previously read: a fine-tuned VAP scored EOT recall
+    .845 / FPR .055 / 368 ms).'
+  source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 6
+  reader_should_conclude: Use this paper for the objective definition and event-level F1 on Switchboard
+    only. Do NOT quote the F1 values as EOT-latency or false-cut performance, do not assume Fisher/Candor
+    training, and do not assume a parameter count (not stated). Deployed checkpoints (public example,
+    oto fine-tunes) differ from this 2022 model.
+  dive_corrections: '2026-10-20 Stage-2: Fisher is not training data of this paper (Switchboard only);
+    no parameter count in the paper; Discrete advantage is significant only on prediction tasks. 2026-10-20
+    Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived): arXiv:2403.06487
+    Multilingual Turn-taking Prediction Using Voice Activity Projection - Declined at the operator''s
+    6-wave cap (steering seq 9). Dive note: wave cap reached; English-only use is acceptable for a first
+    CS-22 arm [wave6 surfaced (cap)]; arXiv:2209.05161 How Much Does Prosody Help Turn-taking? (cited
+    in VAP project README) - Declined at the operator''s 6-wave cap (steering seq 9). Dive note: wave
+    cap reached; background only [wave6 surfaced (cap)].'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §2 Voice Activity Projection
+    quote: Specifically, we use bin durations of 200, 400, 600 and 800ms
+    quote_sha256: d29e3e6fb9b1a54fe2026c37a1c3eccdeb590fffdded3487502a91d1ff72ebcf
+    source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §2
+    quote: we limit the number of bins to 4 for each speaker, resulting in 8 total bits, or 256 different
+      possible states
+    quote_sha256: 32c93ea89c040a4cd2f528eade5dff293f0b2fa1d5cfbb015289f837cc2a3f80
+    source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §4 Model & Training
+    quote: We train on the Switchboard dataset
+    quote_sha256: 48b71c37d4e2b24e3afe9a7ad27b24a7fcfe98921b462bbd01170e6a80cddec2
+    source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5 Table 1
+    quote: Discrete (ours) .899 (.510) .786 .733 * .723 *
+    quote_sha256: ee5f2b7ceedbcbcb01eb3bacd70bf64efb45777d524b5830ea7ddfd1d448a1c8
+    source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4 Model & Training
+    quote: using a hidden size of 256, 4 layers, 4 heads and 0.1 dropout
+    quote_sha256: ecd98e840b3bc49bc32958f25bbdc8ed0d08b8c010f572c682a6da591b32b985
+    source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3
+    quote: we take a zero-shot approach to these tasks
+    quote_sha256: 77e4ffe3dfc59c138e01e2b6cddc9810d1a1e3775139e92e9709c446574791e2
+    source_revision: arXiv:2205.09812v1 (html, sha256 d5ae076d...)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 3
+      partial: 1
+    flags_for_operator:
+    - 'k1 partial: Switchboard 2205/135, mono, 10 s chunks with 2 s overlap verified; Fisher/Candor in
+      later repo README is outside paper, not verifiable here.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Read FULL paper.txt (arXiv 2205.09812v1 html, 308
+    lines, only version v1) at /mnt/raid0/llm/tmp/dive-w6-vap-orig/. Figures (vap_bin, sh_event, Template)
+    not viewed; Table 1 read as text. License: arXiv non-exclusive.'
+- id: intake-2059
+  arxiv_id: null
+  url: https://huggingface.co/viks66/VAP_checkpoints
+  source_type: repo
+  title: viks66/VAP_checkpoints
+  categories:
+  - multimodal
+  - local_inference
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - viks66
+  key_claims:
+  - viks66/VAP_checkpoints holds three fine-tuned VAP state files (oto, swbd, swbd_oto), each 54.76 MB,
+    with no model card (README is a licence stub, cc-by-4.0). It is a delivery bucket for TurnBench, not
+    a documented release.
+  - 'TurnBench''s default VAP baseline loads the "oto" checkpoint (dev+test, thresholds swept at FPR<=0.1:
+    eot 0.9161, int 0.8591) ; the leaderboard row (0.845 EOT recall / 368 ms) does not name its checkpoint,
+    so attributing it to the fine-tuned oto checkpoint rather than the public pretrained example is inference
+    from the default.'
+  - '"oto" most plausibly denotes fine-tuning on the otoSpeech 104 h English full-duplex turn-taking set
+    (TurnBench training split); this naming link is inferred from the TurnBench paper and the dataset
+    card, not stated by the checkpoint repo. Training recipe, epochs, learning rate: undocumented (the
+    VAP training repo is not public per the VAP README).'
+  techniques:
+  - fine-tuned Voice Activity Projection checkpoints (oto, swbd, swbd_oto)
+  reported_results:
+  - 'HF API (sha b9aa0ba1, lastModified 2026-06-30): three .ckpt files each 54,761,165 bytes; README is
+    a 27-byte stub containing only "license: cc-by-4.0"; no card text.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-TURNBENCH (default baseline uses oto)
+    - NEW-VAP (the public pretrained example checkpoint is a different artifact)
+    - NEW-VAP-ORIG
+  expanded_from: intake-2055
+  credibility_score: null
+  source_revision: HF viks66/VAP_checkpoints@b9aa0ba1718221153e04ef343c7f3b8cf84bfbc3
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 6
+  reader_should_conclude: These are English fine-tunes whose provenance is only inferable via TurnBench.
+    Treat the TurnBench VAP row as "oto-fine-tuned", not as the expected performance of the public pretrained
+    checkpoint; do not assume the fine-tune recipe, or that swbd/swbd_oto mean what their names suggest.
+  dive_corrections: '2026-10-20 Stage-2: checkpoint repo has no card; oto inferred as otoSpeech-104h fine-tune;
+    all three files 54,761,165 B. Main correction 2026-10-20 after per-claim second reader: oto->leaderboard-row
+    attribution marked as inference. 2026-10-20 Stage-2 close-out, dive-surfaced sources declined (named
+    so they are not lost or re-derived): https://huggingface.co/datasets/otoearth/otoSpeech-full-duplex-turn-104h
+    - Declined at the operator''s 6-wave cap (steering seq 9). Dive note: wave cap reached; gated dataset
+    (gated: auto per API) [wave6 surfaced (cap)].'
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: api/models/viks66/VAP_checkpoints?blobs=true siblings[oto.ckpt,swbd.ckpt,swbd_oto.ckpt].size
+    quote: oto.ckpt 54761165 / swbd.ckpt 54761165 / swbd_oto.ckpt 54761165 (bytes)
+    quote_sha256: a5efb6e91e7c2f6339017d0270c97fa882c5ec0611edd1e32f03a10755f40743
+    source_revision: HF viks66/VAP_checkpoints@b9aa0ba1718221153e04ef343c7f3b8cf84bfbc3
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: baselines/vap/README.md L17 @ 38a6f87
+    quote: Fine-tuned checkpoints (oto, swbd, swbd_oto) are downloaded automatically from `viks66/VAP_checkpoints`
+      on first run.
+    quote_sha256: 345e605e54135c02c117a3295be6e382f4d5a9452678274c08f140b3362056de
+    source_revision: SesameAILabs/turnbench@38a6f874322430cb3ca71d8a52aa1e636e88bad8
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: TurnBench §III (dataset release; /mnt/raid0/llm/tmp/dive-w3-turnbench/paper.txt)
+    quote: A training set provides ∼104 h of hand-labeled full-duplex dialogue
+    quote_sha256: 85bb59b28310209c9fd5cc7b07ed7cfa755d3841625a7cec768126aa74dd3e51
+    source_revision: arXiv TurnBench paper as read in wave 3 (dive-w3-turnbench/paper.txt)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2031
+    claim_index: 0
+    why: the oto meaning is derived from TurnBench materials read in wave 3
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      partial: 3
+    flags_for_operator:
+    - 'k0 partial: Three ckpts at 54,761,165 B and 27 B license-only README verified; ''delivery bucket
+      for TurnBench'' is inference (TurnBench README does auto-download from it).'
+    - 'k1 partial: Default oto and thresholds .9161/.8591 in TurnBench README L22-30; leaderboard vap
+      row 0.8446/368 ms does not name checkpoint, so oto link is inferred.'
+    - 'k2 partial: TurnBench README L31 links the 104 h oto set as training data (hedged inference); ''VAP
+      training repo not public per VAP README'' is not on disk.'
+    - 'actionable W6-VAPC-01: Assumes public pretrained example checkpoint is a usable control and that
+      oto.ckpt is the reference arm; rests on inferred oto semantics and pin only, no card.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Read: HF API JSON (blobs=true) and README.md raw
+    (27 B) in /mnt/raid0/llm/tmp/dive-w6-vap-ckpt/; cross-read TurnBench repo (baselines/vap/README.md,
+    predict.py L55-L90) and paper.txt from /mnt/raid0/llm/tmp/dive-w3-turnbench/ (wave 3 clone @38a6f87);
+    otoSpeech dataset card via HF API (sha 46f52029). Weights not downloaded; license cc-by-4.0 (one-line
+    fact).'
+- id: intake-2060
+  arxiv_id: null
+  url: https://github.com/ASLP-lab/Hum-Dial
+  source_type: repo
+  title: 'Hum-Dial (HumDial Challenge: Emotional Intelligence and Full-Duplex Interaction)'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - ASLP-lab
+  key_claims:
+  - 'Track 2 (full-duplex) scoring is two-stage: (a) ASR with NeMo parakeet-tdt-0.6b-v2 produces word-level
+    timestamps for the user and model channels (clean and noisy pairs); (b) interruption RESPOND and rejection
+    RESUME labels are produced by an LLM judge (DeepSeek deepseek-chat via the cloud API, prompt in evaluation/instruction/behavior.txt)
+    while rejection rates and first-response delay come from deterministic timestamp rules (first model
+    word after the user''s segment end).'
+  - 'Scenario scores: interruption = mean RESPOND over 5 sub-scenarios plus stop latency and response
+    latency; rejection = RESUME (Third-party-after, Speech-directed-at-others, Backchannels) or timing
+    rejection rate (Pause handling, Third-party-before), mixed 50/50 for Third-party. Final = 0.4 RESPOND
+    + 0.4 RESUME + 0.2 latency score, latency score log-scaled against the best team and the baseline
+    (field-relative).'
+  - Offline scoring of our cascade is feasible for the rule-based half (needs per-turn word timestamps
+    and the dataset's *_sentence.json segment files) and for the ASR front end (NeMo can run on CPU, though
+    Parakeet is not our stack); the LLM-judge half has a cloud default but a swappable base_url constant,
+    and swapping the judge makes our numbers non-comparable to leaderboard numbers.
+  - Train and dev data are not in the repo (dev data / test set are distributed outside it; site says
+    data sent via the registered email), so the scripts cannot be run end-to-end from the repo alone.
+  techniques:
+  - LLM-judged RESPOND/RESUME labelling of overlap handling
+  - timing-rule rejection rate (does the model stay silent through the distractor)
+  - first-response-delay / stop-latency / response-latency
+  - word-timestamp ASR as the scoring front end
+  reported_results:
+  - 'Full-Duplex_Interaction/evaluation/total_score.png: Final Score = 0.4 x S_respond + 0.4 x S_resume
+    + 0.2 x L_score, L_score = 100 - 50 x ln(L_total/L_min)/ln(L_b/L_min) with L_min the best participating
+    team and L_b the baseline latency (so latency score is relative to the field, not absolute).'
+  - 'evaluation/readme.txt: a simpler procedure averages RESPOND over 5 interruption sub-scenarios and
+    RESUME/rejection over 4 rejection sub-scenarios; note that readme itself says weights may change.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-HUMDIAL-SITE (expanded_from)
+    - NEW-HUMDIAL-OVERVIEW
+    - NEW-TURNBENCH (alternative offline-able turn-taking benchmark)
+  expanded_from: intake-2056
+  credibility_score: null
+  source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 6
+  reader_should_conclude: 'The timing metrics are rule-based and reusable offline; the content labels
+    depend on an LLM judge that defaults to the DeepSeek cloud API. Do NOT report a cascade score as a
+    HumDial score unless the same judge model and the same data are used. Scripts alone cannot reproduce
+    the challenge: the data is distributed separately.'
+  dive_corrections: '2026-10-20 Stage-2: judge identified (deepseek-chat via cloud API, swappable constant),
+    ASR front end identified (parakeet-tdt-0.6b-v2), timing metrics verified as pure rules; repo does
+    not carry the data. Main correction 2026-10-20 after per-claim second reader: behavior.txt anchor
+    re-indexed to claim 0; claims 1-3 unanchored (scoring weights are only in total_score.png). 2026-10-20
+    Stage-2 close-out, dive-surfaced sources declined (named so they are not lost or re-derived): https://github.com/DanielLin94144/Full-Duplex-Bench
+    - Declined at the operator''s 6-wave cap (steering seq 9). Dive note: wave cap reached; HumDial scripts
+    already carry the needed pieces [wave6 surfaced (cap)].'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: Full-Duplex_Interaction/evaluation/interruption/eval.py:L11 @ dbbd8ad
+    quote: DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+    quote_sha256: 47e5a634ddbd819b4618f9f319f0722c1dc47623697e398e84db7881c75b28f5
+    source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: Full-Duplex_Interaction/evaluation/interruption/eval.py:L12 @ dbbd8ad
+    quote: MODEL_NAME = "deepseek-chat"
+    quote_sha256: a59f8c771cf7369f5245b86c1b3897c167326de88691706675adb15839a729df
+    source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: Full-Duplex_Interaction/evaluation/get_transcript/infer_en.py:L38 @ dbbd8ad
+    quote: model_name="nvidia/parakeet-tdt-0.6b-v2"
+    quote_sha256: 42e5b2ab80cf3609c6153588ce4d929599035b55b013bce0574fb45dab9b9fd5
+    source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: Full-Duplex_Interaction/evaluation/rejection/Pause_Handling/compute_rejection_rate.py:L38
+      @ dbbd8ad
+    quote: 'if diff is not None and diff > 0:'
+    quote_sha256: 71ebea14f213db902e69faf6fd6279202479b494a9f0716abaa8ed5e8cc12c5e
+    source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: Full-Duplex_Interaction/evaluation/interruption/compute_first_response_delay.py:L19 @ dbbd8ad
+    quote: diff = first_chunk_start - first_origin_xmax
+    quote_sha256: f621c5fc1f9d9e4d6fd529bbdd037ddfe1926cc4b4adb5384e6fbc152246fd33
+    source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: Full-Duplex_Interaction/evaluation/instruction/behavior.txt:L61 @ dbbd8ad
+    quote: C_RESPOND The model meaningfully addresses the overlap’s content
+    quote_sha256: 1f6d8b47d0e3a8105cc7ef60bf8e8374e90979b0a57d27db3ccc79f1f669426d
+    source_revision: ASLP-lab/Hum-Dial@dbbd8adf86bbb459aad6d07f6c8cc1572e267803
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2056
+    claim_index: 1
+    why: total-score formula first quoted from the site; this entry confirms the image in the repo
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 1
+      partial: 1
+      unanchored: 2
+    flags_for_operator:
+    - 'k1 partial: Anchor is only behavior.txt L61 C_RESPOND; formula 0.4/0.4/0.2 with log latency score
+      is in total_score.png and readme.txt, 50/50 Third-party in its readme; unanchored.'
+    - 'actionable W6-HUMD-01: Assumes first_response_delay works from whisper.cpp word timestamps and
+      ''no cloud dependency'' for timing; get_timing.py (stop/response latency) was not read.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Re-used wave-5 clone /mnt/raid0/llm/tmp/dive-w5-humdial-site/repo,
+    SHA confirmed dbbd8adf86bbb459aad6d07f6c8cc1572e267803. Read: Full-Duplex_Interaction/evaluation/readme.txt,
+    interruption/eval.py (all), instruction/behavior.txt L1-L95, get_transcript/infer_en.py L1-L102, interruption/compute_first_response_delay.py,
+    rejection/Pause_Handling/compute_rejection_rate.py and readme, Third-party readmes, total_score.png
+    (viewed). NOT read: interruption/get_timing.py (stop/response latency), infer_cn*.py, clean_wav.py,
+    prepare_for_eval_first.py, the baseline/ tree. No new files in dive-w6-humdial-repo/. License: not
+    checked (irrelevant).'
