@@ -2,7 +2,7 @@
   "session_id": "intake-hybrid-prefix-cache-20261020",
   "started_at": "2026-10-20T16:12:41Z",
   "last_checkpoint": "2026-10-20T16:12:41Z",
-  "stage": "stage1-complete",
+  "stage": "stage2-in-progress",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/kpf-takeover-20261020",
   "branch": "lane/kpf-takeover-20261020",
@@ -81,6 +81,42 @@
       "disposition": "context-only",
       "plan_ref": null,
       "reason": "executed outside intake as operator-directed engineering (KVU-12 reopen; P1 reassignment) — not an intake filing"
+    },
+    {
+      "seq": 6,
+      "stage": 2,
+      "verbatim": "I approve: Dives on vLLM PR, RFC, docs (Recommended); KPF-25 + KPF-21 (orchestrator); KPF-03 belief-kernel wiring; KPF-17a FA test re-cut",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Operator multi-select answer; dive half = Stage-2 wave 1 selection (intake-2061/2062, 2071, 2066); KPF items are operator-directed engineering outside the intake filing",
+      "timestamp": "2026-10-20"
+    },
+    {
+      "seq": 7,
+      "stage": 2,
+      "verbatim": "yes, same rule here, and re-dispatch all the non-intake items",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Adopts the standing Stage-2 budget the operator set for intake 09f781b0 (seq 2/4/9 there): dive all recommended sources plus recommended dive-surfaced literature, wave by wave, up to 6 Stage-2 waves; wave 1 = intake-2061/2062, 2063, 2066, 2068, 2071",
+      "timestamp": "2026-10-20"
+    },
+    {
+      "seq": 8,
+      "stage": 2,
+      "verbatim": "use subagents at your disposal whenever useful.",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Execution directive; governs dispatch, not filing",
+      "timestamp": "2026-10-20"
+    },
+    {
+      "seq": 9,
+      "stage": 2,
+      "verbatim": "Ideally the cheapest subagents that can handle the task. Keep your main thread for work review and submission",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Execution directive; governs subagent model choice, not filing",
+      "timestamp": "2026-10-20"
     }
   ],
   "actionable_ledger": [],
@@ -9719,5 +9755,32 @@
         "cleanup": "pending explicit operator confirmation per feedback_manual_confirm_before_deletion"
       }
     }
-  ]
+  ],
+  "stage2": {
+    "wave_budget": {
+      "max_waves": 6,
+      "rule": "all recommended dives + recommended dive-surfaced sources per wave",
+      "source": "operator 2026-10-20 (steering seq 7)"
+    },
+    "waves": [
+      {
+        "wave": 1,
+        "entries": [
+          "intake-2061",
+          "intake-2062",
+          "intake-2063",
+          "intake-2066",
+          "intake-2068",
+          "intake-2071"
+        ],
+        "dispatched": "2026-10-20",
+        "scratch": [
+          "/mnt/raid0/llm/tmp/dive-2061",
+          "/mnt/raid0/llm/tmp/dive-2071",
+          "/mnt/raid0/llm/tmp/dive-2063",
+          "/mnt/raid0/llm/tmp/dive-2068"
+        ]
+      }
+    ]
+  }
 }
