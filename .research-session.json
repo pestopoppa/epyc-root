@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T15:27:48+00:00",
-  "stage": "stage4-in-progress",
+  "last_checkpoint": "2026-10-20T15:32:42+00:00",
+  "stage": "stage4-complete",
   "phase": 4,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
@@ -9615,6 +9615,20 @@
         "why": "index_state.py --check cite-check blocks whole-entry citations of entries that carry an overturned claim (intake-1988 claim 4, intake-1341 claim 3); both lines cite the record as provenance/discussion and rely on neither overturned claim. Meaning unchanged; stage3_filing proposed_tasks and task_refs updated to the applied text; the approved plan file and plan_sha256 are unchanged.",
         "operator_review": "reported in the Stage-4 summary; revert on request"
       }
-    ]
+    ],
+    "completed": "2026-10-20T15:32:42+00:00",
+    "reconciled": true,
+    "validation": {
+      "validate_intake_plain": 0,
+      "validate_intake_plan_stage4": 0,
+      "index_state": 0,
+      "index_state_check": "0 problems"
+    },
+    "files_changed": 20,
+    "new_tasks": 25,
+    "checkbox_flips": 1,
+    "checkbox_flip_note": "HIL-8 filed as [x] (its corrections were applied in this Stage 4)",
+    "push": "pending operator-authorized wrap-up push (operator instruction recorded under operator_push_instruction)",
+    "cleanup": "pending explicit operator confirmation per feedback_manual_confirm_before_deletion"
   }
 }
