@@ -1995,6 +1995,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
     progress JSONL `routing_decision` and `task_completed`/`task_failed` events, and it serves from 2026-09-30 04:52Z
     (API PID 1930724). Still owed: backend, index size and `instrument_class` on the producer, a ClaimTuple-shaped
     sidecar or strict reader, the adapter and a `cli.py ingest` verb. Source-table row updated.
+- [ ] **VB-UFH12-EMBSPEED — wire the write side of the embedder speed records** (`repl-embedding-retrieval.md` REPL-EMB-2.7 speed block; filed 2026-10-20). VB-UFH12-RETR covers recall, not timing. The pilot `artifacts/research/emb-speed-20261020/results.jsonl` is retrospective and contended (no claim tuple; peer load recorded only in `ctx0/ctx1`); the in-launch speed block must emit chunks/s, tokens/s, p50/p95, RSS and index-build time with model/revision/dtype/runtime identity, cpu-list, region-lock claim, loadavg/GPU/frequency context and the A/A noise floor in its unit, through the same writer as 2.4. The source-table row in `scripts/vidya/adapters/README.md` goes with it.
 - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
   REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
   corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
@@ -2243,6 +2244,13 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   (2) the probe's `acc_peak` ≤ 238 is for the named prompts on the architect only. Grade via `claim_tuple.grade()`;
   no new ladder. Row PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and
   an adapter projects the harness summaries.
+- [ ] **VB-DF2-REPLAY — write side for CPU-only DF2 n-gram replays (DF2-14, DF2-19)** (filed 2026-10-20, agent df2-19;
+  CLAUDE.md *Belief Kernel*). No adapter row exists for these replays, and none is written here.
+  - Source: `epyc-root` `artifacts/research/df2-19-20261020/` (`results.json` carries the outcomes, chosen gates, seed count and corpus sizes;
+    `provenance.json` carries the dataset/tokenizer/COUNT pins and file sha256s; `positions.csv.gz` is the per-position raw table).
+  - Caution: token-level n-gram predictability under a Dolma2 retokenization proxy and a fitted overlap model, not drafter acceptance;
+    per-position DFlash2 acceptance is not on the wire. Two prompt groups only; the DF2-14 numbers (320 turns / 630k) are not re-checkable.
+  - Done when an adapter projects the arm hit rates and the holdout simulated gains with the pinned inputs as the locator.
 - [ ] **VB-V11FA — write side for the v11 FA routing A/B slot and the DF2-9 model probe** (filed 2026-10-04,
   workspace-ec, CLAUDE.md *Belief Kernel*).
   - Producers: `gpu_slot_v11fa.sh` → `slot-<ts>/summary.txt` and `perf_table.tsv` (µs per FA op × layout × rows ×

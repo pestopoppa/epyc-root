@@ -49,6 +49,21 @@ Common report columns for each paired arm: successful task completion/correctnes
 
 Protocol governance: MEASUREMENT.md defines claim grammar and its registry. P-AB-1, P-QUAL-T1, P-QUAL-PROMO and P-SMOKE-1 already exist for their stated scopes. A mechanism smoke or a value lacking a fitting cited protocol is an observation and cannot gate keep/revert/promotion. Any new protocol, metric definition, sample unit, MDE/noise rule, or amendment to existing protocols requires human amendment under MEASUREMENT.md §5; this design does not create one. HS-5b/P0.4 ordering is strict: no tuning or efficacy claims until the OpenCode Harness Card is published and P0.4 acceptance/freeze is complete. HIL design itself can proceed before that point.
 
+### HIL-2 pre-first-suite-run checklist (HIL-7, added 2026-10-20)
+
+Source: the v4 reading of arXiv 2607.12227 (intake-2006#record). Items 1, 3 and 4 follow the paper protocol; **items 2, 5 and 6 are EPYC additions beyond the paper protocol**. No HIL suite run (HIL-6 onward) starts before every item below is satisfied by that run's design. Items whose existing hook is a human-amendment candidate are satisfied run-locally until the operator amends MEASUREMENT.md.
+
+| # | Requirement | Origin | Existing hook |
+|---|---|---|---|
+| 1 | A task-level baseline at the identical rollout count (parallel sampling, sequential refinement, per-task harness scaling) is run beside the paired incumbent-vs-candidate arm. | paper protocol | Pairing and same-question arms: P-AB-1. The matched-rollout baseline arm itself has no protocol: human-amendment candidate (MEASUREMENT.md section 5), not applied here. |
+| 2 | Proposer, meta-agent and summariser tokens are counted in the budget, not only the task-solver tokens. | EPYC addition | The common report column "model-token cost per successfully solved task" is the nearest axis; it does not say which roles are counted. Human-amendment candidate (MEASUREMENT.md section 5), not applied here. |
+| 3 | Disjoint train, validation and test split; selection on validation only; the test split is touched once for the reported claim. | paper protocol | P-QUAL-PROMO (fresh stratified draw, n >= 200, qids unseen within 60 days) covers the held-out promotion draw. Train/validation selection discipline is not stated by a protocol: human-amendment candidate for that part. |
+| 4 | Report with and without the verification signal. | paper protocol | No existing hook. Human-amendment candidate (MEASUREMENT.md section 5), not applied here. |
+| 5 | At least two runs, a confidence interval and a stated minimum detectable effect. | EPYC addition | P-AB-1 requires N >= 100/arm for production-role decisions and reporting of infra-failure rate; it states no run-count, CI or MDE rule. The run-count/CI/MDE rule is a human-amendment candidate (MEASUREMENT.md section 5), not applied here. |
+| 6 | An unmodified-harness control is run on the same split. | EPYC addition | The paired incumbent arm in P-AB-1 is the nearest control; whether the incumbent equals the unmodified harness must be stated per run. A standing unmodified-harness control is a human-amendment candidate, not applied here. |
+
+This section creates no protocol, metric, sample unit or MDE/noise rule; per the protocol-governance paragraph above, results lacking a fitting cited protocol remain observations.
+
 ## HIL-3 — option-B shared-substrate extraction plan
 
 The source review does not support moving the AutoPilot controller or copying its gate logic. Several named components already exist as importable modules; the brittle boundary is that key journal/gate/PromptForge pieces live under `scripts/autopilot`, where the running controller establishes `sys.path` and frequently imports bare module names. Keep one implementation and expose a narrow package API; do not fork logic into a second loop.

@@ -577,6 +577,25 @@ def check_duplicate_locators(entries: list[dict]) -> list[str]:
     ]
 
 
+def check_ingested_date_types(entries: list[dict]) -> list[str]:
+    """ERRORS for an ingested_date YAML parsed as a date rather than a string.
+
+    An unquoted `ingested_date: 2026-10-20` loads as datetime.date. The vidya adapter coerces it
+    back to ISO text, but the index contract is a quoted 'YYYY-MM-DD' string, and an unquoted
+    value broke the vidya ledger rebuild on 2026-10-20. A coercion is a symptom patch, so the
+    validator refuses the file and names the entry.
+    """
+    out = []
+    for entry in entries:
+        value = entry.get("ingested_date")
+        if value is not None and not isinstance(value, str):
+            out.append(
+                f"{entry.get('id')}: ingested_date {value!r} parsed as {type(value).__name__}, "
+                "not a quoted string — quote it as 'YYYY-MM-DD' in intake_index.yaml"
+            )
+    return out
+
+
 def check_merge_map(entries: list[dict]) -> list[str]:
     """The redirect map must list every absorbed id.
 
@@ -1320,6 +1339,7 @@ def main() -> int:
         errors.extend(check_merge_map(entries))
         for warning in check_duplicate_locators(entries):
             print(f"WARNING: {warning}")
+        errors.extend(check_ingested_date_types(entries))
 
     if args.plan_file is not None:
         try:
