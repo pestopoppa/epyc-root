@@ -251998,17 +251998,17 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
-  notes: 'Analyst proposed not_applicable; held at worth_investigating/low pending operator confirmation
-    (project rule: never dismiss as not_applicable without asking). Stage-1 analyst read: davidgonmar/depth-memory@9a6865feeb43a153a4501cc9a6457e047ffef3c3;
-    fetch_status: partial (repo page digest only; raw README and paper not read). EPYC fit (unverified):
-    Pretraining architecture change at 400M-1.5B scale; requires training from scratch and NVIDIA-only
-    fast kernels. No fit with a frozen llama.cpp serving stack or existing GGUF lineup. Only conceptual
-    interest if the paper shows decode-cost or long-context benefits. Verdict not_applicable is provisional
-    pending operator review per research-intake policy (flag, not dismiss). Dive recommendation (Stage-1):
-    no - Pretraining-time architecture (no path to our frozen GGUF lineup); companion paper entry covers
-    the technique. Analyst notes: WebFetch digest cited arXiv ID 2610.18809; not verified against arxiv.
-    License MIT. 12 stars. Re-verify every figure against primary source before citing; this entry is
-    stage1-unverified.'
+  notes: 'Analyst proposed not_applicable; held at worth_investigating/low. Low because it requires new
+    pretrained weights (nothing portable onto served models), not because of platform. Stage-1 analyst
+    read: davidgonmar/depth-memory@9a6865feeb43a153a4501cc9a6457e047ffef3c3; fetch_status: partial (repo
+    page digest only; raw README and paper not read). EPYC fit (unverified): Pretraining architecture
+    change at 400M-1.5B scale; requires training from scratch and NVIDIA-only fast kernels. No fit with
+    a frozen llama.cpp serving stack or existing GGUF lineup. Only conceptual interest if the paper shows
+    decode-cost or long-context benefits. Verdict not_applicable is provisional pending operator review
+    per research-intake policy (flag, not dismiss). Dive recommendation (Stage-1): no - Pretraining-time
+    architecture (no path to our frozen GGUF lineup); companion paper entry covers the technique. Analyst
+    notes: WebFetch digest cited arXiv ID 2610.18809; not verified against arxiv. License MIT. 12 stars.
+    Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
 - id: intake-1979
   arxiv_id: null
   url: https://github.com/magnitudedev/magnitude
@@ -252080,12 +252080,16 @@
     magnitude local inference engine per-hardware kernel tuning benchmark; Magnitude inference engine
     vs llama.cpp independent benchmark reproduce claim catch. Headline numbers (92% Metal M4 Pro, 19%
     CUDA on DGX Spark, Qwen 3.6 35B A3B) are vendor-run; no independent reproduction surfaced (provisional).
-    Dive recommendation (Stage-1): no - Declined: Metal/CUDA-first engine with vendor-run headline numbers
-    that an independent review and HN commenters contest (shifting baselines, unequal speculative decoding);
-    AutoKernel already owns per-hardware kernel tuning on EPYC/MI210. Analyst notes: Apache-2.0; 7.2k
+    Dive recommendation (Stage-1): yes - Per-hardware kernel autotuning engine with per-model drafters
+    (Metal/CUDA-first). Platform is not a reason to skip (operator 2026-10-20): a dive settles its tuning
+    search space, cost model and drafter method and which parts AutoKernel could port to EPYC/MI210; its
+    contested vendor numbers become dive questions, not a decline reason. Analyst notes: Apache-2.0; 7.2k
     stars at fetch. Benchmark numbers are vendor self-reported against Ollama; commercial-ish product.
     Contradiction pass not run (no empirical paper claims, bounded). Re-verify every figure against primary
     source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
 - id: intake-1980
   arxiv_id: null
   url: https://github.com/Gen-Verse/RSI-Anything
@@ -252162,11 +252166,15 @@
     Lambert lossy self-improvement) not specific to this work. Corroboration seen: Aggregator page for
     the paper; results (code repair hidden-test 26.3% to 31.2%, lab planning 21.80% to 46.01%, reaction
     optimization 96.15% vs 82.16% Bayesian opt) are self-reported and restated by news sites. (https://www.emergentmind.com/papers/2610.13912;
-    restatement) Dive recommendation (Stage-1): no - Declined (repo and paper): self-reported, small domain-specific
-    gains (e.g. code repair 26.3% -> 31.2% per Tier-2b digest) with no independent evaluation; the world-model-prediction
-    pattern is recorded for the harness/autopilot cluster without a dive. Analyst notes: Apache-2.0; 809
-    stars. All numbers are README-reported and unverified against the paper. Re-verify every figure against
-    primary source before citing; this entry is stage1-unverified.'
+    restatement) Dive recommendation (Stage-1): yes - Surrogate pre-screening (predict a candidate''s
+    outcome before running the expensive trial) maps onto AutoKernel, where each trial costs a compile
+    plus a timing window; a dive settles the predictor design, training signal, and how much trial cost
+    it saves, against cheap heuristics. Analyst notes: Apache-2.0; 809 stars. All numbers are README-reported
+    and unverified against the paper. Re-verify every figure against primary source before citing; this
+    entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
 - id: intake-1981
   arxiv_id: null
   url: https://github.com/context-dot-dev/sgrep
@@ -252311,7 +252319,6 @@
   credibility_score: null
   contradicting_evidence: null
   recommended_actions:
-  - '[unverified] Read NVIDIA Open Model License text and record terms vs open-source-only policy; handoffs/active/conversation-stack.md'
   - '[unverified] Adopt FullDuplexBench categories as interlocutor eval rubric; conversation-stack.md'
   source_revision: NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91 (WebFetch digest of repo
     page, retrieved 2026-10-20)
@@ -252324,22 +252331,21 @@
     Directly in the ratified speech-interlocutor lane (conversation-stack.md), which currently names Step-Audio
     2 mini as lead and Qwen3-Omni as challenger with the whisper+qwentts cascade as baseline. PersonaPlex
     is a Moshi-class full-duplex candidate; same blockers as prior Moshi-derived entries (PyTorch/CUDA-oriented,
-    Mimi codec, no GGUF/llama.cpp), but it runs on a single MI210 only if ROCm PyTorch works. Weights
-    are NVIDIA Open Model License (not MIT), so terms need review against open-source-only policy; code
-    is MIT. Useful mainly as a bake-off reference for full-duplex behaviour and as a FullDuplexBench pointer.
-    Tier-2b (bounded, provisional): queries NVIDIA PersonaPlex full-duplex speech-to-speech evaluation
-    latency license criticism; PersonaPlex 7B hands-on review problems hallucination latency GPU independent
-    test. none surfaced in bounded search (provisional): no independent latency/quality evaluation, no
-    license complaints found. Latency figures differ by metric across sources. Corroboration seen: Press
-    coverage of NVIDIA''s own benchmark (DNMOS 3.90 vs Gemini Live 3.72; speaker switch 0.07s vs 1.3s).
-    Vendor numbers restated. (https://the-decoder.com/nvidia-open-sources-personaplex-a-voice-ai-that-listens-and-talks-at-the-same-time/;
+    Mimi codec, no GGUF/llama.cpp), but it runs on a single MI210 only if ROCm PyTorch works.Useful mainly
+    as a bake-off reference for full-duplex behaviour and as a FullDuplexBench pointer. Tier-2b (bounded,
+    provisional): queries NVIDIA PersonaPlex full-duplex speech-to-speech evaluation latency license criticism;
+    PersonaPlex 7B hands-on review problems hallucination latency GPU independent test. none surfaced
+    in bounded search (provisional): no independent latency/quality evaluation, no license complaints
+    found. Latency figures differ by metric across sources. Corroboration seen: Press coverage of NVIDIA''s
+    own benchmark (DNMOS 3.90 vs Gemini Live 3.72; speaker switch 0.07s vs 1.3s). Vendor numbers restated.
+    (https://the-decoder.com/nvidia-open-sources-personaplex-a-voice-ai-that-listens-and-talks-at-the-same-time/;
     restatement) Dive recommendation (Stage-1): yes - Only open-weight full-duplex speech-to-speech candidate
-    against the ratified speech-interlocutor vision; a dive settles weight license terms (NVIDIA Open
-    Model License vs open-source-only policy), VRAM/latency feasibility on MI210 (ROCm, not CUDA), and
-    the Moshi-derived serving path. Analyst notes: Weights license (NVIDIA Open Model License) taken from
-    digest, not verified against license text. arXiv IDs come from the digest of the repo page. No contradiction
-    search run (credibility null). Re-verify every figure against primary source before citing; this entry
-    is stage1-unverified.'
+    against the ratified speech-interlocutor vision; a dive settles base model/size, the Moshi-derived
+    serving path and what porting it to MI210 (ROCm/HIP) or EPYC CPU would take, VRAM, and the latency/turn-taking
+    tables. Analyst notes: Weights license (NVIDIA Open Model License) taken from digest, not verified
+    against license text. arXiv IDs come from the digest of the repo page. No contradiction search run
+    (credibility null). License recorded as a fact only (project is non-commercial; operator 2026-10-20).
+    Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
@@ -252353,7 +252359,7 @@
   - local_inference
   - hardware_optimization
   novelty: low
-  relevance: low
+  relevance: medium
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-20'
@@ -252400,19 +252406,24 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
-  notes: 'Analyst proposed not_applicable; held at worth_investigating/low pending operator confirmation.
-    Its component model list (end-of-utterance detection, VAD, echo cancellation) may matter for cascade
-    turn-taking even though the SDK itself cannot run here. Stage-1 analyst read: FluidInference/FluidAudio@61d41b3ca04833d1cb80632c82ba401f117a01ef
+  notes: 'Re-scored 2026-10-20 after operator steering (platform is not a reason to dismiss): evaluated
+    as a catalogue of portable duplex front-end components. Stage-1 analyst read: FluidInference/FluidAudio@61d41b3ca04833d1cb80632c82ba401f117a01ef
     (WebFetch digest, retrieved 2026-10-20); fetch_status: partial (WebFetch digest only). EPYC fit (unverified):
     Apple-ANE-only Swift code cannot run on EPYC/MI210, so the SDK itself is a misfit. The model choices
     are the transferable part: Parakeet EOU (streaming end-of-utterance), Silero VAD, Sortformer/LS-EEND
     diarization and LocalVQE echo cancellation are the front-end pieces a full-duplex cascade fallback
     needs and which whisper.cpp does not supply. Models are permissively licensed except Sortformer. Use
-    as a catalogue of open duplex front-end components, not as code. Dive recommendation (Stage-1): no
-    - Swift/CoreML SDK locked to Apple Neural Engine; not runnable on EPYC/MI210. Analyst notes: Not dismissed
-    lightly: verdict reflects platform mismatch only; component list may merit a flag for review per research-intake
-    rule. No numbers independently verified. Re-verify every figure against primary source before citing;
-    this entry is stage1-unverified.'
+    as a catalogue of open duplex front-end components, not as code. Dive recommendation (Stage-1): yes
+    - The Swift/ANE SDK is not the point; its open component models (streaming end-of-utterance detection,
+    VAD, diarization, echo cancellation) are the front-end pieces a full-duplex cascade needs and whisper.cpp
+    lacks. A dive settles which have ONNX/PyTorch/GGML-portable weights and their latency. Analyst notes:
+    Not dismissed lightly: verdict reflects platform mismatch only; component list may merit a flag for
+    review per research-intake rule. No numbers independently verified. License recorded as a fact only
+    (project is non-commercial; operator 2026-10-20). Re-verify every figure against primary source before
+    citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
 - id: intake-1984
   arxiv_id: null
   url: https://huggingface.co/fishaudio/drama-3
@@ -252435,8 +252446,7 @@
   - Up to 16 speakers per text via speaker tags, reference-clip voice cloning, inline emotion tags, and
     edit-by-continuation.
   - Served via SGLang-Omni and vLLM-Omni with per-chunk streaming for long text.
-  - License is the Fish Audio Community License (metadata tag fish-audio-research-license), so likely
-    not fully permissive.
+  - License is the Fish Audio Community License (metadata tag fish-audio-research-license).
   techniques:
   - MoE TTS
   - codebook multi-token prediction
@@ -252472,8 +252482,7 @@
   expanded_from: null
   credibility_score: null
   contradicting_evidence: null
-  recommended_actions:
-  - '[unverified] Read the Fish Audio Community License text and file eligibility decision; handoffs/active/conversation-stack.md'
+  recommended_actions: []
   source_revision: HF model card retrieved 2026-10-20 (WebFetch digest)
   verification: stage1-unverified
   handoffs_updated: []
@@ -252482,15 +252491,14 @@
     (WebFetch digest only; license text not read). EPYC fit (unverified): A 3B-active MoE TTS is conceptually
     attractive for CPU decode (bandwidth-bound, like our MoE LLMs), and the MTP audio decoder resembles
     our speculative-decoding interests. But it is 35B total, GPU-served via SGLang/vLLM, FP8 (MI210 lacks
-    FP8 hardware), has no llama.cpp path, and the license is a community/research license, so it conflicts
-    with open-source-only unless terms are permissive. Production TTS (qwentts.cpp) is frozen and works;
-    this is a quality/latency reference rather than a drop-in. Dive recommendation (Stage-1): yes - Cheap
-    and decisive: the weight license (tagged fish-audio-research-license per digest) decides admissibility
-    under the open-source-only policy before any TTS evaluation; also settles MoE size/streaming latency
-    vs qwentts.cpp. Analyst notes: Training data and authors not stated on card. Benchmarks are on H200
-    and vendor-reported, not comparable to MI210/EPYC. arXiv ID taken from digest, unverified that it
-    resolves. Card has no dated stamp. Re-verify every figure against primary source before citing; this
-    entry is stage1-unverified.'
+    FP8 hardware), has no llama.Production TTS (qwentts.cpp) is frozen and works; this is a quality/latency
+    reference rather than a drop-in. Dive recommendation (Stage-1): yes - MoE TTS on a Qwen3.5-35B-A3B
+    hybrid DeltaNet backbone (per Stage-1 read); a dive settles streaming latency and hardware, inference-code
+    availability, and what a CPU/MI210 path would need (llama.cpp support for the backbone) vs qwentts.cpp.
+    Analyst notes: Training data and authors not stated on card. Benchmarks are on H200 and vendor-reported,
+    not comparable to MI210/EPYC. arXiv ID taken from digest, unverified that it resolves. Card has no
+    dated stamp. License recorded as a fact only (project is non-commercial; operator 2026-10-20). Re-verify
+    every figure against primary source before citing; this entry is stage1-unverified.'
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
@@ -252631,11 +252639,11 @@
   verification: stage1-unverified
   handoffs_updated: []
   handoffs_created: []
-  notes: 'Analyst proposed not_applicable; held at worth_investigating/low pending operator confirmation
-    (companion artifact of an in-domain repo). Stage-1 analyst read: retrieved 2026-10-20 (WebFetch digest
-    only; no commit pinned); fetch_status: partial (WebFetch digest only; Space files/app code not inspected).
-    EPYC fit (unverified): Demo front-end for the mLattice repo; adds no independent measurement. Same-author
-    inference only: the repo links to it as its own demo, and README says the demo server is experiments/demo_server.py,
+  notes: 'Analyst proposed not_applicable; held at worth_investigating/low (companion demo of an in-domain
+    repo with no content). Stage-1 analyst read: retrieved 2026-10-20 (WebFetch digest only; no commit
+    pinned); fetch_status: partial (WebFetch digest only; Space files/app code not inspected). EPYC fit
+    (unverified): Demo front-end for the mLattice repo; adds no independent measurement. Same-author inference
+    only: the repo links to it as its own demo, and README says the demo server is experiments/demo_server.py,
     but handle Ex0bit vs repo owner eelbaz is not confirmed identical by any fetched page. Dive recommendation
     (Stage-1): no - Demo page with no description or measurements in the Stage-1 read. Analyst notes:
     Treat as a pointer under the repo entry. Whether it is the same person as eelbaz was not verified
@@ -252747,7 +252755,7 @@
   - training_distillation
   - local_inference
   novelty: medium
-  relevance: low
+  relevance: medium
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-20'
@@ -252826,13 +252834,17 @@
     to Engram Track B (frozen-backbone retrofit): COUNT''s parameter-free, count-based table is a cheaper,
     trainless-table variant and the training-free domain swap is an interesting angle for the retrofit
     derisk. It is not a speculative-decoding method; only the n-gram-counting idea overlaps with prompt-lookup.
-    Dive recommendation (Stage-1): no - Pretraining-time n-gram count tables on the dolma2 tokenizer with
-    no path to our frozen GGUF lineup; record as monitor input for the Engram handoff rather than spend
-    a dive. Analyst notes: Fetched via WebFetch digest, not raw. Credibility 2 = recent +1, known AI2/UW
-    authors +1, no venue, no corroboration. Contradiction pass not run (relevance low, verdict exploratory).
-    The paper abstract page lists no code link, but the repo README names this arXiv ID as its paper,
-    and the dataset card cites it. Re-verify every figure against primary source before citing; this entry
-    is stage1-unverified.'
+    Dive recommendation (Stage-1): yes - Host-RAM n-gram count tables with compiled, prefetching multithreaded
+    lookup and training-free table swap. The EPYC host is RAM-rich; a dive settles whether the table/lookup
+    mechanism ports to a large-corpus n-gram drafter for speculative decoding or to the Engram Track B
+    retrofit, independent of the dolma2 tokenizer. Analyst notes: Fetched via WebFetch digest, not raw.
+    Credibility 2 = recent +1, known AI2/UW authors +1, no venue, no corroboration. Contradiction pass
+    not run (relevance low, verdict exploratory). The paper abstract page lists no code link, but the
+    repo README names this arXiv ID as its paper, and the dataset card cites it. Re-verify every figure
+    against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
 - id: intake-1989
   arxiv_id: null
   url: https://github.com/IanMagnusson/COUNT
@@ -252842,7 +252854,7 @@
   - memory_augmented
   - training_distillation
   novelty: medium
-  relevance: low
+  relevance: medium
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-20'
@@ -252892,9 +252904,13 @@
     fetched). EPYC fit (unverified): Training-oriented code (OLMo-core fork, Beaker extras, H200-scale
     ladder); we have no pretraining infrastructure on EPYC+MI210. Useful only as a reference for the table-build
     pipeline (counting, stupid backoff, packing), which runs on CPU/RAM-heavy hosts like ours. Not a serving
-    component. Dive recommendation (Stage-1): no - Deep-dive of the paper covers it; code is training-side.
-    Analyst notes: HEAD SHA from git ls-remote. No code run or cloned. Re-verify every figure against
-    primary source before citing; this entry is stage1-unverified.'
+    component. Dive recommendation (Stage-1): yes - Dive with the COUNT paper: the table-build pipeline
+    (counting, stupid backoff, top-K packing) and host lookup code are the portable parts for an EPYC-side
+    n-gram store. Analyst notes: HEAD SHA from git ls-remote. No code run or cloned. Re-verify every figure
+    against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
 - id: intake-1990
   arxiv_id: null
   url: https://huggingface.co/datasets/IanMagnusson/count-ngram-tables
@@ -253799,12 +253815,17 @@
     Lambert lossy self-improvement) not specific to this work. Corroboration seen: Aggregator page for
     the paper; results (code repair hidden-test 26.3% to 31.2%, lab planning 21.80% to 46.01%, reaction
     optimization 96.15% vs 82.16% Bayesian opt) are self-reported and restated by news sites. (https://www.emergentmind.com/papers/2610.13912;
-    restatement) Dive recommendation (Stage-1): no - Declined (repo and paper): self-reported, small domain-specific
-    gains (e.g. code repair 26.3% -> 31.2% per Tier-2b digest) with no independent evaluation; the world-model-prediction
-    pattern is recorded for the harness/autopilot cluster without a dive. Analyst notes: Repo README states
-    Apache-2.0 and links HF dataset Gen-Verse/RSI-Anything. Contradiction pass not run (credibility <3,
-    non-actionable verdict). Companion, distinct from the repo entry. Re-verify every figure against primary
-    source before citing; this entry is stage1-unverified.'
+    restatement) Dive recommendation (Stage-1): yes - Surrogate pre-screening (predict a candidate''s
+    outcome before running the expensive trial) maps onto AutoKernel, where each trial costs a compile
+    plus a timing window; a dive settles the predictor design, training signal, and how much trial cost
+    it saves, against cheap heuristics. Analyst notes: Repo README states Apache-2.0 and links HF dataset
+    Gen-Verse/RSI-Anything. Contradiction pass not run (credibility <3, non-actionable verdict). Companion,
+    distinct from the repo entry. License recorded as a fact only (project is non-commercial; operator
+    2026-10-20). License recorded as a fact only (project is non-commercial; operator 2026-10-20). Re-verify
+    every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
 - id: intake-2001
   arxiv_id: '2602.06053'
   url: https://arxiv.org/abs/2602.06053
@@ -253900,8 +253921,10 @@
     mechanism; the repo carries license and serving path. Analyst notes: Latency units/column labels in
     tables were inferred by the fetch summarizer (not stated); verify against the PDF before quoting.
     Parameter count ''about 7B'' is inferred from checkpoint name. Contradiction pass skipped (not run).
-    Memory notes were not grepped (not in my read scope); handoff conversation-stack.md was. Re-verify
-    every figure against primary source before citing; this entry is stage1-unverified.'
+    Memory notes were not grepped (not in my read scope); handoff conversation-stack.md was. License recorded
+    as a fact only (project is non-commercial; operator 2026-10-20). License recorded as a fact only (project
+    is non-commercial; operator 2026-10-20). Re-verify every figure against primary source before citing;
+    this entry is stage1-unverified.'
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
@@ -253978,8 +254001,7 @@
   expanded_from: intake-1984
   credibility_score: null
   contradicting_evidence: null
-  recommended_actions:
-  - '[unverified] Read the LICENSE and record terms; if permissive enough, list as TTS candidate in handoffs/active/multimodal-pipeline.md.'
+  recommended_actions: []
   source_revision: arXiv:2610.18010v2 (html route, first 100k of 136k chars read); HF fishaudio/drama-3
     @ b2b5ee998034b2975720906c815e7fb0e9f007bd
   verification: stage1-unverified
@@ -253990,16 +254012,16 @@
     HF card read). EPYC fit (unverified): A TTS candidate whose backbone shares the Qwen3.5-35B-A3B hybrid
     DeltaNet MoE class that our lineup already serves, so llama.cpp-side kernels (DeltaNet, MoE) could
     in principle be reused, but the audio decoder/codec path has no llama.cpp or qwentts.cpp support.
-    Weights are 36B on the HF card; every number is H200, nothing for CPU or MI210; serving is via SGLang-Omni/vLLM-Omni.
-    License is the Fish Audio Community License (metadata tag says fish-audio-research-license), so open-source-only
-    policy compliance needs a read of the LICENSE file. Not a replacement for the frozen qwentts TTS soon,
-    but a quality ceiling reference. Dive recommendation (Stage-1): yes - Dive together with the drama-3
-    model card: license first (decides admissibility), then streaming latency and the Qwen3.5-35B-A3B
-    backbone (hybrid DeltaNet MoE - llama.cpp support status matters for any CPU/MI210 path). Analyst
-    notes: credibility null: TTS tech report from the vendor (commercial bias), no third-party corroboration
+    Weights are 36B on the HF card; every number is H200, nothing for CPU or MI210; serving is via SGLang-Omni/vLLM-Omni.Not
+    a replacement for the frozen qwentts TTS soon, but a quality ceiling reference. Dive recommendation
+    (Stage-1): yes - Dive together with the drama-3 model card: streaming latency, the Qwen3.5-35B-A3B
+    hybrid DeltaNet MoE backbone and its llama.cpp support status for any CPU/MI210 path. Analyst notes:
+    credibility null: TTS tech report from the vendor (commercial bias), no third-party corroboration
     seen; scored null per ''blogs without empirical claims'' is not exact, set to 3 minus 1 bias if the
     main prefers numeric. HF card lists 3 finetunes and 39 quantized variants. Contradiction pass skipped.
-    Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+    License recorded as a fact only (project is non-commercial; operator 2026-10-20). License recorded
+    as a fact only (project is non-commercial; operator 2026-10-20). Re-verify every figure against primary
+    source before citing; this entry is stage1-unverified.'
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
@@ -254064,9 +254086,7 @@
   expanded_from: intake-1982
   credibility_score: 4
   contradicting_evidence: null
-  recommended_actions:
-  - '[unverified] Evaluate adopting Full-Duplex-Bench as turn-taking gate in CS-5/CS-8 of handoffs/active/conversation-stack.md;
-    check repo license (github.com/DanielLin94144/Full-Duplex-Bench) first.'
+  recommended_actions: []
   source_revision: arXiv:2503.04721v3 (html route; v3 revised 2025-08-16)
   verification: stage1-unverified
   handoffs_updated: []
@@ -254083,8 +254103,9 @@
     dive settles metric definitions, whether it scores cascades (STT->LLM->TTS) as well as end-to-end
     models, and the current version''s task set. Analyst notes: Table column semantics taken from the
     fetch summarizer; verify TOR direction per task before quoting. ASRU 2025 acceptance per arXiv abs
-    page. Contradiction pass skipped. Re-verify every figure against primary source before citing; this
-    entry is stage1-unverified.'
+    page. Contradiction pass skipped. License recorded as a fact only (project is non-commercial; operator
+    2026-10-20). License recorded as a fact only (project is non-commercial; operator 2026-10-20). Re-verify
+    every figure against primary source before citing; this entry is stage1-unverified.'
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'
@@ -254179,7 +254200,9 @@
     page not fetched by me. Post claims no independent replication of its own results. Titled ''preregistered'';
     the Zenodo DOI 10.5281/zenodo.22149941 is cited. Contradiction pass not run (credibility null). Greedy
     only, no temperature tested, so it is silent on the sampling regime where HyperQwen reports chains/lookup
-    losses. Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+    losses. License recorded as a fact only (project is non-commercial; operator 2026-10-20). License
+    recorded as a fact only (project is non-commercial; operator 2026-10-20). Re-verify every figure against
+    primary source before citing; this entry is stage1-unverified.'
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage-1 2026-10-20: recommended for a Stage-2 dive; nothing read from disk yet.'

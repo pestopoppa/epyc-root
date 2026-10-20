@@ -1,9 +1,9 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T13:05:03+00:00",
-  "stage": "stage1-complete",
-  "phase": 5,
+  "last_checkpoint": "2026-10-20T13:13:59+00:00",
+  "stage": "stage2-wave1-running",
+  "phase": 2,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
   "topic": "Cognition Agent Memory Repo and Google EmbeddingGemma 2 + 2026-10-20 batch (24 new URLs: agent memory/tooling, speech, mLattice, COUNT n-gram, 9 arXiv papers, RTX3090 27B article)",
@@ -130,6 +130,50 @@
       "disposition": "context-only",
       "plan_ref": null,
       "reason": "Fold executed in place (session 09f781b0 resumed, nothing replaced); the single Stage-3 plan will map retained 10-07 actionables (S1-01..D2-1976-01) and 2026-10-20 actionables in one complete recommendation table."
+    },
+    {
+      "seq": 7,
+      "stage": 2,
+      "verbatim": "\"Other                              │ 1981 sgrep, 1979 Magnitude, 1980/2000 RSI-Anything, 1985/1986 mLattice, 1988–1990 COUNT,      │ Mostly low relevance.                                                                                            │\n  │                                    │ 1978/1994 Depth Memory                                                                        │                      \" - why were these considered low relevance? \" Not diving, with reasons recorded:                                                                                                                       \n  - Magnitude: vendor numbers that independent reviewers contest, and it targets Metal/CUDA.\" - just because a reference cites work on platforms that we don't use, doesn't mean that work can't be reverse engineered for our hardware!",
+      "text": "\"Other                              │ 1981 sgrep, 1979 Magnitude, 1980/2000 RSI-Anything, 1985/1986 mLattice, 1988–1990 COUNT,      │ Mostly low relevance.                                                                                            │\n  │                                    │ 1978/1994 Depth Memory                                                                        │                      \" - why were these considered low relevance? \" Not diving, with reasons recorded:                                                                                                                       \n  - Magnitude: vendor numbers that independent reviewers contest, and it targets Metal/CUDA.\" - just because a reference cites work on platforms that we don't use, doesn't mean that work can't be reverse engineered for our hardware!",
+      "ts": "2026-10-20T13:12:34+00:00",
+      "timestamp": "2026-10-20T13:12:34+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Applied immediately at Stage 2 as a scoring correction (re-score by portable mechanism, not as-shipped platform fit): Magnitude, RSI-Anything, COUNT, FluidAudio re-scored and added to wave 1; Depth Memory and mLattice stay low (need new pretrained weights). Stage-3 plan will carry the resulting actionables."
+    },
+    {
+      "seq": 8,
+      "stage": 2,
+      "verbatim": "\"9. Drama 3: license check first.\" - licenses are irrelevant to this project. WE ARE NOT COMMERCIAL",
+      "text": "\"9. Drama 3: license check first.\" - licenses are irrelevant to this project. WE ARE NOT COMMERCIAL",
+      "ts": "2026-10-20T13:12:34+00:00",
+      "timestamp": "2026-10-20T13:12:34+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Applied immediately: license removed as a gate from entries 1982/1984/2002/1977, from the Stage-2 brief, and from the running speech dive; license stays a one-line fact only. No plan item may cite license as a blocker."
+    },
+    {
+      "seq": 9,
+      "stage": 2,
+      "verbatim": "\"1. Wave budget. I read \"all recommended stage 2 literature expansions\" as covering both the recommended dives and their follow-up sources, up to 6 waves counted from today. Say so if you meant only the follow-ups. \" - I meant that if the first wave of deepdives identifies new recommended literature to deep dive, proceed with a second wave and so on for UP TO six waves in total",
+      "text": "\"1. Wave budget. I read \"all recommended stage 2 literature expansions\" as covering both the recommended dives and their follow-up sources, up to 6 waves counted from today. Say so if you meant only the follow-ups. \" - I meant that if the first wave of deepdives identifies new recommended literature to deep dive, proceed with a second wave and so on for UP TO six waves in total",
+      "ts": "2026-10-20T13:13:59+00:00",
+      "timestamp": "2026-10-20T13:13:59+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Wave policy: each wave's recommended dive-surfaced sources are auto-selected for the next wave, up to 6 waves in total (wave 1 included); Stage-2 close-out gate then closes and Stage 3 begins."
+    },
+    {
+      "seq": 10,
+      "stage": 2,
+      "verbatim": "\"2. Three sources the analysts wanted to mark out of scope. Project rules say to ask you first, so for now they're kept as low-relevance:                                                                                                                    \n     - FluidAudio: only runs on Apple hardware, but its turn-taking components (end-of-utterance detection, voice activity detection, echo cancellation) may be useful to us.\" - anything that can be potnetially reverse-engineered for our hardware is relevant to us",
+      "text": "\"2. Three sources the analysts wanted to mark out of scope. Project rules say to ask you first, so for now they're kept as low-relevance:                                                                                                                    \n     - FluidAudio: only runs on Apple hardware, but its turn-taking components (end-of-utterance detection, voice activity detection, echo cancellation) may be useful to us.\" - anything that can be potnetially reverse-engineered for our hardware is relevant to us",
+      "ts": "2026-10-20T13:13:59+00:00",
+      "timestamp": "2026-10-20T13:13:59+00:00",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Applied: FluidAudio re-scored medium and dived as a catalogue of portable duplex front-end components; relevance rule for the rest of the campaign = potential to reverse-engineer for EPYC/MI210."
     }
   ],
   "actionable_ledger": [
@@ -1073,7 +1117,9 @@
       "cap": 6,
       "counted_from": "2026-10-20",
       "prior_waves_10_07": 3,
-      "operator_seq": 4
+      "operator_seq": 4,
+      "total_including_wave1": true,
+      "auto_advance": "recommended dive-surfaced sources from wave N become wave N+1 (operator seq 9)"
     },
     "stage1_20261020": {
       "url_to_id": {
@@ -1171,6 +1217,51 @@
       "operator_questions": [
         "not_applicable confirmations held at worth_investigating/low: intake-1978 depth-memory repo, intake-1983 FluidAudio, intake-1986 mLattice HF Space"
       ]
-    }
+    },
+    "stage2_waves_20261020": [
+      {
+        "wave": 1,
+        "started": "2026-10-20T13:07:11+00:00",
+        "selection_basis": "operator steering seq 4 (all recommended, <=6 waves)",
+        "units": {
+          "W1-D1": [
+            "intake-1998",
+            "intake-2005"
+          ],
+          "W1-D2": [
+            "intake-1993",
+            "intake-2006"
+          ],
+          "W1-D3": [
+            "intake-1982",
+            "intake-2001",
+            "intake-2003",
+            "intake-1984",
+            "intake-2002"
+          ],
+          "W1-D4": [
+            "intake-2004",
+            "intake-1977"
+          ],
+          "W1-D5": [
+            "intake-1981",
+            "stage2b:https://leaderboard.mteb.org/models",
+            "stage2b:https://www.reddit.com/r/LocalLLaMA/comments/1wz5va3/googleembeddinggemma2_hugging_face/"
+          ],
+          "W1-D6": [
+            "intake-1979",
+            "intake-1980",
+            "intake-2000"
+          ],
+          "W1-D7": [
+            "intake-1988",
+            "intake-1989",
+            "intake-1983"
+          ]
+        },
+        "status": "running",
+        "addendum": "D6/D7 added mid-wave after operator steering seq 7/10 re-scoring."
+      }
+    ]
   }
 }
