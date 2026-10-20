@@ -268206,7 +268206,7 @@
   relevance: medium
   discovered_via: expansion
   expanded_from: intake-2068
-  ingested_date: 2026-10-20
+  ingested_date: '2026-10-20'
   verdict: already_integrated
   verification: dive-overturned
   read_depth: FULL
@@ -268276,7 +268276,7 @@
   relevance: high
   discovered_via: expansion
   expanded_from: intake-2068
-  ingested_date: 2026-10-20
+  ingested_date: '2026-10-20'
   verdict: worth_investigating
   verification: dive-verified
   read_depth: FULL
@@ -268345,7 +268345,7 @@
   relevance: low
   discovered_via: expansion
   expanded_from: intake-2068
-  ingested_date: 2026-10-20
+  ingested_date: '2026-10-20'
   verdict: already_integrated
   verification: dive-verified
   read_depth: FULL
@@ -268400,7 +268400,7 @@
   relevance: medium
   discovered_via: expansion
   expanded_from: intake-2068
-  ingested_date: 2026-10-20
+  ingested_date: '2026-10-20'
   verdict: worth_investigating
   verification: dive-verified
   read_depth: FULL

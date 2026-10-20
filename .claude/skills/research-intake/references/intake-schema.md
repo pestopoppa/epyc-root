@@ -18,6 +18,8 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `verdict` | enum | `new_opportunity`, `already_integrated`, `worth_investigating`, `not_applicable`, `superseded`, `adopt_patterns`, or `adopt_component` |
 | `ingested_date` | string | ISO date (YYYY-MM-DD) |
 
+Dates are quoted strings (`'YYYY-MM-DD'`); an unquoted YAML date is a validation ERROR (it parses as a date object and broke the vidya ledger on 2026-10-20).
+
 ## Optional Fields
 
 | Field | Type | Description |

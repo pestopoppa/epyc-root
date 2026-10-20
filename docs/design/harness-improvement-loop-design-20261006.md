@@ -51,7 +51,7 @@ Protocol governance: MEASUREMENT.md defines claim grammar and its registry. P-AB
 
 ### HIL-2 pre-first-suite-run checklist (HIL-7, added 2026-10-20)
 
-Source: the v4 reading of arXiv 2607.12227 (intake-2006#record). Items 1, 3 and 4 follow the paper protocol; **items 2, 5 and 6 are EPYC additions beyond the paper protocol**. No HIL suite run (HIL-6 onward) starts before every item below is satisfied or explicitly recorded as a human-amendment candidate.
+Source: the v4 reading of arXiv 2607.12227 (intake-2006#record). Items 1, 3 and 4 follow the paper protocol; **items 2, 5 and 6 are EPYC additions beyond the paper protocol**. No HIL suite run (HIL-6 onward) starts before every item below is satisfied by that run's design. Items whose existing hook is a human-amendment candidate are satisfied run-locally until the operator amends MEASUREMENT.md.
 
 | # | Requirement | Origin | Existing hook |
 |---|---|---|---|
