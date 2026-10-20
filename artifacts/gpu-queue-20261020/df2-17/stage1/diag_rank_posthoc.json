@@ -1,0 +1,3674 @@
+[
+ {
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "arm": "mtp_n5",
+  "first_diff": 34,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 279,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    411,
+    " this",
+    -0.6756
+   ],
+   [
+    279,
+    " the",
+    -0.7111
+   ],
+   [
+    1754,
+    " each",
+    -11.5868
+   ],
+   [
+    1608,
+    " using",
+    -12.0455
+   ],
+   [
+    3377,
+    " problem",
+    -13.2076
+   ],
+   [
+    321,
+    " and",
+    -14.1838
+   ],
+   [
+    559,
+    "this",
+    -14.4337
+   ],
+   [
+    104362,
+    "\u8fd9\u4e2a\u95ee\u9898",
+    -14.9634
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0355
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "arm": "dflash_n4",
+  "first_diff": 34,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 279,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    411,
+    " this",
+    -0.6756
+   ],
+   [
+    279,
+    " the",
+    -0.7111
+   ],
+   [
+    1754,
+    " each",
+    -11.5868
+   ],
+   [
+    1608,
+    " using",
+    -12.0455
+   ],
+   [
+    3377,
+    " problem",
+    -13.2076
+   ],
+   [
+    321,
+    " and",
+    -14.1838
+   ],
+   [
+    559,
+    "this",
+    -14.4337
+   ],
+   [
+    104362,
+    "\u8fd9\u4e2a\u95ee\u9898",
+    -14.9634
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0355
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "arm": "dflash_n7",
+  "first_diff": 34,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 279,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    411,
+    " this",
+    -0.6756
+   ],
+   [
+    279,
+    " the",
+    -0.7111
+   ],
+   [
+    1754,
+    " each",
+    -11.5868
+   ],
+   [
+    1608,
+    " using",
+    -12.0455
+   ],
+   [
+    3377,
+    " problem",
+    -13.2076
+   ],
+   [
+    321,
+    " and",
+    -14.1838
+   ],
+   [
+    559,
+    "this",
+    -14.4337
+   ],
+   [
+    104362,
+    "\u8fd9\u4e2a\u95ee\u9898",
+    -14.9634
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0355
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "arm": "mtp_n2",
+  "first_diff": 64,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 16720,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    279,
+    " the",
+    -1.2605
+   ],
+   [
+    16720,
+    " vertices",
+    -1.3015
+   ],
+   [
+    24959,
+    " integers",
+    -2.2064
+   ],
+   [
+    7552,
+    " nodes",
+    -2.3578
+   ],
+   [
+    264,
+    " a",
+    -2.61
+   ],
+   [
+    3387,
+    " points",
+    -2.8308
+   ],
+   [
+    836,
+    " their",
+    -3.3398
+   ],
+   [
+    13139,
+    " pairs",
+    -3.5872
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0409
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "arm": "mtp_n1",
+  "first_diff": 239,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 16720,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    12103,
+    " distinct",
+    -0.671
+   ],
+   [
+    16720,
+    " vertices",
+    -0.853
+   ],
+   [
+    64941,
+    " checkpoints",
+    -2.9548
+   ],
+   [
+    7552,
+    " nodes",
+    -4.6146
+   ],
+   [
+    14505,
+    " indices",
+    -9.571
+   ],
+   [
+    3387,
+    " points",
+    -9.6326
+   ],
+   [
+    24959,
+    " integers",
+    -9.8618
+   ],
+   [
+    28336,
+    " checkpoint",
+    -10.2243
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1819
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "arm": "mtp_n3",
+  "first_diff": 64,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 16720,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    279,
+    " the",
+    -1.2605
+   ],
+   [
+    16720,
+    " vertices",
+    -1.3015
+   ],
+   [
+    24959,
+    " integers",
+    -2.2064
+   ],
+   [
+    7552,
+    " nodes",
+    -2.3578
+   ],
+   [
+    264,
+    " a",
+    -2.61
+   ],
+   [
+    3387,
+    " points",
+    -2.8308
+   ],
+   [
+    836,
+    " their",
+    -3.3398
+   ],
+   [
+    13139,
+    " pairs",
+    -3.5872
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0409
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1659",
+  "arm": "mtp_n5",
+  "first_diff": 128,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7995,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1716,
+    " check",
+    -0.8038
+   ],
+   [
+    7995,
+    " determine",
+    -0.8162
+   ],
+   [
+    18730,
+    " investigate",
+    -3.0549
+   ],
+   [
+    1228,
+    " test",
+    -4.1993
+   ],
+   [
+    1436,
+    " see",
+    -4.6017
+   ],
+   [
+    4884,
+    " fix",
+    -4.8805
+   ],
+   [
+    26782,
+    " substitute",
+    -5.1553
+   ],
+   [
+    20321,
+    " examine",
+    -5.2886
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0125
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1659",
+  "arm": "dflash_n4",
+  "first_diff": 128,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7995,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1716,
+    " check",
+    -0.8038
+   ],
+   [
+    7995,
+    " determine",
+    -0.8162
+   ],
+   [
+    18730,
+    " investigate",
+    -3.0549
+   ],
+   [
+    1228,
+    " test",
+    -4.1993
+   ],
+   [
+    1436,
+    " see",
+    -4.6017
+   ],
+   [
+    4884,
+    " fix",
+    -4.8805
+   ],
+   [
+    26782,
+    " substitute",
+    -5.1553
+   ],
+   [
+    20321,
+    " examine",
+    -5.2886
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0125
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1659",
+  "arm": "dflash_n7",
+  "first_diff": 128,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7995,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1716,
+    " check",
+    -0.8038
+   ],
+   [
+    7995,
+    " determine",
+    -0.8162
+   ],
+   [
+    18730,
+    " investigate",
+    -3.0549
+   ],
+   [
+    1228,
+    " test",
+    -4.1993
+   ],
+   [
+    1436,
+    " see",
+    -4.6017
+   ],
+   [
+    4884,
+    " fix",
+    -4.8805
+   ],
+   [
+    26782,
+    " substitute",
+    -5.1553
+   ],
+   [
+    20321,
+    " examine",
+    -5.2886
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0125
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1659",
+  "arm": "mtp_n2",
+  "first_diff": 128,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7995,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1716,
+    " check",
+    -0.8038
+   ],
+   [
+    7995,
+    " determine",
+    -0.8162
+   ],
+   [
+    18730,
+    " investigate",
+    -3.0549
+   ],
+   [
+    1228,
+    " test",
+    -4.1993
+   ],
+   [
+    1436,
+    " see",
+    -4.6017
+   ],
+   [
+    4884,
+    " fix",
+    -4.8805
+   ],
+   [
+    26782,
+    " substitute",
+    -5.1553
+   ],
+   [
+    20321,
+    " examine",
+    -5.2886
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0125
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1659",
+  "arm": "mtp_n1",
+  "first_diff": 128,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7995,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1716,
+    " check",
+    -0.8038
+   ],
+   [
+    7995,
+    " determine",
+    -0.8162
+   ],
+   [
+    18730,
+    " investigate",
+    -3.0549
+   ],
+   [
+    1228,
+    " test",
+    -4.1993
+   ],
+   [
+    1436,
+    " see",
+    -4.6017
+   ],
+   [
+    4884,
+    " fix",
+    -4.8805
+   ],
+   [
+    26782,
+    " substitute",
+    -5.1553
+   ],
+   [
+    20321,
+    " examine",
+    -5.2886
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0125
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1659",
+  "arm": "mtp_n3",
+  "first_diff": 128,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7995,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1716,
+    " check",
+    -0.8038
+   ],
+   [
+    7995,
+    " determine",
+    -0.8162
+   ],
+   [
+    18730,
+    " investigate",
+    -3.0549
+   ],
+   [
+    1228,
+    " test",
+    -4.1993
+   ],
+   [
+    1436,
+    " see",
+    -4.6017
+   ],
+   [
+    4884,
+    " fix",
+    -4.8805
+   ],
+   [
+    26782,
+    " substitute",
+    -5.1553
+   ],
+   [
+    20321,
+    " examine",
+    -5.2886
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0125
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "arm": "mtp_n5",
+  "first_diff": 1222,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 20810,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1919,
+    "This",
+    -1.2929
+   ],
+   [
+    20810,
+    "Does",
+    -1.3331
+   ],
+   [
+    10883,
+    "However",
+    -1.6364
+   ],
+   [
+    3742,
+    "Is",
+    -2.104
+   ],
+   [
+    45930,
+    "Specific",
+    -2.6388
+   ],
+   [
+    9764,
+    "Let",
+    -3.4753
+   ],
+   [
+    2381,
+    "For",
+    -4.0929
+   ],
+   [
+    50821,
+    "Actually",
+    -5.4109
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0402
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "arm": "dflash_n4",
+  "first_diff": 1222,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 20810,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1919,
+    "This",
+    -1.2929
+   ],
+   [
+    20810,
+    "Does",
+    -1.3331
+   ],
+   [
+    10883,
+    "However",
+    -1.6364
+   ],
+   [
+    3742,
+    "Is",
+    -2.104
+   ],
+   [
+    45930,
+    "Specific",
+    -2.6388
+   ],
+   [
+    9764,
+    "Let",
+    -3.4753
+   ],
+   [
+    2381,
+    "For",
+    -4.0929
+   ],
+   [
+    50821,
+    "Actually",
+    -5.4109
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0402
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "arm": "dflash_n7",
+  "first_diff": 1222,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 20810,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1919,
+    "This",
+    -1.2929
+   ],
+   [
+    20810,
+    "Does",
+    -1.3331
+   ],
+   [
+    10883,
+    "However",
+    -1.6364
+   ],
+   [
+    3742,
+    "Is",
+    -2.104
+   ],
+   [
+    45930,
+    "Specific",
+    -2.6388
+   ],
+   [
+    9764,
+    "Let",
+    -3.4753
+   ],
+   [
+    2381,
+    "For",
+    -4.0929
+   ],
+   [
+    50821,
+    "Actually",
+    -5.4109
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0402
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "arm": "mtp_n2",
+  "first_diff": 1222,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 20810,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1919,
+    "This",
+    -1.2929
+   ],
+   [
+    20810,
+    "Does",
+    -1.3331
+   ],
+   [
+    10883,
+    "However",
+    -1.6364
+   ],
+   [
+    3742,
+    "Is",
+    -2.104
+   ],
+   [
+    45930,
+    "Specific",
+    -2.6388
+   ],
+   [
+    9764,
+    "Let",
+    -3.4753
+   ],
+   [
+    2381,
+    "For",
+    -4.0929
+   ],
+   [
+    50821,
+    "Actually",
+    -5.4109
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0402
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "arm": "mtp_n1",
+  "first_diff": 480,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 17571,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    5022,
+    "pm",
+    -0.6537
+   ],
+   [
+    17571,
+    "matrix",
+    -0.7508
+   ],
+   [
+    1595,
+    "array",
+    -4.992
+   ],
+   [
+    65,
+    "b",
+    -7.05
+   ],
+   [
+    45569,
+    "aligned",
+    -9.0616
+   ],
+   [
+    7107,
+    "vm",
+    -10.2719
+   ],
+   [
+    6403,
+    "align",
+    -10.9175
+   ],
+   [
+    110976,
+    "\u77e9\u9635",
+    -11.0563
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0972
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "arm": "mtp_n3",
+  "first_diff": 1222,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 20810,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1919,
+    "This",
+    -1.2929
+   ],
+   [
+    20810,
+    "Does",
+    -1.3331
+   ],
+   [
+    10883,
+    "However",
+    -1.6364
+   ],
+   [
+    3742,
+    "Is",
+    -2.104
+   ],
+   [
+    45930,
+    "Specific",
+    -2.6388
+   ],
+   [
+    9764,
+    "Let",
+    -3.4753
+   ],
+   [
+    2381,
+    "For",
+    -4.0929
+   ],
+   [
+    50821,
+    "Actually",
+    -5.4109
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0402
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2171",
+  "arm": "mtp_n5",
+  "first_diff": 353,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 1110,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    560,
+    " u",
+    -1.5014
+   ],
+   [
+    1110,
+    " z",
+    -1.5465
+   ],
+   [
+    830,
+    " x",
+    -1.6594
+   ],
+   [
+    259,
+    " t",
+    -1.9837
+   ],
+   [
+    1788,
+    " same",
+    -2.4101
+   ],
+   [
+    264,
+    " a",
+    -3.1499
+   ],
+   [
+    318,
+    " (",
+    -3.4403
+   ],
+   [
+    9987,
+    " (-",
+    -3.6412
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0451
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2171",
+  "arm": "dflash_n4",
+  "first_diff": 353,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 1110,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    560,
+    " u",
+    -1.5014
+   ],
+   [
+    1110,
+    " z",
+    -1.5465
+   ],
+   [
+    830,
+    " x",
+    -1.6594
+   ],
+   [
+    259,
+    " t",
+    -1.9837
+   ],
+   [
+    1788,
+    " same",
+    -2.4101
+   ],
+   [
+    264,
+    " a",
+    -3.1499
+   ],
+   [
+    318,
+    " (",
+    -3.4403
+   ],
+   [
+    9987,
+    " (-",
+    -3.6412
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0451
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2171",
+  "arm": "dflash_n7",
+  "first_diff": 353,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 1110,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    560,
+    " u",
+    -1.5014
+   ],
+   [
+    1110,
+    " z",
+    -1.5465
+   ],
+   [
+    830,
+    " x",
+    -1.6594
+   ],
+   [
+    259,
+    " t",
+    -1.9837
+   ],
+   [
+    1788,
+    " same",
+    -2.4101
+   ],
+   [
+    264,
+    " a",
+    -3.1499
+   ],
+   [
+    318,
+    " (",
+    -3.4403
+   ],
+   [
+    9987,
+    " (-",
+    -3.6412
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0451
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2171",
+  "arm": "mtp_n2",
+  "first_diff": 353,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 1110,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    560,
+    " u",
+    -1.5014
+   ],
+   [
+    1110,
+    " z",
+    -1.5465
+   ],
+   [
+    830,
+    " x",
+    -1.6594
+   ],
+   [
+    259,
+    " t",
+    -1.9837
+   ],
+   [
+    1788,
+    " same",
+    -2.4101
+   ],
+   [
+    264,
+    " a",
+    -3.1499
+   ],
+   [
+    318,
+    " (",
+    -3.4403
+   ],
+   [
+    9987,
+    " (-",
+    -3.6412
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0451
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2171",
+  "arm": "mtp_n1",
+  "first_diff": 268,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 11,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    694,
+    " but",
+    -0.8836
+   ],
+   [
+    11,
+    ",",
+    -0.9077
+   ],
+   [
+    321,
+    " and",
+    -1.9707
+   ],
+   [
+    574,
+    " =>",
+    -4.4473
+   ],
+   [
+    6486,
+    " gives",
+    -4.8276
+   ],
+   [
+    23197,
+    " implies",
+    -5.2051
+   ],
+   [
+    26,
+    ";",
+    -5.3597
+   ],
+   [
+    1000,
+    " would",
+    -5.5048
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0241
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2171",
+  "arm": "mtp_n3",
+  "first_diff": 353,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 1110,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    560,
+    " u",
+    -1.5014
+   ],
+   [
+    1110,
+    " z",
+    -1.5465
+   ],
+   [
+    830,
+    " x",
+    -1.6594
+   ],
+   [
+    259,
+    " t",
+    -1.9837
+   ],
+   [
+    1788,
+    " same",
+    -2.4101
+   ],
+   [
+    264,
+    " a",
+    -3.1499
+   ],
+   [
+    318,
+    " (",
+    -3.4403
+   ],
+   [
+    9987,
+    " (-",
+    -3.6412
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0451
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "arm": "mtp_n5",
+  "first_diff": 1176,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 12576,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    60439,
+    "$:",
+    -0.7475
+   ],
+   [
+    12576,
+    "$.",
+    -0.7721
+   ],
+   [
+    3,
+    "$",
+    -3.0976
+   ],
+   [
+    53031,
+    "$,",
+    -3.9582
+   ],
+   [
+    43143,
+    "`:",
+    -10.2709
+   ],
+   [
+    92217,
+    "**:",
+    -10.9237
+   ],
+   [
+    27653,
+    "`.",
+    -11.301
+   ],
+   [
+    763,
+    "\":",
+    -11.3985
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0246
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "arm": "dflash_n4",
+  "first_diff": 1176,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 12576,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    60439,
+    "$:",
+    -0.7475
+   ],
+   [
+    12576,
+    "$.",
+    -0.7721
+   ],
+   [
+    3,
+    "$",
+    -3.0976
+   ],
+   [
+    53031,
+    "$,",
+    -3.9582
+   ],
+   [
+    43143,
+    "`:",
+    -10.2709
+   ],
+   [
+    92217,
+    "**:",
+    -10.9237
+   ],
+   [
+    27653,
+    "`.",
+    -11.301
+   ],
+   [
+    763,
+    "\":",
+    -11.3985
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0246
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "arm": "dflash_n7",
+  "first_diff": 1176,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 12576,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    60439,
+    "$:",
+    -0.7475
+   ],
+   [
+    12576,
+    "$.",
+    -0.7721
+   ],
+   [
+    3,
+    "$",
+    -3.0976
+   ],
+   [
+    53031,
+    "$,",
+    -3.9582
+   ],
+   [
+    43143,
+    "`:",
+    -10.2709
+   ],
+   [
+    92217,
+    "**:",
+    -10.9237
+   ],
+   [
+    27653,
+    "`.",
+    -11.301
+   ],
+   [
+    763,
+    "\":",
+    -11.3985
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0246
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "arm": "mtp_n2",
+  "first_diff": 183,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 16345,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    760,
+    "The",
+    -0.8887
+   ],
+   [
+    16345,
+    "Switch",
+    -0.9137
+   ],
+   [
+    9764,
+    "Let",
+    -1.7619
+   ],
+   [
+    12189,
+    "Since",
+    -5.2013
+   ],
+   [
+    51,
+    "T",
+    -5.2956
+   ],
+   [
+    12834,
+    "Sw",
+    -6.8573
+   ],
+   [
+    2381,
+    "For",
+    -7.3066
+   ],
+   [
+    5836,
+    "After",
+    -7.4948
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.025
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "arm": "mtp_n1",
+  "first_diff": 183,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 16345,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    760,
+    "The",
+    -0.8887
+   ],
+   [
+    16345,
+    "Switch",
+    -0.9137
+   ],
+   [
+    9764,
+    "Let",
+    -1.7619
+   ],
+   [
+    12189,
+    "Since",
+    -5.2013
+   ],
+   [
+    51,
+    "T",
+    -5.2956
+   ],
+   [
+    12834,
+    "Sw",
+    -6.8573
+   ],
+   [
+    2381,
+    "For",
+    -7.3066
+   ],
+   [
+    5836,
+    "After",
+    -7.4948
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.025
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "arm": "mtp_n3",
+  "first_diff": 183,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 16345,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    760,
+    "The",
+    -0.8887
+   ],
+   [
+    16345,
+    "Switch",
+    -0.9137
+   ],
+   [
+    9764,
+    "Let",
+    -1.7619
+   ],
+   [
+    12189,
+    "Since",
+    -5.2013
+   ],
+   [
+    51,
+    "T",
+    -5.2956
+   ],
+   [
+    12834,
+    "Sw",
+    -6.8573
+   ],
+   [
+    2381,
+    "For",
+    -7.3066
+   ],
+   [
+    5836,
+    "After",
+    -7.4948
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.025
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1938",
+  "arm": "mtp_n5",
+  "first_diff": 247,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7897,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    2007,
+    "(x",
+    -1.3498
+   ],
+   [
+    12792,
+    "(z",
+    -1.4589
+   ],
+   [
+    7897,
+    "(u",
+    -1.4661
+   ],
+   [
+    3,
+    "$",
+    -2.2371
+   ],
+   [
+    1117,
+    "(t",
+    -2.4544
+   ],
+   [
+    5781,
+    "(k",
+    -2.8841
+   ],
+   [
+    2784,
+    "(a",
+    -5.0922
+   ],
+   [
+    6803,
+    "(y",
+    -5.108
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1163
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1938",
+  "arm": "dflash_n4",
+  "first_diff": 247,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7897,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    2007,
+    "(x",
+    -1.3498
+   ],
+   [
+    12792,
+    "(z",
+    -1.4589
+   ],
+   [
+    7897,
+    "(u",
+    -1.4661
+   ],
+   [
+    3,
+    "$",
+    -2.2371
+   ],
+   [
+    1117,
+    "(t",
+    -2.4544
+   ],
+   [
+    5781,
+    "(k",
+    -2.8841
+   ],
+   [
+    2784,
+    "(a",
+    -5.0922
+   ],
+   [
+    6803,
+    "(y",
+    -5.108
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1163
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1938",
+  "arm": "dflash_n7",
+  "first_diff": 247,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7897,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    2007,
+    "(x",
+    -1.3498
+   ],
+   [
+    12792,
+    "(z",
+    -1.4589
+   ],
+   [
+    7897,
+    "(u",
+    -1.4661
+   ],
+   [
+    3,
+    "$",
+    -2.2371
+   ],
+   [
+    1117,
+    "(t",
+    -2.4544
+   ],
+   [
+    5781,
+    "(k",
+    -2.8841
+   ],
+   [
+    2784,
+    "(a",
+    -5.0922
+   ],
+   [
+    6803,
+    "(y",
+    -5.108
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1163
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1938",
+  "arm": "mtp_n2",
+  "first_diff": 36,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 28,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    283,
+    " =",
+    -0.6784
+   ],
+   [
+    28,
+    "=",
+    -0.7081
+   ],
+   [
+    17572,
+    "=f",
+    -12.9842
+   ],
+   [
+    478,
+    " +",
+    -14.6389
+   ],
+   [
+    281,
+    " f",
+    -14.6627
+   ],
+   [
+    33289,
+    "=\\",
+    -14.8564
+   ],
+   [
+    471,
+    " -",
+    -15.1005
+   ],
+   [
+    1088,
+    " \\",
+    -16.0887
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0297
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1938",
+  "arm": "mtp_n1",
+  "first_diff": 247,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7897,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    2007,
+    "(x",
+    -1.3498
+   ],
+   [
+    12792,
+    "(z",
+    -1.4589
+   ],
+   [
+    7897,
+    "(u",
+    -1.4661
+   ],
+   [
+    3,
+    "$",
+    -2.2371
+   ],
+   [
+    1117,
+    "(t",
+    -2.4544
+   ],
+   [
+    5781,
+    "(k",
+    -2.8841
+   ],
+   [
+    2784,
+    "(a",
+    -5.0922
+   ],
+   [
+    6803,
+    "(y",
+    -5.108
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1163
+ },
+ {
+  "id": "olympiadbench_hard_algebra_1938",
+  "arm": "mtp_n3",
+  "first_diff": 36,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 28,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    283,
+    " =",
+    -0.6784
+   ],
+   [
+    28,
+    "=",
+    -0.7081
+   ],
+   [
+    17572,
+    "=f",
+    -12.9842
+   ],
+   [
+    478,
+    " +",
+    -14.6389
+   ],
+   [
+    281,
+    " f",
+    -14.6627
+   ],
+   [
+    33289,
+    "=\\",
+    -14.8564
+   ],
+   [
+    471,
+    " -",
+    -15.1005
+   ],
+   [
+    1088,
+    " \\",
+    -16.0887
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0297
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_1869",
+  "arm": "mtp_n5",
+  "first_diff": 182,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 478,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    471,
+    " -",
+    -0.6975
+   ],
+   [
+    478,
+    " +",
+    -0.7406
+   ],
+   [
+    283,
+    " =",
+    -3.7933
+   ],
+   [
+    1088,
+    " \\",
+    -5.9269
+   ],
+   [
+    318,
+    " (",
+    -9.7728
+   ],
+   [
+    33,
+    "B",
+    -11.0065
+   ],
+   [
+    907,
+    " ?",
+    -11.7156
+   ],
+   [
+    498,
+    " [",
+    -11.7234
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.043
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_1869",
+  "arm": "dflash_n4",
+  "first_diff": 182,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 478,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    471,
+    " -",
+    -0.6975
+   ],
+   [
+    478,
+    " +",
+    -0.7406
+   ],
+   [
+    283,
+    " =",
+    -3.7933
+   ],
+   [
+    1088,
+    " \\",
+    -5.9269
+   ],
+   [
+    318,
+    " (",
+    -9.7728
+   ],
+   [
+    33,
+    "B",
+    -11.0065
+   ],
+   [
+    907,
+    " ?",
+    -11.7156
+   ],
+   [
+    498,
+    " [",
+    -11.7234
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.043
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_1869",
+  "arm": "dflash_n7",
+  "first_diff": 182,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 478,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    471,
+    " -",
+    -0.6975
+   ],
+   [
+    478,
+    " +",
+    -0.7406
+   ],
+   [
+    283,
+    " =",
+    -3.7933
+   ],
+   [
+    1088,
+    " \\",
+    -5.9269
+   ],
+   [
+    318,
+    " (",
+    -9.7728
+   ],
+   [
+    33,
+    "B",
+    -11.0065
+   ],
+   [
+    907,
+    " ?",
+    -11.7156
+   ],
+   [
+    498,
+    " [",
+    -11.7234
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.043
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_1869",
+  "arm": "mtp_n2",
+  "first_diff": 182,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 478,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    471,
+    " -",
+    -0.6975
+   ],
+   [
+    478,
+    " +",
+    -0.7406
+   ],
+   [
+    283,
+    " =",
+    -3.7933
+   ],
+   [
+    1088,
+    " \\",
+    -5.9269
+   ],
+   [
+    318,
+    " (",
+    -9.7728
+   ],
+   [
+    33,
+    "B",
+    -11.0065
+   ],
+   [
+    907,
+    " ?",
+    -11.7156
+   ],
+   [
+    498,
+    " [",
+    -11.7234
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.043
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_1869",
+  "arm": "mtp_n1",
+  "first_diff": 960,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 6817,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    271,
+    "\n\n",
+    -1.147
+   ],
+   [
+    6817,
+    " Note",
+    -1.2668
+   ],
+   [
+    198,
+    "\n",
+    -1.6509
+   ],
+   [
+    6558,
+    " Let",
+    -2.3805
+   ],
+   [
+    561,
+    " The",
+    -2.8824
+   ],
+   [
+    8439,
+    " Since",
+    -3.0695
+   ],
+   [
+    1690,
+    " For",
+    -5.2376
+   ],
+   [
+    1061,
+    " This",
+    -5.4364
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1198
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_1869",
+  "arm": "mtp_n3",
+  "first_diff": 182,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 478,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    471,
+    " -",
+    -0.6975
+   ],
+   [
+    478,
+    " +",
+    -0.7406
+   ],
+   [
+    283,
+    " =",
+    -3.7933
+   ],
+   [
+    1088,
+    " \\",
+    -5.9269
+   ],
+   [
+    318,
+    " (",
+    -9.7728
+   ],
+   [
+    33,
+    "B",
+    -11.0065
+   ],
+   [
+    907,
+    " ?",
+    -11.7156
+   ],
+   [
+    498,
+    " [",
+    -11.7234
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.043
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2574",
+  "arm": "mtp_n5",
+  "first_diff": 882,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7762,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    88965,
+    "+(\\",
+    -0.6743
+   ],
+   [
+    7762,
+    "-(",
+    -0.7437
+   ],
+   [
+    12975,
+    "+(",
+    -4.3011
+   ],
+   [
+    6354,
+    "-x",
+    -7.3825
+   ],
+   [
+    10,
+    "+",
+    -7.7785
+   ],
+   [
+    36641,
+    "+x",
+    -8.3663
+   ],
+   [
+    40337,
+    "+\\",
+    -9.3591
+   ],
+   [
+    271,
+    "\n\n",
+    -9.8973
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0694
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2574",
+  "arm": "dflash_n4",
+  "first_diff": 882,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7762,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    88965,
+    "+(\\",
+    -0.6743
+   ],
+   [
+    7762,
+    "-(",
+    -0.7437
+   ],
+   [
+    12975,
+    "+(",
+    -4.3011
+   ],
+   [
+    6354,
+    "-x",
+    -7.3825
+   ],
+   [
+    10,
+    "+",
+    -7.7785
+   ],
+   [
+    36641,
+    "+x",
+    -8.3663
+   ],
+   [
+    40337,
+    "+\\",
+    -9.3591
+   ],
+   [
+    271,
+    "\n\n",
+    -9.8973
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0694
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2574",
+  "arm": "dflash_n7",
+  "first_diff": 882,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 7762,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    88965,
+    "+(\\",
+    -0.6743
+   ],
+   [
+    7762,
+    "-(",
+    -0.7437
+   ],
+   [
+    12975,
+    "+(",
+    -4.3011
+   ],
+   [
+    6354,
+    "-x",
+    -7.3825
+   ],
+   [
+    10,
+    "+",
+    -7.7785
+   ],
+   [
+    36641,
+    "+x",
+    -8.3663
+   ],
+   [
+    40337,
+    "+\\",
+    -9.3591
+   ],
+   [
+    271,
+    "\n\n",
+    -9.8973
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0694
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2574",
+  "arm": "mtp_n2",
+  "first_diff": 397,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 628,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    599,
+    " have",
+    -0.7505
+   ],
+   [
+    628,
+    " can",
+    -0.7563
+   ],
+   [
+    615,
+    " get",
+    -3.1772
+   ],
+   [
+    3165,
+    " write",
+    -4.1784
+   ],
+   [
+    17591,
+    " rewrite",
+    -7.1202
+   ],
+   [
+    1366,
+    " know",
+    -7.6261
+   ],
+   [
+    198,
+    "\n",
+    -9.2618
+   ],
+   [
+    1144,
+    " need",
+    -11.8999
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0058
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2574",
+  "arm": "mtp_n1",
+  "first_diff": 397,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 628,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    599,
+    " have",
+    -0.7505
+   ],
+   [
+    628,
+    " can",
+    -0.7563
+   ],
+   [
+    615,
+    " get",
+    -3.1772
+   ],
+   [
+    3165,
+    " write",
+    -4.1784
+   ],
+   [
+    17591,
+    " rewrite",
+    -7.1202
+   ],
+   [
+    1366,
+    " know",
+    -7.6261
+   ],
+   [
+    198,
+    "\n",
+    -9.2618
+   ],
+   [
+    1144,
+    " need",
+    -11.8999
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0058
+ },
+ {
+  "id": "olympiadbench_hard_algebra_2574",
+  "arm": "mtp_n3",
+  "first_diff": 397,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 628,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    599,
+    " have",
+    -0.7505
+   ],
+   [
+    628,
+    " can",
+    -0.7563
+   ],
+   [
+    615,
+    " get",
+    -3.1772
+   ],
+   [
+    3165,
+    " write",
+    -4.1784
+   ],
+   [
+    17591,
+    " rewrite",
+    -7.1202
+   ],
+   [
+    1366,
+    " know",
+    -7.6261
+   ],
+   [
+    198,
+    "\n",
+    -9.2618
+   ],
+   [
+    1144,
+    " need",
+    -11.8999
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0058
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "arm": "mtp_n5",
+  "first_diff": 451,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 18664,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    58497,
+    " implication",
+    -1.691
+   ],
+   [
+    3050,
+    " specific",
+    -1.708
+   ],
+   [
+    18664,
+    " intersection",
+    -1.7294
+   ],
+   [
+    54006,
+    " cardinal",
+    -2.153
+   ],
+   [
+    23398,
+    " implications",
+    -2.7443
+   ],
+   [
+    28928,
+    " strongest",
+    -2.9288
+   ],
+   [
+    328,
+    " \"",
+    -3.3678
+   ],
+   [
+    43070,
+    " simplest",
+    -3.8382
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0384
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "arm": "dflash_n4",
+  "first_diff": 451,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 18664,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    58497,
+    " implication",
+    -1.691
+   ],
+   [
+    3050,
+    " specific",
+    -1.708
+   ],
+   [
+    18664,
+    " intersection",
+    -1.7294
+   ],
+   [
+    54006,
+    " cardinal",
+    -2.153
+   ],
+   [
+    23398,
+    " implications",
+    -2.7443
+   ],
+   [
+    28928,
+    " strongest",
+    -2.9288
+   ],
+   [
+    328,
+    " \"",
+    -3.3678
+   ],
+   [
+    43070,
+    " simplest",
+    -3.8382
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0384
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "arm": "dflash_n7",
+  "first_diff": 451,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 18664,
+  "arm_token_rank_in_baseline_top8": 3,
+  "baseline_top8": [
+   [
+    58497,
+    " implication",
+    -1.691
+   ],
+   [
+    3050,
+    " specific",
+    -1.708
+   ],
+   [
+    18664,
+    " intersection",
+    -1.7294
+   ],
+   [
+    54006,
+    " cardinal",
+    -2.153
+   ],
+   [
+    23398,
+    " implications",
+    -2.7443
+   ],
+   [
+    28928,
+    " strongest",
+    -2.9288
+   ],
+   [
+    328,
+    " \"",
+    -3.3678
+   ],
+   [
+    43070,
+    " simplest",
+    -3.8382
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0384
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "arm": "mtp_n2",
+  "first_diff": 56,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 264,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    13534,
+    " coordinates",
+    -1.0364
+   ],
+   [
+    264,
+    " a",
+    -1.1113
+   ],
+   [
+    279,
+    " the",
+    -1.6682
+   ],
+   [
+    449,
+    " an",
+    -2.1116
+   ],
+   [
+    14505,
+    " indices",
+    -5.6621
+   ],
+   [
+    5646,
+    " grid",
+    -7.1141
+   ],
+   [
+    5568,
+    " functions",
+    -7.553
+   ],
+   [
+    393,
+    " $",
+    -8.0268
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0749
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "arm": "mtp_n1",
+  "first_diff": 135,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 8097,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    393,
+    " $",
+    -0.718
+   ],
+   [
+    8097,
+    " fixed",
+    -0.7339
+   ],
+   [
+    6000,
+    " layer",
+    -4.1202
+   ],
+   [
+    15511,
+    " slice",
+    -4.8619
+   ],
+   [
+    15707,
+    " coordinate",
+    -5.4892
+   ],
+   [
+    1857,
+    " index",
+    -6.4698
+   ],
+   [
+    6505,
+    " pair",
+    -6.9527
+   ],
+   [
+    2713,
+    " row",
+    -8.2336
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0159
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "arm": "mtp_n3",
+  "first_diff": 56,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 264,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    13534,
+    " coordinates",
+    -1.0364
+   ],
+   [
+    264,
+    " a",
+    -1.1113
+   ],
+   [
+    279,
+    " the",
+    -1.6682
+   ],
+   [
+    449,
+    " an",
+    -2.1116
+   ],
+   [
+    14505,
+    " indices",
+    -5.6621
+   ],
+   [
+    5646,
+    " grid",
+    -7.1141
+   ],
+   [
+    5568,
+    " functions",
+    -7.553
+   ],
+   [
+    393,
+    " $",
+    -8.0268
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0749
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_2415",
+  "arm": "mtp_n5",
+  "first_diff": 479,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 76,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    45,
+    "N",
+    -0.8735
+   ],
+   [
+    76,
+    "m",
+    -0.9035
+   ],
+   [
+    77,
+    "n",
+    -1.7433
+   ],
+   [
+    44,
+    "M",
+    -6.1599
+   ],
+   [
+    42,
+    "K",
+    -9.3841
+   ],
+   [
+    43,
+    "L",
+    -9.6152
+   ],
+   [
+    74,
+    "k",
+    -10.2023
+   ],
+   [
+    51,
+    "T",
+    -10.459
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.03
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_2415",
+  "arm": "dflash_n4",
+  "first_diff": 479,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 76,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    45,
+    "N",
+    -0.8735
+   ],
+   [
+    76,
+    "m",
+    -0.9035
+   ],
+   [
+    77,
+    "n",
+    -1.7433
+   ],
+   [
+    44,
+    "M",
+    -6.1599
+   ],
+   [
+    42,
+    "K",
+    -9.3841
+   ],
+   [
+    43,
+    "L",
+    -9.6152
+   ],
+   [
+    74,
+    "k",
+    -10.2023
+   ],
+   [
+    51,
+    "T",
+    -10.459
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.03
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_2415",
+  "arm": "dflash_n7",
+  "first_diff": 479,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 76,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    45,
+    "N",
+    -0.8735
+   ],
+   [
+    76,
+    "m",
+    -0.9035
+   ],
+   [
+    77,
+    "n",
+    -1.7433
+   ],
+   [
+    44,
+    "M",
+    -6.1599
+   ],
+   [
+    42,
+    "K",
+    -9.3841
+   ],
+   [
+    43,
+    "L",
+    -9.6152
+   ],
+   [
+    74,
+    "k",
+    -10.2023
+   ],
+   [
+    51,
+    "T",
+    -10.459
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.03
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_2415",
+  "arm": "mtp_n2",
+  "first_diff": 36,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 75389,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    381,
+    " be",
+    -0.6736
+   ],
+   [
+    75389,
+    " denote",
+    -0.7132
+   ],
+   [
+    3875,
+    " represent",
+    -11.0899
+   ],
+   [
+    68701,
+    " denotes",
+    -11.3742
+   ],
+   [
+    3262,
+    " den",
+    -13.2578
+   ],
+   [
+    6762,
+    " define",
+    -13.6876
+   ],
+   [
+    5018,
+    "den",
+    -16.7041
+   ],
+   [
+    4364,
+    " defined",
+    -16.7172
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0396
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_2415",
+  "arm": "mtp_n1",
+  "first_diff": 479,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 76,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    45,
+    "N",
+    -0.8735
+   ],
+   [
+    76,
+    "m",
+    -0.9035
+   ],
+   [
+    77,
+    "n",
+    -1.7433
+   ],
+   [
+    44,
+    "M",
+    -6.1599
+   ],
+   [
+    42,
+    "K",
+    -9.3841
+   ],
+   [
+    43,
+    "L",
+    -9.6152
+   ],
+   [
+    74,
+    "k",
+    -10.2023
+   ],
+   [
+    51,
+    "T",
+    -10.459
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.03
+ },
+ {
+  "id": "olympiadbench_hard_number_theory_2415",
+  "arm": "mtp_n3",
+  "first_diff": 36,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 75389,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    381,
+    " be",
+    -0.6736
+   ],
+   [
+    75389,
+    " denote",
+    -0.7132
+   ],
+   [
+    3875,
+    " represent",
+    -11.0899
+   ],
+   [
+    68701,
+    " denotes",
+    -11.3742
+   ],
+   [
+    3262,
+    " den",
+    -13.2578
+   ],
+   [
+    6762,
+    " define",
+    -13.6876
+   ],
+   [
+    5018,
+    "den",
+    -16.7041
+   ],
+   [
+    4364,
+    " defined",
+    -16.7172
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0396
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "arm": "mtp_n5",
+  "first_diff": 238,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 8839,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    35944,
+    "Consider",
+    -1.3285
+   ],
+   [
+    8839,
+    "Note",
+    -1.348
+   ],
+   [
+    5170,
+    "First",
+    -2.015
+   ],
+   [
+    12189,
+    "Since",
+    -2.1074
+   ],
+   [
+    33061,
+    "Notice",
+    -2.3272
+   ],
+   [
+    9764,
+    "Let",
+    -2.9213
+   ],
+   [
+    13962,
+    "###",
+    -3.7782
+   ],
+   [
+    760,
+    "The",
+    -3.8951
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0196
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "arm": "dflash_n4",
+  "first_diff": 238,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 8839,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    35944,
+    "Consider",
+    -1.3285
+   ],
+   [
+    8839,
+    "Note",
+    -1.348
+   ],
+   [
+    5170,
+    "First",
+    -2.015
+   ],
+   [
+    12189,
+    "Since",
+    -2.1074
+   ],
+   [
+    33061,
+    "Notice",
+    -2.3272
+   ],
+   [
+    9764,
+    "Let",
+    -2.9213
+   ],
+   [
+    13962,
+    "###",
+    -3.7782
+   ],
+   [
+    760,
+    "The",
+    -3.8951
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0196
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "arm": "dflash_n7",
+  "first_diff": 238,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 8839,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    35944,
+    "Consider",
+    -1.3285
+   ],
+   [
+    8839,
+    "Note",
+    -1.348
+   ],
+   [
+    5170,
+    "First",
+    -2.015
+   ],
+   [
+    12189,
+    "Since",
+    -2.1074
+   ],
+   [
+    33061,
+    "Notice",
+    -2.3272
+   ],
+   [
+    9764,
+    "Let",
+    -2.9213
+   ],
+   [
+    13962,
+    "###",
+    -3.7782
+   ],
+   [
+    760,
+    "The",
+    -3.8951
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0196
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "arm": "mtp_n2",
+  "first_diff": 181,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 440,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1332,
+    " where",
+    -0.6914
+   ],
+   [
+    440,
+    " with",
+    -0.7068
+   ],
+   [
+    364,
+    " for",
+    -6.2513
+   ],
+   [
+    29607,
+    " consisting",
+    -6.758
+   ],
+   [
+    4771,
+    " $(",
+    -7.6473
+   ],
+   [
+    303,
+    " in",
+    -7.7547
+   ],
+   [
+    1608,
+    " using",
+    -7.8265
+   ],
+   [
+    15394,
+    " involving",
+    -7.8393
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0154
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "arm": "mtp_n1",
+  "first_diff": 238,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 8839,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    35944,
+    "Consider",
+    -1.3285
+   ],
+   [
+    8839,
+    "Note",
+    -1.348
+   ],
+   [
+    5170,
+    "First",
+    -2.015
+   ],
+   [
+    12189,
+    "Since",
+    -2.1074
+   ],
+   [
+    33061,
+    "Notice",
+    -2.3272
+   ],
+   [
+    9764,
+    "Let",
+    -2.9213
+   ],
+   [
+    13962,
+    "###",
+    -3.7782
+   ],
+   [
+    760,
+    "The",
+    -3.8951
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0196
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "arm": "mtp_n3",
+  "first_diff": 181,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 440,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    1332,
+    " where",
+    -0.6914
+   ],
+   [
+    440,
+    " with",
+    -0.7068
+   ],
+   [
+    364,
+    " for",
+    -6.2513
+   ],
+   [
+    29607,
+    " consisting",
+    -6.758
+   ],
+   [
+    4771,
+    " $(",
+    -7.6473
+   ],
+   [
+    303,
+    " in",
+    -7.7547
+   ],
+   [
+    1608,
+    " using",
+    -7.8265
+   ],
+   [
+    15394,
+    " involving",
+    -7.8393
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0154
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "arm": "mtp_n5",
+  "first_diff": 212,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 11179,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    760,
+    "The",
+    -0.7047
+   ],
+   [
+    11179,
+    "Every",
+    -0.7836
+   ],
+   [
+    2324,
+    "All",
+    -3.7248
+   ],
+   [
+    28068,
+    "every",
+    -4.5188
+   ],
+   [
+    1719,
+    "the",
+    -5.0749
+   ],
+   [
+    31575,
+    "Union",
+    -5.5368
+   ],
+   [
+    528,
+    "all",
+    -6.7263
+   ],
+   [
+    4699,
+    "Each",
+    -7.216
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0789
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "arm": "dflash_n4",
+  "first_diff": 212,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 11179,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    760,
+    "The",
+    -0.7047
+   ],
+   [
+    11179,
+    "Every",
+    -0.7836
+   ],
+   [
+    2324,
+    "All",
+    -3.7248
+   ],
+   [
+    28068,
+    "every",
+    -4.5188
+   ],
+   [
+    1719,
+    "the",
+    -5.0749
+   ],
+   [
+    31575,
+    "Union",
+    -5.5368
+   ],
+   [
+    528,
+    "all",
+    -6.7263
+   ],
+   [
+    4699,
+    "Each",
+    -7.216
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0789
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "arm": "dflash_n7",
+  "first_diff": 212,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 11179,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    760,
+    "The",
+    -0.7047
+   ],
+   [
+    11179,
+    "Every",
+    -0.7836
+   ],
+   [
+    2324,
+    "All",
+    -3.7248
+   ],
+   [
+    28068,
+    "every",
+    -4.5188
+   ],
+   [
+    1719,
+    "the",
+    -5.0749
+   ],
+   [
+    31575,
+    "Union",
+    -5.5368
+   ],
+   [
+    528,
+    "all",
+    -6.7263
+   ],
+   [
+    4699,
+    "Each",
+    -7.216
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0789
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "arm": "mtp_n2",
+  "first_diff": 250,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 303,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    524,
+    " not",
+    -0.7934
+   ],
+   [
+    303,
+    " in",
+    -0.7939
+   ],
+   [
+    421,
+    " that",
+    -2.7874
+   ],
+   [
+    56014,
+    " $\\",
+    -3.6015
+   ],
+   [
+    11946,
+    " passing",
+    -5.7268
+   ],
+   [
+    22868,
+    " equation",
+    -6.57
+   ],
+   [
+    393,
+    " $",
+    -6.7859
+   ],
+   [
+    1503,
+    " does",
+    -7.6273
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0005
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "arm": "mtp_n1",
+  "first_diff": 248,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 9764,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    32,
+    "A",
+    -0.8222
+   ],
+   [
+    9764,
+    "Let",
+    -0.9297
+   ],
+   [
+    12189,
+    "Since",
+    -2.9464
+   ],
+   [
+    13962,
+    "###",
+    -3.1135
+   ],
+   [
+    760,
+    "The",
+    -3.7279
+   ],
+   [
+    2592,
+    "If",
+    -4.012
+   ],
+   [
+    1919,
+    "This",
+    -4.5244
+   ],
+   [
+    8347,
+    "Any",
+    -5.0905
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.1075
+ },
+ {
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "arm": "mtp_n3",
+  "first_diff": 250,
+  "baseline_tokens_reproduced": true,
+  "arm_token": 303,
+  "arm_token_rank_in_baseline_top8": 2,
+  "baseline_top8": [
+   [
+    524,
+    " not",
+    -0.7934
+   ],
+   [
+    303,
+    " in",
+    -0.7939
+   ],
+   [
+    421,
+    " that",
+    -2.7874
+   ],
+   [
+    56014,
+    " $\\",
+    -3.6015
+   ],
+   [
+    11946,
+    " passing",
+    -5.7268
+   ],
+   [
+    22868,
+    " equation",
+    -6.57
+   ],
+   [
+    393,
+    " $",
+    -6.7859
+   ],
+   [
+    1503,
+    " does",
+    -7.6273
+   ]
+  ],
+  "arm_token_gap_to_top1": 0.0005
+ }
+]

@@ -1,0 +1,1166 @@
+[
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_algebra_1659",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_algebra_2171",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_algebra_1938",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_number_theory_1869",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_algebra_2574",
+  "base": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "eos"
+  },
+  "arm_grade": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "limit"
+  },
+  "graded_flip": false,
+  "status": "both answered, same correctness"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_number_theory_2415",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n4",
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_algebra_1659",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_algebra_2171",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_algebra_1938",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_number_theory_1869",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_algebra_2574",
+  "base": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "eos"
+  },
+  "arm_grade": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "limit"
+  },
+  "graded_flip": false,
+  "status": "both answered, same correctness"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_number_theory_2415",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "dflash_n7",
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_algebra_1659",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_algebra_2171",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_algebra_1938",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_number_theory_1869",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_algebra_2574",
+  "base": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "eos"
+  },
+  "arm_grade": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "limit"
+  },
+  "graded_flip": false,
+  "status": "both answered, same correctness"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_number_theory_2415",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n1",
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_algebra_1659",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_algebra_2171",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_algebra_1938",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_number_theory_1869",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_algebra_2574",
+  "base": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "eos"
+  },
+  "arm_grade": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "limit"
+  },
+  "graded_flip": false,
+  "status": "both answered, same correctness"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_number_theory_2415",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n2",
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_algebra_1659",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_algebra_2171",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_algebra_1938",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_number_theory_1869",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_algebra_2574",
+  "base": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "eos"
+  },
+  "arm_grade": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "limit"
+  },
+  "graded_flip": false,
+  "status": "both answered, same correctness"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_number_theory_2415",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n3",
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_combinatorics_1882",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_algebra_1659",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_combinatorics_2230",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_algebra_2171",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_combinatorics_2127",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_algebra_1938",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_number_theory_1869",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_algebra_2574",
+  "base": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "eos"
+  },
+  "arm_grade": {
+   "answered": true,
+   "boxed": "2",
+   "correct": false,
+   "stop": "limit"
+  },
+  "graded_flip": false,
+  "status": "both answered, same correctness"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_combinatorics_1818",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_number_theory_2415",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_combinatorics_1664",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ },
+ {
+  "arm": "mtp_n5",
+  "id": "olympiadbench_hard_combinatorics_1662",
+  "base": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "arm_grade": {
+   "answered": false,
+   "stop": "limit",
+   "correct": null
+  },
+  "graded_flip": false,
+  "status": "ungradable (answer missing: truncated at cap or no boxed)"
+ }
+]

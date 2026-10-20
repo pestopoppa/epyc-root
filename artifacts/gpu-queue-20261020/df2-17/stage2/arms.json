@@ -1,0 +1,114 @@
+{
+ "dflash_n7": {
+  "label": "dflash_n7",
+  "kind": "dflash",
+  "n_max": 7,
+  "verify_width": 8,
+  "env": {},
+  "server_pid": 1486222,
+  "server_dead_after": true,
+  "wall_s": 228.8,
+  "vram_at_ready": 35199041536,
+  "residency": {
+   "n": 457,
+   "vram_peak": 36197593088,
+   "vram_first": 27502997504,
+   "vram_last": 33481764864,
+   "busy_max": 100,
+   "busy_nonzero_samples": 427,
+   "kfd_pids_max": 1,
+   "child_in_kfd_samples": 456
+  },
+  "kv_unified_lines": [
+   "kv_unified = 'false'"
+  ],
+  "spec_exact_mode_logged": [],
+  "n_records": 24,
+  "records_sha256": "f19b49717f3d2e0e8dae2393df17de8630547d1fff022bf80ad0c091601714f4"
+ },
+ "off_A": {
+  "label": "off_A",
+  "kind": "none",
+  "n_max": 0,
+  "verify_width": 1,
+  "env": {},
+  "server_pid": 1021738,
+  "server_dead_after": true,
+  "wall_s": 905.2,
+  "vram_at_ready": 29683269632,
+  "residency": {
+   "n": 1808,
+   "vram_peak": 30069125120,
+   "vram_first": 27487412224,
+   "vram_last": 30068723712,
+   "busy_max": 100,
+   "busy_nonzero_samples": 1773,
+   "kfd_pids_max": 24,
+   "child_in_kfd_samples": 1807
+  },
+  "kv_unified_lines": [
+   "kv_unified = 'false'"
+  ],
+  "spec_exact_mode_logged": [],
+  "n_records": 24,
+  "records_sha256": "d96a48e981787557f2cc49c324b07c88abe5e80a467a0f65a07a89fcf975f210"
+ },
+ "off_B": {
+  "label": "off_B",
+  "kind": "none",
+  "n_max": 0,
+  "verify_width": 1,
+  "env": {},
+  "server_pid": 1292979,
+  "server_dead_after": true,
+  "wall_s": 448.7,
+  "vram_at_ready": 29683277824,
+  "residency": {
+   "n": 897,
+   "vram_peak": 30067912704,
+   "vram_first": 27454124032,
+   "vram_last": 27771523072,
+   "busy_max": 100,
+   "busy_nonzero_samples": 884,
+   "kfd_pids_max": 2,
+   "child_in_kfd_samples": 896
+  },
+  "kv_unified_lines": [
+   "kv_unified = 'false'"
+  ],
+  "spec_exact_mode_logged": [],
+  "n_records": 24,
+  "records_sha256": "d96a48e981787557f2cc49c324b07c88abe5e80a467a0f65a07a89fcf975f210"
+ },
+ "serial_df7": {
+  "label": "serial_df7",
+  "kind": "dflash",
+  "n_max": 7,
+  "verify_width": 8,
+  "env": {
+   "LLAMA_SPEC_EXACT": "serial"
+  },
+  "server_pid": 1373433,
+  "server_dead_after": true,
+  "wall_s": 486.7,
+  "vram_at_ready": 35199053824,
+  "residency": {
+   "n": 972,
+   "vram_peak": 36197158912,
+   "vram_first": 27448033280,
+   "vram_last": 35826053120,
+   "busy_max": 100,
+   "busy_nonzero_samples": 937,
+   "kfd_pids_max": 1,
+   "child_in_kfd_samples": 971
+  },
+  "kv_unified_lines": [
+   "kv_unified = 'false'"
+  ],
+  "spec_exact_mode_logged": [
+   "serial"
+  ],
+  "n_records": 24,
+  "records_sha256": "d96a48e981787557f2cc49c324b07c88abe5e80a467a0f65a07a89fcf975f210"
+ }
+}

@@ -1,0 +1,90 @@
+{
+ "started": "2026-10-20T18:54:26Z",
+ "configs": [
+  {
+   "block": [
+    64,
+    64,
+    32
+   ],
+   "status": "PASS",
+   "compile_wall_s": 1.837,
+   "hipcc_s": [
+    1.407
+   ],
+   "nmse_primary": 4.320994761997099e-08,
+   "pass_primary": true,
+   "repeat_bitwise_identical": true,
+   "kernel_source_sha256": "1e83c493b16dedf8b148a8af3b29c5b34fbabd597b37f9d4a07deaa7efc0049d",
+   "kernel_source_has_mfma": true,
+   "nmse_second_shape": 4.27727506746578e-08
+  },
+  {
+   "block": [
+    128,
+    128,
+    32
+   ],
+   "status": "PASS",
+   "compile_wall_s": 1.982,
+   "hipcc_s": [
+    1.454
+   ],
+   "nmse_primary": 4.320994761997099e-08,
+   "pass_primary": true,
+   "repeat_bitwise_identical": true,
+   "kernel_source_sha256": "000e3bbf3d6ba560136ca446fda96f07c803857e5d85f508afde1cd4e3a9e754",
+   "kernel_source_has_mfma": true,
+   "nmse_second_shape": 4.27727506746578e-08
+  },
+  {
+   "block": [
+    128,
+    64,
+    64
+   ],
+   "status": "PASS",
+   "compile_wall_s": 2.009,
+   "hipcc_s": [
+    1.55
+   ],
+   "nmse_primary": 4.320994761997099e-08,
+   "pass_primary": true,
+   "repeat_bitwise_identical": true,
+   "kernel_source_sha256": "849d682264d6c3d7872e9021293e3de7d7142bb948a98862b8ec02540080f5df",
+   "kernel_source_has_mfma": true,
+   "nmse_second_shape": 4.27727506746578e-08
+  }
+ ],
+ "versions": {
+  "tilelang": "0.1.15",
+  "torch": "2.5.1+rocm6.2",
+  "python": "3.12.14",
+  "hip": "6.2.41133-dd7f95766",
+  "apache-tvm-ffi": "0.1.12"
+ },
+ "device": {
+  "is_available": true,
+  "name": "AMD Radeon Graphics",
+  "arch": "gfx90a:sramecc+:xnack-"
+ },
+ "target_auto_str": "{\"kind\":\"hip\",\"tag\":\"\",\"keys\":[\"hip\",\"gpu\"],\"thread_warp_size\":64,\"mtriple\":\"amdgcn-amd-amdhsa-hcc\",\"mcpu\":\"gfx90a\"}",
+ "target_auto": {
+  "repr": "{\"kind\":\"hip\",\"tag\":\"\",\"keys\":[\"hip\",\"gpu\"],\"thread_warp_size\":64,\"mtriple\":\"amdgcn-amd-amdhsa-hcc\",\"mcpu\":\"gfx90a\"}",
+  "kind": "hip",
+  "mcpu": "gfx90a",
+  "export": "{'kind': 'hip', 'tag': '', 'keys': '(\"hip\", \"gpu\")', 'thread_warp_size': '64', 'mtriple': 'amdgcn-amd-amdhsa-hcc', 'mcpu': 'gfx90a'}"
+ },
+ "seed": 20261020,
+ "residency_during_run": {
+  "n": 80,
+  "vram_peak": 1058578432,
+  "vram_first": 13094912,
+  "vram_last": 1058578432,
+  "busy_max": 0,
+  "busy_nonzero_samples": 0,
+  "kfd_pids_max": 1,
+  "child_in_kfd_samples": 0
+ },
+ "finished": "2026-10-20T18:54:46Z"
+}

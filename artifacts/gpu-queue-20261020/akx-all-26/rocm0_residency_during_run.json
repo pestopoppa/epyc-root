@@ -1,0 +1,37 @@
+{
+ "rc": 0,
+ "wall_s": 302.0,
+ "residency": {
+  "n": 604,
+  "vram_peak": 1382633472,
+  "vram_first": 13094912,
+  "vram_last": 13094912,
+  "busy_max": 99,
+  "busy_nonzero_samples": 16,
+  "kfd_pids_max": 1,
+  "child_in_kfd_samples": 0
+ },
+ "samples_tail": [
+  {
+   "t": 1792522083.2657552,
+   "vram": 480485376,
+   "busy": 0,
+   "kfd_pids": 1,
+   "child_in_kfd": null
+  },
+  {
+   "t": 1792522083.76611,
+   "vram": 491065344,
+   "busy": 3,
+   "kfd_pids": 1,
+   "child_in_kfd": null
+  },
+  {
+   "t": 1792522084.2664936,
+   "vram": 13094912,
+   "busy": 0,
+   "kfd_pids": 0,
+   "child_in_kfd": null
+  }
+ ]
+}

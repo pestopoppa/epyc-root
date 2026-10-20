@@ -1,0 +1,98 @@
+{
+ "olympiadbench_hard_combinatorics_1882": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.095625,
+  "near_tie_lt_0.1": 0.0125,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_algebra_1659": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.056875,
+  "near_tie_lt_0.1": 0.010625,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_combinatorics_2230": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.05875,
+  "near_tie_lt_0.1": 0.011875,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_algebra_2171": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.1275,
+  "near_tie_lt_0.1": 0.026875,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_combinatorics_2127": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.041875,
+  "near_tie_lt_0.1": 0.006875,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_algebra_1938": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.04125,
+  "near_tie_lt_0.1": 0.008125,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_number_theory_1869": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.035625,
+  "near_tie_lt_0.1": 0.01,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_algebra_2574": {
+  "n_tokens": 1391,
+  "stop": "eos",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.04672897196261682,
+  "near_tie_lt_0.1": 0.010064701653486701,
+  "cap_hit": false
+ },
+ "olympiadbench_hard_combinatorics_1818": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.05625,
+  "near_tie_lt_0.1": 0.015625,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_number_theory_2415": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.02625,
+  "near_tie_lt_0.1": 0.005625,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_combinatorics_1664": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.065625,
+  "near_tie_lt_0.1": 0.01375,
+  "cap_hit": true
+ },
+ "olympiadbench_hard_combinatorics_1662": {
+  "n_tokens": 1600,
+  "stop": "limit",
+  "margin_identical_to_main": true,
+  "near_tie_lt_0.5": 0.055625,
+  "near_tie_lt_0.1": 0.01,
+  "cap_hit": true
+ }
+}
