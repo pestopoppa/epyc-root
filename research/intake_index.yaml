@@ -259295,3 +259295,2921 @@
     A-E, G, J proofs/code, Table in App. D, Fig. 6/9/13 values, the reference list. No web search for
     independent replication was run (Tier-2b: none found within the sources read). License facts: paper
     CC BY-NC-ND 4.0, repo CC BY-NC 4.0 (irrelevant to this project).'
+- id: intake-2023
+  arxiv_id: '2609.15309'
+  url: https://arxiv.org/abs/2609.15309
+  source_type: paper
+  title: 'When Agents Slow Down: Understanding LLM Agents'' Test-Time Strategies via Elo-per-token Analysis'
+  categories:
+  - benchmark_methodology
+  - autonomous_research
+  - context_management
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Kaiyuan Liu
+  - Qiuyang Mang
+  - Bo Peng
+  - Wenhao Chai
+  - Hanchen Li
+  - Shreyas Pimpalgaonkar
+  - Luke Zettlemoyer
+  - Alex Dimakis
+  - Alvin Cheung
+  key_claims:
+  - 'Elo-per-token rates a system at a token checkpoint: for each task it takes the best-so-far score
+    at each cumulative-token budget, forms pairwise win/tie/loss games between checkpoint-players within
+    a task (including across sessions and systems), pools games across tasks and fits Bradley-Terry by
+    MM, anchoring the lowest budget at 1000. Only within-task orderings enter, so score scales never mix.
+    Self-Elo drops same-session games (prefix maxima decide those in advance).'
+  - Independent best-of-n sampling gains exactly 400 Elo per tenfold token increase (Theorem 3.1, i.i.d.
+    continuous scores, equal attempt cost). This line is the reference; a session whose local slope is
+    below 400/decade is converting tokens worse than fresh independent attempts would.
+  - 'Measured slopes: several agent systems exceed 400/decade early, peak, then decline; pooled over 14
+    tasks every system is below 400 at the largest budgets. The curves keep rising (marginal gain, not
+    absolute regression) and the comparison is slope-vs-reference, not ''long session scores lower than
+    a restart'' at equal tokens. The intro''s ''after the first few context-window compactions'' is an
+    attribution in prose; the sections read contain no compaction ablation.'
+  - 'Models and budgets: Kimi Code/K2.7, Codex/GPT-5.5, Claude Code/Opus 4.8, Gemini CLI/Gemini 3.5 Flash;
+    100M tokens per session, cache-inclusive (input+output+cached), 5 sessions per agent-task cell, watchdog
+    resumes early exits in the same context; tasks need dense intermediate scoring via an agent-callable
+    submit script (App. C.1).'
+  - 'Splitting evidence is one task: on Polyomino Packing (Kimi K2.7) b_inf = 38M so K=3, giving +264
+    joint-Elo over one 100M session and +355 over ten 10M sessions; MLS-Bench is said to replicate (App.
+    E, not read). ''Restart'' here means a fresh independent session with no carried memory, and the best
+    of K is returned.'
+  - 'The paper''s own limit: b_inf is task-specific and not predictable from the domain-level curve or
+    early-session statistics (authors list this as future work), so a restart policy needs a per-target
+    curve.'
+  - Humans on AtCoder keep improving after agents flatten; the time-aligned comparison rests on locally
+    re-hosted evaluators (AHC014 plus three more) and, for pooled human curves, only contests whose crawled
+    scores reproduce official standings.
+  - 'Theorem 6.1 (asymptotic): if the post-inflection slope stays strictly below 400, frozen-state repeated
+    sampling from the agent''s state eventually beats continuing the session. Conditional on a slope assumption
+    and i.i.d. continuations, not an empirical finding at every budget.'
+  techniques:
+  - Elo-per-token (best-so-far, within-task pairwise, Bradley-Terry MM fit, session-bootstrap CIs)
+  - 400-Elo-per-decade independent-sampling reference
+  - scaling inflection point b_inf = last budget with slope > 400; K = round(B/b_inf) sessions
+  - self-Elo (cross-session games only) vs joint-Elo
+  reported_results:
+  - Four agents x 14 tasks (4 FrontierCS, 3 ALE-Bench AHC, 2 MLS-Bench, 5 FlashInfer-Bench kernels), 100M
+    cache-inclusive tokens, 5 sessions per cell [§4.1, App. C.1]
+  - Local self-Elo slope exceeds 400/decade at small budgets for several systems, peaks, then declines;
+    pooled, every system is below 400 by the largest budgets [§4.2, Fig 3 middle row]
+  - 'FrontierCS Polyomino Packing, Kimi K2.7: inflection 38M tokens -> K=3; +264 joint-Elo vs 1x100M and
+    +355 vs 10x10M at 100M total [§6.2, Fig 8]; single-task headline'
+  - AdaEvolve, GEPA and test-time training (gpt-oss-20b) show the same early-lead-then-diminishing pattern;
+    evolving methods within ~20 Elo of Kimi Code at its last checkpoint [§5.1-5.2]
+  - 'Humans (AtCoder top-10/top-50, wall-clock axis) convex in log time; only time-aligned human-vs-agent
+    joint-Elo: AHC014 (Fig 1 right), plus AHC038/040/031 in Fig 5 [§4.3]'
+  - Domain-level inflection does not predict task-level inflection [§7]
+  referenced_arxiv_ids:
+  - '2407.21787'
+  - '2602.20133'
+  - '2507.19457'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-STATELESS (SLA cites this paper as [17]; Qiuyang Mang is an author of both)
+    - intake-1998 (forgetting / long-session degradation; this paper is a measurement method for the same
+      question)
+  expanded_from: intake-2010
+  credibility_score: 4
+  contradicting_evidence:
+  - '''When Independent Sampling Outperforms Agentic Reasoning'' arxiv.org/pdf/2605.08478 (search hit;
+    different study, not a replication; not read; independent but unverified)'
+  - aiweekly.co, prismix.dev, agentpatterns.ai summaries restate the +264/+355 numbers (restatement).
+    No independent replication found.
+  source_revision: arXiv:2609.15309v1 (ar5iv html)
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'Take away: a per-target slope test (local Elo per decade of tokens vs 400)
+    is a cheap diagnostic of whether continuing a long session still beats fresh attempts, and K=round(B/b_inf)
+    is a testable restart policy. Do NOT carry ''long coding-agent sessions are worse than restarts''
+    as a measured fact at equal tokens. The measured fact is a SLOPE falling below 400/decade after a
+    peak (curves still rise); the one split experiment is a single task with one model; the restart baseline
+    is memoryless, whereas an AK campaign with strategy-store carry-over is not that baseline. Compaction
+    as the cause is asserted in prose, not isolated.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Narrowed the popular framing (''falls below independent
+    sampling'') to slope-below-reference; split result is one task; restart = memoryless fresh session;
+    compaction attribution not tested in the sections read.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract; §3.2 (ar5iv text; no page numbers)
+    quote: We propose Elo-per-token analysis, which tracks the best solution found at each token budget
+      and uses a Bradley–Terry model to aggregate within-task orderings into Elo ratings across tasks
+      with different score scales.
+    quote_sha256: ae16924bd486238f365d65cf7355af28982bfdea3c91ce2cf768fda4ed0c2ac1
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.3 Theorem 3.1 (ar5iv text; no page numbers)
+    quote: If attempts have equal token cost, independent sampling therefore gains 400 Elo for every tenfold
+      increase in total token budget.
+    quote_sha256: 06a59a88c7671fdeb03b7355bc28c3a25c2739e30d33d634fd4b997b521ef347
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §4.2 (ar5iv text; no page numbers)
+    quote: In the pooled panel, every system falls below 400 by the largest budgets, and most benchmark-specific
+      curves show the same late-stage decline at different budgets.
+    quote_sha256: e3ca75dde484bf4e5ec8ab385f25d2c7438c32c82b6be5a95d5266244ba23f89
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.1 (ar5iv text; no page numbers)
+    quote: Each agent system receives a target budget of 100M tokens on every task.
+    quote_sha256: c654e35b8c9e3e7d2ada0b709d65f23042271edf142aaae7fc1bfddc0f486afe
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §6.2 (ar5iv text; no page numbers)
+    quote: The predicted three-session allocation gains +264 joint-Elo over one 100M-token session and
+      +355 over ten 10M-token sessions.
+    quote_sha256: ccc8856867bf96be636b02aaafd80afc114535c8b67e2608e65da63f6ae0d7e6
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: §7 (ar5iv text; no page numbers)
+    quote: Predicting this point from task properties or early-session statistics, without profiling the
+      full task-level curve, remains an important direction for future work.
+    quote_sha256: 68a3b4095ac921d0a626ed994646f3b73b2f38ee1cce1e5a521620d4859dec5c
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: §4.3 (ar5iv text; no page numbers)
+    quote: Human progress thus persists after agent progress saturates on the reproduced task.
+    quote_sha256: 2fdc10e5361d7141e46dc3a411b3dad740eecac90cd0a01b060886010eb75fc7
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: §6.1 Theorem 6.1 (ar5iv text; no page numbers)
+    quote: If the original harness has asymptotic post-inflection slope strictly below sref, then frozen-state
+      repeated sampling approaches slope sref and eventually yields a larger Elo gain than continuing
+      the original session.
+    quote_sha256: 9810f6357cfd698e5d8b3ffc83be6f5055827ca305aa9b909522f3e129541e0f
+    source_revision: arXiv:2609.15309v1 (ar5iv html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 8
+    flags_for_operator: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read from disk: ar5iv HTML (sha256 5d3ce5a267b7cb9d4adbe20dd4a52e89ab1ff60d04b0839dc05a5348df8a8e6a)
+    converted to text; main text sections 1-8 read in full, Appendix C, D, F.1/F.3/F.4 read; arXiv v1
+    PDF also saved (sha256 513f96f7e83f973187345a567e22852aa9dcd7acaa924df2fd3a58225415d1d7) but not extracted.
+    NOT read: Appendix A proofs, B estimator, E allocation design and MLS-Bench results, G prompts. arxiv.org/html/..v1
+    returned an error page; ar5iv route used (abs page shows [v1]). Paper''s code link github.com/agent-tts/Agent-TTS-Code
+    returns HTTP 200 on HEAD, not cloned. Model names as printed in the paper.'
+- id: intake-2024
+  arxiv_id: null
+  url: https://github.com/Alex-q-z/stateless-language-agents
+  source_type: repo
+  title: 'stateless-language-agents (preprint-only repository for "Stateless Language Agents: Scaling
+    Long-Horizon Automated Research", arXiv:2610.07625)'
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - context_management
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Qizheng Zhang
+  - Changxiu Ji
+  - Isaac Sun
+  - Kunle Olukotun
+  - et al. (18 authors in preprint)
+  key_claims:
+  - 'The repository is NOT the harness: one commit (1271183, ''Add SLA preprint'', created 2026-10-06)
+    and one tracked file, assets/sla-preprint.pdf. No README, LICENSE, code, prompt files, schema or tests.
+    The evidence-summary builder, Landlock wrapper and journal schema are not released here.'
+  - 'What the preprint specifies: stateful search with stateless agents; the harness owns candidates and
+    outcomes and rebuilds a fresh role-specific context for the Advisor each epoch and each Worker each
+    trial. Defaults: W=3 Workers, 3 local trials per Advisor epoch (App. B.1).'
+  - The Advisor's evidence summary is described only in prose (recent attempts, outcomes grouped by search
+    direction, Worker status, recent progress, task diagnostics) and separates measured non-improvements
+    from inconclusive implementation/runtime/correctness failures. No builder code or field list is given.
+  - 'Isolation: Workers run as unprivileged processes under Linux Landlock with restricted network; the
+    harness clears saved sessions between trials and checkpoints candidate snapshots, evaluation outputs
+    and event logs. The mechanism is named, the implementation is not published.'
+  - Full Anthropic-kernel Advisor and Worker prompts (and FrontierSWE, SOL-ExecBench prompts) are reproduced
+    in the preprint's Appendix E with {placeholders}; they are the reusable artifact. The Advisor prompt
+    caps incremental lanes at one, treats errors as inconclusive, and says reset is not amnesia.
+  - 'Headline result (3 Codex runs, Anthropic VLIW SIMD cycles task, not a GPU kernel): SLA reaches the
+    strongest baseline''s final result with 67.9M vs 986.3M tokens (93.1% fewer); rankings reverse with
+    horizon on FrontierSWE; Advisor uses <0.6% of tokens.'
+  techniques:
+  - harness-owned research state with per-invocation context reconstruction
+  - Advisor/Worker split with explicit assignments
+  - Landlock + cleared sessions for enforced statelessness
+  - sanitized scalar ledger; inconclusive-vs-negative evidence separation
+  - shared-checkpoint ablations
+  reported_results:
+  - 'Repo: 1 commit, 1 file (assets/sla-preprint.pdf, 558758 bytes, 32 pages), GitHub API license null,
+    11 stars, only branch main, no releases'
+  - 'Preprint Table 1 (Anthropic kernel, Codex, 3 runs, 1B tokens): SLA 1112.0 +- 8.9 cycles vs best baseline
+    1275.7 +- 133.9; 67.9M vs 986.3M tokens to match [p.8]'
+  referenced_arxiv_ids:
+  - '2609.15309'
+  - '2602.20133'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-STATELESS (the paper this repo accompanies; cite this repo as paper-only)
+    - NEW-ELOTOKEN (cited by SLA as [17])
+  expanded_from: intake-2010
+  credibility_score: null
+  source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'The harness is NOT released: this repo is a PDF host. Do not plan to ''reuse
+    the SLA code''. Reusable now: Appendix E prompt text and the §3 design (re-derivable). AK would write
+    its own evidence-summary builder, journal-to-context projection and sandbox; AK already has an append-only
+    journal with shards and replay, so the new work is the projection and per-invocation prompt assembly,
+    not storage. Re-check the repo before building (created 2026-10-06, may gain code).'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Repo holds only the preprint PDF; contradicts any
+    assumption that the builder, prompts-as-files, Landlock code or journal schema are published.'
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: git log -1 @ 1271183 (sole commit; sole tracked file assets/sla-preprint.pdf sha256 875cdf5e7cbe6229a4e435ad1df7fe0a45b87d41172fce81b9946b8bfe9fdcae)
+    quote: '[paper] Add SLA preprint'
+    quote_sha256: b31076b59b91a6ceeff07f343983dd257f47bcd64b6d6c32f432544dac72eac4
+    source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: assets/sla-preprint.pdf p.1 Abstract / §3 @ 1271183
+    quote: instead, the harness owns the research state (candidate solutions and measured outcomes) and
+      reconstructs a fresh and role-specific context for every invocation.
+    quote_sha256: 2f31ab38d8fce455c99913787c00a54a3dcfecb4410454ae9c16e3e48ab4d7a5
+    source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: assets/sla-preprint.pdf p.5 §3.1 @ 1271183
+    quote: It separates measured non-improvements from inconclusive failures in implementation, runtime,
+      or correctness, so a failed execution is not mistaken for evidence that a direction is exhausted.
+    quote_sha256: f5a5c51dae4cdd5d796b25ab03525f0b433539393f58471bee65d850ff66a934
+    source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: assets/sla-preprint.pdf p.6 §3.3 @ 1271183
+    quote: Workers run as unprivileged processes under Linux Landlock filesystem restrictions, with restricted
+      network access, and the harness clears their saved sessions between trials.
+    quote_sha256: 1456bc3a364c98b971b77328cde07ea60ba771cc26734e064bd65a11acd2467b
+    source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: assets/sla-preprint.pdf p.24 App. E Anthropic Kernel Advisor Prompt @ 1271183
+    quote: Use the sanitized ledger to avoid repeating mechanisms with strong negative evidence. Reset
+      means fresh reasoning from measured state, not amnesia.
+    quote_sha256: 081cf4d496072ce16281903556175d9b91e82bd3766218486de2f817d118d7c9
+    source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: assets/sla-preprint.pdf p.7 §4.2 @ 1271183
+    quote: On the Anthropic kernel task with Codex, SLA needs only 67.9M tokens, compared with 986.3M
+      for SwarmResearch, a 93.1% reduction.
+    quote_sha256: bf4d335c4c2e6afe7e3a464624aef7f8478c15ddfda660f43d861afb5b11d1e4
+    source_revision: Alex-q-z/stateless-language-agents@1271183f6c73729d0c5e1602e12951fba59cf657
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 6
+    flags_for_operator: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone at 1271183f6c73729d0c5e1602e12951fba59cf657;
+    git ls-tree shows only assets/sla-preprint.pdf. PDF text extracted with pypdf (plain interpreter from
+    cwd=/ since -I hides the user-site pypdf) to dive-w3-sla-repo/preprint.txt (sha256 707a553e1e568737a96424d1eb63462f98df193f43fcdd23d6ce971f19cd50d3).
+    Read: abstract, intro, §3, §4.1-4.3 tables, App. B.1-B.2, Anthropic kernel Advisor prompt. NOT read:
+    FrontierSWE/SOL prompts, App. C/D, remaining §4.4. GitHub API checked for branches/releases. No license
+    declared (one-line fact). Main verified anchor c0 via git log -1 in the clone (1271183f... "[paper]
+    Add SLA preprint").'
+- id: intake-2025
+  arxiv_id: null
+  url: https://github.com/BokwaiHo/arl-mode-collapse
+  source_type: repo
+  title: 'Beneath the Diff: Diagnosing and Mitigating Algorithmic Mode Collapse in Code-Level Autonomous
+    Research Loops (arl-mode-collapse)'
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - BokwaiHo (GitHub owner; README gives anonymized authorship)
+  key_claims:
+  - Surface diversity S_t = mean pairwise normalized Levenshtein distance (distance / max length, python-Levenshtein)
+    over the last W=20 accepted unified diffs; input is diff text; 0.0 until two diffs exist; O(W^2) per
+    update.
+  - 'Semantic diversity C_t: each edit DESCRIPTION is embedded with sentence-transformers all-mpnet-base-v2
+    (normalized), ALL accumulated embeddings are re-clustered on each call with HDBSCAN (min_cluster_size=5,
+    min_samples=2, euclidean), and C_t counts distinct non-noise clusters among the last W=20 edits. Fallbacks:
+    sklearn DBSCAN(eps=0.4, cosine); a hash-seeded random embedder if sentence-transformers is absent
+    (uses Python hash(), not reproducible across processes without PYTHONHASHSEED; docstring says not
+    for paper numbers).'
+  - 'Mechanism entropy H_t: an ordered first-match-wins regex parser assigns each description to one of
+    9 categories (Optimizer, Scheduling, Architecture, Data, Loss, Regularization, Numerical, Decoding,
+    Other); H_t is Shannon entropy in nats over the last 20 labels. The taxonomy is ML-training specific
+    and would send nearly every kernel edit to ''Other''. The docstring''s kappa=0.84 on 200 edits and
+    187-edit pilot are not backed by any file in the repo.'
+  - 'Faithfulness: gap = |m_opt_t - m_opt_0| - |m_ho_t - m_ho_0|; ratio rho = held-out gain / in-loop
+    gain (0.0 when in-loop gain <= 1e-9). Gains are absolute values, so a held-out regression counts as
+    ''gain'' and direction is ignored (higher_is_better is stored but unused in these methods).'
+  - 'Inputs per accepted iteration: description string, unified diff string, category, in-loop metric,
+    and a periodic held-out metric (HVG interval K=10); loop emits diagnostics.csv with columns iter,accepted,S_t,C_t,H_t,V_t,m_opt,m_ho,gap,ratio.
+    Offline replay over AK history is feasible for S_t, C_t, H_t and faithfulness if per-candidate description
+    + patch + screen and confirmed scores are retained. Provenance V_t needs a 1.1M-abstract FAISS index
+    and returns 0.0 if absent (not useful for kernels).'
+  - Kernel use needs a replacement taxonomy for _KEYWORD_RULES (tiling/blocking, vectorization/ISA path,
+    prefetch/cache, threading/NUMA, quant dequant path, fusion, launch config, layout, algorithmic) plus
+    a human or LLM spot check. This is design inference, not a claim in the repo.
+  techniques:
+  - rolling-window diff Levenshtein diversity (surface)
+  - HDBSCAN cluster count over SBERT edit-description embeddings (semantic)
+  - rule-based mechanism taxonomy + Shannon entropy
+  - in-loop vs held-out gain ratio (faithfulness)
+  - 'DAPS mitigation: category-coverage reweighting, persistent edit memory, held-out validation gate'
+  reported_results:
+  - 'No result logs ship in the repo (README: full reproduction ~6,200 A100-hours; plots read pre-computed
+    logs not included). Defaults W=20, tau_m=0.85, M=200, K=10, N=8 [README table]. No numbers read from
+    outputs.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-MODECOLLAPSE (paper this code implements; paper-level numbers not verified by this dive)
+  expanded_from: intake-2011
+  credibility_score: null
+  source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'The instrument is small (~400 lines in arl/diagnostics), self-contained, and
+    needs only strings (description, diff) plus two metric series, so it can be vendored or reimplemented
+    offline over a journal. S_t and C_t are generic; the taxonomy and provenance corpus are ML-training-specific
+    and must be replaced for kernels. Carry these caveats: faithfulness uses absolute gains (direction-blind);
+    C_t re-clusters the whole history each call and depends on the embedding model; hash-embedder fallback
+    is non-deterministic; kappa=0.84 is unsupported by repo data; no logs ship, so paper numbers cannot
+    be re-derived here, only the instrument.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Instrument fully released and offline-capable; two
+    caveats found in code (abs-gain faithfulness; unsupported kappa claim).'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: arl/diagnostics/surface.py:L4-L4 @ bb64b6f
+    quote: window-mean of pairwise normalized Levenshtein distances over the last
+    quote_sha256: 803eb88af99a24946b5ec75d3da7e197d92545991397380342a8fcb19a97b895
+    source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: arl/diagnostics/semantic.py:L66-L68 @ bb64b6f
+    quote: "                min_cluster_size=self.min_cluster_size,\n                min_samples=self.min_samples,\n\
+      \                metric=\"euclidean\","
+    quote_sha256: 32093f4e695ec80debc7195bc21d45861fddb7316d7afea1b959ee0de0efcbf6
+    source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: arl/diagnostics/embedder.py:L34-L34 @ bb64b6f
+    quote: '            seed = abs(hash(t)) % (2**32)'
+    quote_sha256: c1d320b01274f94c1f50d563b5062cd477ce85a875aa94a026797cb362292d53
+    source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: arl/diagnostics/mechanism.py:L86-L89 @ bb64b6f
+    quote: "    for cat, pat in _KEYWORD_RULES:\n        if pat.search(description):\n            return\
+      \ cat\n    return \"Other\""
+    quote_sha256: 1ea750823ffe6db033ed9e905035c8e3c1aa7a3748a78cd9f07c634f546f1e63
+    source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: arl/diagnostics/faithfulness.py:L57-L57 @ bb64b6f
+    quote: '        return self.in_loop_gain() - self.held_out_gain()'
+    quote_sha256: 5f45c60fa350434cd3da11c0c422e6bfb20047c171235fdb1dd1642da23e19e0
+    source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: arl/diagnostics/faithfulness.py:L65-L68 @ bb64b6f
+    quote: "        denom = self.in_loop_gain()\n        if denom <= 1e-9:\n            return 0.0\n \
+      \       return self.held_out_gain() / denom"
+    quote_sha256: 3465e0f5fd65e720a621e0a51fd592faaf301cce6296dabba40826bd6cd7b41b
+    source_revision: BokwaiHo/arl-mode-collapse@bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+      unanchored: 2
+    flags_for_operator:
+    - 'k2 partial: Regex first-match, 9 categories, entropy in nats over 20 verified; kappa/187 appear
+      only in mechanism.py docstring. But "would send nearly every kernel edit to Other" is unlabelled
+      inference (words like block/width/cycle/sampling match ML rules).'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
+    (single commit ''logo''; GitHub pushed_at 2026-05-26). Read in full: arl/diagnostics/{__init__,surface,embedder,semantic,mechanism,faithfulness}.py,
+    arl/utils/diff_utils.py, README, LICENSE header, tests/test_diagnostics.py head; provenance.py first
+    ~90 lines; arl/loop.py grep-level only. NOT read: daps/, proposer/, executor/, pipelines/, scripts/,
+    rest of loop.py. Nothing executed; sentence-transformers/hdbscan/python-Levenshtein not installed.
+    License: MIT per README/LICENSE (GitHub API: NOASSERTION).'
+- id: intake-2026
+  arxiv_id: '2211.03578'
+  url: https://arxiv.org/abs/2211.03578
+  source_type: paper
+  title: 'TLP: A Deep Learning-based Cost Model for Tensor Program Tuning'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Yi Zhai
+  - Yu Zhang
+  - Shuo Liu
+  - Xiaomeng Chu
+  - Jie Peng
+  - Jianmin Ji
+  - Yanyong Zhang
+  key_claims:
+  - 'TLP replaces hand-engineered statement features (Ansor: 164 dims) with features read straight off
+    the schedule-primitive sequence (primitive type one-hot, numeric parameters unchanged, name parameters
+    tokenized), fed to a self-attention + residual regressor trained with LambdaRank. Because the primitive
+    sequence exists before any tensor program is generated, the score is computed BEFORE lowering and
+    BEFORE any build; only the top-k are then generated and measured. The same extractor serves CPUs and
+    GPUs.'
+  - 'Accuracy (TenSet top-k scores, held-out ResNet-50/MobileNet-V2/ResNext-50/BERT-tiny/BERT-base): TLP
+    beats TenSet-MLP on all five CPUs (incl. AMD EPYC 7452: top-1 0.9055 vs 0.8510) and is mixed on GPUs
+    (K80 0.9059 vs 0.9083; T4 0.8847 vs 0.8757).'
+  - 'Search-time: reaching the quality of TenSet-MLP after 2,000 trials takes 9.1x (CPU) / 3.0x (GPU)
+    less time with TLP; vs Ansor 16.7x / 16.0x. About 1.7-1.8x of the per-trial wall-clock gain is simply
+    cheaper feature extraction (no program generation). Measured on 5 networks, one laptop CPU and one
+    T4 - not on any AMD GPU.'
+  - 'Cross-hardware: TLP-alone offline models do not transfer; MTL-TLP gets TenSet-MLP-or-better accuracy
+    with 500K target records (about 7% of TenSet) plus another platform of the SAME ISA, 4.7x/2.9x search-time
+    gains. Authors state 500K records still take tens of hours to collect. Different-ISA helpers help
+    less (Table 9); CPU<->GPU not tried.'
+  techniques:
+  - cost-model features from schedule primitives (type one-hot + numeric params + tokenized name params),
+    no lowering
+  - self-attention backbone + LambdaRank loss
+  - multi-task learning across hardware platforms (MTL-TLP, shared backbone, per-platform heads)
+  - top-k score as the dataset metric
+  reported_results:
+  - 'Table 5 (§6.1.4): top-1/top-5 TLP vs TenSet MLP - Platinum-8272 0.9194/0.9710 vs 0.8748/0.9527; AMD
+    EPYC 7452 0.9055/0.9494 vs 0.8510/0.9175; Tesla K80 0.9059/0.9741 vs 0.9083/0.9629; T4 0.8847/0.9250
+    vs 0.8757/0.9528'
+  - '§6.3 Figs 12-13: search time to reach TenSet-MLP 2,000-trial quality: TLP 9.1x CPU / 3.0x GPU, MTL-TLP
+    4.7x / 2.9x; to reach Ansor 2,000-trial quality: TLP 16.7x / 16.0x, MTL-TLP 10.0x / 15.8x (5 networks,
+    one i7-10510U laptop CPU and one T4)'
+  - '§6.3: per-trial wall-clock TLP is 1.7x (CPU) / 1.8x (GPU) faster than TenSet MLP because no tensor
+    program is generated for feature extraction; 5 GA rounds 20 s -> 6 s'
+  - 'Table 6 (§6.2.1): E5-2673 target with 500K own records alone top-1 0.6647; + all Platinum-8272 data
+    0.8741; + EPYC-7452 as 3rd task 0.8901'
+  - 'Table 9 (§6.2.3): i7-10510U target (500K), helper task ISA effect top-1: Platinum-8272 0.8413, E5-2673
+    0.8331, EPYC-7452 0.8082, Graviton2 0.7711'
+  - 'Table 8 (§6.2.2): MTL 0.8331/0.9672 beats fine-tuning 0.7897/0.9175 and GPT/BERT self-supervised
+    pre-training 0.6863 / 0.6316 top-1'
+  referenced_arxiv_ids:
+  - '2001.08743'
+  - '2012.07145'
+  - '2005.13685'
+  - '1810.04805'
+  - '1909.10351'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-ANSOR (expanded_from; Ansor GBDT/164-dim statement features is the baseline TLP replaces)
+    - NEW-TENSET (TLP trains on the TenSet dataset and TenSet-TLP)
+    - NEW-PRUNER (reports TLP failed to tune on some workloads after fine-tuning)
+  expanded_from: intake-2012
+  credibility_score: 4
+  contradicting_evidence:
+  - Pruner (arXiv:2402.02361v3 §2.3 and §6.1) reports the TLP model fine-tuned on the target platform
+    "occasionally crashed, leading to tuning failures" and that TLP could only be compared on A100 (independent
+    authors, same city/university as TLP authors but different group; reproduction was on NVIDIA GPUs
+    with ~500K-record fine-tuning sets)
+  - 'Pruner Table 11: PaCM beats TLP top-1 0.862 -> 0.892 (T4) and 0.880 -> 0.897 (K80) on TenSet GPUs
+    (independent-ish competitor, restates a dataset metric)'
+  - 'Search for independent reproductions of TLP found none (WebSearch 2026-10-20: only Pruner and summaries)'
+  source_revision: arXiv:2211.03578v2 (html); code zhaiyi000/tlp@54665a17a518f7613d5a866ca0871f12a66ab0c7
+    (TVM/TenSet fork, Apache-2.0; README only skimmed)
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: 'TLP shows a learned model can score candidates from the knob/primitive sequence
+    alone, before lowering - the property AK needs. But it is trained on hundreds of thousands to millions
+    of labelled programs per platform (TenSet 8.6M/platform; MTL-TLP needs 500K target records) and every
+    number is on TVM/Ansor schedule primitives for dense NN subgraphs on Intel/AMD/ARM CPUs and NVIDIA
+    GPUs. Do NOT carry 9.1x/16.7x to AK: those are time-to-quality gains in a measurement-bound tuner;
+    AK iterations are build-bound (handoff-recorded 75.7% build / 3.9% measure, via W2 NEW-ANSOR) and
+    AK has ~10^1-10^2 labelled candidates, not 10^5-10^6. Take the idea (featurize the knob vector, score
+    pre-build, rank by top-k not RMSE) not the numbers.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. The abstract headline 9.1x/3.0x is vs TenSet MLP
+    (not Ansor); vs Ansor it is 16.7x/16.0x. Both are time-to-baseline-quality, 5 networks, 1 CPU + 1
+    GPU. Main correction 2026-10-20 after per-claim second reader: removed a TenSet finding misattributed
+    to TLP from claim 1.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.1 last paragraph
+    quote: In addition, TLP directly extracts features from schedule primitives, eliminating the need
+      to generate tensor programs and reducing tuning time.
+    quote_sha256: 63b852c0b3677f874fc21fd7cf450cd58520cc2f49b22f1005d543731785b768
+    source_revision: arXiv:2211.03578v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §6.1.4 after Table 5
+    quote: It can be found that on all CPUs, TLP exceeds TenSet MLP by a large margin. On GPUs, TLP and
+      TenSet MLP each have their strengths.
+    quote_sha256: e942d91eb562c8dc14a9b67dd4d43ed144c8b92f6ff4e755e2e7344770908ecf
+    source_revision: arXiv:2211.03578v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §6.3 paragraph on Figs 12-13
+    quote: Compared with TenSet MLP, TLP can speed up the search time by an average of 9.1× and 3.0× on
+      the CPU and GPU. MTL-TLP can speed up the search time by an average of 4.7× and 2.9× on the CPU
+      and GPU.
+    quote_sha256: 6c3cf8da06e65bfd5d249924f804c32b8889cf2e6f08fbef30958f4a2c5ce2ab
+    source_revision: arXiv:2211.03578v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §8 Discussion/Limitation
+    quote: MTL-TLP trained with only 7% of the target platform data outperforms TenSet MLP with all data.
+      However, it still takes tens of hours to collect 500K data.
+    quote_sha256: fe9d04d77fc1b72601a8773c106e99fba0b3e6b46d983340ab83df672b0a4d22
+    source_revision: arXiv:2211.03578v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §6.3 execution-speed paragraph (second anchor for claim 2)
+    quote: In terms of execution speed alone, TLP is on average 1.7× and 1.8× faster than TenSet MLP on
+      the CPU and GPU, respectively, because TLP extracts features from schedule primitives without generating
+      tensor programs.
+    quote_sha256: b1e9c9bcf8f41881e13244fb3261a388fb6c1ae592722541f0f8bed041929c40
+    source_revision: arXiv:2211.03578v2 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+    flags_for_operator:
+    - 'k1 partial: Table 5 numbers all verified (EPYC 0.9055 vs 0.8510; K80 0.9059 vs 0.9083; T4 0.8847
+      vs 0.8757). But "top-k not RMSE/R2 tracked latency in TenSet" is not in the TLP source (no RMSE/R2);
+      it comes from TenSet paper.'
+    - 'actionable W3B-NEW-TLP-02: Claims TLP shows regression metrics are misleading; TLP source has no
+      RMSE/R2 discussion (only TenSet does).'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL body of arXiv:2211.03578v2 html from disk
+    (/mnt/raid0/llm/tmp/dive-w3-tlp/paper.html sha256 af139f06cdff5b94bd45fd70baa75ec6e3118504da0c51841b77ac6494e7ebe4;
+    text via scratchpad strip.py); figures 10-13 are images (numbers taken from prose). Repo cloned shallow
+    at 54665a17a518f7613d5a866ca0871f12a66ab0c7; not read beyond README header. Fetch route: arxiv.org/abs
+    -> /html/2211.03578v2. v1 also exists.'
+- id: intake-2027
+  arxiv_id: '2402.02361'
+  url: https://arxiv.org/abs/2402.02361
+  source_type: paper
+  title: 'Pruner: A Draft-then-Verify Exploration Mechanism to Accelerate Tensor Program Tuning'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Liang Qiao
+  - Jun Shi
+  - Xiaoyu Hao
+  - Xi Fang
+  - Sen Zhang
+  - Minfan Zhao
+  - Ziqi Zhu
+  - Junshi Chen
+  - Hong An
+  - Xulong Tang
+  - Bing Li
+  - Honghui Yuan
+  - Xinyang Wang
+  key_claims:
+  - 'Pruner splits each tuning round into DRAFT and VERIFY. Draft: a genetic algorithm explores the Ansor
+    schedule space scored by a Symbol-based Analyzer - a closed-form latency estimate L = sum_i(S8/Up
+    + S5/Um), where compute/memory utilisation Up, Um are the product of hardware penalty terms (L0/L1/L2
+    allocation vs capacity, ceil-quantisation of blocks vs parallel units, memory-transaction alignment)
+    computed from 8 symbols read off the schedule and a per-device limits file - and keeps the best 512.
+    Verify: a learned transformer cost model (PaCM) scores only those 512 instead of ~8,000, and only
+    its top picks are measured. The draft needs no training data and no on-device run, but is evaluated
+    on the schedule expanded to buffer statements, so it is cheaper than the learned model, not free of
+    lowering.'
+  - 'What the draft buys: on TenSet T4 the 512-candidate drafted set contains a near-best program (Best-1
+    0.995; 0.914 at 50 candidates); removing the compute-utilisation penalty drops Best-1 to 0.880 at
+    512, so the analytic terms (not just the GA) carry the quality.'
+  - 'Measured savings (time to match baseline 2,000-trial quality, 14 DNNs): 2.6x online vs Ansor (MoA-Pruner
+    4.82x), 4.75x vs TenSet-MLP offline, 4.05x vs TLP (A100 only, because TLP failed to produce a program
+    on several workloads), 4.08x vs MetaSchedule on A100 TensorCore with 16x16x16 WMMA. Total compile
+    time for the same 2,000 trials falls only to 84.1% (Pruner) / 75.3% (MoA-Pruner) of Ansor on TITAN
+    V; on Orin (Table 1) an Ansor run is about 85-97 min of which 44-51 min is on-device measurement,
+    untouched by Pruner; the saving is the exploration/learned-model share (~40% on Orin).'
+  - 'Hardware: only three NVIDIA GPUs (A100, Titan V, Jetson Orin-AGX); no AMD GPU and no CPU. Porting
+    needs a device-abstraction entry (memory capacities, parallel-unit counts, transaction length) - repo
+    shows `--psa a100_40` for the A100 abstraction (code skimmed, not run).'
+  - 'Code: github.com/qiaolian9/Pruner @0760c3f39d84b31b4b10c4d7971ff402f2c350ae, Apache-2.0, a TVM fork
+    targeted at CUDA/A100; paper link in abstract and repo README agree. The arXiv listing has three versions
+    with different titles: v1/v2 "A Speculative Exploration Mechanism..." and v3 (ASPLOS 2025) "Draft-then-Verify".'
+  techniques:
+  - draft model = closed-form analytic cost (Symbol-based Analyzer) over hardware-aware symbols/penalties
+    from the schedule, driving a GA that outputs 512 drafted candidates
+  - verify = learned Pattern-aware Cost Model (transformer on temporal dataflow + statement features)
+    on the drafted set only
+  - Momentum online Adaptation (Siamese pre-trained model, MoCo-style momentum) for cross-platform online
+    tuning
+  - device abstraction file carries per-level memory/parallel-unit limits
+  reported_results:
+  - 'Abstract/§6.1: online avg speedup 2.6x (Pruner) / 4.82x (MoA-Pruner) vs Ansor; offline 4.75x vs TenSet,
+    4.05x vs TLP (A100 only: TLP failed to search some workloads); 4.08x vs MetaSchedule on TensorCore
+    (Table 9); metric = time to reach baseline 2,000-trial quality'
+  - 'Table 7 (§6.3): total compile time for 2,000 trials = Pruner 84.1% / MoA-Pruner 75.3% of Ansor (e.g.
+    R50 124.63 -> 102.03 -> 91.67 min on TITAN V)'
+  - 'Table 1 (§2.3): Ansor 2,000 trials on Orin: exploration 35/30.31/41.8 min, training 5.4/5.6/5.5,
+    measurement 44.4/50.61/49.4 (R50/DeTR/I-V3) - model-guided exploration is ~40% of wall clock'
+  - 'Table 10 (§6.5): Best-1 score of drafted set (TenSet T4) 0.995 at |Sspec|=512 (0.914 at 50); removing
+    the compute penalty drops to 0.880, memory penalty to 0.930'
+  - 'Table 11: PaCM top-1/top-5 0.892/0.962 (T4), 0.897/0.969 (K80) vs TLP 0.862/0.935, 0.880/0.947; TenSetMLP
+    0.859/0.941, 0.878/0.958'
+  - 'Table 13 (offline ablation): LSE on vs off compile cost R50 111 -> 89 min, latency 1.491 -> 1.444
+    ms'
+  - '§6.1 vs frameworks on A100: 1.95x PyTorch2.2, 2.27x Triton, 1.21x TensorRT average; TensorRT/cuBLAS
+    win on large-reduction (split-K) linears (41.3us vs 36.7us)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-ANSOR (baseline and expanded_from)
+    - NEW-TLP (compared against; Pruner reports TLP failures)
+    - NEW-TENSET (pre-training corpus)
+  expanded_from: intake-2012
+  credibility_score: 4
+  contradicting_evidence:
+  - 'No independent replication found (WebSearch 2026-10-20: only the paper, its earlier versions and
+    summary sites - restatements). The A100-only TLP comparison and the Orin-based Table 1 are the authors
+    own.'
+  source_revision: arXiv:2402.02361v3 (html); code qiaolian9/Pruner@0760c3f39d84b31b4b10c4d7971ff402f2c350ae
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'Pruner is the closest published analogue to "cheap analytic pre-filter, then
+    expensive verifier": a closed-form hardware-penalty model picks 512 of ~8,000 candidates with Best-1
+    0.995 and no training data. But its target bottleneck is learned-model INFERENCE inside search (~40%
+    of an Ansor run), not BUILD time; total wall-clock gain is only 16-25%, and the large headline factors
+    are time-to-quality vs weaker baselines. It is NVIDIA-GPU only, so the penalty terms (warp/SM quantisation,
+    L0/L1/L2 limits) would need a gfx90a device abstraction (64-wide wavefronts, 104 CUs, 64KB LDS - inference,
+    not from the paper). For AK, take the pattern (an analytic roofline/occupancy pre-screen that costs
+    nothing before a build), not the speedup figures. Paper read: body sections 1-8 FULL; figures 6-15
+    are images (numbers from prose/tables); repo only listed.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Stage-1 (wave-2) title "Speculative Exploration Mechanism"
+    is the v1/v2 title; current v3 title is "Draft-then-Verify". The wall-clock saving is 16-25%, not
+    the 2.6-4.8x headline (which is time-to-quality). Main correction 2026-10-20 after per-claim second
+    reader: 84.1% is TITAN V only; replaced ''~50 of ~85-125 min'' with Table 1 Orin figures; re-indexed
+    two anchors (8,000->512 -> claim 0; TLP-crash -> claim 2).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.1 Symbol-based Analyzer
+    quote: Pruner proposes an empirical formula named Symbol-based Analyzer (SA) instead of using a deep
+      learning-based cost model during exploration.
+    quote_sha256: 68976e93c8fe4f85e7d16790705d4dbc8e8d4f66216dbe26947296295dd9a6fd
+    source_revision: arXiv:2402.02361v3 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §6.3 Compilation Cost
+    quote: reducing the evaluation set from 8,000 candidates to 512
+    quote_sha256: 54dffdbe96bf313d9c9f91f7d9780918d5df0a133c26c0fd74af350115927bb1
+    source_revision: arXiv:2402.02361v3 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §6.3 Compilation Cost
+    quote: The data shows that the average compilation time of Pruner and MoA-Pruner is 84.1% and 75.3%
+      of Ansor’s, respectively.
+    quote_sha256: 01a54a72b2cd006eb5c8fac094cc3b3b0e40f1f75cf3132fa87e5795be024fef
+    source_revision: arXiv:2402.02361v3 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §2.3 Opportunities, Table 1 sentence
+    quote: illustrating space exploration with learned cost model’s time occupies nearly 40%
+    quote_sha256: a45143aa5ab22e85fb9432e4e759e410936e691561d5ab12f117d7adbd157c89
+    source_revision: arXiv:2402.02361v3 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5 Platforms and baselines
+    quote: 'We evaluate Pruner on three representative NVIDIA GPU platforms: A100, Titan V, and Jetson
+      Orin-AGX.'
+    quote_sha256: 7a35eb736c6c8880dd6b66e19257816601d26848d39c43309d8a851028767dfb
+    source_revision: arXiv:2402.02361v3 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §2.3 Opportunities item 2 (TLP failure report)
+    quote: In our experiments (§6.1), the TLP model fine-tuned on the target platform occasionally crashed,
+      leading to tuning failures and the disappearance of the tuning curve.
+    quote_sha256: 3610e763526f04ea0baa1fb63c9aa4b327888188956ab41fad5dc9421c815925
+    source_revision: arXiv:2402.02361v3 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 2
+      partial: 2
+      unanchored: 1
+    flags_for_operator:
+    - 'k1 partial: Numbers true (Table 10: 0.995, 0.914, w/o P_c 0.880) but the indexed anchor (8000->512)
+      supports claim 0, not this claim; Table 10 is unanchored.'
+    - 'k2 partial: Speedups 2.6/4.82/4.75/4.05/4.08, 14 DNNs, 84.1/75.3% verified. But 84.1% is TITAN
+      V; "~50 min of ~85-125 min" not in source (Orin Ansor Table 1: ~85-97 total, 44-51 measurement);
+      40% is Orin exploration share.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Stage-2b (wave 3) combined Stage-1+2 entry. Read arXiv:2402.02361v3 html text from disk (paper.html
+    sha256 e11834969d1de1a032a74d1eadaa4c6f6e3e01eac6a611c7b926d7accb18e40f; /html/2402.02361v3), body
+    sections 1-8 read; reference list and images not. Repo cloned shallow (0760c3f), README read, src
+    not read (so draft model implementation details beyond paper unverified). Latin-1/zero-width characters
+    in equations prevented anchoring Eq.1 verbatim.
+- id: intake-2028
+  arxiv_id: null
+  url: https://github.com/tlc-pack/tenset
+  source_type: paper
+  title: 'TenSet: A Large-scale Program Performance Dataset for Learned Tensor Compilers'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Lianmin Zheng
+  - Ruochen Liu
+  - Junru Shao
+  - Tianqi Chen
+  - Joseph E. Gonzalez
+  - Ion Stoica
+  - Ameer Haj-Ali
+  key_claims:
+  - 'TenSet (NeurIPS 2021 Datasets & Benchmarks) is a public offline dataset of 51,577,248 Ansor-generated
+    (task, program, measured latency or error code) records: 120 network configs, 2,308 unique subgraphs
+    on each of 6 platforms (13,848 tasks, at most 4,000 random programs per task). Hardware: Intel Platinum
+    8272CL, Intel E5-2673v4, AMD EPYC 7452 (a 4-core Azure VM, AVX-2), ARM Graviton2, NVIDIA Tesla K80
+    and T4. No AMD GPU, no AVX-512-free Zen4/5 CPU, no CDNA; floating-point dense networks only. The paper
+    itself prints two different record totals (Table 1: 51,532,994; text and README: 51,577,248).'
+  - 'Effect of pre-training: a cost model trained offline on the SAME platform cuts search time to reach
+    the Ansor-default result "by up to 10x" - read from Fig 6a this is about 10-11x on CPUs but only ~1.9-6.7x
+    on the K80 GPU. The baseline (Ansor default) starts from random search and trains its model online,
+    so the figure measures the value of ANY prior model, not of the architecture. Held-out status of the
+    search networks is not stated in §5.4 (§5.2 holds out five networks for the accuracy test).'
+  - 'Transfer: a model trained on one CPU transfers to other CPUs with degraded quality (Fig 6b); adding
+    a local correction model fitted to 40 target trials per task gives 3-10% lower result latency (Table
+    5). Only CPU-to-CPU transfer was attempted; the authors expect little CPU-to-GPU benefit and did not
+    test it.'
+  - 'Dataset-design lessons: at a fixed record budget, more distinct tasks beat more programs per task
+    (120,000 records: 600x200 > 300x400 > 200x600); ranking-trained MLP beats XGBoost/LSTM regression;
+    use top-k score rather than RMSE/R2 (ranking losses make R2 meaningless, e.g. -1818 for the model
+    with the best final latency).'
+  - 'What an AK-history dataset would need to support the same: (1) per-candidate record with a stable
+    task key (kernel + shape + dtype + quant type + device), the full knob/edit vector, and the outcome
+    incl. build failure / crash / numerics-fail class (TenSet records error_no for failures), (2) many
+    distinct tasks with a modest number of candidates each rather than one task heavily sampled, (3) same-device
+    records for the pre-trained model (cross-device transfer degrades), (4) order of 1e5 records for the
+    regime TenSet tested (its 120k-record experiments); handoff-recorded AK volume is 17 benchmarked candidates
+    in the audited campaign (via W2 NEW-ANSOR; not judgeable here). Inference: AK is therefore roughly
+    four orders of magnitude short today.'
+  techniques:
+  - offline dataset of (task, program, measurement) records
+  - MLP + LambdaRank cost model pre-trained offline
+  - top-k score as dataset metric
+  - more tasks beats more programs-per-task at fixed budget
+  - local-model transfer learning
+  reported_results:
+  - '§3.4 / Table 1-2: 120 networks, 6 platforms (Intel Platinum 8272CL, Intel E5-2673v4, AMD EPYC 7452
+    4-core, Graviton2, Tesla K80, Tesla T4), 2,308 subgraphs x 6 = 13,848 tasks, <=4,000 programs/task,
+    51,577,248 records (Table 1 in the paper prints 51,532,994; README and §3.4 print 51,577,248)'
+  - '§5.4 Fig 6a (bar labels, order inferred from PDF text extraction): Ansor-default vs pre-trained search
+    seconds - CPU ResNet-50 3289 -> 301, MobileNet-V2 2956 -> 284, BERT-base 2121 -> 206 (~10.9x/10.4x/10.3x);
+    K80 GPU 13344 -> 2976, 10196 -> 1520, 6224 -> 3216 (4.5x/6.7x/1.9x)'
+  - '§5.5 Table 5: local-model transfer Platinum-8272 -> E5-2673, ResNet-50, 50 trials/task: 29.94 ms
+    -> 27.26 ms (setting 1), 32.03 -> 28.92 (setting 2); same-platform 6.43 -> 6.22 / 7.15 -> 6.44'
+  - '§5.2 Table 4: MLP+ranking loss best overall (top-1 ResNet-50 0.8823; XGBoost+MSE 0.8535; LSTM+MSE
+    0.8637)'
+  - '§5.3: at fixed size 120,000, (600 tasks x 200 programs) > (300 x 400) > (200 x 600)'
+  referenced_arxiv_ids:
+  - '2005.13685'
+  - '2109.08267'
+  - '2102.04199'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-rebuild-program.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-ANSOR (expanded_from; the Ansor default is TenSet baseline)
+    - NEW-TLP (trains on TenSet and TenSet-TLP)
+    - NEW-PRUNER (pre-trains on TenSet GPU)
+  expanded_from: intake-2012
+  credibility_score: 4
+  contradicting_evidence:
+  - TLP paper (arXiv:2211.03578v2 §6.1.4) reports a better model (TLP) than TenSet MLP on all five CPUs;
+    the "up to 10x" is therefore a statement about pre-training per se, not about the TenSet MLP (independent
+    group; dataset-metric comparison).
+  source_revision: NeurIPS 2021 D&B paper PDF (cl.cam.ac.uk copy, sha256 ef5d0c158bd5f7a13ad2c79ddbfbd8fa386d4f41b2cffa4966d7f2faa3112490)
+    + tlc-pack/tenset@35774ed373f9693cc6efcbe83f5703141e8ab0c8
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'TenSet is the evidence that an offline corpus of (task, program, outcome) records
+    lets a ranking MLP replace online model-building: ~10x on CPUs, 2-7x on the GPU, against a baseline
+    that has no prior. It also tells us what the corpus must look like (many tasks, error codes kept,
+    same-device). Do NOT read it as a transfer story to MI210: no CDNA or AMD GPU exists in the data,
+    and CPU->GPU transfer was never tried. The only AMD part is a 4-core Zen2 VM. PDF extraction note:
+    this dive used a hand-written zlib/content-stream extractor on the Cambridge copy of the paper (no
+    appendix pages in that copy, so appendices A-C - network list, metric definitions, training details
+    - are UNREAD).'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. "Up to 10x" holds only on CPUs; GPU gains 1.9-6.7x
+    (Fig 6a labels, order inferred). Paper Table 1 and text disagree on record total. Main correction
+    2026-10-20 after per-claim second reader: dropped README-license anchor (supports no claim); re-indexed
+    the §5.3 anchor to claim 3; corrected actionable reasons (TenSet does include AVX-512 CPU data).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract / §1
+    quote: 52 million program performance records collected from real measurements on Intel CPUs,AMD CPUs,
+      ARM CPUs, and NVIDIA GPUs
+    quote_sha256: 2a5d35408e69de86a0844f07eaa879400e170f8cb9f785f44dc7ff30d5413e2f
+    source_revision: NeurIPS 2021 D&B paper PDF (cl.cam.ac.uk copy, sha256 ef5d0c158bd5f7a13ad2c79ddbfbd8fa386d4f41b2cffa4966d7f2faa3112490)
+      + tlc-pack/tenset@35774ed373f9693cc6efcbe83f5703141e8ab0c8
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.4
+    quote: reduces the search time by up to10
+    quote_sha256: f49be482e39de1e2f6d8f0182dc1ae4b9576c13c625d47673f697463e7fbcf3e
+    source_revision: NeurIPS 2021 D&B paper PDF (cl.cam.ac.uk copy, sha256 ef5d0c158bd5f7a13ad2c79ddbfbd8fa386d4f41b2cffa4966d7f2faa3112490)
+      + tlc-pack/tenset@35774ed373f9693cc6efcbe83f5703141e8ab0c8
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5.3
+    quote: For example, for a dataset of size 120000, (600 tasks, 200 programs per task)works better than
+      (300 tasks, 400 programs per task) and (200 tasks, 600 programs per task).
+    quote_sha256: 49c3f8e63121ead2f85320f3dfede982bc197536768ac309c28fb7a7f51a6858
+    source_revision: NeurIPS 2021 D&B paper PDF (cl.cam.ac.uk copy, sha256 ef5d0c158bd5f7a13ad2c79ddbfbd8fa386d4f41b2cffa4966d7f2faa3112490)
+      + tlc-pack/tenset@35774ed373f9693cc6efcbe83f5703141e8ab0c8
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5.5 (transfer scope)
+    quote: Note that we only do transfer learning across different types of CPUs.
+    quote_sha256: c981070c2f2e6d6502628ed56daa27aa3ee2e0866acbb89a068da5dabb47cd49
+    source_revision: NeurIPS 2021 D&B paper PDF (cl.cam.ac.uk copy, sha256 ef5d0c158bd5f7a13ad2c79ddbfbd8fa386d4f41b2cffa4966d7f2faa3112490)
+      + tlc-pack/tenset@35774ed373f9693cc6efcbe83f5703141e8ab0c8
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 3
+      partial: 1
+      unanchored: 1
+    flags_for_operator:
+    - 'k3 partial: Claim is supported by Sec 5.3 (600x200>...), Table 4, Table 3 (R2 -1818.41, best latency
+      6.39) but the anchor indexed to k=3 is the README license line, irrelevant.'
+    - 'actionable W3B-NEW-TENSET-02: "No ... CPU-AVX512 content" contradicts Table 2: Intel Platinum 8272CL
+      is listed with AVX-512. "multi-GB download" also not in source.'
+    - 'actionable W3B-NEW-TENSET-01: "TenSet shows keeping error codes ... matters": source only says
+      records can hold an error code, not that it matters.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Paper: NeurIPS 2021 D&B; no arXiv version found
+    in this run (the guessed arXiv id was wrong and was discarded). Fetched PDF from www.cl.cam.ac.uk/~ey204/teaching/ACS/R244_2022_2023/papers/ZHENG_NEURIPS_2021.pdf
+    (sha256 ef5d0c15...2490), extracted with a content-stream parser (ligatures/spaces garbled in places;
+    quotes are verbatim from the extracted text on disk). neurips.cc/virtual/2021/22738 page lists only
+    the abstract and GitHub link. Repo shallow clone tlc-pack/tenset@35774ed373f9693cc6efcbe83f5703141e8ab0c8:
+    README, scripts/README.md, docs/get_started_with_cost_model_experiments.md (download via Google Drive
+    zips dataset_cpu_v3.3 / dataset_gpu_v3.3; not downloaded) read; no source code read beyond measure_programs.py
+    greps.'
+- id: intake-2029
+  arxiv_id: null
+  url: https://github.com/tile-ai/tilelang
+  source_type: repo
+  title: tile-ai/tilelang
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - Tile-AI (LeiWang1999, chengyupku, nox-410 et al.)
+  key_claims:
+  - 'HIP/ROCm status per the tree: AMD ROCm/HIP is a "Supported" backend (CUDA is "Primary"); the README
+    names CDNA and RDNA with "gfx942/gfx950 paths". CI runs the full ROCm test suite and four example
+    tests only on a self-hosted gfx942 (MI300X) runner with ROCm 7.2; gfx950 is stated as not covered.
+    No CI job runs on gfx90a (MI210/MI250).'
+  - 'gfx90a is present in the tree as (non-exhaustive): a documented target example (`{"kind": "hip",
+    "mcpu": "gfx90a"}`), a compile-only HIP codegen test, one of five arches in docker/Dockerfile.rocm
+    PYTORCH_ROCM_ARCH ("gfx90a;gfx942;gfx950;gfx1201;gfx1100"), arch guards in the HIP templates (buffer-resource
+    descriptor word, sdot4), a carver test (check_sm_version("gfx90a") == -1) and a gfx950 test docstring.
+    It is never named as a tested runtime device. This narrows the wave-2 statement that the README names
+    gfx942/gfx950 only: gfx90a is buildable-for and codegen-tested, but not runtime-tested.'
+  - 'Gfx9 MFMA generator exists: tilelang/rocm/intrinsics/mfma_macro_generator.py (WARP_SIZE = 64) picks
+    16x16 MFMA shapes by operand width (k=4 for 32-bit, k=16 for 16-bit and non-gfx950 8-bit, k=32 for
+    fp8/int8 shapes and gfx950), with an explicit CDNA2/3 branch for bf16 (`__builtin_amdgcn_mfma_f32_16x16x16bf16_1k`)
+    versus gfx950 (`..16x16x32_bf16`). 32x32 shapes appear only as an int8/gfx950 special case. fp8 MFMA
+    suffixes (fp8_fp8, bf8_bf8) are generated; inference from AMD ISA knowledge, not the tree: MI210 has
+    no fp8 MFMA, so only the f16/bf16(_1k)/f32/int8 16x16 paths are candidates there.'
+  - 'Could TileLang be an AK kernel-authoring backend for MI210? Tree-supported facts: kernels are JIT-compiled
+    by the host hipcc (Installation.md), a Python DSL with an autotuner that enumerates a user-supplied
+    config list, compiles candidates in a CPU worker pool and benchmarks on the device, and a Roller-style
+    analytic hint generator (carver) with a CDNA arch class whose hard-coded constants (bandwidth [1300,
+    14000], reg_cap 32768, sm_partition 4) are not MI210 values. No learned cost model exists in tuner
+    or carver. Inference (not in tree): (a) a TileLang AK path would author standalone HIP kernels, not
+    ggml-hip kernels, so a ggml integration/numerics bridge would be new work; (b) its per-config hipcc
+    compile replaces a full llama.cpp rebuild per candidate and therefore attacks AK''s build share (75.7%
+    of iteration, handoff-recorded via W2 NEW-ANSOR); (c) its LLVM CPU backend is "Experimental" and gives
+    no AVX-512/VNNI quant-kernel route for EPYC; (d) no tree evidence on IQ2/IQ3 grid-decode support (a
+    dequant GEMM example exists under examples/dequantize_gemm but was not read).'
+  - 'Cross-reference: the TileLang paper (arXiv:2504.17577, title confirmed this run from arxiv.org/abs:
+    "TileLang: A Composable Tiled Programming Model for AI Systems") is not a standalone entry in the
+    lane index; it appears only as a cited ID inside intake-966 (lane line 60994, a prior-art citation
+    for wave specialization) and as a referenced ID in intake-1226 (line 101567). The sibling repo entry
+    tilelang-puzzles is at index line 24992 with a deep dive. This repo entry supersedes neither; do not
+    re-ingest the paper for MI210 questions because intake-966 records the paper line of work has no CDNA2
+    position.'
+  techniques:
+  - Python tile DSL on TVM, JIT to HIP via host hipcc
+  - MFMA macro generator for gfx9 (CDNA) incl. 16x16 shapes and bf16_1k variants
+  - 'carver: Roller-style analytic hint generator with CDNA arch class'
+  - autotuner = enumerate user-supplied config list, compile in parallel on CPU, benchmark on device (no
+    learned model in the tuner)
+  reported_results:
+  - 'README backend table: AMD ROCm/HIP "Supported" (CUDA is "Primary"); CI runs on a self-hosted gfx942
+    (MI300X) runner, gfx950 not covered'
+  - tree HEAD 876a59e (committed 2026-10-20), README latest release v0.1.13 (2026-08-03)
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - autokernel-rebuild-program.md
+    experiments: []
+    intake_entries:
+    - intake-966
+    - intake-1226
+    intake_entry_notes:
+    - intake-966 (cites the TileLang paper arXiv:2504.17577 as prior art for wave specialization; index
+      has no standalone entry for the paper, only the ID in intake-966/intake-1226 and the tilelang-puzzles
+      repo entry at index line 24992)
+    - intake-1979 (expanded_from; Seismic Vulkan path, MI210 MFMA unreachable)
+  expanded_from: intake-1979
+  credibility_score: null
+  source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'TileLang is the only candidate seen so far with a maintained MFMA code generator
+    for gfx9 (WARP_SIZE 64, CDNA2/3 bf16_1k branch) and a Python authoring surface; but upstream runtime-tests
+    only gfx942, and gfx90a is codegen-tested at most. Whether it works on an MI210 is UNKNOWN - the tree
+    gives no evidence either way - and answering it needs one bounded compile-and-run probe on the MI210
+    (a plain 16-bit GEMM), which this dive was forbidden to perform. License: MIT (one line). Do not state
+    "supports MI210".'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Refines wave-2 note: gfx90a is not absent from the
+    tree (compile-only test, docker arch list, HIP template guards, docs example), but it is not runtime-tested;
+    MI210/CDNA2 named only in a code comment. Main correction 2026-10-20 after per-claim second reader:
+    claim 1 ''only as'' overstated; added carver test and docstring mentions.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md backend table, AMD ROCm/HIP row
+    quote: CI runs on a self-hosted gfx942 (MI300X) runner; gfx950 is not yet covered.
+    quote_sha256: 58d4219efbf1611eac6c38ae07fb664ce911baa911ff90ca5335365a53393b9d
+    source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: .github/workflows/ci.yml:L93-L97 @ 876a59e
+    quote: 'tags: [self-hosted, amd, gfx942]'
+    quote_sha256: 4514894ee7e32c8b7dbcf128c86e065e63fab61eba0b8abc3c6c602bb598f2ce
+    source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: testing/python/transform/test_tilelang_codegen_import_source.py:L29 @ 876a59e
+    quote: '{"kind": "hip", "mcpu": "gfx90a"},'
+    quote_sha256: 13e678466372740e5e13aa8c6cc10cf8164704e55e68b0e82aa29b30ce4837b0
+    source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docker/Dockerfile.rocm:L20 @ 876a59e
+    quote: ENV PYTORCH_ROCM_ARCH="gfx90a;gfx942;gfx950;gfx1201;gfx1100"
+    quote_sha256: 2507cfcc4e6a3194ae2f08368fe053559aeca104b2e4ed06565561eb41c2ddbe
+    source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tilelang/rocm/intrinsics/mfma_macro_generator.py:L198 @ 876a59e
+    quote: '# CDNA2/3: __builtin_amdgcn_mfma_f32_16x16x16bf16_1k'
+    quote_sha256: 2d0cbafcbd3c9447a011477d15ad70bd6831f487dacce9144ce07394f9b2a2f2
+    source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: docs/get_started/Installation.md L40 @ 876a59e
+    quote: Kernels are JIT-compiled with the host `hipcc`
+    quote_sha256: ae12507720c717dc83ecc29f1606419f140ac7b958f8b112ae7194c5830a3df2
+    source_revision: tile-ai/tilelang@876a59e6eb8091ea608c14a84d5300190c3735ce
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-1979
+    claim_index: 2
+    why: W2 corrected claim that gfx90a/CDNA2 is not named in the Seismic tree; this entry concerns a
+      different repo, but the MFMA-unreachable-through-Vulkan conclusion is what motivates looking at
+      TileLang as the MFMA route
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 2
+      partial: 2
+      unanchored: 1
+    flags_for_operator:
+    - 'k1 partial: All listed gfx90a hits verified, but "only as" is overstated: also testing/python/carver
+      test (check_sm_version("gfx90a")==-1) and a gfx950 test docstring; gfx908 etc. share guards.'
+    - 'k3 partial: Hipcc JIT, ThreadPoolExecutor autotuner, carver cdna.py bandwidth [1300,14000], reg_cap
+      32768, sm_partition 4 verified. "not MI210 values" and the (a)-(d) points are inference placed under
+      tree-supported facts; 75.7% is project figure.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone /mnt/raid0/llm/tmp/dive-w3-tilelang/repo
+    @876a59e6eb8091ea608c14a84d5300190c3735ce (HEAD date 2026-10-20). Read: README backend section, ci.yml
+    ROCm matrix and tests, Installation.md ROCm section, docs/get_started/targets.md, mfma_macro_generator.py
+    L1-200, rocm/target.py, carver/arch/cdna.py, HIP template arch guards, autotuner grep. NOT read: gemm_mfma.py
+    body, mfma_layout.py, examples/amd, examples/dequantize_gemm (quant support), test bodies, the actual
+    HIP codegen (src/target), 3rdparty TVM. Nothing was built or run. Main verified anchor c0 at repo/.github/workflows/ci.yml:93
+    ("- tags: [self-hosted, amd, gfx942]").'
+- id: intake-2030
+  arxiv_id: '2509.26388'
+  url: https://arxiv.org/abs/2509.26388
+  source_type: paper
+  title: 'Game-Time: Evaluating Temporal Dynamics in Spoken Language Models'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Kai-Wei Chang
+  - En-Pei Hu
+  - Chun-Yi Kuan
+  - Wenze Ren
+  - Wei-Chih Chen
+  - Guan-Ting Lin
+  - Yu Tsao
+  - Shao-Hua Sun
+  - Hung-yi Lee
+  - James Glass
+  key_claims:
+  - 'The judge protocol is text-only: dual-channel audio is transcribed to time-aligned text (Whisper-medium
+    word timestamps) and a Gemini 2.5 Pro LLM scores instruction following / response appropriateness
+    from the transcript; an audio-LLM judge was also reported effective but more costly.'
+  - 'Human agreement is moderate and measured only on the Advanced (temporal) tasks: Spearman 0.677 /
+    Pearson 0.675 for the text judge (audio-LLM judge 0.643 / 0.625), over 4 models x 35 scores, 20 samples
+    per task, 3 Prolific raters each. No confidence interval is given.'
+  - 'The paper contains NO turn-taking judge results or human-agreement numbers: it only asserts the method
+    "can effectively evaluate other behaviors such as turn-taking" with results deferred to a project
+    website (a JavaScript shell that could not be read from disk). So FDB-v2 borrows the method, not any
+    validated turn-taking agreement figure from this paper.'
+  - 'Local-judge substitution is untested: the paper says Gemini 2.5 Pro was chosen after a preliminary
+    study as "superior to other open-source and commercial models" but shows no comparison numbers. Because
+    the judge input is plain transcript text, a local LLM can in principle be given the same prompt, but
+    it must be validated against human ratings before use.'
+  - 'Benchmark scale: 1,475 spoken-instruction instances (700 Basic, 775 Advanced) synthesised with CosyVoice
+    TTS; it tests explicit time/tempo/simultaneous-speech instruction following, not endpointing latency.'
+  techniques:
+  - text-only LLM-as-judge over time-aligned dual-channel transcripts (Whisper-medium word timestamps)
+  - instruction-following tasks with temporal constraints (Time/Tempo/SimulSpeak)
+  - non-causal SSML-LLM oracle topline
+  - judge-vs-human correlation check
+  reported_results:
+  - '§3.3: 1,475 test instances = 700 Basic (14 subtasks x 50) + 775 Advanced (31 subtasks x 25)'
+  - 'Table 3 (§5.2): Human-LLM Spearman 0.677 / Pearson 0.675; Human-ALLM 0.643 / 0.625; across 4 models
+    x 35 scores, Advanced tasks only; 20 samples per task x 3 Prolific raters'
+  - '§4: judge = Gemini 2.5 Pro on Whisper-medium word alignments; judge choice stated as "superior" with
+    no numbers shown'
+  - '§5.1: nearly all models degrade substantially under temporal constraints; Time-Silence, Tempo and
+    SimulSpeak fail even for GPT-realtime (Fig. 3 read as prose only, figure values not extractable from
+    html)'
+  referenced_arxiv_ids:
+  - '2503.04721'
+  - '2506.05984'
+  - '2509.08753'
+  - '2505.14654'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-FDB15 / FDB-v2 wave-2 entry (FDB-v2 cites this paper for its Gemini judge protocol)
+  expanded_from: intake-2013
+  credibility_score: 3
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: 'Game-Time settles the judge FDB-v2 follows: a text-only Gemini 2.5 Pro judge
+    over Whisper-timestamped transcripts, human agreement r~0.68 (moderate, 4 systems, Advanced tasks
+    only). It does NOT validate a turn-taking judge, and says nothing about any local judge. Do not carry
+    "Game-Time shows LLM judges are reliable for turn-taking" - the turn-taking evidence is off-paper.
+    A local judge is plausible mechanically (text input) but must clear a stated agreement bar against
+    human ratings on our own sessions before it gates anything.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Narrowed the FDB-v2 linkage: the paper provides no
+    turn-taking agreement numbers; its 0.677 is for temporal instruction tasks. Main correction 2026-10-20
+    after per-claim second reader: audio-LLM judge was ''also effective but more costly'', not rejected.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.4 Dual-channel Evaluation
+    quote: we first transcribe the dual-channel audio (user and model) to obtain time-aligned text. This
+      transcription is then provided to an LLM judge
+    quote_sha256: fe42c979a90b9828b42cede18cd58ba578c6cec3b85b16e12defa03e6e3dfdc3
+    source_revision: arXiv:2509.26388v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.2 Human Evaluation
+    quote: Across 4 models × 35 data scores, we observe a reasonably high correlation (Spearman’s ρ=0.677,
+      Pearson’s r=0.675) for our dual-channel evaluation method.
+    quote_sha256: 208836966fb6abbf567564b2701aadfc4d634a76a16406e29c13d14812979565
+    source_revision: arXiv:2509.26388v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3.4 last paragraph
+    quote: this method can effectively evaluate other behaviors such as turn-taking. Due to space limitations,
+      these additional results are available on our project website.
+    quote_sha256: 86655b0bf0540e93fbe74ccbe5ee545e3a43cca092a33278cd4b79b49c61a031
+    source_revision: arXiv:2509.26388v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4 Dual-channel Evaluation
+    quote: we selected Gemini 2.5 Pro as the LLM judge, which we found superior to other open-source and
+      commercial models
+    quote_sha256: daa8e5b39358b6acd726835b93fdd05cc24cb846f5640d6ba40cb20a5057e8b3
+    source_revision: arXiv:2509.26388v4 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §3.3 end
+    quote: In the end we have a total of 1,475 test instances
+    quote_sha256: afbab3f35cacb4e094e1eb32d3a747be9890039efa983f5eaaf04b886955c7fe
+    source_revision: arXiv:2509.26388v4 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      partial: 1
+      true: 4
+    flags_for_operator:
+    - 'k0 partial: Text-only Gemini 2.5 Pro over Whisper-medium transcripts supported; but audio-LLM judge
+      was ''also effective but more costly'', not ''rejected''; rule-based called too rigid.'
+    - 'actionable W3-NEW-GAMETIME-01: ''removes the cloud dependency W2 flagged'' is not from this source;
+      the CI and 3-rater protocol are the project''s own design, not the paper''s.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-gametime/paper.txt
+    (from paper.html sha256 bb2c39bd387d33a476fa7963869b9cd1466314036c2d9f27109d725e0e9fda4d, arXiv v4
+    html, 2026-05-01). Project site https://ga642381.github.io/Game-Time fetched (site.html sha256 a9022ac3de1a2b5bca70a28c1f06a5dfc9abf8c93123f72285f8cce0d47f408d)
+    but it is a 3.7 KB JS shell: demos/datasets/turn-taking results NOT read. Fig. 3/4 numbers not extractable
+    (images). No code repo found in the paper. Tier-2b: no independent replication searched beyond FDB-v2
+    (W2 entry; same lab network, restatement of the method).'
+- id: intake-2031
+  arxiv_id: '2608.25218'
+  url: https://arxiv.org/abs/2608.25218
+  source_type: paper
+  title: 'TurnBench: A Multi-Domain Benchmark for Turn-Taking Dynamics in Spoken Dialogue'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - Freeman Jiang
+  - Ramon Sanabria
+  - Soham Deshmukh
+  - Bandhav Veluri
+  - Simon Michael Vuch Williams
+  - Elliott K. Suen
+  - Garreth Lee
+  - Kevin Yoonho Choi
+  - Takuya Umeki
+  - Riku Kubo
+  - Sathvik Udupa
+  - Chien-yu Huang
+  - Shih-Yun Shan Kuan
+  - Zhuoyan Tao
+  - Satyapriya Krishna
+  - Sefik Emre Eskimez
+  - Yu Tsao
+  - Hung-yi Lee
+  - Shinji Watanabe
+  key_claims:
+  - 'English only, studio-recorded, dyadic: 30 h / 154 dialogues / 106 voice actors across six conversation
+    types, triple-annotated (Fleiss kappa 0.78). Conversation TYPE is the controlled variable; there are
+    NO paired / same-words / context-controlled stimuli, so this does not fill the ECHO "same words, different
+    actions" gap.'
+  - 'Two tracks are scored with causal commit timestamps: End-of-Turn and Interruption. A mid-turn pause
+    fired on counts as an EOT false positive; a backchannel (or non-content event) fired on counts as
+    an INT false positive; non-floor-taking interruption attempts are excluded rather than negatives.
+    Metrics are recall, FPR and signed latency (10/50/90th pct); the leaderboard ranks by test recall
+    subject to FPR <= 0.15.'
+  - 'Best open systems: VAP EOT 0.845 recall / 0.055 FPR / 368 ms and INT 0.945 / 0.107 / 994 ms; SmartTurn
+    v3 (ONNX) EOT 0.752 / 0.047 / 1017 ms but INT recall only 0.107. Acoustic-only baselines have high
+    false-positive rates (e.g. RMS VAD FPR .632 overall, 0.51-0.70 per conversation type). Interruption
+    false positives are type-dependent and highest in casual (backchannel-dense) talk. The INT 0.107 FPR
+    for VAP exceeds the stated 0.1 dev budget though the text calls it in-budget (test vs dev).'
+  - 'No system matches humans: human listeners start a floor transfer a median 151 ms before the turn
+    ends (281 ms including interruptions); the fast INT systems (SmartTurn 159 ms, ESPnet 210 ms, OpenAI)
+    pay in FPR or recall; accurate ones wait about 1 s.'
+  - 'Cascade-compatible scoring: a submission is a JSON of per-speaker eot/interruption timestamps from
+    ANY system, with lookahead folded into the timestamp; scorer is MIT and runs locally on the public
+    dev split (38 dialogues, labelled, gated HF, non-commercial data licence); test split is audio-only
+    (116 dialogues, leaderboard submission). Full-duplex models are scored on EOT only, by detecting model
+    speech onset with pyannote VAD, so their latency includes generation time.'
+  techniques:
+  - human-annotated dual-channel turn-taking corpus with conversation type as controlled variable
+  - causal commit-time scoring (recall / FPR / signed latency) for end-of-turn and interruption
+  - scale-invariant quantile threshold sweep at a fixed dev FPR budget
+  - full-duplex models scored by speech-onset detection (pyannote VAD)
+  reported_results:
+  - 'Table IV EOT overall recall/fpr/median dt(ms): RMS VAD .718/.632/-117; OpenAI Server VAD .955/.525/282;
+    OpenAI Semantic VAD .303/.018/793; Kyutai SVAD .773/.059/1007; SmartTurn v3 .752/.047/1017; VAP .845/.055/368;
+    Mimi-EP .782/.078/645; ESPnet TT-pred .826/.078/862; WavLM-Large (anchor) .800/.054/1076; Gemini 3.1
+    Live .657/.022/1234; Moshi .233/.044/702'
+  - 'Table IV INT overall: VAP .945/.107/994; Kyutai SVAD .898/.081/559; SmartTurn v3 .107/.093/159 (inverted
+    turn-ending score); OpenAI Server VAD .990/.458/184; RMS VAD .996/.445/123'
+  - 'Table III: 154 dialogues, 106 voice actors, 32,820 consensus events (11,791 turn, 1,151 interruption,
+    7,917 backchannel); dev 38 / test 116 dialogues'
+  - '§IV-A: Fleiss kappa 0.78; human median floor-transfer offset -281 ms (-151 ms excluding floor-taking
+    interruptions)'
+  referenced_arxiv_ids:
+  - '2606.13450'
+  - '2410.00037'
+  - '2503.04721'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-SAMEWORDS / ECHO wave-2 entry (this does NOT supply paired same-words stimuli)
+    - NEW-PARAKEET-EOU wave-2 entry (a CS-22 arm that could be scored here)
+  expanded_from: intake-2016
+  credibility_score: 5
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: TurnBench is the first English, human-annotated, multi-register benchmark we
+    have found that scores a cascade endpointer directly (timestamps in, recall/FPR/latency out) and penalises
+    false cuts on mid-turn pauses and false barge-ins on backchannels - exactly CS-22 and CS-23. It is
+    NOT a paired same-words benchmark (ECHO remains the closest) and it does not score full-duplex interruption.
+    Carry the Table IV numbers as reference points for English endpointers (SmartTurn v3, VAP, Kyutai
+    SVAD), not as our own results. Data is gated; the dev split is enough to score an arm.
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected expansion framing (NEW-SAMEWORDS): not
+    paired/same-words; conversation-type-controlled. Confirmed cascade scoring is by-design. Main correction
+    2026-10-20 after per-claim second reader: RMS VAD statement restated from the table (FPR .632 overall).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §VIII Conclusion
+    quote: All dialogues are English, studio-recorded, and dyadic.
+    quote_sha256: c491f04356545f804e6f78f89236241a5bec8c0e49868a59f4d184b782c6eb2f
+    source_revision: arXiv:2608.25218v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §V-C Submission and scoring
+    quote: Inside a negative span, firing counts as at most one false positive and not firing counts as
+      one true negative.
+    quote_sha256: 51def23bd1268cb2b5669b512908d1e1fa8f4b807741090ca9e1b7cf665b45e5
+    source_revision: arXiv:2608.25218v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §I contributions
+    quote: The strongest system, VAP, reaches 0.845 end-of-turn recall and 0.945 interruption recall at
+      median latencies of 368 ms and 994 ms.
+    quote_sha256: 85f56b51ebe24792dfcfdd4f71fab2ded3f7b6b411d407d1f651cb79f111f400
+    source_revision: arXiv:2608.25218v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: abstract
+    quote: no current system performs equivalently without incurring excessive false positives
+    quote_sha256: 05fef6ff332e52aa0db46886cf6411a956a7be1d9987b094276b15b065c1546a
+    source_revision: arXiv:2608.25218v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: docs/SUBMISSION_FORMAT.md "Causality is a term of submission"
+    quote: Lookahead is simply latency you pay, as in deployment.
+    quote_sha256: 2e78ec9b70ae0485a6cd10fb709d61330cd1b0669da7f480bb58c4c4d8d3b29f
+    source_revision: SesameAILabs/turnbench@38a6f874322430cb3ca71d8a52aa1e636e88bad8
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 4
+      partial: 1
+    flags_for_operator:
+    - 'k2 partial: VAP, SmartTurn v3 (ONNX) numbers and casual-INT-FPR verified. ''FPR 0.5-0.6'' misstates
+      RMS VAD (.632 overall, 0.51-0.70 per type); the 0.107 vs 0.1 dev budget note is the analyst''s.'
+    - 'actionable W3-NEW-TURNBENCH-01: Mostly fine; ''scorer is local CPU'' and ''python -m turnbench.score''
+      hold per README. Silero/Parakeet-EOU arm adapters are project plans, nothing unsupported numerically.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-turnbench/paper.txt
+    (paper.html sha256 0682fc8c038419b785962af23a5ca929fcc7f64066a173b74c35bd2d91f9bf78, arXiv v2 html
+    2026-09-16). Repo SesameAILabs/turnbench@38a6f874322430cb3ca71d8a52aa1e636e88bad8 cloned: read README,
+    LICENSE (MIT), docs/SUBMISSION_FORMAT.md; baselines/ dir listing only (rms_vad, smart_turn_v3, vap,
+    kyutai_semantic_vad, gemini, moshi ... ); NOT read: scorer code, per-baseline predict.py, results/leaderboard-test.json,
+    dataset cards (gated). Tier-2b: sesame.com blog, turnbench.sesame.com leaderboard and AlphaSignal
+    found by search all restate paper numbers (restatement); no independent replication. Search snippet:
+    leaderboard page lists dev 7.3 h / test 22.9 h (restatement, unread).'
+- id: intake-2032
+  arxiv_id: '2604.21406'
+  url: https://arxiv.org/abs/2604.21406
+  source_type: paper
+  title: 'Full-Duplex Interaction in Spoken Dialogue Systems: A Comprehensive Study from the ICASSP 2026
+    HumDial Challenge'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Chengyou Wang
+  - Hongfei Xue
+  - Guojian Li
+  - Zhixian Zhao
+  - Shuiyuan Wang
+  - Shuai Wang
+  - Xin Xu
+  - Hui Bu
+  - Lei Xie
+  key_claims:
+  - 'Challenge tasks: Interruption (follow-up question, negation, repetition request, topic switch, silence/stop)
+    and Rejection (user backchannel, pause handling, third-party speech, speech directed to others). The
+    paper text says "eight scenarios" but Table 1 and the repo list nine sub-scenarios. Data: >100 h dual-channel,
+    Chinese and English, actor-recorded from LLM scripts; test zip is on HF (not downloaded).'
+  - 'This is NOT an independent study: the authors are affiliated with ASLP@NPU (inferred to be the organisers
+    and the Easy Turn group; not stated), the reference baseline is their own Easy-Turn + OSUM-EChat,
+    and Table 2 is the organisers'' leaderboard. Its in-text citation for Easy-Turn ([17]) actually points
+    to the Badcat team paper (arXiv 2601.20230).'
+  - 'Results (organiser leaderboard): best final score Cookie asr 76.6 (Int 79.3, Rej 72.2, 1.26 s first-response
+    delay); best interruption Badcat 89.7 but Rej only 57.8; Gemini-2.5 Int 79.8 but Rej 36.5. Reading
+    the table (main''s inference, not paper text - the paper itself wrongly names Freeze-Omni as rejection
+    leader at 50.2), rejection of non-interruptive input is the weak axis for nearly all systems; per-scenario
+    breakdown is not in the paper text, so interruption-vs-backchannel cannot be separated from these
+    tables.'
+  - 'Architectures: most submissions are cascaded or semi-cascaded (VAD + streaming ASR + decision module
+    + TTS); top-2 are cascade (cookie_asr) and semi-cascaded Qwen3-Omni decision-token (Badcat). The team
+    literally named "Cascade" scored 37.7, so architecture alone does not predict rank. Specialised small
+    classifiers (Whisper-tiny 4-class, TinyBERT) are reported as robust front filters. Which rows are
+    open-source/open-weights is encoded only by table colours that did not survive extraction, so it is
+    UNKNOWN from disk.'
+  - 'Scoring depends on a cloud-grade judge: responses are classified Respond/Resume/Uncertain/Unknown
+    by DeepSeek-V3 on Parakeet-TDT (English) / Paraformer (Chinese) transcripts, following FDB v1.5; latency
+    uses Silero-VAD. Same local-judge validation issue as FDB v1.5.'
+  techniques:
+  - Interruption vs Rejection scenario split (backchannel, pause, third-party, side-speech)
+  - Full-Duplex-Bench v1.5 behaviour classification with DeepSeek-V3 judge
+  - first-response / stop / response latency with Silero-VAD
+  - lightweight 4-class turn classifiers (Whisper-tiny, TinyBERT) in front of an LLM
+  reported_results:
+  - 'Table 2 (read from repo README, same rows): Cookie asr Int 79.3 / Rej 72.2 / delay 1.260 s / final
+    76.6 (rank 1); Badcat 89.7 / 57.8 / 1.632 / 73.5 (rank 2); SenseDialog 76.4 / 60.9 / 1.237 / 71.0;
+    Gemini-2.5 79.8 / 36.5 / 1.301 / 62.3; Baseline (Easy-Turn + Osum-EChat) 75.9 / 35.2 / 2.531 / 56.4;
+    Freeze-Omni 29.6 / 50.2 / 2.578 / 43.8; Cascade 28.1 / 30.9 / 1.739 / 37.7; Moshi 35.4 / 22.8 / 2.876
+    / 34.5'
+  - '§4.3 Eq. 3: final = 0.4 Int + 0.4 Rej + 0.2 delay score'
+  - 'Table 1: test 600 per scenario (200 for speech-to-others); dataset >100 h, Chinese and English, professional
+    actors reading DeepSeek-generated scripts'
+  referenced_arxiv_ids:
+  - '2507.23159'
+  - '2601.05564'
+  - '2601.20230'
+  - '2503.04721'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-SAMEWORDS wave-2 entry
+    - NEW-EASYTURN (HumDial baseline uses Easy Turn; same lab)
+  expanded_from: intake-2016
+  credibility_score: 3
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: HumDial is an organiser-run Chinese+English interruption/rejection benchmark
+    whose top systems are cascades, which supports (but is not independent evidence for) the cascade-first
+    plan. Its useful content is the scenario taxonomy (backchannel / pause / third-party / side-speech
+    rejection) and the lesson that rejection, not interruption, is where systems fail. Do NOT cite the
+    final scores as comparable across languages, and do not rely on it for backchannel-vs-interrupt separation
+    (no per-scenario table in the paper). Open-weights status of the winners is unknown here.
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Corrected "independent results": none - organiser
+    paper with own-lab baseline. Flagged 8-vs-9 scenario discrepancy and mis-cited Easy-Turn reference.
+    Main correction 2026-10-20 after per-claim second reader: organiser/Easy-Turn-group identity and ''rejection
+    is the weak axis'' marked as inference.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 Scenarios
+    quote: 'the released dataset includes two major categories: Interruption and Rejection, with a total
+      of eight scenarios.'
+    quote_sha256: 0b029d5e57c3ceac30221813308dc01d01e9bfdfef1bc70e10b9134db3fe8cec
+    source_revision: arXiv:2604.21406v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.1 Model Evaluation
+    quote: To ensure consistent evaluation across systems, we use a baseline that integrates Easy-Turn
+      [17] with Osum-EChat [5].
+    quote_sha256: 1716f63d33db38b35733f4cf7d935a1aa6b906d33898f6e132f87dfb1137cdaf
+    source_revision: arXiv:2604.21406v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md leaderboard table
+    quote: '| Cookie asr | 79.3 | 72.2 | 1.260 | 79.9 | 76.6 | 1 |'
+    quote_sha256: 25889e43f2b1288153f584fe634688c61ea3f49e92f52c3140562871b5e526c1
+    source_revision: ASLP-lab/HumDial-FDBench@f51d8ebfeac5461c5df1b38ed99882e33a6861c1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §6.1 System Architecture
+    quote: Most submissions adopt cascaded or semi-cascaded pipelines.
+    quote_sha256: 39f02089ef95ab315005415429f3e3f1dc7fcfe3e7f3269e4bbea5ae32bee24a
+    source_revision: arXiv:2604.21406v2 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.1 Behavior evaluation
+    quote: DeepSeek-V3 [12] is employed to categorize the model responses using carefully designed prompts.
+    quote_sha256: 608ba689940e7d49190f3509743aa30998f60baf1059cca14593b93c932a8fc4
+    source_revision: arXiv:2604.21406v2 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 3
+      partial: 2
+    flags_for_operator:
+    - 'k1 partial: ASLP@NPU affiliation, Easy-Turn+OSUM-EChat baseline and Badcat [17] mis-citation verified;
+      ''organisers'' and ''same group as Easy Turn'' are inference, no such statement in paper.'
+    - 'k2 partial: Table numbers match (Cookie 76.6/79.3/72.2/1.26; Badcat 89.7/57.8; Gemini 79.8/36.5).
+      ''Rejection is weak axis'' is inference from numbers; paper text wrongly says Freeze-Omni leads
+      rejection (50.2).'
+    - 'actionable W3-NEW-HUMDIAL-02: ''2xGPU baseline'' and ''no per-language split'' are not in the quoted
+      sources checked here (2x4090 is from baseline readme.txt per notes, not on this check); minor.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-humdial/paper.txt
+    (paper.html sha256 6ef041232817d4bef536c5d0b147107c02b7df067da815a12354d95b48265da1, arXiv v2 html
+    2026-04-24). Repo ASLP-lab/HumDial-FDBench@f51d8ebfeac5461c5df1b38ed99882e33a6861c1 cloned: README
+    (leaderboard identical to Table 2; Apache-2.0), baseline readme.txt (needs >=2x RTX4090, Freeze-Omni-derived
+    stack). NOT read: evaluation code, baseline source, HF test zip (Humdial-Track2-Test.zip not downloaded),
+    the challenge overview 2601.05564, team papers. Tier-2b: no independent evaluation found.'
+- id: intake-2033
+  arxiv_id: '2509.23938'
+  url: https://arxiv.org/abs/2509.23938
+  source_type: paper
+  title: 'Easy Turn: Integrating Acoustic and Linguistic Modalities for Robust Turn-Taking in Full-Duplex
+    Spoken Dialogue Systems'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Guojian Li
+  - Chengyou Wang
+  - Hongfei Xue
+  - Shuiyuan Wang
+  - Dehui Gao
+  - Zihan Zhang
+  - Yuke Lin
+  - Wenjie Li
+  - Longshuai Xiao
+  - Zhonghua Fu
+  - Lei Xie
+  key_claims:
+  - 'Architecture: Whisper-Medium audio encoder (2 conv + 24 transformer layers) + adaptor (3 conv + 4
+    transformer) + Qwen2.5-0.5B-Instruct; it emits the ASR transcript followed by a turn-state tag. Size
+    is about 0.85-0.86 B parameters (inference from the table''s "850" under an "MB" header; checkpoint
+    byte size not in the saved files).'
+  - 'Four states: complete, incomplete, backchannel ("brief feedback"), wait (explicit request to pause/stop).
+    It classifies an utterance segment; it is not a streaming endpointer and the paper gives no streaming
+    or chunked-latency analysis.'
+  - 'Accuracy (authors'' own 800-sample testset, half TTS-synthetic): Easy Turn 96.33 / 97.67 / 91 / 98
+    vs TEN Turn Detection+Paraformer 86.67 / 89.3 / - / 91 and Smart Turn V2 78.67 / 62 / - / -. Latency
+    263 ms (4090) vs 204 ms and 27 ms. No Parakeet, Silero or silence-threshold baseline, no confidence
+    intervals, no false-cut rate, no independent reproduction found.'
+  - 'Language: all inspected material is Mandarin. Training data are MagicData-RAMC, Aishell/WenetSpeech
+    ASR alignment and Chinese-text synthetic sets; the test list inspected has lang <CN>; prompts are
+    Chinese. HF tags list en+zh, but the paper reports no English result, so English accuracy is unknown.'
+  - 'Ablation: fusing acoustic and linguistic via ASR+turn-detection gives ACCavg 95.75 against 85.5 (acoustic-only)
+    and 86.25 (text-only), and 87.88 without the transcript step.'
+  - 'Release: model (HF ASLP-lab/Easy-Turn, Apache-2.0), WeNet-based training and inference code, 1,145
+    h trainset, testset. No ONNX/GGUF/CPU path; inference scripts take a GPU id.'
+  techniques:
+  - Whisper-Medium encoder + adaptor + Qwen2.5-0.5B-Instruct "ASR + turn-detection" output (transcript
+    then state tag)
+  - 'four turn states: complete / incomplete / backchannel / wait'
+  - LLM cross-annotation of real (MagicData-RAMC) and TTS-synthetic training data
+  - 'two-stage training: ASR alignment (23k h) then turn-state fine-tune'
+  reported_results:
+  - 'Table 2 (authors'' own Easy Turn testset, RTX 4090): Easy Turn params 850, latency 263 ms, memory
+    2559 MB, ACC complete/incomplete/backchannel/wait = 96.33/97.67/91/98; Paraformer+TEN Turn Detection
+    7220 / 204 ms / 15419 MB / 86.67/89.3/-/91; Smart Turn V2 95 / 27 ms / 370 MB / 78.67/62/-/-'
+  - 'Table 3: ACCavg 95.75 (acoustic+linguistic) vs 87.88 (no ASR step) vs 86.25 (text-only Qwen2.5-0.5B)
+    vs 85.50 (Whisper+linear acoustic-only)'
+  - 'Table 1: trainset 1,145 h (complete 580 h, incomplete 532 h, backchannel 10 h, wait 23 h); testset
+    300/300/100/100 samples, real:synthetic 1:1'
+  referenced_arxiv_ids:
+  - '2501.13306'
+  - '2503.04721'
+  - '2203.16844'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-PARAKEET-EOU wave-2 entry (alternative CS-22 turn-end arm)
+    - NEW-HUMDIAL (its reference baseline)
+  expanded_from: intake-2016
+  credibility_score: 2
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: 'Easy Turn is a heavy (about 0.86 B, GPU-run, Mandarin-trained) utterance-level
+    turn-state classifier whose comparison is on the authors'' own half-synthetic Mandarin testset; it
+    does not beat or even test the baselines that matter to us (Silero+silence, Parakeet-EOU). It is NOT
+    a ready CS-22 arm: no English evidence, no streaming, no CPU path. Carry the four-state taxonomy (esp.
+    backchannel / wait, which map to CS-23) and the data-construction recipe; do not carry the accuracy
+    table as evidence about English turn-end quality.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Language narrowed to Mandarin (paper and test list),
+    "850 MB" read as ~0.86 B params. Main correction 2026-10-20 after per-claim second reader: removed
+    unsaved checkpoint byte count; swapped anchors/verdicts for claims 3 and 4 (language vs ablation).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3.1 Model Architecture
+    quote: we adopt the Whisper-Medium model as the audio encoder, which includes two 1D convolutional
+      layers and 24 Transformer layers.
+    quote_sha256: 97c6a26cbe0818bc384ab9c9d70cc6ef93a279a08c5b63cfe3bbd4dde97ab998
+    source_revision: arXiv:2509.23938v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §2.1 Turn States
+    quote: Backchannel In natural conversations, backchannel signals refer to brief listener responses
+    quote_sha256: 901d091d540840166d7a5e43ebbd46a82955f43329fe8751a8a8ff2464ba673a
+    source_revision: arXiv:2509.23938v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md Main Results table
+    quote: '| **Easy Turn (Proposed)** | 850 | 263 | 2559 | **96.33** | **97.67** | **91** | **98** |'
+    quote_sha256: 155042abf98fb06ff5e8803b6586d7200f47032e02df29fec72c21f8da653123
+    source_revision: ASLP-lab/Easy-Turn@fe175eaa8442c9a0834acf29f8640ee74c2aceca
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §4.3 Ablation
+    quote: Finetuned Whisper + Linear refers to fine-tuning Whisper-Medium audio encoder
+    quote_sha256: 14c8b7054b9a60d47fc5de9bf27fea4355320f1c46ea162a653e0d43a2cd270d
+    source_revision: arXiv:2509.23938v1 (html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §4.1 Experimental Setup
+    quote: alignment training on the ASR task with 23,000 hours of data, including the Aishell1
+    quote_sha256: 72e5b115de926bb3e523529a4012ff26515cbde92bbc1f0bce39b1ae735d89f3
+    source_revision: arXiv:2509.23938v1 (html)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      partial: 1
+      true: 4
+      unanchored: 1
+    flags_for_operator:
+    - 'k0 partial: Whisper-Medium (2 conv + 24 transformer), adaptor (3 conv + 4 transformer), Qwen2.5-0.5B
+      verified. Checkpoint byte count 3,451,801,684 and fp32 not on disk; 0.86B inference is flagged by
+      the claim.'
+    - k5 unanchored citable
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-easyturn/paper.txt
+    (paper.html sha256 3485a3ae8231a47e2ecbc2781c3133c2000ec605cda34d59cddc2df388924a26, arXiv v1 html).
+    Repo ASLP-lab/Easy-Turn@fe175eaa8442c9a0834acf29f8640ee74c2aceca cloned (README, LICENSE Apache-2.0,
+    conf/prompt.yaml); HF model ASLP-lab/Easy-Turn@7d1f8b06776b575ac22e2fd4aa7913da2f4b8b98 (api + tree
+    sizes + card); testset list head read (lang CN). NOT read: wenet model code, trainset/testset audio,
+    config.json (0 bytes in tree). CPU effort for CS-22 is an UNMEASURED estimate: needs a port of a custom
+    WeNet adaptor + Whisper-medium encoder + Qwen2.5-0.5B (llama.cpp covers the 0.5B LLM and whisper.cpp
+    the encoder only), plus English retraining/validation; versus Parakeet-EOU (W2 entry: 120 M streaming,
+    native EOU token, p50 160 ms vendor figure, community ONNX CPU path) it is the larger and less direct
+    route. Tier-2b: web search found no independent reproduction or English evaluation; all hits are the
+    authors'' own paper/card/repo (restatement).'
+- id: intake-2034
+  arxiv_id: null
+  url: https://github.com/DanielLin94144/Full-Duplex-Bench
+  source_type: repo
+  title: 'Full-Duplex-Bench: A Benchmark Suite for Evaluating Full-Duplex Spoken Dialogue Models and Systems'
+  categories:
+  - multimodal
+  - benchmark_methodology
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_component
+  ingested_date: '2026-10-20'
+  authors:
+  - Guan-Ting Lin
+  - Hung-yi Lee
+  - et al. (README names Lin, Lian, Li, Wang, Anumanchipalli, Liu, Kuan, Chen, Chen, Lee across v1/v1.5/v3)
+  key_claims:
+  - 'Cascade contract (v1/v1.5): a system under test must produce, per stimulus folder, a time-synchronous
+    output.wav of the same timeline as the supplied input.wav; scoring then needs NeMo Parakeet-TDT word-timestamp
+    ASR (get_transcript/asr.py -> output.json {text, chunks:[{text,timestamp:[s,e]}]}), plus clean_input/clean_output
+    (+ their .json) for v1.5 adaptation analyses. Nothing in the scorers needs the system to be a speech-to-speech
+    model.'
+  - 'Fully local (no keys): v1 pause_handling, smooth_turn_taking and backchannel scorers (pure JSON +
+    Silero VAD + repo-shipped icc_gt_distribution.json), v1.5 get_timing.py (stop/response latency intervals
+    from Silero VAD over input.wav and output.wav; parameters USER_MERGE_GAP 0.6 s, MODEL_MERGE_GAP 0.5
+    s, whose inline comments say 300 ms / 50 ms and disagree with the values), and general_before_after/significance_test
+    (WPM, pitch, intensity, UTMOSv2 + paired t-tests; first run downloads Silero via torch.hub and UTMOSv2
+    weights, no key). Hard network/key coupling is therefore only first-run weight fetches.'
+  - 'Cloud-judge coupled (OpenAI client built with no base_url, model names hardcoded): v1.5 `behavior`
+    task (gpt-4o-2024-08-06, retries forever on any exception), v1 `user_interruption` rating (gpt-4-turbo,
+    plus a client.models.list() probe at startup in evaluate.py). Because the SDK client is constructed
+    with defaults, redirecting to a local OpenAI-compatible endpoint is a base-URL environment variable
+    plus serving a model under the hardcoded name (inference from SDK default behaviour; not exercised
+    here). A local judge breaks comparability with published numbers. asr.py hard-codes `.cuda()` on the
+    NeMo model: it must be patched for CPU or run under a ROCm torch build (not verified).'
+  - 'v3 split: the three evaluators (evaluate_tool_calls.py, evaluate_pass_rate.py, analyze_tool_latency.py)
+    read only result_{provider}.json files plus benchmark_data_v2.json (in repo) and do not touch LiveKit
+    (README). --provider is a free-form string, so a custom ''cascade_epyc'' provider needs no code change.
+    Required result fields: example_id, actual_tool_calls [{function,args,timestamp_start,timestamp_end}
+    relative to stream start], transcript, asr_chunks (word timestamps), user_speech_end_rel, audio_agent_speech_start.
+    Without --use-llm, argument matching falls back to exact match and response quality is skipped; analyze_tool_latency.py
+    always constructs an OpenAI client from OPENAI_API_KEY (a dummy key suffices) and uses gpt-4o only
+    for the task-completion latency (key-information sentence), so first-response and tool-call latency
+    are judge-free.'
+  - 'v3 inference harness is the cloud-coupled part: run_tool_benchmark.py streams input.wav into a LiveKit
+    room (LIVEKIT_URL/KEY/SECRET) where cascaded_agent.py (Silero VAD min_silence 0.55 s, openai.STT whisper-1,
+    openai.LLM gpt-4o, openai.TTS tts-1, min_endpointing_delay 0.5 s) runs, logging tool calls to /tmp/agent_tool_calls.log
+    and latency JSON to /tmp/agent_heartbeat.log. The cascade reference baseline is thus an all-OpenAI-API
+    cascade; an EPYC cascade replaces the harness (local audio feeder + whisper :9000 / LLM / qwentts
+    :9002 + our own tool-call logger) and writes the same result JSON. The 100 v3 audio files (48 kHz
+    human recordings) and the v1/v1.5 audio are NOT in the repo (Google Drive links only); only benchmark_data_v2.json
+    and the mock tool APIs (mock_apis.py, latency_injector.py) are. Repo also commits node_modules under
+    v1_v1.5/model_inference/gpt-realtime. License CC BY-NC 4.0 (fact only).'
+  - 'gpt-realtime examiner / gemini judge scope: the v2 folder (WebRTC Node.js orchestrator with an automated
+    AI examiner) and the gpt-realtime/gemini model_inference scripts are cloud-only and were not read
+    in depth; they are irrelevant to scoring a local cascade on v1/v1.5/v3.'
+  techniques:
+  - offline time-aligned output.wav scoring (v1/v1.5)
+  - Silero-VAD stop/response latency intervals
+  - word-level Parakeet-TDT ASR alignment
+  - GPT-4o behavior classifier (v1.5)
+  - v3 tool-call F1 / strict pass-rate / first-response, tool-call and task-completion latency
+  - mock tool APIs with injectable latency
+  reported_results:
+  - 'v1_v1.5/README.md results table: PersonaPlex/dGSLM/Moshi/Freeze-Omni/Gemini/GPT-Realtime rows of
+    TOR/Freq/JSD/GPT-4o/Latency (README.md "Evaluation Results"; vendor-of-benchmark numbers, not re-run)'
+  - 'v3/benchmark_data_v2.json (sha256 816bc3cb6266c0110ae55dfaca3676f0e894b5c2dca89210e5dc7f85338b4663)
+    statistics: 100 scenarios, 4 domains x25, difficulty 32/36/32, avg 1.54 expected tool calls, 21 state_rollback
+    scenarios, 12 mock tools'
+  referenced_arxiv_ids:
+  - '2503.04721'
+  - '2507.23159'
+  - '2510.07838'
+  - '2604.04847'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2003
+    intake_entry_notes:
+    - intake-2003 (parent; this is the code/data companion of the FDB paper family)
+    - NEW-FDB15 (v1.5 paper, W2-G3; scorer code settled here)
+    - NEW-FDB3 (v3 paper, W2-G3; scorer code settled here)
+  expanded_from: intake-2003
+  credibility_score: null
+  source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'Treat Full-Duplex-Bench as an offline file-in/file-out scorer: a local cascade
+    is scorable on v1/v1.5 (overlap, stop/response latency) and v3 (tool-call F1/pass-rate/latency) by
+    producing output.wav + word-aligned JSON + a tool-call log, with only the GPT-4o behavior classifier,
+    the gpt-4-turbo interruption rating and the v3 --use-llm judges needing an LLM endpoint. Do NOT carry:
+    that the repo ships audio data (it does not; Google Drive), that LiveKit Cloud is needed for scoring
+    (it is needed only for the reference inference harness), or that a local judge reproduces published
+    numbers. Never carry a claim of having run anything: nothing was executed.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Settled from code that scorers are local except named
+    judge calls; found asr.py is CUDA-hardcoded and that get_timing.py inline comments contradict its
+    constants.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v1_v1.5/README.md:L133-L133 @ 3e799c4
+    quote: The goal of model inference is to let the model generate the time-synchronous `output.wav`
+      given the audio stream of user speech (`input.wav`).
+    quote_sha256: caf1cf6c223288f482d20670bd10a910883a4c6120077c507e01f96cd1f067ee
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: v1_v1.5/evaluation/get_timing.py:L5-L6 @ 3e799c4
+    quote: 'Writes a **`latency_intervals.json`** file inside every folder that
+
+      contains `input.wav` + `output.wav`:'
+    quote_sha256: 33b5e704c71d18e9b3c6b21aa550eb143636452b62d0599be2bcb733b8aa3656
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: v1_v1.5/evaluation/eval_behavior.py:L54-L54 @ 3e799c4
+    quote: MODEL_NAME = "gpt-4o-2024-08-06"
+    quote_sha256: 76acd74f7b546966f283bf778b15d971edf1bba1b32040e3ea86f14b27a450e3
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: v1_v1.5/evaluation/eval_user_interruption.py:L32-L32 @ 3e799c4
+    quote: MODEL_NAME = "gpt-4-turbo"
+    quote_sha256: 8143c8fab3c3deb37424d59f832146e005461e3960565f8f22050b6933103ac1
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: v1_v1.5/get_transcript/asr.py:L22-L23 @ 3e799c4
+    quote: "model_name=\"nvidia/parakeet-tdt-0.6b-v2\"\n    ).cuda()"
+    quote_sha256: 26ac78e5793d729ada6b378688ac8563189ee9c6f2ed0e50e8416901aec35983
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: v3/README.md:L99-L99 @ 3e799c4
+    quote: The evaluation scripts (Step 3 below) do **not** require LiveKit.
+    quote_sha256: ddc81e3e36d0464b5c78143d244ba20ac8c8deb88fe1502b3f70d87b16bcf541
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: v3/evaluate_tool_calls.py:L69-L69 @ 3e799c4
+    quote: _openai_client = OpenAI()
+    quote_sha256: 1efb62c065223c2bf729b73c46f796dd90ca70d59baa82bde84ed34a7d40866f
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: v3/analyze_tool_latency.py:L271-L271 @ 3e799c4
+    quote: client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    quote_sha256: 4b9958d1a51725605f378e622049a4007a3aef9c673a6e0524dc1ee6e5021f9e
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: v3/run_tool_benchmark.py:L455-L455 @ 3e799c4
+    quote: result["actual_tool_calls"] = actual_tool_calls
+    quote_sha256: 4ac977e4e6d84007e2bbca72f4541239ac7cacef0ac2bf240d4cd8ef968dbf96
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: v3/cascaded_agent.py:L326-L327 @ 3e799c4
+    quote: "llm_model = openai.LLM(\n        model=\"gpt-4o\","
+    quote_sha256: eda75931eb7aa13f3f887f5d638b9ddcd15afad4af124b249bf456126235b4f3
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: v3/livekit_inference.py:L17-L17 @ 3e799c4
+    quote: LIVEKIT_URL          – wss://your-project.livekit.cloud
+    quote_sha256: 1cbb8d2482473365c76491f8bdf510d6352b6b25872d0a83437f233d482f1194
+    source_revision: DanielLin94144/Full-Duplex-Bench@3e799c45a045256f47d5f1c9cda90157e2d2ec9e
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 5
+      unanchored: 1
+    flags_for_operator:
+    - 'actionable W3-NEW-FDB-REPO-02: OPENAI_BASE_URL redirect to a local judge is SDK behaviour not exercised
+      or in repo; ''numbers comparable to published FDB v1.5 stop latency'' (REPO-01) is also unverified.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read from disk: README.md, v1_v1.5/README.md, evaluation/{README.md,evaluate.py,eval_behavior.py,get_timing.py,eval_pause_handling.py},
+    parts of eval_user_interruption.py/eval_backchannel.py/eval_general_before_after.py (grep for network/model
+    loads), get_transcript/asr.py, dataset/README.md, v3/{README.md,cascaded_agent.py,run_tool_benchmark.py,evaluate_*.py,analyze_tool_latency.py,benchmark_data_v2.json
+    (structure/stats)}. NOT read: v2/, model_inference/* implementations, eval_general_before_after.py
+    body beyond model loads, significance_test.py, lk_agent_tool.py, latency_injector.py. Cloned shallow
+    to /mnt/raid0/llm/tmp/dive-w3-fdb-repo/repo at 3e799c45a045256f47d5f1c9cda90157e2d2ec9e; nothing executed.
+    No audio/data downloaded.'
+- id: intake-2035
+  arxiv_id: null
+  url: https://github.com/NVIDIA-NeMo/Speech/tree/main/examples/voice_agent
+  source_type: repo
+  title: NeMo Voice Agent (examples/voice_agent, NVIDIA-NeMo/Speech)
+  categories:
+  - multimodal
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - NVIDIA NeMo team
+  key_claims:
+  - The examples/voice_agent tree is marked deprecated in its own README in favour of NVIDIA-NeMo/labs-Voice-Agent
+    (a repo that exists, pushed 2026-10-20 per the GitHub API; not read). The actual logic lives under
+    nemo/agents/voice_agent (pipecat services), which the example imports; the sparse checkout covered
+    both paths.
+  - 'Pipeline order (server.py): websocket transport input (Silero VAD via pipecat, can_create_user_frames=False
+    so the transport never interrupts by itself) -> RTVI -> STT -> [diar] -> NeMoTurnTakingService ->
+    user aggregator -> LLM -> TTS -> websocket output; PipelineParams(allow_interruptions=True). Turn-taking
+    is therefore a single stateful processor sitting between ASR and LLM that alone decides when StartInterruptionFrame
+    is emitted.'
+  - 'VAD defaults (default.yaml): Silero confidence 0.6, start_secs 0.1, stop_secs 1.2, min_volume 0.4.
+    The 1.2 s silence is the fallback end-of-turn; the in-band <EOU> token ends the turn earlier when
+    the ASR emits it. README says a dedicated turn-taking model is not released, so turn-taking is VAD
+    + EOU-token heuristics.'
+  - 'Chunking: audio arrives in 16 ms websocket frames; stt.py batches buffer_size=5 frames = 80 ms per
+    model call; streaming_asr uses att_context_size [70,1] and chunk_size_in_secs 0.08 (the config echoes
+    frame_len 0.08). On <EOU> or <EOB> in the decoded text the service resets audio buffer, encoder caches
+    and hypotheses (reset_state), so each utterance is decoded from a fresh state.'
+  - 'Barge-in/backchannel logic (turn_taking.py): while VAD says the user is speaking, tokens are accumulated;
+    on <EOU> the completed text is pushed and UserStopped emitted, unless the bot is speaking and the
+    text matches the 78-line backchannel_phrases.yaml (then it is routed upstream as ''(text)'' and the
+    bot is NOT interrupted); a trailing <EOB> while the bot speaks is also treated as backchannel. If
+    no backchannel list is configured, VAD start immediately interrupts. Otherwise, interim text with
+    at least max_buffer_size=2 completed words (code: len(completed_words) >= max_buffer_size) (the last
+    word is assumed unfinished) triggers UserStartedSpeaking + StartInterruptionFrame before EOU. bot_stop_delay=0.5
+    s keeps the bot flagged as speaking after BotStopped to cover client-side playout lag.'
+  - 'Hardware: README requires at least one GPU (21 GB VRAM for 9B LLMs); every default config sets device
+    cuda; TTS Kokoro-82M default; environment.yaml pins onnx 1.19.0 / onnxruntime 1.23.0 but no ONNX path
+    is used in the voice agent code (grep: only environment.yaml hits). Nothing in the turn-taking, backchannel
+    or buffering logic is GPU-specific; only the NeMo STT/diar/TTS model calls are.'
+  - 'Portable to our cascade: (a) the turn_taking.py state machine, reimplementable without pipecat in
+    ~150 lines around whisper/Silero events; (b) backchannel phrase list and the ''ignore backchannel
+    while bot speaking'' rule for CS-23; (c) max_buffer_size word-count early interrupt; (d) bot_stop_delay
+    compensation; (e) the reset-on-EOU decoding discipline if an EOU ASR arm is added (CS-22). Not portable
+    without work: NeMo cache-aware streaming runtime on ROCm (unverified), diarization, pipecat transport.'
+  techniques:
+  - in-band <EOU>/<EOB> RNNT tokens as turn-end and backchannel signals
+  - Silero VAD gating of transcript buffer
+  - backchannel phrase list suppresses barge-in while bot speaks
+  - word-count (max_buffer_size) interruption threshold
+  - bot_stop_delay output-latency compensation
+  - pipecat frame pipeline with StartInterruptionFrame
+  reported_results:
+  - 'none: repo has no latency/false-cut benchmark; README lists "Evaluation tools and benchmarks for
+    voice agents" under Upcoming Next (README.md)'
+  referenced_arxiv_ids:
+  - '2312.17279'
+  - '2507.18446'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-PARAKEET-EOU (W2-G4; this repo is the vendor reference wiring for that model)
+  expanded_from: intake-2017
+  credibility_score: null
+  source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: 'Take the control-flow design (EOU token OR VAD stop_secs ends turn; backchannel
+    phrases suppress barge-in only while the bot is speaking; >=2 completed words interrupt early; 80
+    ms ASR chunks; full state reset after each EOU) as a reference spec for CS-22/CS-23. Do NOT carry:
+    any latency or false-cut figure (the repo has none), the idea that the stack is GPU-independent end
+    to end, or that the example path is maintained (deprecated, successor repo labs-Voice-Agent unread).'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. Discovered the example is deprecated and logic is
+    under nemo/agents/voice_agent; no benchmark in repo. Main correction 2026-10-20 after per-claim second
+    reader: interrupt threshold is >= 2 completed words, not > 2.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: examples/voice_agent/README.md:L4-L4 @ 6f55840
+    quote: '> `nemo/agents/voice_agent` and `examples/voice_agent` in this repository are deprecated.'
+    quote_sha256: 9f43c658caa6c815fe0c6c71a889765200a2b991194357f3a0052d3bdccad2b9
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: examples/voice_agent/server/server.py:L320-L320 @ 6f55840
+    quote: allow_interruptions=True,
+    quote_sha256: f806dd8ad7837e22e6ada8c5c921f405ee1df74e79891f405f7987797047fcd4
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: examples/voice_agent/server/server_configs/default.yaml:L15-L15 @ 6f55840
+    quote: 'stop_secs: 1.2  # min amount of silence to trigger UserStopSpeaking'
+    quote_sha256: 5a07079e3a8498a4d2d3a5a5dfee057c6d4030da62a48c9d3b2ea5f46d620003
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: examples/voice_agent/README.md:L226-L226 @ 6f55840
+    quote: As the new turn-taking prediction model is not yet released, we use the VAD-based turn-taking
+      prediction for now.
+    quote_sha256: d176bcca25dba5e04f288cccc74c7ed77024001c9f2b3cb7db01032abfe3aa6f
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: nemo/agents/voice_agent/pipecat/services/nemo/stt.py:L66-L66 @ 6f55840
+    quote: 'buffer_size: Optional[int] = 5  # number of audio frames to buffer, 1 frame is 16ms'
+    quote_sha256: 82afcad31f9a084db32d4de5a1806d08d3f33aec76f4af5dbca48c60b8deb80f
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: nemo/agents/voice_agent/pipecat/services/nemo/streaming_asr.py:L299-L299 @ 6f55840
+    quote: self.reset_state(stream_id=stream_id)
+    quote_sha256: 5a6fc9d6b9caba7a04af9135b8e3aeea794202c9c928a3fb71a1e6e726c94fe8
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: nemo/agents/voice_agent/pipecat/services/nemo/turn_taking.py:L206-L206 @ 6f55840
+    quote: has_eou = self._user_speaking_buffer.endswith(self.eou_string)
+    quote_sha256: 22090b961f1c538a01d5dac318b84bb016b00840db434fb6dcf395b2927b509d
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: examples/voice_agent/server/server_configs/default.yaml:L35-L35 @ 6f55840
+    quote: 'max_buffer_size: 2  # num of words more than this amount will interrupt the LLM immediately
+      if not backchannel phrases'
+    quote_sha256: 27b1b373983aa470e969933e0e371a1c54ee97908a740a1cf1d5b425501c6e22
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: examples/voice_agent/server/server_configs/default.yaml:L36-L36 @ 6f55840
+    quote: 'bot_stop_delay: 0.5  # a delay in seconds allowed between server and client audio output'
+    quote_sha256: ff540e66f1f5d8ceb54a40597c7c176b58b112baf6c6b358adc6b123a60a1183
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: examples/voice_agent/README.md:L61-L61 @ 6f55840
+    quote: '- A computer with at least one GPU. At least 21GB VRAM is recommended for using 9B LLMs, and
+      13GB VRAM for 4B LLMs.'
+    quote_sha256: 11d32e5ede73df065f30d290ca83fce9c16aef7f9622d26572edebc61a9653d5
+    source_revision: NVIDIA-NeMo/Speech@6f558408dbe1c2a7e6b730184e8d46e1474d6dca
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      true: 5
+      partial: 1
+      unanchored: 1
+    flags_for_operator:
+    - 'k4 partial: Backchannel suppression, 78-line list, EOB, bot_stop_delay 0.5 verified. Code uses
+      len(completed_words) >= max_buffer_size (2), not ''above 2''; reader_should_conclude ''>2 words''
+      is wrong.'
+    - 'actionable W3-NEW-NEMO-VOICEAGENT-01: ''2-word early interrupt'' matches code (>=2) but contradicts
+      the entry''s ''above 2'' wording; reconcile before use.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Sparse blobless clone at /mnt/raid0/llm/tmp/dive-w3-nemo-voiceagent/repo,
+    HEAD 6f558408dbe1c2a7e6b730184e8d46e1474d6dca (committed 2026-10-20), paths examples/voice_agent and
+    nemo/agents/voice_agent. Read in full: README.md, server_configs/default.yaml, stt_configs/nemo_cache_aware_streaming.yaml,
+    backchannel_phrases.yaml, model_registry.yaml, turn_taking.py, streaming_asr.py; read in part: stt.py,
+    server.py (pipeline lines), utils.py CacheFeatureBufferer, base_input.py. NOT read: tts.py, llm.py,
+    diar*.py, audio_logger.py, websocket_server.py, client/, tests, labs-Voice-Agent repo.'
+- id: intake-2036
+  arxiv_id: null
+  url: https://huggingface.co/ysdede/parakeet-realtime-eou-120m-v1-onnx
+  source_type: repo
+  title: Parakeet Realtime EOU 120M v1 ONNX
+  categories:
+  - multimodal
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - ysdede (community conversion of NVIDIA parakeet_realtime_eou_120m-v1)
+  key_claims:
+  - 'Exported: two graphs, encoder-model.onnx and decoder_joint-model.onnx (the decoder and joint are
+    fused into one graph), each in fp32, fp16 and int8 (six .onnx files), plus vocab.txt and config.json
+    (per-file byte sizes from the HF tree API were not saved to disk; repo usedStorage 858,328,106 bytes).'
+  - 'Token-exactness claim is narrow: the card says fp32, fp16 and decoder-only int8 give exact token/text/raw-text
+    parity and encoder-only int8 and full int8/int8 do NOT, measured on one unnamed ''smoke fixture''.
+    Parity is stated against NeMo''s output implicitly (the card never names the reference run). Recommended
+    pairings are fp32/fp32, fp16/fp16 or fp32 encoder + int8 decoder, so the CPU-fast int8 encoder is
+    explicitly not recommended.'
+  - 'Frontend contract (config.json + card): 16 kHz mono, 128 mel bins, 10 ms frame shift, subsampling
+    8, centered valid-length mode, raw log-mel with NO per-feature normalisation (the card warns this
+    differs from the nemo128 contract). The mel frontend is NOT in the ONNX package: it ships as a JavaScript
+    frontend inside @asrjs/speech-recognition, so a Python/C++ consumer must reimplement the NeMo log-mel
+    front end. config.json ids: vocab_size 1026, blank_id 1026, eou_id 1024, eob_id 1025, pred_hidden
+    640, pred_layers 1, max_symbols_per_step 10.'
+  - 'The card does NOT document the encoder''s cache inputs/outputs (cache_last_channel, cache_last_time,
+    lengths), the chunk size, or the pre-encode cache; those must be read from the ONNX graph signatures
+    at execution time. The card contains no latency or WER figure; its only usage examples are JavaScript/WASM
+    via asrjs. Independent third-party consumers confirm the model is runnable under onnxruntime: soniqo/Parakeet-EOU-120M-ONNX-INT8
+    (3 graphs, 320 ms chunks of 64 mel frames, preCacheSize 9, outputFrames 4, int8 encoder only) and
+    altunenes/parakeet-rs (Rust, 160 ms chunks of 2560 samples). These are restatement-grade for correctness:
+    neither is validated against NeMo in what was read.'
+  - 'CS-22 cheapest-route judgement: this package is NOT the cheapest turnkey route as shipped (no documented
+    cache contract, no Python reference, frontend missing). It is, however, the best-parity artifact set
+    (fp32/fp16 exact on the card''s fixture), and the NeMo reference (NEW-NEMO-VOICEAGENT) supplies the
+    state-reset-on-EOU and 80 ms chunk discipline. The lowest-risk path is: inspect the ONNX I/O signatures
+    (shape metadata only), implement the 128-bin NeMo log-mel in numpy, drive fp32 encoder + int8 decoder_joint
+    with onnxruntime CPU in 80-160 ms chunks, and check token parity against a NeMo CPU run on the same
+    clips before measuring EOU latency and false-cut rate on CS-4. CPU latency is unknown: the only figure
+    found (soniqo: encoder RTF ~67x, macOS arm64, int8) is vendor-style, a different platform, and not
+    for these files.'
+  techniques:
+  - encoder/decoder_joint ONNX split
+  - fp32/fp16/int8 variants
+  - cache-aware streaming FastConformer-RNNT
+  - explicit <EOU> token
+  reported_results:
+  - Card reports exact token/text/raw-text parity for fp32, fp16 and decoder-only int8 on a single "smoke
+    fixture" (README.md "Quantization Notes"); encoder-only int8 and full int8/int8 not exact. No WER,
+    no latency, no fixture size.
+  - 'File sizes from HF tree API (bytes): encoder fp32 459170470, fp16 230121472, int8 131479377; decoder_joint
+    fp32 21348923, fp16 10679601, int8 5368692.'
+  referenced_arxiv_ids:
+  - '2305.05084'
+  - '2312.17279'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - NEW-PARAKEET-EOU (W2-G4; the vendor model this converts)
+    - NEW-NEMO-VOICEAGENT (reference wiring of the same model)
+  expanded_from: intake-2017
+  credibility_score: null
+  contradicting_evidence:
+  - 'soniqo card lists 25 European languages for a model whose base card is English-only, and states 320
+    ms chunks while NeMo configs use 80 ms and the base card says 80-160 ms: treat the soniqo card as
+    unreliable on capability claims (https://huggingface.co/soniqo/Parakeet-EOU-120M-ONNX-INT8; independent
+    third party)'
+  source_revision: HF ysdede/parakeet-realtime-eou-120m-v1-onnx@6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: 'The ysdede package is a plain encoder + decoder_joint ONNX conversion with
+    a narrow exactness claim (fp32, fp16, decoder-int8 only) and no latency evidence; budget real work
+    for the mel frontend and the cache-state wiring. Do NOT carry: ''int8 is exact'' (only the decoder),
+    any CPU speed number for this package, or soniqo''s multilingual/RTF claims. License fact only: NVIDIA
+    Open Model License.'
+  dive_corrections: '2026-10-20 Stage-2b: new entry. W2 summary ''decoder-only INT8 token-exact, encoder
+    INT8 not exact'' confirmed; added that decoder and joint are one graph, the frontend is absent from
+    the package, and the cache contract is undocumented. Main correction 2026-10-20 after per-claim second
+    reader: per-file sizes removed (not in saved files).'
+  claim_anchors:
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L105-L105 @ 6d6be8e
+    quote: '- encoder-only INT8: not exact'
+    quote_sha256: 19f702b7612737dbe0e2e7389a095218f7fdbceec863611419f2cfd53ec9ebbf
+    source_revision: HF ysdede/parakeet-realtime-eou-120m-v1-onnx@6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L104-L104 @ 6d6be8e
+    quote: '- decoder-only INT8: exact token/text/raw-text parity'
+    quote_sha256: 41609ebb0ce25d70e9da4f153319049be79a19cf83fb0bc492f8e5a8fb8e0a2e
+    source_revision: HF ysdede/parakeet-realtime-eou-120m-v1-onnx@6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L89-L89 @ 6d6be8e
+    quote: 'This matters: this model does **not** use the normalized `nemo128` frontend contract reused
+      by some other NeMo exports.'
+    quote_sha256: e05115d502a800c0be91249ff390f23caed59c235d18818ae8640006a134b549
+    source_revision: HF ysdede/parakeet-realtime-eou-120m-v1-onnx@6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: config.json:L9-L9 @ 6d6be8e
+    quote: '"eou_id": 1024'
+    quote_sha256: 7e28d0240b44c5d03139dfed13ad3838e4f5f23ec63956ea9e721d6d33f15fbd
+    source_revision: HF ysdede/parakeet-realtime-eou-120m-v1-onnx@6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L79-L79 @ 6d6be8e
+    quote: For `@asrjs/speech-recognition`, this ONNX package is intended to run with the shared in-repo
+      JavaScript NeMo frontend.
+    quote_sha256: f55a015853ac1a18807e9f1fd46b3d231855bdee34a24ffb5d789a5cbca8eb35
+    source_revision: HF ysdede/parakeet-realtime-eou-120m-v1-onnx@6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: soniqo_README.md:L62-L62 @ d09ec62
+    quote: '| Streaming | 320 ms chunks (64 mel frames), left context 70, conv cache 8 |'
+    quote_sha256: 957838243239caa9f024243ba46ef89eafa8a889c5bf79d97f5b71c5ffe879c6
+    source_revision: HF soniqo/Parakeet-EOU-120M-ONNX-INT8@d09ec62858af0f33506de73b1821599c6da3e0f3
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: soniqo_README.md:L83-L83 @ d09ec62
+    quote: '| Encoder RTF | ~67× | Faster than real time; per-chunk compute well under the 320 ms window
+      |'
+    quote_sha256: 7be3c8d4154a78a11ac0c9ea797619a9fbdefeaf9d9a64ed5c47133f503441d6
+    source_revision: HF soniqo/Parakeet-EOU-120M-ONNX-INT8@d09ec62858af0f33506de73b1821599c6da3e0f3
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: 'pr_master.md:L57-L57 @ master '
+    quote: 'const CHUNK_SIZE: usize = 2560; // 160ms at 16kHz'
+    quote_sha256: bf90bf375113c0b7981945e329b40882be37196f057322576e0c2ea3144f751b
+    source_revision: github altunenes/parakeet-rs@master (README, sha not recorded)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      unanchored: 2
+      true: 3
+    flags_for_operator:
+    - 'actionable W3-NEW-PARAKEET-ONNX-02: Reason applies ysdede''s encoder-int8 non-exactness to soniqo''s
+      separate export; not shown by either source.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read in full: README.md (sha256 16e4e812...), config.json,
+    HF API tree/sizes (api.json, commit 6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6 lastModified 2026-03-16).
+    Also read soniqo README/config and the parakeet-rs README (pr_master.md) for the independent-consumer
+    cross-check. NOT read: ONNX graph signatures (would need downloading weights; forbidden), figure PNGs,
+    vocab.txt contents, nvidia base card (covered by W2-G4).'
+- id: intake-2037
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/28111
+  source_type: blog
+  title: 'CUDA: mul_mat is not batch-invariant for IQ quants at n=5 and n=8 on SM120'
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - quantization
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-20'
+  authors:
+  - cuhawk
+  - mndodd
+  - siavashnorouzi
+  - Incorrectone
+  key_claims:
+  - 'Issue #28111 (open, no labels, 4 comments, opened 2026-08-31 by cuhawk, updated 2026-10-17) reports
+    that on SM120 ggml_mul_mat with IQ3_S and IQ4_XS weights is not batch-invariant at n=5 and n=8: a
+    batched mul_mat is bitwise different from n serial single-column calls, while n=1..4 agree (3 geometries,
+    tolerance 0, 12/18 pass). The reporter did not fix it.'
+  - 'The MMVQ/MMQ crossover is NOT the cause: GGML_CUDA_MMVQ_MAX=4 leaves 12/18, =1 gives 3/18 (batched
+    side moves to MMQ while the serial reference stays on MMVQ). The reporter infers a per-ncols specialisation
+    inside MMVQ changing accumulation order.'
+  - 'Independent reproductions: RTX 5090 (SM120, master 207bdab950, n=5..8 fail) and RTX 5060 Ti. Both
+    report the remedy: forcing the number of warps constant across n restores invariance. Cost is disputed:
+    5090 commenter says forcing 2 or 4 warps costs performance; 5060 Ti commenter says forcing the generic
+    table to nwarps=2 costs nothing in a limited test. Nobody has a merged fix; a canonical-reduction-tree
+    implementation was promised but not posted by the data cutoff.'
+  - 'Code at upstream master 9df0b73c7: calc_nwarps GENERIC table returns 4 for ncols_dst 1-4 and 2 for
+    5-8 (mmvq.cu L452-L467), which matches the observed n<=4 pass / n=5..8 fail split exactly (nwarps
+    sets the number of tmp_shared partial sums added before warp_reduce_sum, mmvq.cu L816-L819). The failing
+    path is MMVQ (mul_mat_vec_q), not MMQ.'
+  - 'HIP/gfx90a (INFERENCE, not tested by any source): the same mul_mat_vec_q kernel and calc_nwarps run
+    in the HIP build; gfx90a maps to table MMVQ_PARAMETERS_GCN (GCN||CDNA, mmvq.cu L113-L114), where nwarps
+    is 2 for n=1, 2-3 and 4 for most types but 1 for n>=5 (Q3_K: 1 at n=2,3; Q6_K: 1 at n=4). So the reduction
+    tree changes at n=5 for IQ3_S/IQ4_XS on gfx90a too, and at n=2 for Q3_K, n=4 for Q6_K. ggml_cuda_should_use_mmvq
+    for CDNA2 sends IQ3_S/IQ4_XS to MMVQ for ne11<=8 (default branch), so the affected range is n=5..8
+    there. The upstream test would settle it on our card.'
+  techniques:
+  - batch-invariance test (batched vs serial ggml_mul_mat, memcmp, tolerance 0)
+  - MMVQ nwarps reduction-tree pinning
+  - MMVQ/MMQ crossover override
+  reported_results:
+  - 'locator issue.json body: iq3_s m=17408 k=5120, iq4_xs m=10240 k=5120, iq4_xs m=5120 k=17408; n=1..4
+    OK, n=5 and n=8 FAIL for all three; 12/18 tests passed; ERR 1.0 vs tolerance 0 (RTX 5080 Laptop SM120,
+    master 41ef91f7c)'
+  - 'locator issue.json body table: GGML_CUDA_MMVQ_MAX equivalent default 12/18, =4 12/18 unchanged, =1
+    3/18'
+  - 'locator comments.json c3 (siavashnorouzi, 2026-10-02, RTX 5090, master 207bdab950): n=1..4 PASS,
+    n=5..8 FAIL, forcing nwarps 2 or 4 restores invariance with a performance cost'
+  - 'locator comments.json c4 (Incorrectone, 2026-10-17, RTX 5060 Ti, M=10240 K=5120): forcing the generic
+    table nwarps to 2 works "without a penalty" (not tested in detail); emulating an nwarps=4 tmp_shared
+    tree at nwarps=2 works but slower'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-1288
+    intake_entry_notes:
+    - 'intake-1288 (names #25618; this issue is a distinct MUL_MAT-side cause, independent of the FA cause
+      in #28108)'
+  expanded_from: intake-2021
+  credibility_score: null
+  contradicting_evidence:
+  - Cost of the nwarps remedy is contradicted between two commenters (no penalty at nwarps=2 per Incorrectone
+    vs "affects the performance" per siavashnorouzi); both are small unreplicated tests (independent of
+    each other)
+  source_revision: 'ggml-org/llama.cpp issue #28111 (issue.json sha256 f58343eb..., comments.json sha256
+    81c01b71...); code ggml-org/llama.cpp@9df0b73c707900b7277a46b5ae52ff7e7e567d13 (mmvq.cu sha256 63dda3d1...;
+    read L95-145, L213-232, L280-440, L452-620, L786-830; NOT read: vecdotq.cuh, per-type vec_dot, mmq.cu)'
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: 'MUL_MAT batch variance is a SECOND, independent cause of greedy spec-dec divergence
+    beside flash attention: MMVQ picks nwarps by ncols_dst, which changes the reduction tree, so a batched
+    verify (n>=5) is not bitwise equal to n=1 decode. Reproduced on SM120 only; the HIP/gfx90a applicability
+    is an inference from the GCN/CDNA table (nwarps 2->1 at n>=5) and has not been run by anyone. Do NOT
+    carry "fix = force nwarps" as a validated remedy: the cost claims conflict and there is no merged
+    patch. The batch-invariance test shape (batched vs serial, memcmp, tol 0) is the reusable artifact.'
+  dive_corrections: '2026-10-20 Stage-2b: issue is NVIDIA-only evidence; added code-grounded mechanism
+    (calc_nwarps GENERIC 4->2 at ncols 5) and the gfx90a GCN/CDNA table inference; nwarps-remedy cost
+    is disputed, not settled.'
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: issue.json /body
+    quote: All three geometries fail at exactly `n=5` and `n=8`
+    quote_sha256: 2436f6da7da165c5fb567214b9a12b5b77697bf66119612e9a159285241a2f94
+    source_revision: 'ggml-org/llama.cpp issue #28111 via GitHub API (updated_at 2026-10-17T20:29:54Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: issue.json /body
+    quote: That suggests the divergence at `n=5`/`n=8` is within MMVQ itself
+    quote_sha256: 9c3cf3721faafa2c2b309356514499d2bdf0f2bef3ad9c2f36266a35d1b78369
+    source_revision: 'ggml-org/llama.cpp issue #28111 via GitHub API (updated_at 2026-10-17T20:29:54Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: comments.json /2/body
+    quote: Forcing the number of warps at 2 or 4 irrespective of `n` fixes the issue (restores invariance)
+      but it affects the performance of this kernel.
+    quote_sha256: 81ee4095654bf248aa0898b5e3993d6b8771e9ae705a6d076b6879e12441c35e
+    source_revision: 'ggml-org/llama.cpp issue #28111 via GitHub API'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: comments.json /3/body
+    quote: The solution of just forcing generic's (blackwell) nwarp count to 2 does work without a penalty
+    quote_sha256: 53abcb58c9f1664ce1e139f8037124ef9803d44ffb1c385cb4b99e763555257b
+    source_revision: 'ggml-org/llama.cpp issue #28111 via GitHub API'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: ggml/src/ggml-cuda/mmvq.cu:L452-L467 @ 9df0b73
+    quote: "case 8:\n                return 2;"
+    quote_sha256: 119dde80fe5c85072c8045e9fa38bda1343f0632d29fde861fec8d4405fd339a
+    source_revision: ggml-org/llama.cpp@9df0b73c707900b7277a46b5ae52ff7e7e567d13
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: ggml/src/ggml-cuda/mmvq.cu:L468-L482 @ 9df0b73
+    quote: '} else if (table_id == MMVQ_PARAMETERS_GCN) {'
+    quote_sha256: f192c869302744d05d5e824e421e2bd09a85465eeebdfb730fe2332c7e702a72
+    source_revision: ggml-org/llama.cpp@9df0b73c707900b7277a46b5ae52ff7e7e567d13
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: ggml/src/ggml-cuda/mmvq.cu:L113-L114 @ 9df0b73
+    quote: if (GGML_CUDA_CC_IS_GCN(cc) || GGML_CUDA_CC_IS_CDNA(cc)) {
+    quote_sha256: 87c8f5cdcf952579a75087f6d8d6c6d3b519a910e885368f4211c3b2f0f373ed
+    source_revision: ggml-org/llama.cpp@9df0b73c707900b7277a46b5ae52ff7e7e567d13
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 5
+    flags_for_operator: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Stage-2b (wave 3) combined Stage-1+2 entry. issue.json + comments.json via api.github.com to
+    /mnt/raid0/llm/tmp/dive-w3-llama28111/; mmvq.cu, mmvq.cuh, common.cuh, ggml-cuda.cu, fattn.cu, fattn-common.cuh
+    from raw.githubusercontent.com at master 9df0b73c707900b7277a46b5ae52ff7e7e567d13 (commit.txt). Note
+    ggml-cuda.cu dispatch (L2015-2025) tries MMF, then MMVQ, then MMQ.
+- id: intake-2038
+  arxiv_id: null
+  url: https://github.com/Apoze/llama.cpp/commit/6263445513416ef93fd5d05391299f33c64702fa
+  source_type: repo
+  title: 'cuda: stabilize quantized FA for speculative batches'
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Apoze
+  key_claims:
+  - 'The commit (one commit on a personal fork branch fix/cuda-speculative-batch-invariance; message title
+    only "cuda: stabilize quantized FA for speculative batches") touches ggml-cuda fattn-common.cuh, fattn-vec.cuh
+    and fattn.cu only (+16/-5), no test and no benchmark.'
+  - 'Dispatch change (fattn.cu): on the NVIDIA cc>=Ada branch with quantized K/V, the VEC kernel is chosen
+    for Q->ne[1] <= 4 instead of <= 2.'
+  - 'Vec launcher change (fattn-vec.cuh): on NVIDIA cc>=Ada with a quantized K or V type, always instantiate
+    cols_per_block = 1 (as the ne[1]==1 case does), so every query column runs with the single-column
+    tile arithmetic.'
+  - 'Partition change (fattn-common.cuh launch_fattn): for NVIDIA cc>=Ada, Q->ne[1]<=4, quantized K/V
+    and no f16 conversion, parallel_blocks is NOT clamped to ntiles_KV and the efficiency search loop
+    is capped at the initial parallel_blocks (parallel_blocks_max), so the KV split/combine order no longer
+    depends on ntiles_KV.'
+  - 'Scope and cost: gated to NVIDIA Ada+ (GGML_CUDA_CC_IS_NVIDIA && cc >= ADA_LOVELACE), unconditional
+    (no env switch), quantized KV only; performance cost is NOT stated anywhere in the commit. No upstream
+    PR from this author was found (GitHub search author:Apoze in ggml-org/llama.cpp returned 0 items);
+    the closest upstream attempt, #28108 (different design, Blackwell-only), was closed unmerged on 2026-09-21.
+    Nothing here applies to gfx90a as written (NVIDIA-gated).'
+  techniques:
+  - fixed KV partition (parallel_blocks independent of ntiles_KV)
+  - single-column vec FA kernel for Q->ne[1]<=4 with quantized KV
+  reported_results:
+  - 'locator commit.json: 3 files, +16/-5 lines (stats total 21); commit dated 2026-08-25T16:11:17Z; no
+    performance number, test or message body in the commit'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-1288
+    intake_entry_notes:
+    - 'intake-1288 (names #25618; this branch is cited there as the unmerged FA-side fix)'
+  expanded_from: intake-2021
+  credibility_score: null
+  source_revision: Apoze/llama.cpp@6263445513416ef93fd5d05391299f33c64702fa (branch fix/cuda-speculative-batch-invariance,
+    parent 8767ef1ca8d644080a14e78378704989df16764c) (commit.diff sha256 and commit.json read in full)
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: This is the minimal "make the FA reduction order independent of batch width"
+    recipe for quantized-KV vec attention (per-column single-width tile + KV split fixed regardless of
+    KV length), unmerged, untested in the commit, cost unreported, NVIDIA-gated. Take the IDEA (pin both
+    tile width and parallel_blocks) as a design pattern for an FA batch-invariance variant; do NOT cite
+    it as a validated or upstream fix, and do NOT assume a cost.
+  dive_corrections: '2026-10-20 Stage-2b: confirmed exact scope; established it differs from #28108 (cols_per_block=1
+    plus fixed parallel_blocks, Ada+, quantized KV) and has no stated cost, test or upstream PR.'
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: commit.json /files
+    quote: 'cuda: stabilize quantized FA for speculative batches'
+    quote_sha256: eed146b3ea69825f01c21751b02dbc47bede77f21d8610033dc661f3df55eb12
+    source_revision: Apoze/llama.cpp@6263445513416ef93fd5d05391299f33c64702fa (branch fix/cuda-speculative-batch-invariance,
+      parent 8767ef1ca8d644080a14e78378704989df16764c)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: fattn.cu hunk @@ -466 (diff)
+    quote: +                    if (Q->ne[1] <= 4) {
+    quote_sha256: 12a2f5b27d485cf37ae4d2fd434876515666acbcd175563aa794651cf31c16bf
+    source_revision: Apoze/llama.cpp@6263445513416ef93fd5d05391299f33c64702fa (branch fix/cuda-speculative-batch-invariance,
+      parent 8767ef1ca8d644080a14e78378704989df16764c)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: fattn-vec.cuh hunk @@ -548 (diff)
+    quote: +    if (Q->ne[1] == 1 || fixed_quantized_vec_partition) {
+    quote_sha256: 5b05505480730f8ee16c892fd81e8a258183145f8bf4c4650028c4a732b2edf9
+    source_revision: Apoze/llama.cpp@6263445513416ef93fd5d05391299f33c64702fa (branch fix/cuda-speculative-batch-invariance,
+      parent 8767ef1ca8d644080a14e78378704989df16764c)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: fattn-common.cuh hunk @@ -1149 (diff)
+    quote: '+        const int parallel_blocks_max = fixed_quantized_vec_partition ? parallel_blocks :
+      ntiles_KV;'
+    quote_sha256: 207fa19a1322758335b6e386aeede91b087b2c82161ae39953ecb3875935244a
+    source_revision: Apoze/llama.cpp@6263445513416ef93fd5d05391299f33c64702fa (branch fix/cuda-speculative-batch-invariance,
+      parent 8767ef1ca8d644080a14e78378704989df16764c)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: fattn-common.cuh hunk @@ -1149 (diff)
+    quote: +        const bool fixed_quantized_vec_partition = GGML_CUDA_CC_IS_NVIDIA(cc) &&
+    quote_sha256: 0d58b1b3692a716673ecb5eb7adc51d340b67bbefae7ec4b69776bc66822f2e6
+    source_revision: Apoze/llama.cpp@6263445513416ef93fd5d05391299f33c64702fa (branch fix/cuda-speculative-batch-invariance,
+      parent 8767ef1ca8d644080a14e78378704989df16764c)
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 4
+      partial: 1
+    flags_for_operator:
+    - 'k4 partial: Gating, no env switch, no cost in commit verified; #28108 closure verified in other
+      dive. "No upstream PR found" rests on 0-hit search files with no recorded query (absence from one
+      key).'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. commit.json via api.github.com and commit.diff via
+    github.com into /mnt/raid0/llm/tmp/dive-w3-apoze-fix/. Fork default branch master, pushed_at 2026-08-25T17:27:27Z.
+    Searched ggml-org/llama.cpp issues/PRs for the commit, author and topic: no merged equivalent found
+    (search is not exhaustive).'
+- id: intake-2039
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/28108
+  source_type: repo
+  title: 'CUDA: batch-invariant flash-attn for narrow widths on SM120'
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - cuhawk
+  key_claims:
+  - 'PR #28108 (closed, merged=false, 0 reviews, 0 review comments, 2 comments: a template/AI-detected
+    bot note and a maintainer AI-usage-policy note) adds tests/test-backend-ops.cpp struct test_flash_attn_ext_batch_invariance
+    plus a Blackwell-gated dispatch fix.'
+  - 'Test design: one graph builds a BATCHED ggml_flash_attn_ext over n_tokens queries and a SERIAL chain
+    of n_tokens single-query flash_attn_ext ops over the same K/V views, concatenates [batched | serial]
+    into one output, and err() returns 0.0 if memcmp of the two halves is equal else 1.0 with max_err()
+    = 0.0, so any bit difference fails. Fixed shapes: head_size 256, 24 q heads, 4 kv heads, Q8_0 K/V
+    stored as 2*n_kv views of length n_kv, F16 kq mask, GGML_PREC_F32, run_whole_graph() true. Sweep:
+    n_kv in {2048, 7168, 16384} x n_tokens in {1,2,3,4} = 12 cases (KV length is swept because it changes
+    the parallel_blocks choice).'
+  - The test is backend-agnostic (plain ggml graph, no CUDA code), so it is directly reusable as a template
+    for an AK batch-invariance gate on HIP/Vulkan/CPU; it must be extended with other KV types (F16, Q4/IQ)
+    and widths up to the real verify width. Its compare is batched-vs-serial on the SAME backend, not
+    vs CPU, so it needs no reference build.
+  - 'Fix: on cc >= BLACKWELL, Q->ne[1] in 3..4 and ne[3]==1, route to BEST_FATTN_KERNEL_VEC and instantiate
+    cols_per_block=4 (the tile widths 1 and 2 already reduce to), gated by env LLAMA_SM120_FA_INVARIANT
+    (0 disables). Cost +15.5-16.5% FA time at widths 3-4, none elsewhere - measured on one RTX 5080 Laptop
+    at hs256, 24/4 heads, kv 7168, q8_0 KV.'
+  - 'Why closed unmerged: most likely (inference: no comment states the reason; the policy note shares
+    the close timestamp) the maintainer policy note (2026-09-21, JohannesGaessler) quoting the AI-usage
+    policy that prohibits AI-written PR descriptions, after the bot flagged template non-compliance and
+    AI-detected content on 2026-08-31. The closure comment contains no technical objection; nothing on
+    design merits was reviewed. The author kept a MUL_MAT test out of this PR deliberately because it
+    would fail CI on master (see #28111).'
+  techniques:
+  - test_flash_attn_ext_batch_invariance (batched vs serial, memcmp, tol 0)
+  - Blackwell-only dispatch of widths 3-4 to the 4-wide vec tile
+  reported_results:
+  - 'locator pr.json body: master 6/12 pass, PR 12/12; n_tokens 3,4 fail at n_kv 2048/7168/16384 on RTX
+    5080 Laptop'
+  - 'locator pr.json body Cost table (q8_0 KV, hs256, 24 q-heads, 4 kv-heads, kv 7168): nb=3 159.56->185.81
+    us (+16.5%), nb=4 162.04->187.15 (+15.5%), nb=1,2,5,8 within 0.7%'
+  - 'locator pr.json body: end-to-end Qwen3.8-27B-UD-Q3_K_XL temp 0 seed 1, 640 tokens, ngram-mod: master
+    diverges, PR byte identical (single prompt; a low-entropy code-edit prompt was identical either way)'
+  - 'locator pr.json body: alternative pinning one MMA instance rejected, +84.5% at nb=1, +21.2% at nb=2'
+  - 'locator pr.json body: test-backend-ops 14607/14607 passed'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - speculative-decoding-mtp-refresh.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1288
+    intake_entry_notes:
+    - 'intake-1288 (names #25618; PR #28108 is the test-design source)'
+  expanded_from: intake-2021
+  credibility_score: null
+  contradicting_evidence:
+  - Single prompt end-to-end evidence (one 640-token run, self-reported, hardware RTX 5080 Laptop only;
+    independent=no); the author states other architectures untested
+  source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+    head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z); pr.diff read
+    in full, reviews.json and review_comments.json are empty arrays'
+  verification: dive-verified
+  read_depth: FULL
+  dive_wave: 3
+  reader_should_conclude: 'Take the TEST DESIGN (batched-vs-serial in one graph, memcmp, tolerance 0,
+    KV-length sweep, F32 prec) as the template for an AK batch-invariance op gate. Do NOT cite the +16%
+    cost or the byte-identical result as general: single card, single prompt, Blackwell-only. It was closed
+    for an AI-writing policy reason, not rejected on technical merit, so closure is no evidence against
+    the approach.'
+  dive_corrections: '2026-10-20 Stage-2b: closure reason pinned to the AI-usage policy (no technical review
+    occurred); test design extracted from the diff; the test is backend-agnostic. Main correction 2026-10-20
+    after per-claim second reader: added measurement conditions to the cost figure; closure reason marked
+    as inference.'
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: pr.json /state, comments.json /1/body
+    quote: It is strictly prohibited to use AI to write your posts for you
+    quote_sha256: 809bf8cd964a191c9852d273fc7aa582ba388f732b00bc300ab1f1c12f1b18e3
+    source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+      head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr.diff tests/test-backend-ops.cpp test_flash_attn_ext_batch_invariance
+    quote: '+        return memcmp(backend, backend + count/2, count/2 * sizeof(float)) == 0 ? 0.0 : 1.0;'
+    quote_sha256: b5b96f0ae29985a1af5f22e17ddd0cbcf7af17a78e6975119a7fac5892aa15c9
+    source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+      head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr.diff tests/test-backend-ops.cpp test list
+    quote: '+    for (int64_t n_kv : {2048, 7168, 16384}) {'
+    quote_sha256: 61c9eafd4ce55cf7c9aac3307844cf4d2e338d3dd152654b8db22e76d88b94b6
+    source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+      head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr.diff test build_graph
+    quote: ggml_flash_attn_ext_set_prec(result, GGML_PREC_F32);
+    quote_sha256: ede5b3a235e5f4c2aacab6ffeaf785bbc8859c94aeb719f28301b2334fc13865
+    source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+      head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr.diff fattn.cu hunk
+    quote: +    if (cc >= GGML_CUDA_CC_BLACKWELL && can_use_vector_kernel && Q->ne[1] <= 4 && Q->ne[3]
+      == 1 &&
+    quote_sha256: 1a9f1136b17d87dd825402a4b3a34c7ce5f42c824811972df74b30aefae73d47
+    source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+      head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z)'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: json-pointer
+    locator: comments.json /0/body
+    quote: AI-generated content
+    quote_sha256: 871cd7d50f248ca321316cac114552d9a1e4d5d8c7798b119af125c74f09d5ef
+    source_revision: 'ggml-org/llama.cpp PR #28108 via GitHub API (base 2d8d612e4c68d3801e556a1b4a028f55ec33ecbb,
+      head 1e2f6954442e6369eda1c4c5c30561109e5f3d8a; closed unmerged 2026-09-21T14:38:30Z)'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 2
+      partial: 3
+    flags_for_operator:
+    - 'k2 partial: Plain ggml graph and same-backend compare verified. Reusability on HIP/Vulkan/CPU and
+      needed extensions are unlabelled inference; anchor (set_prec) is weak.'
+    - 'k3 partial: Env var, cols_per_block=4, ne[1] 3..4, ne[3]==1 verified; fattn.cu routes ne[1]<=4
+      to VEC. +16.5/+15.5% is nb=3/4 on RTX 5080 Laptop, hs256 24/4 heads, kv 7168, q8_0 only; conditions
+      dropped.'
+    - 'k4 partial: Bot note 08-31 and policy quote 09-21 (same timestamp as close) verified; no technical
+      objection. "Stated trigger" is inference: no comment says it closed for that reason. MUL_MAT test
+      deferral is from #28111 body.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Stage-2b (wave 3) combined Stage-1+2 entry. pr.json, comments.json, review_comments.json, reviews.json,
+    pr.diff into /mnt/raid0/llm/tmp/dive-w3-pr28108/. A mmul_mat comment line was added to test-backend-ops.cpp
+    in the diff (stray, no MUL_MAT test shipped).
+- id: intake-2040
+  arxiv_id: null
+  url: https://github.com/MinishLab/semble
+  source_type: repo
+  title: 'Semble: Fast and Accurate Code Search for Agents'
+  categories:
+  - search_retrieval
+  - tool_implementation
+  - rag_alternatives
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-10-20'
+  authors:
+  - Thomas van Dongen
+  - Stephan Tulkens
+  key_claims:
+  - 'Design (README + src/semble/search.py @8ee6463): tree-sitter code-aware chunks; two retrievers, static
+    Model2Vec embeddings (minishlab/potion-code-16M-v2, no transformer at query time) and BM25; each retriever
+    over-fetches top_k*5 candidates, both converted to RRF scores 1/(60+rank), combined as alpha*semantic
+    + (1-alpha)*BM25 with alpha 0.5 for natural-language queries and 0.3 for symbol-like queries; then
+    boosts (definition x3.0, identifier stems x1.0, file coherence 0.2) and path penalties (tests, compat/legacy,
+    examples, .d.ts).'
+  - 'Numbers (self-reported, benchmarks/README.md): NDCG@10 0.855 over ~1,251 queries / 63 repos / 19
+    languages vs CodeRankEmbed 0.839, ColGREP 0.693, BM25 0.673 and zvec-grep 0.670 (zvec-grep is the
+    same potion-code-16M-v2 + BM25 recipe without semble ranking). No confidence intervals or seeds are
+    reported. Labels are file-level (annotations/*.json hold "relevant"/"secondary" file paths) generated
+    by Claude Sonnet 4.6 and checked by the same model as judge.'
+  - 'Ablation shows the code-aware ranking, not the dense model, carries most of the gain: BM25 raw 0.686
+    -> 0.838 with ranking; adding potion-code-16M-v2 on top gives 0.855 (+0.017, no CI). Dense raw alone
+    (0.652) is below BM25 raw (0.686).'
+  - 'The "agent-facing" evaluation is a SIMULATION, not an agent run: expected tokens until first relevant
+    hit (ripgrep per-keyword + read matched files in full, 32k cap) vs semble top-50 chunks: 45,587 vs
+    353 tokens ("99% fewer"); recall at 2k tokens 0.963 vs 0.037. The ripgrep baseline is a fixed keyword
+    heuristic written by the authors (same weakness as sgrep intake-1981 notes for its literal-OR baseline).
+    No task-success (SWE-bench-style) evaluation exists in the repo; sgrep has one (vendor, 50 tasks).'
+  - 'Operational: MIT; Python (uv tool install), CPU only, on-disk index cache with mtime incremental
+    reindex, MCP server (search, find_related), library API SembleIndex.from_path/search, SEMBLE_MODEL_NAME
+    lets a local Model2Vec path replace the HF download. Not run; repo only cloned.'
+  techniques:
+  - Model2Vec static embeddings (potion-code-16M-v2)
+  - BM25
+  - reciprocal rank fusion with query-adaptive alpha
+  - tree-sitter chunking
+  - code-aware reranking (definition/stem/coherence boosts, noise penalties)
+  reported_results:
+  - 'benchmarks/README.md Main results: NDCG@10 semble 0.855, CodeRankEmbed 0.839, ColGREP 0.693, BM25
+    0.673, zvec-grep 0.670; semble index 240 ms, query p50 0.69 ms (CPU, one repo per language)'
+  - 'benchmarks/README.md Expected tokens per query: ripgrep+read 45,587 vs semble 353'
+  - 'benchmarks/README.md Ablations: BM25 raw 0.686 -> 0.838 with ranking; potion-code-16M-v2 raw 0.652
+    -> 0.824; hybrid 0.855'
+  - 'benchmarks/README.md Recall at token budgets: semble 0.843@500, 0.963@2k, 0.996@32k; rg+read 0.037@2k,
+    0.583@32k'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-embedding-retrieval.md
+    experiments: []
+    intake_entries:
+    - intake-1981
+    intake_entry_notes:
+    - 'intake-1981 (sgrep: same potion-code-16M-v2 + BM25 recipe, different fusion and eval)'
+  expanded_from: intake-2019
+  credibility_score: null
+  contradicting_evidence:
+  - No independent replication found or searched beyond the repo; all numbers are author-run (restatement
+    of one source)
+  source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b (README.md sha256 b3d7c7b1...;
+    LICENSE MIT)
+  verification: dive-verified
+  read_depth: PARTIAL
+  dive_wave: 3
+  reader_should_conclude: Semble is a better-SPECIFIED public retrieval baseline than sgrep on retrieval
+    quality (pinned repos, annotations in-repo, 11 baselines, ablation, one-command reproduction) but
+    a weaker one on agent outcome (simulated tokens only, no task-success run). Both use the same potion-code-16M-v2
+    + BM25 core. Its own ablation says the code-aware reranker, not the dense half, gives most of the
+    lift, and the benchmark is code-only with LLM-written file-level labels, so none of it transfers as
+    evidence about REPL spill files / context bundles. Use it as an additional arm and a harness pattern,
+    not as a rationale for the REPL-EMB-2.1 margin.
+  dive_corrections: '2026-10-20 Stage-2b: new entry; flagged label provenance (same LLM generates and
+    judges), absence of CIs, simulated rather than live agent eval, and ablation showing BM25+ranking
+    0.838 vs hybrid 0.855.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README.md "How it works"
+    quote: The two score lists are fused with Reciprocal Rank Fusion (RRF).
+    quote_sha256: 560e16ada8e6d1b6612618d9e35b0b9fec070b6ff12af945dac2eac7d7fb49bf
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: src/semble/ranking/boosting.py:L81-L82 @ 8ee6463
+    quote: '_ALPHA_NL = 0.5  # balanced semantic + BM25'
+    quote_sha256: 38a668e689e6fccfa88b8a11eb8b26ad8e5670d0e1d68e95e7a06d1bfb12482f
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: benchmarks/README.md "Main results"
+    quote: '| **semble**           | **0.855** | **240 ms** | **0.69 ms** |'
+    quote_sha256: 19de3577219a1620660d2d241a18c3827ee7fb36d9a9639ed255e7e87fe0183a
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: benchmarks/README.md "Dataset" Notes
+    quote: queries and ground-truth relevance labels are generated by Claude Sonnet 4.6. The same model
+      is used as LLM-as-judge to verify label quality.
+    quote_sha256: 3af04c6bfabbf22cdb77a423ad22f62686da35164f72e7841b7947568efdd7b9
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: benchmarks/README.md "Ablations"
+    quote: '| BM25                      | 0.686 |     0.838 |'
+    quote_sha256: bbc2210801ad9c97c406da1cd666a6c03ddf73abf65a00b30db9eb8182e08da4
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: benchmarks/README.md "Token efficiency / Methodology"
+    quote: '`ripgrep+read` splits the query into keywords (dropping stopwords and short words), runs `rg
+      --fixed-strings --ignore-case` for each keyword, then reads matched files in full'
+    quote_sha256: 8a14d869c54686cb820c8757c95c3df2c82ad2e1e24dc4c9fe9e6f7cd0b035f0
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: README.md "Using a custom model"
+    quote: you can set your `SEMBLE_MODEL_NAME` environment variable to a local path or Hugging Face repository
+    quote_sha256: 4308fd2f2e780681762c9ce3f9ccac06905143dd910df5ce8a4dcc12c1484d7a
+    source_revision: MinishLab/semble@8ee6463efbb1ff755c339e965c7298b7afd7db5b
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  second_reader:
+    date: '2026-10-20'
+    method: independent agent; per-claim support question against on-disk passage (mechanical re-find
+      by main)
+    tally:
+      'yes': 5
+    flags_for_operator: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone at /mnt/raid0/llm/tmp/dive-w3-semble/repo
+    (HEAD 8ee6463efbb1ff755c339e965c7298b7afd7db5b, 2026-10-16). Read: README.md, benchmarks/README.md
+    in full, search.py L1-130, ranking/boosting.py L138-160 and constants, one annotation file (flask.json).
+    NOT read: chunking code, dense/bm25 index code, tests, installer/agents, results/*.json, other annotations,
+    the potion-code-16M-v2 model card. Nothing executed. Not in research/intake_index.yaml (grep MinishLab/semble:
+    0).'

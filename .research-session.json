@@ -1,8 +1,8 @@
 {
   "session_id": "09f781b0-cd20-400e-95b6-5f6647888fb7",
   "started_at": "2026-10-07T04:25:27Z",
-  "last_checkpoint": "2026-10-20T13:43:34+00:00",
-  "stage": "stage2-wave3-running",
+  "last_checkpoint": "2026-10-20T13:54:54+00:00",
+  "stage": "stage2-wave4-running",
   "phase": 2,
   "lane": "/mnt/raid0/llm/worktrees/intake-batch-20261020",
   "branch": "intake/batch-20261020",
@@ -67,10 +67,28 @@
     "intake-2019",
     "intake-2020",
     "intake-2021",
-    "intake-2022"
+    "intake-2022",
+    "intake-2023",
+    "intake-2024",
+    "intake-2025",
+    "intake-2026",
+    "intake-2027",
+    "intake-2028",
+    "intake-2029",
+    "intake-2030",
+    "intake-2031",
+    "intake-2032",
+    "intake-2033",
+    "intake-2034",
+    "intake-2035",
+    "intake-2036",
+    "intake-2037",
+    "intake-2038",
+    "intake-2039",
+    "intake-2040"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2023,
+  "next_intake_id": 2041,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -1486,6 +1504,413 @@
       "project_decision": "None for the statistic; the admission policy is covered under W1-1979-02.",
       "wave": 2,
       "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-A-ELO-01",
+      "source": "intake-2023",
+      "action": "Write an offline script that reads closed AK campaign journals and computes, per target, best-so-far measured score vs cumulative tokens (planner+critic+worker), then a Bradley-Terry self-Elo curve on a doubling token grid and the local slope per decade against 400; report only if >=5 independent campaigns per target exist, otherwise report the count and stop.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Zero-compute journal analysis. First step is verifying the journal carries per-call token usage and confirmed (not screen) scores; a lane grep found no explicit per-call token field, so a prospective journal column may be needed first.",
+      "project_decision": "Whether AK campaign restarts (fresh planner context) should be scheduled by token budget rather than wall-clock/stall heuristics.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-A-ELO-02",
+      "source": "intake-2023",
+      "action": "If W3-A-ELO-01 shows a slope-below-400 regime, pre-register a restart-vs-continue comparison (K fresh campaigns vs 1 long, same total tokens, same target) before changing any restart policy.",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "The paper restart baseline is memoryless; AK restarts keep the strategy store, so the effect must be measured on AK, not imported.",
+      "project_decision": "AK restart cadence.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-A-SLA-01",
+      "source": "intake-2024",
+      "action": "Draft (do not implement) a one-page AK planner-context spec: which journal fields feed an evidence summary (direction-grouped outcomes, inconclusive vs sealed-valid non-improvement, frontier age), mapped from the Appendix E Advisor prompt inputs.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "The prompt and the inconclusive-vs-negative distinction are the portable parts; the AK journal design already retains all failures (lane autokernel-research-loop.md:1028).",
+      "project_decision": "Whether AK planner context becomes a harness-built summary (stateless planner) rather than accumulated conversation.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-A-ARL-01",
+      "source": "intake-2025",
+      "action": "Write a kernel mechanism taxonomy (8-10 categories: tiling, vectorization/ISA path, prefetch, threading/NUMA, quant dequant path, fusion, launch config, layout, algorithmic, Other) and hand-label a sample of AK strategy-store entries to measure rule-parser agreement before using any entropy number.",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "The shipped parser has no kernel vocabulary; labeling is the gating cost and agreement must be measured because the repo asserts kappa=0.84 without evidence.",
+      "project_decision": "Whether AK shows algorithmic mode collapse (planner repeating one mechanism) and whether to add a diversity gate to planner prompts.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-A-ARL-02",
+      "source": "intake-2025",
+      "action": "Implement S_t, C_t, H_t as a read-only offline script over closed AK journal/strategy-store history (own reimplementation or vendored with the same parameters: W=20, HDBSCAN 5/2, all-mpnet-base-v2) in an isolated venv, as a small CPU job under region-lock.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "No effect on the frozen kernel; analysis of closed campaigns. Needs per-candidate description text and patch retention; if AK keeps only hashes, add prospective journal fields. Also a measurement producer for belief-kernel wiring.",
+      "project_decision": "Same as above.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-A-ARL-03",
+      "source": "intake-2025",
+      "action": "Define the AK faithfulness pair as in-loop screen metric vs confirmed/serving-gate metric and compute signed (not absolute) gain ratios over campaign time.",
+      "owner": "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "proposed_disposition": "propose",
+      "reason": "Absolute gains hide held-out regressions; AK already has screen, confirm and serving stages so the pair exists.",
+      "project_decision": "Whether the keep-gate should track screen-to-confirm transfer rate over time.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TLP-01",
+      "source": "intake-2026",
+      "action": "In the AK candidate journal, record the exact knob/edit vector for every candidate in a fixed, numerically parseable schema (type tag + numeric params) BEFORE build, with the later build-success/error class and measured result beside it, so a TLP-style knob-sequence regressor and a build-failure classifier can be fitted offline.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Write-side capture is cheap/permanent (belief-kernel rule); TLP shows primitive-level features suffice without lowering. Same task as W2-NEW-ANSOR-01 - merge, do not duplicate.",
+      "project_decision": "Whether a pre-build surrogate for AK parametric candidates is ever justified.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TLP-02",
+      "source": "intake-2026",
+      "action": "When any AK surrogate is evaluated, report top-1/top-5 score and pairwise-ranking accuracy per task, not RMSE/R2.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "TenSet (intake entry for TenSet, not TLP) recommends top-k score over RMSE for ranking; TLP reports top-k scores.",
+      "project_decision": "Acceptance metric for a future surrogate.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TLP-03",
+      "source": "intake-2026",
+      "action": "Port MTL-TLP / pre-trained cost model to AK now.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "decline",
+      "reason": "Needs 5e5 labelled target records; AK has tens. Re-open only on the NEW-ANSOR trigger (candidate count + build no longer dominant).",
+      "project_decision": "None changed now.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-PRUNER-01",
+      "source": "intake-2027",
+      "action": "Prototype a zero-cost analytic pre-screen for AK GPU candidates: from the candidate knob vector (tile/block sizes, LDS bytes, unroll, wavefront count) compute an occupancy/LDS/bandwidth roofline score using the measured gfx90a receipts, and log it beside the measured result to check rank correlation on already-benchmarked candidates before using it to gate builds.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Pruner Table 10 shows an analytic draft keeps near-best candidates; the cost to test is a script over existing journal rows - no new compute, no build.",
+      "project_decision": "Whether a pre-build analytic gate can cut AK build count.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-PRUNER-02",
+      "source": "intake-2027",
+      "action": "Adopt Pruner as an AK search component.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "decline",
+      "reason": "NVIDIA-only TVM fork; attacks cost-model inference time, not build time.",
+      "project_decision": "None.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TENSET-01",
+      "source": "intake-2028",
+      "action": "Define the AK history record schema as a TenSet-style hierarchy (task key -> candidate (knob/edit vector) -> outcome with failure class and per-stage build/measure seconds) and add a one-shot exporter from the existing candidate journals; do not train anything.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "propose",
+      "reason": "Write-side retrofit is impossible later; TenSet records carry error codes and shows more tasks beat more programs per task. Same record as W3B-NEW-TLP-01 - land once.",
+      "project_decision": "Whether AK accumulates a fittable surrogate corpus.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TENSET-02",
+      "source": "intake-2028",
+      "action": "Download the TenSet dataset or train a cost model on it.",
+      "owner": "handoffs/active/autokernel-rebuild-program.md",
+      "proposed_disposition": "decline",
+      "reason": "No gfx90a/CDNA content (its CPU platforms include an AVX-512 Xeon Platinum 8272CL and a 4-core EPYC 7452 VM, per Table 2); AK candidates are not TVM schedules, so it supplies no AK decision.",
+      "project_decision": "None.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TILELANG-01",
+      "source": "intake-2029",
+      "action": "Run ONE bounded gfx90a viability probe of upstream TileLang on the MI210 in an isolated venv: install the wheel, compile and run its plain f16 MFMA GEMM example with target {\"kind\":\"hip\",\"mcpu\":\"gfx90a\"}, check numerics against torch, record pass/fail and hipcc compile seconds per config. Under GPU claim/exclusivity rules; report build-seconds-per-config next to the 2,025 s build per AK iteration.",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "propose",
+      "reason": "The tree cannot answer whether MI210 works (no runtime CI on gfx90a); one probe settles it and also measures the per-candidate compile cost that decides whether TileLang attacks AK's build bottleneck.",
+      "project_decision": "Whether TileLang becomes an AK GPU kernel-authoring/search surface for MI210.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3B-NEW-TILELANG-02",
+      "source": "intake-2029",
+      "action": "Read tilelang/rocm/op/gemm/gemm_mfma.py, examples/amd and examples/dequantize_gemm to determine whether sub-4-bit (IQ2/IQ3) dequant-GEMM can be expressed on gfx9.",
+      "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "proposed_disposition": "propose",
+      "reason": "Low-bit GPU perf is a priority and the tree files were not read in this dive; text-only task, no compute.",
+      "project_decision": "Same as above.",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-GAMETIME-01",
+      "source": "intake-2030",
+      "action": "If CS-36 needs an LLM judge for turn-level acceptance, validate a local text-only judge (champion or 35B-A3B role) on the Game-Time protocol: score >=20 CS-4/CS-36 sessions with 3 human raters, report Spearman/Pearson with CI, and require it to meet or exceed the published Gemini 0.677 before the judge is allowed to gate.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Judge input is transcript text so a local judge is feasible; removes the cloud dependency W2 flagged for FDB-v1.5/v2. Gate only after validation.",
+      "project_decision": "whether CS-36 acceptance may use a local LLM judge",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-GAMETIME-02",
+      "source": "intake-2030",
+      "action": "Do not wire Game-Time Time/Tempo/SimulSpeak tasks into CS-2 or CS-36.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "They test explicit temporal-instruction following by an SLM, not endpointing or barge-in; no mapping to CS-22/CS-23 metrics.",
+      "project_decision": "none",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-TURNBENCH-01",
+      "source": "intake-2031",
+      "action": "Score the CS-22 arms (Silero VAD + silence threshold; Parakeet-EOU if run) on the TurnBench dev split: write a predictions.json adapter per arm, run `python -m turnbench.score`, and report EOT recall / FPR / signed latency (and INT FPR for the CS-23 barge-in detector) next to the RMS VAD floor and SmartTurn v3 / VAP reference rows, as an English human-annotated cross-check to the CS-4 hesitation clips.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Gives CS-22 an external false-cut / false-barge-in number on human-annotated English; the scorer is local CPU, no cloud judge; needs the operator to supply a HF token for the gated dev split.",
+      "project_decision": "which turn-end arm (silence threshold vs streaming EOU token vs semantic) CS-22 selects, and the CS-23 barge-in trigger",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-TURNBENCH-02",
+      "source": "intake-2031",
+      "action": "Use TurnBench corpus (not just scorer) as selection-split material for CS-4 hesitation/backchannel sets only if the Annex S corpus rules (PCM-SHA-256 binding, durable in-repo) can admit a gated, non-redistributable dataset; otherwise keep it as an external cross-check.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Annex S requires durable in-repo corpora; gated HF data may not satisfy this - an explicit scoping decision.",
+      "project_decision": "whether external gated data can sit in the CS-4 sets",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-HUMDIAL-01",
+      "source": "intake-2032",
+      "action": "Borrow the Rejection taxonomy (backchannel, mid-sentence pause, third-party speech, side-speech) as scenario labels for the CS-4 hesitation/backchannel sets and CS-23 false-barge-in tests.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Gives named, externally-used scenario classes with no model download; cheap to adopt as labels.",
+      "project_decision": "CS-4 set composition and CS-23 false-barge-in acceptance",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-HUMDIAL-02",
+      "source": "intake-2032",
+      "action": "Do not adopt HumDial-FDBench scoring (DeepSeek-V3 judge, 2xGPU baseline) as a gate.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Cloud judge, organiser-run leaderboard, mixed zh/en with no per-language split.",
+      "project_decision": "none",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-EASYTURN-01",
+      "source": "intake-2033",
+      "action": "Do not add Easy Turn as a CS-22 arm; keep Silero+silence and Parakeet-EOU (and SmartTurn v3 per TurnBench) as the arms.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "decline",
+      "reason": "Mandarin-trained, offline utterance classifier, no CPU runtime, no English evidence; costs a port plus retraining for an unmeasured gain.",
+      "project_decision": "CS-22 arm set",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-EASYTURN-02",
+      "source": "intake-2033",
+      "action": "Adopt the four-state label set (complete / incomplete / backchannel / wait) as the annotation scheme for the CS-4 hesitation/backchannel clips so a later semantic-EOT or barge-in classifier can be scored on it.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "Cheap labelling convention that maps to CS-22 (complete/incomplete) and CS-23 (backchannel/wait).",
+      "project_decision": "CS-4 label schema",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-FDB-REPO-01",
+      "source": "intake-2034",
+      "action": "Add a stop/response-latency harness to CS-23: reuse v1_v1.5/evaluation/get_timing.py (Silero VAD intervals over input.wav/output.wav) as the barge-in cancel-latency instrument, feeding it the FDB v1.5 user_interruption stimuli (requires manual Google Drive fetch of the v1.5 dataset) played against a speaking cascade.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "CS-23 needs measured cancel latency in a harness with simulated overlap; get_timing.py is a ready, keyless instrument and gives numbers comparable to published FDB v1.5 stop latency.",
+      "project_decision": "whether CS-23 reports FDB-comparable stop/response latency or a bespoke metric",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-FDB-REPO-02",
+      "source": "intake-2034",
+      "action": "In CS-36, add an FDB v3 tool-call arm: write an EPYC provider adapter that emits result_cascade_epyc.json (fields listed in the entry) from our cascade for the 100 v3 recordings and score with evaluate_tool_calls.py / evaluate_pass_rate.py (exact-match mode first, then local-judge mode via OPENAI_BASE_URL with the judge model name aliased).",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "gives a public tool-use-under-disfluency comparison for the cascade baseline (CS-21) without LiveKit Cloud or OpenAI keys; judge swap must be labelled non-comparable.",
+      "project_decision": "whether the cascade baseline is reported against FDB v3 published systems",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-FDB-REPO-03",
+      "source": "intake-2034",
+      "action": "Before use, patch-plan get_transcript/asr.py and run_tool_benchmark.py load_asr_model for CPU (replace .cuda()) or substitute our whisper word-timestamp output, and record that substitution as a measurement-era change (ASR differs from Parakeet-TDT).",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "both hard-code NeMo Parakeet-TDT on CUDA; ASR choice changes every timestamp-derived metric, so the substitution must be declared.",
+      "project_decision": "which ASR provides word timestamps for FDB scoring on this host",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-NEMO-VOICEAGENT-01",
+      "source": "intake-2035",
+      "action": "In CS-23 specify barge-in policy using the NeMo turn_taking.py rules as the reference (backchannel list suppression while bot speaks, 2-word early interrupt, bot_stop_delay) and measure each rule separately in the cancel-latency harness against plain VAD-start interruption.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "gives a concrete, vendor-used baseline policy set to ablate; the repo reports no numbers so each rule must be measured.",
+      "project_decision": "barge-in trigger: VAD start vs word-count vs backchannel-filtered",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-NEMO-VOICEAGENT-02",
+      "source": "intake-2035",
+      "action": "In CS-22 add the NeMo defaults (Silero confidence 0.6 / start 0.1 s / stop 1.2 s) as a named reference configuration of the VAD arm so the EOU arm and silence arm are compared against the vendor operating point.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "makes the silence-threshold arm comparable to a published deployment default.",
+      "project_decision": "silence threshold for end-of-turn",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-PARAKEET-ONNX-01",
+      "source": "intake-2036",
+      "action": "CS-22 EOU arm preparation task: onnx-load (metadata only) the encoder and decoder_joint graphs, record input/output names, shapes and cache layout, and write a numpy NeMo-128-mel frontend plus an 80 ms chunked greedy RNNT loop with reset-on-EOU; verify token parity against a NeMo CPU streaming run on 10 CS-4 clips before any latency measurement.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "parity gate prevents measuring a mis-wired port; card gives parity only on one unnamed fixture.",
+      "project_decision": "whether the EOU arm can run on EPYC CPU through onnxruntime",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-PARAKEET-ONNX-02",
+      "source": "intake-2036",
+      "action": "If the ysdede graphs prove awkward, evaluate soniqo/Parakeet-EOU-120M-ONNX-INT8 (documented cache handoff, 3 graphs) as the fallback artifact set, treating its capability claims as unverified.",
+      "owner": "handoffs/active/conversation-stack.md",
+      "proposed_disposition": "propose",
+      "reason": "explicit chunk/cache contract in config.json reduces wiring risk but only the encoder int8 variant is offered and encoder int8 is non-exact per the ysdede card.",
+      "project_decision": "which ONNX artifact set backs the CS-22 EOU arm",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-LLAMA28111-01",
+      "source": "intake-2037",
+      "action": "Add a MUL_MAT batch-invariance probe (one batched ggml_mul_mat vs n serial single-column calls, memcmp, tolerance 0) for IQ3_S, IQ4_XS, IQ2_XXS/XS/S, IQ3_XXS and Q3_K/Q6_K at n=1..8 on gfx90a (HIP build) as an AK correctness-gate candidate on the experimental branch, using CPU-side-free correctness scheduling",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Predicted from the GCN/CDNA nwarps table to fail at n=5 for IQ3_S/IQ4_XS on gfx90a; a tolerance-0 probe is a cheap deciding test and fits the low-bit lane",
+      "project_decision": "whether spec-dec verification widths >=5 are lossless on the MI210 low-bit lane, and whether AK needs a batch-invariance gate",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-LLAMA28111-02",
+      "source": "intake-2037",
+      "action": "Run the same batched-vs-serial probe on the CPU backend (ggml-cpu IQ2/IQ3 iqk paths) for n=1..8",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "CPU low-bit path is a priority and its GEMM tiling may also vary with n; no source tests CPU",
+      "project_decision": "CPU spec-dec verify losslessness on IQ2/IQ3",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-APOZE-FIX-01",
+      "source": "intake-2038",
+      "action": "When writing the AK batch-invariance gate, include a quantized-KV FA case with n_tokens 1..4 across several n_kv values, and treat parallel_blocks / KV split as part of the invariance contract on the HIP FA path",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "The commit shows KV-length-dependent partitioning is a second variance source beside tile width",
+      "project_decision": "FA-side spec-dec losslessness on gfx90a",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-PR28108-01",
+      "source": "intake-2039",
+      "action": "Port test_flash_attn_ext_batch_invariance to an AK gate harness: same batched-vs-serial single-graph structure, memcmp tol 0, n_kv sweep, extended to the production KV types and verify widths, run on the HIP build for gfx90a under the correctness-work scheduling rule",
+      "owner": "handoffs/active/autokernel-research-loop.md",
+      "proposed_disposition": "propose",
+      "reason": "Backend-agnostic, needs no reference build, directly detects the bug class that diverged greedy spec-dec",
+      "project_decision": "whether an AK keep requires batch-invariance in addition to speed/NMSE",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-PR28108-02",
+      "source": "intake-2039",
+      "action": "Treat any candidate kernel whose batch-invariant variant costs >~15% at verify widths as a throughput-vs-losslessness decision package, with the +16% figure as a Blackwell data point only",
+      "owner": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "proposed_disposition": "decline",
+      "reason": "Cost is single-card Blackwell; no gfx90a number exists, so a decision package would be premature",
+      "project_decision": "none until gfx90a probe runs",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-SEMBLE-01",
+      "source": "intake-2040",
+      "action": "Add \"semble-style static-embedding (potion-code-16M-v2) + BM25 RRF\" and semble itself as extra arms to the offline REPL retrieval eval corpus, alongside sgrep, reporting recall@5/CPU-s/latency per the already-registered metric",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "propose",
+      "reason": "Both are CPU-only, ms-latency candidates on the cheap end of the 2.1 \"cheapest-within-X\" rule; the 2.2 arm list is not frozen text (only 2.1 is) and no edit to 2.1 is proposed",
+      "project_decision": "which cheap hybrid arm, if any, beats grep/BM25 by the registered margin M=0.10 on recall@5",
+      "wave": 3,
+      "verification": "dive-verified"
+    },
+    {
+      "ledger_id": "W3-NEW-SEMBLE-02",
+      "source": "intake-2040",
+      "action": "Copy the benchmark pattern (per-category NDCG, raw-vs-ranked ablation, token-budget recall curve) into the 2.2 report template, and add a BM25+rank-signals-only arm so dense gain is isolated",
+      "owner": "handoffs/active/repl-embedding-retrieval.md",
+      "proposed_disposition": "propose",
+      "reason": "Semble own ablation shows reranking explains most lift; 2.2 must separate lexical-plus-heuristics from dense gain or the kill rule is misattributed",
+      "project_decision": "whether dense embeddings are needed at all for REPL retrieval",
+      "wave": 3,
+      "verification": "dive-verified"
     }
   ],
   "state": {
@@ -2654,6 +3079,348 @@
             "source": "arXiv 2504.17577 TileLang paper",
             "bears_on": "intake-1979",
             "reason": "Already in the index; cross-referenced instead."
+          }
+        ],
+        "status": "applied",
+        "decline_revision": [
+          {
+            "source": "https://github.com/ggml-org/llama.cpp/pull/28489",
+            "was": "declined in wave-3 record",
+            "now": "ingest-and-dive in wave 4",
+            "why": "Wave-3 E recommends it as the open remedy for the batch-invariance class on Vulkan, which MI210 runs (operator seq 7/10 reverse-engineering lens)."
+          }
+        ],
+        "applied": "2026-10-20T13:54:54+00:00",
+        "new_entries": {
+          "NEW-ELOTOKEN": "intake-2023",
+          "NEW-SLA-REPO": "intake-2024",
+          "NEW-ARLMC-REPO": "intake-2025",
+          "NEW-TLP": "intake-2026",
+          "NEW-PRUNER": "intake-2027",
+          "NEW-TENSET": "intake-2028",
+          "NEW-TILELANG": "intake-2029",
+          "NEW-GAMETIME": "intake-2030",
+          "NEW-TURNBENCH": "intake-2031",
+          "NEW-HUMDIAL": "intake-2032",
+          "NEW-EASYTURN": "intake-2033",
+          "NEW-FDB-REPO": "intake-2034",
+          "NEW-NEMO-VOICEAGENT": "intake-2035",
+          "NEW-PARAKEET-ONNX": "intake-2036",
+          "NEW-LLAMA28111": "intake-2037",
+          "NEW-APOZE-FIX": "intake-2038",
+          "NEW-PR28108": "intake-2039",
+          "NEW-SEMBLE": "intake-2040"
+        },
+        "surfaced": [
+          {
+            "id_or_url": "https://github.com/agent-tts/Agent-TTS-Code",
+            "what_it_would_settle": "Exact Bradley-Terry MM implementation, checkpoint grid, bootstrap and submission-log schema, so the AK analysis can be validated against the reference implementation.",
+            "bears_on": "NEW-ELOTOKEN",
+            "recommend": "ingest-and-dive",
+            "reason": "Cheap clone-and-read; only way to confirm estimator details not read (App. B).",
+            "from_entry": "intake-2023",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://arxiv.org/abs/2605.08478",
+            "what_it_would_settle": "Independent evidence on whether agentic loops lose to independent sampling under budget; could corroborate or contradict the slope claim.",
+            "bears_on": "NEW-ELOTOKEN",
+            "recommend": "ingest-and-dive",
+            "reason": "Only independent-looking hit; concerns reasoning agents, so applicability to kernel loops is uncertain.",
+            "from_entry": "intake-2023",
+            "wave": 3
+          },
+          {
+            "id_or_url": "arXiv:2402.02361 Pruner (ASPLOS25)",
+            "what_it_would_settle": "TLP replacement with analytic pre-filter",
+            "bears_on": "NEW-TLP",
+            "recommend": "ingest-and-dive",
+            "reason": "Dived in this wave as NEW-PRUNER.",
+            "from_entry": "intake-2026",
+            "wave": 3
+          },
+          {
+            "id_or_url": "TLM: Zhai et al. 2024 (language-model tensor-program tuner, cited by Pruner as \"TLM (Zhai et al., 2024)\")",
+            "what_it_would_settle": "Whether a pretrained LM generating schedules (not just scoring) removes the search loop; Pruner says it only works for subgraphs seen in pretraining",
+            "bears_on": "NEW-TLP",
+            "recommend": "ingest-and-dive",
+            "reason": "arXiv ID not seen in a fetched source this run - locate via search before ingest; closest published analogue to an LLM proposing kernel edits from a history dataset.",
+            "from_entry": "intake-2026",
+            "wave": 3
+          },
+          {
+            "id_or_url": "Roller (Zhu et al., 2022; cited by Pruner as a rule-based tile constructor; arXiv/OSDI id not seen in a fetched source this run)",
+            "what_it_would_settle": "Whether a purely analytic tile generator (no search, no model) is competitive; TileLang carver is a Roller-style generator",
+            "bears_on": "NEW-PRUNER",
+            "recommend": "decline",
+            "reason": "ID not seen in a fetched source this run; the finding is already summarised by Pruner Table 6 (Roller loses to Ansor/MoA-Pruner on TITAN V) and by the TileLang tree.",
+            "from_entry": "intake-2027",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/zhaiyi000/tlp (TenSet-TLP 8.65M-record Intel i7-10510U CPU dataset, CC BY 4.0)",
+            "what_it_would_settle": "Only another CPU TVM dataset; no AMD or GPU CDNA content",
+            "bears_on": "NEW-TENSET",
+            "recommend": "decline",
+            "reason": "Does not change any AK conclusion.",
+            "from_entry": "intake-2028",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/tile-ai/tilelang/releases/tag/v0.1.13 (and v0.1.10 \"broadened AMD ... support\")",
+            "what_it_would_settle": "Whether any release note mentions MI200/gfx90a fixes",
+            "bears_on": "NEW-TILELANG",
+            "recommend": "decline",
+            "reason": "Release notes are summarised in the README; the probe in W3B-NEW-TILELANG-01 is stronger evidence.",
+            "from_entry": "intake-2029",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://ga642381.github.io/Game-Time",
+            "what_it_would_settle": "turn-taking judge prompts, human-agreement and datasets that the paper defers",
+            "bears_on": "NEW-GAMETIME",
+            "recommend": "decline",
+            "reason": "Needs a JS-capable browser to read; marginal given W2 already declined the FDB-v2 judge as a gate. Revisit only if action 01 is taken.",
+            "from_entry": "intake-2030",
+            "wave": 3
+          },
+          {
+            "id_or_url": "arXiv:2506.05984",
+            "what_it_would_settle": "audio-LLM-as-judge (ALLM) agreement protocol cited for the alternative judge",
+            "bears_on": "NEW-GAMETIME",
+            "recommend": "decline",
+            "reason": "Cloud audio-LLM judge; not needed for a transcript-based local judge.",
+            "from_entry": "intake-2030",
+            "wave": 3
+          },
+          {
+            "id_or_url": "arXiv:2606.13450",
+            "what_it_would_settle": "Endpoint anticipation for low-latency spoken dialogue (Udupa, Watanabe et al.); cited by TurnBench for end-of-turn detection; may give a causal-anticipation endpointer with measurements on this benchmark",
+            "bears_on": "NEW-TURNBENCH",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (0 hits); bears directly on CS-22 semantic end-of-turn arm and latency (human -151 ms anticipation).",
+            "from_entry": "intake-2031",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/pipecat-ai/smart-turn",
+            "what_it_would_settle": "SmartTurn v3 ONNX CPU endpointer, TurnBench EOT .752/.047 on English",
+            "bears_on": "NEW-TURNBENCH",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (0 hits); candidate semantic-EOT CPU arm for CS-22 with an external English number; compare with Parakeet-EOU.",
+            "from_entry": "intake-2031",
+            "wave": 3
+          },
+          {
+            "id_or_url": "arXiv:2601.20230",
+            "what_it_would_settle": "Unit-based agent for semi-cascaded full-duplex systems (HumDial rank 2, Int 89.7)",
+            "bears_on": "NEW-HUMDIAL",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (0 hits); semi-cascaded design is the closest published architecture to our cascade.",
+            "from_entry": "intake-2031",
+            "wave": 3
+          },
+          {
+            "id_or_url": "arXiv:2601.20230",
+            "what_it_would_settle": "Badcat: semi-cascaded unit-based agent (Int 89.7, rank 2); how the decision tokens Switch/Continue are produced",
+            "bears_on": "NEW-HUMDIAL",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (0 hits); closest published design to cascade + unified decision.",
+            "from_entry": "intake-2032",
+            "wave": 3
+          },
+          {
+            "id_or_url": "arXiv:2601.05564",
+            "what_it_would_settle": "challenge overview with team descriptions and per-track results (which winners are open)",
+            "bears_on": "NEW-HUMDIAL",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (0 hits); only route to open-weights status and per-scenario numbers.",
+            "from_entry": "intake-2032",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/pipecat-ai/smart-turn",
+            "what_it_would_settle": "English CPU-capable endpointer (ONNX) that Easy Turn compared against (v2) and TurnBench scored (v3)",
+            "bears_on": "NEW-EASYTURN",
+            "recommend": "ingest-and-dive",
+            "reason": "Not in index (0 hits); more practical CS-22 candidate than Easy Turn.",
+            "from_entry": "intake-2033",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/ten-framework/ten-turn-detection",
+            "what_it_would_settle": "7B text-only turn detector used as Easy Turn's labeller and baseline",
+            "bears_on": "NEW-EASYTURN",
+            "recommend": "decline",
+            "reason": "7 B and requires upstream ASR; too heavy for the CPU voice path.",
+            "from_entry": "intake-2033",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://drive.google.com/drive/folders/1DtoxMVO9_Y_nDs2peZtx3pw-U2qYgpd3",
+            "what_it_would_settle": "actual v1/v1.5 stimuli (sample counts, durations, overlap windows) needed before CS-23 harness design",
+            "bears_on": "NEW-FDB-REPO",
+            "recommend": "decline",
+            "reason": "Dataset download, not an intake source; fetch at execution time by the operator-authorised lane.",
+            "from_entry": "intake-2034",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/NVIDIA-NeMo/labs-Voice-Agent",
+            "what_it_would_settle": "successor implementation; whether it adds evaluation tooling or a trained turn-taking model that supersedes the VAD+EOU heuristics",
+            "bears_on": "NEW-NEMO-VOICEAGENT",
+            "recommend": "ingest-and-dive",
+            "reason": "README states this tree is deprecated in its favour and the GitHub API shows it is active (pushed 2026-10-20); may change the turn-taking conclusion. Not in index (0 hits).",
+            "from_entry": "intake-2035",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://huggingface.co/soniqo/Parakeet-EOU-120M-ONNX-INT8",
+            "what_it_would_settle": "explicit cache/chunk contract for an EOU ONNX export",
+            "bears_on": "NEW-PARAKEET-ONNX",
+            "recommend": "decline",
+            "reason": "Fallback artifact only; fetch at execution time. Not in index.",
+            "from_entry": "intake-2036",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/altunenes/parakeet-rs",
+            "what_it_would_settle": "working Rust reference implementation (frontend, chunking, EOU decoding) to copy the missing frontend/cache logic from",
+            "bears_on": "NEW-PARAKEET-ONNX",
+            "recommend": "ingest-and-dive",
+            "reason": "Only readable code found that wires this model under onnxruntime; would settle the frontend and cache-state contract that the ysdede card omits. Not in index (0 hits).",
+            "from_entry": "intake-2036",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/issues/28768",
+            "what_it_would_settle": "HIP/ROCm gfx1201 batched target scoring changes logits/top-1 with a Vulkan control stable: the only AMD HIP report seen; may show whether the MMVQ/FA cause hits AMD",
+            "bears_on": "NEW-LLAMA28111",
+            "recommend": "ingest-and-dive",
+            "reason": "Titled in a search result in this run; AMD HIP evidence is what would move the gfx90a inference from plausible to observed",
+            "from_entry": "intake-2037",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/28489",
+            "what_it_would_settle": "vulkan: make MMVQ path selection independent of batch size - an open remedy for the same class on Vulkan (MI210 also runs Vulkan)",
+            "bears_on": "NEW-LLAMA28111",
+            "recommend": "ingest-and-dive",
+            "reason": "Candidate design for batch-independent kernel selection",
+            "from_entry": "intake-2037",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/28109",
+            "what_it_would_settle": "open tests: gated delta net batch invariance test - extends the invariance test family to recurrent layers (Qwen3.x GDN)",
+            "bears_on": "NEW-LLAMA28111",
+            "recommend": "ingest-and-dive",
+            "reason": "Our champion is GDN-hybrid; test template reusable",
+            "from_entry": "intake-2037",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/28109",
+            "what_it_would_settle": "GDN batch-invariance test; same template for recurrent layers of our Qwen3.x champion",
+            "bears_on": "NEW-PR28108",
+            "recommend": "ingest-and-dive",
+            "reason": "Champion is GDN-hybrid; invariance gate must cover it",
+            "from_entry": "intake-2039",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://huggingface.co/minishlab/potion-code-16M-v2",
+            "what_it_would_settle": "model card, training data and standalone code-retrieval numbers for the static embedder shared by semble and sgrep",
+            "bears_on": "NEW-SEMBLE",
+            "recommend": "ingest-and-dive",
+            "reason": "Core component of both candidate arms; not read in this dive",
+            "from_entry": "intake-2040",
+            "wave": 3
+          },
+          {
+            "id_or_url": "https://github.com/zvec-ai/zvec-grep",
+            "what_it_would_settle": "the same potion+BM25 recipe without semble ranking (0.670 NDCG@10 in the semble table): independent check of how much ranking matters",
+            "bears_on": "NEW-SEMBLE",
+            "recommend": "decline",
+            "reason": "Covered by semble ablation; low marginal information",
+            "from_entry": "intake-2040",
+            "wave": 3
+          }
+        ],
+        "second_reader": "second-reader-SR-W3a.yaml, SR-W3b.yaml; no 'no' verdicts; main applied 12 claim/actionable corrections and 6 anchor re-indexings before write (recorded per entry in dive_corrections); 2 anchors (git log subject, ci.yml line) verified by main directly"
+      },
+      {
+        "wave": 4,
+        "started": "2026-10-20T13:46:07+00:00",
+        "selection_basis": "auto-advance of wave-3 recommended dive-surfaced sources (operator seq 9)",
+        "units": {
+          "W4-A": [
+            "NEW github agent-tts/Agent-TTS-Code",
+            "NEW 2605.08478",
+            "NEW TLM (Zhai 2024; persist only if ID observed)"
+          ],
+          "W4-B": [
+            "NEW llama.cpp#28768",
+            "NEW llama.cpp PR#28489",
+            "NEW llama.cpp PR#28109"
+          ],
+          "W4-C": [
+            "NEW github pipecat-ai/smart-turn",
+            "NEW 2606.13450",
+            "NEW github altunenes/parakeet-rs",
+            "NEW github NVIDIA-NeMo/labs-Voice-Agent"
+          ],
+          "W4-D": [
+            "NEW 2601.20230",
+            "NEW 2601.05564",
+            "NEW hf minishlab/potion-code-16M-v2"
+          ]
+        },
+        "declined": [
+          {
+            "source": "Roller (Zhu et al. 2022)",
+            "bears_on": "NEW-PRUNER",
+            "reason": "No arXiv/venue ID observed; TileLang carver already covers the analytic-tile idea."
+          },
+          {
+            "source": "https://github.com/zhaiyi000/tlp",
+            "bears_on": "NEW-TENSET",
+            "reason": "Another Intel-CPU TVM dataset; no AMD/CDNA content."
+          },
+          {
+            "source": "https://github.com/tile-ai/tilelang/releases/tag/v0.1.13",
+            "bears_on": "NEW-TILELANG",
+            "reason": "Release notes; the tree itself was read at HEAD."
+          },
+          {
+            "source": "https://ga642381.github.io/Game-Time",
+            "bears_on": "NEW-GAMETIME",
+            "reason": "JS-only site; content not readable from disk."
+          },
+          {
+            "source": "arXiv:2506.05984",
+            "bears_on": "NEW-GAMETIME",
+            "reason": "Audio-LLM judge protocol; FDB-v2's judge is text-only so it does not change the local-judge conclusion."
+          },
+          {
+            "source": "https://github.com/ten-framework/ten-turn-detection",
+            "bears_on": "NEW-EASYTURN",
+            "reason": "7B text-only labeller/baseline; not a CPU-cheap CS-22 arm."
+          },
+          {
+            "source": "https://drive.google.com/drive/folders/1DtoxMVO9_Y_nDs2peZtx3pw-U2qYgpd3",
+            "bears_on": "NEW-FDB-REPO",
+            "reason": "Dataset download, not a source to dive; belongs to execution."
+          },
+          {
+            "source": "https://huggingface.co/soniqo/Parakeet-EOU-120M-ONNX-INT8",
+            "bears_on": "NEW-PARAKEET-ONNX",
+            "reason": "Card makes an unreliable 25-language claim for an English-only base; parakeet-rs chosen instead."
+          },
+          {
+            "source": "https://github.com/zvec-ai/zvec-grep",
+            "bears_on": "NEW-SEMBLE",
+            "reason": "Semble's own table already contrasts it; no new decision."
           }
         ],
         "status": "running"
