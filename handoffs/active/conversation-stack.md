@@ -624,3 +624,12 @@ Research intake of the full-duplex / turn-taking sources (intake-2003#record, in
 - Service-Duplex-Bench (intake-2001#record): data unreleased; its 7-probe role-adherence taxonomy is a template if CS-4 sets 3/4 need role-adherence probes.
 - FluidAudio (intake-1983#record): on-device component catalogue (EOU, VAD, AEC, diarisation, TTS) as a component map; read its Sortformer / LS-EEND documentation only if multi-speaker diarisation enters scope.
 - HumDial organiser rows (intake-2052#record): the organiser Cascade and Baseline rows have undisclosed composition and GPU serving; they are non-comparable and set no CS-22/CS-23 target.
+
+## Speech measurement queue pointer — 2026-10-20 (agent `speech-queue`)
+
+Operator directive 2026-10-20: use any free resource for speech measurements, no need to build the stack first. The prioritised queue (13 rows: resource class, one-line command, runtime, decision informed, dependencies) is `/mnt/raid0/llm/tmp/speech-queue-20261020/QUEUE.md`; staged scripts are in its `scripts/` (all with `--deadline` and `--dry-run`, own claims, own non-production ports 19300/19302/19370; dry-runs pass; nothing was run). Facts it records that bear on tasks here:
+- CS-8 G1, paper prior only (model cards, not a measurement): Step-Audio 2 mini lists en+zh; Qwen3-Omni lists Italian among its 10 speech-output languages. The measured G1 is still owed (queue SPQ-03 cascade baseline, SPQ-08 candidates).
+- CS-5: the host has no ROCm PyTorch (only cu130/cpu torch); the ROCm 6.2 wheels and the D1 weights are being downloaded (`/mnt/raid0/llm/models/speech-d1-20261020/`, `/mnt/raid0/llm/data/speech-wheels-20261020/`); SPQ-06 tests the rocm/vllm container on gfx90a.
+- CS-9: the 35B-A3B Q8 (36.6-41.4 GB) plus the GPU cascade (~4 GB) and Step (12-20 GB) fit in one 64 GB MI210, so part (a) can be pre-measured before the second card arrives (SPQ-12, needs an `--gpu` mode in `own_cascade.sh`).
+- CS-49: `src/voice/http_clients.py` takes `base_url`, so own instances on non-production ports can replace :9000/:9002; what is missing is the CS-23 policy code and a live driver, not services.
+- Human stratum: the admission gate needs speaker-disjoint splits, so at least two speakers per language; recording sheet `human_recording_sheet.md` (240 takes, 114 minimum viable) sits beside the queue.
