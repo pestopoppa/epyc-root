@@ -1355,7 +1355,7 @@ the gate's home; promoting it to policy grammar would be an operator action, not
 
 Three papers now sit on the harness-versus-weights axis — Harness-R1 (`intake-1323#record`),
 `intake-1339`'s source, and the arXiv:2607.12227 critique carried via `intake-921` — and **none of
-them is budget-matched**. `intake-1339`'s source indicts prior work *twice* for hiding
+them is budget-matched**. *(Narrowed 2026-10-20 per intake-2006 v4 - the 2607.12227 critique matches its task-level baselines by rollout count but excludes harness-modification cost, so it is matched on one cost axis only; the standing rule below is unchanged.)* `intake-1339`'s source indicts prior work *twice* for hiding
 harness-design cost and then prices only its own training side (~1,800 H200 GPU-hours).
 
 **Standing rule: any future proposal on this axis must state both costs — the harness-design cost

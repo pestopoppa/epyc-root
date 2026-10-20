@@ -185,6 +185,7 @@ slice `90 passed`, Ruff, py_compile, and diff-check.
 - No active vision code tail. Future work here should be opened as a new scoped
   feature, e.g. remote image fetching, multiple images per OpenAI message, or
   a promotion-grade OpenAI image request quality/latency benchmark.
+- Embedder-upgrade screens (owned trigger, no checkbox; intake P4-RETRIEVAL M13, 2026-10-20): the Chroma `descriptions` (384-d MiniLM) and `images` (512-d CLIP) collections and `vision.db` were empty on 2026-10-20 (0 embeddings, 1 photo, 0 descriptions). When the descriptions collection holds enough described photos for a labelled screen of >= 120 queries, or an operator names a text-to-photo search task, run a side-by-side fit screen of EmbeddingGemma 2 on the text-description route and, separately, a cross-modal probe against CLIP, each in its own index identity, before any change to the MiniLM or CLIP routes. The pinned EmbeddingGemma 2 manifest is REPL-EMB-2.5 in `repl-embedding-retrieval.md`.
 
 ### Key Files
 - `src/vision/pipeline.py` (385 lines) — core pipeline

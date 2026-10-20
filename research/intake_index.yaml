@@ -54854,7 +54854,7 @@
     - intake-926
     - intake-927
   contradicting_evidence:
-  - 'Tier-2b (2026-07-29) CONTESTED - arXiv 2607.12227 ''Rethinking the Evaluation of Harness Evolution for Agents'', published TWO DAYS BEFORE MemoHarness, tests GPT-5.4 and Claude Opus 4.6 on Terminal-Bench 2.1 and finds automatic harness evolution ''does not consistently outperform simple test-time scaling methods and exhibits limited generalization''. It names two protocol defects that apply to MemoHarness by construction: (a) no matched feedback/inference-budget baseline, so gains may be bought with extra search iterations; (b) search and final eval on the SAME benchmark, i.e. benchmark overfitting. It does not name MemoHarness.'
+  - 'Tier-2b (2026-07-29) CONTESTED - arXiv 2607.12227 ''Rethinking the Evaluation of Harness Evolution for Agents'', published TWO DAYS BEFORE MemoHarness, tests GPT-5.4 and Claude Opus 4.6 on Terminal-Bench 2.1 and finds automatic harness evolution ''does not consistently outperform simple test-time scaling methods and exhibits limited generalization''. It names two protocol defects that apply to MemoHarness by construction: (a) no matched feedback/inference-budget baseline, so gains may be bought with extra search iterations; (b) search and final eval on the SAME benchmark, i.e. benchmark overfitting. It does not name MemoHarness. [CORRECTED 2026-10-20 per intake-2006 - the quoted sentence and the two-model setup are arXiv:2607.12227 v1/v2 wording; the v4 abstract does not contain that sentence, and v4 Table 3 spans three models with a held-out average of +0.0 (n=34, no CI).]'
   - 'Tier-2b: arXiv 2605.23950 ''Stop Comparing LLM Agents Without Disclosing the Harness'' and arXiv 2605.27922 (Harness-Bench, harness effects vary across models) reinforce that a harness number is not a model number.'
   - 'Statistical: 0.806 x 18 tasks is not an integer, implying averaging over unreported repetitions. With no n/reps/seeds/variance, 0.806 and +0.084 are OBSERVATIONS, not decision-gating numbers under MEASUREMENT.md.'
   novelty_justification: 'The problem framing and outer-loop harness search are covered by intake-244 (Meta-Harness) and intake-271. The genuine delta is the mechanism: a structured six-dimension editable harness space plus a dual-layer experience bank enabling PER-CASE harness specialization at test time via similarity retrieval, with no test-time labels. Nothing in the index covers per-case test-time harness adaptation. Not high - an incremental extension of a closely-tracked line, evaluated on the same benchmark as the prior work.'
@@ -54872,9 +54872,9 @@
 
     Defect (b) OVERFITTING: OVERTURNED — Stage 1''s accusation is FALSE. Appendix C: "We use an 80/20 (8:2) train/evaluation split of the full 89-task suite, yielding an 18-task held-out evaluation split", "fixed 80/20 random partition with seed 42", search on the 71-task train split, selection "by validation at the end of search, not the in-training peak". That is precisely the mitigation the rebuttal prescribes. RESIDUAL: Figure 3 reports held-out scores at six checkpoints, so the held-out split was scored repeatedly during development; and the Terminal-Bench VERSION (2.0 vs 2.1) is never stated — 2.1 "repairs 28 of the 89 tasks", so if 2.0 was used, 31% of tasks carried known defects a search loop could exploit.
 
-    DATE CORRECTED: 2607.12227 was submitted 14 Jul 2026, the SAME DAY as MemoHarness — not two days before. It tests THREE models (Claude Opus 4.6, GPT-5.4, GPT-5.4 mini) on Terminal-Bench 2.1, averaged over two runs. It names Meta-Harness/AHE/AEVO, not MemoHarness. Independent contemporaneous works; neither could cite the other.
+    DATE CORRECTED: 2607.12227 was submitted 14 Jul 2026, the SAME DAY as MemoHarness — not two days before. It tests THREE models (Claude Opus 4.6, GPT-5.4, GPT-5.4 mini) on Terminal-Bench 2.1, averaged over two runs. [CORRECTED 2026-10-20 per intake-2006 - true for Tables 1-2 only; Table 3 had two models in v1/v2 and has three in v3/v4.] It names Meta-Harness/AHE/AEVO, not MemoHarness. Independent contemporaneous works; neither could cite the other.
 
-    THE SHARPER PROBLEM IS EMPIRICAL: with a disjoint 45/10/34 split 2607.12227 found the evolved harness "improves Claude Opus 4.6 by a mere 1.2 points and brings no improvement at all on GPT-5.4... average gain of just 0.6 points", concluding "severe overfitting to the training tasks". MemoHarness claims +8.4 points on a held-out split — 14x larger on a split half the size with no significance test. The economical explanation is that 18 tasks cannot resolve the effect.
+    THE SHARPER PROBLEM IS EMPIRICAL: with a disjoint 45/10/34 split 2607.12227 found the evolved harness "improves Claude Opus 4.6 by a mere 1.2 points and brings no improvement at all on GPT-5.4... average gain of just 0.6 points", concluding "severe overfitting to the training tasks". [CORRECTED 2026-10-20 per intake-2006 - the 0.6-point average is the v1/v2 two-model row (67.7 -> 68.3); v4 Table 3 gives +1.2 Opus 4.6, +0.0 GPT-5.4, -1.4 GPT-5.4 mini, average +0.0 (63.2 -> 63.2), n=34, no CI. The overfitting wording was not re-checked in v4.] MemoHarness claims +8.4 points on a held-out split — 14x larger on a split half the size with no significance test. [RETIRED 2026-10-20 per intake-2006 - the 14x ratio rested on the v1/v2 +0.6 average; against v4 the comparison is MemoHarness +8.4 versus +0.0 (three-model average), still directionally valid, but no ratio is defined.] The economical explanation is that 18 tasks cannot resolve the effect.
 
     CLAIM 3 CONFIRMED-AND-WORSE: the paper concedes run-averaging ("not constrained to integer multiples of the 18 held-out tasks") but NEVER states the repetition count. Forensic test of every R from 1 to 25 against all 14 Table-3 cells: NO single R explains the table — at R=2 three cells are unreachable (Claude-Sonnet-4.6 base 0.530, GLM-5 0.733, GPT-4.1 0.538); the smallest fully consistent denominator is R=26 (468 runs), implausible. Separately Appendix C states decoding is DETERMINISTIC (temperature 0.0, top-p 1.0, candidate count 1), under which repeated runs collapse to identical k/18 — contradicting run-averaging. Significance: +0.084 = 1.51 of 18 tasks; as 29/36 vs 26/36 Fisher two-sided p = 0.58. Appendix A concedes "point estimates rather than confidence intervals or significance tests". OBSERVATIONS under MEASUREMENT.md; cannot gate anything.
 
@@ -54892,7 +54892,9 @@
 
     FURTHER CONSTRAINTS: arXiv 2605.23950 quantifies the swing (HV 18.48 vs MV 2.37 pp^2 = 7.80x; harness changes move GLM-5.1 by 13.0pp vs model changes 3.0pp; six ranking reversals in nine comparisons) and demands a Harness Card over a seven-layer taxonomy. arXiv 2605.27922 Harness-Bench (5,194 trajectories) reports a 23.8-point aggregate spread and the gradient that WEAKER backbones show LARGER cross-harness variance — MemoHarness''s r=-0.16 does NOT exhibit the effect the literature predicts, which weakens the portable-execution-policy reading of Table 3. MemoHarness''s baselines are undisclosed product harnesses (Codex, Claude Code, OpenCode), exactly the unattributable comparison 2605.23950 forbids; the paper half-concedes this ("necessarily system-level comparisons"). [SCOPE NOTE ADDED 2026-09-07 (Stage 4, plan B-Q11): the four 2605.23950 figures above are EXACT, but the entry records none of the limits that bound them - the paper disclaims universality, H1-H3 is an author-built harness ladder, and its three models were selected for sitting 0.8 leaderboard points apart. A reader taking 7.80x from this line without those three would over-claim. Verified by the intake-1344 dive]
 
-    NOTE: our own randomized-pool robustness experiment returned NULL (learned-routing-controller.md P4.6, 10 runs, no arm cleared +1pp), consistent with 2607.12227''s +0.6pt held-out finding. Converging evidence that harness-level gains are small and hard to measure; any future local harness experiment must be POWERED and BUDGET-MATCHED before it is run.'
+    NOTE: our own randomized-pool robustness experiment returned NULL (learned-routing-controller.md P4.6, 10 runs, no arm cleared +1pp), consistent with 2607.12227''s +0.6pt held-out finding. [CORRECTED 2026-10-20 per intake-2006 - v4 held-out average is +0.0 over three models, n=34; +0.6 was the v1/v2 two-model figure.] Converging evidence that harness-level gains are small and hard to measure; any future local harness experiment must be POWERED and BUDGET-MATCHED before it is run.
+
+    2026-10-20 Stage-3 (intake-2006) - every 2607.12227 figure in this entry is the v1/v2 reading; inline CORRECTED markers give the v4 figures (held-out +0.0 average over three models, n=34, no CI). Direction of the caution is unchanged; quote v4 only.'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -55723,7 +55725,7 @@
   contradicting_evidence:
   - 'SELF-UNDERCUT THE PAPER DISCLOSES BUT NEVER CONFRONTS: the prompted realization outperforms the authors'' own IHR runtime on all three benchmarks (77.00/57.30/47.90 vs 73.00/53.90/46.30). The paper reports and discusses these numbers plainly and concedes ''The main remaining gap is engineering efficiency: reducing handoff loss, fixed context overhead, and redundant orchestration calls in the prototype runtime'' — but never frames it as undercutting its own contribution. FAIR READING: the stated claim is ''comparable task outcomes'', not superiority, and RQ2 argues IHR buys auditable mechanism realization that prompting does not.'
   - 'STATISTICAL POWER: sample sizes are never stated; single run per cell; no variance, CIs or seeds. Recovered n=500 (RQ3 SWE) and n=36 (RQ3 OSWorld). No sub-5-point delta is distinguishable from noise, and at n=36 not even +13.9pp is (p=0.35). All OBSERVATIONS under MEASUREMENT.md.'
-  - 'Tier-2b category-level caution: arXiv 2607.12227 finds automatic harness evolution ''does not consistently outperform simple test-time scaling methods and exhibits limited generalization''. arXiv 2605.23950 (Stop Comparing LLM Agents Without Disclosing the Harness) and 2605.27922 (Harness-Bench) both hold that a harness number is not a model number.'
+  - 'Tier-2b category-level caution: arXiv 2607.12227 finds automatic harness evolution ''does not consistently outperform simple test-time scaling methods and exhibits limited generalization''. [CORRECTED 2026-10-20 per intake-2006 - this sentence is v1/v2 abstract wording and is not in the v4 abstract; the v4 body still says the evolved harness does not consistently outperform simple test-time discovery, and v4 Table 3 held-out average is +0.0 over three models. Direction of the caution holds.] arXiv 2605.23950 (Stop Comparing LLM Agents Without Disclosing the Harness) and 2605.27922 (Harness-Bench) both hold that a harness number is not a model number.'
   - 'OPEN-WEIGHT TRANSFER IS UNTESTED: every arm ran on gpt-5.4-mini. The authors themselves flag that NL policy may be ''interpreted differently across models'', and their own Information Handoff Recall drops to 0.32/0.55 under parent-child execution even on a frontier model.'
   - 'ADVERSARIAL: 31 citing papers, ALL citing the FRAMING only — none re-runs the results. At four months old that absence is mildly informative: the community adopted the vocabulary without re-testing. Three third-party repos are DECOYS — Wescome/NLAH and impartshadow/nlah are name collisions that never cite the paper, and ASSERT-KTH/reimpl-ihr cites arXiv:2603.25723 but describes a FUZZ-DRIVER generation system with fabricated authors and title, i.e. an LLM-hallucinated artifact, not evidence.'
   novelty_justification: 'The harness-as-first-class-analyzable-object thesis is already in the index (intake-244, intake-271). New to us: the specific representation - harness policy as an editable natural-language document a runtime interprets - plus per-module ablations treating harness components as independently testable variables.'
@@ -55761,7 +55763,9 @@
 
     ADVERSARIAL: 31 citing papers, ALL citing the FRAMING only — none re-runs it. Three third-party repos are decoys: Wescome/NLAH and impartshadow/nlah are name collisions that never cite the paper, and ASSERT-KTH/reimpl-ihr cites arXiv:2603.25723 but describes a FUZZ-DRIVER generation system with fabricated authors and title — an LLM-hallucinated artifact, not evidence. At four months old with 31 citations the absence of replication is mildly informative: the community adopted the vocabulary without re-testing the results.
 
-    PROCESS FLAG: the failure mode here is CONFIDENT FABRICATION OF A FULL RESULTS TABLE, not partial extraction. Sibling entries from the same Stage-1 batch should be audited for the same mode before Stage 3 relies on them.'
+    PROCESS FLAG: the failure mode here is CONFIDENT FABRICATION OF A FULL RESULTS TABLE, not partial extraction. Sibling entries from the same Stage-1 batch should be audited for the same mode before Stage 3 relies on them.
+
+    2026-10-20 Stage-3 (intake-2006) - the 2607.12227 quotation in contradicting_evidence is v1/v2 wording; no figure is quoted in this entry; see the inline marker.'
   claim_anchors:
   - claim_index: 1
     kind: page-and-quote
@@ -128819,7 +128823,7 @@
   verdict_justification: 'Not not_applicable (in domain, Apache-2.0, a 9B Qwen3.5 derivative that would serve on the MI210 or CPU). Not already_integrated (local program is fixed-proposer). Not superseded - if anything the SENIOR claim relative to JIT-Agent on the trained-editor axis. Not adopt_component: the checkpoints are TARGET-SPECIFIC ("An engineer is only meaningful against the target it was trained for", README pinned), trained on WebShop/ALFWorld/DBBench, none our domain; reproducing training needs 8x H800 plus live reruns. adopt_patterns because the carriable content is mechanism-level and zero-compute: the outcome-grounded rerun reward; the four-hook taxonomy as a coordinate system; rerun-the-WHOLE-batch-including-prior-successes as a built-in regression check; the negative result on frozen frontier proposers as a PromptForge caution; the relocate-the-trainable-object move as a new HS-5 column; the 23-patch three-editor contrastive corpus.'
   contradicting_evidence:
   - 'PROVISIONAL: no criticism or reproduction surfaced in a bounded search (2 searches); ~5 weeks old; only aggregators found.'
-  - 'Category-level caution ALREADY IN THE INDEX: 2607.12227 (carried in intake-921) finds automatic harness evolution does not consistently outperform simple test-time scaling and generalises poorly; Harness-R1''s multi-pass loop is a form of test-time scaling never priced against a same-budget control.'
+  - 'Category-level caution ALREADY IN THE INDEX: 2607.12227 (carried in intake-921) finds automatic harness evolution does not consistently outperform simple test-time scaling and generalises poorly [CORRECTED 2026-10-20 per intake-2006 - v1/v2 reading; v4 Table 3 held-out average is +0.0 over three models (n=34), and the latest version also reports a positive long-horizon games result (per-task same-instance adaptation, not held-out)]; Harness-R1''s multi-pass loop is a form of test-time scaling never priced against a same-budget control.'
   - 'ANALYST-GENERATED, the cost hole (the SAME defect the JIT-Agent entry flags): zero tokens/latency/cost anywhere while Reflection (success@2) scores 55.8 vs 53.6 and is excluded purely on protocol grounds; with no budget axis the advantage over multi-episode scaling cannot be judged.'
   - 'ANALYST-GENERATED, reported but never framed: Agent SFT alone 59.2 vs Harness-R1 53.6 - on this setup training the actor beats editing the harness; the case rests on the +5.0 ON TOP of a fine-tuned actor.'
   - 'ANALYST-GENERATED, resolved tension: the README warning about target-pairing is about CHECKPOINT PAIRING and does not contradict the Appendix E transfer claim. Table 1 vs Appendix G differ by 0.1-0.5 pp (rerun variance; the only variance signal on the main table).'
@@ -128909,7 +128913,9 @@
     2026-08-27, after this paper posted) contains no occurrence of "Harness-R1" or "2608.02276" - it is a category-level
     critique on a different benchmark, not a rebuttal. (11) NARROWED local relevance: for Gemma-4-26B-A4B-it the WebShop
     delta is +0.4 and for Gemma-4-31B-it -0.2; the Gemma gains are ALFWorld/DBBench only. (12) New unframed sub-result:
-    ALFWorld Pick2 regresses 47.5 -> 39.3 in Table 1. Stage-2b (2026-09-07): intake-1339 ingested+dived from this entry''s dive-surfaced sources; effect on this entry: corroborates (claims [''rr2'', ''rr0'', ''rr4'']) - CORROBORATES rr2 in direction and NARROWS the rule a reader would draw from it. Corroboration: an independent group (POSTECH), on the same benchmark family (ALFWorld), with open weights and three seeds rather than one closed model, finds the same ordering - post-training dominates harness work in-distribution by a wide margin (Qwen2.5-7B: best frozen-model harness 29.0 vs post-trained band 55.6-86.9), exactly as Harness-R1''''s Table 1 shows Agent SFT 59.2 beating harness editing of the vanilla target 53.6. Neither paper frames its own number this way; two papers now do it independently, so the reading intake-1323''''s dive called analyst-generated is no longer a lone inference. NARROWING, and it is the load-bearing part: the residual harness lever ON TOP of post-training is not a small constant. On the same Qwen2.5-7B, h-low -> h-high adds +22.3 on top of GRPO (55.6 -> 77.9) but only +5.9 on top of GiGPO (81.0 -> 86.9). Its size is set by the training algorithm''''s credit assignment. So Harness-R1''''s +5.0 (59.2 -> 64.2) must NOT be generalised into "harness work is marginal once you post-train" - it is one point on a curve whose other end is +22.3. EXTENDS rr0 and rr4 rather than touching their numbers: intake-1323 has no OOD axis at all, and this source supplies it. Harness-R1''''s Appendix E transfer is measured by generating a NEW patch per unseen target with the task distribution and tool interface held fixed; this paper holds the harness fixed and moves the tool interface instead, and finds that what determines survival is a design choice made BEFORE training. Together they say the two entries measure orthogonal robustness axes and neither covers the other. NO REFUTATION. Nothing here contradicts any Harness-R1 number, and depends_on is empty in both directions: this source''''s claims rest on its own tables, and no intake-1323 claim would have to change if this were retracted - the corroboration is welcome, not load-bearing. ONE SHARED CAUTION, now stronger: intake-1323''''s reader_should_conclude says "all three environments are closed-world interactive, so HS-4 must weigh this as METHOD, never as a candidate score." This source is ALSO closed-world, with ONE environment where 1323 had three and nothing above 7B in any training arm. The caution carries over and should be stated once for the pair rather than twice. (13) 2026-09-16 LOCAL EVIDENCE, MHS-5 (orchestrator 4f28e6c3 on branch sub/autopilot-safety-20260916, PENDING MERGE to origin/main as of 2026-09-16; artifact orchestration/datasets/harness_r1_heldout_effect_corpus.json, sha256 09ae7365febc11e0627a26dccfeb500a712c498e9de55a9034578cb301efbc71, derived from upstream examples/heldout_generalization @411bb5489ada, upstream results sha256 cf4ce8c0593ee009111da39b1f5a69161d2f22d0384b8be582136734032c59e2): item (6) NARROWED. The two rewrite_action patches are the worst WebShop regressions, but the single worst valid patch over all 23 is a hint-only CONSTRAIN patch (deepseek-v4-pro, ALFWorld, seed 20260721, -83/490 = -16.9 pp, effect kind inject_hint). The generalization "every catastrophic held-out regression came from an override patch" (promptforge-mutation-safety-contract.md MHS-4 rationale, never a key claim of this entry) is REFUTED on this corpus. The ordering survives: REPLACE is 4/4 negative, mean -8.4 pp, rescue:regression 0.21; CONSTRAIN is n=19, mean +3.9 pp, rescue:regression 1.65, with 4 negative (9 of the 19 are from the trained Harness-R1 editor, a confound). An effect-kind prior RANKS risk; it does not certify safety. This item touches none of key_claims 0-4 (claim_corrections unchanged except the claim-4 note).'
+    ALFWorld Pick2 regresses 47.5 -> 39.3 in Table 1. Stage-2b (2026-09-07): intake-1339 ingested+dived from this entry''s dive-surfaced sources; effect on this entry: corroborates (claims [''rr2'', ''rr0'', ''rr4'']) - CORROBORATES rr2 in direction and NARROWS the rule a reader would draw from it. Corroboration: an independent group (POSTECH), on the same benchmark family (ALFWorld), with open weights and three seeds rather than one closed model, finds the same ordering - post-training dominates harness work in-distribution by a wide margin (Qwen2.5-7B: best frozen-model harness 29.0 vs post-trained band 55.6-86.9), exactly as Harness-R1''''s Table 1 shows Agent SFT 59.2 beating harness editing of the vanilla target 53.6. Neither paper frames its own number this way; two papers now do it independently, so the reading intake-1323''''s dive called analyst-generated is no longer a lone inference. NARROWING, and it is the load-bearing part: the residual harness lever ON TOP of post-training is not a small constant. On the same Qwen2.5-7B, h-low -> h-high adds +22.3 on top of GRPO (55.6 -> 77.9) but only +5.9 on top of GiGPO (81.0 -> 86.9). Its size is set by the training algorithm''''s credit assignment. So Harness-R1''''s +5.0 (59.2 -> 64.2) must NOT be generalised into "harness work is marginal once you post-train" - it is one point on a curve whose other end is +22.3. EXTENDS rr0 and rr4 rather than touching their numbers: intake-1323 has no OOD axis at all, and this source supplies it. Harness-R1''''s Appendix E transfer is measured by generating a NEW patch per unseen target with the task distribution and tool interface held fixed; this paper holds the harness fixed and moves the tool interface instead, and finds that what determines survival is a design choice made BEFORE training. Together they say the two entries measure orthogonal robustness axes and neither covers the other. NO REFUTATION. Nothing here contradicts any Harness-R1 number, and depends_on is empty in both directions: this source''''s claims rest on its own tables, and no intake-1323 claim would have to change if this were retracted - the corroboration is welcome, not load-bearing. ONE SHARED CAUTION, now stronger: intake-1323''''s reader_should_conclude says "all three environments are closed-world interactive, so HS-4 must weigh this as METHOD, never as a candidate score." This source is ALSO closed-world, with ONE environment where 1323 had three and nothing above 7B in any training arm. The caution carries over and should be stated once for the pair rather than twice. (13) 2026-09-16 LOCAL EVIDENCE, MHS-5 (orchestrator 4f28e6c3 on branch sub/autopilot-safety-20260916, PENDING MERGE to origin/main as of 2026-09-16; artifact orchestration/datasets/harness_r1_heldout_effect_corpus.json, sha256 09ae7365febc11e0627a26dccfeb500a712c498e9de55a9034578cb301efbc71, derived from upstream examples/heldout_generalization @411bb5489ada, upstream results sha256 cf4ce8c0593ee009111da39b1f5a69161d2f22d0384b8be582136734032c59e2): item (6) NARROWED. The two rewrite_action patches are the worst WebShop regressions, but the single worst valid patch over all 23 is a hint-only CONSTRAIN patch (deepseek-v4-pro, ALFWorld, seed 20260721, -83/490 = -16.9 pp, effect kind inject_hint). The generalization "every catastrophic held-out regression came from an override patch" (promptforge-mutation-safety-contract.md MHS-4 rationale, never a key claim of this entry) is REFUTED on this corpus. The ordering survives: REPLACE is 4/4 negative, mean -8.4 pp, rescue:regression 0.21; CONSTRAIN is n=19, mean +3.9 pp, rescue:regression 1.65, with 4 negative (9 of the 19 are from the trained Harness-R1 editor, a confound). An effect-kind prior RANKS risk; it does not certify safety. This item touches none of key_claims 0-4 (claim_corrections unchanged except the claim-4 note).
+
+    2026-10-20 Stage-3 (intake-2006) - 2607.12227 citations in this entry are the v1/v2 reading (see inline markers); v4 does not engage Harness-R1.'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -129222,7 +129228,7 @@
       the Evaluation of Harness Evolution for Agents" (Wang, Zhu, Hu, Yuan, Chen, Senthil, Hajishirzi, Tsvetkov, Dasigi,
       Xiao; submitted 14 Jul 2026, LAST REVISED 27 AUG 2026 - i.e. AFTER Harness-R1 posted), and its abstract does
       say verbatim: "Experiments on Terminal-Bench 2.1 with GPT-5.4 and Claude Opus 4.6 show that automatic harness
-      evolution does not consistently outperform simple test-time scaling methods and exhibits limited generalization."
+      evolution does not consistently outperform simple test-time scaling methods and exhibits limited generalization." [CORRECTED 2026-10-20 per intake-2006 - this verbatim abstract is v2-only; the v4 abstract names matched-budget baselines, train/test separation and long-horizon games (ARC-AGI-3, EdgeBench) instead.]
       BUT a grep of the v2 full text for "Harness-R1", "Harness R1", "2608.02276" and "Shao" returns NONE OF THESE
       STRINGS. It had the opportunity to engage this paper and did not. It is a category-level critique on a different
       benchmark with different models, NOT a rebuttal of Harness-R1. Carry it as a methodological frame, never as
@@ -129390,7 +129396,7 @@
       of it - but it is squarely on the axis the paper reports and declines to discuss, and the index holds nothing
       on harness-vs-post-training as a tradeoff.'
   - ref: arXiv:2607.12227 v2 (revised 2026-08-27) - "Rethinking the Evaluation of Harness Evolution for Agents"
-    what_it_would_settle: Whether the version already carried via intake-921 is the pre-revision one. The v2 revision
+    what_it_would_settle: Whether the version already carried via intake-921 is the pre-revision one. [ANSWERED 2026-10-20 per intake-2006 - yes, intake-921 carries the v1/v2 reading; the current version is v4 (revised 2026-10-05).] The v2 revision
       postdates Harness-R1 and still does not cite it, which is itself evidence about how the field is reading this
       line. Its two methodological demands - budget-matched task-level search baselines, and search not sharing a
       benchmark with final evaluation - are the exact unasked questions for Harness-R1 AND for our own PromptForge
@@ -129568,7 +129574,7 @@
       of "Harness-R1", "2608.02276" or "Shao". It is a category-level critique on Terminal-Bench 2.1 with GPT-5.4
       / Claude Opus 4.6, not a rebuttal of this paper. Carry it as a methodological frame (budget-matched baselines;
       search sharing a benchmark with evaluation) and never as criticism of these numbers. Also note intake-921 may
-      hold the pre-revision version.
+      hold the pre-revision version. [CONFIRMED 2026-10-20 per intake-2006 - intake-921 held v1/v2. v4 still has zero occurrences of Harness-R1 or 2608.02276 (a Shao hit in v4 is the reference author S. Shao in Li et al. 2026, not the Harness-R1 author), so the not-a-rebuttal narrowing stands.]
   - claim_index: contradicting_evidence[0] (bounded negative)
     effect: unaffected
     note: 'Re-run with 6 fresh retrievals on 2026-09-07: still no independent criticism, replication or failed reproduction.
@@ -139197,7 +139203,9 @@
     at the h-low/h-mid boundary on both knobs the paper varies and have never disclosed it on the HS-6 Harness Card.
     (12) The paper reproduces the very cost-disclosure asymmetry it indicts - it prices only the training side (~1,800
     H200 GPU-hours) - so it does NOT settle the trade-off as an economic question, only as an ordering and interaction
-    question. Stage-2b close-out (2026-09-07, operator): the following dive-surfaced ingest-and-dive candidates were DEFERRED by the operator to the Stage-3 expansion queue (not declined on merit): arXiv:2607.22688 - "Co-Harness: Co-Evolving Harnesses and Model Weights for LLM Agents" (Zhengyu Che; arXiv:2605.08741 - "Training with Harnesses: On-Policy Harness Self-Distillation for Complex Reasoni.'
+    question. Stage-2b close-out (2026-09-07, operator): the following dive-surfaced ingest-and-dive candidates were DEFERRED by the operator to the Stage-3 expansion queue (not declined on merit): arXiv:2607.22688 - "Co-Harness: Co-Evolving Harnesses and Model Weights for LLM Agents" (Zhengyu Che; arXiv:2605.08741 - "Training with Harnesses: On-Policy Harness Self-Distillation for Complex Reasoni.
+
+    2026-10-20 Stage-3 (intake-2006) - the ledger row proposed fixing a quoted 2607.12227 phrase here; no such quotation exists in this entry. The only 2607.12227 statements are the two budget-matching sentences marked inline.'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -139570,7 +139578,7 @@
       It therefore reproduces the exact asymmetry it names, and delivers no budget-matched comparison of the two levers
       - which is the same methodological complaint arXiv:2607.12227 (intake-921 lineage) makes of the harness-evolution
       category generally, and which the intake-1323 dive flagged as the unasked question for Harness-R1 too. Three
-      papers on this axis now, none budget-matched.'
+      papers on this axis now, none budget-matched. [NARROWED 2026-10-20 per intake-2006 - the 2607.12227 critique matches its task-level baselines by rollout count (K=5, m=1) but excludes harness-modification (meta-agent) cost, so it is matched on one cost axis only.]'
     kind: internal
     source: Sec 1, Sec 3.2, Sec 4.1 Remark, Limitations
     pinned: arXiv:2606.25447v1
@@ -139655,7 +139663,7 @@
       cells, and without it the 1323 reading hardens into a false general rule.
   - direction: 'Record the standing methodological gap across the whole harness-evolution line: three papers now on
       the harness-vs-weights axis - Harness-R1 (intake-1323), this one, and the arXiv:2607.12227 critique already
-      carried via intake-921 - and NONE is budget-matched. This paper indicts prior work twice for hiding harness-design
+      carried via intake-921 - and NONE is budget-matched. [NARROWED 2026-10-20 per intake-2006 - 2607.12227 is rollout-count matched but excludes harness-modification cost; the standing rule to state both costs is unchanged.] This paper indicts prior work twice for hiding harness-design
       cost and then prices only its own training side (~1,800 H200 GPU-hours). Any future proposal on this axis must
       state both costs or be declined.'
     owner: handoffs/active/inference-research-index.md or wiki/benchmark-methodology.md, applied by the owning session
@@ -140877,9 +140885,9 @@
     surfaced in a bounded search", never "none exists"; the paper is two months old and has 26 GitHub stars.
   - 'CATEGORY-LEVEL, already in our index and INDEPENDENT: arXiv 2607.12227 ("Rethinking the Evaluation of Harness
     Evolution for Agents") finds harness evolution "does not consistently outperform simple test-time scaling methods
-    and exhibits limited generalization" with a held-out average gain of just 0.6 points; our own learned-routing-controller.md
+    and exhibits limited generalization" with a held-out average gain of just 0.6 points; [CORRECTED 2026-10-20 per intake-2006 - v1/v2 two-model figure; v4 held-out average is +0.0 over three models, n=34.] our own learned-routing-controller.md
     P4.6 randomized-pool experiment returned NULL over 10 runs with no arm clearing +1pp. Both say harness-level
-    effects are small and hard to power. Recorded at intake_index.yaml:53294.'
+    effects are small and hard to power. Recorded in intake-921 (dive_corrections) and intake-2006 (arXiv:2607.12227v4 Table 3).'
   - 'INTERNAL, arithmetic, checkable from the paper alone: Table 4''s two K=5 rows report D_belief BELOW their own
     algebraic floor. With w=(0.30,0.15,0.25,0.25,0.05) and D_act >= 0, raw-structured K=5 must be >= 0.3835 but
     is reported as 0.373, and raw-risk-gated K=5 must be >= 0.3916 but is reported as 0.383 — implied D_act of -0.210
@@ -141032,7 +141040,9 @@
     Vidya "belief" != agent belief; the collision is nominal. Our frozen llama.cpp at 0db32c06e accepts all three
     client parameters (max_completion_tokens alias, response_format json_object WITH schema, seed), so a from-scratch
     instrument would be strictly better than the paper''s parse-and-retry. VERDICT CHANGED worth_investigating ->
-    adopt_patterns; credibility 2. Stage-2b close-out (2026-09-07, operator): the following dive-surfaced ingest-and-dive candidates were DEFERRED by the operator to the Stage-3 expansion queue (not declined on merit): arXiv:2603.19328 - Sah et al., The verifier tax: horizon dependent safety success tradeoffs in tool ; arXiv:2608.23953 - The Empire, Long Divided, Must Unite: Architectural Convergence in Three LLM Agen; arXiv:2606.11211 - Hiremath & Hiremath, Calibration drift under reasoning: how chain-of-thought budg; arXiv:2607.05458 - Learning to Control LLM Agent Harnesses with Offline Reinforcement Learning. Stage-2b (2026-09-07): intake-1344 ingested+dived from this entry''s dive-surfaced sources; effect on this entry: corroborates (claims [0]) - CORROBORATES claim 0 (the premise that a harness is a first-order experimental variable at fixed model, task and environment) from a genuinely independent direction, and does so on EXECUTED outcome evidence rather than on 2607.04528''s confounded raw-vs-mediated arms - which is exactly what the 1341 dive said should carry the thesis instead. Claims 1-4 of intake-1341 (the six-tuple H, D_belief and its arrival/growth decomposition, the HIBench-Code and SWE-bench/Terminal-Bench belief tables, BIWM) are INDEPENDENT of this source: it contains no belief construct at all - "belief", "world model" and "elicit" occur zero times in v1 - so it neither supports nor threatens any of them. TWO NARROWINGS OWED BACK TO THE BEARING DIVE, neither of which changes a key_claim there. (1) The 1341 dive characterises this paper as one of the sources on which our harness thesis rests "on much better evidence" and as "strictly stronger" than 2607.04528 for HS-4. Both remain true - this paper is better designed, better disclosed in prose, and independently corroborated in direction - but "strictly stronger" should not be read as "unconfounded": its 7.80x is an author-built harness ladder measured against three deliberately-clustered models at n=2 per cell, and it releases no code, so on the artifact axis it is actually WEAKER than 2607.04528, which at least ships a repo. (2) The 1341 dive states we "are running on an unverified source" at harness-selection-and-integration.md:164. That is now resolved and the verdict is worse than feared in one specific way and better in another: the taxonomy is real and correctly named, but our stated DELTA against intake-921''s six-dimension list is factually wrong and the resulting card omits two of the seven layers. VINDICATES the 1341 dive''s single highest-priority surfaced source - it was right that this needed ingesting, and right about why. CONFIRMS ITS CENTRAL NEGATIVE: 1341''s finding that no local or literature source measures elicited agent belief survives contact with the strongest harness-variance paper in the field, which measures pass@1 and nothing else.'
+    adopt_patterns; credibility 2. Stage-2b close-out (2026-09-07, operator): the following dive-surfaced ingest-and-dive candidates were DEFERRED by the operator to the Stage-3 expansion queue (not declined on merit): arXiv:2603.19328 - Sah et al., The verifier tax: horizon dependent safety success tradeoffs in tool ; arXiv:2608.23953 - The Empire, Long Divided, Must Unite: Architectural Convergence in Three LLM Agen; arXiv:2606.11211 - Hiremath & Hiremath, Calibration drift under reasoning: how chain-of-thought budg; arXiv:2607.05458 - Learning to Control LLM Agent Harnesses with Offline Reinforcement Learning. Stage-2b (2026-09-07): intake-1344 ingested+dived from this entry''s dive-surfaced sources; effect on this entry: corroborates (claims [0]) - CORROBORATES claim 0 (the premise that a harness is a first-order experimental variable at fixed model, task and environment) from a genuinely independent direction, and does so on EXECUTED outcome evidence rather than on 2607.04528''s confounded raw-vs-mediated arms - which is exactly what the 1341 dive said should carry the thesis instead. Claims 1-4 of intake-1341 (the six-tuple H, D_belief and its arrival/growth decomposition, the HIBench-Code and SWE-bench/Terminal-Bench belief tables, BIWM) are INDEPENDENT of this source: it contains no belief construct at all - "belief", "world model" and "elicit" occur zero times in v1 - so it neither supports nor threatens any of them. TWO NARROWINGS OWED BACK TO THE BEARING DIVE, neither of which changes a key_claim there. (1) The 1341 dive characterises this paper as one of the sources on which our harness thesis rests "on much better evidence" and as "strictly stronger" than 2607.04528 for HS-4. Both remain true - this paper is better designed, better disclosed in prose, and independently corroborated in direction - but "strictly stronger" should not be read as "unconfounded": its 7.80x is an author-built harness ladder measured against three deliberately-clustered models at n=2 per cell, and it releases no code, so on the artifact axis it is actually WEAKER than 2607.04528, which at least ships a repo. (2) The 1341 dive states we "are running on an unverified source" at harness-selection-and-integration.md:164. That is now resolved and the verdict is worse than feared in one specific way and better in another: the taxonomy is real and correctly named, but our stated DELTA against intake-921''s six-dimension list is factually wrong and the resulting card omits two of the seven layers. VINDICATES the 1341 dive''s single highest-priority surfaced source - it was right that this needed ingesting, and right about why. CONFIRMS ITS CENTRAL NEGATIVE: 1341''s finding that no local or literature source measures elicited agent belief survives contact with the strongest harness-variance paper in the field, which measures pass@1 and nothing else.
+
+    2026-10-20 Stage-3 (intake-2006) - the 53276 and 53294 line pointers resolved into intake-908 and are replaced; 2607.12227 figures are the v1/v2 reading, see inline markers.'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -141304,12 +141314,12 @@
     source: alphaxiv.org/abs/2607.04528 + 3 web searches
     pinned: retrieved 2026-09-07
   - finding: 'CATEGORY-LEVEL INDEPENDENT, already local: arXiv 2607.12227 finds harness evolution gives an average
-      held-out gain of just 0.6 points and concludes "severe overfitting to the training tasks"; our own learned-routing-controller.md
+      held-out gain of just 0.6 points and concludes [CORRECTED 2026-10-20 per intake-2006 - v1/v2 two-model figure; v4 held-out average is +0.0 over three models, n=34] "severe overfitting to the training tasks"; our own learned-routing-controller.md
       P4.6 randomized-pool experiment returned NULL (10 runs, no arm cleared +1pp). Both say harness-level effects
       are small and hard to power — which makes a paper reporting D_fail swings of 0.400 -> 0.800 with no confidence
       interval, on 10 tasks, a priori suspect.'
     kind: independent
-    source: arXiv:2607.12227; intake_index.yaml:53276,:53294
+    source: arXiv:2607.12227v4 Table 3 (intake-2006); intake-921 dive_corrections
     pinned: index read 2026-09-07
   - finding: 'INDEPENDENT, the correct instrument: arXiv 2605.27922 (Harness-Bench, 106 sandboxed tasks, 5,194 trajectories)
       and arXiv 2605.23950 ("Stop Comparing LLM Agents Without Disclosing the Harness", seven-layer taxonomy + Harness
@@ -141377,7 +141387,7 @@
   - direction: 'DECLINE (Stage-1 #3): do NOT propose a D_belief replication across our HS-4 candidates. It is not
       runnable from the release (missing metrics package, missing fixtures) and the reference design is confounded,
       so a replication would reproduce the confound. If the measurement is ever wanted it must be built from scratch,
-      and it must first clear the local power gate: 2607.12227''s +0.6pt held-out null, learned-routing-controller.md
+      and it must first clear the local power gate: 2607.12227''s +0.6pt held-out null [CORRECTED 2026-10-20 per intake-2006 - now +0.0 average over three models, n=34], learned-routing-controller.md
       P4.6''s 10-run null, and the noise floors at wiki/benchmark-methodology.md:5 all say harness-level effects are
       small and must be POWERED and BUDGET-MATCHED before any run.'
     owner: decline
@@ -249042,8 +249052,6 @@
   ingested_date: '2026-10-07'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
   authors:
   - Cognition
   key_claims:
@@ -249387,6 +249395,14 @@
     located_by: machine
     verified_by: vidya/machine_anchor
   depends_on: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'K4: compared against kb-search, project-wiki lint/incremental compile, MEMORY.md and the session bus;
+    no demonstrated gap (plan P4-RETRIEVAL K4).'
+  - Reopen conditions (stale note escaped lint; named multi-owner boundary; undiscoverable cross-agent finding)
+    recorded in K4; DCP-bundle angle carried by M14 in handoffs/active/delegation-context-preassembly.md.
+  handoffs_updated: []
+  handoffs_created: []
 - id: intake-1964
   arxiv_id: null
   url: https://huggingface.co/google/embeddinggemma-2
@@ -249406,8 +249422,6 @@
   ingested_date: '2026-10-07'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
   authors:
   - Google DeepMind
   key_claims:
@@ -249519,7 +249533,9 @@
     says 262,144; effective support beyond 8,192 remains unvalidated. No weights were downloaded, packages
     installed, code run or inference performed. Stage-1 claim #2 (historical wording): “The model card
     specifies an 8192-token context, task-steering prefixes and asymmetric query/document formatting for
-    retrieval.”'
+    retrieval.”
+
+    2026-10-20: maintainer-run result files (embeddings-benchmark/results PR #793, run with mteb 2.26.10, sentence-transformers 6.1.0, transformers 5.20.1) exist for revision 914f7f89; by the dive''s own unweighted re-aggregation (not the official leaderboard formula; second-reader partial) they reproduce the code-retrieval gain over EmbeddingGemma-300m (about +9 points) but score about 0.6 points below it on the multilingual suite. The claim-1 figures remain publisher-reported; do not cite 61.36 as independently confirmed or 60.52 as the leaderboard number.'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -249788,6 +249804,16 @@
     reviewed_source_path: /mnt/raid0/llm/tmp/dive-1964/README.md
     reviewed_source_sha256: b677a0ee2818c36f091b65fd3d9b4baea9f04d53b02b49cae916c74bf9682037
   depends_on: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - EmbeddingGemma 2 enters the 2.2 offline comparison as REPL-EMB-2.5/2.6/2.7 in handoffs/active/repl-embedding-retrieval.md
+    (@768 and @256, parity gate, EPYC speed block).
+  - Vision/MiniLM/CLIP branch held as M13 prose in handoffs/active/multimodal-pipeline.md; 1024-d store
+    substitution held as M12; K5 adds a dive_correction on claim 1 at Stage 4.
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  - handoffs/active/multimodal-pipeline.md
+  handoffs_created: []
 - id: intake-1965
   arxiv_id: null
   url: https://github.com/AgentMemoryRepo/agentmemoryrepo
@@ -249806,8 +249832,6 @@
   ingested_date: '2026-10-07'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
   authors:
   - AgentMemoryRepo
   - Cognition
@@ -250048,6 +250072,12 @@
     source_revision: 8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
     observed_revision: commit:8798cb26c817d451a5ed6cba0ad8d9eca8d5ec3e
   depends_on: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'K4: format and skill read on the pinned repo (dive); local trial has no startup or scheduled Dreaming;
+    nothing beyond MEMORY.md/wiki to adopt.'
+  handoffs_updated: []
+  handoffs_created: []
 - id: intake-1966
   arxiv_id: null
   url: https://developers.googleblog.com/en/embeddinggemma-2-the-developer-guide/
@@ -250066,8 +250096,6 @@
   ingested_date: '2026-10-07'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
   authors:
   - Maarten Grootendorst
   - Ian Ballantyne
@@ -250214,6 +250242,13 @@
     reviewed_source_path: /mnt/raid0/llm/tmp/dive-1966/developer-guide.txt
     reviewed_source_sha256: af57d0fd505b6a6aad65f7adcd9bca819f6f7e12abf7d4d6ac096e070a54e7e3
   depends_on: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Prompt, MRL/normalisation and same-checkpoint text-only loading guidance feed REPL-EMB-2.5 (adapter
+    config, text-only vs full equivalence check).
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  handoffs_created: []
 - id: intake-1967
   arxiv_id: null
   url: https://huggingface.co/ggml-org/embeddinggemma-2-GGUF
@@ -250231,8 +250266,6 @@
   ingested_date: '2026-10-07'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
   authors:
   - ggml-org
   key_claims:
@@ -250429,6 +250462,13 @@
     reviewed_source_path: /mnt/raid0/llm/tmp/dive-1967/convert.log
     reviewed_source_sha256: 900fc30b02d8e424eacdd1ce58687b6449b2587733e03e63c18fe5ed77009e1a
   depends_on: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - ggml-org BF16/Q8_0 GGUFs are the llama.cpp lane artifacts in REPL-EMB-2.6; frozen ffc1bac82 lacks gemma-embedding2
+    (plan-time grep of src/llama-arch.cpp L62).
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  handoffs_created: []
 - id: intake-1968
   arxiv_id: '2609.23570'
   url: https://arxiv.org/abs/2609.23570
@@ -250608,8 +250648,6 @@
     comparison: DCP-4 advisory default-off and DCP-6 awaiting quality-scored falsification; benchmark
     does not test wiki/source-linked diagnostic context specifically. No inference performed.'
   depends_on: []
-  handoffs_updated: []
-  handoffs_created: []
   cross_references:
     chapters: []
     handoffs:
@@ -250619,6 +250657,13 @@
     - intake-1976
     intake_entry_notes:
     - intake-1976 (linked benchmark code/data release-status companion; not independent evidence)
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'M14: matched paired design already in DCP-6; paper tests none of our briefs; trigger prose added under
+    Open questions in handoffs/active/delegation-context-preassembly.md.'
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  handoffs_created: []
 - id: intake-1969
   title: llama.cpp merged implementation for EmbeddingGemma 2
   url: https://github.com/ggml-org/llama.cpp/pull/30054
@@ -250809,6 +250854,13 @@
   - claim_index: 3
     effect: unaffected
     note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'PR #30054 C++ model diff is applied on an experimental worktree branch in REPL-EMB-2.6; generic arch
+    test skips GEMMA_EMBEDDING2, so the own parity gate in REPL-EMB-2.5/2.6 is required.'
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  handoffs_created: []
 - id: intake-1970
   title: EmbeddingGemma 2 model-specific GGUF conversion recipe
   url: https://github.com/ggml-org/convert/commit/aa5d5d997139d86298edb6e17fe2e5ade4d1aa90
@@ -250979,6 +251031,12 @@
   - claim_index: 2
     effect: unaffected
     note: Source implementation/recipe evidence; no local conversion, execution, test, or parity result.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Recipe pins (BF16 main, Q8_0 derived, external LLAMA_CPP) are recorded as lane identities in REPL-EMB-2.6.
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  handoffs_created: []
 - id: intake-1971
   url: https://huggingface.co/docs/transformers/model_doc/embedding_gemma2
   title: EmbeddingGemma2 · Hugging Face
@@ -251300,6 +251358,14 @@
       retained claim is limited to the documented normalization dtype and parameter. This describes correction
       of an unpersisted draft hypothesis; no rejected hypothesis is attached to or opposed against the
       retained truthful claim.
+  integration_disposition: integrated
+  disposition_evidence:
+  - Docs path (ST >=6.1.0, Transformers AutoModel) pinned in REPL-EMB-2.5; vision shared-space claims held
+    as M13 prose in handoffs/active/multimodal-pipeline.md (stores empty 2026-10-20).
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  - handoffs/active/multimodal-pipeline.md
+  handoffs_created: []
 - id: intake-1972
   url: https://github.com/huggingface/transformers/releases/tag/v5.19.0
   title: Release v5.19.0
@@ -251401,6 +251467,14 @@
     effect: unaffected
     note: These are same-publisher release-note restatements of model documentation/card claims, not independent
       model-quality corroboration.
+  integration_disposition: integrated
+  disposition_evidence:
+  - transformers v5.19.0 pin in the REPL-EMB-2.5 compatibility matrix; duplicate vision rows closed under
+    M13.
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  - handoffs/active/multimodal-pipeline.md
+  handoffs_created: []
 - id: intake-1973
   url: https://github.com/huggingface/sentence-transformers/releases/tag/v6.1.0
   title: v6.1.0 - Documentation and input handling improvements
@@ -251514,6 +251588,14 @@
     note: Transformers 5.19.0 falls inside this declared range. The model docs separately name Sentence
       Transformers >=6.1.0. Current orchestrator uv.lock pins ST 5.3.0 and Transformers 4.57.6, so this
       stack does not satisfy the candidate docs/release pair; no install or change was made.
+  integration_disposition: integrated
+  disposition_evidence:
+  - ST v6.1.0 dependency metadata (transformers >=5.0.0,<6.0.0) and the lock gap (ST 5.3.0/transformers
+    4.57.6) recorded in REPL-EMB-2.5; duplicate vision rows closed under M13.
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  - handoffs/active/multimodal-pipeline.md
+  handoffs_created: []
 - id: intake-1974
   url: https://github.com/embeddings-benchmark/mteb/pull/5588
   title: 'model: EmbeddingGemma 2'
@@ -251644,6 +251726,14 @@
     effect: unaffected
     note: Saved PR updated_at is 2026-10-07T09:29:28Z in the snapshot read 2026-10-07; retrieval time
       is not inferred from updated_at.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'K5: open PR with undisclosed eval setup; publisher figures stay labelled; duplicate-text rows map to
+    REPL-EMB-2.5 (compat matrix) and M13.'
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  - handoffs/active/multimodal-pipeline.md
+  handoffs_created: []
 - id: intake-1975
   url: https://github.com/embeddings-benchmark/results/pull/745
   title: 'results: EmbeddingGemma 2'
@@ -251806,6 +251896,14 @@
     effect: unaffected
     note: PR updated_at is 2026-10-06T23:00:14Z in the saved snapshot read 2026-10-07; retrieval time
       is not inferred from updated_at.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'K5: results PR #745 closed by its author 2026-10-12 per intake-2009; duplicate-text rows map to REPL-EMB-2.5
+    and M13.'
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
+  - handoffs/active/multimodal-pipeline.md
+  handoffs_created: []
 - id: intake-1976
   arxiv_id: null
   url: https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/VibeMemBench
@@ -251850,8 +251948,6 @@
     repository and other release channels not exhaustively reviewed. Same project/paper companion, not
     independent empirical confirmation. No install, test, model or weight download, or execution.
   depends_on: []
-  handoffs_updated: []
-  handoffs_created: []
   cross_references:
     chapters: []
     handoffs: []
@@ -251861,6 +251957,14 @@
     intake_entry_notes:
     - intake-1968 (paper this repository accompanies; not independent corroboration)
   reported_results: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'M14: pinned 188835d4 status is stale; plan-time unverified observation that the subtree now has scripts
+    and a public Hugging Face dataset; consult-on-use rule recorded under Open questions in handoffs/active/delegation-context-preassembly.md;
+    supplementary dive offered to the operator.'
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  handoffs_created: []
 - id: intake-1977
   arxiv_id: '2506.13771'
   url: https://arxiv.org/abs/2506.13771
@@ -252003,7 +252107,8 @@
     tally:
       true: 5
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/tq3-quantization-evaluation.md
   handoffs_created: []
   notes: 'arXiv current version v5 (first posted 2025-05-30). Tier-2b saw a NeurIPS 2025 poster listing
     (neurips.cc/virtual/2025/poster/115061): peer-reviewed +2, lab +1, age ~17 months gives no recency
@@ -252037,6 +252142,11 @@
     : README, LICENSE (CC BY-NC 4.0), file list (no .cu). Independent replication search not run beyond
     repo (no web search performed); Tier-2b found none. License: CC BY-NC 4.0 (fact only; licenses irrelevant
     to this non-commercial project). Dive field rationale (wave 1): verdict: monitor.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - QAT+KD per model, no released kernel, non-GGUF two-path layer (intake-1977 claims 2-4, second reader
+    5/5 true); monitor record with stop rule and observable trigger in tq3-quantization-evaluation.md;
+    optional microbench declined with reason (W1-intake-1977-02)
 - id: intake-1978
   arxiv_id: null
   url: https://github.com/davidgonmar/depth-memory
@@ -252098,6 +252208,10 @@
     architecture (no path to our frozen GGUF lineup); companion paper entry covers the technique. Analyst
     notes: WebFetch digest cited arXiv ID 2610.18809; not verified against arxiv. License MIT. 12 stars.
     Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified companion repository of intake-1994; no verified claim; architecture-watch reference
+    with no current consumer
 - id: intake-1979
   arxiv_id: null
   url: https://github.com/magnitudedev/magnitude
@@ -252469,7 +252583,10 @@
     - 'k1 partial: Catalog ''method: dflash2'' and HF z-lab mirror confirmed; ''several'' DFlash/MTP/DSpark
       pairings and ''no Magnitude-specific algorithm'' are unanchored negatives.'
     - k3 unanchored citable
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
+  - handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: magnitudedev/magnitude@940e51bd3c16b4b98935d04e855fe8685031ae90; fetch_status:
     partial (repo page digest only; code and raw README not read). EPYC fit (unverified): Conceptually
@@ -252546,6 +252663,11 @@
       not named'' which is only true for inference/ tree.'
     - 'actionable W2-1979-04: ''power equal in simulation'' rests on agent''s own pure-python sim; ''AK
       cost dominated by B_min=12'' is handoff-recorded, unverified.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Vulkan floor check AKX-ALL-29; IQ2/IQ3 GLSL read INF37-IQ-4; CPU IQ/VNNI read NEW-9; stopping-rule
+    comparison and arm-order replay held as M5 prose in the all-devices handoff; kernel port declined
+    without evidence.
 - id: intake-1980
   arxiv_id: null
   url: https://github.com/Gen-Verse/RSI-Anything
@@ -252678,6 +252800,10 @@
     file listing (573 files), LICENSE (Apache-2.0, one-line fact). NOT read: src/rsi_anything/workflow/*,
     tasks/code_repair/src/{world,losses,training,semantic_world}.py bodies, tasks/gui/*, vendored jepa-anything-core.
     No code run. HF dataset Gen-Verse/RSI-Anything not fetched.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - No ledger row; the repo is the code-repair arm of intake-2000 only and holds evaluation count constant,
+    so it supports no AK work beyond the evidence-tier pattern retained in K1.
 - id: intake-1981
   arxiv_id: null
   url: https://github.com/context-dot-dev/sgrep
@@ -252866,7 +252992,8 @@
     flags_for_operator:
     - 'k0 partial: Anchor supports average+normalize to 256 and no transformer pass; README confirms --stdin
       does not use index. f16 tables and pinned revisions only weakly evidenced (tests/cache.py snapshot).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: context-dot-dev/sgrep@dec6122c05be553c5a60bd647d1350b221b7b9c3; fetch_status:
     partial (repo page digest only; raw README and benchmark notes not read). EPYC fit (unverified): A
@@ -252894,6 +253021,10 @@
     only; no demonstrated consumer for the tool); verdict: adopt_patterns (unchanged); do not adopt the
     binary; credibility_score: null (unchanged; vendor self-run, ledgers published, no independent replication
     found).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Model2Vec + BM25 recipe becomes the static arms in REPL-EMB-2.5/2.7 via a small script; sgrep binary
+    as a kb-search baseline declined (no consumer gap).
 - id: intake-1982
   arxiv_id: null
   url: https://github.com/NVIDIA/personaplex
@@ -253126,7 +253257,8 @@
       its own reason says v10 op coverage is unverified; no source supports the missing list.'
     - 'actionable W1-1982-02: Premise that torch.cuda and CUDA graphs run on gfx90a PyTorch-ROCm is general
       knowledge, not source-verified; dive marks it plausible but untested.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91 (WebFetch
     digest of repo page, retrieved 2026-10-20); fetch_status: partial (WebFetch digest only; raw README
@@ -253161,6 +253293,10 @@
   relevance_reason: 'English-only fails D2/G1; value is as an FDB-harness reference and a known-published-numbers
     anchor, not as a bake-off challenger. Not dismissed: operator may still want an English-only full-duplex
     reference.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable trigger prose (no checkbox) under handoffs/active/conversation-stack.md; considered immediate
+    step recorded in the M record: W1-1982-01 -> M8; W1-1982-02 -> M8; W1-1982-03 -> M8'
 - id: intake-1983
   arxiv_id: null
   url: https://github.com/FluidInference/FluidAudio
@@ -253322,7 +253458,8 @@
     - k2 unanchored citable
     - 'actionable W1-intake-1983-01: Assumes Parakeet-Realtime-EOU-120M runs under NeMo on CPU/MI210;
       dive itself marks runtime availability unverified.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Re-scored 2026-10-20 after operator steering (platform is not a reason to dismiss): evaluated
     as a catalogue of portable duplex front-end components. Stage-1 analyst read: FluidInference/FluidAudio@61d41b3ca04833d1cb80632c82ba401f117a01ef
@@ -253347,6 +253484,10 @@
     threshold defaults, Nemotron docs, Sources for VAD/diarization, the HF Sortformer/LocalVQE cards,
     upstream localai-org/LocalVQE repo (not fetched), any ONNX availability of NeMo EOU. No independent
     replication of FluidAudio numbers searched (vendor benchmarks only).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W1-intake-1983-01 -> P3 / CS-47; W1-intake-1983-02 -> P6 / CS-49; W1-intake-1983-03 -> K3'
 - id: intake-1984
   arxiv_id: null
   url: https://huggingface.co/fishaudio/drama-3
@@ -253536,7 +253677,8 @@
       read, SGLang-Omni cookbook and vLLM recipe pages not read.'
     - 'actionable W1-1984-02: DAC causal decoder and FP8 dequant steps rest on general knowledge; MI210
       FP8 lack (inside corrected claim 3) is flagged general knowledge and must not be cited as source-verified.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: HF model card retrieved 2026-10-20 (WebFetch digest); fetch_status: partial
     (WebFetch digest only; license text not read). EPYC fit (unverified): A 3B-active MoE TTS is conceptually
@@ -253557,6 +253699,10 @@
     / 39 quantized variants listed on the hub. Independent search: no reproduction or critique found (eesel.ai
     and morphic.com pages restate the pricing and release; restatement). Licence (one-line fact only):
     Fish Audio Community License v1.0 dated 2026-10-13; not used as a gate.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable trigger prose (no checkbox) under handoffs/active/conversation-stack.md; considered immediate
+    step recorded in the M record: W1-1984-01 -> K3; W1-1984-02 -> M9'
 - id: intake-1985
   arxiv_id: null
   url: https://github.com/eelbaz/mLattice
@@ -253657,6 +253803,10 @@
     into this entry per main. Reference list in PAPER.md has no arXiv IDs (Gated Delta Networks ICLR 2025,
     SDM 1988, Titans 2024 cited by name only). Re-verify every figure against primary source before citing;
     this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified repository; the frozen-memory topology line is owned by delta-mem-reproduction.md;
+    no edit made because no verified claim exists
 - id: intake-1986
   arxiv_id: null
   url: https://huggingface.co/spaces/Ex0bit/mLattice
@@ -253704,6 +253854,9 @@
     Treat as a pointer under the repo entry. Whether it is the same person as eelbaz was not verified
     (linked as ''Live demo'' from the repo, which strongly implies the author''s own). Re-verify every
     figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified demo page of intake-1985; adds no independent content
 - id: intake-1987
   arxiv_id: null
   url: https://wccftech.com/rtx-3090-4-6x-token-generation-27b-llm-inference-optimizations/
@@ -253799,6 +253952,10 @@
     says 381 tps, body 382 tok/s and ''near-5x'' vs 4.6x - internal inconsistency. Search snippets (not
     fetched) are unverified secondary. Re-verify every figure against primary source before citing; this
     entry is stage1-unverified.'
+  integration_disposition: declined
+  disposition_evidence:
+  - press restatement superseded by the primary intakes 1827 and 1830, which carry the composition and
+    compact-KV material and are owned by the DF2 lane; its Stage-1 follow-ups are satisfied there
 - id: intake-1988
   arxiv_id: '2610.20456'
   url: https://arxiv.org/abs/2610.20456
@@ -254007,7 +254164,9 @@
     - k4 unanchored citable
     - 'actionable W1-intake-1988-02: Checkpoint repo name is from dataset card links, not fetched; zero-init
       gate retrofit effect is untested design, not source-supported.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/dflash2-block-drafter-experimental-build.md
+  - handoffs/active/engram-conditional-memory.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.20456v1 (abs page + html route; last ~13.8k chars of HTML not
     read); fetch_status: partial (arXiv HTML read up to 100k of 113.8k chars; Appendix B.1 onward unread).
@@ -254032,6 +254191,10 @@
     header, olmo-core/.../data/count_table.py (reader/lookup) at COUNT@31fd41ef; did NOT read the OLMo-core
     fork''s CountNgramEmbedding forward or the training launch script. Tier-2b: one WebSearch for replications
     -> none (only a restatement blog summary, st-hakky).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W1-intake-1988-01 + NEW-1 become DF2-19 (corpus-table replay on the DF2-14 transcripts); Track B COUNT
+    arm held as monitor prose in engram-conditional-memory.md; late fusion declined (W1-intake-1988-04)
 - id: intake-1989
   arxiv_id: null
   url: https://github.com/IanMagnusson/COUNT
@@ -254163,7 +254326,8 @@
       and NumPy-only reader imports verified, torch needed only in the OLMo fork.'
     - 'actionable W1-intake-1989-01: ~0.13 ms/token with 8 threads is derived from 1988 Tables 5/9 (decode
       workers count taken from prefill config); no CPU-lookup latency figure exists in source.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: IanMagnusson/COUNT@31fd41ef4be88327d656af48463883628ceb8598 (HEAD via
     git ls-remote, 2026-10-20); fetch_status: ok (raw README via WebFetch digest; repo page not separately
@@ -254180,6 +254344,10 @@
     bodies, the OLMo-core fork (CountNgramEmbedding), tests, count_ladder.py. Nothing executed. Dataset
     card intake-1990 fetched (sha256 904403c5..): only format facts used (Dolma2 tokenizer, forward_index_topk.bin
     per-order sorted histories); HF dataset sha 5a284fd648f9.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - its NumPy reference reader and COUN v2 format are the instrument for DF2-19 (intake-1989 claims 1-2
+    anchored); the C++ reader and latency bench (W1-intake-1989-01) is gated prose under DF2-19
 - id: intake-1990
   arxiv_id: null
   url: https://huggingface.co/datasets/IanMagnusson/count-ngram-tables
@@ -254240,6 +254408,10 @@
     ODC-By. Grep of repo for infini-gram returned no intake entry; no contamination handoff directly relevant
     (the card has no benchmark data). Re-verify every figure against primary source before citing; this
     entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified dataset card; the table download target is resolved through dive-verified intake-2020
+    (build manifest of general-17gb); none of the card's own figures is used
 - id: intake-1991
   arxiv_id: '2609.20804'
   url: https://arxiv.org/abs/2609.20804
@@ -254342,6 +254514,10 @@
     search not run (credibility<3, verdict adopt_patterns); not a negative result. Authors/figures from
     the abs page and html digest via WebFetch (small-model summary), not raw download. Re-verify every
     figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified; observation-masking/elision family already owned by tool-output-compression.md
+    (intake-274 line and finished A/B); primary read first if a new arm opens
 - id: intake-1992
   arxiv_id: '2609.35738'
   url: https://arxiv.org/abs/2609.35738
@@ -254414,7 +254590,8 @@
     future option; no action now.'
   source_revision: arXiv:2609.35738v1 (abs + html route; html read to char 100000 of 160701)
   verification: stage1-unverified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2609.35738v1 (abs + html route; html read to char 100000 of 160701);
     fetch_status: partial (html read first 100000 of 160701 chars; appendices D-F unread). EPYC fit (unverified):
@@ -254426,6 +254603,10 @@
     evidence; Meta-Harness lineage already covered. Analyst notes: Contradiction search not run (credibility
     2); not a negative result. Figures from WebFetch digest. Re-verify every figure against primary source
     before citing; this entry is stage1-unverified.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - stage1-unverified; primary-read queue paragraph in harness-improvement-loop.md, trigger HIL-6 / OP-HIL4
+    architecture selection
 - id: intake-1993
   arxiv_id: '2610.07447'
   url: https://arxiv.org/abs/2610.07447
@@ -254587,7 +254768,8 @@
     tally:
       true: 4
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.07447v1 (abs + html route; html read to char 100000 of 110711);
     fetch_status: partial (html read first 100000 of 110711 chars). EPYC fit (unverified): Directly relevant
@@ -254617,6 +254799,10 @@
     no code link. EPYC check of lane handoffs: no existing mention of 2610.07447 in autokernel-research-loop.md
     / autopilot-continuous-optimization.md. Dive field rationale (wave 1): relevance: medium-high (mechanism
     transfers by analogy only; no kernel-optimization-on-hardware task; closed GPT models; no code).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Between-run spread and independent-campaign count are AK-HR-1(b); the fork-and-flush arm is M1 prose
+    attached to the unrun AK-plateau pack A/B; branch timing in the concurrent-target handoff declined.
 - id: intake-1994
   arxiv_id: '2610.18809'
   url: https://arxiv.org/abs/2610.18809
@@ -254697,6 +254883,10 @@
     yet; revisit if a lineup model adopts it. Analyst notes: Contradiction search not run (low relevance).
     Ablation delta values were not legible in extraction and are omitted. Re-verify every figure against
     primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified pretraining-architecture paper; no verified claim and no lineup consumer; the suggested
+    owner cpu-fused-decoder-blocks.md is an A-GATE-FAILED historical record and is not used
 - id: intake-1995
   arxiv_id: '2610.14224'
   url: https://arxiv.org/abs/2610.14224
@@ -254772,7 +254962,8 @@
   - '[unverified] Compare Propose-Probe-Compose to current PromptForge mutation flow; owner handoffs/active/harness-improvement-loop.md'
   source_revision: arXiv:2610.14224v1 (html route; text read to char 100000 of 169089)
   verification: stage1-unverified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.14224v1 (html route; text read to char 100000 of 169089); fetch_status:
     partial (read first 100k of 169k chars; Appendix F limitations truncated). EPYC fit (unverified):
@@ -254788,6 +254979,9 @@
     weaken evidence. Analyst notes: Contradiction pass not run (credibility 3, verdict adopt_patterns
     only; bounded budget). Provisional. Re-verify every figure against primary source before citing; this
     entry is stage1-unverified.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - stage1-unverified; same primary-read queue and trigger
 - id: intake-1996
   arxiv_id: '2610.22192'
   url: https://arxiv.org/abs/2610.22192
@@ -254860,6 +255054,9 @@
     (Stage-1): no - Training-heavy, out of compute scope; reward patterns only. Analyst notes: Abstract/page
     did not state compute (GPU counts/hours). Release of weights not verified. Re-verify every figure
     against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified; no consumer identified in the lineup or handoffs; titled reference only
 - id: intake-1997
   arxiv_id: '2610.18861'
   url: https://arxiv.org/abs/2610.18861
@@ -254929,6 +255126,9 @@
     serving stack; not matched to frozen kernel. Analyst notes: intake-3897 id is a guess from a line-number
     grep (title at line 3897); the real intake id was not looked up - verify before citing. Treat intake_entries
     field accordingly. Re-verify every figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified; no handoff cross-reference and no consumer; titled reference only
 - id: intake-1998
   arxiv_id: '2610.20563'
   url: https://arxiv.org/abs/2610.20563
@@ -255103,7 +255303,8 @@
     - 'actionable W1-intake-1998-01: Reason says paper reports ''largest forgetting effect on exactly
       the state AK keeps (do-not-repeat etc.)''; no anchored claim shows effect attributable to lessons/do-not-repeat
       state, and the paper has no notes/lessons condition.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.20563v1 (abs page only; html 404, PDF streams not decodable);
     fetch_status: partial (abs page + search mirror only; /html returned 404 for v1 and unversioned; PDF
@@ -255133,6 +255334,10 @@
   relevance_note: 'Relevance lowered from high to medium: the kernel task is a simulator toy with a deterministic
     cheap judge; the transferable content is the restart mechanism and its measured mechanism (edit-size/reasoning
     decay), not the headline numbers.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - Forget arm and repeat-null counter-datum held as M1 (AK-RI-FORGET-1) with trigger from AK-HR-2; the
+    one controlled comparison is a single task with 3 replicates.
 - id: intake-1999
   arxiv_id: '2610.12668'
   url: https://arxiv.org/abs/2610.12668
@@ -255192,7 +255397,8 @@
     handoffs/active/unified-trace-memory-service.md'
   source_revision: arXiv:2610.12668v1 (html route; read to char 100000 of 103474)
   verification: stage1-unverified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.12668v1 (html route; read to char 100000 of 103474); fetch_status:
     ok (cited works shown by title only, no arXiv IDs in source). EPYC fit (unverified): Editing stored
@@ -255208,6 +255414,9 @@
     handoffs but unproven on open models. Analyst notes: Contradiction pass not run. Backbone names (Claude
     Opus 4.8, GPT-5.5, Gemini 3.7 Flash) as reported by the fetch digest. Re-verify every figure against
     primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - stage1-unverified; same primary-read queue and trigger (memory-revision design)
 - id: intake-2000
   arxiv_id: '2610.13912'
   url: https://arxiv.org/abs/2610.13912
@@ -255381,7 +255590,8 @@
       seen in text; ''no ablation'' is a negative (no ''ablation'' string found).'
     - 'k3 partial: Anchor supports only ''joint multiround evaluation is needed''; reaction-yield and
       lab-planning pretrained-predictor details are not anchored.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.13912v1 (html route); companion repo Gen-Verse/RSI-Anything@8ba44cd73ec6f57b151ec06e2f71a0726adfb687
     (README sha256 df44d12f..., retrieved 2026-10-20); fetch_status: partial (html route read to ~100k
@@ -255410,6 +255620,9 @@
     read: section 3.5 immune science, section 4 related work, references, appendix A; figure images (captions
     only). AK mapping read from lane files: autokernel-research-loop.md L322-331, L981, L2337-2339, L3701;
     autokernel-all-devices-all-dimensions.md L50, L257.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - Predictor replay gated by AK-HR-1(e) readiness under M3; evidence-tier pattern retained as K1.
 - id: intake-2001
   arxiv_id: '2602.06053'
   url: https://arxiv.org/abs/2602.06053
@@ -255647,7 +255860,8 @@
       on Service-Duplex-Bench 3.59+-0.12 vs 3.22+-0.14 do not overlap.'
     - 'k7 partial: Anchor is training-data size and does not support a negative claim; paper does state
       8xA100 training hardware, so no hardware figure is slightly overbroad; no params/VRAM found.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2602.06053v1 (html route); companion repo NVIDIA/personaplex@3428dfd95309a7f3c84fd93259ded0f810d1ff91
     (README sha256 4e8d2598..., retrieved 2026-10-20); fetch_status: ok. EPYC fit (unverified): Directly
@@ -255671,6 +255885,10 @@
     and the FDB paper (intake-2003). No figures/captions beyond Fig. 1 exist in text form. Independent
     corroboration search: none (press/blogs restate NVIDIA numbers; one Towards-AI blog gives a qualitative
     ''dumb but fluent'' impression, labelled restatement/opinion).'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Retained design knowledge recorded as prior art in handoffs/active/conversation-stack.md (K3): W1-2001-01
+    -> K3'
 - id: intake-2002
   arxiv_id: '2610.18010'
   url: https://arxiv.org/abs/2610.18010
@@ -255879,7 +256097,8 @@
       claim that Qwen3.5''s own MTP layer is replaced is not found in the report.'
     - 'actionable W1-2002-01: Says backbone is same family as the lineup''s 35B-A3B; project-internal
       assertion not from the source (low risk).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2610.18010v2 (html route, first 100k of 136k chars read); HF fishaudio/drama-3
     @ b2b5ee998034b2975720906c815e7fb0e9f007bd; fetch_status: partial (last ~36k chars of html not read;
@@ -255901,6 +256120,10 @@
     evaluation text skimmed only; NOT read: references (1049+) and Appendices A-C prompt formats (only
     spot grep of speaker tokens). Greps run: ''TTFA|first audio|time to first|latency'' (none for TTFA
     in the report). abs.html sha a4e6d45d.... Card cross-checked in intake-1984.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable trigger prose (no checkbox) under handoffs/active/conversation-stack.md; considered immediate
+    step recorded in the M record: W1-2002-01 -> M9; W1-2002-02 -> decline'
 - id: intake-2003
   arxiv_id: '2503.04721'
   url: https://arxiv.org/abs/2503.04721
@@ -256128,7 +256351,8 @@
     - k5 unanchored citable
     - 'actionable W1-2003-02: Presents running unchanged get_transcript/asr.py and evaluate.py on a cascade
       as feasible; files exist but cascade scorability is the unsourced claim 3 speculation.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2503.04721v3 (html route; v3 revised 2025-08-16); fetch_status:
     ok (html route; repo not fetched). EPYC fit (unverified): Fills a gap: conversation-stack CS-5/CS-8
@@ -256153,6 +256377,10 @@
     NOT read: reference list, evaluation .py code, v2/v3 papers (abs pages only), the Google Drive data
     (no dataset downloads allowed), v1.5 metric definitions beyond README bullets. Licence (one-line fact
     only): repo LICENSE is CC BY-NC 4.0.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W1-2003-01 -> P3 / CS-45; W1-2003-02 -> P6 / CS-48; W1-2003-04 -> decline'
 - id: intake-2004
   arxiv_id: null
   url: https://hackmd.io/@thc1006/qwen3-8-27b-speculative-decoding-rtx-3090
@@ -256313,7 +256541,9 @@
       ''9B sibling'' unverified and 150/150 is control-vs-control2 builds.'
     - 'actionable W1-intake-2004-01: ''76-80% at 400'' divergence rate is not among the anchored claims;
       not verified.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/dflash2-block-drafter-experimental-build.md
+  - handoffs/active/qwen38-27b-replace-qwen36.md
   handoffs_created: []
   notes: 'Not a reproduction of intake-1827/1830 (different engine, quant, power, context); do not pool
     its tok/s with HyperQwen figures. Stage-1 analyst read: retrieved 2026-10-20 (WebFetch digest, not
@@ -256348,6 +256578,10 @@
     n=25 prompts; divergence is prompt-deterministic, so 92-100% is of prompts essentially. Web adversarial
     pass not run for independent replication beyond repo''s own cross-references (restatement of upstream
     issues only).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - DF2-17 reruns DF2-6/DF2-8 at cap 1600 with the width x drafter table (W1-intake-2004-01).
+  - Q38-T9 replays banked Q38-T7 phase A per class (W1-intake-2004-02).
 - id: intake-2005
   arxiv_id: '2608.21836'
   url: https://arxiv.org/abs/2608.21836
@@ -256512,7 +256746,9 @@
       files; ''opposite of intake-1998'' is interpretation.'
     - 'actionable W1-intake-2005-01: Case (c) ''prefill-shaped q_len>1 path'' wording not verified against
       source text; otherwise a test-fixture idea.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/autokernel-cross-workload-keep-gate.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2608.21836v1 (abs page digest only; full html not read); fetch_status:
     partial (abs page only via WebFetch digest; no full text, baselines unread). EPYC fit (unverified):
@@ -256537,6 +256773,10 @@
     version (per-backend per-phase non-inferiority, T0/T1 coverage, token identity, serving gate), so
     remaining value is the failure taxonomy and the restart-with-notes ablation. Credibility 4->3: eager
     baseline, single runs per ablation cell, NVIDIA-only, headline dominated by Mamba/RecurrentGemma.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - Restart-with-notes arm in M1; deployment-gap fixtures held as M4 trigger prose in the keep-gate handoff
+    (STUB).
 - id: intake-2006
   arxiv_id: '2607.12227'
   url: https://arxiv.org/abs/2607.12227
@@ -256704,7 +256944,8 @@
     flags_for_operator:
     - 'actionable W1-intake-2006-01..04: Line-number and intake-index corrections cannot be validated
       from the source; paper-side figures (v4 +0.0, +1.2, -1.4, n=34) are supported.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2607.12227v4 (abs page digest only; revised 2026-10-05); fetch_status:
     partial (abs page digest only; v4 body not read; index notes cite v1/v2 figures that I did not re-verify).
@@ -256726,6 +256967,11 @@
     5, win-rate Table 11, figures. Tier-2b: WebSearch returned arXiv/aggregator pages (papers.cool, emergentmind,
     HF papers, hyper.ai, opentrain) restating the v1/v2 abstract - restatement; aggregators still serve
     the stale abstract. No independent replication found.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - HIL-7 matched-budget/held-out gate added to the HIL evaluation design; HIL-8 specifies insert-only
+    v4 corrections for intake-921/926/1323/1339/1341 and the wiki sentence (intake-2006 claims 0-4, second
+    reader 5/5 true)
 - id: intake-2007
   arxiv_id: '2608.26218'
   url: https://arxiv.org/abs/2608.26218
@@ -256786,6 +257032,9 @@
     Analyst notes: Credibility estimate: arXiv-only +0, recent +1, no major lab, no corroboration = 1;
     I scored 2 generously for large cohort; treat as 1-2. Contradiction pass not run. Re-verify every
     figure against primary source before citing; this entry is stage1-unverified.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - stage1-unverified; same context-trimming family and owner as intake-1991
 - id: intake-2008
   arxiv_id: '2605.05716'
   url: https://arxiv.org/abs/2605.05716
@@ -256834,7 +257083,8 @@
   - '[unverified] Cite as rationale for per-role scaffold-subset ablation in harness-selection-and-integration.md.'
   source_revision: arXiv:2605.05716v1 (abs page digest only)
   verification: stage1-unverified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
   notes: 'Stage-1 analyst read: arXiv:2605.05716v1 (abs page digest only); fetch_status: partial (abs
     page digest only). EPYC fit (unverified): Supports ablating orchestrator and REPL scaffolding components
@@ -256844,6 +257094,9 @@
     per-role component ablation; evidence base narrow. Analyst notes: Abstract only; no full text. Credibility
     estimate rough. Contradiction pass not run. Re-verify every figure against primary source before citing;
     this entry is stage1-unverified.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - stage1-unverified; same primary-read queue and trigger (ablation design)
 - id: intake-2009
   arxiv_id: null
   url: https://leaderboard.mteb.org/models
@@ -257011,6 +257264,10 @@
     are not on the multilingual v2 board in this clone and were not fetched), the HF mteb/results dataset,
     leaderboard rendered tables, mteb PR #5588 (reference implementation), the PR #793 bot comparison
     table beyond its first lines.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'K5: dive_correction for intake-1964 claim 1 (hedged: dive''s own aggregation, second-reader partial);
+    motivates CodeRetrieval prompt use and code-slice reporting in REPL-EMB-2.5/2.7.'
 - id: intake-2010
   arxiv_id: '2610.07625'
   url: https://arxiv.org/abs/2610.07625
@@ -257230,7 +257487,8 @@
     - 'actionable W2-NEW-STATELESS-01: "SLA is the only source that ablates what enters each fresh context"
       is an unsupported superlative about the literature; also the 1998 vs LLM4LLM position mapping is
       not from this paper.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read /mnt/raid0/llm/tmp/dive-w2-stateless/paper.html
     (sha256 dd3629395bbbeaff76ab4f256967fc619816d0c37a9ef1ae98f0b79e3ea5df74, arxiv.org/html/2610.07625v1)
@@ -257240,6 +257498,10 @@
     (NOT cloned; unverified whether populated). License CC BY 4.0 (paper). Tier-2b: one search; only secondary
     mirrors (opentrain.ai, chatpaper) restating the abstract (restatement); no replication or criticism
     found. Comparison numbers for intake-1998 are taken from the W1-D1 dive output, not re-read here.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Planner-window and do-not-repeat audit plus SLA input mapping are AK-HR-2(iii); harness-rebuilt arm
+    is M1 arm 3.
 - id: intake-2011
   arxiv_id: '2609.00077'
   url: https://arxiv.org/abs/2609.00077
@@ -257428,7 +257690,8 @@
       but +1.4% wall-clock is stated for T2 only, not the four-task average the claim implies.'
     - 'actionable W2-NEW-MODECOLLAPSE-02: Reason says in-loop/held-out ratio is "the only quantity" exposing
       Goodharting; paper does not claim exclusivity (it also uses H_t, C_t, V_t).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read /mnt/raid0/llm/tmp/dive-w2-modecollapse/paper.html
     (sha256 cf65c8558ca241d163dd7408558cb13b020e0c65ff6b62cf7de66d71b48349e9, arxiv.org/html/2609.00077v1)
@@ -257437,6 +257700,9 @@
     (LICENSE MIT; README read; code files in arl/ and scripts/ NOT read, nothing executed). Tier-2b: one
     search; no independent replication or criticism of DAPS; related-loop critiques surfaced (2605.26200
     already in index with 28 hits). Aggregate Tier-2b: none.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Offline four-axis diagnostic and signed faithfulness ratio are AK-HR-2.
 - id: intake-2012
   arxiv_id: '2006.06762'
   url: https://arxiv.org/abs/2006.06762
@@ -257655,7 +257921,9 @@
       Intel/V100/4-core A53, "18/20-core" has no 20-core support.'
     - 'actionable W2-NEW-ANSOR-01: "only with thousands of labelled measurements" is not in the paper
       (it says <30,000 measured typically); presented as Ansor finding.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read /mnt/raid0/llm/tmp/dive-w2-ansor/ar5iv.html
     (sha256 6055529d5a0f93183ccaea40ba04eab37aad907c2642196f50c116a0f5d192fd, ar5iv.labs.arxiv.org/html/2006.06762)
@@ -257665,6 +257933,10 @@
     local zlib extractor returned empty pages. Tier-2b: one search; follow-ups (TenSet, TLP, Pruner) surfaced,
     not read; no failed reproduction found; Ansor is shipped in Apache TVM (paper §10). License: not applicable
     to the paper.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Pre-build knob/feature capture is AK-HR-3 (exporter side AK-HR-1) with belief wiring VB-AK-HISTORY;
+    learned cost model declined now with M3 reopen trigger.
 - id: intake-2013
   arxiv_id: '2507.23159'
   url: https://arxiv.org/abs/2507.23159
@@ -257826,7 +258098,8 @@
       source and the removal-not-repair framing is inference (author partly flags).'
     - 'k4 partial: Needs only time-synchronous output.wav and the scoring stack (repo readmes confirm);
       streaming-harness need and CS-23 mapping are inference, not source.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-fdb15/paper.txt
     (arXiv html v4, 26 Apr 2026, sha256 d3f133878736d37a4e67c64240b1addd8c2f85922a3eafb92836b85589d17c44;
@@ -257836,6 +258109,10 @@
     search: no independent replication found (aggregators restate authors'' numbers: restatement). Repo
     evaluation README confirms entry points `evaluate.py --task behavior`, `get_timing.py`, `significance_test.py`.
     License: paper CC BY-SA 4.0 (one-line fact).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W2-G3-FDB15-01 -> P6 / CS-48; W2-G3-FDB15-02 -> P6 / CS-48; W2-G3-FDB15-03 -> decline'
 - id: intake-2014
   arxiv_id: '2510.07838'
   url: https://arxiv.org/abs/2510.07838
@@ -257977,7 +258254,8 @@
     flags_for_operator:
     - 'k4 partial: Adapter requirement (48 kHz/10 ms) and both API keys confirmed; "only through WebRTC
       adapter" and the CS-2/CS-36 gating judgments are inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-fdb2/paper.txt
     (arXiv html v2, 26 Apr 2026, sha256 7b059edd25ce9adc709a56e028feb8392edf38dba535d9c571b213b743a1ad1b;
@@ -257986,6 +258264,10 @@
     requires OPENAI_API_KEY and GEMINI_API_KEY, NeMo ASR, Node.js orchestrator. NOT read: orchestrator/judge
     code, the Examiner prompts in the repo, session counts per cell. Tier-2b: no independent replication
     found. License: paper CC BY 4.0 (one-line fact).'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Retained design knowledge recorded as prior art in handoffs/active/conversation-stack.md (K3): W2-G3-FDB2-01
+    -> K3; W2-G3-FDB2-02 -> decline'
 - id: intake-2015
   arxiv_id: '2604.04847'
   url: https://arxiv.org/abs/2604.04847
@@ -258149,7 +258431,8 @@
       signal" are interpretation; CI absence unverifiable.'
     - 'k5 partial: Local deterministic mock APIs confirmed; portability to a local cascade and CS-24 mapping
       are the entry judgement, not source.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-fdb3/paper.txt
     (arXiv html v1, 06 Apr 2026, sha256 500ff1cc08028cfcaaea473dd1b8bf2a3da458e5b1a5a0abd4d731de58308313;
@@ -258159,6 +258442,10 @@
     do not need LiveKit. Data on Google Drive (not fetched). NOT read: v3 code, per-scenario case tables
     beyond Case 1 start. Tier-2b: aggregator benchlm.ai transcribes the paper''s numbers (restatement).
     License: paper CC BY-SA 4.0 (one-line fact).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W2-G3-FDB3-01 -> P3 / CS-45; W2-G3-FDB3-02 -> M11; W2-G3-FDB3-03 -> decline'
 - id: intake-2016
   arxiv_id: '2609.17360'
   url: https://arxiv.org/abs/2609.17360
@@ -258336,7 +258623,8 @@
       is 12% and Lychee 6%.'
     - 'k5 partial: Gated=manual (HF API) and Chinese-only confirmed; cascade-scorability requirements
       are inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full from /mnt/raid0/llm/tmp/dive-w2-samewords/paper.txt
     (arXiv html v2, 24 Sep 2026, sha256 144490f6cfd1bd81e7dd6c67f72009e7fdc4ef73a57307aed146a5be5709d358;
@@ -258345,6 +258633,10 @@
     wall; hf_readme.md in the dive dir contains only that error text). NOT read: the reference list tail
     beyond [14], the cited systems'' papers. Tier-2b: no independent replication of ECHO results found
     (paper is 4 weeks old). License: arXiv perpetual non-exclusive (one-line fact).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W2-G3-SAMEWORDS-01 -> P3 / CS-45; W2-G3-SAMEWORDS-02 -> P3 / CS-45'
 - id: intake-2017
   arxiv_id: null
   url: https://huggingface.co/nvidia/parakeet_realtime_eou_120m-v1
@@ -258455,7 +258747,8 @@
     - 'actionable W2-NEW-PARAKEET-EOU-01: "only open-weights model found whose turn-end is a native in-band
       token" is a survey claim not supported by the dive source (search file lists other ONNX/CoreML ports
       only).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read in full: HF README.md (sha256 618bce4a1ac767cc01c1d7fd5aafee3341667185b855bae7d4abc656008bfa93),
     HF API json (sha a7e2b46..., files: README.md, .nemo, 2 pngs; license nvidia-open-model-license one-line
@@ -258468,6 +258761,10 @@
     1-3 days to a working streaming harness and the RNNT greedy decode + cache tensors are the risky parts;
     path B = NeMo PyTorch on CPU (pip NeMo, heavy dependency). No llama.cpp/ggml path exists. Estimate
     is judgement, labelled unmeasured.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W2-NEW-PARAKEET-EOU-01 -> P3 / CS-47'
 - id: intake-2018
   arxiv_id: null
   url: https://github.com/localai-org/LocalVQE
@@ -258580,7 +258877,8 @@
     - 'k3 partial: Far-end reference, DNS/AEC training, multi-ISA CPU build, Vulkan option confirmed;
       "neural stage too small for GPU" is stated for v1.4-AEC only (v1.3 Vulkan 2.57 ms beats CPU 3.21);
       MI210 Vulkan is external.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Cloned depth-1 at 7f61cd05 (2026-10-19), nothing
     run. Read README.md in full (sha256 2eeed279c971cce67f7897ae51bc9c8552c0e88bdd715d27520f956262d2423c),
@@ -258590,6 +258888,10 @@
     as ref, injected user speech as mic) through localvqe_process_frame_f32 (or CLI --in-wav mic ref --out-wav)
     before the barge-in detector, report cancel-latency and false-barge-in rate with and without AEC;
     reference/mic time alignment is the part the README does not address.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W2-NEW-LOCALVQE-01 -> P6 / CS-49'
 - id: intake-2019
   arxiv_id: null
   url: https://github.com/MinishLab/model2vec
@@ -258703,7 +259005,8 @@
     flags_for_operator:
     - 'k1 partial: 51.08/31.11 vs 55.93/42.92 and 7,559,168 params confirmed, but the 91.96% figure is
       for Avg(All) 51.32 vs 55.80, not the MTEB average cited.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Cloned depth-1 at dc1ff382 (nothing run). Read:
     README.md (sha256 1897812863c65915470b142e56afc30890dba3043bc9969a8a4745bd9cfecc38), results/README.md
@@ -258714,6 +259017,9 @@
     index with the same static model (invariant: one embedding model per index); adding it only widens
     the arm set and does not touch the frozen 2.1 rule text. Potion-base-8M also ships an ONNX file (API
     listing) - irrelevant for numpy path.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - potion-base-8M static prose arm and anchor-arm framing in REPL-EMB-2.5/2.7.
 - id: intake-2020
   arxiv_id: null
   url: https://huggingface.co/IanMagnusson/count-checkpoints-standard-transformer
@@ -258827,7 +259133,8 @@
     flags_for_operator:
     - 'k3 partial: Output-head averaging, CountLookup, 797.5 GB for 370M-1B, 17 GB for 60M-190M, ODC-By
       confirmed; "COUNT trained from step 0" and MI210-port remarks are inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/engram-conditional-memory.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read: HF README (sha256 d1e183a5..., repo sha 748e5de4),
     1B step32537 config.json and release_args.json, COUNT checkpoints README (repo sha b3522bbb), n-gram
@@ -258837,6 +259144,10 @@
     history count 12319), 142 GB, 797.5 GB. 1B checkpoint total disk size not measured (full optimizer
     state; sizes not queried). Wave-1 Track B proposal wording says ''standard 1B + 17 GB table''; the
     COUNT 1B checkpoint card says its training table was general-797gb.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - released standard 1B + Dolma2 tokenizer + pairing correction (intake-2020 claims 0-3) recorded as
+    Track B trigger prose in engram-conditional-memory.md; supplies the table revision pin used by DF2-19
 - id: intake-2021
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/25618
@@ -259108,7 +259419,10 @@
       test, while n-max 3 belongs to the separate 8/8->7/8 parser test.'
     - 'actionable W2-G5-llama25618-03: "upstream has no merged batch-invariant fix on CUDA or Vulkan as
       of 2026-10-18" is an absence claim inferred from a handful of PRs, not a surveyed fact.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
+  - handoffs/active/dflash2-block-drafter-experimental-build.md
+  - handoffs/active/qwen38-27b-replace-qwen36.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Fetched via curl to /mnt/raid0/llm/tmp/dive-w2-llama25618/:
     issue.json (sha 48f4a58b..., updated_at 2026-10-18T19:11:45Z), c1.json (31 comments; pages 2-3 empty),
@@ -259119,6 +259433,10 @@
     diffs, #23335 comments, #26741 comments, #28108 comments; no code was run. Several reporters are NONE-association
     first-time posters; numbers are as reported, not reproduced here. Anchors are quotes from the rendered
     API text (comments.txt/extra.txt).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-26/27 carry the batched-vs-serial op gate; DF2-17 settles DF2-6b-bis; Q38-T10 states the parity
+    contract; M6 owns exact-argument-role trigger.
 - id: intake-2022
   arxiv_id: '2603.00042'
   url: https://arxiv.org/abs/2603.00042
@@ -259307,7 +259625,8 @@
     flags_for_operator:
     - 'actionable W2-G5-littlebit2-02: "a 1-bit sign factorisation ... without QAT is expected to be worse
       than IQ1_S NMSE" and "~1 hour numpy" are the author''s expectations, not source-verified.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/tq3-quantization-evaluation.md
   handoffs_created: []
   notes: 'Stage-2b (wave 2) combined Stage-1+2 entry. Read: /mnt/raid0/llm/tmp/dive-w2-littlebit2/paper.txt
     (stripped from paper.html v2 sha256 2567b925...), lines 1-560 in full plus Appendix F.1 and H.3; arxiv.org/abs
@@ -259316,6 +259635,11 @@
     A-E, G, J proofs/code, Table in App. D, Fig. 6/9/13 values, the reference list. No web search for
     independent replication was run (Tier-2b: none found within the sources read). License facts: paper
     CC BY-NC-ND 4.0, repo CC BY-NC 4.0 (irrelevant to this project).'
+  integration_disposition: monitor
+  disposition_evidence:
+  - LittleBit-2 changes only the initialisation of the same QAT+KD recipe, reports no init-only perplexity
+    and releases no kernel (intake-2022 claims 1, 4, second reader 5/5 true); same tq3 monitor record;
+    init-only NMSE probe declined (W2-G5-littlebit2-02); rotation idea already owned by the QTIP entry
 - id: intake-2023
   arxiv_id: '2609.15309'
   url: https://arxiv.org/abs/2609.15309
@@ -259498,7 +259822,8 @@
     tally:
       'yes': 8
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read from disk: ar5iv HTML (sha256 5d3ce5a267b7cb9d4adbe20dd4a52e89ab1ff60d04b0839dc05a5348df8a8e6a)
     converted to text; main text sections 1-8 read in full, Appendix C, D, F.1/F.3/F.4 read; arXiv v1
@@ -259506,6 +259831,10 @@
     NOT read: Appendix A proofs, B estimator, E allocation design and MLS-Bench results, G prompts. arxiv.org/html/..v1
     returned an error page; ar5iv route used (abs page shows [v1]). Paper''s code link github.com/agent-tts/Agent-TTS-Code
     returns HTTP 200 on HEAD, not cloned. Model names as printed in the paper.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - Elo-per-budget fit and restart-vs-continue pre-registration held as M2; AK-HR-1(b)(c) report the independent-campaign
+    count now.
 - id: intake-2024
   arxiv_id: null
   url: https://github.com/Alex-q-z/stateless-language-agents
@@ -259640,7 +259969,8 @@
     tally:
       'yes': 6
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone at 1271183f6c73729d0c5e1602e12951fba59cf657;
     git ls-tree shows only assets/sla-preprint.pdf. PDF text extracted with pypdf (plain interpreter from
@@ -259649,6 +259979,10 @@
     FrontierSWE/SOL prompts, App. C/D, remaining §4.4. GitHub API checked for branches/releases. No license
     declared (one-line fact). Main verified anchor c0 via git log -1 in the clone (1271183f... "[paper]
     Add SLA preprint").'
+  integration_disposition: integrated
+  disposition_evidence:
+  - One-page SLA Advisor input mapping is part of AK-HR-2(iii); the repo is a preprint host with no harness
+    code.
 - id: intake-2025
   arxiv_id: null
   url: https://github.com/BokwaiHo/arl-mode-collapse
@@ -259786,7 +260120,9 @@
     - 'k2 partial: Regex first-match, 9 categories, entropy in nats over 20 verified; kappa/187 appear
       only in mechanism.py docstring. But "would send nearly every kernel edit to Other" is unlabelled
       inference (words like block/width/cycle/sampling match ML rules).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone bb64b6f76bd0d8dc10fb07e2fca22f6a3dad08b6
     (single commit ''logo''; GitHub pushed_at 2026-05-26). Read in full: arl/diagnostics/{__init__,surface,embedder,semantic,mechanism,faithfulness}.py,
@@ -259794,6 +260130,9 @@
     ~90 lines; arl/loop.py grep-level only. NOT read: daps/, proposer/, executor/, pipelines/, scripts/,
     rest of loop.py. Nothing executed; sentence-transformers/hdbscan/python-Levenshtein not installed.
     License: MIT per README/LICENSE (GitHub API: NOASSERTION).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - S_t/C_t/H_t and signed faithfulness are AK-HR-2 with a frozen kernel taxonomy; wiring VB-AK-HISTORY.
 - id: intake-2026
   arxiv_id: '2211.03578'
   url: https://arxiv.org/abs/2211.03578
@@ -259955,13 +260294,18 @@
       it comes from TenSet paper.'
     - 'actionable W3B-NEW-TLP-02: Claims TLP shows regression metrics are misleading; TLP source has no
       RMSE/R2 discussion (only TenSet does).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL body of arXiv:2211.03578v2 html from disk
     (/mnt/raid0/llm/tmp/dive-w3-tlp/paper.html sha256 af139f06cdff5b94bd45fd70baa75ec6e3118504da0c51841b77ac6494e7ebe4;
     text via scratchpad strip.py); figures 10-13 are images (numbers taken from prose). Repo cloned shallow
     at 54665a17a518f7613d5a866ca0871f12a66ab0c7; not read beyond README header. Fetch route: arxiv.org/abs
     -> /html/2211.03578v2. v1 also exists.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Pre-build typed knob capture merged into AK-HR-3 and exporter AK-HR-1; ranking-metric rule in M3;
+    pretrained port declined.
 - id: intake-2027
   arxiv_id: '2402.02361'
   url: https://arxiv.org/abs/2402.02361
@@ -260138,13 +260482,17 @@
     - 'k2 partial: Speedups 2.6/4.82/4.75/4.05/4.08, 14 DNNs, 84.1/75.3% verified. But 84.1% is TITAN
       V; "~50 min of ~85-125 min" not in source (Orin Ansor Table 1: ~85-97 total, 44-51 measurement);
       40% is Orin exploration share.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: Stage-2b (wave 3) combined Stage-1+2 entry. Read arXiv:2402.02361v3 html text from disk (paper.html
     sha256 e11834969d1de1a032a74d1eadaa4c6f6e3e01eac6a611c7b926d7accb18e40f; /html/2402.02361v3), body
     sections 1-8 read; reference list and images not. Repo cloned shallow (0760c3f), README read, src
     not read (so draft model implementation details beyond paper unverified). Latin-1/zero-width characters
     in equations prevented anchoring Eq.1 verbatim.
+  integration_disposition: monitor
+  disposition_evidence:
+  - Analytic gfx90a pre-screen held as M3 (needs typed GPU descriptors from AK-HR-3); adoption declined.
 - id: intake-2028
   arxiv_id: null
   url: https://github.com/tlc-pack/tenset
@@ -260303,7 +260651,8 @@
       is listed with AVX-512. "multi-GB download" also not in source.'
     - 'actionable W3B-NEW-TENSET-01: "TenSet shows keeping error codes ... matters": source only says
       records can hold an error code, not that it matters.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Paper: NeurIPS 2021 D&B; no arXiv version found
     in this run (the guessed arXiv id was wrong and was discarded). Fetched PDF from www.cl.cam.ac.uk/~ey204/teaching/ACS/R244_2022_2023/papers/ZHENG_NEURIPS_2021.pdf
@@ -260313,6 +260662,9 @@
     README, scripts/README.md, docs/get_started_with_cost_model_experiments.md (download via Google Drive
     zips dataset_cpu_v3.3 / dataset_gpu_v3.3; not downloaded) read; no source code read beyond measure_programs.py
     greps.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - TenSet-style record shape and one-shot exporter are AK-HR-1; dataset download declined.
 - id: intake-2029
   arxiv_id: null
   url: https://github.com/tile-ai/tilelang
@@ -260470,7 +260822,8 @@
     - 'k3 partial: Hipcc JIT, ThreadPoolExecutor autotuner, carver cdna.py bandwidth [1300,14000], reg_cap
       32768, sm_partition 4 verified. "not MI210 values" and the (a)-(d) points are inference placed under
       tree-supported facts; 75.7% is project figure.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone /mnt/raid0/llm/tmp/dive-w3-tilelang/repo
     @876a59e6eb8091ea608c14a84d5300190c3735ce (HEAD date 2026-10-20). Read: README backend section, ci.yml
@@ -260479,6 +260832,9 @@
     body, mfma_layout.py, examples/amd, examples/dequantize_gemm (quant support), test bodies, the actual
     HIP codegen (src/target), 3rdparty TVM. Nothing was built or run. Main verified anchor c0 at repo/.github/workflows/ci.yml:93
     ("- tags: [self-hosted, amd, gfx942]").'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Bounded gfx90a viability probe and dequant expressibility read are AKX-ALL-28.
 - id: intake-2030
   arxiv_id: '2509.26388'
   url: https://arxiv.org/abs/2509.26388
@@ -260619,7 +260975,8 @@
       was ''also effective but more costly'', not ''rejected''; rule-based called too rigid.'
     - 'actionable W3-NEW-GAMETIME-01: ''removes the cloud dependency W2 flagged'' is not from this source;
       the CI and 3-rater protocol are the project''s own design, not the paper''s.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-gametime/paper.txt
     (from paper.html sha256 bb2c39bd387d33a476fa7963869b9cd1466314036c2d9f27109d725e0e9fda4d, arXiv v4
@@ -260627,6 +260984,10 @@
     but it is a 3.7 KB JS shell: demos/datasets/turn-taking results NOT read. Fig. 3/4 numbers not extractable
     (images). No code repo found in the paper. Tier-2b: no independent replication searched beyond FDB-v2
     (W2 entry; same lab network, restatement of the method).'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable trigger prose (no checkbox) under handoffs/active/conversation-stack.md; considered immediate
+    step recorded in the M record: W3-NEW-GAMETIME-01 -> M11; W3-NEW-GAMETIME-02 -> decline'
 - id: intake-2031
   arxiv_id: '2608.25218'
   url: https://arxiv.org/abs/2608.25218
@@ -260778,7 +261139,8 @@
       RMS VAD (.632 overall, 0.51-0.70 per type); the 0.107 vs 0.1 dev budget note is the analyst''s.'
     - 'actionable W3-NEW-TURNBENCH-01: Mostly fine; ''scorer is local CPU'' and ''python -m turnbench.score''
       hold per README. Silero/Parakeet-EOU arm adapters are project plans, nothing unsupported numerically.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-turnbench/paper.txt
     (paper.html sha256 0682fc8c038419b785962af23a5ca929fcc7f64066a173b74c35bd2d91f9bf78, arXiv v2 html
@@ -260788,6 +261150,10 @@
     dataset cards (gated). Tier-2b: sesame.com blog, turnbench.sesame.com leaderboard and AlphaSignal
     found by search all restate paper numbers (restatement); no independent replication. Search snippet:
     leaderboard page lists dev 7.3 h / test 22.9 h (restatement, unread).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W3-NEW-TURNBENCH-01 -> P3 / CS-47; W3-NEW-TURNBENCH-02 -> P3 / CS-45'
 - id: intake-2032
   arxiv_id: '2604.21406'
   url: https://arxiv.org/abs/2604.21406
@@ -260934,7 +261300,8 @@
       rejection (50.2).'
     - 'actionable W3-NEW-HUMDIAL-02: ''2xGPU baseline'' and ''no per-language split'' are not in the quoted
       sources checked here (2x4090 is from baseline readme.txt per notes, not on this check); minor.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-humdial/paper.txt
     (paper.html sha256 6ef041232817d4bef536c5d0b147107c02b7df067da815a12354d95b48265da1, arXiv v2 html
@@ -260942,6 +261309,10 @@
     (leaderboard identical to Table 2; Apache-2.0), baseline readme.txt (needs >=2x RTX4090, Freeze-Omni-derived
     stack). NOT read: evaluation code, baseline source, HF test zip (Humdial-Track2-Test.zip not downloaded),
     the challenge overview 2601.05564, team papers. Tier-2b: no independent evaluation found.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W3-NEW-HUMDIAL-01 -> P3 / CS-45; W3-NEW-HUMDIAL-02 -> decline'
 - id: intake-2033
   arxiv_id: '2509.23938'
   url: https://arxiv.org/abs/2509.23938
@@ -261083,7 +261454,8 @@
       verified. Checkpoint byte count 3,451,801,684 and fp32 not on disk; 0.86B inference is flagged by
       the claim.'
     - k5 unanchored citable
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read FULL: /mnt/raid0/llm/tmp/dive-w3-easyturn/paper.txt
     (paper.html sha256 3485a3ae8231a47e2ecbc2781c3133c2000ec605cda34d59cddc2df388924a26, arXiv v1 html).
@@ -261096,6 +261468,10 @@
     native EOU token, p50 160 ms vendor figure, community ONNX CPU path) it is the larger and less direct
     route. Tier-2b: web search found no independent reproduction or English evaluation; all hits are the
     authors'' own paper/card/repo (restatement).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W3-NEW-EASYTURN-01 -> M10; W3-NEW-EASYTURN-02 -> P3 / CS-45'
 - id: intake-2034
   arxiv_id: null
   url: https://github.com/DanielLin94144/Full-Duplex-Bench
@@ -261294,7 +261670,8 @@
     flags_for_operator:
     - 'actionable W3-NEW-FDB-REPO-02: OPENAI_BASE_URL redirect to a local judge is SDK behaviour not exercised
       or in repo; ''numbers comparable to published FDB v1.5 stop latency'' (REPO-01) is also unverified.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read from disk: README.md, v1_v1.5/README.md, evaluation/{README.md,evaluate.py,eval_behavior.py,get_timing.py,eval_pause_handling.py},
     parts of eval_user_interruption.py/eval_backchannel.py/eval_general_before_after.py (grep for network/model
@@ -261303,6 +261680,10 @@
     body beyond model loads, significance_test.py, lk_agent_tool.py, latency_injector.py. Cloned shallow
     to /mnt/raid0/llm/tmp/dive-w3-fdb-repo/repo at 3e799c45a045256f47d5f1c9cda90157e2d2ec9e; nothing executed.
     No audio/data downloaded.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W3-NEW-FDB-REPO-01 -> P6 / CS-48; W3-NEW-FDB-REPO-02 -> M11; W3-NEW-FDB-REPO-03 -> P6 / CS-48'
 - id: intake-2035
   arxiv_id: null
   url: https://github.com/NVIDIA-NeMo/Speech/tree/main/examples/voice_agent
@@ -261477,7 +261858,8 @@
       is wrong.'
     - 'actionable W3-NEW-NEMO-VOICEAGENT-01: ''2-word early interrupt'' matches code (>=2) but contradicts
       the entry''s ''above 2'' wording; reconcile before use.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Sparse blobless clone at /mnt/raid0/llm/tmp/dive-w3-nemo-voiceagent/repo,
     HEAD 6f558408dbe1c2a7e6b730184e8d46e1474d6dca (committed 2026-10-20), paths examples/voice_agent and
@@ -261485,6 +261867,10 @@
     backchannel_phrases.yaml, model_registry.yaml, turn_taking.py, streaming_asr.py; read in part: stt.py,
     server.py (pipeline lines), utils.py CacheFeatureBufferer, base_input.py. NOT read: tts.py, llm.py,
     diar*.py, audio_logger.py, websocket_server.py, client/, tests, labs-Voice-Agent repo.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W3-NEW-NEMO-VOICEAGENT-01 -> P6 / CS-49; W3-NEW-NEMO-VOICEAGENT-02 -> P3 / CS-47'
 - id: intake-2036
   arxiv_id: null
   url: https://huggingface.co/ysdede/parakeet-realtime-eou-120m-v1-onnx
@@ -261648,13 +262034,18 @@
     flags_for_operator:
     - 'actionable W3-NEW-PARAKEET-ONNX-02: Reason applies ysdede''s encoder-int8 non-exactness to soniqo''s
       separate export; not shown by either source.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Read in full: README.md (sha256 16e4e812...), config.json,
     HF API tree/sizes (api.json, commit 6d6be8e9113b4aa8ae7b4d5dfb655795c084d0c6 lastModified 2026-03-16).
     Also read soniqo README/config and the parakeet-rs README (pr_master.md) for the independent-consumer
     cross-check. NOT read: ONNX graph signatures (would need downloading weights; forbidden), figure PNGs,
     vocab.txt contents, nvidia base card (covered by W2-G4).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W3-NEW-PARAKEET-ONNX-01 -> P3 / CS-46; W3-NEW-PARAKEET-ONNX-02 -> decline'
 - id: intake-2037
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/28111
@@ -261807,12 +262198,17 @@
     tally:
       'yes': 5
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   notes: Stage-2b (wave 3) combined Stage-1+2 entry. issue.json + comments.json via api.github.com to
     /mnt/raid0/llm/tmp/dive-w3-llama28111/; mmvq.cu, mmvq.cuh, common.cuh, ggml-cuda.cu, fattn.cu, fattn-common.cuh
     from raw.githubusercontent.com at master 9df0b73c707900b7277a46b5ae52ff7e7e567d13 (commit.txt). Note
     ggml-cuda.cu dispatch (L2015-2025) tries MMF, then MMVQ, then MMQ.
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-26 tests the MMVQ nwarps/IQ-type prediction on gfx90a and CPU (W3-NEW-LLAMA28111-01/02); gfx90a
+    reading stays labelled inference.
 - id: intake-2038
   arxiv_id: null
   url: https://github.com/Apoze/llama.cpp/commit/6263445513416ef93fd5d05391299f33c64702fa
@@ -261933,12 +262329,17 @@
     - 'k4 partial: Gating, no env switch, no cost in commit verified; #28108 closure verified in other
       dive. "No upstream PR found" rests on 0-hit search files with no recorded query (absence from one
       key).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. commit.json via api.github.com and commit.diff via
     github.com into /mnt/raid0/llm/tmp/dive-w3-apoze-fix/. Fork default branch master, pushed_at 2026-08-25T17:27:27Z.
     Searched ggml-org/llama.cpp issues/PRs for the commit, author and topic: no merged equivalent found
     (search is not exhaustive).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-26 FA sweep counts the KV split (parallel_blocks) in the invariance contract (W3-NEW-APOZE-FIX-01);
+    fix design retained under M6.
 - id: intake-2039
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/28108
@@ -262092,11 +262493,16 @@
     - 'k4 partial: Bot note 08-31 and policy quote 09-21 (same timestamp as close) verified; no technical
       objection. "Stated trigger" is inference: no comment says it closed for that reason. MUL_MAT test
       deferral is from #28111 body.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   notes: Stage-2b (wave 3) combined Stage-1+2 entry. pr.json, comments.json, review_comments.json, reviews.json,
     pr.diff into /mnt/raid0/llm/tmp/dive-w3-pr28108/. A mmul_mat comment line was added to test-backend-ops.cpp
     in the diff (stray, no MUL_MAT test shipped).
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-26/27 adopt the batched-vs-serial single-graph FA test design; cost-decision package is monitor
+    M6 (W3-NEW-PR28108-01/02).
 - id: intake-2040
   arxiv_id: null
   url: https://github.com/MinishLab/semble
@@ -262245,7 +262651,8 @@
     tally:
       'yes': 5
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
   handoffs_created: []
   notes: 'Stage-2b (wave 3) combined Stage-1+2 entry. Shallow clone at /mnt/raid0/llm/tmp/dive-w3-semble/repo
     (HEAD 8ee6463efbb1ff755c339e965c7298b7afd7db5b, 2026-10-16). Read: README.md, benchmarks/README.md
@@ -262253,6 +262660,9 @@
     NOT read: chunking code, dense/bm25 index code, tests, installer/agents, results/*.json, other annotations,
     the potion-code-16M-v2 model card. Nothing executed. Not in research/intake_index.yaml (grep MinishLab/semble:
     0).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - semble-style static+BM25 arm, report decomposition and reported-only semble diagnostic in REPL-EMB-2.7.
 - id: intake-2041
   arxiv_id: null
   url: https://github.com/agent-tts/Agent-TTS-Code
@@ -262402,7 +262812,9 @@
       budget, wall-clock, controller tokens work unchanged'' is inference (int() cast, ordering use).'
     - 'actionable W4-A-agentttscode-01: ''400/decade reference'' unsupported: Elo=400*log10(BT strength)
       is per decade of strength, not of budget; the paper/code give no such slope reference for budget.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read from disk (cloned depth 1 @ f10c0c5adf0388500b75983762178e3976a202e5,
     nothing run): README.md (full, sha256 43c834a6faa7d658ac70278aba5b74ee6c1df7fc70fbeb6e03a9077c694946ad),
@@ -262410,6 +262822,10 @@
     elo_checkpoint.py L68-108, elo_fit.py pairwise_wins/load_tuples, export_joint_elo_ci.py (full), export_selfelo_ci.py
     (full), run_elo_mainfig.py (full), aggregate.py COLUMNS. NOT read: harbor/ patches, adapters, Adaevolve/,
     ahc_bridge/, mls-bench/, remaining analysis scripts. Own-code license: none chosen; harbor/ is Apache-2.0.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Budget-axis and trial-id audit AK-HR-1(c) plus fields AK-HR-3; Elo estimator reimplementation held
+    as M2.
 - id: intake-2042
   arxiv_id: '2605.08478'
   url: https://arxiv.org/abs/2605.08478
@@ -262571,13 +262987,17 @@
     - 'actionable W4-A-indepsampling-01: ''only principled restart-vs-continue criterion in this source''
       is a superlative; mild. Theory is conditional on independent retries and finite q*, which AK may
       not satisfy.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read FULL from disk: arxiv.org/html/2605.08478v1
     (paper.html sha256 81bb7cb93ae1ed962a8bd3186d6a53cafdc5dc152340cbd509654135cd774613, abs.html sha256
     123608065e7dd29e4adf8057fc25f98e9b11f299b08f89d6893efade0e89e46a), text via python3 -I tag stripper.
     Figures were not viewed (no numbers extractable). Code repo not cloned. Authors per abs page and HTML:
     Yihe Dong, Boris Shigida (Princeton). Published 2026-05-08, v1 only.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - -ln(1-p)/c cap comparison held as M2 step (b); needs independent fresh-store campaigns.
 - id: intake-2043
   arxiv_id: null
   url: https://usenix.org/conference/osdi24/presentation/zhai
@@ -262733,13 +263153,17 @@
       not be the most economical choice'', claim hardens it to ''uneconomic''.'
     - 'k4 partial: 4-core i7-10510U, V100s, CUDA 11.6, TVM V0.12 in text; ''laptop'' is outside knowledge;
       AMD absence and ''idea is portable'' are inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read FULL from disk: usenix.org/system/files/osdi24-zhai.pdf
     (sha256 ca202420617e02d28cc0c1d4c5e9ff56bd9b8a7fef60ed2a47989b00d527349b, 2470109 bytes), text via
     pypdf (tlm.txt, 1556 lines incl. Appendix A, B). Figures 9-15 not viewed. Presentation page saved
     (sha256 0e84d64940394c99a032fe50e28822fb832104da758e726cfc7d30071f9d8df2). Code repo github.com/zhaiyi000/tlm
     named in abstract, not cloned.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Knob-space boundedness and tuple counts are AK-HR-1(e)(f); an LM proposer is closed under M3.
 - id: intake-2044
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/28768
@@ -262928,7 +263352,9 @@
       is a project assertion, not source.'
     - 'actionable W4-NEW-LLAMA28768-01: Widths 5 and 8 and the ''real code corpus'' gate are design choices
       beyond the thread (thread used W 1-4); acceptable but not sourced.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
+  - handoffs/active/dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Fetched via gh api to /mnt/raid0/llm/tmp/dive-w4-llama28768/
     (issue.json, comments.json; full sha256 in artifact listing: comments.json=2caf8a3cc532; issue.json=f6b212bf2c02).
@@ -262939,6 +263365,10 @@
     Separately fetched (dive-w4-llama28211, not this thread): #28211 is a gfx1151 host-buffer defect fixed
     by revert #28604, NOT batch invariance. Main verified the PPL-blindness anchor in the JSON-decoded
     body of comments.json (escaped newlines defeat raw grep).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-27 carries the reporting recipe; DF2-18 inventories width gates and runs the model-level comparison;
+    K2 retains the no-MI210-claim rule (W4-NEW-LLAMA28768-01..03).
 - id: intake-2045
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/28489
@@ -263091,7 +263521,8 @@
     - 'k4 partial: Design principle (path independent of N, serial N=1 is spec) is in the body; ''slower
       by design'' and ''blocked by the maintainer'' overstate one hedged comment from a CONTRIBUTOR; rest
       is flagged inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Fetched via gh api to /mnt/raid0/llm/tmp/dive-w4-pr28489/
     (pr.json, comments.json, review_comments.json [empty], reviews.json [empty], pr.diff; sha256 prefix:
@@ -263100,6 +263531,10 @@
     Not read: the code of ggml_vk_should_use_mmvq outside the diff context (so the remaining per-vendor/type/k
     switch, e.g. AMD small-k thresholds, was not inspected; which AMD configs flip is unknown from this
     source).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-26 includes an optional Vulkan-on-MI210 column with the PR's column-0 N=1-vs-N>1 design (W4-NEW-PR28489-01);
+    the PR itself is design context only (K2).
 - id: intake-2046
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/28109
@@ -263243,7 +263678,9 @@
       not in this PR.'
     - 'actionable W4-NEW-PR28109-02: ''issue #28768 shows the only localised GDN width variance sat outside
       the op'' omits that it was a commenter''s own fork patch (not upstream).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
+  - handoffs/active/dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Fetched via gh api to /mnt/raid0/llm/tmp/dive-w4-pr28109/
     (pr.json, comments.json, review_comments.json [empty], reviews.json [empty], pr.diff; sha256 prefix:
@@ -263253,6 +263690,10 @@
     for n>1'' question is open); the ''K=3/4'' final args of the existing test_gated_delta_net were not
     examined, and the meaning of the trailing ''1'' argument of ggml_gated_delta_net in this test was
     not verified.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AKX-ALL-26 ports the GDN batch-invariance test to ROCm0 and CPU; DF2-18 and AKX-ALL-27 carry the model-level
+    companion (W4-NEW-PR28109-01/02).
 - id: intake-2047
   arxiv_id: null
   url: https://github.com/pipecat-ai/smart-turn
@@ -263439,7 +263880,8 @@
     - 'actionable W4-SMARTTURN-01: ''wrapper default (1 s silence gate, thr 0.05)'' - 0.05 is a fallback
       only; TurnBench README documents swept theta_eot=0.0082. Also ''only open audio-native ONNX-CPU
       model with TurnBench row'' is an unverified superlative.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read from disk (dive-w4-smartturn/): repo README.md
     (sha256 ddac4b3e...), inference.py, benchmark.py head (constants only), HF README (sha256 8b87ad1b...),
@@ -263452,6 +263894,10 @@
     TurnBench (which has the same-author wrapper; see notes) - provisional. Anchors quoting TurnBench''s
     wrapper live in /mnt/raid0/llm/tmp/dive-w3-turnbench (predict.py L53/L89/L98, README L38), verified
     by main and second reader.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W4-SMARTTURN-01 -> P3 / CS-47; W4-SMARTTURN-02 -> P3 / CS-47'
 - id: intake-2048
   arxiv_id: '2606.13450'
   url: https://arxiv.org/abs/2606.13450
@@ -263639,7 +264085,8 @@
       and ''not downloaded'' are not in the dive dir.'
     - 'k6 partial: Mimi 24 kHz, 25M transformer, streaming ASR in paper; CPU suitability and whisper.cpp
       mapping explicitly inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read FULL text of arXiv v1 html from disk (dive-w4-endpointanticip/paper.html
     sha256 6a86e70b...; paper.txt via strip.py). Figures 1-2 are images and were NOT viewed (only their
@@ -263648,6 +264095,10 @@
     not downloaded. Tier-2b: no independent replication or criticism surfaced (preprint is 4 months old;
     not searched beyond the repo) - provisional. credibility 3 = recent(+1) known contributor(+1) venue
     per repo README only(+1 unverified).'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable trigger prose (no checkbox) under handoffs/active/conversation-stack.md; considered immediate
+    step recorded in the M record: W4-ENDPOINTANTICIP-01 -> M10; W4-ENDPOINTANTICIP-02 -> M10'
 - id: intake-2049
   arxiv_id: null
   url: https://github.com/altunenes/parakeet-rs
@@ -263793,7 +264244,8 @@
     - 'actionable W4-PARAKEET-RS-02: ''evaluate EOU timing with reset off'' is not possible as written:
       with reset_on_eou=false the EOU token just breaks the decode loop and nothing is surfaced; EOU is
       only returned (as '' [EOU]'') on the reset path.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Cloned 6ad1501 (git log date Mon Oct 19 2026). Read
     in full: src/parakeet_eou.rs (sha256 f014f490...), src/model_eou.rs (88eb90f4...), README EOU/downloads
@@ -263801,6 +264253,10 @@
     scripts/export_realtime_eou_120m.py first 60 lines. NOT read: rest of export script (normalisation/chunk
     settings in the NeMo config), execution.rs, burn_backend, other models, Cargo.toml features. Never
     built or run. License MIT (fact only).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W4-PARAKEET-RS-01 -> P3 / CS-46; W4-PARAKEET-RS-02 -> P3 / CS-46'
 - id: intake-2050
   arxiv_id: null
   url: https://github.com/NVIDIA-NeMo/labs-Voice-Agent
@@ -263951,7 +264407,8 @@
       true for dedicated metrics.'
     - 'k4 partial: CUDA 13 default, NVIDIA GPU, NVFP4 ~24GB+, browser mic confirmed; installation.md lists
       a `cpu` torch-backend wheel option, and diarisation-on-CUDA is not verified; no ROCm mention.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Shallow clone 2b08bdb read from disk: README.md,
     docs/about/architecture.md, turn-taking.md (sha256 558944e6...), asr.md excerpts, evaluate/index.md,
@@ -263959,6 +264416,10 @@
     f45eadca...), stt.py ASR_EOU_MODELS line. NOT read: turn_taking.py bodies, evaluation/ code, scoring
     docs, the six eval signals, release notes beyond grep, tests. Never run. License Apache-2.0 (fact
     only).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W4-LABS-VOICEAGENT-01 -> P6 / CS-49; W4-LABS-VOICEAGENT-02 -> decline'
 - id: intake-2051
   arxiv_id: '2601.20230'
   url: https://arxiv.org/abs/2601.20230
@@ -264118,12 +264579,17 @@
     - 'k3 partial: Apache-2.0, f4ff2b1 2026-04-08, DashScope APIs, 0.64/2.5/1.5 s, prompts in config confirmed;
       the SHIFT prompt detects topic shift (shift_s repeats prior answer on speaker mismatch), not ''repeat
       requests''.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read in full: paper.txt (html v2, sha256 288d0150...),
     repo README, src/config.yaml, src/backend.py L225-L360, src/module.py L1-150, qwen3_api.py, LICENSE
     header. Not read: frontend.py, evaluation/ scripts, history/, setup scripts. Repo @ f4ff2b1f4b24f83366bf93d3017a773709da4226.
     Repo is not in index; arXiv id 0 index hits.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W4-NEW-BADCAT-01 -> P3 / CS-47; W4-NEW-BADCAT-02 -> P3 / CS-45; W4-NEW-BADCAT-03 -> M11'
 - id: intake-2052
   arxiv_id: '2601.05564'
   url: https://arxiv.org/abs/2601.05564
@@ -264287,11 +264753,16 @@
       row Rej is below Int'' is false for Cascade (Int 28.1, Rej 30.9).'
     - 'k3 partial: Final scores, ranks, Qwen3-Omni-30B + 20 raters match; ''Tasks 1-2 near ceiling 4.97-5.00''
       holds only for TeleAI/NJU averages (NJU Task1 4.90; SenseDialog Task1 3.67).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read in full: paper.txt from html v2 (sha256 5646cfff...).
     Not read: team papers other than Badcat. Open/cascade status of Cookie_asr taken only from a search
     snippet of 2604.21406 and left unverified here. Single mild contradiction check: none surfaced (provisional).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W4-NEW-HUMDIAL-OVERVIEW-01 -> P3 / CS-45; W4-NEW-HUMDIAL-OVERVIEW-02 -> K3'
 - id: intake-2053
   arxiv_id: null
   url: https://huggingface.co/minishlab/potion-code-16M-v2
@@ -264435,13 +264906,18 @@
     tally:
       'yes': 5
     flags_for_operator: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/repl-embedding-retrieval.md
   handoffs_created: []
   notes: 'Stage-2b (wave 4) combined Stage-1+2 entry. Read in full: README.md (sha256 835e4161...), config.json,
     modules.json, HF API json (sha e9d2a44c..., sha256 f588d6a1...), siblings list (.gitattributes, README.md,
     config.json, model.safetensors, modules.json, tokenizer.json). Also read Semble README and benchmarks
     README (MinishLab/semble main) for speed provenance. Weights NOT downloaded (HEAD request for size
     only). License: MIT (HF tags). Not read: tokenizer.json, Model2Vec/Tokenlearn code, CornStack datasets.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - potion-code-16M-v2 dense-only and hybrid arms and the EPYC speed block in REPL-EMB-2.7; Semble 480x/23x
+    not cited.
 - id: intake-2054
   arxiv_id: null
   url: https://github.com/kyutai-labs/unmute
@@ -264588,7 +265064,8 @@
       head probability; their meaning may not carry to Silero/SmartTurn/VAP scores.'
     - 'actionable W5-UNMUTE-03: Rationale ''whisper.cpp is non-streaming'' is background knowledge not
       verified in the dive (self-flagged in verdict_per_claim 4).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 5) combined Stage-1+2 entry. Read: README.md (full), unmute/stt/speech_to_text.py
     (full), exponential_moving_average.py, unmute/unmute_handler.py L55-70,L280-480,L575-615, kyutai_constants.py,
@@ -264598,6 +265075,10 @@
     no description found. NOT read: frontend/, docs/browser_backend_communication.md body, loadtest, Dockerfiles/compose,
     tts python module, the delayed-streams-modeling Rust server (where prs semantics live). Repo license
     MIT (one-line fact). Repo cloned shallow at e348e567c7020d40020412024f7aa03c38a3bc3e, nothing executed.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W5-UNMUTE-01 -> P3 / CS-47; W5-UNMUTE-02 -> P6 / CS-49; W5-UNMUTE-03 -> decline'
 - id: intake-2055
   arxiv_id: '2401.04868'
   url: https://arxiv.org/abs/2401.04868
@@ -264744,7 +265225,8 @@
     - 'actionable W5-VAP-01: Suggests the public example checkpoint (Japanese-trained per paper; English
       model unspecified) is directly usable; paper reports nothing for it. ''Under region-lock'' is fine.
       ''Stereo input = user mic + our TTS output'' is design inference.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 5) combined Stage-1+2 entry. Read FULL: paper.txt from arXiv v1 html (paper.html
     sha256 74fe0ed2cfe9bd2453e0b999a45989024b55fea9f257bab69814a80108550fc8); only one version exists
@@ -264755,6 +265237,10 @@
     cc-by-4.0); no weights downloaded. Model parameter count not stated anywhere read. Accuracy comparison
     to TurnBench metrics is not possible (different tasks). The TurnBench VAP README anchor lives in /mnt/raid0/llm/tmp/dive-w3-turnbench
     (verified by second reader).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W5-VAP-01 -> P3 / CS-47; W5-VAP-02 -> P3 / CS-47'
 - id: intake-2056
   arxiv_id: null
   url: https://aslp-lab.github.io/HumDial-Challenge/
@@ -264890,7 +265376,8 @@
     - 'actionable W5-HUMDIAL-02: Decline reason says no public mirror found, but site says organizers
       released a public test set (x.txt L81) and the Track 2 test set is ''officially released''; the
       decline rests on train/dev only.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 5) combined Stage-1+2 entry. Fetched 8 pages by curl to dive-w5-humdial-site/
     (home x.html sha256 ea89bfe9..., faq 514f93bf..., track1 pages, track2 description 12f2dacf..., test_set
@@ -264900,6 +265387,10 @@
     prompt.yaml head; NOT read: evaluation scripts, baseline code, PNGs (eval_results.png, total_score.png).
     No LICENSE file seen in repo root listing. Nothing executed. Baseline weights live at HF ASLP-lab/ICASSP2026-HumDial-Challenge-Track2-Baseline
     (URL from baseline/readme.txt); not opened.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W5-HUMDIAL-01 -> P3 / CS-45; W5-HUMDIAL-02 -> P3 / CS-45'
 - id: intake-2057
   arxiv_id: null
   url: https://github.com/kyutai-labs/delayed-streams-modeling
@@ -265044,7 +265535,8 @@
       0.6/0.4 hysteresis are not in this repo (cross-source, intake-2054).'
     - 'k2 partial: step_with_extra_heads, --cpu, no HIP feature verified; README never says VAD is Rust-only
       (only lists --vad under Rust standalone); kyutai.org not on disk.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Read from disk: README.md (all 345 lines), FAQ.md
     L45-L60, scripts/stt_from_mic_rust_server.py L15-L60, scripts/stt_from_file_rust_server.py L25-L50,
@@ -265053,6 +265545,10 @@
     model sha 1c34c6b4). NOT read: stt_pytorch.ipynb body, TTS scripts, moshi crate source (where the
     head loss lives), moshi-finetune. Shallow clone at /mnt/raid0/llm/tmp/dive-w6-dsm-repo/repo @ 4c4f65e
     (commit date 2026-01-26). License: Apache-2.0 / MIT (code). Nothing run.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable trigger prose (no checkbox) under handoffs/active/conversation-stack.md; considered immediate
+    step recorded in the M record: W6-DSM-01 -> M10; W6-DSM-02 -> M10'
 - id: intake-2058
   arxiv_id: '2205.09812'
   url: https://arxiv.org/abs/2205.09812
@@ -265188,11 +265684,16 @@
     flags_for_operator:
     - 'k1 partial: Switchboard 2205/135, mono, 10 s chunks with 2 s overlap verified; Fisher/Candor in
       later repo README is outside paper, not verifiable here.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Read FULL paper.txt (arXiv 2205.09812v1 html, 308
     lines, only version v1) at /mnt/raid0/llm/tmp/dive-w6-vap-orig/. Figures (vap_bin, sh_event, Template)
     not viewed; Table 1 read as text. License: arXiv non-exclusive.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W6-VAPO-01 -> P3 / CS-47'
 - id: intake-2059
   arxiv_id: null
   url: https://huggingface.co/viks66/VAP_checkpoints
@@ -265295,13 +265796,18 @@
       training repo not public per VAP README'' is not on disk.'
     - 'actionable W6-VAPC-01: Assumes public pretrained example checkpoint is a usable control and that
       oto.ckpt is the reference arm; rests on inferred oto semantics and pin only, no card.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Read: HF API JSON (blobs=true) and README.md raw
     (27 B) in /mnt/raid0/llm/tmp/dive-w6-vap-ckpt/; cross-read TurnBench repo (baselines/vap/README.md,
     predict.py L55-L90) and paper.txt from /mnt/raid0/llm/tmp/dive-w3-turnbench/ (wave 3 clone @38a6f87);
     otoSpeech dataset card via HF API (sha 46f52029). Weights not downloaded; license cc-by-4.0 (one-line
     fact).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W6-VAPC-01 -> P3 / CS-47'
 - id: intake-2060
   arxiv_id: null
   url: https://github.com/ASLP-lab/Hum-Dial
@@ -265436,7 +265942,8 @@
       is in total_score.png and readme.txt, 50/50 Third-party in its readme; unanchored.'
     - 'actionable W6-HUMD-01: Assumes first_response_delay works from whisper.cpp word timestamps and
       ''no cloud dependency'' for timing; get_timing.py (stop/response latency) was not read.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
   handoffs_created: []
   notes: 'Stage-2b (wave 6) combined Stage-1+2 entry. Re-used wave-5 clone /mnt/raid0/llm/tmp/dive-w5-humdial-site/repo,
     SHA confirmed dbbd8adf86bbb459aad6d07f6c8cc1572e267803. Read: Full-Duplex_Interaction/evaluation/readme.txt,
@@ -265445,3 +265952,7 @@
     (viewed). NOT read: interruption/get_timing.py (stop/response latency), infer_cn*.py, clean_wav.py,
     prepare_for_eval_first.py, the baseline/ tree. No new files in dive-w6-humdial-repo/. License: not
     checked (irrelevant).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Ledger rows map to proposed owner tasks in handoffs/active/conversation-stack.md (CS-45..CS-49):
+    W6-HUMD-01 -> P6 / CS-48; W6-HUMD-02 -> decline'

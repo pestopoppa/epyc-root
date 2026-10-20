@@ -118,6 +118,8 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
     `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md` row 3. Justification bar: INF-70 XFER-3 (uniform IQ4_XS is
     +24-34% faster than UD at +17.8% PPL, `artifacts/cpu-window2-20261004/`).
 
+- [ ] **NEW-9 — Compare Magnitude's CPU IQ2/IQ3 decode and VNNI repack against iqk (documentation-only, zero compute).** Read `inference/seismic/native-cpu/src/weights.rs` (IQ grid CPU decode, rows16/rows8 repack; the vector-coded representation near L1271) and its x86v4vnni `dot_u8_i8` path in `/mnt/raid0/llm/tmp/dive-1979/repo` @ `940e51b` against `ggml/src/ggml-cpu/iqk/iqk_gemm_iquants.cpp` for IQ2_XXS, IQ2_XS and IQ3_XXS (IQ1 is stubbed and out of scope). Record any decode-then-int8-dot structure iqk lacks, cross-checked against NEW-5 (NO-GO: VPDPBUSD is not a decode win on this Zen5 host) and NEW-6(a)(f) (no 16-wide func16 kernels, no zmm variant). Done when each difference is classed decode-bound, prefill/GEMM-bound or layout-only and either feeds a NEW-6 rider or is closed with its reason; no build and no bench.
+
 ## Decision gates
 
 - **B2 fails on any model** → do not promote; isolate kernel vs convert path, and consider a narrower whitelist (e.g. IQ2_XXS + IQ3_XXS only).

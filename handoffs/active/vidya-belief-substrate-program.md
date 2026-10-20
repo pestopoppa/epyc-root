@@ -1610,6 +1610,10 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 
 - [ ] **VB-AK-LINEAGE — finish prospective AutoKernel lineage source/outcome binding before the first real diagnostic run.** The default-off source/patch capture helper and offline line-level detector do not themselves authorize a run. At authoring, the producer must mint a durable attempt ID, bind it to the original outcome row, capture immutable parent/child source bytes and patch, and export verified `programs.jsonl`/blobs/capture receipts. Add strict read-side ClaimTuple projection of producer-authored diagnostic measurements; never backfill from overwritten `<mechanism>.<lane>.patch` paths or tree hashes. No live search-policy or promotion authority. Source: `autokernel-research-loop.md` AK-lineage diagnostics (intake-1451#record, intake-1458#record, intake-1442#record).
 
+## VB-AK-HISTORY — AutoKernel closed-history replay capture (filed 2026-10-20)
+
+- [ ] **VB-AK-HISTORY — Keep AK-HR-1 and AK-HR-2 retrospective and wire the prospective AK-HR-3 fields on the WRITE side before their first post-change run.** The census and diagnostic read historical stores that have no producer hook, so they emit zero ClaimTuples and are reported as descriptive census (the VB-TD-21-CENSUS stance). The fields AK-HR-3 adds (attempt-to-call key, cumulative budget, failure class, stage seconds, typed knob descriptor) are written natively with self-hashed receipts and projected through `ClaimTuple` and `claim_tuple.grade()` only (no new ladder, no backfill). Add the candidate source row to `scripts/vidya/adapters/README.md` with this plan's text now; the ROOT reader is not required before AK-HR-3 lands.
+
 ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a)
 
 Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inference-research `scripts/benchmark/niah_scorer.py` (branch `sub/e1a-niah-20260916` `d8fab068`, pending merge). The source row is in `scripts/vidya/adapters/README.md`. No E1 arm has run, so nothing is pre-hook.
@@ -1943,6 +1947,8 @@ The operator ratified the speech vision on 2026-09-24. It lives in
 
 No run exists yet, so the write side is filed **before** the first run. The row is in
 `scripts/vidya/adapters/README.md` → *Known and candidate sources*. Owner: INF-79.
+
+**2026-10-20 extension (research intake, no new checkbox):** the conversation-stack measurement family now also covers the CS-22 turn-end arm bake-off (CS-47) and the CS-23 barge-in ablation (CS-49); both emit their records through this write side. Carry `metric_direction` per metric: false-cut rate, EOT FPR, INT FPR, latency, interruption t_stop, cancel latency and CPU ms are lower_better; EOT recall, PASR and interruption Respond rate are higher_better; t_stop for backchannel, off-talk and background speech is higher-is-correct. Reference rows copied from published papers (TurnBench, Full-Duplex-Bench, HumDial, VAP) are tagged as such and never graded as our measurements.
 
 - [ ] **VB-SPEECH-CONV-1 — write side for the conversation-stack harnesses, before the first CS-8/CS-9 run.**
   - Every harness row carries: a schema version, a row hash, `protocol_id` (null until the CS-2 Annex S amendment

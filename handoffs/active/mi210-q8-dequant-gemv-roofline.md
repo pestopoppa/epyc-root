@@ -353,6 +353,7 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     observation, not an ISA limit. Acc VGPRs are MFMA-only (ordinary v_* needs `V_ACCVGPR_READ`), so they
     are no MMVQ decode lever. The 64-VGPR→8-wave rule is in neither the ISA nor the MI250 docs
     (intake-1418); treat it as empirical.
+- [ ] **INF37-IQ-4 — Record Magnitude's IQ2/IQ3 planar-decode GEMV layout as a lever on file for the IQ-residency reprice (documentation-only, zero compute).** Read `inference/seismic/lang/native-library/vulkan/packets.glsl` (IQ2_XS, IQ2_XXS and IQ3_XXS kinds; the rows16 planar layout with code, scale and super-factor planes and one 16-byte packet load per 32 elements; factored scale*dot+bias*sum(x); the grid sign-parity trick) from `/mnt/raid0/llm/tmp/dive-1979/repo` @ `940e51b` and compare it with ggml-cuda's IQ2/IQ3 `mul_mat_vec_q` decode on gfx90a. Add to the INF37-IQ-2 lever list which differences exist (memory layout, loads per element, sign decode) and which are layout-only (would need a repack) versus kernel-only. No MI210 run and no IQ role is made resident; the entry is read at the tripwire's reprice and claims no benefit.
 
 ## Proposed non-IQ follow-through — 2026-10-04 earlier-intake retrospective
 

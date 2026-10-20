@@ -446,6 +446,8 @@ The planner receives the refusal record as context through the existing belief/p
 | OP-41 (operator-owned admission control, lands after champion finalization, promotion and reboot; `autokernel-unified-surface-program.md:890-902`) | **What this gate needs from OP-41, without deciding it:** (i) arm-second reservations for other-backend TOUCHED rows, especially CPU W3–W6, whose windows are the expensive, contended ones; (ii) a correctness-surface class for census forwards, distinct from benchmark windows but still exclusive of concurrent benchmark arms; (iii) a rule that an unavailable window leaves rows `pending`, never passed. **Until OP-41 lands:** cooperative region-lock plus labelled contended arms, as today, and a row measured under unattributed foreign load is `INVALID`, not a regression. |
 | Required-target validation (`serial_run.py:1196-1278`) | This gate **is** that aggregate, upgraded: non-author rows use §8.1 instead of `ab_verdict`, INERT rows are excused only with witnesses, and `failed` refuses. No second ledger. |
 
+- **Width-invariance refuse mode (M7, 2026-10-20, intake-2039/2044/2046):** AKX-ALL-27 (all-devices handoff) records width invariance relative to the anchor, observe-only; the champion's accepted keeps are knowingly width-variant, so no absolute refusing rule. Fires when a keep's touched-route table worsens against the anchor AND DF2-18/DF2-17 on its build show acceptance loss or an outcome flip beyond the A/A floor; then an operator decision package.
+
 ---
 
 ## 9. Spec D — composition / FOLD re-check
@@ -774,3 +776,7 @@ Not operator decisions, handled in-spec:
 **Research intake**
 - `research/intake_index.yaml`: `intake-1367#01` (§3.4 gating quote, dive-verified), `intake-1370#record` (ERA; AK-ACC-1), `intake-1378#record` (AK-GH-1), `intake-1375#record` (FML-bench; bearing only on process metrics, not relied on).
 - Not relied on: intake-1381 / intake-1392 (serving-config tuning evidence, dive-verified 2026-09-15) bear on INF-73 U3's proposer, not on this gate.
+
+## Research Intake Update — 2026-10-20 (LLM4LLM deployment-gap fixtures; trigger record)
+
+- **AK-RI-KEEPGATE-1 (durable trigger, no checkbox; intake-2005):** activate when the first GPU source `keep_candidate` reaches the keep gate (AKX-ALL-22 or AKX-P2e). Then add negative fixtures for the three deployment-gap patterns LLM4LLM describes qualitatively: a candidate that wins on cold inputs but loses in the real graph (cache_state is already held fixed by AK-X-4), one that passes isolated shapes but reads out of bounds, and one covering only a prefill-shaped (q_len>1) path (case wording not verified against the source); each must be refused by T1b real-graph translation, the per-phase non-inferiority rule or an OOB check. The T0 sanitizer path in the research-loop spec is host-side ASAN/UBSAN, which does not instrument HIP device code, and `rocminfo` reports this host's MI210 as `gfx90a:sramecc+:xnack-`, so confirm whether HIP device sanitizing is available without xnack+ and otherwise pick a guard-page or canary-padded buffer check in `test-backend-ops` at trigger time. Re-open earlier if this handoff leaves STUB. Dormant, not blocked.

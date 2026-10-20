@@ -74,6 +74,8 @@ From the official blog + the open-source `w-winter/dot314` MCP wrapper source (r
 - Can DCP-2's discovery reuse the learned router / difficulty signal to size the budget by task difficulty?
 - Slicing granularity: function-level (GitNexus symbols) vs line-range (ColGREP chunks) vs both?
 - Interaction with context-folding: if the assembled bundle still overflows mid-task, folding takes over — do the two share the segment-importance scorer?
+- Source-linked diagnostics in delegated context (owned trigger, no checkbox; intake P4-RETRIEVAL M14, 2026-10-20): DCP-4 seed bundles are built from code search and file reads only, with no wiki or diagnostic-artifact source. When a quality-scored DCP-6 run produces a non-hold `decision` and its failure analysis attributes at least one miss to an absent repo-resident diagnostic (script, query or wiki page), add one held-out task class for that case to DCP-6; until then do not build the injection in order to measure it.
+- VibeMemBench (arXiv 2609.23570; intake-1968 and intake-1976, M14): the companion subtree was a 100-byte "Coming" README at the 2026-10-07 dive; a 2026-10-20 plan-time check (not dive-verified) found `scripts/` and a public Hugging Face dataset. When a coding-agent memory comparison is scoped, dive the released harness and dataset before adopting it; the paper's matched memory-on/off design is already DCP-6's.
 
 ## Dependencies / cross-cutting
 
