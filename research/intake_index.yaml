@@ -265999,7 +265999,7 @@
     - intake-2062
     - intake-2071
     - intake-2065
-  expanded_from: intake-2062
+  expanded_from: null
   credibility_score: null
   contradicting_evidence: null
   source_revision: "vllm-project/vllm PR #46384, state MERGED 2026-07-12T05:37:52Z, merge commit 481e481be786c1ca3229e26aa34c15ffd22375af, head 4918bbed3a462f39c85af232c6e4f52040573c3d; PR body and file list read via gh 2026-10-20; diff NOT read"
