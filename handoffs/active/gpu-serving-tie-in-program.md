@@ -324,3 +324,10 @@ phase completions in `progress/`; tenancy + rebind decisions get operator decisi
 - E8 apply: `artifacts/operator/ratify_and_apply_e8_quality_baseline_v4_20260727.sh`
 
 - [ ] **GPUWIN-STANDING-APPROVAL — finish tests, fix the ratify placeholder, merge, operator ratify.** Owner: workspace-ec. (filed 2026-10-07) epyc-orchestrator `feat/gpu-window-standing-approval-20261007` @ 7dfc4c32 (WIP, pushed, tests NOT run). Ratify script `/mnt/raid0/llm/tmp/gpuwin-standing/ratify_gpu_window_standing_approval_20261007.sh` has the `__ORCH_FILE_SHA__` placeholder and needs the branch merged first. Operator approved a 180-min standing approval plus a workspace-ec consumer row. Done when tests pass, the script is operator-ready and the operator has run `--apply`.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **GPU-ZOS-1 — Host gap per decode step on :8083 np4 (intake-2116#record, intake-2126#record).** First read the existing server t_decode / t_post_decode / t_sampl averages over a 4-slot DFlash2 decode window (no new build) and report post_decode/(decode+post_decode) with N steps; only if logs lack them, rebuild with DEBUG_TIMINGS on an experimental branch and prove the symbol is in the binary before reading it. Spec on and off. Rule: < 3% closes one-step-lag async scheduling as not worth it; >= 3% opens an experimental-branch design.
+- [ ] **PB-QCOST-1 — Fit a quadratic prefill cost model for the existing prefill budget (intake-2116#record, intake-2136#record).** Regress iteration ms on q (uncached tokens) and q*c (c = cached or already-computed prefix) from the existing pb_ms_per_tok samples and replay the 3x20k + 80k neighbour scenario with the fitted budget vs the current linear budget; record decode-under-prefill ratio and solo-prefill delta with the noise floor and its unit. Offline first; follows KVU-16g's A/B.

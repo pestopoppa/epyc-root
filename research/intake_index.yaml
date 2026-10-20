@@ -272870,8 +272870,56 @@
     NVFP4/MXFP4 defs, grep for fake-quant ops. Official DS41 reference /mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash/inference/model.py
     read at L546-L552, L698-L710, L750-L765, L1036-L1064, grep elsewhere (sha256 4e9ae23620ed). No code was executed.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "speculative-decoding-mtp-refresh.md"
+  - "kv-unified-stack-rollout.md"
+  - "kv-prefix-fork-and-paged-attention.md"
+  - "gpu-serving-tie-in-program.md"
+  - "within-role-placement-state-machine.md"
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-055 (SEED-D1-A1) -> P3 / DS41-CONF.1"
+  - "DI-056 (SEED-D1-A2) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-057 (SEED-D1-A3) -> P4 / SPEC-CONF.1"
+  - "DI-058 (SEED-D1-A4) -> P3 / DS41-CONF.1"
+  - "DI-059 (SEED-D1-A5) -> K4 knowledge-only"
+  - "DI-060 (SEED-D1-A6) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-061 (SEED-D2-A1) -> P1 / DS41-CED.1"
+  - "DI-062 (SEED-D2-A2) -> P5 / KPF-28"
+  - "DI-063 (SEED-D2-A3) -> P5 / KVU-12.3"
+  - "DI-064 (SEED-D2-A4) -> K2 knowledge-only"
+  - "DI-065 (SEED-D2-A5) -> K2 knowledge-only"
+  - "DI-066 (SEED-D2-A6) -> P3 / DS41-KV.1"
+  - "DI-067 (SEED-D2-A7) -> K2 knowledge-only"
+  - "DI-068 (intake-SEED-D3-A1) -> P5 / GPU-ZOS-1"
+  - "DI-069 (intake-SEED-D3-A2) -> P5 / PB-QCOST-1"
+  - "DI-070 (intake-SEED-D3-A3) -> K2 knowledge-only"
+  - "DI-071 (intake-SEED-D3-A4) -> P5 / WP-15"
+  - "DI-072 (intake-SEED-D3-A5) -> decline: CPU decode is bandwidth-bound and the host gap is not its constraint; the deciding measurement is the GPU host-gap probe, not a platform objection"
+  - "DI-073 (intake-SEED-D4-A1) -> P2 / DS41-B12.1"
+  - "DI-074 (intake-SEED-D4-A2) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-075 (intake-SEED-D4-A3) -> P3 / DS41-C123.1"
+  - "DI-076 (intake-SEED-D4-A4) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-077 (intake-SEED-D4-A5) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-078 (intake-SEED-D4-A6) -> P6 / RT-6"
+  - "DI-079 (intake-SEED-D4-A7) -> P6 / RT-7"
+  - "DI-080 (intake-SEED-D4-A8) -> P3 / DS41-T7.1"
+  - "DI-081 (intake-SEED-D4-A9) -> M4 monitor (dormant trigger, no checkbox)"
+  - "DI-082 (intake-SEED-D4-A10) -> K1 knowledge-only"
+  - "DI-083 (intake-SEED-D4-A11) -> K1 knowledge-only"
+  - "DI-084 (intake-SEED-D5-A1) -> P2 / DS41-T4.1"
+  - "DI-085 (intake-SEED-D5-A2) -> K1 knowledge-only"
+  - "DI-086 (intake-SEED-D5-A3) -> P2 / DS41-T3.2"
+  - "DI-087 (intake-SEED-D5-A4) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-088 (intake-SEED-D5-A5) -> P2 / DS41-T5.1"
+  - "DI-089 (intake-SEED-D5-A6) -> P4 / SPEC-PIT.1"
+  - "DI-090 (intake-SEED-D5-A7) -> P4 / SPEC-RNG.1"
+  - "DI-091 (intake-SEED-D5-A8) -> P4 / SPEC-GRAM.1"
+  - "DI-092 (intake-SEED-D5-A9) -> K2 knowledge-only"
+  - "DI-093 (intake-SEED-D5-A10) -> K4 knowledge-only"
   source_revision: 'deepseek-ai/DeepInfer @ 774ce244b87cc0eb8d4b94ab9f5de2ab22049f01 (D1 scope: speculative decoding path
     only) | deepseek-ai/DeepInfer @ 774ce244b87cc0eb8d4b94ab9f5de2ab22049f01 (2026-10-20); EPYC: llama.cpp dd3d9721c src/models/deepseek41.cpp,
     src/llama-kv-cache-dsv4.cpp, tools/server/server-context.cpp; official ref inference/model.py (DeepSeek-V4.1-Flash, 2026-09-22
@@ -274216,8 +274264,20 @@
     build, server or benchmark was run. PowerAttention / HISA / YOIO / IndexCache abstracts were NOT read (titles resolved
     from arxiv.org/abs only). Pinned: llama.cpp dd3d9721c; model.py sha256-12 4e9ae23620ed.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-001 (intake-2117-A1) -> P1 / DS41-CED.1"
+  - "DI-002 (intake-2117-A2) -> P1 / DS41-CED.2"
+  - "DI-003 (intake-2117-A3) -> P2 / DS41-T3.2"
+  - "DI-004 (intake-2117-A4) -> K1 knowledge-only"
+  - "DI-005 (intake-2117-A5) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-006 (intake-2117-A6) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-007 (intake-2117-A7) -> K1 knowledge-only"
+  - "DI-008 (intake-2117-A8) -> K2 knowledge-only"
   source_revision: 'arXiv 2609.19969v1 (2026-09-17; abs page lists v1 only), text via arxiv.org/html; content cross-checked
     identical to the local HF PDF DeepSeek_V41_Tech_Report.pdf (sha256-12 ba68e2e40408). EPYC side: llama.cpp dd3d9721c src/models/deepseek41.cpp;
     reference inference/model.py sha256-12 4e9ae23620ed'
@@ -274646,8 +274706,18 @@
     any live server behaviour. Orchestrator @ 62ee3ba6: no DS41 registry role exists, so there is no orchestrator sampling/max_tokens
     config for DS41 to cite (grep of orchestration/*.yaml and src/backends/serving_params.py).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "qwen-chat-template-evaluation.md"
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-009 (intake-2118-A1) -> P2 / DS41-T3.3"
+  - "DI-010 (intake-2118-A2) -> P5 / CT-12"
+  - "DI-011 (intake-2118-A3) -> K2 knowledge-only"
+  - "DI-012 (intake-2118-A4) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-013 (intake-2118-A5) -> K1 knowledge-only"
   source_revision: deepseek-ai/deepseek-recipe @ 935817c66f5d6e64838f419692545f06787e485f (2026-10-20, 0.2.0); EPYC-side reads
     at llama.cpp dd3d9721c
   reader_should_conclude: 'Cite claims 1-3 for HOW special-token injection is prevented (structural provenance, not escaping)
@@ -274994,8 +275064,19 @@
     EPYC code read-only: epyc-orchestrator @ 62ee3ba6; champion server-context.cpp @ dd3d9721c; lane handoffs in worktree
     intake-deepinfer-20261020. No compute run.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "within-role-placement-state-machine.md"
+  - "heterogeneous-slot-fabric-residency.md"
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-014 (intake-2119-A1) -> P5 / WP-15"
+  - "DI-015 (intake-2119-A2) -> P5 / HSF-4"
+  - "DI-016 (intake-2119-A3) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-017 (intake-2119-A4) -> K2 knowledge-only"
+  - "DI-018 (intake-2119-A5) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-019 (intake-2119-A6) -> K2 knowledge-only"
   source_revision: arXiv 2602.21548v2 (26 Feb 2026); text saved /mnt/raid0/llm/tmp/dive-deepinfer-main/s1/dualpath/text.txt;
     whole body, appendices A.1-A.5, reference list skimmed
   reader_should_conclude: 'Cite DualPath for (a) the token-count-proxy, two-dimension (token + request count) decode-side
@@ -275303,8 +275384,17 @@
     tests/, the .zh.md deep-dive, Ascend chart numbers. Charts read as images (approximate). Ours read via git show at dd3d9721c
     saved under /mnt/raid0/llm/tmp/dive-deepinfer-deepselect/ours/. Repo pinned bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-020 (intake-2120-A1) -> P3 / DS41-C7.2"
+  - "DI-021 (intake-2120-A2) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-022 (intake-2120-A3) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-023 (intake-2120-A4) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-024 (intake-2120-A5) -> K1 knowledge-only"
   source_revision: bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18
   reader_should_conclude: 'Cite as vendor-reported algorithm evidence: one streaming read + threshold filter + O(k) compaction;
     benchmark metric is bandwidth. Do NOT carry 2-20x as an expectation for our shapes, and do NOT assume top-k is a material
@@ -275484,8 +275574,16 @@
     18c72a1c1) read for sampling/serve command; orchestrator @ 62ee3ba6 has no DS41 registry role so there is no orchestrator-sent
     sampling to cite (NOT-FOUND); lane handoff §W (L1311-L1372) and DS41-T3a (L1394) read from the worktree.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-025 (intake-2121-A1) -> P2 / DS41-W5.1"
+  - "DI-026 (intake-2121-A2) -> P2 / DS41-W6.1"
+  - "DI-027 (intake-2121-A3) -> P2 / DS41-W7.1"
+  - "DI-028 (intake-2121-A4) -> P2 / DS41-T3.3"
+  - "DI-029 (intake-2121-A5) -> K1 knowledge-only"
   source_revision: HF deepseek-ai/DeepSeek-V4.1-Flash-1017 @ 1bae0e1088993b9b82de08f59de5be5a34e42170 (2026-10-17)
   reader_should_conclude: 'Cite: sampling recommendation (claim 1: T=1.0, top_p=1.0, vendor-stated), identical config/tokenizer/tensor
     map (claim 3, sha256-verified against the local September snapshot), and the two reference-code deltas (claims 4-5) as
@@ -275669,8 +275767,17 @@
     KV bytes for a given type_k = ggml_row_size(type_k, 512) per KV plane is INFERRED from n_embd_head_k_mla_impl = n_embd_head_k()
     (llama-kv-cache-dsv4.cpp:L879-L880); the plane count and the type_k default in the DS41 launch recipe were not verified.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "llama-cpp-dsa-contribution.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-030 (intake-2122-A1) -> P3 / DS41-KV.1"
+  - "DI-031 (intake-2122-A2) -> K1 knowledge-only"
+  - "DI-032 (intake-2122-A3) -> P3 / DSA-IDX.1"
+  - "DI-033 (intake-2122-A4) -> K1 knowledge-only"
+  - "DI-034 (intake-2122-A5) -> M1 monitor (dormant trigger, no checkbox)"
   source_revision: 0f11e178da1f67becb087a324b400854931ec3e3
   reader_should_conclude: Cite the two per-token layouts, the indices/topk_length/attn_sink contract and the scheduler-metadata
     reuse hazard as primary-source facts. Our fork already carries the 528 B row convention (ggml_gather_rows_e4m3_e8m0, k=16)
@@ -275896,8 +276003,18 @@
     and its 7 comments, PR #304/#432 bodies, DeepEP baseline. Submodules (cutlass, deep_jit) not fetched. Commit pinned: 5081f8513af57e61696de4f4f04b0e707ffb503e.
     No code executed.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "autokernel-champion-aggregate.md"
+  - "moe-routing-tap-and-locality-measurement.md"
+  - "deepseek-v41-flash-evaluation.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-035 (intake-2123-A1) -> P6 / CH-19"
+  - "DI-036 (intake-2123-A2) -> K3 knowledge-only"
+  - "DI-037 (intake-2123-A3) -> M4 monitor (dormant trigger, no checkbox)"
+  - "DI-038 (intake-2123-A4) -> K1 knowledge-only"
+  - "DI-039 (intake-2123-A5) -> decline: no consumer; a single-socket host has no inter-device all-to-all to overlap, and the compute half of the idea is carried by the fused up-gate screen"
   source_revision: 'deepseek-ai/DeepGEMM@5081f8513af57e61696de4f4f04b0e707ffb503e (HEAD 2026-10-20); PR #316 body fetched
     2026-10-20'
   reader_should_conclude: 'Cite DeepGEMM for (a) the Mega MoE dataflow shape (interleaved gate/up layout, in-epilogue SwiGLU
@@ -276159,8 +276276,17 @@
     Ascend files, commit history, and any issues or PRs. No code executed; TileLang not installed or inspected beyond the
     lane record for intake-2029 (HIP status cited from there). Commit pinned: c1cf914a82e6901c679445f872051ce44ac2cc63.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "autokernel-champion-aggregate.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-040 (intake-2124-A1) -> P2 / DS41-B3.1"
+  - "DI-041 (intake-2124-A2) -> K1 knowledge-only"
+  - "DI-042 (intake-2124-A3) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-043 (intake-2124-A4) -> K1 knowledge-only"
+  - "DI-044 (intake-2124-A5) -> P6 / CH-19"
   source_revision: deepseek-ai/TileKernels@c1cf914a82e6901c679445f872051ce44ac2cc63 (committed 2026-10-14)
   reader_should_conclude: 'Cite TileKernels for (a) the existence of an independent PyTorch statement of the V4 Engram gate,
     mHC Sinkhorn, sqrtsoftplus router, SwiGLU+clamp and FP8/FP4/UE8M0 conventions, and (b) the fact that it has NO AMD path
@@ -276408,8 +276534,17 @@
     at about 70%) and 2507.06607 (abstract, intro, YOCO appendix excerpt; 135 KB text, only YOCO-mentioning lines read). EPYC
     code read via git grep/show @ dd3d9721c; DS41 config.json text_config and Q&A L179-L191 read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-045 (intake-2125-A1) -> P1 / DS41-CED.1"
+  - "DI-046 (intake-2125-A2) -> P1 / DS41-CED.1"
+  - "DI-047 (intake-2125-A3) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-048 (intake-2125-A4) -> K2 knowledge-only"
+  - "DI-049 (intake-2125-A5) -> K2 knowledge-only"
   source_revision: arXiv 2405.05254v2 (raw HTML sha256-12 b2c5f9cea80f, saved s1/yoco/p.html); main text, Tables 1-9, App.
     A-G text read; Figures 4-9 are images and were NOT read (numbers taken from the prose)
   reader_should_conclude: 'Cite YOCO for two things only: the O(N+CL) cache formula and the exactness condition for prefill
@@ -276690,8 +276825,18 @@
     mi210-*, kv-unified-stack-rollout, gpu-drafter-control-redesign, dflash2-block-drafter-experimental-build, speculative-decoding-mtp-refresh,
     cpu-decode-roofline-program, sarathi-serve-cpu-evaluation): only kernel-launch HIP-graph results. No compute run.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "gpu-serving-tie-in-program.md"
+  - "kv-unified-stack-rollout.md"
+  - "heterogeneous-slot-fabric-residency.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-050 (intake-2126-A1) -> P5 / GPU-ZOS-1"
+  - "DI-051 (intake-2126-A2) -> K2 knowledge-only"
+  - "DI-052 (intake-2126-A3) -> P5 / HSF-5"
+  - "DI-053 (intake-2126-A4) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-054 (intake-2126-A5) -> K2 knowledge-only"
   source_revision: arXiv 2408.12757v2; text saved /mnt/raid0/llm/tmp/dive-deepinfer-main/s1/nanoflow/p.txt (82K chars); EPYC
     code dd3d9721c:tools/server/server-context.cpp saved copy /mnt/raid0/llm/tmp/dive-deepinfer-main/s2/server-context.cpp
   reader_should_conclude: 'Cite NanoFlow for (a) the exact async-batch-formation contract (batch i+1 formed before i completes,
@@ -276977,8 +277122,14 @@
     (license line CC BY-NC-SA; no venue seen). Credibility: +1 recency (>=12 months old, <=24 so 0), no venue verified, no
     independent corroboration read; scored 1 on a 0-6 rubric.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-094 (NEW-powerattention-A1) -> P1 / DS41-CED.2"
+  - "DI-095 (NEW-powerattention-A2) -> K1 knowledge-only"
+  - "DI-096 (NEW-powerattention-A3) -> decline: adopting the attention pattern needs continued pretraining per model and no served model can be retrained here"
   source_revision: arXiv 2503.03588v1 (5 Mar 2025); HTML read from disk, file sha256-12 da4291a6b476; only version v1 exists
   reader_should_conclude: 'Cite only as: a retrofitted dense 7B with ~2K windows shows usable propagation of roughly 6 of
     28 layers (authors estimate) and sliding-window stacks collapse on multi-hop tasks (RULER VT). Do NOT cite it as having
@@ -277177,8 +277328,15 @@
     Code repo (github.com/wuyou2002/YOCO-plus) not fetched. Credibility 2: preprint (no venue verified) +1 recency, +1 independent
     of the YOCO authors; -0 commercial.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-097 (NEW-yocopp-A1) -> P1 / DS41-CED.2"
+  - "DI-098 (NEW-yocopp-A2) -> K2 knowledge-only"
+  - "DI-099 (NEW-yocopp-A3) -> decline: the residual fix needs from-scratch pretraining of a new architecture and applies to no served checkpoint"
   source_revision: arXiv 2604.13556v1 (15 Apr 2026); HTML read from disk (yocopp.html sha256-12 e7234e578ad2); only version
     v1
   reader_should_conclude: 'Cite for: (1) independent small-scale evidence that plain YOCO is slightly worse than a standard
@@ -277438,8 +277596,14 @@
     2603.12201 is cited by the paper and already referenced in the lane index (not re-ingested). No code released in the paper
     text beyond a GitHub org link (MuLabPKU/TransArch) - not fetched.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "DI-100 (HISA-A1) -> K1 knowledge-only"
+  - "DI-101 (HISA-A2) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-102 (HISA-A3) -> M1 monitor (dormant trigger, no checkbox)"
   source_revision: arXiv v4 (10 Sep 2026); html sha256-12 364c3c40c23c
   reader_should_conclude: 'Cite HISA for the block-then-token indexing structure, the O(L/B + mB) cost model and the GPU-measured
     indexer/e2e speedups (with their conditions: A100 kernel, 8xH200 SGLang, 128K, concurrency-dependent TPOT). Do NOT cite
@@ -277635,8 +277799,13 @@
     DSA/IndexCache/HySparse are not available as numbers. No released code located in the text. IndexCache 2603.12201 is already
     referenced in the lane index.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-103 (YOIO-A1) -> K1 knowledge-only"
+  - "DI-104 (YOIO-A2) -> P3 / DS41-C7.2"
   source_revision: arXiv v1 (04 Jun 2026); html sha256-12 dde9e10201cd
   reader_should_conclude: 'Cite YOIO/CLSA for: one shared single-head indexer feeding 16 YOCO cross-decoder layers, trained
     by distillation; and for the GPU observation that per-layer token top-k can exceed dense attention time at 128K. Do NOT
@@ -277837,8 +278006,15 @@
     (server-context.cpp:L727-L735) gives per-slot n_ctx, is_processing, n_prompt_tokens, n_prompt_tokens_processed, n_prompt_tokens_cache,
     from which usage = sum(tokens)/sum(n_ctx) and per-request cache-hit = n_prompt_tokens_cache/n_prompt_tokens are derivable
     (the lane already defines kv_occupancy this way: heterogeneous-slot-fabric-residency.md:L254-L255).'
-  handoffs_updated: []
+  handoffs_updated:
+  - "kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-105 (CONCUR-A1) -> P5 / KVU-21"
+  - "DI-106 (CONCUR-A2) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-107 (CONCUR-A3) -> K2 knowledge-only"
+  - "DI-108 (CONCUR-A4) -> K2 knowledge-only"
   source_revision: arXiv 2601.22705v1 (30 Jan 2026)
   reader_should_conclude: 'Cite CONCUR for ONE thing: an AIMD agent-admission window gated on (KV usage high AND hit rate
     low) beat fixed caps on GPU+SGLang offline batch, with numbers that are vendor-reported and configuration dependent. Do
@@ -278059,8 +278235,15 @@
     server_lifecycle.py:L179/L297/L356 declare json_schema=True capability. Lane context: gpu-acceleration-path.md:L72 already
     flags a compressed-FSM/precomputed grammar engine as a llama.cpp upgrade target if grammar throughput becomes a bottleneck
     - this dive supplies the mechanism, not the evidence that it is one.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "speculative-decoding-mtp-refresh.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-109 (XGRAMMAR-A1) -> P4 / SPEC-GRAM.1"
+  - "DI-110 (XGRAMMAR-A2) -> M3 monitor (dormant trigger, no checkbox)"
+  - "DI-111 (XGRAMMAR-A3) -> K4 knowledge-only"
+  - "DI-112 (XGRAMMAR-A4) -> K4 knowledge-only"
   source_revision: arXiv 2411.15100v3 (12 May 2025); github.com/mlc-ai/xgrammar @ 614ab01 (full SHA 614ab01d2af3fdfdde73ae3e4171a7f36db45c23)
   reader_should_conclude: Cite XGrammar for the mechanism (context-independent token masks precomputed per automaton position;
     only the <1% context-dependent remainder checked at runtime; O(1) persistent-stack rollback) and for its authors own tens-of-microseconds
@@ -278269,8 +278452,14 @@
     hits -- genuinely new. Cheap contradiction pass not run (credibility_score 2, below the >=3 trigger, and this is a repo
     not an actionable claim beyond port-pattern mapping); flagged instead via claim-level caveats above (unreleased hardware,
     no independent corroboration, no fused-vs-unfused comparison for MegaMoE).'
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "DI-113 (NEW-deepgemm-ascend-A1) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-114 (NEW-deepgemm-ascend-A2) -> K3 knowledge-only"
   source_revision: deepseek-ai/DeepGEMM-Ascend@3a35326271b069b8b5bf1a754435acd6cc91575b (cloned 2026-10-20, repo last commit
     2026-10-14; depth-1 clone, submodules not fetched)
   reader_should_conclude: 'Cite this repo for ONE thing only: the concrete, hardware-proven pattern of dequantizing a packed
@@ -278451,8 +278640,15 @@
     (@774ce24) re-read this session, and the seed D4 patch. Repo was already named in the lane index only as a declined Gate-2
     item (issue #12, unrelated entry) and as a README fetched for dedup; no index entry has this URL. Vendor mechanism only:
     no numbers anywhere in the repo.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-115 (NEW-eplb-A1) -> P6 / RT-6"
+  - "DI-116 (NEW-eplb-A2) -> P6 / RT-2.1"
+  - "DI-117 (NEW-eplb-A3) -> K3 knowledge-only"
+  - "DI-118 (NEW-eplb-A4) -> M4 monitor (dormant trigger, no checkbox)"
   source_revision: deepseek-ai/EPLB @ d52c72d5b2f2fb4c41afbf8eb21366820239913d
   reader_should_conclude: Cite EPLB for the algorithm (greedy hottest-per-replica replication, LPT equal-cardinality packing,
     divisibility switch between hierarchical and global) and as the reference arm of RT-6. Do NOT cite it for any balance
@@ -278651,8 +278847,17 @@
     22k-line total outside the files above. Mechanism evidence only; no performance numbers exist in the text read. No run,
     build or install was done. Not in the lane index by URL (grep); README was fetched earlier only for dedup by the expansion
     stage.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "deepseek-v41-flash-evaluation.md"
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "DI-119 (NEW-deepep-A1) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-120 (NEW-deepep-A2) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-121 (NEW-deepep-A3) -> K1 knowledge-only"
+  - "DI-122 (NEW-deepep-A4) -> K3 knowledge-only"
+  - "DI-123 (NEW-deepep-A5) -> K3 knowledge-only"
   source_revision: deepseek-ai/DeepEP @ b5a33eefda39485f438dc764695b71ba7b9249b6
   reader_should_conclude: 'Cite DeepEP for: how EngramBuffer stores and fetches rows (GPU-initiated one-sided gets from a
     NIC-registered HBM or host-NUMA shard, one launch for all layers, per-layer wait hook, intra-forward overlap only, no
@@ -278974,8 +279179,23 @@
     of main KV and indexer K that the post uses for the block KV content, unexplained in either text. Arithmetic note (derived,
     not vendor): 112 KiB per 128-token block is about 896 B per context token, within 1% of the 890 B per context token that
     intake-2116 derived from code for FP4 main plus indexer KV, which is consistent with but not proof of the page layout.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "heterogeneous-slot-fabric-residency.md"
+  - "gpu-serving-tie-in-program.md"
+  - "kv-unified-stack-rollout.md"
+  - "speculative-decoding-mtp-refresh.md"
+  - "kv-prefix-fork-and-paged-attention.md"
+  - "within-role-placement-state-machine.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-124 (NEW-zhihu-A1) -> P5 / HSF-3.1"
+  - "DI-125 (NEW-zhihu-A2) -> P5 / PB-QCOST-1"
+  - "DI-126 (NEW-zhihu-A3) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-127 (NEW-zhihu-A4) -> K2 knowledge-only"
+  - "DI-128 (NEW-zhihu-A5) -> K4 knowledge-only"
+  - "DI-129 (NEW-zhihu-A6) -> P5 / KPF-28"
+  - "DI-130 (NEW-zhihu-A7) -> P5 / WP-15"
   source_revision: 'Zhihu article p/2095560295930508953; text via r.jina.ai text extraction, not a model digest; saved /mnt/raid0/llm/tmp/dive-deepinfer-zhihu/zhihu.md
     sha256 a7c0e06a3df362bd1c580ee338af69a0868b7fae5e81006e98603cccb3242130 (49841 B); publication date absent from extract;
     code cross-checks: official reference model.py in DeepSeek-V4.1-Flash/inference (sha256-12 4e9ae23620ed) and llama.cpp
@@ -279362,8 +279582,14 @@
     re4-protocol-redesign.md), an inert-CLI note (gpu-acceleration-path.md:L566) and the standing pointer gpu-acceleration-path.md:L72.
     Unmeasured caveat: the regex trigger search re-scans the whole trigger_buffer on every token while awaiting (quadratic
     in free-text length, std::regex); plausibly small for short pre-tool text.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "speculative-decoding-mtp-refresh.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-131 (XGRAMMAR2-A1) -> P4 / SPEC-GRAM.1"
+  - "DI-132 (XGRAMMAR2-A2) -> M3 monitor (dormant trigger, no checkbox)"
+  - "DI-133 (XGRAMMAR2-A3) -> decline: the source contains no speculative-decoding mechanism to port and llama.cpp already advances the grammar per accepted token"
   source_revision: arXiv 2601.04426v4 (html fetched 2026-10-20; sha256 90fffdb5bc06219e...)
   reader_should_conclude: 'Cite for: TagDispatch free-then-constrained semantics, the finding that dynamic tool sets defeat
     whole-grammar caches (0% reuse) while substructure reuse rises with tool count, and the JIT trade (cheaper compile, costlier
@@ -279607,8 +279833,14 @@
     implementation. The paper symbol for EPLB with exact load is a superscript plus (confirmed in raw HTML as EPLB + +); the
     training sentence lists it as the third EPLB-named entry. Implementation repo Dots-Infra/UltraEP exists (GitHub API: pushed_at
     2026-10-15) and was not read.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-134 (UE-A1) -> P6 / RT-6"
+  - "DI-135 (UE-A2) -> K3 knowledge-only"
+  - "DI-136 (UE-A3) -> K3 knowledge-only"
   source_revision: arXiv 2606.04101v3 (cs.DC, 18 Jun 2026; v1 2 Jun 2026)
   reader_should_conclude: 'Cite for: (a) exact post-gating planning is the alternative to history-window planning, and the
     authors measured the history window failing on non-stationary load in PREFILL and TRAINING; (b) the quota-driven threshold-search
@@ -279892,8 +280124,14 @@
     Nothing built or run. README acknowledgements name UltraEP (github.com/Dots-Infra/UltraEP), DeepEP, AcclEP and an arXiv
     id labelled Echo (2603.07685); that id resolves on arxiv.org/abs to a different title (Scalable Training of Mixture-of-Experts
     Models with Megatron Core), so it is NOT listed as a surfaced source.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-137 (MO-A1) -> K3 knowledge-only"
+  - "DI-138 (MO-A2) -> M4 monitor (dormant trigger, no checkbox)"
+  - "DI-139 (MO-A3) -> P6 / RT-6"
   source_revision: MoonshotAI/MoonEP @ d86fda40329de4002e0cade6817df7b4b5512ee5
   reader_should_conclude: 'Cite for the design: exact-load per-layer planning with a strict per-rank token capacity, owner-push
     prefetch of redundant experts into a layer-shared slot pool, MXFP4-capable. Do NOT cite for any speed, overhead or balance
@@ -280131,8 +280369,16 @@
     only), dispatch_combine.hpp comment at L369, grep of whole tree for gfx90a/MI210/MI250 (0 hits). NOT READ: EP dispatch/combine
     kernel bodies, RDMA/IBGDA transport code, cco, collective, IR, JIT v2 internals, UMBP distributed master/peer code, PD-benchmark
     and EP-benchmark docs. No code was built or run.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "kv-unified-stack-rollout.md"
+  - "deepseek-v41-flash-evaluation.md"
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "DI-140 (MORI-A1) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-141 (MORI-A2) -> M1 monitor (dormant trigger, no checkbox)"
+  - "DI-142 (MORI-A3) -> M2 monitor (dormant trigger, no checkbox)"
+  - "DI-143 (MORI-A4) -> K2 knowledge-only"
   source_revision: 37cdd8e9f8a3b55d0e133ac8e0e15ebeae3ca62b
   reader_should_conclude: 'Cite MORI for: (1) AMD-side proof that EP dispatch/combine and KV transfer exist as open ROCm libraries,
     MI300/MI355 + RDMA-NIC class only; (2) the UMBP host-tier recipe (hipHostRegister Mapped|Portable pieces + portable HIP
@@ -280374,8 +280620,14 @@
     NOT READ: weight_sync.cu, grad_reduce.cu, reroute.cu bodies, load_compute.cu, barrier.cu, ptx.cuh, python runtime modules
     beyond greps, docs/blog_v1_zh.md, examples/, test_e2e.py; the rest of placement.cu (lines 136-410 oracle helpers, 440-780,
     1000-1480) was skimmed by grep only. Nothing built or run.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-144 (UER-A1) -> P6 / RT-6"
+  - "DI-145 (UER-A2) -> K3 knowledge-only"
+  - "DI-146 (UER-A3) -> K3 knowledge-only"
   source_revision: 1474022d7e19b30d931d43364fe814c478b9fb3a (Dots-Infra/UltraEP, 2026-10-15)
   reader_should_conclude: 'Cite for: (a) the planner is a single-block GPU kernel with no CPU build of the quota algorithm,
     and the only host code is an EPLB-style legacy greedy; (b) MIT license, readable algorithm, so RT-6a can port the oracle
@@ -280610,8 +280862,14 @@
     of the EPLB planner, already covered by intake-2134), minilp.cu kernel_count_idx/kernel_map_idx bodies and the NVSHMEM
     communication section (L100-L190), download-mathdx.sh. Nothing built or run. The exact interior-point update formulas
     (lines 345-372) were skimmed by grep; the iteration count, Big-M cost and acceptance test are read directly.'
-  handoffs_updated: []
+  handoffs_updated:
+  - "moe-routing-tap-and-locality-measurement.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "DI-147 (LPLB-A1) -> P6 / RT-6"
+  - "DI-148 (LPLB-A2) -> M4 monitor (dormant trigger, no checkbox)"
+  - "DI-149 (LPLB-A3) -> P6 / RT-6"
   source_revision: 0490f79452f7ef277e814449600b1b1dd4c663b3 (deepseek-ai/LPLB, 2025-11-19)
   reader_should_conclude: 'Cite for: the min-max replica-edge LP formulation, the at-most-one-replica-per-expert constraint,
     the authors'' stated limitations, and a fixed-5-iteration on-device IPM costing about 100 us. Do NOT cite for any throughput

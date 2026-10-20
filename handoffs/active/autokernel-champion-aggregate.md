@@ -748,3 +748,9 @@ control). `autokernel-rebuild-program.md` → **RATIFY-MEAS-1** is closed.
 protocol row in the registry**, so every serving number this campaign quotes — including both headlines above —
 formally cites no protocol. That is the next amendment, and it was deliberately left out of RATIFY-MEAS-1
 rather than smuggled in.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **CH-19 — Screen the dead iqk_moe_fused_up_gate hook as a default-off fused MoE up+gate+SwiGLU node (intake-2123#record, intake-2124#record).** Add a caller in the CPU MUL_MAT_ID path behind a default-0 knob (fix the non-IQK stub signature); gate on MUL_MAT_ID test-backend-ops and decode-logit NMSE; then a same-window ABA on the champion for Qwen3.6-35B-A3B Q8_0 decode (frozen manifest, 5 interleaved pairs, predeclared keep at >= the window floor); drop if within noise.

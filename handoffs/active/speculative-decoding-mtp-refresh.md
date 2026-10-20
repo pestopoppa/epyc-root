@@ -251,7 +251,7 @@ This packet packages the remaining T4/T5/Hy3 gates without running inference. It
 | intake-722 | unsloth/Qwen3.5-122B-A10B-MTP-GGUF | not_applicable (hybrid wall) |
 | intake-723 | unsloth/Qwen3.5-9B-MTP-GGUF | worth_investigating |
 | intake-724 | google/gemma-4-31B-it-assistant | adopt_component (on disk) |
-| intake-725 | llama.cpp/ik_llama MTP+EAGLE3 support (PRs #22673/#22400/#23398/#18039, ik #1744) | adopt_patterns |
+| intake-725#record | llama.cpp/ik_llama MTP+EAGLE3 support (PRs #22673/#22400/#23398/#18039, ik #1744) | adopt_patterns |
 | intake-737 | DeepSeek DeepSpec — MIT draft-model train/eval framework (DSpark/DFlash/EAGLE-3; Qwen3 + gemma-4-12B-it ckpts) | worth_investigating (checkpoints) / n/a (8-GPU framework, no CPU/GGUF path) |
 | intake-738 | DSpark semi-AR drafter (parallel backbone + 1-token correction head) | adopt_patterns — transferable draft head (needs training + GGUF port); scheduler CPU-inert (→ moe-spec); vendor-unreproduced |
 | intake-740 | FR-Spec draft-vocab trim for native MTP (llama.cpp #25187, `avifenesh@047bfa508`) | worth_investigating — lossless@temp0, −85% draft-head kernel → +1-3% e2e; impl → qwen-mtp-llamacpp-port.md P7 |
@@ -394,3 +394,25 @@ _Via `/research-intake` Stage-2; see [`intake-derived-work-2026-07-25.md`](intak
 
 
 2026-10-07 MAIN acceptance: [normally published source and original97/97](../../artifacts/ni08/registry-banner-override-source-20261007/README.md) close SW-6, SCG-ENVOVR-EXPIRED and the prospective verifier. SW-5 keeps its wider active editing-reference documentation sweep open. Full source/result custody verified; original capacity collection NULL retained; no shared-host test, runtime reload or measurement warrant.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **SPEC-CONF.1 — DFlash2 proxy-confidence reliability probe, then a cross-request verify-budget arm for CAFE-3 (intake-2116#record).** Step 1 (no timing claim): in the DFlash2 draft branch log the selector top-1 probability per position and realized acceptance on the DF2 prompt sets at np4; report AUC of position only, the CAFE-3 per-position EMA, top-1 probability and its cumulative product. Rule: cumulative product (or top-1) must beat both priors by AUC >= 0.05, else record the decline. Step 2 only if step 1 passes AND CAFE-2 shows the np4 verify cost is not flat (T(max)/T(min) >= 1.25): host-side rank-and-cut of all slots' draft positions on the cumulative score against the measured np4 step-time curve, A/B vs n-max 4 and 7, >= 5 interleaved pairs, identity 100%.
+- [ ] **SPEC-PIT.1 — PIT/KS distribution gate for temperature > 0 speculative decoding (intake-2116#record).** Expose per-token sum_smaller_probs from llama-server behind a diagnostic flag on an experimental build; run >= 128 trajectories x 1024 tokens at (T, top_p) in {(1.0, 1.0), (1.0, 0.95), (4.0, 0.95)} for plain vs MTP/DFlash2/DSpark arms; fail an arm on KS p <= 1e-5 (DeepInfer test_sampler.py recipe). Gate for any adaptive-width verify change.
+- [ ] **SPEC-RNG.1 — Position-keyed counter RNG for seeded sampling (experimental) (intake-2116#record).** Replace the stateful mt19937 draws in the dist sampler and speculative rng with SplitMix64(seed, absolute position, role); acceptance = identical seeded output for np 1 vs 4 and speculative depth 0 vs 3 on a fixed prompt set. Experimental branch only.
+- [ ] **SPEC-GRAM.1 — Grammar cost and grammar x speculative-verify smoke (intake-2116#record, intake-2132#record, intake-2137#record).** (1) Time llama_grammar_apply_impl and the full sampler step with the orchestrator tool-call GBNF (eager vs lazy trigger) and a json_schema, frontdoor and DS41 vocabularies, at 1 token/step and at verify batch 5; (2) one JSON-schema request class through plain, draft-mtp and draft-dspark: acceptance, tokens/step, reject-resample count vs unconstrained, and grammar state after a mid-draft rejection. Predeclared: grammar < 2% of the step everywhere closes engine work; >= 5% at the frontdoor opens the token-mask cache trigger.
+
+**Dormant triggers (no checkbox, no index next action; materialize a task only when the trigger is observed). 'An' in a row means that intake entry's own dive-ledger row n:**
+
+- DI-110 (intake-2132): monitor: SPEC-GRAM.1 shows grammar time >= 5% of decode step at the frontdoor or >= 2 ms/step on any lineup model
+- DI-132 (intake-2137): monitor: trigger = intake-2132 XGRAMMAR-A1 measurement reports grammar compile+mask above 5% of tool-turn wall time, or a request carries more than 100 tools
+
+**Retained knowledge (no task):**
+
+- DI-059 (intake-2116#record): knowledge-only: retained as a design note for CAFE-2 / the cost-aware truncation trigger step (a); add one line to CAFE-2 at apply time.
+- DI-093 (intake-2116#record): knowledge-only: gate precondition for any adaptive-width verify: trajectory-exactness gates run at fixed width; adaptive width is gated by the PIT/KS test (A6)
+- DI-111 (intake-2132): knowledge-only: retained use = if a tree/multi-branch drafter is ever added to the champion, branch grammar state by clone-per-branch or adopt a persistent stack; DeepInfer-style cap (NEXTN+2) is a DeepInfer invariant
+- DI-112 (intake-2132): knowledge-only: see dive_surfaced_sources
+- DI-128 (intake-2136): knowledge-only: retained as citation boundary for the cost-aware truncation trigger and SPEC-CONF.1 (vendor +4-7% band is estimated, -1.5% at low concurrency, GPU EP64); no new task, tasks already exist (SEED-D1-A1..A3).

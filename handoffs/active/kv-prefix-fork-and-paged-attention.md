@@ -690,3 +690,9 @@ CPU only, under `region-lock` (q1 after the coordinator's 2026-10-04 single-quad
   - KPF-18 item 1 must report fork-vs-fresh against the fresh-vs-fresh **and** fragmented-layout control. If it exceeds
     that control at production length, the fix is order-preserving placement for fork children (a P3 /
     `--kv-affine-chunk` concern), not the share itself.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **KPF-28 — DS41 (dsv4 memory) checkpoint and fork characterisation (intake-2116#record, intake-2136#record).** On the prefix-fork build with the DS41 GGUF record bytes per context checkpoint per component (raw SWA window, compressed planes and compressor state, indexer, engram), window-ring bytes and plane bytes separately, whether create_checkpoint/restore and the KPF-11 fork rule work on llama_kv_cache_dsv4 (hit length vs the checkpoint grid, 128-aligned vs dense), and resume prompt_n. Correctness class, CPU. Decides whether a 128-grid policy or a window-state-free checkpoint (needs DS41-CED.1) is worth building.

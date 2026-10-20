@@ -363,3 +363,44 @@ is olympiad-style reasoning.
 Flip the box here, update RTG-57's `Next action`, and append to `progress/YYYY-MM/`. Operator decisions go through
 the master index: OP-54, OP-55 and OP-56 are decided and applied; the CPU speech contention (KVU-11b) was decided D (no change) by
 the operator directly, with no queue row. The gate's known-gap choice was decided before filing: option A.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **KVU-21 — Agent-resume recompute probe on :8083 (intake-2131#record).** From existing request logs/timings compute, per resumed agent turn, recompute fraction = prompt tokens processed / prompt tokens, and pool usage from /slots, vs concurrent agents 1..4 plus queued; one bounded 4-agent fan-out replay in a GPU window only if logs lack it. Rule: median recompute fraction >= 0.25 at >= 3 agents while usage >= 0.5 opens the CONCUR-style AIMD admission trigger; below closes it.
+- [ ] **KVU-12.3 — Decode-boundary checkpoint arm for the KVU-12.1 matrix (intake-2116#record).** Add a fifth hybrid-checkpoint arm that snapshots recurrent (and drafter) state every 128 generated tokens (capped per sequence), run on the frontdoor Qwen3.6-35B-A3B and the 27B with the KVU-12.1 controls; measure turn-2 resume prompt_n after 1k-4k generated tokens vs the dense arm, checkpoint bytes and TTFT. Counts are correctness class; TTFT in a window.
+
+**Dormant triggers (no checkbox, no index next action; materialize a task only when the trigger is observed). 'An' in a row means that intake entry's own dive-ledger row n:**
+
+- DI-016 (intake-2119): monitor: revisit when (a) a second MI210 is attached (CS-12 cascade, kv-unified-stack-rollout.md:331) or (b) an NVMe-resident KV tier becomes the reload source and its read bandwidth, not PCIe, is the measured bottleneck
+- DI-018 (intake-2119): monitor: admission-queue wait or TTFT p95 on :8083 rises while pool occupancy stays below its fit limit (that is the signature a pool-fit-only cap misses)
+- DI-023 (intake-2120): monitor: llama_perf sampling time (t_sample_ms) exceeds 1% of eval time on a production frontdoor/architect log; otherwise knowledge-only (DeepSelect fp32 sampler claim is CUDA-only and our sampler already single-pass)
+- DI-047 (intake-2125): monitor: the dive found Gemma-3n/4 KV-shared tail layers get no prompt-row pruning in prefill (exact skip available), but Gemma-4 was retired and deleted from the lineup on 2026-09-23 (orchestration/model_registry.yaml deprecated_models @ 62ee3ba6), so no consumer exists today. Trigger: any model with n_layer_kv_from_start sharing (Gemma-3n/4 class) re-enters the lineup; then file the exact row-prune with last-row logit parity.
+- DI-053 (intake-2126): monitor: the AutoKernel GPU profiler reports MI210 prefill (-ub 2048) as compute-bound on GEMMs with a material attention share of layer time (otherwise nothing to overlap), or a hardware change adds idle matrix capacity (second MI210 / matrix-capable part). Until then knowledge-only.
+- DI-060 (intake-2116#record): monitor: revisit only if a llama-server async-scheduling task is filed from the scheduler dive; trigger = any task that overlaps host scheduling of step N+1 with device forward of step N.
+- DI-106 (intake-2131): monitor: CONCUR-A1 probe result (KVU-21) shows recompute fraction >= 0.25 at >= 3 agents with usage >= 0.5; then draft task in kv-unified-stack-rollout.md
+- DI-126 (intake-2136): monitor: short-request TTFT p95 on a shared server rises while a request longer than 16K tokens is prefilling (join request_keys with the inference tap); until measured there is nothing to fix.
+- DI-140 (intake-2140): monitor: a host-pinned KV tier prototype (hipHostRegister mapped region plus a small gather kernel, source-copied MIT from ROCm/mori UMBP and compiled for gfx90a) is the read side of a write-through mirror; trigger = the analytic write-through mirror costing finds the mirror fits the decode budget and removes measurable handover cost. MORI itself does not support gfx90a or ROCm 6.2, so this is a port, priced there.
+- DI-142 (intake-2140): monitor: second MI210 installed AND a serving-engine EP consumer exists; then rerun this port map (first step: add gfx90a to _supported_arch_list / MORI_SUPPORTED_ARCHS with MORI_GPU_ARCHS=gfx90a and run only the intranode ep2 test)
+
+**Retained knowledge (no task):**
+
+- DI-008 (intake-2117): knowledge-only: lessons (1) and (3) feed kv-prefix-fork-and-paged-attention.md and v9-kernel-per-request-speculative-params.md as design context; no task.
+- DI-011 (intake-2118): knowledge-only: design reference for A2 option (2); no separate task until A2 probe shows the class is open on a live server.
+- DI-017 (intake-2119): knowledge-only: design rule for any future mirrored/offloaded KV traffic (see intake-2126-A3): price it against decode-in-flight on the same link and cores before enabling
+- DI-019 (intake-2119): knowledge-only: have an equivalent feedback budget; revisit only with the sarathi-serve-cpu-evaluation re-promotion trigger (multi-tenant / prefill-heavy)
+- DI-048 (intake-2125): knowledge-only: only Gemma-3n/4 in the lineup share KV across layers; nothing else benefits from YOCO-style prefill skipping.
+- DI-049 (intake-2125): knowledge-only: cite YOCO for the exact early-exit argument and the O(N+CL) memory formula; do NOT cite its 71.8x/9.6x/80x figures as achievable on our stack (H100, gRet, 3B).
+- DI-051 (intake-2126): knowledge-only: sets the precondition for A1 follow-up: only the non-spec arms (and CPU draft-free roles) could use a lagged batch; revisit if A1 shows a material gap in the no-spec arm
+- DI-054 (intake-2126): knowledge-only: one-line regime test for the roofline program and np/batch sweeps; no new task
+- DI-064 (intake-2116#record): knowledge-only: retained use is the boundary condition for any future "replay instead of checkpoint" proposal on Qwen3.6/3.8 hybrids (reject for GDN layers; only drafter SWA windows qualify, covered by KPF-13.1).
+- DI-065 (intake-2116#record): monitor: next pull of fresh production into llama.cpp-experimental carries PR #30580 (llama.cpp upstream); trigger = KPF-17.4 SWA checkpoint range case runs on the new tip.
+- DI-067 (intake-2116#record): knowledge-only: retained use is the comparison point for KPF-18.1 hit-length rows and a candidate hit policy for DS41 only after DS41-CED.1 shows the approximation is acceptable.
+- DI-070 (intake-2116#record): knowledge-only: retained use is the Sarathi reopen comparison (sarathi-serve-cpu-evaluation.md:L14) - cite as vendor-reported engine behaviour code-verified @774ce24
+- DI-092 (intake-2116#record): knowledge-only: cite the coverage_complete / rule-vs-judge agreement pattern when touching quality-gate summaries; do not import vendor Pass@1 as an EPYC target
+- DI-098 (intake-2128): knowledge-only: Gemma-3n/4 are natively trained with KV sharing (not YOCO-style early exit; their upper layers still run for every token); the YOCO++ evidence neither supports nor refutes them, and no layer-skipping prefill on them is implied.
+- DI-107 (intake-2131): knowledge-only: retained use = if A2 opens, fold a usage gauge into the same champion patch series rather than polling /slots; HSF-2 (heterogeneous-slot-fabric-residency.md:L276) already owns --metrics launch argv
+- DI-108 (intake-2131): knowledge-only: intake-2119 reader_should_conclude should drop CONCUR as the support for the hit-rate figure; the 98.7% stays DualPath own-trace, vendor-reported
+- DI-127 (intake-2136): knowledge-only: design input for the HSF demote threshold (0.8 hysteresis and a drain grace as starting hypotheses to be replaced by HSF-1 swap cost data); no separate task.
+- DI-143 (intake-2140): knowledge-only: retained as the prior for MORI-A1 tier placement (no placement experiment needed unless A1 proceeds)

@@ -264,3 +264,9 @@ untrustworthy on gfx90a until root-caused.
 - [ ] D2 sparse-attention contribution — only if runtime profiling shows dense-mask attention still scales with full KV despite top-k
 - [ ] D3 AVX-512BW Lightning Indexer CPU kernel — deferred because D3.1 did not show material indexer share; reopen only after D2 real-sparse or a different shape changes the profile.
 - [ ] GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#record).** Adopt the FlashMLA sparse-decode contract: int32 indices (page*page_size + offset, -1 = invalid), per-query topk_length, attn_sink, optional extra index set; write the CPU oracle test first (dense masked FA over the same gathered rows must match bit-for-bit). Consumer: DS41-C123.1.

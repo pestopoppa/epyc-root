@@ -431,3 +431,9 @@ for worker_general + port-alignment/liveness guard.
   DAR-LAT-1 `SlotCapacity` record (decision-aware-routing.md).
 - Trigger (prose): when that load term is actually designed, dive intake-1784#record (llm-d router scorers;
   stage1-unverified) and map each scorer to this shape or to a named gap.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record).** Offline: from recorded dispatch logs reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection, then re-simulate a token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests) and report max/mean token imbalance and TTFT-tail deltas. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation.

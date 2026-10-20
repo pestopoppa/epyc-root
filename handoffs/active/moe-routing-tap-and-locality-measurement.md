@@ -90,3 +90,32 @@ foreign paper's. The instrument is the deliverable; no throughput claim is licen
   handoff, one owner.
 - Wire the tap's output into the belief kernel on the **write** side when RT-2 is built (SC66); a
   claim tuple invented on read cannot recover warrant the run never captured.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **RT-6 — Offline expert-placement replay on RT-1 traces, DS41 + frontdoor (intake-2116#record, intake-2134#record, intake-2138#record, intake-2141#record, intake-2142#record).** Numpy, no inference (capture is RT-1). Bins = 4 NUMA nodes and 12 CCDs; T in {1, 3} decode plus one prefill-chunk row. Arms: DeepInfer windowed per-step-peak policy (policy.py port), EPLB-global (eplb.py @ d52c72d), a zero-lag exact-load oracle (UltraEP planner logic), MoonEP rank-level greedy, and the LPLB fractional LP floor as a bound only; score every arm by per-step max/mean with the null model beside it and replication priced in copied bytes. Rule: if even the oracle/LP bound fails 1.65 / (best max/mean) >= 1.10 on >= 2 workloads, close as a negative recorded in large-moe-expert-parallelism.md.
+- [ ] **RT-2.1 — Trace-shape rider for the replays (intake-2134#record).** The tap keeps token order and sample boundaries, tags each token prefill vs decode (and the speculative block size), and covers deepseek41 including the 128-expert DSpark layers (int16 ids), so RT-6/RT-7 can derive [steps, layers, experts] counts; an aggregate-only dump is insufficient. COMPUTE-GATED - FILE ONLY.
+- [ ] **RT-7 — Residency hit-rate curve h(k) and stationarity for DS41 hot experts on the MI210 (intake-2116#record, intake-2139#record).** Offline from RT-1 traces: for k in {39, 53, 63} experts/layer with greedy cross-layer allocation, the share of top-6 selections covered by a static ranking learned on domain A and scored on domain B, plus top-set overlap between consecutive 1k-step windows. Rule: open the HIP MXFP4 expert-cache work (CAFE-7) only if h(53) >= 0.30 on >= 2 workloads and the HIP resident MXFP4 MoE kernel check passes; h < 0.23 closes it. Per-step dynamic prefetch is excluded (fetch costs ~5.7 CPU reads).
+
+**Dormant triggers (no checkbox, no index next action; materialize a task only when the trigger is observed). 'An' in a row means that intake entry's own dive-ledger row n:**
+
+- DI-037 (intake-2123): monitor: a MoE role with experts resident on the MI210 enters the lineup and MMQ_MMID shows as a top kernel in the HIP route log (GGML_CUDA_LOG_MMVQ_ROUTE); then compare MMQ_MMID against a masked-layout kernel
+- DI-081 (intake-2116#record): monitor: RT-6 replay result - trigger: 1.65 / (best max/mean) >= 1.10 on >= 2 workloads at T in {1,3}; then open CPU15-REVAL with the EPLB planner as the dispatch policy (CPU20 canonical matrix, 3 reps, PPL gate)
+- DI-118 (intake-2134): monitor: a model with n_group > 1 and topk_group routing is added to the lineup (check config.json for n_group/topk_group)
+- DI-138 (intake-2139): monitor: trigger = DS41-T7 delivers t_cpu and t_gpu per token-expert AND RT-7 shows h(53) >= 0.30 on >= 2 workloads (then open the CAFE-7 design with MoonEP's slot-pool layout as the reference)
+- DI-148 (intake-2142): knowledge-only: retain LPLB as the min-max replica-edge LP formulation reference and as the (non-quantified) 'LPLB loses to EPLB under extreme global imbalance, one replica per expert' limitation; monitor trigger: RT-6/RT-6 shows an LP-floor pass of the decision rule at T=1..3 that integral power-of-two-choices does not reach.
+
+**Retained knowledge (no task):**
+
+- DI-036 (intake-2123): knowledge-only: layout recipe retained as the design input for A1 if the fused node is positive; do not task before A1 measures (CPU decode is bandwidth-bound, the layout changes locality not bytes)
+- DI-114 (intake-2133): knowledge-only: confirms scale-pack granularity/order is an implementation choice tuned to each vendor's cache/DMA width, not a constraint on ggml's own MXFP4 format; no action needed
+- DI-117 (intake-2134): knowledge-only: EPLB is the right reference for NUMA-bin balancing (RT-6) and the wrong shape for CPU-vs-MI210 residency (RT-7), which is a top-k coverage curve
+- DI-122 (intake-2135): knowledge-only: no EP reopen without a new bottleneck proof (large-moe-expert-parallelism.md reopen rule); retain the no-CPU-sync decode idea for that day
+- DI-123 (intake-2135): knowledge-only: confirms D4-A9's shape; no new task
+- DI-135 (intake-2138): knowledge-only: records why UltraEP-style per-step planning is not a decode candidate (excluded by its authors; quota floor and byte-neutral replication at T=1-4); revisit only if RT-6's oracle arm shows >=1.10 headroom at T in {1,3}
+- DI-136 (intake-2138): knowledge-only: retained use = break-even formula for any MoE prefill GPU-assist design (cite UltraEP quota floor as the same idea); no task until DS41-T7 produces t_cpu and t_gpu per token-expert
+- DI-137 (intake-2139): knowledge-only: records the 5.7x fetch-vs-read break-even that rules out per-step MoonEP-style prefetch at decode on this host; RT-7 (already proposed) remains the decision instrument
+- DI-145 (intake-2141): knowledge-only: UltraEP is retained as the reference for exact-load planning and for the finding that history windows go stale in prefill/training; its runtime is NVLink-domain EP infrastructure with no EPYC consumer. Re-open only if RT-6 shows an oracle-vs-history gap at T>=512 that the CPU prefill path (cpu-prefill-compute-large-models.md) could exploit.
+- DI-146 (intake-2141): knowledge-only: main session carries the narrowing into intake-2138 claim 6 (see claim_corrections).

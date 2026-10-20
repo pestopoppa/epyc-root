@@ -595,3 +595,9 @@ Artifacts read, with digests, are recorded in the intake entries:
 `chat_template.jinja` from each repo, the stock Qwen template (8,952 B), and the Unsloth template
 embedded in our production GGUF (9,993 B) — the last extracted by a header read, without loading
 the 29 GB model.
+
+## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+- [ ] **CT-12 — Special-token injection through llama-server, probe then fix path (intake-2118#record).** At dd3d9721c chat templating flattens rendered parts to one string (common/chat.cpp:925-927) and the prompt is tokenized with parse_special = true (tools/server/server-context.cpp:4882), so user/tool/RAG text spelling a control token may become that token. (1) Probe each lineup family on an experimental server with /tokenize and a chat request whose user text is the literal control-token spelling (compare usage prompt_tokens and the token ids); (2) if open, choose between a champion-branch patch that tokenizes is_input parts with parse_special = false and an orchestrator-side neutraliser; (3) no-regression A/B on template goldens before any fold.
