@@ -1,0 +1,308 @@
+[
+ {
+  "label": "code_w2_fusionoff_a",
+  "width": 2,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "code_w2_fusionoff_nocap_a",
+  "width": 2,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "code_w2_graphsoff_nocap_a",
+  "width": 2,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_GRAPHS": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "code_w2_maskskipoff_a",
+  "width": 2,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_FA_MASK_SKIP": "0"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "code_w2_fa0_a",
+  "width": 2,
+  "prefix": "code",
+  "env": {},
+  "args": [
+   "--fa",
+   "0"
+  ],
+  "nocap": 0
+ },
+ {
+  "label": "code_w5_fusionoff_a",
+  "width": 5,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "code_w5_fusionoff_nocap_a",
+  "width": 5,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "code_w5_graphsoff_nocap_a",
+  "width": 5,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_GRAPHS": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "code_w5_maskskipoff_a",
+  "width": 5,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_FA_MASK_SKIP": "0"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "code_w5_fa0_a",
+  "width": 5,
+  "prefix": "code",
+  "env": {},
+  "args": [
+   "--fa",
+   "0"
+  ],
+  "nocap": 0
+ },
+ {
+  "label": "code_w9_fusionoff_a",
+  "width": 9,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "code_w9_fusionoff_nocap_a",
+  "width": 9,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "code_w9_graphsoff_nocap_a",
+  "width": 9,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_DISABLE_GRAPHS": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "code_w9_maskskipoff_a",
+  "width": 9,
+  "prefix": "code",
+  "env": {
+   "GGML_CUDA_FA_MASK_SKIP": "0"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "code_w9_fa0_a",
+  "width": 9,
+  "prefix": "code",
+  "env": {},
+  "args": [
+   "--fa",
+   "0"
+  ],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w2_fusionoff_a",
+  "width": 2,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w2_fusionoff_nocap_a",
+  "width": 2,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "prose_w2_graphsoff_nocap_a",
+  "width": 2,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_GRAPHS": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "prose_w2_maskskipoff_a",
+  "width": 2,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_FA_MASK_SKIP": "0"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w2_fa0_a",
+  "width": 2,
+  "prefix": "prose",
+  "env": {},
+  "args": [
+   "--fa",
+   "0"
+  ],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w5_fusionoff_a",
+  "width": 5,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w5_fusionoff_nocap_a",
+  "width": 5,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "prose_w5_graphsoff_nocap_a",
+  "width": 5,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_GRAPHS": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "prose_w5_maskskipoff_a",
+  "width": 5,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_FA_MASK_SKIP": "0"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w5_fa0_a",
+  "width": 5,
+  "prefix": "prose",
+  "env": {},
+  "args": [
+   "--fa",
+   "0"
+  ],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w9_fusionoff_a",
+  "width": 9,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w9_fusionoff_nocap_a",
+  "width": 9,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_FUSION": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "prose_w9_graphsoff_nocap_a",
+  "width": 9,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_DISABLE_GRAPHS": "1"
+  },
+  "args": [],
+  "nocap": 1
+ },
+ {
+  "label": "prose_w9_maskskipoff_a",
+  "width": 9,
+  "prefix": "prose",
+  "env": {
+   "GGML_CUDA_FA_MASK_SKIP": "0"
+  },
+  "args": [],
+  "nocap": 0
+ },
+ {
+  "label": "prose_w9_fa0_a",
+  "width": 9,
+  "prefix": "prose",
+  "env": {},
+  "args": [
+   "--fa",
+   "0"
+  ],
+  "nocap": 0
+ }
+]

@@ -1,0 +1,386 @@
+[
+ {
+  "pair": "code_w2_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "26aa4cbe85825cc0",
+   "n_batch_nodes": 3687,
+   "logits_batch": "8454b60e8b6277f1",
+   "logits_ref": "c1352b456608c760"
+  },
+  "digest_b": {
+   "batch_nodes": "26aa4cbe85825cc0",
+   "n_batch_nodes": 3687,
+   "logits_batch": "8454b60e8b6277f1",
+   "logits_ref": "c1352b456608c760"
+  }
+ },
+ {
+  "pair": "code_w2_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "8454b60e8b6277f1",
+   "logits_ref": "c1352b456608c760"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "8454b60e8b6277f1",
+   "logits_ref": "c1352b456608c760"
+  }
+ },
+ {
+  "pair": "code_w3_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "df716d82a06a555d",
+   "n_batch_nodes": 3687,
+   "logits_batch": "0ba596972aa01639",
+   "logits_ref": "e6602f57f99ee354"
+  },
+  "digest_b": {
+   "batch_nodes": "df716d82a06a555d",
+   "n_batch_nodes": 3687,
+   "logits_batch": "0ba596972aa01639",
+   "logits_ref": "e6602f57f99ee354"
+  }
+ },
+ {
+  "pair": "code_w3_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "0ba596972aa01639",
+   "logits_ref": "e6602f57f99ee354"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "0ba596972aa01639",
+   "logits_ref": "e6602f57f99ee354"
+  }
+ },
+ {
+  "pair": "code_w4_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "51102dbf42f62de0",
+   "n_batch_nodes": 3687,
+   "logits_batch": "3f87c866948ee709",
+   "logits_ref": "d4b3fb4150d366db"
+  },
+  "digest_b": {
+   "batch_nodes": "51102dbf42f62de0",
+   "n_batch_nodes": 3687,
+   "logits_batch": "3f87c866948ee709",
+   "logits_ref": "d4b3fb4150d366db"
+  }
+ },
+ {
+  "pair": "code_w4_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "3f87c866948ee709",
+   "logits_ref": "d4b3fb4150d366db"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "3f87c866948ee709",
+   "logits_ref": "d4b3fb4150d366db"
+  }
+ },
+ {
+  "pair": "code_w5_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "1dcd9def36deacd7",
+   "n_batch_nodes": 3687,
+   "logits_batch": "3edf38b7d3f7faac",
+   "logits_ref": "ad40eabf08671fc0"
+  },
+  "digest_b": {
+   "batch_nodes": "1dcd9def36deacd7",
+   "n_batch_nodes": 3687,
+   "logits_batch": "3edf38b7d3f7faac",
+   "logits_ref": "ad40eabf08671fc0"
+  }
+ },
+ {
+  "pair": "code_w5_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "3edf38b7d3f7faac",
+   "logits_ref": "ad40eabf08671fc0"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "3edf38b7d3f7faac",
+   "logits_ref": "ad40eabf08671fc0"
+  }
+ },
+ {
+  "pair": "code_w8_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "74b3b232aced9f24",
+   "n_batch_nodes": 3687,
+   "logits_batch": "c0f3df799ea7bd45",
+   "logits_ref": "aeebf5f38ae3465c"
+  },
+  "digest_b": {
+   "batch_nodes": "74b3b232aced9f24",
+   "n_batch_nodes": 3687,
+   "logits_batch": "c0f3df799ea7bd45",
+   "logits_ref": "aeebf5f38ae3465c"
+  }
+ },
+ {
+  "pair": "code_w8_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "c0f3df799ea7bd45",
+   "logits_ref": "aeebf5f38ae3465c"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "c0f3df799ea7bd45",
+   "logits_ref": "aeebf5f38ae3465c"
+  }
+ },
+ {
+  "pair": "code_w9_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "8f1ec5178e4205ab",
+   "n_batch_nodes": 3687,
+   "logits_batch": "2c18782dd87dde11",
+   "logits_ref": "a7fbbdbed0fb9c0d"
+  },
+  "digest_b": {
+   "batch_nodes": "8f1ec5178e4205ab",
+   "n_batch_nodes": 3687,
+   "logits_batch": "2c18782dd87dde11",
+   "logits_ref": "a7fbbdbed0fb9c0d"
+  }
+ },
+ {
+  "pair": "code_w9_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "2c18782dd87dde11",
+   "logits_ref": "a7fbbdbed0fb9c0d"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "2c18782dd87dde11",
+   "logits_ref": "a7fbbdbed0fb9c0d"
+  }
+ },
+ {
+  "pair": "prose_w2_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "195902bd50cd03a8",
+   "n_batch_nodes": 3687,
+   "logits_batch": "b1f48d91c1005464",
+   "logits_ref": "e0ca45cef3edc2c9"
+  },
+  "digest_b": {
+   "batch_nodes": "195902bd50cd03a8",
+   "n_batch_nodes": 3687,
+   "logits_batch": "b1f48d91c1005464",
+   "logits_ref": "e0ca45cef3edc2c9"
+  }
+ },
+ {
+  "pair": "prose_w2_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "b1f48d91c1005464",
+   "logits_ref": "e0ca45cef3edc2c9"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "b1f48d91c1005464",
+   "logits_ref": "e0ca45cef3edc2c9"
+  }
+ },
+ {
+  "pair": "prose_w3_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "f0080add303358b8",
+   "n_batch_nodes": 3687,
+   "logits_batch": "6d8177e6cfaec0df",
+   "logits_ref": "d752b8d868af626d"
+  },
+  "digest_b": {
+   "batch_nodes": "f0080add303358b8",
+   "n_batch_nodes": 3687,
+   "logits_batch": "6d8177e6cfaec0df",
+   "logits_ref": "d752b8d868af626d"
+  }
+ },
+ {
+  "pair": "prose_w3_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "6d8177e6cfaec0df",
+   "logits_ref": "d752b8d868af626d"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "6d8177e6cfaec0df",
+   "logits_ref": "d752b8d868af626d"
+  }
+ },
+ {
+  "pair": "prose_w4_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "42e1a5dd9f274873",
+   "n_batch_nodes": 3687,
+   "logits_batch": "f4e1927352521b60",
+   "logits_ref": "2c980896130ff7c2"
+  },
+  "digest_b": {
+   "batch_nodes": "42e1a5dd9f274873",
+   "n_batch_nodes": 3687,
+   "logits_batch": "f4e1927352521b60",
+   "logits_ref": "2c980896130ff7c2"
+  }
+ },
+ {
+  "pair": "prose_w4_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "f4e1927352521b60",
+   "logits_ref": "2c980896130ff7c2"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "f4e1927352521b60",
+   "logits_ref": "2c980896130ff7c2"
+  }
+ },
+ {
+  "pair": "prose_w5_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "447ab0fa015ddc41",
+   "n_batch_nodes": 3687,
+   "logits_batch": "5c18822156b5f1fd",
+   "logits_ref": "86a5ea81df624cc5"
+  },
+  "digest_b": {
+   "batch_nodes": "447ab0fa015ddc41",
+   "n_batch_nodes": 3687,
+   "logits_batch": "5c18822156b5f1fd",
+   "logits_ref": "86a5ea81df624cc5"
+  }
+ },
+ {
+  "pair": "prose_w5_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "5c18822156b5f1fd",
+   "logits_ref": "86a5ea81df624cc5"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "5c18822156b5f1fd",
+   "logits_ref": "86a5ea81df624cc5"
+  }
+ },
+ {
+  "pair": "prose_w8_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "3f9f1a3a585f46de",
+   "n_batch_nodes": 3687,
+   "logits_batch": "60ceee3f692dec6f",
+   "logits_ref": "3844fdcfe63f573a"
+  },
+  "digest_b": {
+   "batch_nodes": "3f9f1a3a585f46de",
+   "n_batch_nodes": 3687,
+   "logits_batch": "60ceee3f692dec6f",
+   "logits_ref": "3844fdcfe63f573a"
+  }
+ },
+ {
+  "pair": "prose_w8_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "60ceee3f692dec6f",
+   "logits_ref": "3844fdcfe63f573a"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "60ceee3f692dec6f",
+   "logits_ref": "3844fdcfe63f573a"
+  }
+ },
+ {
+  "pair": "prose_w9_cap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "b16daa9c0ad70dff",
+   "n_batch_nodes": 3687,
+   "logits_batch": "8a2e0b360be217d0",
+   "logits_ref": "442f4fb28670f3d5"
+  },
+  "digest_b": {
+   "batch_nodes": "b16daa9c0ad70dff",
+   "n_batch_nodes": 3687,
+   "logits_batch": "8a2e0b360be217d0",
+   "logits_ref": "442f4fb28670f3d5"
+  }
+ },
+ {
+  "pair": "prose_w9_nocap",
+  "bitwise_identical": true,
+  "digest_a": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "8a2e0b360be217d0",
+   "logits_ref": "442f4fb28670f3d5"
+  },
+  "digest_b": {
+   "batch_nodes": "14650fb0739d0383",
+   "n_batch_nodes": 0,
+   "logits_batch": "8a2e0b360be217d0",
+   "logits_ref": "442f4fb28670f3d5"
+  }
+ }
+]

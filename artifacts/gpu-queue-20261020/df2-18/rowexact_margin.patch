@@ -1,0 +1,84 @@
+--- /mnt/raid0/llm/tmp/gpu-queue-20261020/df2-18/src/rowexact_stock.cpp	2026-10-20 15:51:27.065463322 +0000
++++ /mnt/raid0/llm/tmp/gpu-queue-20261020/df2-18/src/rowexact_margin.cpp	2026-10-20 15:51:48.284961421 +0000
+@@ -124,6 +124,7 @@
+ }
+ 
+ static double g_min_abs = 0.0;
++static int    g_nocap   = 0;   // DF2-18: --nocap 1 leaves cb_eval unset so multi-node fusions / HIP graphs stay active; only logits+state are compared
+ 
+ static std::string ne_str(const rec & r) {
+     char buf[96]; snprintf(buf, sizeof buf, "[%lld,%lld,%lld,%lld]", (long long)r.ne[0], (long long)r.ne[1], (long long)r.ne[2], (long long)r.ne[3]); return buf;
+@@ -179,8 +180,7 @@
+     if (o.unified >= 0) cp.kv_unified = o.unified != 0;
+     if (o.fa == 0) cp.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_DISABLED;
+     if (o.fa == 1) cp.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED;
+-    cp.cb_eval = cb_eval;
+-    cp.cb_eval_user_data = cap;
++    if (!g_nocap) { cp.cb_eval = cb_eval; cp.cb_eval_user_data = cap; }
+     llama_context * ctx = llama_init_from_model(model, cp);
+     if (!ctx) { fprintf(stderr, "ctx init failed\n"); exit(1); }
+     return ctx;
+@@ -254,6 +254,29 @@
+     return rr;
+ }
+ 
++
++// ---- DF2-18 additive instrumentation (does not change any comparison) -----------------------
++static uint64_t fnv1a(const uint8_t * p, size_t n, uint64_t h) {
++    for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= 1099511628211ULL; }
++    return h;
++}
++static uint64_t digest_recs(const std::vector<rec> & v) {
++    uint64_t h = 1469598103934665603ULL;
++    for (const auto & r : v) { h = fnv1a((const uint8_t *) r.name.data(), r.name.size(), h); h = fnv1a(r.data.data(), r.data.size(), h); }
++    return h;
++}
++static void top2(const std::vector<float> & a, int & i1, int & i2, double & margin) {
++    i1 = 0; i2 = -1;
++    for (size_t i = 1; i < a.size(); i++) if (a[i] > a[i1]) i1 = i;
++    for (size_t i = 0; i < a.size(); i++) { if ((int) i == i1) continue; if (i2 < 0 || a[i] > a[i2]) i2 = i; }
++    margin = (double) a[i1] - (double) a[i2];
++}
++static void print_margins(const std::vector<float> & bat, const std::vector<float> & ref, int row) {
++    int b1, b2, r1, r2; double bm, rm;
++    top2(bat, b1, b2, bm); top2(ref, r1, r2, rm);
++    printf("  MARGIN row=%d ref_top1=%d ref_top2=%d ref_margin=%.6f bat_top1=%d bat_top2=%d bat_margin=%.6f\n", row, r1, r2, rm, b1, b2, bm);
++}
++
+ static void cmp_logits(const std::vector<float> & a, const std::vector<float> & b, const char * label) {
+     int64_t nd = 0; double mx = 0; int am_a = 0, am_b = 0;
+     for (size_t i = 0; i < a.size(); i++) {
+@@ -328,6 +351,7 @@
+         else if (a == "--prompt")    o.prompt_a = atoi(next().c_str());
+         else if (a == "--min-abs")   o.min_abs = atof(next().c_str());
+         else if (a == "--text")      o.text_file = next();
++        else if (a == "--nocap")     g_nocap = atoi(next().c_str());
+         else { fprintf(stderr, "unknown arg %s\n", a.c_str()); return 1; }
+     }
+     g_min_abs = o.min_abs;
+@@ -342,7 +366,7 @@
+     const int n_vocab = llama_vocab_n_tokens(vocab);
+ 
+     const int want = o.prefix + o.n;
+-    printf("rowexact: mode=%s n=%d prefix=%d seqs=%d n_seq_max=%d unified=%d fa=%d rs_seq=%d threads=%d\n",
++    printf("rowexact: nocap=%d mode=%s n=%d prefix=%d seqs=%d n_seq_max=%d unified=%d fa=%d rs_seq=%d threads=%d\n", g_nocap,
+            o.mode.c_str(), o.n, o.prefix, o.seqs, o.n_seq_max, o.unified, o.fa, o.rs_seq, o.n_threads);
+ 
+     std::string text_buf;
+@@ -365,6 +389,16 @@
+             printf("-- token row %d (pos %d)\n", t, o.prefix + t);
+             cmp_nodes(bat.batch, o.n, 1, t, ref.per_token[t], 1, 1, 0, o.show, "batch-row vs single");
+             cmp_logits(bat.logits[t], ref.logits[t], "batch-row vs single");
++            print_margins(bat.logits[t], ref.logits[t], t);
++            printf("  DIGEST row=%d ref_nodes=%016llx\n", t, (unsigned long long) digest_recs(ref.per_token[t]));
++        }
++        printf("DIGEST batch_nodes=%016llx n_batch_nodes=%zu\n", (unsigned long long) digest_recs(bat.batch), bat.batch.size());
++        {
++            uint64_t hl = 1469598103934665603ULL;
++            for (auto & l : bat.logits) hl = fnv1a((const uint8_t *) l.data(), l.size() * sizeof(float), hl);
++            uint64_t hr = 1469598103934665603ULL;
++            for (auto & l : ref.logits) hr = fnv1a((const uint8_t *) l.data(), l.size() * sizeof(float), hr);
++            printf("DIGEST logits_batch=%016llx logits_ref=%016llx\n", (unsigned long long) hl, (unsigned long long) hr);
+         }
+         cmp_state(bat.state, ref.state, "seq0 after batch vs after singles");
+     } else if (o.mode == "multi") {
