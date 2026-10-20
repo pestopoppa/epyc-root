@@ -210,7 +210,7 @@ def _u(seed, key):
 
 
 @njit(cache=True)
-def sim_turn(prop, hit, acc, seed, turnkey, oracle):
+def sim_turn(prop, hit, acc, seed, turnkey, oracle, perpos=False):
     """Return (tokens, steps).  prop/hit: lookup arrays over scored positions (None-equivalent: all False).
     acc: per-position DFlash2 accept probability (float64)."""
     n = prop.shape[0]
@@ -225,7 +225,15 @@ def sim_turn(prop, hit, acc, seed, turnkey, oracle):
                 break
             ok = False
             used_lookup = False
-            if chain and prop[pos]:
+            if perpos and prop[pos]:
+                # per-position merge: no chain restriction (secondary variant, added after the primary run)
+                if hit[pos]:
+                    ok = True
+                elif oracle:
+                    ok = _u(seed, turnkey * 1000003 + pos) < acc[pos]
+            elif perpos:
+                ok = _u(seed, turnkey * 1000003 + pos) < acc[pos]
+            elif chain and prop[pos]:
                 used_lookup = True
                 if hit[pos]:
                     ok = True
@@ -235,8 +243,6 @@ def sim_turn(prop, hit, acc, seed, turnkey, oracle):
             else:
                 chain = False
                 ok = _u(seed, turnkey * 1000003 + pos) < acc[pos]
-            if oracle and used_lookup and not hit[pos]:
-                pass
             if ok:
                 acc_n += 1
             else:

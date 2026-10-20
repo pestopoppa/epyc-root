@@ -97,18 +97,18 @@ def acc_array(t, H, scenario, q_cov):
     return np.where(H, q_cov, qu)
 
 
-def sim_steps(turns, props, hits, accs, oracle, seeds=SEEDS):
+def sim_steps(turns, props, hits, accs, oracle, seeds=SEEDS, perpos=False):
     out = np.zeros(len(turns))
     for i, t in enumerate(turns):
         tk = int(hashlib.md5(f'{t["run"]}/{t["turn"]}'.encode()).hexdigest()[:6], 16)
         s = 0.0
         for sd in seeds:
-            s += L.sim_turn(props[i], hits[i], accs[i], sd, tk, oracle)[1]
+            s += L.sim_turn(props[i], hits[i], accs[i], sd, tk, oracle, perpos)[1]
         out[i] = s / len(seeds)
     return out
 
 
-def compare(turns, const, base_specs, cand_specs, scenario, oracle, q_fit_turns=None, fit=None, seeds=SEEDS, with_df=True):
+def compare(turns, const, base_specs, cand_specs, scenario, oracle, q_fit_turns=None, fit=None, seeds=SEEDS, with_df=True, perpos=False):
     """Steps for baseline and candidate on `turns`.  H = union hit set of both.  Fit from q_fit_turns (calibration) if given."""
     n = len(turns)
     pb = [merged(t, base_specs) for t in turns]
@@ -122,9 +122,9 @@ def compare(turns, const, base_specs, cand_specs, scenario, oracle, q_fit_turns=
             fit = (None, None, None, None)
     q_cov = fit[1]
     accs = [acc_array(t, H[i], scenario, q_cov) for i, t in enumerate(turns)]
-    s_base = sim_steps(turns, [p[0] for p in pb], [p[1] for p in pb], accs, oracle, seeds)
-    s_cand = sim_steps(turns, [p[0] for p in pc], [p[1] for p in pc], accs, oracle, seeds)
-    s_df = sim_steps(turns, [np.zeros(t["N"], bool) for t in turns], [np.zeros(t["N"], bool) for t in turns], accs, oracle, seeds) if with_df else None
+    s_base = sim_steps(turns, [p[0] for p in pb], [p[1] for p in pb], accs, oracle, seeds, perpos)
+    s_cand = sim_steps(turns, [p[0] for p in pc], [p[1] for p in pc], accs, oracle, seeds, perpos)
+    s_df = sim_steps(turns, [np.zeros(t["N"], bool) for t in turns], [np.zeros(t["N"], bool) for t in turns], accs, oracle, seeds, perpos) if with_df else None
     return s_base, s_cand, s_df, fit
 
 
@@ -212,6 +212,39 @@ def evaluate(turns, const, cal, hold, use_b, log):
         log(f"[{cal}->{hold}] {kind} gate={gcfg} cal_gain={best[1]:+.4f} hold fit/realistic={cell['fit|realistic']['gain_diluted']:+.4f} indep/oracle={cell['indep|oracle']['gain_diluted']:+.4f}")
     res["arms"] = out
     return res
+
+
+def bounds(turns, const, cal, hold, use_b, ak, primary):
+    """SECONDARY, added after the primary run (does not enter the verdict): per-position merge without the chain
+    restriction, loosest gate, and the best gate chosen ON THE HOLDOUT (deliberately optimistic upper bound)."""
+    T = [t for t in turns if t["group"] == hold and t["eligible"]]
+    Tc = [t for t in turns if t["group"] == cal and t["eligible"]]
+    C = [c for c in const if c["group"] == hold]
+    out = {}
+    kinds = (["b"] if use_b else []) + ["c", "cg"]
+    for kind in kinds:
+        cell = {}
+        chosen = primary["arms"][kind]["gate_chosen_on_cal"]
+        gl = {"loosest": (1, 0.0, 1), "chosen_on_cal": tuple(chosen)}
+        for gname, g in gl.items():
+            sp = ("b", g[0], g[1]) if kind == "b" else (kind,) + g
+            _, _, _, fitc = compare(Tc, [], [("a", ak)], [("a", ak), sp], "fit", False, with_df=False, perpos=True)
+            for scen in ("indep", "fit"):
+                for oracle in (False, True):
+                    sb, sc, _, _ = compare(T, C, [("a", ak)], [("a", ak), sp], scen, oracle, fit=fitc if scen == "fit" else None, with_df=False, perpos=True)
+                    cell[f"{gname}|{scen}|{'oracle' if oracle else 'realistic'}|perpos"] = gains(T, C, sb, sc)["gain_diluted"]
+        # best gate on the holdout itself, oracle gate, independence, per-position (upper bound)
+        best = None
+        grid = [(h, s, 1) for h in HMINS for s in SMINS] if kind == "b" else [(h, s, tm) for h in HMINS for s in SMINS for tm in TOTMINS]
+        for g in grid:
+            sp = ("b", g[0], g[1]) if kind == "b" else (kind,) + g
+            sb, sc, _, _ = compare(T, C, [("a", ak)], [("a", ak), sp], "indep", True, with_df=False, seeds=SEEDS[:8], perpos=True)
+            v = gains(T, C, sb, sc)["gain_diluted"]
+            if best is None or v > best[1]:
+                best = (g, v)
+        cell["holdout_best_gate_indep_oracle_perpos"] = {"gate": list(best[0]), "gain_diluted": best[1]}
+        out[kind] = cell
+    return out
 
 
 # ------------------------------------------------------------------ coverage tables
@@ -332,6 +365,8 @@ def main():
     v = {}
     for kind in (["b"] if use_b else []) + ["c"]:
         v[kind] = result["primary"]["arms"][kind]["fit|realistic"]["gain_diluted"]
+    result["secondary_bounds_C4"] = bounds(turns, const, CAL, HOLD, use_b, result["primary"]["a_k_chosen_on_cal"], result["primary"])
+    log("bounds " + json.dumps(result["secondary_bounds_C4"], default=str))
     result["verdict_inputs_fit_realistic_diluted"] = v
     result["verdict"] = "GO" if any(x >= 0.03 for x in v.values()) else "STOP"
     log(f"VERDICT {result['verdict']} {v}")
