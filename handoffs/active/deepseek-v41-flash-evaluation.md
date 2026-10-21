@@ -1387,11 +1387,34 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     so `test-backend-ops` has nothing to compare against. Use a served-shape MUL_MAT_ID MXFP4 case set (the
     `served_shape_cases.py` lane profile from the 1017 GGUF) against an f32-dequant reference, cap 5e-4.
     (derived 2026-10-21 from DS41-W5)
+    - *(2026-10-21, weight half DONE, no server; research `73aab47cc`, `data/ds41-1017-w5-20261021/w5a/`.)*
+      The 1017 experts are **natively MXFP4**. HF stores them as `I8` packed E2M1 with an `F8_E8M0` scale per 32.
+      In the GGUF, the E2M1 codes and E8M0 scales are **bit-identical** to the source on 4/4 checked expert matrices,
+      so NMSE = 0.0 by construction. Q8_0 non-experts vs their FP8 E4M3 source (32x32 E8M0 blocks) measure NMSE
+      2.92e-5 to 2.99e-5 on 4 tensors. F16 tensors vs F32 source measure about 4e-8.
+    - *(2026-10-21, kernel half: existing evidence VACUOUS.)* The AK served-shape calibration's MXFP4 NMSE = 0.0
+      proves nothing about the served path: `test-backend-ops` allocates plain CPU buffers, so it never runs the
+      `CPU_REPACK` `mxfp4_8x8_q8_0` GEMV that the 1017 server uses for every routed row, and both of its arms
+      execute the same generic kernel. A real-weight harness is built (`w5a/mxfp4_repack_nmse.cpp`). It compares
+      CPU_REPACK and plain-buffer MUL_MAT_ID against an f32 reference at n = 1 to 512, asserts that the weights
+      were repacked, and runs no server. It is armed as step W5A of the DS41-W6.2 slot driver, 2026-10-22T22:00Z.
+      Close this box when `w5a_kernel.jsonl` shows every case at or under 5e-4 with `repacked` true.
   - [ ] **DS41-W5b — raw-completion empty-EOS on article + question + `Answer:` prompts.** Both arms
     (Sept Q4 and 1017) emit EOS as the first token at 309-2041 prompt tokens. A question-first variant
     answers fine at 2030 tokens. Check whether this is a template/BOS effect (DS41-T3.3b) or model
     behaviour before using raw-completion prompts in any long-prompt gate. Rows:
     `data/ds41-1017-w5-20261021/raw/coh-1017-len.rows.jsonl`. (derived 2026-10-21 from DS41-W5)
+    - *(2026-10-21, static findings; research `73aab47cc`, `data/ds41-1017-w5-20261021/w5b/`.)*
+      - Ruled out: tokenization, double BOS, the chat template and the harness. llama.cpp ids equal HF
+        `tokenizer.json` (1017) on all 10 W5 prompts, there is a single BOS, `/completion` applies no template,
+        and `coherence.py` is plain greedy with no stop strings.
+      - The only token-level difference between failing and passing prompts: every failing prompt ends with the
+        merged token `?Ċ` before `Answer:`, while `q40`/`p220` end `.Ċ`/`.ĊĊ`. The failing prompts are also
+        wikitext-formatted and cut mid-word.
+      - `qfirst9000` passing does not clear the port: its answer is inside the last ~128 tokens.
+      - Decisive run armed: step W5B of the slot driver. One target-only server runs 20 probes with `n_probs`:
+        suffix, content and length-ladder variants, EOS-banned controls and a chat-rendered arm. The
+        reading table is in `w5b/README.md`.
 - [ ] DS41-W5b - **Run the DS41-1017 target-only baseline (24 A/A pairs, then champion vs candidate C) on the AK loop's `matched_process_v2` instrument.** Armed 2026-10-21: `/mnt/raid0/llm/tmp/ds41-1017-baseline-20261021/chained_launch.sh` (starts itself at 2026-10-22T06:30Z, then blocks on the region lock and takes q0-q3 plus gpu-quiet exclusive in one claim, runs a 9-shard page-cache warm-up, `calibrate` 24 pairs, `compare` 5 pairs; refuses unless `APPROVED` matches `gate_1017.py` and `PREDECLARED.md` and `SMOKE_OK` is newer than `APPROVED`). Recipe `ds41-1017-mxfp4-cpu-t48-targetonly` (template_hash `65f1c793...`, request digest `e50732d9...`, split-model digest `ba9f129c...`), predeclared counts N_AA=24 / N_CMP=5, effect = median(C)/median(champion)-1 judged against the instrument's floor. Done when `RUN_RECORD.json` exists with the floor file path (first DS41-1017 process-level floor, not comparable to the Sept 3.412%/4.533%) and the compare row. Retirement independence checked 2026-10-21: a guarded dry-run (stat/open/listdir/scandir/access/readlink/subprocess patched to raise, plus an audit hook) of `gate_1017.py --dry-run` and `calibrate` plan shows ZERO touches of the Sept Q4 or the DSpark drafter, so deleting them does not affect the run. (filed 2026-10-21)
   - 2026-10-21 smoke gate PASS (`SMOKE_OK` 12:37Z): champion `dd3d9721c` and candidate `f0c96dc1f` both load and serve the 1017 split GGUF with the exact recipe argv/env/port; frozen request x2 deterministic with 256 tokens; the two builds are token-identical; load 95-105 s; 16.8-17.2 tok/s (single run, no claim beyond load/coherence/determinism); text coherent. First sight of 1017 target-only decode speed on these builds; not a baseline.
   - 2026-10-21 (c2-regate) **candidate switched C -> C2** (`c-plus-nemotron-bolt-20261021` @ `49550eda5`, approved by main): arm now `chained_launch_c2.sh`, patched `gate_1017.py`/`PREDECLARED.md` re-approved; evidence `/mnt/raid0/llm/tmp/c2-regate-20261021/SMOKE_C2.json` (C2 loads 1017 via mmap, 2x256 tokens deterministic, coherent, 256/256 identical to the champion in the SAME config).
@@ -1414,6 +1437,20 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     DS41-W6.1 already exists below.) Partial result: n=2 pairs block 2, A−B −1.9 pp, CI [−4.2, −0.0]; n=1 block 3,
     −0.9 pp; research `37cc352cc`. Needs ≥3 more pairs, run one server at a time, plus a greedy identity pass.
     The Sept DSpark drafter is kept until then.
+    - *(2026-10-21, ARMED; research `73aab47cc` + `d0b392982`, `artifacts/ds41_w6_dspark_1017_20261021/w6.2/`.)*
+      - Driver: `/mnt/raid0/llm/tmp/ds41-w5ab-w62-20261021/driver.sh`, PID 1360538 (setsid group). It dies on a
+        host reboot and nothing re-arms it.
+      - Start gate: it waits for 2026-10-22T22:00Z AND a fresh `compute-flags/DS41_AK_FLOOR_ENDED`, then takes ONE
+        build claim on 0-47.
+      - Steps: W5A, then W5B, then pairs p3 A,B (+ full greedy pass), p4 B,A, p5 A,B, and p6 B,A if it fits.
+        Arms run sequentially at `-t 48`, seeds `1000p+234+i`.
+      - Every load passes a MemAvailable ≥ 400 GiB gate and a no-other-DS41-server gate. Every step is bounded
+        to the 2026-10-23T00:30Z hard stop.
+      - Timeline: `compute-flags/DS41_W62_TIMELINE.txt`. End flag: `compute-flags/DS41_W62_ENDED`.
+      - Dry run PASS.
+      - Post-run: `analyze_post.py --agent <id> --commit --push` (paired-t CI over all complete pairs, old plus
+        new; it reproduces W6.1 exactly on the old rows; greedy identity p3A vs p3B; it also writes the producer
+        belief rows).
 - [ ] DS41-W7 — **Cut over and retire the Sept artifacts.**
   - Update `epyc-inference-research/scripts/lib/deepseek_v41_flash_recipe.py`. The trunk is now a
     9-shard split, so `TRUNK_GGUF` becomes shard 1 plus a shard/sha256 list, following the
