@@ -40,6 +40,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from adapters._argv_scope import flag as _flag, scope_from_argv  # noqa: E402
 from claim_tuple import ClaimTuple, ProjectionError, register, to_frames  # noqa: E402
 
 SCHEMA = "epyc.kpf.run.v1"
@@ -53,8 +54,6 @@ KNOB_FAMILY = "slot_serving"
 VARIED_BY_ARM = {"fork_off": ["slot_fork"], "fork_on": ["slot_fork"], "fork_on_dflash2_off": ["dflash2"],
                  "champion": ["binary"]}
 _WINDOW = re.compile(r"^(?P<stem>.+)-(?P<arm>[AB])(?P<k>\d+)$")
-_QUANT = re.compile(r"-((?:UD-)?I?Q\d(?:_[A-Z0-9]+)*|BF16|F16)\.gguf$")
-_BUILD_SHA = re.compile(r"/kernels/builds/(?:cpu|gpu)-\d{8}-([0-9a-f]{7,40})/")
 REQUIRED = ("run_id", "arm", "binary_sha256", "prompt_set_sha256", "window_id", "end_utc", "host", "argv",
             "equivalence", "rows", "rows_sha256", "record_sha256", "category")
 EXT_KEYS = ("checkpoint_set", "hit_components", "hit_length_min", "hit_tokens", "tokens_lost_to_missing_checkpoint",
@@ -100,82 +99,14 @@ def _rows_present(row: dict, sidecar: Path) -> bool:
     return h.hexdigest() == row["rows_sha256"]
 
 
-def _flag(argv: list, *names: str) -> str | None:
-    """The value after the LAST occurrence of any of ``names``; None when absent or valueless."""
-    found = None
-    for i, tok in enumerate(argv[:-1]):
-        if tok in names and isinstance(argv[i + 1], str) and not argv[i + 1].startswith("--"):
-            found = argv[i + 1]
-    return found
-
-
-def _has(argv: list, *names: str) -> bool:
-    return any(tok in names for tok in argv)
-
-
-def _int(text: str | None) -> int | None:
-    try:
-        return int(text) if text is not None else None
-    except ValueError:
-        return None
-
-
 def _applicability(row: dict) -> dict:
-    """The scope this record states about itself (argv + readback), never a guess.
-
-    Read from ``row["argv"]``, which the runner proved is the launched process's own cmdline
-    (``argv_readback.proc_cmdline_matches_argv``): a record whose readback says otherwise declares
-    NO scope. ``device`` is deliberately absent (see module docstring).
-    """
-    argv = row.get("argv")
-    if not isinstance(argv, list) or not all(isinstance(t, str) for t in argv):
-        return {}
+    """The scope this record states about itself (argv + readback); see ``_argv_scope``."""
     readback = row.get("argv_readback")
-    if isinstance(readback, dict) and readback.get("proc_cmdline_matches_argv") is False:
-        return {}
-    scope: dict = {"scope_basis": "native"}
-    model = _flag(argv, "-m", "--model")
-    if not model:
-        return {}
-    scope["model_file"] = model
-    quant = _QUANT.search(Path(model).name)
-    if quant:
-        scope["quant"] = quant.group(1)
-    device = _flag(argv, "--device")
-    if device == "none":
-        scope["backend"] = "cpu"
-    elif device and device.startswith("ROCm"):
-        scope["backend"] = "gpu"
-    np_ = _int(_flag(argv, "-np", "--parallel"))
-    if np_ and np_ > 0:
-        scope["np"] = np_
-    binary = row.get("binary_realpath") or row.get("binary")
-    if isinstance(binary, str) and binary and row.get("binary_sha256"):
-        scope["kernel"] = {"build_path": binary, "execution_digest": row["binary_sha256"]}
-        build = _BUILD_SHA.search(binary)
-        if build:
-            scope["build_sha"] = build.group(1)
-    scope["knob_family"] = KNOB_FAMILY
-    knobs: dict = {}
-    for name, flags in (("np", ("-np", "--parallel")), ("ctx", ("-c", "--ctx-size")),
-                        ("b", ("-b", "--batch-size")), ("ub", ("-ub", "--ubatch-size")),
-                        ("cache_type_k", ("-ctk", "--cache-type-k")), ("cache_type_v", ("-ctv", "--cache-type-v")),
-                        ("flash_attn", ("--flash-attn", "-fa")), ("cache_ram_mib", ("--cache-ram",)),
-                        ("spec_type", ("--spec-type",)), ("spec_draft_n_max", ("--spec-draft-n-max",))):
-        value = _flag(argv, *flags)
-        if value is not None:
-            knobs[name] = _int(value) if value.lstrip("-").isdigit() else value
-    for name, flag in (("kv_unified", "--kv-unified"), ("no_cache_idle_slots", "--no-cache-idle-slots")):
-        if _has(argv, flag):
-            knobs[name] = True
-    if isinstance(row.get("dflash2"), bool):
-        knobs["dflash2"] = row["dflash2"]
-    if knobs:
-        scope["knobs"] = knobs
-    varied = VARIED_BY_ARM.get(row.get("arm"))
-    if varied:
-        scope["varied"] = list(varied)
-    return scope
+    return scope_from_argv(
+        row.get("argv"), binary=row.get("binary_realpath") or row.get("binary"),
+        binary_sha256=row.get("binary_sha256"), family=KNOB_FAMILY,
+        varied=VARIED_BY_ARM.get(row.get("arm")), dflash2=row.get("dflash2"),
+        readback_ok=not (isinstance(readback, dict) and readback.get("proc_cmdline_matches_argv") is False))
 
 
 def _children(row: dict) -> list[float]:
