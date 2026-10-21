@@ -35,16 +35,17 @@ without an attempt id is never projected (no identity, no claim).
 
 SCOPE. `applicability.scope_basis` says where the model/backend scope came from: `native` when the
 row's own `research_scope` names the model, else `store_manifest` (the producer contract pins the
-whole store's scope; see `build_store_manifest`). Never mixed, never inferred from a path or a date.
+whole store's scope, read through `_ak_store_manifest.resolve`). Never mixed, never inferred from a path or a date.
 
 DEDUP JOIN. A row whose comparison carries a serving `belief_capture` has a serving claim
 `legacy-serving-v2:<capture_id>` (lane B). The join key is `comparison.belief_capture.capture_id`;
 `belief_receipt_id` on these rows is the planner-evidence receipt, a different object (it appears
-on refusal rows that never measured anything), so it is carried for provenance only. The
-experiment claim keeps statement, falsifier and outcome and links the serving claim by id in
-`extra["serving_claim_id"]` and a short claim-text pointer. It does NOT drop its own numbers: the
-projection must be a pure function of the row, because a projection that depended on what the
-ledger already holds would emit different frames for the same attempt on re-run.
+on refusal rows that never measured anything), so it is carried in `extra` for provenance only.
+The experiment claim links the serving claim by id in `observation.serving_claim_id` and keeps its
+statement, falsifier, outcome AND its own numbers. It does not drop the numbers: the projection
+must be a pure function of the row, because a projection that depended on what the ledger already
+holds would emit different frames for the same attempt on re-run. De-duplicating the PRESENTATION
+(one value-bearing line per capture) is the reader's job, through that id.
 
 RETROFIT. `observation.retrofit` is True for every row with no top-level `belief_capture` in its
 payload, i.e. every row written before the producer hook (Phase 2) exists.
@@ -65,6 +66,7 @@ from pathlib import Path
 from statistics import median
 from typing import Any, Iterable, Mapping
 
+from adapters import _ak_store_manifest as store_scope
 from claim_tuple import ClaimTuple, ProjectionError
 
 ADAPTER_ID = "vidya.adapters.autokernel_experiments/v1"
@@ -112,6 +114,7 @@ _COLUMNS = ("attempt_id", "recorded_at", "campaign_id", "deployment", "epoch_sha
             "falsifier", "status", "effect_fraction", "exact_effect", "target_effect",
             "refusal_reason", "result_sha256", "spawn_parent", "branch_id", "width", "depth")
 _HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+_GIT_SHA = re.compile(r"[0-9a-f]{7,64}\Z")
 _ATTEMPT = re.compile(r"[^\s\x00-\x1f\x7f]{1,200}\Z")
 _OP_FAILED = re.compile(r"^([A-Z][A-Z0-9_]{2,})\s+failed\b")
 _SERVING_SURFACE = re.compile(r"^serving:(?P<recipe>\S+)$")
@@ -123,48 +126,21 @@ PROPOSITION_MAX = 1000
 
 # ============================================================================== carrier seam
 #
-# THE ONE PLACE a ClaimTuple is constructed. Lane A adds `ClaimTuple.observation` and the new
-# applicability keys (DESIGN §4.1/§4.2) on a separate branch. Until that lands this module still
-# runs: the observation rides in `extra["observation"]` and the keys the old validator rejects
-# ride in `extra["applicability_full"]`. After the integration rebase `CARRIER_READY` is True and
-# the fallback branch below is dead code to delete; nothing else in this file changes.
-
-
-def _carrier_ready() -> bool:
-    if "observation" not in {f.name for f in dataclasses.fields(ClaimTuple)}:
-        return False
-    try:
-        ClaimTuple(measurement_id="probe", metric="m", value=0, date="", category="CANDIDATE",
-                   claim="probe", applicability={"scope_basis": "native", "np": 1})
-    except ProjectionError:
-        return False
-    return True
-
-
-CARRIER_READY = _carrier_ready()
-_LEGACY_APPLICABILITY = frozenset({"model_file", "quant", "backend", "device", "context_tokens",
-                                   "kernel", "run_id", "run_expected_keys"})
+# THE ONE PLACE a ClaimTuple is constructed (`ClaimTuple.observation` and the loop-belief
+# applicability keys come from lane A's carrier, `claim_tuple.py`).
 
 
 def _make_tuple(fields: dict, applicability: dict, observation: dict) -> ClaimTuple:
     """Build the ClaimTuple. `fields` are ClaimTuple constructor kwargs except the two below."""
-    if CARRIER_READY:
-        return ClaimTuple(**fields, applicability=applicability, observation=observation)
-    extra = dict(fields.get("extra") or {})
-    extra["observation"] = observation
-    extra["applicability_full"] = dict(applicability)
-    legacy = {key: value for key, value in applicability.items() if key in _LEGACY_APPLICABILITY}
-    return ClaimTuple(**{**fields, "extra": extra}, applicability=legacy)
+    return ClaimTuple(**fields, applicability=applicability, observation=observation)
 
 
 def observation_of(tup: ClaimTuple) -> dict:
-    """The observation of a projected tuple, on either side of the carrier integration."""
-    return dict(getattr(tup, "observation", None) or tup.extra.get("observation") or {})
+    return dict(tup.observation)
 
 
 def applicability_of(tup: ClaimTuple) -> dict:
-    """The full applicability of a projected tuple, on either side of the carrier integration."""
-    return dict(tup.extra.get("applicability_full") or tup.applicability)
+    return dict(tup.applicability)
 
 
 # ============================================================================== small helpers
@@ -270,84 +246,57 @@ def _store_digest16(store_manifest: Mapping[str, Any]) -> str:
     digest = store_manifest.get("store_digest")
     if isinstance(digest, str) and _HEX64.fullmatch(digest):
         return digest[:16]
-    path = store_manifest.get("store_path")
+    path = store_manifest.get("store")
     if isinstance(path, str) and path.strip():
         return hashlib.sha256(path.encode()).hexdigest()[:16]
-    raise ProjectionError("store_manifest needs store_digest (64 hex) or store_path")
+    raise ProjectionError("store_manifest needs store_digest (64 hex) or store (the resolved path)")
 
 
-def _native_scope(payload: Mapping[str, Any], comparison: Mapping[str, Any]) -> dict:
-    """The row's own `research_scope`, as applicability keys; {} when it names no model."""
-    scope = payload.get("research_scope")
-    if not isinstance(scope, Mapping):
-        return {}
-    model = scope.get("model")
-    path = model.get("path") if isinstance(model, Mapping) else model
-    if not _text(path):
-        return {}
-    out = {"model_file": _text(path)}
-    sha = model.get("sha256") if isinstance(model, Mapping) else None
-    if isinstance(sha, str) and _HEX64.fullmatch(sha.lower()):
-        out["model_sha256"] = sha.lower()
-    for key in ("quant", "backend"):
-        if _text(scope.get(key)):
-            out[key] = _text(scope[key])
-    match = _SERVING_SURFACE.match(_text(scope.get("measurement_surface")))
-    if match:
-        out["recipe"] = match.group("recipe")
-    return out
+def _native_scope(payload: Mapping[str, Any]) -> dict:
+    """The row's own `research_scope` as applicability keys; {} when it names no model."""
+    return store_scope.row_scope(payload.get("research_scope"))
 
 
 def _manifest_scope(store_manifest: Mapping[str, Any]) -> dict:
-    if not _text(store_manifest.get("model_file")):
+    """What the store's manifest may say about a row that states no scope of its own.
+
+    The manifest is `_ak_store_manifest.resolve(store)`. A loop-status manifest pins the model
+    and backend of the store's TARGET, not the recipe each row ran (a loop can move between
+    recipes), so its `recipe` is not applied to a row; the row-scope strategy's recipe is the one
+    every measured row of the store shares, and is.
+    """
+    pinned = store_manifest.get("scope")
+    if not isinstance(pinned, Mapping) or not _text(pinned.get("model_file")):
         return {}
     out = {}
     for key in ("model_file", "model_sha256", "quant", "backend", "device", "recipe"):
-        if _text(store_manifest.get(key)):
-            out[key] = _text(store_manifest[key])
-    if type(store_manifest.get("np")) is int and store_manifest["np"] > 0:
-        out["np"] = store_manifest["np"]
+        if _text(pinned.get(key)):
+            out[key] = _text(pinned[key])
+    if store_manifest.get("strategy") != "row_scope":
+        out.pop("recipe", None)
+    if type(pinned.get("np")) is int and pinned["np"] > 0:
+        out["np"] = pinned["np"]
     return out
 
 
 def build_store_manifest(store_dir: Path, *, label: str | None = None,
                          overrides: Mapping[str, Any] | None = None) -> dict:
-    """The store identity plus, when the store pins one, its scope.
+    """`_ak_store_manifest.resolve(store)` (both strategies live there) plus optional label/overrides.
 
-    `store_path` (resolved) names the store; its sha256 is the `store-digest16` of every id.
-    The scope is the ONE native `research_scope` shared by every measured row that has one
-    (bounded read: a few payloads). A store whose measured rows disagree, or carry none, gets NO
-    manifest scope: unscoped is honest, a guessed scope is not. `overrides` (e.g. a reviewed
-    campaign-manifest extract) wins key by key.
+    `overrides` wins key by key and may carry `scope` keys directly (`model_file`, `backend`...);
+    they are merged into `manifest["scope"]`.
     """
-    store = Path(store_dir)
-    manifest: dict[str, Any] = {"store_path": str(store.resolve()), "scope_derivation": "none"}
-    scopes: set[str] = set()
-    conn = _connect(store)
-    try:
-        marks = ",".join("?" for _ in ("kept", "keep_candidate", "measured_null", "regression"))
-        cursor = conn.execute(
-            f"SELECT payload FROM experiments WHERE status IN ({marks}) "
-            "AND payload LIKE '%\"research_scope\"%' ORDER BY rowid LIMIT 8",
-            ("kept", "keep_candidate", "measured_null", "regression"))
-        for (raw,) in cursor:
-            try:
-                payload = json.loads(raw)
-            except ValueError:
-                continue
-            scope = _native_scope(payload, {}) if isinstance(payload, dict) else {}
-            if scope:
-                scopes.add(json.dumps(scope, sort_keys=True))
-    finally:
-        conn.close()
-    if len(scopes) == 1:
-        manifest.update(json.loads(next(iter(scopes))))
-        manifest["scope_derivation"] = "uniform native research_scope of the store's measured rows"
-    elif len(scopes) > 1:
-        manifest["scope_derivation"] = "none: the store's measured rows name different scopes"
+    manifest = store_scope.resolve(store_dir)
+    manifest["scope"] = dict(manifest.get("scope") or {})
     if label:
         manifest["label"] = label
-    manifest.update({k: v for k, v in (overrides or {}).items() if v not in (None, "")})
+    for key, value in (overrides or {}).items():
+        if value in (None, ""):
+            continue
+        if key in ("model_file", "model_sha256", "quant", "backend", "device", "recipe", "np"):
+            manifest["scope"][key] = value
+        else:
+            manifest[key] = value
     return manifest
 
 
@@ -488,7 +437,7 @@ def _is_retrofit(payload: Mapping[str, Any]) -> bool:
 def _applicability(row: Mapping[str, Any], payload: Mapping[str, Any],
                    comparison: Mapping[str, Any], store_manifest: Mapping[str, Any],
                    op: str) -> dict:
-    native = _native_scope(payload, comparison)
+    native = _native_scope(payload)
     if native:
         scope, basis = native, "native"
     else:
@@ -502,6 +451,8 @@ def _applicability(row: Mapping[str, Any], payload: Mapping[str, Any],
     elif "np" not in out and type(payload.get("np")) is int and payload["np"] > 0:
         out["np"] = payload["np"]
     build = _text(row.get("spawn_parent")) or _text(payload.get("champion_head"))
+    if not _GIT_SHA.fullmatch(build):
+        build = ""  # `applicability.build_sha` is a git sha or absent; never a branch label
     for key, value in (("build_sha", build), ("epoch", _text(row.get("epoch_sha256"))),
                        ("surface", _text(row.get("target_surface"))),
                        ("symbol", _text(row.get("target_symbol"))), ("op", op)):
@@ -599,8 +550,6 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
             None if numbers["pairs"] is None else f"{numbers['pairs']} pairs") if part]
         claim = f"{label}: {what}{where}: {measured}" + (f" ({', '.join(detail)})" if detail else "")
     claim = f"{claim} — producer verdict {status.upper()}"
-    if serving:
-        claim += f" [serving claim {serving.removeprefix(SERVING_V2_PREFIX)[:16]}]"
 
     observation: dict[str, Any] = {"outcome": outcome, "outcome_native": status,
                                    "retrofit": _is_retrofit(payload)}
@@ -613,6 +562,8 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
         observation["decisive"] = numbers["decisive"]
     if numbers["pairs"] is not None:
         observation["n_pairs"] = numbers["pairs"]
+    if serving:
+        observation["serving_claim_id"] = serving
     if reason:
         observation["outcome_reason"] = reason
     if mechanism_id:
@@ -631,7 +582,7 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
         reps_basis="" if disposition == "verifier" or numbers["pairs"] is None else (
             "scored:matched process pairs" if matched else "scored:paired A/B pairs"),
         source_kind=SOURCE_KIND,
-        attestation_locator=(f"autokernel-experiments:{store_manifest.get('store_path', '')}"
+        attestation_locator=(f"autokernel-experiments:{store_manifest.get('store', '')}"
                              f"/experiments.db#attempt={row['attempt_id']}"),
         attestation_sha256=_row_digest(row), attestation_present=True,
         extra={"attempt_id": row["attempt_id"], "store_digest16": _store_digest16(store_manifest),
@@ -679,7 +630,7 @@ def ingest(stores: Iterable[Path], *, as_of: str | None = None,
         "schema": REPORT_SCHEMA, "dry_run": ledger_path is None, "stores": [], "rows_read": 0,
         "by_status": {}, "projected": 0, "by_disposition": {}, "not_projected": {},
         "by_scope_basis": {}, "by_outcome": {}, "retrofit": 0, "projection_errors": [],
-        "frames": 0, "carrier_ready": CARRIER_READY}
+        "frames": 0}
     incoming: list[dict] = []
 
     def bump(table: dict, key: str) -> None:
@@ -691,7 +642,7 @@ def ingest(stores: Iterable[Path], *, as_of: str | None = None,
         report["stores"].append({"store": str(store), "store_digest16": _store_digest16(manifest),
                                  "rows": len(rows),
                                  "max_rowid": rows[-1]["rowid"] if rows else since_rowid,
-                                 "scope_derivation": manifest.get("scope_derivation")})
+                                 "scope_strategy": manifest.get("strategy")})
         for row in rows:
             report["rows_read"] += 1
             bump(report["by_status"], str(row.get("status")))
@@ -731,6 +682,6 @@ def ingest(stores: Iterable[Path], *, as_of: str | None = None,
     return report
 
 
-__all__ = ["ADAPTER_ID", "CARRIER_READY", "applicability_of", "build_store_manifest",
+__all__ = ["ADAPTER_ID", "applicability_of", "build_store_manifest",
            "check_ledger_target", "classify", "ingest", "measurement_id", "native_rows",
            "observation_of", "project", "serving_claim_id"]
