@@ -63,7 +63,7 @@ Not run: DS41 DSpark identity. It is structural only: graph_dsv4/dsv41 are untou
 
 **Current champion (2026-10-20): `dd3d9721c`** on `ak/champion/llama-cpp-ffc1bac82eec` — the "slotdraft" fold below, on top of `e33229348` (AutoKernel keeps of 2026-10-06/08 had advanced it past the ledgered `b0ba1d427`). Builds: `kernels/builds/cpu-20261020-dd3d9721c`, `kernels/builds/gpu-20261020-dd3d9721c`. The paragraph below describes the 2026-10-04 state. Branches cut from `e33229348` (e.g. the pending EmbeddingGemma 2 fold above) rebase onto `dd3d9721c`.
 
-**The champion is `b0ba1d427` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 four times:
+**As of 2026-10-04 the champion was `b0ba1d427` on `ak/champion/llama-cpp-ffc1bac82eec` (since advanced; the ref now points at `dd3d9721c`, per the line above)** (v10 lineage; advanced 2026-10-04 four times:
 KVU-19 `90c12df42` → `1bceceb05`; all-keeps `1bceceb05` → `61bdb185c`; CPU FA overflow `61bdb185c` → `9a3f1392a`; W
 `9a3f1392a` → `b0ba1d427`; see the fold ledger entries below). This is the GLOBAL champion branch. Builds:
 `kernels/builds/cpu-20261004-b0ba1d427` and `kernels/builds/gpu-20261004-b0ba1d427` (10332).
