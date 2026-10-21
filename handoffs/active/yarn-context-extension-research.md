@@ -321,6 +321,29 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   - **LongRoPE.** No production GGUF ships the factor tensors.
   - **NTK base raising.** θ is already 1e7, and YaRN supersedes it.
 
+### YARN-AGG-1 / YARN-JUDGE-1 spec (2026-10-21, lane dpf-sample-yarn-yarn)
+
+Code: research repo `scripts/benchmark/yarn_gate/` (lane branch `lane/dpf-sample-yarn-yarn-epyc-inference-research-20261021`). Everything below was built and tested with an in-process fake endpoint; no model was called and no data was fetched.
+
+**Comparisons.** A0 vs A1 (GPU 27B) and CN vs CY2 (CPU 35B-A3B hybrid), each at native lengths and beyond. Greedy, thinking off, same item ids in both arms (paired).
+
+**Arms and pins**
+
+| Arm | Cells | Pins and records |
+|---|---|---|
+| Oolong-synth (config and aggregation on top of the OOL-1 adapter `scripts/benchmark/oolong_adapter.py`; the adapter is not duplicated) | counting and user; REAL-token targets 128K, 240K (native) and 400K, 500K (beyond) | `oolongbench/oolong-synth@81d2f8d9349f6ff329d695f9be494051e9f05cb9`; upstream scorer `abertsch72/oolong@0bb7eabe8` (vendored unmodified); labelled column never used. Per bin: mean score with context-clustered CI, attempted rate, no-answer rate, failure classes. |
+| Oolong control | HoloBench info_amount (constant relevant amount) | Restrict to the `num_labels` value(s) present at every real-length bin; report score by length inside that band. A drop at 400K is attributed to length only if it persists inside the band. An empty common band means the control is UNAVAILABLE and the drop is not attributed. |
+| HELMET recall and RAG | `ruler_niah_mk_2`, `ruler_niah_mk_3`, `ruler_niah_mv`, `json_kv`, `nq`, `hotpotqa` at 128K and 240K, `--endpoint_url http://localhost:8080/v1/` | repo `princeton-nlp/HELMET@aeadacc6593e9a222a84b0660b186a4e23d2efda`; record the config file (path and sha256), `max_test_samples`, pin; paper numbers are non-comparable. HELMET configs stop at 128K, so the 240K config is a local copy recorded by sha and must be validated against the pinned checkout before the first run. |
+| LongBioBench | standard, multi_standard (5 and 10 retrievals), paraphrase; exact match | generator `dc6f6ed1aab5dd072f0837f3160a45beb4df8dbe`; served-model tokenizer for sizing; a coherent haystack, not the neutral one. The generator output schema was not inspected offline; the runner expects JSONL rows `{id, prompt or context, question, answer, variant}` and the window runner adapts the generator to it. |
+
+**Binning rule.** Nominal lengths come from a GPT-4-tokenizer sizing and are never used to label a cell. Every context is re-tokenized with the served tokenizer (`POST /tokenize`) or its real size is read from the server timings (`prompt_n + cache_n`); that real count is recorded, binned in 32,768-token bins, and is the only input to the zone label. With N = 262,144 (`--yarn-orig-ctx`) and 4,096 tokens reserved for question and answer: native means real + 4,096 <= N; beyond-native means real > N; anything in between is `boundary` and counts as neither. `label_zone` raises on any non-measured source. A cell whose real median differs from its nominal target by more than 10% is flagged `nominal_mismatch`. The dataset ships power-of-two nominal buckets, so 240K, 400K and 500K buckets probably do not exist for Oolong; a target zone that no bucket lands in is reported NOT CONSTRUCTIBLE and is never relabelled from the nominal length.
+
+**Pre-declared margin (declared before any run; the operator may amend it only before the first run).** Inside the native window A1 must not fall below A0 by more than 0.10 absolute score per cell and per bin, tested with a paired, context-clustered bootstrap of A1 - A0: PASS iff the 95% lower bound is >= -0.10; FAIL iff the point estimate is < -0.10; otherwise INCONCLUSIVE, which is never reported as a pass. Needle cells keep their E1 rule (A1 >= A0 - 1 of 10). Expect INCONCLUSIVE often on Oolong: about 16 distinct contexts per length limits the clustered CI.
+
+**Judge (YARN-JUDGE-1).** The judge is served locally on `localhost:{port}/v1` (OpenAI wire format; a non-localhost endpoint is refused). Model id, prompt version and sha256, temperature 0, seed 0 and max_tokens ride in the claim tuple fields; the client refuses to run while `YARN_TIMING_WINDOW_ACTIVE=1`; an unparsed reply is listed under `unjudged` and never scored 0. Validation on about 50 hand-labelled items: `judge_validation_kit.py select | sheet | judge | agree | pin` (a blind sheet, accuracy, Cohen kappa, Wilson interval, a pin record).
+
+**Ready for a window (not run).** `run_local_judge_window.sh` (needs `WINDOW_CONFIRMED=1`, a served judge, a filled labelling sheet; also scores one HELMET cell if `HELMET_CELL` is given). Operator-visible fetch step: `fetch_oolong_subset.py --list-lengths` then `--fetch` (needs `OPERATOR_FETCH_CONFIRMED=1`; reads only the wanted row groups and never the labelled column; not run). Open before the fetch: which nominal buckets exist. Open before the first HELMET cell: the real HELMET result schema (`--selfcheck-schema` checks it).
+
 ## Completed Scope
 
 - The superseded 2026-03-09 to 2026-09-07 scope (YaRN primer, flag table, key questions, references, the 2026-03-24, 04-18 and 05-20 intake updates, stale progress checklist) moved 2026-10-06 to [the archived history](../archived/yarn-context-extension-research-history-through-2026-10-06.md). The Tulving benchmark gate now lives with `episodic-memory-integrity.md` M-12 (rescoped 2026-09-07; 200ch/100K split, fixed tau).
