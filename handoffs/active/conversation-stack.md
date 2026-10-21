@@ -59,7 +59,7 @@ The interlocutor and the orchestrator split the work like this.
 | D1 | **The interlocutor is chosen by a bake-off.** Step-Audio 2 mini is the lead and Qwen3-Omni-30B-A3B the challenger. Today's whisper+qwentts cascade is the baseline. The controller is model-agnostic, so the winner is a backend, not an architecture. |
 | D1a | Quantizing the Qwen3-Omni Thinker to about Q4 is acceptable. The intelligence ceiling comes from the orchestrator, not the interlocutor. |
 | D2 | **Languages.** English is mandatory. Italian is strongly wanted, and en+it is acceptable. German and French are desirable. Language is the **first** bake-off gate. |
-| D3 | **Placement is decided by measurement.** PyTorch serves as a *measurement-only* reference. The operator leans towards the GPU. The decisive numbers are (a) CPU-LLM throughput after a core partition and (b) whether one MI210 can serve LLM and speech requests concurrently without either side missing its target. |
+| D3 | **Placement is decided by measurement.** PyTorch serves as a *measurement-only* reference. The operator leans towards the GPU. The decisive number is whether speech (cascade, then interlocutor) can co-reside on card 2 with 35B-A3B (the documented lean), or on card 1 with the 27B if VRAM allows, without either side missing its target. CPU speech placement is retained only as the CS-26 degraded fallback. (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2). |
 | D4 | **The production runtime is our own llama.cpp-family port**, built on an experimental tree and promoted as a new kernel version. vLLM and PyTorch are measurement instruments only, per the standing rule in `wiki/inference-serving.md` ("vLLM is a measurement instrument, not a second deployment engine"). |
 | D5 | **Routing.** The controller sends every *substantive* turn to the orchestrator. Local answers are limited to social, backchannel and interaction-control turns. The operator will reassess model-decided routing once routing accuracy has been measured. |
 | D6 | **A dedicated voice-turn contract** in the orchestrator: real token streaming, a session-keyed conversation store, a spoken-form answer plus an optional display payload with preserve/verbatim fields, and a voice routing policy. It should be whatever is simplest to implement that meets this. |
@@ -69,6 +69,8 @@ The interlocutor and the orchestrator split the work like this.
 | D10 | **A custom or cloned persona voice is nice to have, not mandatory.** It is a tie-break criterion in the bake-off. Any cloning obeys the default-deny guardrail carried below. |
 | D11 | **Latency hiding is a ladder, cheapest rung first:** native preamble, then streamed answer, then untrained mid-generation injection. KAME-style training of the front-end is a **gated research track**. |
 | D12 | **This handoff is the one home for speech.** It is the conversation-stack handoff that KVU-11 anticipated, and it absorbs the open speech items from `multimodal-pipeline.md`. |
+
+- [ ] **OD-A — confirm speech host card.** Default card 2 beside 35B-A3B, gated on CS-9 numbers; CS-26 cascade fallback kept. Operator confirms at CS-9 readout. (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2)
 
 ## Accumulated insights — 2026-10-20 (for Phase 2 / D1 when the second MI210 is installed)
 
@@ -231,7 +233,7 @@ Plain bullets, deliberately not checkboxes: the tasks they point to own the chec
     - semantic fidelity and exact-value retention after revoicing (judged; SC58 frame rules apply)
     - a language gate (round-trip WER through the frozen STT oracle, plus a human intelligibility check for it/de/fr)
     - co-residency slowdown of the co-tenant LLM
-  - fix the stale MI210 premise at speech.md:69-71 (production speech is on CPU since OP-56) and define CPU placement proof and co-tenant state as part of the measurand;
+  - fix the stale MI210 premise at speech.md:69-71 (production speech is on CPU since OP-56) and define device-keyed placement proof (`HIP_VISIBLE_DEVICES`, ggml linkage, VRAM sampled during the run, KFD PID count), with co-tenant state as part of the measurand (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2);
   - issue a superseding receipt for the 2.35% → 3.37% whisper WER defect (speech.md:147-154);
   - fix the MEASUREMENT.md:71/:72 index inconsistencies.
 
@@ -271,7 +273,7 @@ Plain bullets, deliberately not checkboxes: the tasks they point to own the chec
   - **G4 serving:** TTFA, RTF, VRAM and repetition/corruption rate on the MI210 at BF16, plus a quantized proxy.
 
   Tie-break: voice identity (D10). Deliver a winner recommendation with the numbers to the operator through the master decision queue. If both candidates fail G1 or G3, the recommendation says so. Kimi-Audio (12.5 Hz, 19 GB detokenizer) is not in the bake-off; it re-enters only if both candidates fail.
-- [ ] **CS-9 — measure GPU co-residency and CU partitioning on the second MI210.** This is the D3 decision input. Run 35B-A3B as a test tenant at np {1, 4, 16} decoding at the same time as (a) the cascade and (b) each candidate interlocutor. Record both sides at p95: LLM tok/s per slot, speech TTFA and RTF.
+- [ ] **CS-9 — measure GPU co-residency and CU partitioning for speech placement. (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2)** This is the D3 decision input. Arms: (A) card 2 with 35B-A3B at np {1, 4, 16}; (B) card 1 with the 27B np4 and VL-30B, only if VRAM permits. For each arm, run the cascade and each candidate interlocutor concurrently. Record p95 LLM tok/s per slot plus speech TTFA/RTF. There is no CPU arm.
   - Then test soft partitioning: ROCm per-queue **CU masking** (`HSA_CU_MASK`, `hipExtStreamCreateWithCUMask`). First establish whether it works on gfx90a at all. **Established 2026-10-21 (queue row 7, `artifacts/speech-queue-20261021/result.txt`): it works on gfx90a; a disjoint mask isolates a 25% stream from a 75% one and unmasked interference is +31% on synthetic kernels, so LLM + STT/TTS co-residency on ONE MI210 is feasible to test with real tenants.** If it does, measure whether a speech CU reservation protects speech latency, and what it costs the LLM. MI210 has no hard compute partitioning, unlike MI300.
   - Also record real VRAM per co-tenant, replacing the estimates in *Facts*.
 - [ ] **CS-10 — probe latency hiding on the stock models (no training), on the reference harness.**
@@ -287,7 +289,7 @@ Plain bullets, deliberately not checkboxes: the tasks they point to own the chec
 - [ ] **CS-12 — prepare the stack-change package that puts the cascade (whisper + qwentts) on the second MI210 beside 35B-A3B.** It uses the `stack-change` skill and one operator signature, and is coordinated with whichever package commissions 35B-A3B there.
   - Carry the standing rule from multimodal S-11a: **re-cut the capacity-gate speech-VRAM fold (whisper 2.06 + tts 2.62 GiB) and key the reservation on the service's device before speech returns to any GPU.** The reference patch is `artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch`, on orch branch `noninf/inf41-speech`.
   - Give each service its own `HIP_VISIBLE_DEVICES` and prove ggml linkage plus the engine's device line (Annex S).
-  - Acceptance, carried from KVU-11b: re-run the live-contention harness with a CPU LLM generating, and require **STT RTF < 0.5 and TTS first packet < 1 s**. Record the 35B-A3B slowdown from CS-9.
+  - Acceptance, carried from KVU-11b (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2): re-run the live-contention harness with 35B-A3B generating on the same card AND with the CPU :8074 (Flash-Next) generating, and require **STT RTF < 0.5 and TTS first packet < 1 s**. Record the 35B-A3B slowdown from CS-9.
   - Landing this resolves the CPU speech collapse that led the operator to choose option D.
   - In the same package, fix the stale speech descriptions:
     - the registry `description` strings still say "HIP/gfx90a, MI210" for CPU services (research `orchestration/model_registry.yaml:2068,2163`, mirrored in orch `model_registry_full.yaml`);
@@ -394,7 +396,7 @@ Kernel rules apply throughout: work on an experimental branch pulled fresh from 
 
 ### Phase 6: the interlocutor in service
 
-- [ ] **CS-35 — prepare the stack-change package that makes the interlocutor resident** at the placement CS-9/CS-11 selected (the operator leans towards the second MI210). It includes:
+- [ ] **CS-35 — prepare the stack-change package that makes the interlocutor resident** at the placement CS-9 selected (default card 2, operator lean) (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2). It includes:
   - a capacity-gate reservation keyed on device;
   - health probes;
   - an automatic fallback to the cascade (CS-26);
@@ -444,7 +446,7 @@ No boxes until the operator opens this. Recorded constraints for when it opens:
   S-16 and S-17 (vision and GPU budget) stay in INF-41. S-17's rule, "do not add a fifth resident model before the budget audit", applies to card 1. CS-9/CS-12 do that audit for the second card.
 - From `kv-unified-stack-rollout.md` (RTG-57):
   - KVU-11's requirement "voice turns reason on :8083" becomes CS-17's default.
-  - KVU-11b's measurements and acceptance become CS-12 and CS-11.
+  - KVU-11b's measurements and acceptance become CS-12 and CS-9 (CS-11 declined 2026-10-21).
   - KVU-11c (qwentts thread flag) **stays in RTG-57**, because it matters only for a CPU speech path.
 
 - [ ] **CS-43 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as hygiene. Moved 2026-09-24 from `multimodal-pipeline.md` S-14. It is operator-sanctioned and does not depend on our kernel cycle.
@@ -487,7 +489,7 @@ CS-24 -> CS-41
 - **Kimi-Audio.** It is outside the bake-off (D1) and re-enters only if both candidates fail G1 or G3.
 - **An "emotionally annotated transcript" cascade.** Rejected as the target architecture in the operator draft §2. The cascade here is only a fallback.
 - **Transplanting a stronger LLM into the interlocutor backbone.** Rejected in draft §19.
-- **Partitioning the CPU LLM roles or a decode throttle as standalone work.** Superseded by this plan (KVU-11b, option D). CS-11 measures the partition only as a D3 input.
+- **Partitioning the CPU LLM roles or a decode throttle as standalone work.** Superseded by this plan (KVU-11b, option D). CS-11 declined 2026-10-21; partition work superseded by speech placement on card 2.
 - **Vision and GPU-budget items (S-16, S-17).** These stay in INF-41.
 
 ## Sources
