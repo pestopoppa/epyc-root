@@ -119,6 +119,8 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
       prompts average 8.2k chars vs 50.9k for full. The scorer now reads the arm off the stored
       prompt headers (`context_mode_by_prompt`) and REFUSES a `--belief-measurements --arm` that
       disagrees. 23 new tests + 6 scorer tests; 136 passed.
+- [x] **CME-5 — Spec for a thin registered CL-Bench system that sends each turn to the orchestrator /v1 chat endpoint (design only; no repo code is executed).** CL-Bench routes every call through LiteLLM with no `api_base` plumbed through the ICL, notepad and structured-output path, so a local endpoint needs a custom system registered with `@register_system` implementing respond, reset and name (`intake-2168#00`, `intake-2168#01`). The spec lists the interface points to satisfy (Query, Response, TaskStepResult; usage events with pricing None), a provider_mode-independent client, and a prefix-stable prompt layout for KV reuse. One bounded smoke (`clbench run exploitable_poker --schedule quick_test`, 5 hands x 3 runs) is not filed: it needs the CR3 trigger (spec accepted and a granted compute window), and the run size must be fixed on the served model's prefix-cache hit rate and a context of at least about 128K (`intake-2168#03`). The CL-Bench suite is borrowed for its metric, never as a production or promotion gate. ✅ 2026-10-20
+- [ ] **CME-6 — Recompute paired stateful-minus-stateless gain from the shipped CL-Bench run files (zero inference; analysis artifact only, no MEASUREMENT edit).** From `/mnt/raid0/llm/tmp/dive-clbench-repo/repo/final_results/runs/icl-gpt-5.4` and `icl-claude-sonnet-4.6` (repo SHA 5f8c50eb1e84b2eda2ef4faff757dfc812a0ea26; re-clone if absent; gzip JSON read with `python3 -I`, no repo code run) report per-instance paired gain, the headroom-normalised gain, and the spread of the single stateless run versus the five stateful rollouts, i.e. how much of the published interval width the unreplicated stateless baseline hides (`intake-2149#01`, `intake-2149#02`). Frozen input manifest: the run directories with file digests; baseline: the published Table 1 values; denominator: every instance including failed ones; decision rule predeclared: report only; the output feeds decision package DP-E as its worked example.
 
 ## Open Questions
 
@@ -135,3 +137,9 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
 ## Notes
 
 Compute-gated work is filed here, never run. Adapter authoring is pure code and needs no inference.
+
+## Research Intake Update — 2026-10-20 (harness cluster)
+
+Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae002602307b0d9ba6435b010be4d6ffd8a495a04605f3967). Monitor and knowledge records below are prose: no checkbox, no index next action.
+
+- **M6 (monitor, 2026-10-20) — Memory-instrument follow-ons (CL-Bench smoke, congested-memory leg).** Trigger: CME-5 accepted and a compute window granted; or the HS-4 P2 profile-on arm is scheduled. First step when it fires: Size the CL-Bench smoke on the served model's prefix-cache hit rate; add the congested-memory leg. No immediate step remains: Both need an instrument or arm that does not exist yet.

@@ -36,6 +36,11 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-PQP | Lifetime promotion error budget: recommend (a) status quo plus the SEQ-5 ledger; options in the plan DP-A. Human-amendment only. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
+| OP-ABSEQ | Sequential paired e-process for P-AB-1: recommend (a) no amendment. DP-B. | harness-improvement-loop.md HIL-9 item 11 | 2026-10-20 |
+| OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
+| OP-FLAGSRC | 17 flagged sources: recommend the table in DP-D. | harness-improvement-loop.md | 2026-10-20 |
+| OP-AMENDCAND | Two further MEASUREMENT amendment candidates: recommend hold. DP-E. | conversational-memory-eval-instrument.md CME-6 | 2026-10-20 |
 | OP-M12F | Choose prospective EPYC v3 ordering eligibility (recommend gold≥2, partial retrieval zero) or retain v2. [Concrete metric/source package](../../artifacts/operator/decisions/M12f-EPYC-v3-20261008/README.md); SC67 protocol admission remains separate. | [episodic-memory-integrity.md](episodic-memory-integrity.md) M-12f | 2026-10-08 |
 | OP-AUD10 | Approve the tested clean-only Bash hook and name its live steward (recommend codex-ni-main), name another steward, or retain current settings. [Exact D9 package](../../artifacts/operator/decisions/D9-AUD10-clean-only-20261008/README.md). | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) AUD-10 | 2026-10-08 |
 | OP-LR11-LR13 | Ratify bounded additive close-time inventory and subagent scratch/records rules, or retain current policy. [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md); recommendation A, typed human terminal signature required. | [non-inference-backlog.md](non-inference-backlog.md) LR-11 / LR-13 | 2026-10-07 |
