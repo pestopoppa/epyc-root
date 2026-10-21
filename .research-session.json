@@ -1,8 +1,8 @@
 {
   "session_id": "intake-deepseek-prodstack-20261021",
   "started_at": "2026-10-21T10:00:00Z",
-  "last_checkpoint": "2026-10-21T13:05:00Z",
-  "stage": "stage3",
+  "last_checkpoint": "2026-10-21T11:04:58Z",
+  "stage": "stage4-complete",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021",
   "branch": "intake/deepseek-prodstack-20261021",
@@ -47,19 +47,446 @@
       "verbatim": "the official DeepInfer github source was already processed yesterday so this is an opportunity to further assess if any important opportunities were missed.",
       "disposition": "context-only",
       "plan_ref": null,
-      "reason": "Provisional at Stage 1/2: the whole session is the requested gap analysis; final disposition in the Stage-3 steering_reconciliation."
+      "reason": "Executed as the framing of the whole session: every claim in the new material was classified COVERED / REFINES / NEW against intake-2116..2142 and the 2026-10-20 plan (section 1 of this plan); only REFINES and NEW rows carry work. The one genuinely missed opportunity surfaced two waves deep (slot-order head-of-line in llama-server, P3)."
     },
     {
       "seq": 2,
       "stage": 1,
       "ts": "2026-10-21T10:00:00Z",
       "verbatim": "[relayed by main session workspace-f8 as operator intent, not operator's own words] Gap analysis against the DeepInfer intake: classify every claim as ALREADY COVERED / REFINES / NEW; the value is in REFINES and NEW, do not re-file covered work. Stage 1 in full (dedup unbounded); Stage 2 dive EVERY recommended entry; Stage-2b loop up to 4 waves, do not manufacture sources; second reader on every wave; draft the Stage-3 plan at /mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/PLAN.md + payload.json (v2); owners = existing handoffs where possible, prefer refining an existing task; do NOT apply Stage 4. Frame every production idea against our single-host stack; CUDA-only is never a reason to decline; flag what does not apply at our scale for operator review rather than dismissing.",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "reason": "Provisional at Stage 1/2: scope instruction executed as given; final disposition (planned -> lineup packet) in the Stage-3 steering_reconciliation."
+      "disposition": "planned",
+      "plan_ref": "P1",
+      "reason": "Executed as scoped: dedup unbounded (Zhihu URL collided with intake-2136 and was recorded as a re-encounter, not re-minted); the one new entry was dived in full; three Stage-2b waves ran on every recommended dive-surfaced source (wave 1: 2 entries; wave 2: 5; wave 3: 2), a fourth wave had nothing recommended; second readers on every wave; plan_ref names the packet that carries most REFINES rows; all owners are existing handoffs; two tasks are same-ID refinements and the one new checkbox (PB-HOL-1) is the single NEW measurement the waves justified; the does-not-apply set is flagged in Q3, not dismissed."
     }
   ],
-  "actionable_ledger": [],
+  "actionable_ledger": [
+    {
+      "ledger_id": "XP-A1",
+      "source": "intake-2214#05",
+      "action": "Add a weighted decode-side score a*KV_tokens + b*in_flight (a, b swept) as a replay arm of the frontdoor instance-selection replay.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "XP-A2",
+      "source": "intake-2214#11",
+      "action": "Add an overload pre-filter (skip stickiness when fleet waiting > N) with power-of-two-choices on in-flight for cold sessions as a replay arm, keeping the cold-session rule separate from returning sessions.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "XP-A3",
+      "source": "intake-2214#11",
+      "action": "Price the practitioner's 'short pool ignores cache affinity, pooling as fallback' on a per-instance-KV fleet: score every arm by the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "XP-A4",
+      "source": "intake-2214#10",
+      "action": "Emit a per-role uncached-prompt-length histogram with candidate tier cuts from the serving logs so the length-tier question and the replay read one table (thresholds come from offline traffic, not from the vendor cuts).",
+      "terminal_mapping": "P2 / HSF-4"
+    },
+    {
+      "ledger_id": "XP-A5",
+      "source": "intake-2214#11",
+      "action": "Record the NUMA locality of host-side KV handover (slot save/restore page-cache node vs the restoring instance) when the migration swap cost is next measured; file node-local placement only if the remote share is material.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "XP-A6",
+      "source": "intake-2214#04",
+      "action": "Carry the author's PP-vs-EP prefill position (small deployments: a few dedicated prefill workers) as context for the single-host prefill/decode split question.",
+      "terminal_mapping": "K3"
+    },
+    {
+      "ledger_id": "XP-A7",
+      "source": "intake-2214#00",
+      "action": "Note the author's per-model, per-repo kernel organisation as corroboration of the project's model-specific-kernel stance; no action.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "XP-A8",
+      "source": "intake-2214#07",
+      "action": "Citation hygiene: never cite the X note's TTL sentence (direction inverted vs the article) or its 300k average context; cite intake-2136 for every DeepSeek figure.",
+      "terminal_mapping": "K4"
+    },
+    {
+      "ledger_id": "XP-A9",
+      "source": "intake-2214#10",
+      "action": "Router-side prefix-to-instance tracking (router-owned hash table, or KV events feeding a radix tree) as the affinity input for instance selection on a fleet with per-instance KV.",
+      "terminal_mapping": "M2"
+    },
+    {
+      "ledger_id": "XP-A10",
+      "source": "intake-2214#10",
+      "action": "A shared KV substrate for a prefill pool (Mooncake Store / PegaFlow analogue = a host-RAM shared prefix store) as the alternative that would make affinity-free pooling valid on this host.",
+      "terminal_mapping": "M2"
+    },
+    {
+      "ledger_id": "XP-A11",
+      "source": "intake-2214#01",
+      "action": "Flag for operator review the production ideas that do not apply at single-host scale (wide-EP decode, 3FS/EC KV store, GDR/RDMA swap-in, instance-count autoscaling, vision-encoder load balancer, separate structured-output compile machines) with the reason and the prior disposition each already has.",
+      "terminal_mapping": "K4"
+    },
+    {
+      "ledger_id": "XP-A12",
+      "source": "intake-2214#03",
+      "action": "Time-budget batching from an offline-profiled cost table (the author's PP estimator): already covered by PB-QCOST-1 and KVU-16g; retain as corroboration only.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "SRF-A1",
+      "source": "intake-2215#04",
+      "action": "Refine DI-126's trigger: split short-request TTFT into queue-wait (all np slots busy, or the orchestrator lease holding longs back) and prefill-share (interference inside update_slots); name the remedy per component and fire (i) only if requests_deferred > 0 coincides with the p95 rise.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "SRF-A2",
+      "source": "intake-2215#02",
+      "action": "When KVU-15d lands, carry the admission verdict (head / wait / pass with the long flag) beside its lease-wait field so the queue-wait component of DI-126 is measurable from existing records.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "SRF-A3",
+      "source": "intake-2215#01",
+      "action": "Record the tuning doctrine: threshold at the prompt-length valley (P70-P85 start), aging bound from the long-wait tail under strict short-first, never from mean short TTFT; re-check DEFAULT_LONG_PREFILL_TOKENS=16384 against the per-role histogram when it exists.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "SRF-A4",
+      "source": "intake-2215#04",
+      "action": "Lane-aware pop_deferred_task() in llama-server (short-first by task size with an enqueue timestamp and a long_max_wait_ms gate; experimental branch, about 40 lines): named remedy for the queue-wait component, built only when it fires.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "SRF-A5",
+      "source": "intake-2215#06",
+      "action": "Do not copy: the NPU/PD role gates, the FCFS-only install and module-level scheduler swap, the 256-token default (our :8083 p90 new-token prefill is about 20.7K), warning_once semantics, and the premise that the waiting queue is the head-of-line locus.",
+      "terminal_mapping": "decline: platform-specific or wrong for our traffic shape; the transferable parts are carried by the sibling SRF rows"
+    },
+    {
+      "ledger_id": "SRF-A6",
+      "source": "intake-2215#03",
+      "action": "Record that the orchestrator already has a bounded short-pass rule in SharedKVPoolAdmission (short may pass only when every ticket ahead is a lease-held long and it fits), i.e. the SRF idea at the admission layer without aging; the declined 'no >= 32K prefill while >= 2 slots decode' rule stays declined.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "TB-A1",
+      "source": "intake-2216#00",
+      "action": "Score the replay rule on L_total = estimated prompt tokens + n_tokens_budget (both already in dispatch.v1), not prompt length alone, and report both.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "TB-A2",
+      "source": "intake-2216#02",
+      "action": "Fit chars-per-token per client.class offline from the request_id join (dispatch.v1 to serving_call.v1 real token counts); report dispersion and the mis-route rate a conservative (mean minus sigma) estimate would give at candidate thresholds.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "TB-A3",
+      "source": "intake-2216#01",
+      "action": "Keep DI-126 as a monitor; add the paper's operational signature 'watch preemption / TTFT-under-long-prefill, not utilization'.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "TB-A4",
+      "source": "intake-2216#07",
+      "action": "From the HSF-4 append-length distribution emit alpha(B) for B in {2K, 4K, 8K, 16K} and the ceiling alpha(B)(1 - 1/rho) with rho = measured full-vs-half shape-speed ratio, as the go/no-go for any single-host length tiering (upper bound per the paper's own data).",
+      "terminal_mapping": "P2 / HSF-4"
+    },
+    {
+      "ledger_id": "TB-A5",
+      "source": "intake-2216#04",
+      "action": "Add a two-tier replay arm 'L_total <= B to the half instances, > B to the full instance' and count sessions whose L_total crosses B mid-session under stickiness (each crossing = a KV migration or a re-prefill, which the paper never models).",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "TB-A6",
+      "source": "intake-2216#04",
+      "action": "Per-pool max_model_len as the savings lever does not transfer: rho comes from vLLM reserving C_max KV per sequence on HBM; our frontdoor KV is per-instance host DRAM and the GPU champion has one instance; verify our slot/KV reservation behaviour before assuming either direction.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "TB-A7",
+      "source": "intake-2216#06",
+      "action": "Treat the 31-42% / 2.86M USD / 15.4M USD headlines as non-evidence for this host.",
+      "terminal_mapping": "decline: simulator-only, internal contradictions, withdrawn duplicate with different numbers, same-group corroboration only"
+    },
+    {
+      "ledger_id": "TB-A8",
+      "source": "intake-2216#05",
+      "action": "Frame KVU-16g / PB-QCOST-1 with the paper's point that a chunked-prefill budget fixes head-of-line compute scheduling but not memory provisioning; on one MI210 the binding resource in the KVU-16g scenario is iteration time, so no new task.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "TB-A9",
+      "source": "intake-2216#03",
+      "action": "Design constraint for the placement state machine: a spillover fallback must re-check capacity after spilling (final feasibility check).",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "TB-A10",
+      "source": "intake-2216#03",
+      "action": "Two tiers suffice (a third adds about 2% in the paper): never more than one threshold in any tier arm.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "EW-A1",
+      "source": "intake-2217#01",
+      "action": "If the DI-126 queue-wait component fires, the candidate in-instance ordering rule is a STATIC cost-normalised aging score (wait_ms / estimated_prefill_ms plus a log-length boost) over the llama-server deferred deque, weights fitted from our own serving_calls / dispatch.v1 records and composed with LCP slot affinity; not a learned optimiser.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "EW-A2",
+      "source": "intake-2217#03",
+      "action": "Note on the SRF split that EWSJF is the same waiting-queue lever with a learned lane count (32 on their trace) and adjacent-lane backfill, and still supplies no numeric weight schedule, so the component stays unnumbered.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "EW-A3",
+      "source": "intake-2217#07",
+      "action": "Refine-and-Prune partitioning and the Bayesian meta-optimiser (50-120 min adaptation) for a frontdoor serving a handful of agents.",
+      "terminal_mapping": "decline: designed for 10-500 req/s Poisson mixes; our bursts are shorter than its adaptation horizon"
+    },
+    {
+      "ledger_id": "EW-A4",
+      "source": "intake-2217#02",
+      "action": "Nothing in EWSJF touches in-batch or iteration-level scheduling; KVU-16g / KVU-15a are unaffected and the paper calls that layer orthogonal.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "EW-A5",
+      "source": "intake-2217#06",
+      "action": "Citation hygiene: no latency table behind the 4x TTFT claim, no SJF/Sarathi rows, token-count mismatch between schedulers, reference anomalies; never cite this entry for numbers.",
+      "terminal_mapping": "K4"
+    },
+    {
+      "ledger_id": "MD-A1",
+      "source": "intake-2218#02",
+      "action": "Measure a short prefill arriving under a long prefill with NO slot decoding on :8083, budget off vs --prefill-budget-target-ms on, because the KVU-16g budget caps prompt tokens only while a slot generates and Medha applies its budget to every iteration.",
+      "terminal_mapping": "P3 / PB-HOL-1"
+    },
+    {
+      "ledger_id": "MD-A2",
+      "source": "intake-2218#05",
+      "action": "When scoring any pool/tier rule in the WP-15 replay, report the long-request completion or throughput delta beside the short-TTFT tail: the only pool measurement in the literature (Medha 6.5) puts the cost on long requests.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "MD-A3",
+      "source": "intake-2218#02",
+      "action": "DI-126 pass/fail threshold: a colliding short request's TTFT rising by more than one prefill iteration (1.3-1.8 s per the PB-QCOST-1 fit) is the budget failing, not queue wait; join iteration ms at collision time.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "MD-A4",
+      "source": "intake-2218#01",
+      "action": "Medha's small-chunk-is-free result is H100/FlashInfer-specific and contradicted locally by the PB-QCOST-1 324 ms per-iteration intercept; keep the quadratic budget, do not chase sub-512 chunks.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "MD-A5",
+      "source": "intake-2218#06",
+      "action": "LARS relative-slack priority (needs per-request deadlines our API does not carry), Stream Pipeline Parallelism and KV-Cache Parallelism (multi-device).",
+      "terminal_mapping": "decline: no deadlines on our API; SPP/KVP need a second device (the existing second-MI210 monitor in kv-unified-stack-rollout already covers that case)"
+    },
+    {
+      "ledger_id": "FA-A1",
+      "source": "intake-2219#03",
+      "action": "DI-126 prose: an ordering policy moves only queue wait (execution time unchanged 10.85 vs 10.86 s; all gain from 107.77 to 95.63 s wait in the paper), so the trigger must name which component fired.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "FA-A2",
+      "source": "intake-2219#04",
+      "action": "Do not take an aging bound from this paper (none exists; its two-point sensitivity only says stronger aging drifts toward FCFS); if the queue-wait component fires, set long_max_wait_ms from our own measured p99 long-request queue wait under strict short-first, capped at the long TTFT SLO.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "FA-A3",
+      "source": "intake-2219#02",
+      "action": "Granularity precondition on the lane-aware pop: reordering helps only when the per-iteration prefill budget is fine (gain at 256/512-token chunks, loss at 1024 and at 10 sequence slots); on our stack that is KVU-16g N in the 256-512 class with np above the slot count where the deque is ever non-empty.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "FA-A4",
+      "source": "intake-2219#05",
+      "action": "PB-QCOST-1 may cite the asymmetric (under-estimation-penalising) loss and the 105 ms per-iteration target as design references for --prefill-budget-target-ms; the MLP with GPU-memory features does not transfer.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "FA-A5",
+      "source": "intake-2219#06",
+      "action": "Fragmentation guard: if the KVU-16g A/B log shows the decode-aware budget split across >= 4 prefilling slots with < 64 tokens each per iteration, file a minimum-effective-chunk rule on the experimental tree.",
+      "terminal_mapping": "M3"
+    },
+    {
+      "ledger_id": "FA-A6",
+      "source": "intake-2219#03",
+      "action": "Citation boundary: never cite the 10.24% / 11.27% as a TTFT gain for our traffic (512-token context, saturated backlog, chunk 256, Qwen3-8B on a 4090); never cite APC -22% (degenerate baseline) or LPRS -3.5% without its 0.1 s-arrival condition.",
+      "terminal_mapping": "K4"
+    },
+    {
+      "ledger_id": "GL-A1",
+      "source": "intake-2220#02",
+      "action": "Stratify the WP-15 replay score and holdout by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival from dispatch.v1): routing alone moved TTFT pass rate only at the saturating intensity and was neutral or negative elsewhere, so a pooled score averages it away.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "GL-A2",
+      "source": "intake-2220#00",
+      "action": "Add B = 1024 to the HSF-4 alpha(B) set and label the two cutoff scales as different mechanisms (prompt-length prefill HOL vs total-budget KV reservation); alpha(1024) must be read from our log, not from the paper.",
+      "terminal_mapping": "P2 / HSF-4"
+    },
+    {
+      "ledger_id": "GL-A3",
+      "source": "intake-2220#02",
+      "action": "The GreenLLM 8 QPS row is the magnitude class a shared-queue HOL symptom produces (about 6.5 pp of TTFT pass rate at saturation); the DI-126 trigger text is unchanged because the number is A100/Dynamo-specific.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "GL-A4",
+      "source": "intake-2220#03",
+      "action": "Energy as a WP-15 decision axis.",
+      "terminal_mapping": "decline: host package energy is shared_package_window, never lane-exclusive (the AutoKernel energy-attestation rows), and energy is not an objective of the measurement constitution; re-open only if the operator adds it, then an energy-per-dispatch column from RAPL energy_uj joined to dispatch.v1 comes first"
+    },
+    {
+      "ledger_id": "GL-A5",
+      "source": "intake-2220#04",
+      "action": "Decode is memory-bound so a lower SM clock costs little TBT: the first probe to run on the MI210 (rsmi energy counter) if a power or thermal cap ever constrains the GPU champion; not applicable under the maximum-performance fixed-clock posture.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "GL-A6",
+      "source": "intake-2220#06",
+      "action": "Citation hygiene: never cite the abstract headline (34% energy, under 3.5% extra violations, no throughput loss); cite Table 3/4 rows with their intensity and note the 6.0 pp TBT pass-rate drop vs defaultNV.",
+      "terminal_mapping": "K4"
+    },
+    {
+      "ledger_id": "FP-A1",
+      "source": "intake-2221#00",
+      "action": "DI-126 text: in the frozen v10 tree the pending-prompt loop walks slots in fixed index order (iterate() server-context.cpp:2793) and returns for all remaining slots once batch.size() >= n_batch (:3205-3230, :3614), so a short request in a higher-index slot than a prefilling long slot gets zero prompt tokens until that prompt completes while one below waits one iteration; the monitor must record id_slot of both requests.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "FP-A2",
+      "source": "intake-2221#07",
+      "action": "KVU-16g-2 rider: --prefill-budget-decoding is gated on n_generating > 0 (prefill_budget_get() returns 0 otherwise, 98c0ce12a) and never caps prefill-vs-prefill; enabling it in v11 does not cover DI-126 and must not be counted as covering it.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "FP-A3",
+      "source": "intake-2221#00",
+      "action": "PB-HOL-1: on the champion store build, np = 3, one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent midway, 2x2 arms {short slot below, above} x {budget off, on with pb512 armed by a decoding third slot}, 3 repeats, GPU window; rule: above/off >= 2x below/off confirms slot-order head-of-line and opens the ordering fix.",
+      "terminal_mapping": "P3 / PB-HOL-1"
+    },
+    {
+      "ledger_id": "FP-A4",
+      "source": "intake-2221#02",
+      "action": "Conditional on PB-HOL-1: shortest-remaining-prompt-first (or oldest-arrival-first) ordering of the pending-prompt loop plus an optional prefill-budget-shared cap when >= 2 slots are in SLOT_STATE_PROCESSING_PROMPT with no decoder, experimental branch; gate: above-arm TTFT about one iteration, solo 64K prefill within the KVU-16g -4% envelope, off byte-identical.",
+      "terminal_mapping": "M4"
+    },
+    {
+      "ledger_id": "FP-A5",
+      "source": "intake-2221#01",
+      "action": "Operator-level cooperative preemption (per-request threads and CUDA streams, cooperative suspend inside the forward).",
+      "terminal_mapping": "decline: llama-server executes a ubatch as one ggml_backend_sched graph; the only mid-graph hooks are the eval callback and llama_set_abort_callback, and an abort discards the ubatch; the cheaper equivalent of a smaller preemption bound is a smaller prompt chunk, already built"
+    },
+    {
+      "ledger_id": "FP-A6",
+      "source": "intake-2221#02",
+      "action": "Slack-aware EDF with per-request TTFT SLOs and SLO-aware batching.",
+      "terminal_mapping": "decline: no SLO classes exist at the server or the orchestrator (only long >= 16384 vs short); revisit only if per-role TTFT SLOs are ever declared"
+    },
+    {
+      "ledger_id": "FP-A7",
+      "source": "intake-2221#07",
+      "action": "The polynomial TTFT predictor is the PD-disaggregated cousin of PB-QCOST-1; ours needs the q*c term because slots share one KV cache. No action.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "FP-A8",
+      "source": "intake-2221#07",
+      "action": "Figure 3 / Takeaway-1 (small-chunk throughput collapse) corroborates keeping -ub 2048 for solo prefill and capping only under contention. No action.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "FP-A9",
+      "source": "intake-2221#01",
+      "action": "A ggml backend-scheduler suspend/resume primitive (graph split at an operator boundary with resumable state) would make operator-level preemption revisitable; trigger = any upstream ggml change that lets ggml_backend_sched_graph_compute return partway and resume.",
+      "terminal_mapping": "M4"
+    },
+    {
+      "ledger_id": "LP-A1",
+      "source": "intake-2222#02",
+      "action": "DI-126 decomposition of a colliding short TTFT on :8083 into deque wait, slot-order wait and co-batch inflation (iteration ms with the long chunk present minus the solo short iteration from the PB-QCOST-1 fit); batch homogeneity (LAPS) can remove only the co-batch part, the budget bounds slot-order plus co-batch, reordering only deque wait.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "LP-A2",
+      "source": "intake-2222#05",
+      "action": "Add a solo-short reference run and the iteration ms at collision to the collision probe, with the rule: (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever; >= one budget iteration opens an experimental option giving a newly arrived short prompt its own ubatch before the long slot resumes, priced at one long-prefill iteration per collision.",
+      "terminal_mapping": "P3 / PB-HOL-1"
+    },
+    {
+      "ledger_id": "LP-A3",
+      "source": "intake-2222#01",
+      "action": "Score a static length-pool arm (short to the two half instances, long to the full; threshold at the prompt-length valley) beside the token-balanced rule in the WP-15 replay and report long-request throughput; the LAPS spatial pool controller itself is knowledge-only because our three instances differ in shape and migrating one is a cpuset change.",
+      "terminal_mapping": "P1 / WP-15"
+    },
+    {
+      "ledger_id": "LP-A4",
+      "source": "intake-2222#05",
+      "action": "CUDA/HIP-Graph short-prefill bucketing with power-of-two (length, batch) buckets.",
+      "terminal_mapping": "decline: np = 4 agentic traffic never reaches 64-way short prefills; HIP graphs are decode-only here; 228-277 MB per captured graph against about 2.2 GiB VRAM headroom; the paper reports the gain vanishes when prefill and decode share an instance, which is our topology"
+    },
+    {
+      "ledger_id": "LP-A5",
+      "source": "intake-2222#01",
+      "action": "Record under the KV/serving owner that the 16384-token long-prefill lease with bounded short-pass (KVU-15a) is already orchestrator-level temporal disaggregation (at most one long prefill in flight, shorts pass), so any engine-side split is scoped as the residual after the lease.",
+      "terminal_mapping": "K2"
+    },
+    {
+      "ledger_id": "SW-A1",
+      "source": "intake-2223#01",
+      "action": "Refine PB-QCOST-1: the fit t = 324 + 0.987 q + 2.41e-5 q c ms was taken at one decode-batch point (gen = 3 slots, decode_rows 24 with draft rows); re-validate at n = 1 and n = 4 generating slots (decode_rows 8 and 32) before the budget is enabled on the np4 :8083 shape and report the per-n intercept with the noise floor and its unit.",
+      "terminal_mapping": "P3 / PB-QCOST-1"
+    },
+    {
+      "ledger_id": "SW-A2",
+      "source": "intake-2223#03",
+      "action": "KVU-16g-2 rider: choose target-ms as the decode TPOT target minus a ONE-SIDED margin equal to the held-out P99 absolute residual of the PB-QCOST-1 fit, not from the mean fit; PB-QCOST-1 must add the P99 residual to its offline output (its report gives rmse 40-65 ms and MAPE only).",
+      "terminal_mapping": "P3 / PB-QCOST-1"
+    },
+    {
+      "ledger_id": "SW-A3",
+      "source": "intake-2223#00",
+      "action": "In llama-server every generating slot advances in the same batch per iteration, so SLOWeave's min over per-slot deadlines collapses to one global target minus the host gap since the previous iteration (the quantity GPU-ZOS-1 measures); the per-slot form adds nothing over a global target-ms without per-request TPOT classes.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "SW-A4",
+      "source": "intake-2223#04",
+      "action": "Per-request TPOT classes D_i (interactive vs batch) merged by min as the design reference for a shared server hosting two TPOT classes; trigger = a role-to-TPOT-class mapping becomes a request parameter on :8083 or any shared_with server (the paper did not evaluate the heterogeneous case).",
+      "terminal_mapping": "M4"
+    },
+    {
+      "ledger_id": "SW-A5",
+      "source": "intake-2223#01",
+      "action": "Binary search over a start-up-profiled cumulative-max P50/P99 cost grid.",
+      "terminal_mapping": "decline: our fitted quadratic inverts in closed form at fixed cached prefix (q = (target - 324) / (0.987 + 2.41e-5 c)) at held-out MAPE 4.0-7.8%; a profiling grid costs GPU time with no shown accuracy gain"
+    },
+    {
+      "ledger_id": "SW-A6",
+      "source": "intake-2223#02",
+      "action": "SLOWeave leaves the no-decoder case unbounded (full chunk when the active set is empty) and admits one prefill per iteration oldest-first, so it offers nothing for the short-under-long collision; the no-decoder arm of PB-HOL-1 stays the deciding measurement.",
+      "terminal_mapping": "K5"
+    },
+    {
+      "ledger_id": "SW-A7",
+      "source": "intake-2223#02",
+      "action": "Admission controller (reject when predicted decode-only cost approaches the TPOT target) and an aging threshold with explicit SLO-exception logging.",
+      "terminal_mapping": "decline: the shipped budget already has a 64-token floor per iteration (a bounded-violation policy), and the API has no reject/redirect path to drive"
+    }
+  ],
   "state": {
     "fetch_routes": {
       "x_post": "api.fxtwitter.com JSON (x.com 402)",
@@ -30129,7 +30556,7 @@
     }
   },
   "stage3": {
-    "status": "DRAFT written 2026-10-21; NOT applied; awaiting operator review via the main session",
+    "status": "operator-approved 2026-10-21; applied at Stage 4",
     "plan_path": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/PLAN.md",
     "plan_sha256_draft": "3bfc4eb3ad8adb39939184bc27d45e408b4c7d19265659461477135df873a7e1",
     "payload_path": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/payload.json",
@@ -30144,6 +30571,1714 @@
       "M1-M4 monitors"
     ],
     "recommendations": 71,
-    "tasks": 4
+    "tasks": 4,
+    "plan_sha256_approved": "3bfc4eb3ad8adb39939184bc27d45e408b4c7d19265659461477135df873a7e1"
+  },
+  "stage3_filing": {
+    "format_version": 2,
+    "entry_updates": [
+      {
+        "id": "intake-2214",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "within-role-placement-state-machine.md",
+          "heterogeneous-slot-fabric-residency.md",
+          "kv-prefix-fork-and-paged-attention.md",
+          "numa-prefill-decode-disaggregation.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "XP-A1/A2/A3 -> P1 / WP-15 (refined)",
+          "XP-A4 -> P2 / HSF-4 (refined)",
+          "XP-A5 -> M1 (within-role trigger prose)",
+          "XP-A9/A10 -> M2 (kv-prefix-fork trigger prose)",
+          "XP-A6 -> K3; XP-A7/A12 -> K1; XP-A8/A11 -> K4 (entry-level)"
+        ]
+      },
+      {
+        "id": "intake-2215",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "kv-unified-stack-rollout.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "SRF-A1/A2/A4 -> P3 (DI-126 monitor prose rewritten, KVU-15d verdict rider)",
+          "SRF-A3/A6 -> K2",
+          "SRF-A5 -> declined (platform-specific)"
+        ]
+      },
+      {
+        "id": "intake-2216",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "within-role-placement-state-machine.md",
+          "heterogeneous-slot-fabric-residency.md",
+          "kv-unified-stack-rollout.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "TB-A1/A2/A5 -> P1 / WP-15 (refined)",
+          "TB-A4 -> P2 / HSF-4 (refined)",
+          "TB-A3 -> P3 (DI-126 signature)",
+          "TB-A6/A8 -> K2; TB-A9/A10 -> K1",
+          "TB-A7 -> declined (simulator-only headlines)"
+        ]
+      },
+      {
+        "id": "intake-2217",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "kv-unified-stack-rollout.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "EW-A1/A2 -> P3 (DI-126 remedy shape for component (i))",
+          "EW-A4 -> K2; EW-A5 -> K4",
+          "EW-A3 -> declined (learned partitioning, adaptation horizon)"
+        ]
+      },
+      {
+        "id": "intake-2218",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "gpu-serving-tie-in-program.md",
+          "kv-unified-stack-rollout.md",
+          "within-role-placement-state-machine.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MD-A1 -> P3 / PB-HOL-1 (no-decoder arm)",
+          "MD-A3 -> P3 (DI-126 threshold)",
+          "MD-A2 -> P1 / WP-15 (long-request delta)",
+          "MD-A4 -> K5",
+          "MD-A5 -> declined (LARS/SPP/KVP)"
+        ]
+      },
+      {
+        "id": "intake-2219",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "kv-unified-stack-rollout.md",
+          "gpu-serving-tie-in-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "FA-A1/A3 -> P3 (DI-126 component split and precondition)",
+          "FA-A5 -> M3 (fragmentation guard)",
+          "FA-A2 -> K2; FA-A4 -> K5; FA-A6 -> K4"
+        ]
+      },
+      {
+        "id": "intake-2220",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "within-role-placement-state-machine.md",
+          "heterogeneous-slot-fabric-residency.md",
+          "kv-unified-stack-rollout.md",
+          "gpu-serving-tie-in-program.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "GL-A1 -> P1 / WP-15 (load-regime stratification)",
+          "GL-A2 -> P2 / HSF-4 (1K cut, mechanism label)",
+          "GL-A3 -> K2; GL-A5 -> K5; GL-A6 -> K4",
+          "GL-A4 -> declined (energy axis; re-open trigger named)"
+        ]
+      },
+      {
+        "id": "intake-2221",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "gpu-serving-tie-in-program.md",
+          "kv-unified-stack-rollout.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "FP-A1/A2/A3 -> P3 (DI-126 mechanism, KVU-16g-2 rider, PB-HOL-1)",
+          "FP-A4/A9 -> M4",
+          "FP-A7/A8 -> K5",
+          "FP-A5/A6 -> declined (operator-level preemption; SLO classes)"
+        ]
+      },
+      {
+        "id": "intake-2222",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "gpu-serving-tie-in-program.md",
+          "kv-unified-stack-rollout.md",
+          "within-role-placement-state-machine.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "LP-A1/A2 -> P3 (DI-126 co-batch component; PB-HOL-1 solo-short reference and rule)",
+          "LP-A3 -> P1 / WP-15",
+          "LP-A5 -> K2",
+          "LP-A4 -> declined (graph bucketing)"
+        ]
+      },
+      {
+        "id": "intake-2223",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "gpu-serving-tie-in-program.md",
+          "kv-unified-stack-rollout.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "SW-A1/A2 -> P3 / PB-QCOST-1 (refined: per-n re-validation, P99 residual) + KVU-16g-2 margin rider",
+          "SW-A3/A6 -> K5",
+          "SW-A4 -> M4",
+          "SW-A5/A7 -> declined (profiled grid; admission controller)"
+        ]
+      }
+    ],
+    "opportunity_reviews": {
+      "P1": {
+        "project_objective": "Whether the frontdoor fleet (full + two half NUMA llama-server instances, per-instance KV) should select instances by load/KV-length/length-tier signals instead of session stickiness plus NUMA preference order, and whether ignoring session affinity (pooling) is affordable without a shared KV store.",
+        "implementation_ref": "epyc-orchestrator @ 65fbdce: src/backends/concurrency_aware.py:1535-1544 (candidate order: sticky half, full, halves), :1603-1614 (burst_prefer_split reorder), :1706-1710 (first lock wins), :1128-1134 and :1846-1847 (session stickiness per uvicorn worker), :752-909 (_migrate_kv slot save/restore); src/backends/dispatch_log.py (dispatch.v1: prompt_chars, n_tokens_budget, per-instance in-flight at arrival/dispatch, session.key, ts_arrival); lane WR:439-443 (WP-15 NOT JUDGEABLE, WP-15.1 done, WP-15.2 open)",
+        "gap": "No in-flight, KV-length, prompt-length or cache-hit signal enters instance selection; stickiness is session-id based and per-worker; WP-15 as filed scores one rule (DualPath token balance), does not price the re-prefill cost of leaving the sticky instance (the cost that decides whether affinity-free pooling is valid on a per-instance-KV fleet), pools all load regimes, and does not charge a tier rule for its long-request cost.",
+        "operational_change": "Refine WP-15 (same ID) to score five arms including the practitioner heuristics and the two-tier rule, with the re-prefill fraction mandatory, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit as a by-product.",
+        "benefit_direction": "A decision on which selection rule (if any) to implement, bounded by the window-to-window variation; correctness constraint = the replay never counts an arm that raises re-prefill or long-request cost as a win.",
+        "owner": "handoffs/active/within-role-placement-state-machine.md",
+        "execution_conditions": "Offline replay, zero inference; needs two dispatch.v1 traffic windows after the next stack start (the record writer is built, the stack is down); implementation of a winning rule is a separate task behind the stack-change gates; moot for arms (d)/(e) and M2 if KVU-12 moves the frontdoor to one unified-KV server.",
+        "closure_basis": "Immediate outcome retained as the refined WP-15; broader rule implementation stays gated on the replay result."
+      },
+      "P2": {
+        "project_objective": "Whether any length-tiering (pool split, lane ordering, admission tier) is worth building on this host, decided from our own per-role uncached-prompt-length distribution rather than vendor or paper cuts.",
+        "implementation_ref": "lane HSF:316-317 (HSF-4 analytic half done: 27B append p50/p90/p99 467/5362/16413 tokens; log half open); epyc-orchestrator @ 65fbdce src/backends/serving_calls.py:601-680 (prompt_tokens, cached_prompt_tokens per call); src/scheduling/kv_pool_admission.py:159-163 (16384 lease threshold chosen as about p90)",
+        "gap": "No per-role histogram or tier-cut table exists; DI-126 and the WP-15 tier arm would each derive their own; the alpha(B)(1-1/rho) ceiling that decides go/no-go for tiering has never been computed; the two cutoff scales in the literature (about 1K prefill-compute HOL vs 8-16K KV reservation) are not distinguished anywhere.",
+        "operational_change": "Refine HSF-4 (same ID) to report the per-role histogram at the named cuts with alpha(B), the ceiling and the mechanism label.",
+        "benefit_direction": "One shared table; a numeric ceiling before any build; correctness constraint = the ceiling is an upper bound (the paper's own data), never a floor.",
+        "owner": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "execution_conditions": "Analytic plus log mining, zero inference; serving_calls.jsonl exists (46 KB, last modified Oct 5) so the first table can be produced now, the fleet part after dispatch.v1 records exist.",
+        "closure_basis": "Immediate outcome retained as the refined HSF-4."
+      },
+      "P3": {
+        "project_objective": "Whether long prefills head-of-line block short requests on :8083 and which lever (queue reordering, slot ordering, prefill budget) is the remedy; and whether the v11 enable of the decode-aware budget can be counted as covering it (it cannot).",
+        "implementation_ref": "llama.cpp @ ffc1bac82 tools/server/server-context.cpp:2793 (iterate: fixed slot order), :3205-3230 (pending-prompt loop returns for remaining slots when batch.size() >= n_batch), :3614 (prompt fill while batch.size() < n_batch), :4753-4755 (requests_deferred gauge only), server-queue.cpp:63-100 (FIFO deferred deque); prefill-budget commit 98c0ce12a (prefill_budget_get() returns 0 when pb_iter.n_generating == 0; n_prompt_limit replaces n_batch); epyc-orchestrator @ 65fbdce src/scheduling/kv_pool_admission.py:59-62, 907-916 (bounded short-pass without aging); lane KVU:240-246 (KVU-15d open), :378 and :1114-1118 (KVU-16g / 16g-2), :1363 (DI-126); GPU:335 (PB-QCOST-1 fit t = 324 + 0.987 q + 2.41e-5 q c ms)",
+        "gap": "DI-126 as written cannot discriminate queue-wait, slot-order and prefill-share; the slot-order mechanism is structural in v10 and the budget is decode-gated, so KVU-16g-2 does not address it; no measurement of a short request colliding with an in-flight long prefill exists; the fit predicts a 4 s vs 75 s asymmetry by slot index.",
+        "operational_change": "One new task PB-HOL-1 (two-request collision probe, 2x2 slot-order x budget plus a no-decoder arm) in gpu-serving-tie-in-program.md; the DI-126 monitor prose rewritten with the mechanism, the three components, their remedies and thresholds; a decode-gating rider under KVU-16g-2.",
+        "benefit_direction": "A measured yes/no on slot-order head-of-line before any scheduler change; correctness constraint = production v10 untouched, any fix on an experimental branch behind its own gate (M4).",
+        "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+        "execution_conditions": "PB-HOL-1 runs in a GPU window on the champion store build (zero-inference otherwise); prose edits now; the ordering fix (FP-A4) and the lane-aware pop (SRF-A4) are dormant triggers until their components fire.",
+        "closure_basis": "Immediate outcome retained as PB-HOL-1 plus the refined monitor; broader scheduler work gated on the probe."
+      },
+      "K1": {
+        "project_objective": "Retain design constraints for the placement state machine without opening work.",
+        "implementation_ref": "lane WR:405-433 (burst_prefer_split, Dynamo cost prose)",
+        "gap": "None open; constraints would otherwise be re-derived.",
+        "operational_change": "Append retained-knowledge lines (XP-A7, XP-A12, TB-A9, TB-A10).",
+        "benefit_direction": "Prevents re-filing; no behaviour change.",
+        "owner": "handoffs/active/within-role-placement-state-machine.md",
+        "execution_conditions": "Prose only.",
+        "closure_basis": "Knowledge-only: no immediate step remains (time-budget batching is PB-QCOST-1/KVU-16g; spillover and two-tier limits are constraints on P1 arms)."
+      },
+      "K2": {
+        "project_objective": "Retain the tuning doctrine, the literature boundaries and the non-transferable levers for the KV/serving owner.",
+        "implementation_ref": "lane KVU:172-187 (KVU-15a lease, 16384), :378 (KVU-16g), :1312-1317 (declined 32K rule); kv_pool_admission.py:59-62,159-163,907-916 @ 65fbdce",
+        "gap": "None open; the short-pass rule and the lease threshold already exist; no paper supplies an aging bound.",
+        "operational_change": "Append retained-knowledge lines (SRF-A3, SRF-A6, TB-A6, TB-A8, EW-A4, FA-A2, GL-A3).",
+        "benefit_direction": "The 16384 lease threshold gets a re-tune procedure when the histogram exists; an aging bound, if ever needed, comes from our own tail; no behaviour change now.",
+        "owner": "handoffs/active/kv-unified-stack-rollout.md",
+        "execution_conditions": "Prose only.",
+        "closure_basis": "Knowledge-only: the re-check of 16384 reads P2's table; no separate task."
+      },
+      "K3": {
+        "project_objective": "Keep the single-host prefill/decode split question anchored to its PF1 trigger.",
+        "implementation_ref": "lane NPD:57-66 (Phase 0 re-scoped, reopen trigger PF1, Mooncake open question)",
+        "gap": "None open; the handoff is blocked on PF1.",
+        "operational_change": "Append one retained-knowledge line (XP-A6).",
+        "benefit_direction": "Records the practitioner position so the reopen is judged against it; no behaviour change.",
+        "owner": "handoffs/active/numa-prefill-decode-disaggregation.md",
+        "execution_conditions": "Prose only.",
+        "closure_basis": "Knowledge-only: no single-host consumer until PF1 reports a regime."
+      },
+      "K4": {
+        "project_objective": "Keep citation hygiene and the flagged non-applicable set visible without a handoff edit.",
+        "implementation_ref": "intake-2214/2217/2219/2220 reader_should_conclude and dive_corrections; intake-2136 dive_corrections (3FS decline 2026-10-20); lane KVU:1364-1365 (DI-140/DI-142 MORI monitors), HSF:308-318 (HSF demote hysteresis K row)",
+        "gap": "None; every item in the set already has a disposition from the 2026-10-20 intake, and each entry carries its own citation boundary.",
+        "operational_change": "None in handoffs; recorded on the entries and in this plan for operator confirmation.",
+        "benefit_direction": "No re-derivation of declined scale-specific ideas; no vendor or paper headline cited as an EPYC expectation.",
+        "owner": "handoffs/active/kv-unified-stack-rollout.md",
+        "execution_conditions": "None.",
+        "closure_basis": "Knowledge-only: each item names its prior disposition; operator confirms in Q3."
+      },
+      "K5": {
+        "project_objective": "Keep the prefill-budget design anchored to the local cost fit, not to kernel-specific literature results.",
+        "implementation_ref": "lane GPU:335-336 (PB-QCOST-1 fit done offline, 324 ms intercept); rocm-verify-profile-backend.md:1442-1452 (MI210 rsmi energy counter); autokernel-research-loop.md:5072-5090 (AK-X-5/5a package energy not lane-exclusive)",
+        "gap": "None open; the fit exists and already carries the q*c term the literature lacks.",
+        "operational_change": "Append retained-knowledge lines (MD-A4, FA-A4, FP-A7, FP-A8, GL-A5).",
+        "benefit_direction": "Nobody imports the small-chunk-is-free result or an energy knob as a tuning target; no behaviour change.",
+        "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+        "execution_conditions": "Prose only.",
+        "closure_basis": "Knowledge-only: the only immediate step considered (sub-512 chunks) is contradicted by the local 324 ms intercept."
+      },
+      "M1": {
+        "project_objective": "Whether cross-NUMA page-cache placement of the slot file makes full-to-half KV handover slower than necessary.",
+        "implementation_ref": "concurrency_aware.py:142-208 (_slot_save/_slot_restore) and :752-909 (_migrate_kv) @ 65fbdce; lane HSF:264 (HSF-1 swap-cost receipt); no NUMA term anywhere in active/ or completed/ for cache-ram or slot-save",
+        "gap": "No measurement of where the slot-file pages land vs the restoring instance's nodes.",
+        "operational_change": "Dormant trigger prose; a numa_maps read rides on the next swap-cost measurement.",
+        "benefit_direction": "Possible restore-time reduction; correctness constraint = no change before the remote share is measured.",
+        "owner": "handoffs/active/within-role-placement-state-machine.md",
+        "execution_conditions": "Rides on the next migration swap-cost measurement; zero extra inference.",
+        "closure_basis": "Monitor: trigger = remote share >= 50% with restore time material in the handover."
+      },
+      "M2": {
+        "project_objective": "Whether a fleet-wide prefix-to-instance index (or a shared host prefix store) is needed to make pooling affordable on the multi-instance frontdoor.",
+        "implementation_ref": "lane KPF:424-430 (KPF-27 per-server radix index, flag OFF), WR:425-433 (Dynamo overlap credit prose: llama-server emits no KV events), KVU:1212-1229 (KVU-12 np x ctx study, --kv-unified gate)",
+        "gap": "Per-slot prefix state is per server and never consulted across instances; no consumer until WP-15 prices affinity.",
+        "operational_change": "Dormant trigger prose only.",
+        "benefit_direction": "Avoids building an index the unified-KV outcome would make moot.",
+        "owner": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+        "execution_conditions": "Trigger = WP-15 arm (d) re-prefill fraction >= 0.25 on returning sessions AND KVU-12 keeps the multi-instance frontdoor.",
+        "closure_basis": "Monitor: both conditions named and observable."
+      },
+      "M3": {
+        "project_objective": "Whether the decode-aware prefill budget fragments across many prefilling slots into useless chunks.",
+        "implementation_ref": "lane KVU:378 (KVU-16g), :1114-1118 (KVU-16g-2 A/B log); prefill-budget commit 98c0ce12a (budget shared across prompt slots per iteration)",
+        "gap": "No evidence our budget fragments; the only literature gain (APC) is against a degenerate 0.78-token-chunk baseline.",
+        "operational_change": "Dormant trigger prose under KVU-16g-2.",
+        "benefit_direction": "A minimum-effective-chunk rule only if fragmentation is observed.",
+        "owner": "handoffs/active/kv-unified-stack-rollout.md",
+        "execution_conditions": "Trigger = the KVU-16g A/B log shows the budget split across >= 4 prefilling slots with < 64 tokens each per iteration.",
+        "closure_basis": "Monitor: trigger observable in the existing A/B log."
+      },
+      "M4": {
+        "project_objective": "What to build if PB-HOL-1 confirms slot-order head-of-line blocking, and whether operator-level preemption ever becomes portable.",
+        "implementation_ref": "server-context.cpp:2793, :3205-3230, :3614 @ ffc1bac82; ggml backend scheduler (one graph per ubatch; eval callback and llama_set_abort_callback are the only mid-graph hooks)",
+        "gap": "Ordering fix and prefill-vs-prefill cap do not exist; no ggml suspend/resume primitive exists.",
+        "operational_change": "Dormant trigger prose (FP-A4 fires on PB-HOL-1; FP-A9 fires on an upstream ggml change).",
+        "benefit_direction": "Short TTFT under a long prefill bounded to about one iteration if built; correctness constraint = solo prefill within the KVU-16g -4% envelope and off byte-identical.",
+        "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+        "execution_conditions": "Experimental branch only, after PB-HOL-1 above/off >= 2x below/off; production v10 untouched.",
+        "closure_basis": "Monitor: both triggers named and observable."
+      }
+    },
+    "actionable_additions": [
+      {
+        "ledger_id": "XP-A1",
+        "source": "intake-2214#05",
+        "action": "Add a weighted decode-side score a*KV_tokens + b*in_flight (a, b swept) as a replay arm of the frontdoor instance-selection replay.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "XP-A2",
+        "source": "intake-2214#11",
+        "action": "Add an overload pre-filter (skip stickiness when fleet waiting > N) with power-of-two-choices on in-flight for cold sessions as a replay arm, keeping the cold-session rule separate from returning sessions.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "XP-A3",
+        "source": "intake-2214#11",
+        "action": "Price the practitioner's 'short pool ignores cache affinity, pooling as fallback' on a per-instance-KV fleet: score every arm by the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "XP-A4",
+        "source": "intake-2214#10",
+        "action": "Emit a per-role uncached-prompt-length histogram with candidate tier cuts from the serving logs so the length-tier question and the replay read one table (thresholds come from offline traffic, not from the vendor cuts).",
+        "terminal_mapping": "P2 / HSF-4"
+      },
+      {
+        "ledger_id": "XP-A5",
+        "source": "intake-2214#11",
+        "action": "Record the NUMA locality of host-side KV handover (slot save/restore page-cache node vs the restoring instance) when the migration swap cost is next measured; file node-local placement only if the remote share is material.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "XP-A6",
+        "source": "intake-2214#04",
+        "action": "Carry the author's PP-vs-EP prefill position (small deployments: a few dedicated prefill workers) as context for the single-host prefill/decode split question.",
+        "terminal_mapping": "K3"
+      },
+      {
+        "ledger_id": "XP-A7",
+        "source": "intake-2214#00",
+        "action": "Note the author's per-model, per-repo kernel organisation as corroboration of the project's model-specific-kernel stance; no action.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "XP-A8",
+        "source": "intake-2214#07",
+        "action": "Citation hygiene: never cite the X note's TTL sentence (direction inverted vs the article) or its 300k average context; cite intake-2136 for every DeepSeek figure.",
+        "terminal_mapping": "K4"
+      },
+      {
+        "ledger_id": "XP-A9",
+        "source": "intake-2214#10",
+        "action": "Router-side prefix-to-instance tracking (router-owned hash table, or KV events feeding a radix tree) as the affinity input for instance selection on a fleet with per-instance KV.",
+        "terminal_mapping": "M2"
+      },
+      {
+        "ledger_id": "XP-A10",
+        "source": "intake-2214#10",
+        "action": "A shared KV substrate for a prefill pool (Mooncake Store / PegaFlow analogue = a host-RAM shared prefix store) as the alternative that would make affinity-free pooling valid on this host.",
+        "terminal_mapping": "M2"
+      },
+      {
+        "ledger_id": "XP-A11",
+        "source": "intake-2214#01",
+        "action": "Flag for operator review the production ideas that do not apply at single-host scale (wide-EP decode, 3FS/EC KV store, GDR/RDMA swap-in, instance-count autoscaling, vision-encoder load balancer, separate structured-output compile machines) with the reason and the prior disposition each already has.",
+        "terminal_mapping": "K4"
+      },
+      {
+        "ledger_id": "XP-A12",
+        "source": "intake-2214#03",
+        "action": "Time-budget batching from an offline-profiled cost table (the author's PP estimator): already covered by PB-QCOST-1 and KVU-16g; retain as corroboration only.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "SRF-A1",
+        "source": "intake-2215#04",
+        "action": "Refine DI-126's trigger: split short-request TTFT into queue-wait (all np slots busy, or the orchestrator lease holding longs back) and prefill-share (interference inside update_slots); name the remedy per component and fire (i) only if requests_deferred > 0 coincides with the p95 rise.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "SRF-A2",
+        "source": "intake-2215#02",
+        "action": "When KVU-15d lands, carry the admission verdict (head / wait / pass with the long flag) beside its lease-wait field so the queue-wait component of DI-126 is measurable from existing records.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "SRF-A3",
+        "source": "intake-2215#01",
+        "action": "Record the tuning doctrine: threshold at the prompt-length valley (P70-P85 start), aging bound from the long-wait tail under strict short-first, never from mean short TTFT; re-check DEFAULT_LONG_PREFILL_TOKENS=16384 against the per-role histogram when it exists.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "SRF-A4",
+        "source": "intake-2215#04",
+        "action": "Lane-aware pop_deferred_task() in llama-server (short-first by task size with an enqueue timestamp and a long_max_wait_ms gate; experimental branch, about 40 lines): named remedy for the queue-wait component, built only when it fires.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "SRF-A5",
+        "source": "intake-2215#06",
+        "action": "Do not copy: the NPU/PD role gates, the FCFS-only install and module-level scheduler swap, the 256-token default (our :8083 p90 new-token prefill is about 20.7K), warning_once semantics, and the premise that the waiting queue is the head-of-line locus.",
+        "terminal_mapping": "decline: platform-specific or wrong for our traffic shape; the transferable parts are carried by the sibling SRF rows"
+      },
+      {
+        "ledger_id": "SRF-A6",
+        "source": "intake-2215#03",
+        "action": "Record that the orchestrator already has a bounded short-pass rule in SharedKVPoolAdmission (short may pass only when every ticket ahead is a lease-held long and it fits), i.e. the SRF idea at the admission layer without aging; the declined 'no >= 32K prefill while >= 2 slots decode' rule stays declined.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "TB-A1",
+        "source": "intake-2216#00",
+        "action": "Score the replay rule on L_total = estimated prompt tokens + n_tokens_budget (both already in dispatch.v1), not prompt length alone, and report both.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "TB-A2",
+        "source": "intake-2216#02",
+        "action": "Fit chars-per-token per client.class offline from the request_id join (dispatch.v1 to serving_call.v1 real token counts); report dispersion and the mis-route rate a conservative (mean minus sigma) estimate would give at candidate thresholds.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "TB-A3",
+        "source": "intake-2216#01",
+        "action": "Keep DI-126 as a monitor; add the paper's operational signature 'watch preemption / TTFT-under-long-prefill, not utilization'.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "TB-A4",
+        "source": "intake-2216#07",
+        "action": "From the HSF-4 append-length distribution emit alpha(B) for B in {2K, 4K, 8K, 16K} and the ceiling alpha(B)(1 - 1/rho) with rho = measured full-vs-half shape-speed ratio, as the go/no-go for any single-host length tiering (upper bound per the paper's own data).",
+        "terminal_mapping": "P2 / HSF-4"
+      },
+      {
+        "ledger_id": "TB-A5",
+        "source": "intake-2216#04",
+        "action": "Add a two-tier replay arm 'L_total <= B to the half instances, > B to the full instance' and count sessions whose L_total crosses B mid-session under stickiness (each crossing = a KV migration or a re-prefill, which the paper never models).",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "TB-A6",
+        "source": "intake-2216#04",
+        "action": "Per-pool max_model_len as the savings lever does not transfer: rho comes from vLLM reserving C_max KV per sequence on HBM; our frontdoor KV is per-instance host DRAM and the GPU champion has one instance; verify our slot/KV reservation behaviour before assuming either direction.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "TB-A7",
+        "source": "intake-2216#06",
+        "action": "Treat the 31-42% / 2.86M USD / 15.4M USD headlines as non-evidence for this host.",
+        "terminal_mapping": "decline: simulator-only, internal contradictions, withdrawn duplicate with different numbers, same-group corroboration only"
+      },
+      {
+        "ledger_id": "TB-A8",
+        "source": "intake-2216#05",
+        "action": "Frame KVU-16g / PB-QCOST-1 with the paper's point that a chunked-prefill budget fixes head-of-line compute scheduling but not memory provisioning; on one MI210 the binding resource in the KVU-16g scenario is iteration time, so no new task.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "TB-A9",
+        "source": "intake-2216#03",
+        "action": "Design constraint for the placement state machine: a spillover fallback must re-check capacity after spilling (final feasibility check).",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "TB-A10",
+        "source": "intake-2216#03",
+        "action": "Two tiers suffice (a third adds about 2% in the paper): never more than one threshold in any tier arm.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "EW-A1",
+        "source": "intake-2217#01",
+        "action": "If the DI-126 queue-wait component fires, the candidate in-instance ordering rule is a STATIC cost-normalised aging score (wait_ms / estimated_prefill_ms plus a log-length boost) over the llama-server deferred deque, weights fitted from our own serving_calls / dispatch.v1 records and composed with LCP slot affinity; not a learned optimiser.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "EW-A2",
+        "source": "intake-2217#03",
+        "action": "Note on the SRF split that EWSJF is the same waiting-queue lever with a learned lane count (32 on their trace) and adjacent-lane backfill, and still supplies no numeric weight schedule, so the component stays unnumbered.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "EW-A3",
+        "source": "intake-2217#07",
+        "action": "Refine-and-Prune partitioning and the Bayesian meta-optimiser (50-120 min adaptation) for a frontdoor serving a handful of agents.",
+        "terminal_mapping": "decline: designed for 10-500 req/s Poisson mixes; our bursts are shorter than its adaptation horizon"
+      },
+      {
+        "ledger_id": "EW-A4",
+        "source": "intake-2217#02",
+        "action": "Nothing in EWSJF touches in-batch or iteration-level scheduling; KVU-16g / KVU-15a are unaffected and the paper calls that layer orthogonal.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "EW-A5",
+        "source": "intake-2217#06",
+        "action": "Citation hygiene: no latency table behind the 4x TTFT claim, no SJF/Sarathi rows, token-count mismatch between schedulers, reference anomalies; never cite this entry for numbers.",
+        "terminal_mapping": "K4"
+      },
+      {
+        "ledger_id": "MD-A1",
+        "source": "intake-2218#02",
+        "action": "Measure a short prefill arriving under a long prefill with NO slot decoding on :8083, budget off vs --prefill-budget-target-ms on, because the KVU-16g budget caps prompt tokens only while a slot generates and Medha applies its budget to every iteration.",
+        "terminal_mapping": "P3 / PB-HOL-1"
+      },
+      {
+        "ledger_id": "MD-A2",
+        "source": "intake-2218#05",
+        "action": "When scoring any pool/tier rule in the WP-15 replay, report the long-request completion or throughput delta beside the short-TTFT tail: the only pool measurement in the literature (Medha 6.5) puts the cost on long requests.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "MD-A3",
+        "source": "intake-2218#02",
+        "action": "DI-126 pass/fail threshold: a colliding short request's TTFT rising by more than one prefill iteration (1.3-1.8 s per the PB-QCOST-1 fit) is the budget failing, not queue wait; join iteration ms at collision time.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "MD-A4",
+        "source": "intake-2218#01",
+        "action": "Medha's small-chunk-is-free result is H100/FlashInfer-specific and contradicted locally by the PB-QCOST-1 324 ms per-iteration intercept; keep the quadratic budget, do not chase sub-512 chunks.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "MD-A5",
+        "source": "intake-2218#06",
+        "action": "LARS relative-slack priority (needs per-request deadlines our API does not carry), Stream Pipeline Parallelism and KV-Cache Parallelism (multi-device).",
+        "terminal_mapping": "decline: no deadlines on our API; SPP/KVP need a second device (the existing second-MI210 monitor in kv-unified-stack-rollout already covers that case)"
+      },
+      {
+        "ledger_id": "FA-A1",
+        "source": "intake-2219#03",
+        "action": "DI-126 prose: an ordering policy moves only queue wait (execution time unchanged 10.85 vs 10.86 s; all gain from 107.77 to 95.63 s wait in the paper), so the trigger must name which component fired.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "FA-A2",
+        "source": "intake-2219#04",
+        "action": "Do not take an aging bound from this paper (none exists; its two-point sensitivity only says stronger aging drifts toward FCFS); if the queue-wait component fires, set long_max_wait_ms from our own measured p99 long-request queue wait under strict short-first, capped at the long TTFT SLO.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "FA-A3",
+        "source": "intake-2219#02",
+        "action": "Granularity precondition on the lane-aware pop: reordering helps only when the per-iteration prefill budget is fine (gain at 256/512-token chunks, loss at 1024 and at 10 sequence slots); on our stack that is KVU-16g N in the 256-512 class with np above the slot count where the deque is ever non-empty.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "FA-A4",
+        "source": "intake-2219#05",
+        "action": "PB-QCOST-1 may cite the asymmetric (under-estimation-penalising) loss and the 105 ms per-iteration target as design references for --prefill-budget-target-ms; the MLP with GPU-memory features does not transfer.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "FA-A5",
+        "source": "intake-2219#06",
+        "action": "Fragmentation guard: if the KVU-16g A/B log shows the decode-aware budget split across >= 4 prefilling slots with < 64 tokens each per iteration, file a minimum-effective-chunk rule on the experimental tree.",
+        "terminal_mapping": "M3"
+      },
+      {
+        "ledger_id": "FA-A6",
+        "source": "intake-2219#03",
+        "action": "Citation boundary: never cite the 10.24% / 11.27% as a TTFT gain for our traffic (512-token context, saturated backlog, chunk 256, Qwen3-8B on a 4090); never cite APC -22% (degenerate baseline) or LPRS -3.5% without its 0.1 s-arrival condition.",
+        "terminal_mapping": "K4"
+      },
+      {
+        "ledger_id": "GL-A1",
+        "source": "intake-2220#02",
+        "action": "Stratify the WP-15 replay score and holdout by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival from dispatch.v1): routing alone moved TTFT pass rate only at the saturating intensity and was neutral or negative elsewhere, so a pooled score averages it away.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "GL-A2",
+        "source": "intake-2220#00",
+        "action": "Add B = 1024 to the HSF-4 alpha(B) set and label the two cutoff scales as different mechanisms (prompt-length prefill HOL vs total-budget KV reservation); alpha(1024) must be read from our log, not from the paper.",
+        "terminal_mapping": "P2 / HSF-4"
+      },
+      {
+        "ledger_id": "GL-A3",
+        "source": "intake-2220#02",
+        "action": "The GreenLLM 8 QPS row is the magnitude class a shared-queue HOL symptom produces (about 6.5 pp of TTFT pass rate at saturation); the DI-126 trigger text is unchanged because the number is A100/Dynamo-specific.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "GL-A4",
+        "source": "intake-2220#03",
+        "action": "Energy as a WP-15 decision axis.",
+        "terminal_mapping": "decline: host package energy is shared_package_window, never lane-exclusive (the AutoKernel energy-attestation rows), and energy is not an objective of the measurement constitution; re-open only if the operator adds it, then an energy-per-dispatch column from RAPL energy_uj joined to dispatch.v1 comes first"
+      },
+      {
+        "ledger_id": "GL-A5",
+        "source": "intake-2220#04",
+        "action": "Decode is memory-bound so a lower SM clock costs little TBT: the first probe to run on the MI210 (rsmi energy counter) if a power or thermal cap ever constrains the GPU champion; not applicable under the maximum-performance fixed-clock posture.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "GL-A6",
+        "source": "intake-2220#06",
+        "action": "Citation hygiene: never cite the abstract headline (34% energy, under 3.5% extra violations, no throughput loss); cite Table 3/4 rows with their intensity and note the 6.0 pp TBT pass-rate drop vs defaultNV.",
+        "terminal_mapping": "K4"
+      },
+      {
+        "ledger_id": "FP-A1",
+        "source": "intake-2221#00",
+        "action": "DI-126 text: in the frozen v10 tree the pending-prompt loop walks slots in fixed index order (iterate() server-context.cpp:2793) and returns for all remaining slots once batch.size() >= n_batch (:3205-3230, :3614), so a short request in a higher-index slot than a prefilling long slot gets zero prompt tokens until that prompt completes while one below waits one iteration; the monitor must record id_slot of both requests.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "FP-A2",
+        "source": "intake-2221#07",
+        "action": "KVU-16g-2 rider: --prefill-budget-decoding is gated on n_generating > 0 (prefill_budget_get() returns 0 otherwise, 98c0ce12a) and never caps prefill-vs-prefill; enabling it in v11 does not cover DI-126 and must not be counted as covering it.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "FP-A3",
+        "source": "intake-2221#00",
+        "action": "PB-HOL-1: on the champion store build, np = 3, one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent midway, 2x2 arms {short slot below, above} x {budget off, on with pb512 armed by a decoding third slot}, 3 repeats, GPU window; rule: above/off >= 2x below/off confirms slot-order head-of-line and opens the ordering fix.",
+        "terminal_mapping": "P3 / PB-HOL-1"
+      },
+      {
+        "ledger_id": "FP-A4",
+        "source": "intake-2221#02",
+        "action": "Conditional on PB-HOL-1: shortest-remaining-prompt-first (or oldest-arrival-first) ordering of the pending-prompt loop plus an optional prefill-budget-shared cap when >= 2 slots are in SLOT_STATE_PROCESSING_PROMPT with no decoder, experimental branch; gate: above-arm TTFT about one iteration, solo 64K prefill within the KVU-16g -4% envelope, off byte-identical.",
+        "terminal_mapping": "M4"
+      },
+      {
+        "ledger_id": "FP-A5",
+        "source": "intake-2221#01",
+        "action": "Operator-level cooperative preemption (per-request threads and CUDA streams, cooperative suspend inside the forward).",
+        "terminal_mapping": "decline: llama-server executes a ubatch as one ggml_backend_sched graph; the only mid-graph hooks are the eval callback and llama_set_abort_callback, and an abort discards the ubatch; the cheaper equivalent of a smaller preemption bound is a smaller prompt chunk, already built"
+      },
+      {
+        "ledger_id": "FP-A6",
+        "source": "intake-2221#02",
+        "action": "Slack-aware EDF with per-request TTFT SLOs and SLO-aware batching.",
+        "terminal_mapping": "decline: no SLO classes exist at the server or the orchestrator (only long >= 16384 vs short); revisit only if per-role TTFT SLOs are ever declared"
+      },
+      {
+        "ledger_id": "FP-A7",
+        "source": "intake-2221#07",
+        "action": "The polynomial TTFT predictor is the PD-disaggregated cousin of PB-QCOST-1; ours needs the q*c term because slots share one KV cache. No action.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "FP-A8",
+        "source": "intake-2221#07",
+        "action": "Figure 3 / Takeaway-1 (small-chunk throughput collapse) corroborates keeping -ub 2048 for solo prefill and capping only under contention. No action.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "FP-A9",
+        "source": "intake-2221#01",
+        "action": "A ggml backend-scheduler suspend/resume primitive (graph split at an operator boundary with resumable state) would make operator-level preemption revisitable; trigger = any upstream ggml change that lets ggml_backend_sched_graph_compute return partway and resume.",
+        "terminal_mapping": "M4"
+      },
+      {
+        "ledger_id": "LP-A1",
+        "source": "intake-2222#02",
+        "action": "DI-126 decomposition of a colliding short TTFT on :8083 into deque wait, slot-order wait and co-batch inflation (iteration ms with the long chunk present minus the solo short iteration from the PB-QCOST-1 fit); batch homogeneity (LAPS) can remove only the co-batch part, the budget bounds slot-order plus co-batch, reordering only deque wait.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "LP-A2",
+        "source": "intake-2222#05",
+        "action": "Add a solo-short reference run and the iteration ms at collision to the collision probe, with the rule: (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever; >= one budget iteration opens an experimental option giving a newly arrived short prompt its own ubatch before the long slot resumes, priced at one long-prefill iteration per collision.",
+        "terminal_mapping": "P3 / PB-HOL-1"
+      },
+      {
+        "ledger_id": "LP-A3",
+        "source": "intake-2222#01",
+        "action": "Score a static length-pool arm (short to the two half instances, long to the full; threshold at the prompt-length valley) beside the token-balanced rule in the WP-15 replay and report long-request throughput; the LAPS spatial pool controller itself is knowledge-only because our three instances differ in shape and migrating one is a cpuset change.",
+        "terminal_mapping": "P1 / WP-15"
+      },
+      {
+        "ledger_id": "LP-A4",
+        "source": "intake-2222#05",
+        "action": "CUDA/HIP-Graph short-prefill bucketing with power-of-two (length, batch) buckets.",
+        "terminal_mapping": "decline: np = 4 agentic traffic never reaches 64-way short prefills; HIP graphs are decode-only here; 228-277 MB per captured graph against about 2.2 GiB VRAM headroom; the paper reports the gain vanishes when prefill and decode share an instance, which is our topology"
+      },
+      {
+        "ledger_id": "LP-A5",
+        "source": "intake-2222#01",
+        "action": "Record under the KV/serving owner that the 16384-token long-prefill lease with bounded short-pass (KVU-15a) is already orchestrator-level temporal disaggregation (at most one long prefill in flight, shorts pass), so any engine-side split is scoped as the residual after the lease.",
+        "terminal_mapping": "K2"
+      },
+      {
+        "ledger_id": "SW-A1",
+        "source": "intake-2223#01",
+        "action": "Refine PB-QCOST-1: the fit t = 324 + 0.987 q + 2.41e-5 q c ms was taken at one decode-batch point (gen = 3 slots, decode_rows 24 with draft rows); re-validate at n = 1 and n = 4 generating slots (decode_rows 8 and 32) before the budget is enabled on the np4 :8083 shape and report the per-n intercept with the noise floor and its unit.",
+        "terminal_mapping": "P3 / PB-QCOST-1"
+      },
+      {
+        "ledger_id": "SW-A2",
+        "source": "intake-2223#03",
+        "action": "KVU-16g-2 rider: choose target-ms as the decode TPOT target minus a ONE-SIDED margin equal to the held-out P99 absolute residual of the PB-QCOST-1 fit, not from the mean fit; PB-QCOST-1 must add the P99 residual to its offline output (its report gives rmse 40-65 ms and MAPE only).",
+        "terminal_mapping": "P3 / PB-QCOST-1"
+      },
+      {
+        "ledger_id": "SW-A3",
+        "source": "intake-2223#00",
+        "action": "In llama-server every generating slot advances in the same batch per iteration, so SLOWeave's min over per-slot deadlines collapses to one global target minus the host gap since the previous iteration (the quantity GPU-ZOS-1 measures); the per-slot form adds nothing over a global target-ms without per-request TPOT classes.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "SW-A4",
+        "source": "intake-2223#04",
+        "action": "Per-request TPOT classes D_i (interactive vs batch) merged by min as the design reference for a shared server hosting two TPOT classes; trigger = a role-to-TPOT-class mapping becomes a request parameter on :8083 or any shared_with server (the paper did not evaluate the heterogeneous case).",
+        "terminal_mapping": "M4"
+      },
+      {
+        "ledger_id": "SW-A5",
+        "source": "intake-2223#01",
+        "action": "Binary search over a start-up-profiled cumulative-max P50/P99 cost grid.",
+        "terminal_mapping": "decline: our fitted quadratic inverts in closed form at fixed cached prefix (q = (target - 324) / (0.987 + 2.41e-5 c)) at held-out MAPE 4.0-7.8%; a profiling grid costs GPU time with no shown accuracy gain"
+      },
+      {
+        "ledger_id": "SW-A6",
+        "source": "intake-2223#02",
+        "action": "SLOWeave leaves the no-decoder case unbounded (full chunk when the active set is empty) and admits one prefill per iteration oldest-first, so it offers nothing for the short-under-long collision; the no-decoder arm of PB-HOL-1 stays the deciding measurement.",
+        "terminal_mapping": "K5"
+      },
+      {
+        "ledger_id": "SW-A7",
+        "source": "intake-2223#02",
+        "action": "Admission controller (reject when predicted decode-only cost approaches the TPOT target) and an aging threshold with explicit SLO-exception logging.",
+        "terminal_mapping": "decline: the shipped budget already has a 64-token floor per iteration (a bounded-violation policy), and the API has no reject/redirect path to drive"
+      }
+    ],
+    "steering_reconciliation": [
+      {
+        "seq": 1,
+        "stage": 1,
+        "ts": "2026-10-21T10:00:00Z",
+        "verbatim": "the official DeepInfer github source was already processed yesterday so this is an opportunity to further assess if any important opportunities were missed.",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Executed as the framing of the whole session: every claim in the new material was classified COVERED / REFINES / NEW against intake-2116..2142 and the 2026-10-20 plan (section 1 of this plan); only REFINES and NEW rows carry work. The one genuinely missed opportunity surfaced two waves deep (slot-order head-of-line in llama-server, P3)."
+      },
+      {
+        "seq": 2,
+        "stage": 1,
+        "ts": "2026-10-21T10:00:00Z",
+        "verbatim": "[relayed by main session workspace-f8 as operator intent, not operator's own words] Gap analysis against the DeepInfer intake: classify every claim as ALREADY COVERED / REFINES / NEW; the value is in REFINES and NEW, do not re-file covered work. Stage 1 in full (dedup unbounded); Stage 2 dive EVERY recommended entry; Stage-2b loop up to 4 waves, do not manufacture sources; second reader on every wave; draft the Stage-3 plan at /mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/PLAN.md + payload.json (v2); owners = existing handoffs where possible, prefer refining an existing task; do NOT apply Stage 4. Frame every production idea against our single-host stack; CUDA-only is never a reason to decline; flag what does not apply at our scale for operator review rather than dismissing.",
+        "disposition": "planned",
+        "plan_ref": "P1",
+        "reason": "Executed as scoped: dedup unbounded (Zhihu URL collided with intake-2136 and was recorded as a re-encounter, not re-minted); the one new entry was dived in full; three Stage-2b waves ran on every recommended dive-surfaced source (wave 1: 2 entries; wave 2: 5; wave 3: 2), a fourth wave had nothing recommended; second readers on every wave; plan_ref names the packet that carries most REFINES rows; all owners are existing handoffs; two tasks are same-ID refinements and the one new checkbox (PB-HOL-1) is the single NEW measurement the waves justified; the does-not-apply set is flagged in Q3, not dismissed."
+      }
+    ],
+    "opportunity_scan": [
+      {
+        "scan_id": "S01",
+        "source_ref": "intake-2214#05 and #12 (weighted decode score; per-step cost terms scale with num_running)",
+        "implementation_ref": "concurrency_aware.py:1535-1544, :1706-1710 @ 65fbdce; dispatch_log.py fleet_at_dispatch",
+        "mechanism": "decode-side instance score a*KV + b*running",
+        "consumer": "ConcurrencyAwareBackend._dispatch instance selection (frontdoor fleet)",
+        "application": "replay arm (c) in WP-15",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "XP-A1"
+        ],
+        "basis": "Selection today reads no load or KV signal; dispatch.v1 records both per instance."
+      },
+      {
+        "scan_id": "S02",
+        "source_ref": "intake-2214#11 (overload filter; cold-session P2C / least-session; short pool ignores cache hit)",
+        "implementation_ref": "concurrency_aware.py:1128-1134, :1846-1847 (session stickiness), :1504-1507 @ 65fbdce",
+        "mechanism": "overload pre-filter + power-of-two-choices for cold sessions; affinity-free pooling",
+        "consumer": "same selection path; returning vs first-turn sessions",
+        "application": "replay arms (d) and the re-prefill-fraction metric in WP-15",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "XP-A2",
+          "XP-A3"
+        ],
+        "basis": "Stickiness exists but is per-worker and never priced; pooling validity depends on the re-prefill cost no task measures."
+      },
+      {
+        "scan_id": "S03",
+        "source_ref": "intake-2214#10 (2k/4k compute-token cuts from offline traffic), intake-2216#07 (alpha(B), alpha(1-1/rho)) and intake-2220#00 (about-1024 prompt-length cutoff, a different mechanism)",
+        "implementation_ref": "serving_calls.py:601-680 (prompt_tokens, cached_prompt_tokens); lane HSF:316-317",
+        "mechanism": "per-role uncached-length histogram and tiering ceiling with mechanism-labelled cuts",
+        "consumer": "HSF-4 report; DI-126; WP-15 tier arm",
+        "application": "HSF-4 refinement",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "XP-A4",
+          "TB-A4",
+          "GL-A2"
+        ],
+        "basis": "HSF-4 already mines append length for the 27B; the per-role table, the 1K cut and the ceiling are missing."
+      },
+      {
+        "scan_id": "S04",
+        "source_ref": "intake-2214#11 (Mooncake store NUMA incast: data on numa0, NIC on numa1)",
+        "implementation_ref": "concurrency_aware.py:142-208, :752-909 @ 65fbdce (slot save/restore handover)",
+        "mechanism": "NUMA-group-local placement of KV store memory",
+        "consumer": "full-to-half KV migration on the frontdoor",
+        "application": "numa_maps read riding on the next swap-cost measurement",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "XP-A5"
+        ],
+        "basis": "Handover crosses NUMA nodes by construction; no measurement exists (28 cache-ram hits, none mention NUMA)."
+      },
+      {
+        "scan_id": "S05",
+        "source_ref": "intake-2214#10 (router-owned hash table vs KV-event radix tree; Mooncake/PegaFlow shared store)",
+        "implementation_ref": "lane KPF:424-430 (KPF-27, per-server index, OFF); WR:429-431 (no KV events from llama-server)",
+        "mechanism": "cross-instance prefix tracking / shared prefix store",
+        "consumer": "instance selection affinity input",
+        "application": "dormant trigger gated on WP-15 arm (d) and KVU-12",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "XP-A9",
+          "XP-A10"
+        ],
+        "basis": "No consumer until the re-prefill fraction is measured; unified KV would make it moot."
+      },
+      {
+        "scan_id": "S06",
+        "source_ref": "intake-2214#04 (PP vs EP prefill; small deployments favour a few prefill workers)",
+        "implementation_ref": "lane NPD:57-66 (PF1 reopen trigger)",
+        "mechanism": "dedicated prefill workers at small scale",
+        "consumer": "numa-prefill-decode-disaggregation reopen decision",
+        "application": "retained context line",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "XP-A6"
+        ],
+        "basis": "Single-host analogue (prefill-dedicated halves) has no consumer until PF1 reports a regime."
+      },
+      {
+        "scan_id": "S07",
+        "source_ref": "intake-2214#00 (per model per repo kernels) and #03 (time-budget batching from an offline table)",
+        "implementation_ref": "lane GPU:335 (PB-QCOST-1 fit done offline t = 324 + 0.987q + 2.41e-5 q c ms), KVU:378 (KVU-16g)",
+        "mechanism": "time-budget chunk solving; model-specific kernels",
+        "consumer": "prefill budget on :8083; AutoKernel champion",
+        "application": "corroboration only",
+        "disposition": "covered",
+        "ledger_ids": [
+          "XP-A7",
+          "XP-A12"
+        ],
+        "basis": "Both ideas already have owners (PB-QCOST-1/KVU-16g; the model-specific-kernel stance)."
+      },
+      {
+        "scan_id": "S08",
+        "source_ref": "intake-2214#07 (TTL direction inverted) and #01 (wide-EP, 3FS, GDR, autoscaling, vision LB, SO compile machines); intake-2217#06, intake-2219#03, intake-2220#06 (headline boundaries)",
+        "implementation_ref": "intake-2136 dive_corrections (3FS decline), lane KVU:1364-1365 (MORI monitors), HSF K row (demote hysteresis)",
+        "mechanism": "citation hygiene; scale-specific production ideas",
+        "consumer": "any future citation of these entries; operator review",
+        "application": "entry-level knowledge, flagged set in Q3",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "XP-A8",
+          "XP-A11",
+          "EW-A5",
+          "FA-A6",
+          "GL-A6"
+        ],
+        "basis": "Each scale-specific item has a prior disposition; every headline has a stated regime mismatch."
+      },
+      {
+        "scan_id": "S09",
+        "source_ref": "intake-2215#04 (waiting-queue-only policy) and #02 (head-of-lane aging gate); intake-2217#01 (static aging score shape); intake-2219#03 (ordering moves queue wait only) and #02 (fine-chunk precondition)",
+        "implementation_ref": "server-queue.cpp:63-100 @ ffc1bac82 (FIFO deferred deque); server-context.cpp:4753-4755 (requests_deferred); kv_pool_admission.py:907-916 @ 65fbdce (short-pass)",
+        "mechanism": "short-first queue ordering with aging",
+        "consumer": "llama-server deferred-task pop; orchestrator admission queue",
+        "application": "DI-126 component (i): trigger, remedy shape, precondition",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "SRF-A1",
+          "SRF-A4",
+          "EW-A1",
+          "EW-A2",
+          "FA-A1",
+          "FA-A3"
+        ],
+        "basis": "DI-126 cannot discriminate the components; the lane pop is the only remedy for (i) and only pays with a fine budget."
+      },
+      {
+        "scan_id": "S10",
+        "source_ref": "intake-2215#02 (size aging from the long-wait tail) and #01 (threshold at the valley); intake-2219#04 (no aging bound in the literature)",
+        "implementation_ref": "lane KVU:240-246 (KVU-15d), kv_pool_admission.py:159-163 (16384 about p90)",
+        "mechanism": "queue-wait observability and threshold/aging tuning doctrine",
+        "consumer": "serving_call.v1 primitives records; the lease threshold",
+        "application": "KVU-15d verdict rider; retained doctrine",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "SRF-A2",
+          "SRF-A3",
+          "FA-A2"
+        ],
+        "basis": "KVU-15d adds long_prefill and the lease wait; the verdict enum is the residual; the threshold re-check reads P2's table; the aging bound comes from our own tail."
+      },
+      {
+        "scan_id": "S11",
+        "source_ref": "intake-2215#06 (NPU/PD gates, 256 default) and #03 (bounded short-pass already exists); intake-2217#07 (learned partition, 50-120 min adaptation) and #02 (in-batch lever untouched)",
+        "implementation_ref": "kv_pool_admission.py:59-62 @ 65fbdce; lane KVU:1312-1317, :378",
+        "mechanism": "platform-specific install, defaults and learned partitioning",
+        "consumer": "none",
+        "application": "decline / retained note",
+        "disposition": "declined",
+        "ledger_ids": [
+          "SRF-A5",
+          "SRF-A6",
+          "EW-A3",
+          "EW-A4"
+        ],
+        "basis": "Wrong for our traffic shape and request rate, already present at the admission layer, or orthogonal to the in-batch lever."
+      },
+      {
+        "scan_id": "S12",
+        "source_ref": "intake-2216#00 and #02 (route on L_total = prompt + max_output; EMA chars-per-token calibration); intake-2220#02 (routing-only gain is load-regime dependent)",
+        "implementation_ref": "dispatch_log.py:105-118 (prompt_chars, n_tokens_budget, ts_arrival, fleet in-flight; no token estimate); serving_calls.py result.prompt_tokens",
+        "mechanism": "total-budget routing signal, offline calibration, load-regime stratification",
+        "consumer": "WP-15 replay inputs and scoring",
+        "application": "arm (b), the chars-per-token fit and the stratified score",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "TB-A1",
+          "TB-A2",
+          "GL-A1"
+        ],
+        "basis": "All inputs are logged; nothing fits, uses or stratifies them."
+      },
+      {
+        "scan_id": "S13",
+        "source_ref": "intake-2216#04 (pools differ only in max_model_len) and #03 (two tiers; spillover with final check); intake-2218#05 (static pools cost long-request completions)",
+        "implementation_ref": "orchestration/stack_topology.yaml:151-159 (full + halves, burst_prefer_split); concurrency_aware.py:1603-1614",
+        "mechanism": "static two-tier pool split and its long-request cost",
+        "consumer": "frontdoor fleet topology",
+        "application": "arm (e) with mid-session crossing count and long-request delta; design constraints",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "TB-A5",
+          "TB-A9",
+          "TB-A10",
+          "TB-A6",
+          "MD-A2"
+        ],
+        "basis": "The full/half shapes already differ in speed; no paper models stickiness; the only pool measurement puts the cost on long requests; the max_model_len lever itself does not transfer."
+      },
+      {
+        "scan_id": "S14",
+        "source_ref": "intake-2216#01 (preemption storms; alert on preemption not utilization) and #05/#06 (simulator-only headlines); intake-2220#02 (HOL magnitude class)",
+        "implementation_ref": "lane KVU:1363 (DI-126), GPU:335 (PB-QCOST-1)",
+        "mechanism": "HOL-blocking signature; budget necessary-not-sufficient",
+        "consumer": "DI-126 monitor; KVU-16g framing",
+        "application": "monitor signature; retained framing; headline decline",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "TB-A3",
+          "TB-A8",
+          "TB-A7",
+          "GL-A3"
+        ],
+        "basis": "The signature sharpens an existing monitor; the numbers are non-evidence."
+      },
+      {
+        "scan_id": "S15",
+        "source_ref": "intake-2221#00 (in-flight long prefill is the blocker) and #07 (chunk-size efficiency); intake-2218#02 (fixed per-iteration time budget applies to every iteration)",
+        "implementation_ref": "server-context.cpp:2793, :3205-3230, :3614 @ ffc1bac82 (fixed slot-order pending-prompt loop; verified by main 2026-10-21); commit 98c0ce12a prefill_budget_get() returns 0 when n_generating == 0 (verified by main)",
+        "mechanism": "slot-order head-of-line inside update_slots; decode-gated budget",
+        "consumer": "llama-server :8083 slot scheduling; KVU-16g-2 v11 enable",
+        "application": "PB-HOL-1 probe; DI-126 mechanism and thresholds; KVU-16g-2 decode-gating rider",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "FP-A1",
+          "FP-A2",
+          "FP-A3",
+          "MD-A1",
+          "MD-A3"
+        ],
+        "basis": "Structural gap verified in the frozen source; the fit predicts a 4 s vs 75 s asymmetry no measurement has ever taken."
+      },
+      {
+        "scan_id": "S16",
+        "source_ref": "intake-2221#02 (S-EDF ordering, SLO-aware batching) and #01 (operator-level preemption); intake-2218#03 (LARS) and #06 (SPP/KVP)",
+        "implementation_ref": "ggml backend scheduler (one graph per ubatch; abort discards work); no SLO classes at server or orchestrator; one MI210",
+        "mechanism": "preemption primitives and deadline-driven priorities",
+        "consumer": "none today",
+        "application": "ordering-fix trigger (portable half of S-EDF); declines for the rest; ggml primitive monitor",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "FP-A4",
+          "FP-A5",
+          "FP-A6",
+          "FP-A9",
+          "MD-A5"
+        ],
+        "basis": "Only iteration-level ordering is portable; preemption, deadlines and multi-device parallelism have no mechanism or consumer here."
+      },
+      {
+        "scan_id": "S18",
+        "source_ref": "intake-2222#02 (batch homogeneity is the only single-instance mechanism), #05 (gain vanishes when prefill and decode share an instance), #01 (dual queue / spatial pools)",
+        "implementation_ref": "server-context.cpp:3205-3230 @ ffc1bac82 (one batch mixes a long chunk and other slots); kv_pool_admission.py:907-916 @ 65fbdce (lease = orchestrator-level temporal split); stack_topology.yaml:151-159 (full + halves)",
+        "mechanism": "prefill batch homogeneity; static length pools",
+        "consumer": ":8083 slot scheduling; frontdoor fleet tier arm; KVU-15a lease",
+        "application": "DI-126 co-batch component; PB-HOL-1 solo-short rule; WP-15 valley-threshold tier arm; lease note; graph-bucketing decline",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "LP-A1",
+          "LP-A2",
+          "LP-A3",
+          "LP-A4",
+          "LP-A5"
+        ],
+        "basis": "The co-batch component is unmeasured; the lease already serialises long prefills; HIP graphs are decode-only and VRAM headroom is about 2.2 GiB."
+      },
+      {
+        "scan_id": "S19",
+        "source_ref": "intake-2223#00 (per-slot deadlines merged by min), #01 (monotone cost model T(n, c)), #03 (one-sided P99 margin), #04 (per-request D_i), #02 (decode-only fallback, admission, aging)",
+        "implementation_ref": "lane GPU:335-336 (PB-QCOST-1 fit at gen = 3 / decode_rows 24; rmse 40-65 ms; no P99 residual); KVU:1114-1118 (KVU-16g-2 target-ms from the fit); PLAN_kvu16g.md:8 (64-token floor)",
+        "mechanism": "deadline-derived per-iteration budget with a one-sided prediction margin",
+        "consumer": "PB-QCOST-1 fit and KVU-16g-2 target-ms choice",
+        "application": "PB-QCOST-1 per-n re-validation and P99 residual; KVU-16g-2 margin rider; TPOT-class monitor; grid/admission declines",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "SW-A1",
+          "SW-A2",
+          "SW-A3",
+          "SW-A4",
+          "SW-A5",
+          "SW-A6",
+          "SW-A7"
+        ],
+        "basis": "The fit has no n dependence and no P99 residual; lockstep decode collapses the per-slot form; the floor already bounds starvation."
+      },
+      {
+        "scan_id": "S17",
+        "source_ref": "intake-2218#01 (small chunks free on H100/FlashInfer); intake-2219#05 (asymmetric loss, 105 ms target) and #06 (APC fragmentation); intake-2221#07 (polynomial predictor); intake-2220#04 (decode-clock knee)",
+        "implementation_ref": "lane GPU:335-336 (PB-QCOST-1 324 ms intercept); KVU:378, :1114-1118 (KVU-16g A/B log); rocm-verify-profile-backend.md:1442-1452",
+        "mechanism": "prefill cost modelling, chunk sizing, fragmentation, GPU clocks",
+        "consumer": "PB-QCOST-1 / KVU-16g-2 design; MI210 posture",
+        "application": "retained knowledge; fragmentation monitor; energy decline",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MD-A4",
+          "FA-A4",
+          "FA-A5",
+          "FP-A7",
+          "FP-A8",
+          "GL-A5",
+          "GL-A4"
+        ],
+        "basis": "The local fit already carries what transfers; small chunks and energy knobs are contradicted or not objectives here; fragmentation has an observable trigger."
+      }
+    ],
+    "outcome_reviews": {
+      "XP-A1": {
+        "required_outcome": "The replay reports the weighted KV+in-flight arm beside the others.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "XP-A2": {
+        "required_outcome": "The replay reports the overload-prefilter/P2C arm with a separate cold-session rule.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "XP-A3": {
+        "required_outcome": "Every arm is scored by the re-prefill fraction on returning sessions; an arm that raises it cannot be kept.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "XP-A4": {
+        "required_outcome": "A per-role uncached-prompt-length histogram with tier-cut shares exists in the HSF-4 report.",
+        "review_status": "preserved",
+        "review_basis": "Main read HSF-4 (analytic half done, log half open) and serving_calls.py fields; the refined HSF-4 line names the per-role histogram, the cuts, alpha(B), the ceiling and the mechanism label.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+            "task_id": "HSF-4",
+            "task_text": "- [ ] **HSF-4 — Reload-vs-re-prefill crossover per lineup model (intake-2119#record, intake-2214#record, intake-2216#record, intake-2220#record).** For each served model compute KV bytes/token and append-prefill FLOPs/token from config, express GB per PFLOP, and set against MI210 H2D (~28.9 GB/s measured plateau) and the CPU --cache-ram copy rate; add the agentic hit rate and append-length distribution from orchestrator session logs, reported PER ROLE as an uncached-prompt-length histogram (prompt_tokens - cached_prompt_tokens from serving_call.v1; dispatch.v1 prompt_chars for the fleet) with, at candidate tier cuts B in {1K, 2K, 4K, 8K, 16K, 64K}, the share of requests and of uncached tokens below B (alpha(B)) and the ceiling alpha(B)*(1 - 1/rho) with rho = measured full-vs-half shape-speed ratio (the 1K cut is the prefill-compute HOL scale, the 8K-16K cuts the KV-reservation scale; label which mechanism each cut speaks to), so DI-126 and the WP-15 tier arm read one table. Analytic plus log mining; output feeds the placement KV-recovery term.",
+            "acceptance": "The HSF-4 report gains a per-role histogram table with alpha(B) and the ceiling at the named cuts, labelled by mechanism; analytic plus log mining, zero inference; the already-done analytic half is unchanged."
+          }
+        ]
+      },
+      "XP-A5": {
+        "required_outcome": "The NUMA split of slot-file pages is recorded at the next swap-cost measurement; node-local placement filed only if material.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M1: trigger prose under within-role-placement; no measurement exists today and none can be taken without the next migration probe; nothing to build before it.",
+        "task_refs": []
+      },
+      "XP-A6": {
+        "required_outcome": "The PP-vs-EP position is visible where the single-host prefill split is decided.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K3: numa-prefill-decode-disaggregation is blocked on PF1; the position changes no trigger.",
+        "task_refs": []
+      },
+      "XP-A7": {
+        "required_outcome": "Corroboration of the model-specific-kernel stance is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K1: no action; the stance already governs AutoKernel work.",
+        "task_refs": []
+      },
+      "XP-A8": {
+        "required_outcome": "No future reader cites the inverted TTL sentence or the 300k figure.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K4: carried in intake-2214 reader_should_conclude and intake-2136 dive_corrections; no handoff edit needed.",
+        "task_refs": []
+      },
+      "XP-A9": {
+        "required_outcome": "A fleet-wide prefix index is built only if affinity is shown to matter and the fleet stays multi-instance.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M2: both trigger conditions are observable (WP-15 arm (d) result; KVU-12 outcome); building earlier risks a moot index.",
+        "task_refs": []
+      },
+      "XP-A10": {
+        "required_outcome": "A shared host prefix store is priced only at the M2 trigger.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M2: same trigger; KVU-12 unified KV is the cheaper route and is already filed.",
+        "task_refs": []
+      },
+      "XP-A11": {
+        "required_outcome": "The does-not-apply set is reviewed by the operator with each item's prior disposition, not dismissed.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K4: plan Q3 lists the items with their 2026-10-20 dispositions (3FS declined; MORI DI-140/142 monitors; hysteresis K row; vision LB and SO compile service have no consumer; wide-EP no second device).",
+        "task_refs": []
+      },
+      "XP-A12": {
+        "required_outcome": "Time-budget batching is not re-filed.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K1: PB-QCOST-1 (offline fit done) and KVU-16g/16g-2 own it.",
+        "task_refs": []
+      },
+      "SRF-A1": {
+        "required_outcome": "DI-126 names its components with a remedy each and a per-component firing condition.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "SRF-A2": {
+        "required_outcome": "When KVU-15d lands, the primitives record carries the admission verdict beside the lease wait (rider in the DI-126 line).",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "SRF-A3": {
+        "required_outcome": "The threshold/aging tuning doctrine is retained where the lease threshold lives.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: the 16384 re-check reads P2's histogram; no separate task.",
+        "task_refs": []
+      },
+      "SRF-A4": {
+        "required_outcome": "The lane-aware pop is the named remedy for component (i), built only when (i) fires and only with a fine budget.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "SRF-A5": {
+        "required_outcome": "Platform-specific parts are not copied.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: NPU/PD gates, FCFS-only install, 256 default and warning_once semantics are wrong for our traffic and engine.",
+        "task_refs": []
+      },
+      "SRF-A6": {
+        "required_outcome": "The existing bounded short-pass rule is recorded so it is not re-filed.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: kv_pool_admission.py:59-62, 907-916 already implements it; the 32K rule stays declined.",
+        "task_refs": []
+      },
+      "TB-A1": {
+        "required_outcome": "The replay scores rules on L_total and on prompt length and reports both.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "TB-A2": {
+        "required_outcome": "A per-client-class chars-per-token fit with dispersion and conservative-estimate mis-route rate is produced from the join.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "TB-A3": {
+        "required_outcome": "DI-126 states the signature: watch TTFT-under-long-prefill and preemption, not utilization.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "TB-A4": {
+        "required_outcome": "alpha(B) and the ceiling alpha(B)(1-1/rho) are reported at the named cuts as an upper bound.",
+        "review_status": "preserved",
+        "review_basis": "Main read HSF-4 (analytic half done, log half open) and serving_calls.py fields; the refined HSF-4 line names the per-role histogram, the cuts, alpha(B), the ceiling and the mechanism label.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+            "task_id": "HSF-4",
+            "task_text": "- [ ] **HSF-4 — Reload-vs-re-prefill crossover per lineup model (intake-2119#record, intake-2214#record, intake-2216#record, intake-2220#record).** For each served model compute KV bytes/token and append-prefill FLOPs/token from config, express GB per PFLOP, and set against MI210 H2D (~28.9 GB/s measured plateau) and the CPU --cache-ram copy rate; add the agentic hit rate and append-length distribution from orchestrator session logs, reported PER ROLE as an uncached-prompt-length histogram (prompt_tokens - cached_prompt_tokens from serving_call.v1; dispatch.v1 prompt_chars for the fleet) with, at candidate tier cuts B in {1K, 2K, 4K, 8K, 16K, 64K}, the share of requests and of uncached tokens below B (alpha(B)) and the ceiling alpha(B)*(1 - 1/rho) with rho = measured full-vs-half shape-speed ratio (the 1K cut is the prefill-compute HOL scale, the 8K-16K cuts the KV-reservation scale; label which mechanism each cut speaks to), so DI-126 and the WP-15 tier arm read one table. Analytic plus log mining; output feeds the placement KV-recovery term.",
+            "acceptance": "The HSF-4 report gains a per-role histogram table with alpha(B) and the ceiling at the named cuts, labelled by mechanism; analytic plus log mining, zero inference; the already-done analytic half is unchanged."
+          }
+        ]
+      },
+      "TB-A5": {
+        "required_outcome": "The two-tier arm is scored with the mid-session crossing count and the long-request delta.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "TB-A6": {
+        "required_outcome": "Nobody assumes the vLLM max_model_len concurrency lever transfers to llama-server slots.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: mechanism-specific; verification folds into any future tier design, not a task now.",
+        "task_refs": []
+      },
+      "TB-A7": {
+        "required_outcome": "The headline savings are never quoted as expected gain.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: simulator-only, internally inconsistent, withdrawn duplicate with other numbers, same-group corroboration only.",
+        "task_refs": []
+      },
+      "TB-A8": {
+        "required_outcome": "KVU-16g is understood as necessary-not-sufficient for memory provisioning.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: on one MI210 the binding resource is iteration time; no new task.",
+        "task_refs": []
+      },
+      "TB-A9": {
+        "required_outcome": "Any spillover fallback re-checks capacity.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K1: design constraint on P1 arms; the state machine already filters by held regions.",
+        "task_refs": []
+      },
+      "TB-A10": {
+        "required_outcome": "No tier arm uses more than one threshold.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K1: bounds P1 arm (e).",
+        "task_refs": []
+      },
+      "EW-A1": {
+        "required_outcome": "If component (i) fires, the candidate ordering rule is the static aging score shape with locally fitted weights, composed with slot affinity.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "EW-A2": {
+        "required_outcome": "The DI-126 line records that the learned-lane variant adds no numbers and stays unnumbered.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "EW-A3": {
+        "required_outcome": "Learned partitioning is not built.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: 10-500 req/s Poisson design with a 50-120 min adaptation horizon longer than our bursts; the frontdoor serves a handful of agents.",
+        "task_refs": []
+      },
+      "EW-A4": {
+        "required_outcome": "KVU-16g / KVU-15a are not reopened on account of EWSJF.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: the paper stays above the engine and calls the in-batch layer orthogonal.",
+        "task_refs": []
+      },
+      "EW-A5": {
+        "required_outcome": "EWSJF is never cited for numbers.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K4: entry reader_should_conclude and contradicting_evidence carry the defects.",
+        "task_refs": []
+      },
+      "MD-A1": {
+        "required_outcome": "A short prefill under a long prefill with no slot decoding is measured with the budget on and off.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "MD-A2": {
+        "required_outcome": "Any tier arm reports the long-request completion/throughput delta beside the short-TTFT tail.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "MD-A3": {
+        "required_outcome": "DI-126 carries the one-iteration threshold (1.3-1.8 s) that separates a budget failure from queue wait.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "MD-A4": {
+        "required_outcome": "Nobody chases sub-512 chunks on the MI210 on the strength of Medha.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: contradicted locally by the 324 ms per-iteration intercept of the PB-QCOST-1 fit.",
+        "task_refs": []
+      },
+      "MD-A5": {
+        "required_outcome": "LARS, SPP and KVP are not built.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: no per-request deadlines on our API; SPP/KVP need a second device (DI-016 trigger exists).",
+        "task_refs": []
+      },
+      "FA-A1": {
+        "required_outcome": "DI-126 states that an ordering policy moves queue wait only and must name the component that fired.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "FA-A2": {
+        "required_outcome": "No aging bound is imported from the literature.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: the paper has no bound, SLO term or per-class split; the bound comes from our own long-request wait tail under strict short-first.",
+        "task_refs": []
+      },
+      "FA-A3": {
+        "required_outcome": "The lane-aware pop remedy carries its fine-budget precondition.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "FA-A4": {
+        "required_outcome": "PB-QCOST-1 may cite the asymmetric loss and the 105 ms target as design references.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: the MLP with GPU-memory features does not transfer; the gain is 0.1 s-arrival-only with a regression at 1.0 s.",
+        "task_refs": []
+      },
+      "FA-A5": {
+        "required_outcome": "A minimum-effective-chunk rule is filed only if the budget is observed to fragment.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M3: trigger observable in the KVU-16g A/B log (>= 4 prefilling slots with < 64 tokens each per iteration); the literature gain is against a degenerate baseline.",
+        "task_refs": []
+      },
+      "FA-A6": {
+        "required_outcome": "The 10.24% / 11.27%, APC -22% and LPRS -3.5% figures are never cited without their regime.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K4: carried in the entry reader_should_conclude.",
+        "task_refs": []
+      },
+      "GL-A1": {
+        "required_outcome": "The replay score and holdout are stratified by load regime.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "GL-A2": {
+        "required_outcome": "alpha(1024) is reported from our log and the two cutoff scales are labelled by mechanism.",
+        "review_status": "preserved",
+        "review_basis": "Main read HSF-4 (analytic half done, log half open) and serving_calls.py fields; the refined HSF-4 line names the per-role histogram, the cuts, alpha(B), the ceiling and the mechanism label.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+            "task_id": "HSF-4",
+            "task_text": "- [ ] **HSF-4 — Reload-vs-re-prefill crossover per lineup model (intake-2119#record, intake-2214#record, intake-2216#record, intake-2220#record).** For each served model compute KV bytes/token and append-prefill FLOPs/token from config, express GB per PFLOP, and set against MI210 H2D (~28.9 GB/s measured plateau) and the CPU --cache-ram copy rate; add the agentic hit rate and append-length distribution from orchestrator session logs, reported PER ROLE as an uncached-prompt-length histogram (prompt_tokens - cached_prompt_tokens from serving_call.v1; dispatch.v1 prompt_chars for the fleet) with, at candidate tier cuts B in {1K, 2K, 4K, 8K, 16K, 64K}, the share of requests and of uncached tokens below B (alpha(B)) and the ceiling alpha(B)*(1 - 1/rho) with rho = measured full-vs-half shape-speed ratio (the 1K cut is the prefill-compute HOL scale, the 8K-16K cuts the KV-reservation scale; label which mechanism each cut speaks to), so DI-126 and the WP-15 tier arm read one table. Analytic plus log mining; output feeds the placement KV-recovery term.",
+            "acceptance": "The HSF-4 report gains a per-role histogram table with alpha(B) and the ceiling at the named cuts, labelled by mechanism; analytic plus log mining, zero inference; the already-done analytic half is unchanged."
+          }
+        ]
+      },
+      "GL-A3": {
+        "required_outcome": "The HOL magnitude class is recorded without changing the DI-126 trigger.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: the 6.5 pp figure is A100/Dynamo-specific.",
+        "task_refs": []
+      },
+      "GL-A4": {
+        "required_outcome": "Energy does not enter WP-15 as a decision axis unless the operator adds it as an objective.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined with a named re-open trigger: package energy is not lane-exclusive (AK-X-5/5a) and energy is not in the measurement constitution; first step on re-open = an energy-per-dispatch column from RAPL energy_uj joined to dispatch.v1.",
+        "task_refs": []
+      },
+      "GL-A5": {
+        "required_outcome": "The MI210 decode-clock probe is the first thing run if a power or thermal cap ever constrains the champion.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: not applicable under the maximum-performance fixed-clock posture; the rsmi counter path is recorded.",
+        "task_refs": []
+      },
+      "GL-A6": {
+        "required_outcome": "The GreenLLM abstract headline is never cited.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K4: entry reader_should_conclude carries the Table 3/4 boundary.",
+        "task_refs": []
+      },
+      "FP-A1": {
+        "required_outcome": "DI-126 states the slot-order mechanism with its source lines and requires id_slot of both requests.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "FP-A2": {
+        "required_outcome": "KVU-16g-2 carries the rider that the budget is decode-gated and does not cover DI-126.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "FP-A3": {
+        "required_outcome": "PB-HOL-1 measures the collision in the 2x2 (+1) arms with the predeclared rule.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "FP-A4": {
+        "required_outcome": "The ordering fix and prefill-vs-prefill cap are built only after PB-HOL-1 confirms slot-order blocking.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M4: trigger = PB-HOL-1 above/off >= 2x below/off; experimental branch; gate named in the prose.",
+        "task_refs": []
+      },
+      "FP-A5": {
+        "required_outcome": "Operator-level preemption is not ported.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: one ggml graph per ubatch, abort discards work, no per-request streams; the cheaper equivalent (a smaller prompt chunk) exists.",
+        "task_refs": []
+      },
+      "FP-A6": {
+        "required_outcome": "S-EDF with SLO classes is not built.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: no SLO classes at server or orchestrator; revisit only if per-role TTFT SLOs are declared.",
+        "task_refs": []
+      },
+      "FP-A7": {
+        "required_outcome": "The polynomial TTFT predictor is not duplicated.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: PB-QCOST-1 already has it with the q*c term.",
+        "task_refs": []
+      },
+      "FP-A8": {
+        "required_outcome": "-ub 2048 stays for solo prefill.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: Figure 3 / Takeaway-1 corroborate the KVU-16g design.",
+        "task_refs": []
+      },
+      "FP-A9": {
+        "required_outcome": "Operator-level preemption is revisited only if ggml gains a suspend/resume primitive.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M4: trigger = an upstream ggml change that lets ggml_backend_sched_graph_compute return partway and resume.",
+        "task_refs": []
+      },
+      "LP-A1": {
+        "required_outcome": "DI-126 names co-batch inflation as a distinct component and which lever touches which component.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "LP-A2": {
+        "required_outcome": "PB-HOL-1 records a solo-short reference and the iteration ms at collision and carries the batch-homogeneity decision rule.",
+        "review_status": "preserved",
+        "review_basis": "Main verified the slot-order loop and the decode-gated budget in the frozen tree (server-context.cpp:2793/3205-3230/3614 @ ffc1bac82; 98c0ce12a prefill_budget_get) and read the SRF/EWSJF/fairness passages; PB-HOL-1 is the deciding probe and the DI-126/KVU-16g-2 prose in section 4 carries the component split, remedies and thresholds.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-HOL-1",
+            "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger.",
+            "acceptance": "Two-request collision probe in a GPU window on the champion store build (production v10 untouched); six-control floor named in the line; the predeclared rule decides whether the ordering-fix trigger opens or DI-126 closes."
+          }
+        ]
+      },
+      "LP-A3": {
+        "required_outcome": "The two-tier arm uses the prompt-length valley among its thresholds and reports long-request throughput.",
+        "review_status": "preserved",
+        "review_basis": "Main read the source passage and the current selection code (concurrency_aware.py @ 65fbdce) and the dispatch.v1 writer; the refined WP-15 line carries this arm/metric verbatim; offline replay only, no activation.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/within-role-placement-state-machine.md",
+            "task_id": "WP-15",
+            "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+            "acceptance": "Offline replay only (zero inference); the arm comparison includes the re-prefill fraction, load-regime stratification, the long-request delta for the tier arm and the chars-per-token fit; holdout window and the predeclared keep rule unchanged; NOT JUDGEABLE until dispatch.v1 has two traffic windows after the next stack start."
+          }
+        ]
+      },
+      "LP-A4": {
+        "required_outcome": "Graph-bucketed short prefill is not built.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: np = 4 agentic traffic, decode-only HIP graphs, 228-277 MB per graph against about 2.2 GiB VRAM headroom, and the paper reports the gain vanishes when prefill and decode share an instance.",
+        "task_refs": []
+      },
+      "LP-A5": {
+        "required_outcome": "The KVU-15a lease is recognised as orchestrator-level temporal disaggregation so no engine-side split is filed as new.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K2: kv_pool_admission.py already serialises long prefills with a bounded short-pass; the engine residual is what PB-HOL-1 measures.",
+        "task_refs": []
+      },
+      "SW-A1": {
+        "required_outcome": "The PB-QCOST-1 fit is re-validated at n = 1 and n = 4 generating slots with per-n intercepts before the np4 enable.",
+        "review_status": "preserved",
+        "review_basis": "Main read the SLOWeave passages and the PB-QCOST-1 report note (fit at gen = 3 / decode_rows 24, rmse 40-65 ms, no P99 residual); the refined PB-QCOST-1 line carries the per-n re-validation and the P99 residual column; the KVU-16g-2 rider in section 4.4 names the one-sided margin rule.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-QCOST-1",
+            "task_text": "- [ ] **PB-QCOST-1 — Fit a quadratic prefill cost model for the existing prefill budget (intake-2116#record, intake-2136#record, intake-2223#record).** Regress iteration ms on q (uncached tokens) and q*c (c = cached or already-computed prefix) from the existing pb_ms_per_tok samples and replay the 3x20k + 80k neighbour scenario with the fitted budget vs the current linear budget; record decode-under-prefill ratio and solo-prefill delta with the noise floor and its unit. The offline fit was taken at one decode-batch point (gen = 3 slots, decode_rows 24 with draft rows): re-validate it at n = 1 and n = 4 generating slots (decode_rows 8 and 32) before the budget is enabled on the np4 :8083 shape, report the per-n intercept with the noise floor and its unit, and add the held-out P99 absolute residual beside rmse/MAPE so KVU-16g-2 can set target-ms as the TPOT target minus that one-sided margin. Offline first; follows KVU-16g's A/B.",
+            "acceptance": "Offline re-validation on existing pb_ms_per_tok samples at two more decode-batch points plus a P99 residual column in the report; zero inference unless the samples at n = 1 / n = 4 do not exist, in which case they come from the KVU-16g A/B windows already planned."
+          }
+        ]
+      },
+      "SW-A2": {
+        "required_outcome": "PB-QCOST-1 reports the held-out P99 absolute residual and KVU-16g-2 sets target-ms as the TPOT target minus that margin.",
+        "review_status": "preserved",
+        "review_basis": "Main read the SLOWeave passages and the PB-QCOST-1 report note (fit at gen = 3 / decode_rows 24, rmse 40-65 ms, no P99 residual); the refined PB-QCOST-1 line carries the per-n re-validation and the P99 residual column; the KVU-16g-2 rider in section 4.4 names the one-sided margin rule.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+            "task_id": "PB-QCOST-1",
+            "task_text": "- [ ] **PB-QCOST-1 — Fit a quadratic prefill cost model for the existing prefill budget (intake-2116#record, intake-2136#record, intake-2223#record).** Regress iteration ms on q (uncached tokens) and q*c (c = cached or already-computed prefix) from the existing pb_ms_per_tok samples and replay the 3x20k + 80k neighbour scenario with the fitted budget vs the current linear budget; record decode-under-prefill ratio and solo-prefill delta with the noise floor and its unit. The offline fit was taken at one decode-batch point (gen = 3 slots, decode_rows 24 with draft rows): re-validate it at n = 1 and n = 4 generating slots (decode_rows 8 and 32) before the budget is enabled on the np4 :8083 shape, report the per-n intercept with the noise floor and its unit, and add the held-out P99 absolute residual beside rmse/MAPE so KVU-16g-2 can set target-ms as the TPOT target minus that one-sided margin. Offline first; follows KVU-16g's A/B.",
+            "acceptance": "Offline re-validation on existing pb_ms_per_tok samples at two more decode-batch points plus a P99 residual column in the report; zero inference unless the samples at n = 1 / n = 4 do not exist, in which case they come from the KVU-16g A/B windows already planned."
+          }
+        ]
+      },
+      "SW-A3": {
+        "required_outcome": "Nobody builds per-slot deadline merging on llama-server.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: lockstep decode makes every per-slot deadline equal; the only residual is the host gap GPU-ZOS-1 already measures.",
+        "task_refs": []
+      },
+      "SW-A4": {
+        "required_outcome": "Per-request TPOT classes are considered only if a role-to-TPOT-class mapping ever becomes a request parameter.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor M4: trigger named and observable; no per-request TPOT on the API today and the paper did not evaluate the heterogeneous case.",
+        "task_refs": []
+      },
+      "SW-A5": {
+        "required_outcome": "No start-up profiling grid replaces the closed-form quadratic.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: the quadratic inverts in closed form at held-out MAPE 4.0-7.8%; a grid costs GPU time with no shown gain.",
+        "task_refs": []
+      },
+      "SW-A6": {
+        "required_outcome": "The no-decoder arm of PB-HOL-1 remains the deciding measurement for the collision.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only K5: SLOWeave leaves the no-decoder case unbounded and admits one prefill per iteration, so it corroborates rather than replaces the probe.",
+        "task_refs": []
+      },
+      "SW-A7": {
+        "required_outcome": "No admission controller or aging threshold is added to the budget.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Declined: the 64-token floor already bounds prefill starvation as a bounded-violation policy and the API has no reject/redirect path.",
+        "task_refs": []
+      }
+    },
+    "proposed_tasks": [
+      {
+        "owner": "handoffs/active/within-role-placement-state-machine.md",
+        "task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record, intake-2214#record, intake-2216#record, intake-2218#record, intake-2220#record).** Offline: from recorded dispatch logs (dispatch.v1 joined to serving_call.v1 on request_id; merge every uvicorn worker's records by time, in-flight state is per worker) reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection (sticky session, then preference order), then re-simulate: (a) the token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests); (b) the same rule on L_total = estimated prompt tokens + n_tokens_budget instead of prompt length alone; (c) a weighted score a*KV_tokens + b*in_flight with (a, b) swept; (d) sticky-session-first unless fleet waiting > N for N in {1, 2, 5}, then power-of-two-choices on in-flight, with a separate cold-session (first-turn) rule; (e) a two-tier rule L_total <= B to the half instances, > B to the full instance for B in {2K, 4K, 8K, 16K} plus the prompt-length valley from the HSF-4 histogram, counting sessions whose L_total crosses B mid-session and reporting the long-request completion/throughput delta beside the short-TTFT tail. Score every arm by max/mean token imbalance, TTFT-tail deltas AND the fraction of prompt tokens re-prefilled when a returning session leaves its sticky instance (cached_prompt_tokens / prompt_tokens from serving_call.v1), stratified by load regime (fleet in-flight count and arrival-rate bucket at ts_arrival), never pooled; fit chars-per-token per client.class from the same join and report its dispersion and the mis-route rate of a conservative (mean minus sigma) estimate. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation; an arm that raises the re-prefill fraction or the long-request cost is not a win whatever its imbalance.",
+        "previous_task_text": "- [ ] **WP-15 — Replay-score KV-length-aware instance selection on the frontdoor fleet (intake-2119#record, intake-2116#record).** Offline: from recorded dispatch logs reconstruct per-instance in-flight requests and reserved tokens for the full + two half instances under the current selection, then re-simulate a token-balanced rule (prefer instances whose tokens + request length stay under 1.05x the fleet mean weighted by measured shape speed; among those the fewest requests) and report max/mean token imbalance and TTFT-tail deltas. Holdout = a later log window. Keep only if the replay gain exceeds its own window-to-window variation."
+      },
+      {
+        "owner": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "task_text": "- [ ] **HSF-4 — Reload-vs-re-prefill crossover per lineup model (intake-2119#record, intake-2214#record, intake-2216#record, intake-2220#record).** For each served model compute KV bytes/token and append-prefill FLOPs/token from config, express GB per PFLOP, and set against MI210 H2D (~28.9 GB/s measured plateau) and the CPU --cache-ram copy rate; add the agentic hit rate and append-length distribution from orchestrator session logs, reported PER ROLE as an uncached-prompt-length histogram (prompt_tokens - cached_prompt_tokens from serving_call.v1; dispatch.v1 prompt_chars for the fleet) with, at candidate tier cuts B in {1K, 2K, 4K, 8K, 16K, 64K}, the share of requests and of uncached tokens below B (alpha(B)) and the ceiling alpha(B)*(1 - 1/rho) with rho = measured full-vs-half shape-speed ratio (the 1K cut is the prefill-compute HOL scale, the 8K-16K cuts the KV-reservation scale; label which mechanism each cut speaks to), so DI-126 and the WP-15 tier arm read one table. Analytic plus log mining; output feeds the placement KV-recovery term.",
+        "previous_task_text": "- [ ] **HSF-4 — Reload-vs-re-prefill crossover per lineup model (intake-2119#record).** For each served model compute KV bytes/token and append-prefill FLOPs/token from config, express GB per PFLOP, and set against MI210 H2D (~28.9 GB/s measured plateau) and the CPU --cache-ram copy rate; add the agentic hit rate and append-length distribution from orchestrator session logs. Analytic plus log mining; output feeds the placement KV-recovery term."
+      },
+      {
+        "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+        "task_text": "- [ ] **PB-HOL-1 — Short-under-long prefill collision probe on :8083 (intake-2221#record, intake-2218#record, intake-2222#record).** On the champion store build with np = 3: one 64K prompt pinned by id_slot, a 128-token prompt pinned to another slot sent about midway through the long prefill; arms = {short slot index below, above the long slot} x {prefill budget off, on with pb512 armed by a third slot decoding} plus one arm with no slot decoding and the budget on, plus a solo-short reference run on the idle server; 3 repeats each in a GPU window; record short TTFT, both id_slot values, the iteration ms at collision and the prefill-budget iter log lines. PB-QCOST-1's fit predicts below/off about 4 s (one iteration at c about 32K), above/off about 75 s (the remaining iterations) and below/on about 1.2 s. Controls: frozen prompt pair manifest + GGUF sha; baseline = budget off; per-run raw timings retained; holdout = a second prompt pair; every run counted including failures. Rules: above/off >= 2x below/off confirms slot-order head-of-line blocking and opens the ordering-fix trigger below, otherwise DI-126 closes as not reproducible on this server; secondly, (collision TTFT - solo TTFT - deque wait) <= one solo short iteration closes batch homogeneity as a lever, >= one budget iteration adds the own-ubatch-for-a-new-short-prompt option to the same trigger."
+      },
+      {
+        "owner": "handoffs/active/gpu-serving-tie-in-program.md",
+        "task_text": "- [ ] **PB-QCOST-1 — Fit a quadratic prefill cost model for the existing prefill budget (intake-2116#record, intake-2136#record, intake-2223#record).** Regress iteration ms on q (uncached tokens) and q*c (c = cached or already-computed prefix) from the existing pb_ms_per_tok samples and replay the 3x20k + 80k neighbour scenario with the fitted budget vs the current linear budget; record decode-under-prefill ratio and solo-prefill delta with the noise floor and its unit. The offline fit was taken at one decode-batch point (gen = 3 slots, decode_rows 24 with draft rows): re-validate it at n = 1 and n = 4 generating slots (decode_rows 8 and 32) before the budget is enabled on the np4 :8083 shape, report the per-n intercept with the noise floor and its unit, and add the held-out P99 absolute residual beside rmse/MAPE so KVU-16g-2 can set target-ms as the TPOT target minus that one-sided margin. Offline first; follows KVU-16g's A/B.",
+        "previous_task_text": "- [ ] **PB-QCOST-1 — Fit a quadratic prefill cost model for the existing prefill budget (intake-2116#record, intake-2136#record).** Regress iteration ms on q (uncached tokens) and q*c (c = cached or already-computed prefix) from the existing pb_ms_per_tok samples and replay the 3x20k + 80k neighbour scenario with the fitted budget vs the current linear budget; record decode-under-prefill ratio and solo-prefill delta with the noise floor and its unit. Offline first; follows KVU-16g's A/B."
+      }
+    ],
+    "plan_sha256": "3bfc4eb3ad8adb39939184bc27d45e408b4c7d19265659461477135df873a7e1"
+  },
+  "stage4": {
+    "status": "complete",
+    "reconciled": true,
+    "applied_at": "2026-10-21T11:04:58Z",
+    "plan_path": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/PLAN.md",
+    "plan_sha256": "3bfc4eb3ad8adb39939184bc27d45e408b4c7d19265659461477135df873a7e1",
+    "operator_approval": "2026-10-21, plan approved as written; answers = plan section 12 recommended answers (Q1-Q6)",
+    "operator_answers": {
+      "Q1": "Proposed declines (section 9): confirmed; every declined source is a companion artifact, same-group restatement, variant of a lever already dived, or cluster-scale infrastructure with no consumer; the two unresolved recollections stay unverified.",
+      "Q2": "WP-15 as refined: run once two dispatch.v1 windows exist; let the KVU-12 outcome prune arms (d)/(e) and M2 rather than wait.",
+      "Q3": "Does-not-apply set (section 11): confirmed knowledge-only / declined with the prior dispositions.",
+      "Q4": "Lane-aware pop in llama-server (SRF-A4): wait; sample requests_deferred first, build only if DI-126 component (i) fires.",
+      "Q5": "PB-HOL-1: schedule with the next GPU window before the v11 stack-change package so the KVU-16g-2 gate text does not claim DI-126 coverage.",
+      "Q6": "Energy as objective (GL-A4): no change now; first step if it ever enters the measurement constitution is an energy-per-dispatch column (RAPL energy_uj joined to dispatch.v1), not a routing term."
+    },
+    "applied": {
+      "handoffs_edited": 6,
+      "entries_updated": 10,
+      "proposed_tasks": 4,
+      "handoffs_created": 0
+    },
+    "deviations": []
   }
 }

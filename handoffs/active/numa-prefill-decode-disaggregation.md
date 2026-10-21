@@ -71,6 +71,7 @@ Phase 0 is the CPU-vs-MI210 prefill crossover, owned by mi210-big-model-and-acce
 - User flagged disaggregation as the "most interesting finding" of the 2026-04-26 intake batch, motivating this stub. Tier 2b critique surfaced after that flag; this stub records the qualified scope honestly.
 - Do NOT propagate the 4.48× / 1.4× / 525% headline numbers from DistServe / Splitwise / Mooncake without the workload caveats above. Those are goodput-under-SLO multi-tenant GPU numbers, not transferable defaults.
 - Closely related: [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) Phase F (KVCOMM) is the existing closest-analogue work and should be the integration point if this stub advances past Phase 0.
+- 2026-10-21 research intake (intake-2214#04, knowledge-only): a practitioner's position on DeepSeek's prefill parallelism: models with per-layer heterogeneity are PP-unfriendly, a full EP prefill needs substantial traffic and many prefill workers, so small/medium deployments favour a few dedicated prefill workers. Single-host analogue = prefill-dedicated halves; no consumer until the PF1 reopen trigger above fires.
 
 ## Progress checklist
 

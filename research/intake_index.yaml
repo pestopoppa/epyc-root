@@ -299526,8 +299526,19 @@
     design reference only), deepseek-ai/3FS (declined 2026-10-20 in intake-2136; URL recorded for citation: https://github.com/deepseek-ai/3FS,
     design notes docs/design_notes.md), SGLang model gateway docs (gateway already indexed as the Shepherd Model Gateway entry),
     Dynamo routing-concepts page (intake-1785 covers it).'
-  handoffs_updated: []
+  handoffs_updated:
+  - within-role-placement-state-machine.md
+  - heterogeneous-slot-fabric-residency.md
+  - kv-prefix-fork-and-paged-attention.md
+  - numa-prefill-decode-disaggregation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - XP-A1/A2/A3 -> P1 / WP-15 (refined)
+  - XP-A4 -> P2 / HSF-4 (refined)
+  - XP-A5 -> M1 (within-role trigger prose)
+  - XP-A9/A10 -> M2 (kv-prefix-fork trigger prose)
+  - XP-A6 -> K3; XP-A7/A12 -> K1; XP-A8/A11 -> K4 (entry-level)
   ingested_date: '2026-10-21'
 
 - id: intake-2215
@@ -299797,8 +299808,14 @@
     claim 7 absence statement reaches sources the reader was not given). Dive-surfaced: arXiv 2602.16603 (FlowPrefill) and
     arXiv 2606.09061 selected for wave 2; arXiv 2401.11181 (2024, disaggregated SJF/LJF prefill) and PR #12240 (batch-job
     scheduler, offline-batch concern) decline PROPOSED (operator confirms at Stage 3).'
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-unified-stack-rollout.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - SRF-A1/A2/A4 -> P3 (DI-126 monitor prose rewritten, KVU-15d verdict rider)
+  - SRF-A3/A6 -> K2
+  - SRF-A5 -> declined (platform-specific)
   ingested_date: '2026-10-21'
 
 - id: intake-2216
@@ -300160,8 +300177,18 @@
     the 1/W Law 2603.17280 and the vision paper 2603.21354 (same author core, restatements), ServeGen 2505.09999 and BurstGPT
     2401.17644 (production length distributions; our own HSF-4 log distribution is the relevant alpha), vllm-project/semantic-router
     (no evidence in the paper that the mechanism ships there).'
-  handoffs_updated: []
+  handoffs_updated:
+  - within-role-placement-state-machine.md
+  - heterogeneous-slot-fabric-residency.md
+  - kv-unified-stack-rollout.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - TB-A1/A2/A5 -> P1 / WP-15 (refined)
+  - TB-A4 -> P2 / HSF-4 (refined)
+  - TB-A3 -> P3 (DI-126 signature)
+  - TB-A6/A8 -> K2; TB-A9/A10 -> K1
+  - TB-A7 -> declined (simulator-only headlines)
   ingested_date: '2026-10-21'
 
 - id: intake-2217
@@ -300418,8 +300445,14 @@
     for our stack. Second reader (independent agent, 2026-10-21): re-find 9/9 (NBSP preserved), hash 9/9; support yes 8 /
     partial 1 / no 0 (claim 1 anchor names only the scoring function; the formula is verbatim in Sections 4.1 and 4.4.1);
     six reported_results groups match; the max_queues example value noted in claim 3.'
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-unified-stack-rollout.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - EW-A1/A2 -> P3 (DI-126 remedy shape for component (i))
+  - EW-A4 -> K2; EW-A5 -> K4
+  - EW-A3 -> declined (learned partitioning, adaptation horizon)
   ingested_date: '2026-10-21'
 
 - id: intake-2218
@@ -300685,8 +300718,18 @@
     hash 8/8; 7/8 byte-exact, claim-7 anchor re-found only modulo an NBSP the source carries (corrected to the source string
     and re-hashed); support yes 8 / partial 0 / no 0; eight numbers match; two paper-internal inconsistencies (P90 vs P99;
     KVP degree) recorded in contradicting_evidence.'
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-serving-tie-in-program.md
+  - kv-unified-stack-rollout.md
+  - within-role-placement-state-machine.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - MD-A1 -> P3 / PB-HOL-1 (no-decoder arm)
+  - MD-A3 -> P3 (DI-126 threshold)
+  - MD-A2 -> P1 / WP-15 (long-request delta)
+  - MD-A4 -> K5
+  - MD-A5 -> declined (LARS/SPP/KVP)
   ingested_date: '2026-10-21'
 
 - id: intake-2219
@@ -301003,8 +301046,15 @@
     reader (independent agent, 2026-10-21): re-find 13/13 (Eq. (1) in MathML alttext; U+00A0 byte-identical), hash 13/13;
     support yes 7 / partial 1 / no 0 (claim 1 over-read "the paper says so explicitly" about the SLO term, reworded); chunk-1024,
     weight-base, predictor and Ascend numbers all match.'
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-unified-stack-rollout.md
+  - gpu-serving-tie-in-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - FA-A1/A3 -> P3 (DI-126 component split and precondition)
+  - FA-A5 -> M3 (fragmentation guard)
+  - FA-A2 -> K2; FA-A4 -> K5; FA-A6 -> K4
   ingested_date: '2026-10-21'
 
 - id: intake-2220
@@ -301399,8 +301449,18 @@
     DVFS, same energy axis; decline unless energy becomes an objective), the unrelated Shi et al. GreenLLM (Dec 2024, carbon-aware
     fleets; decline, name collision only). 2026-10-21 second-reader correction: Table 4 baseline column fixed (6.0 pp / 3.8
     pp vs defaultNV), four anchor quotes restored to the source thin spaces.'
-  handoffs_updated: []
+  handoffs_updated:
+  - within-role-placement-state-machine.md
+  - heterogeneous-slot-fabric-residency.md
+  - kv-unified-stack-rollout.md
+  - gpu-serving-tie-in-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - GL-A1 -> P1 / WP-15 (load-regime stratification)
+  - GL-A2 -> P2 / HSF-4 (1K cut, mechanism label)
+  - GL-A3 -> K2; GL-A5 -> K5; GL-A6 -> K4
+  - GL-A4 -> declined (energy axis; re-open trigger named)
   ingested_date: '2026-10-21'
 
 - id: intake-2221
@@ -301804,8 +301864,16 @@
     n_batch, :3614 fill while batch.size() < n_batch @ ffc1bac82eeca6f9099e1ccd9ba49703c460a115, prefill_budget_get() returns
     0 when pb_iter.n_generating == 0 (98c0ce12a), and 98c0ce12a is NOT an ancestor of ffc1bac82 (experimental branch only;
     zero prefill_budget hits in the frozen file).'
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-serving-tie-in-program.md
+  - kv-unified-stack-rollout.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - FP-A1/A2/A3 -> P3 (DI-126 mechanism, KVU-16g-2 rider, PB-HOL-1)
+  - FP-A4/A9 -> M4
+  - FP-A7/A8 -> K5
+  - FP-A5/A6 -> declined (operator-level preemption; SLO classes)
   ingested_date: '2026-10-21'
 
 - id: intake-2222
@@ -302187,8 +302255,17 @@
     18/18 in paper.txt, hash 18/18; support yes 6 / partial 2 / no 0 (the partials are negative sub-statements wider than
     their anchors, content verified against the baseline list and Table 2); MLSys oral page confirmed under the v1 title;
     no factual mismatch.'
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-serving-tie-in-program.md
+  - kv-unified-stack-rollout.md
+  - within-role-placement-state-machine.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - LP-A1/A2 -> P3 (DI-126 co-batch component; PB-HOL-1 solo-short reference and rule)
+  - LP-A3 -> P1 / WP-15
+  - LP-A5 -> K2
+  - LP-A4 -> declined (graph bucketing)
   ingested_date: '2026-10-21'
 
 - id: intake-2223
@@ -302507,6 +302584,14 @@
     no handoff edited. Second reader (independent agent, 2026-10-21): re-find 8/8 (block scalars and U+2009 kept), hash 8/8;
     support yes 7 / partial 1 / no 0 (claim 6 anchors one Table 2 row; the rest verified by the reader); simulator constants
     and Tables 2-4 numbers exact; no factual mismatch.'
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-serving-tie-in-program.md
+  - kv-unified-stack-rollout.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'SW-A1/A2 -> P3 / PB-QCOST-1 (refined: per-n re-validation, P99 residual) + KVU-16g-2 margin rider'
+  - SW-A3/A6 -> K5
+  - SW-A4 -> M4
+  - SW-A5/A7 -> declined (profiled grid; admission controller)
   ingested_date: '2026-10-21'

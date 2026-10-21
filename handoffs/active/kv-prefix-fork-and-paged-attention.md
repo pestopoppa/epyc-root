@@ -738,3 +738,11 @@ CPU only, under `region-lock` (q1 after the coordinator's 2026-10-04 single-quad
 Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
 
 - [ ] **KPF-28 — DS41 (dsv4 memory) checkpoint and fork characterisation (intake-2116#record, intake-2136#record).** On the prefix-fork build with the DS41 GGUF record bytes per context checkpoint per component (raw SWA window, compressed planes and compressor state, indexer, engram), window-ring bytes and plane bytes separately, whether create_checkpoint/restore and the KPF-11 fork rule work on llama_kv_cache_dsv4 (hit length vs the checkpoint grid, 128-aligned vs dense), and resume prompt_n. Correctness class, CPU. Decides whether a 128-grid policy or a window-state-free checkpoint (needs DS41-CED.1) is worth building.
+
+## Research intake 2026-10-21 — DeepSeek V4.1-Flash deployment commentary (intake-2214..2223, see research/intake_index.yaml)
+
+Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the session's stage3_filing).
+
+**Dormant trigger (no checkbox, no index next action):**
+
+- XP-A9/XP-A10 (intake-2214#10, #11): monitor: a fleet-wide prefix-to-instance index (KPF-27's per-server radix index keyed by instance; router-owned, since llama-server emits no KV events) as the affinity input for frontdoor instance selection, or alternatively a shared host-RAM prefix store (the single-host analogue of a Mooncake pool, intake-472). Trigger = WP-15 arm (d) shows the re-prefill fraction on returning sessions >= 0.25 under the current sticky rule AND KVU-12 keeps the multi-instance frontdoor (a unified-KV single server makes both moot). Price both at that time, not before.
