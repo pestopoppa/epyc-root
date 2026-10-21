@@ -20,10 +20,12 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
   AC7  (needs --before) every claim in the pre-backfill copy keeps its grade, verdict and gate
        outcome; the pre-backfill frames are an unchanged prefix of the post-backfill copy.
        Adapter-fixture frame ids are pinned by tests/vidya/test_claim_tuple.py (lane A), not here.
-  AC9  (belief redesign §12.7) role architect_critic (27B gpu; spec_draft, kv_profile, routing)
-       returns PB-HOL-1 in the KNOB tier (and reports where KPF-18 item 7 landed); role frontdoor
-       (Qwen3.6-35B cpu) returns the KPF-18 item-7 arms as target context; the lineup target
-       (--stack-regime) returns "No beliefs at this regime" until the first post-restart trial.
+  AC9  (belief redesign §12.7, as decided 2026-10-21) role architect_critic (27B gpu; spec_draft,
+       kv_profile, routing): PB-HOL-1 AND the 27B KPF-18 item-7 claims each appear on the knob OR
+       target tier, shown with their value lines (they are `slot_serving`, so target tier is
+       expected; the tier is reported); role frontdoor (Qwen3.6-35B cpu): the 35B KPF-18 item-7
+       arms likewise; the lineup target (--stack-regime) returns "No beliefs at this regime"
+       until the first post-restart trial.
   AC8  10 random mechanism ids from the DS41 and Q38FN experiments.db stores each appear in the
        answer (detailed line, section index or answer `tried_index`) with an outcome.
 
@@ -299,32 +301,44 @@ def _identity(row: dict[str, Any]) -> str:
     return " ".join(str(row.get(k) or "") for k in ("source_kind", "claim_id", "locator", "text"))
 
 
+def _shown_value_rows(col: dict[str, Any], ev: dict[str, Any], pattern: re.Pattern[str],
+                      item7: bool) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """(matching claims on the knob/target tiers, those of them shown with a value line)."""
+    every = col["rows"] + [x for b in lb.FLAG_BUCKETS for x in col["flagged"][b]]
+    hits = [x for x in every if x["tier"] in ("knob", "target")
+            and pattern.search(_identity(x))
+            and (not item7 or ITEM7_RE.search(_identity(x)))]
+    shown = {cid for c in ev["claims"] for cid in [c["claim_id"], *c.get("linked_claim_ids", [])]}
+    valued = [x for x in hits if x["value"] is not None and x["claim_id"] in shown]
+    return hits, valued
+
+
+def _tiers(rows: list[dict[str, Any]]) -> str:
+    return ",".join(sorted({x["tier"] for x in rows})) or "none"
+
+
 def ac9(r: Reader, stack_regime: str) -> dict[str, Any]:
+    """KPF-18 and PB-HOL-1 are tagged `slot_serving` (stack topology, outside AutoPilot's action
+    space), so they are expected on the knob OR target tier -- the tier is reported, not forced."""
     details, ok = [], True
-    rows_by_role = {}
+    reads = {}
     for role, raw in ROLE_TARGETS.items():
         target = lb.Target.from_mapping(raw)
-        col = lb.collect(r.frames, [target], as_of=r.as_of, fold_result=r.result)
-        ev = lb.evaluate_frames(r.frames, [target], as_of=r.as_of, fold_result=r.result)
-        rows_by_role[role] = (col, ev)
-    col, ev = rows_by_role["architect_critic"]
-    every = col["rows"] + [x for b in lb.FLAG_BUCKETS for x in col["flagged"][b]]
-    pbhol_knob = [x for x in every if x["tier"] == "knob" and PBHOL_RE.search(_identity(x))]
-    pbhol_any = [x for x in every if PBHOL_RE.search(_identity(x))]
-    kpf = [x for x in every if KPF_RE.search(_identity(x)) and ITEM7_RE.search(_identity(x))]
-    shown = PBHOL_RE.search(ev["section"]) is not None or any(
-        c["claim_id"] in {x["claim_id"] for x in pbhol_knob} for c in ev["claims"])
-    ok &= bool(pbhol_knob) and shown
-    details.append(f"architect_critic: PB-HOL-1 knob-tier {len(pbhol_knob)} (of {len(pbhol_any)} "
-                   f"PB-HOL claims; tiers {sorted({x['tier'] for x in pbhol_any})}), shown {shown}"
-                   f"; KPF-18 item 7 {len(kpf)} in tiers {sorted({x['tier'] for x in kpf})}")
-    col, ev = rows_by_role["frontdoor"]
-    every = col["rows"] + [x for b in lb.FLAG_BUCKETS for x in col["flagged"][b]]
-    arms = [x for x in every if x["tier"] in ("knob", "target")
-            and KPF_RE.search(_identity(x)) and ITEM7_RE.search(_identity(x))]
-    ok &= bool(arms)
-    details.append(f"frontdoor: KPF-18 item-7 arms {len(arms)} in tiers "
-                   f"{sorted({x['tier'] for x in arms})}")
+        reads[role] = (lb.collect(r.frames, [target], as_of=r.as_of, fold_result=r.result),
+                       lb.evaluate_frames(r.frames, [target], as_of=r.as_of,
+                                          fold_result=r.result))
+    col, ev = reads["architect_critic"]
+    pb_hits, pb_valued = _shown_value_rows(col, ev, PBHOL_RE, item7=False)
+    kpf_hits, kpf_valued = _shown_value_rows(col, ev, KPF_RE, item7=True)
+    ok &= bool(pb_valued) and bool(kpf_valued)
+    details.append(f"architect_critic: PB-HOL-1 {len(pb_hits)} claim(s) on tier {_tiers(pb_hits)}"
+                   f", {len(pb_valued)} shown with a value line; KPF-18 item 7 {len(kpf_hits)} on "
+                   f"tier {_tiers(kpf_hits)}, {len(kpf_valued)} shown with a value line")
+    col, ev = reads["frontdoor"]
+    arms, arms_valued = _shown_value_rows(col, ev, KPF_RE, item7=True)
+    ok &= bool(arms_valued)
+    details.append(f"frontdoor: KPF-18 item-7 arms {len(arms)} on tier {_tiers(arms)}, "
+                   f"{len(arms_valued)} shown with a value line")
     lineup = lb.Target.from_mapping({"scope": "lineup", "stack_regime": stack_regime,
                                      "knob_families": ["kv_compaction", "orchestrator"],
                                      "label": "lineup"})

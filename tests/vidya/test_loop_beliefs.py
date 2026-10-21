@@ -1046,7 +1046,8 @@ def test_p1_acceptance_script_runs_on_a_fixture_ledger(tmp_path, capsys):
     ledger, refuses the canonical path, and AC9 passes on PB-HOL-1 / KPF-18 item-7 shaped claims."""
     import p1_acceptance as acc
     pbhol = _gpu27("pb-hol-1:20261021T160010Z:off:short", kind="pb-hol-1", value="22.05",
-                   scope_keys={"knob_family": "routing", "varied": ["short_slot_index_order"]})
+                   scope_keys={"knob_family": "slot_serving",
+                               "varied": ["short_slot_index_order"]})
     kpf27 = _gpu27("kpf18:kpf18-run-c:item7:B1", kind="kv-prefix-fork", value="25",
                    scope_keys={"knob_family": "slot_serving", "varied": ["slot_fork"]})
     kpf35 = _loop("kpf18:kpf18cpu:item7:B1", model=None, quant="Q8_0", kind="kv-prefix-fork",
@@ -1061,5 +1062,6 @@ def test_p1_acceptance_script_runs_on_a_fixture_ledger(tmp_path, capsys):
     checks = {c["check"]: c for c in out["checks"]}
     assert rc == 1 and not out["pass"]                 # AC1-AC5 need the real backfill
     assert checks["AC9"]["pass"], checks["AC9"]["detail"]
+    assert "PB-HOL-1 1 claim(s) on tier target, 1 shown with a value line" in checks["AC9"]["detail"]
     assert set(checks) == {"AC1", "AC2", "AC3", "AC4", "AC5", "AC9"}
     assert acc.main(["--ledger", str(lb.CANONICAL_LEDGER)]) == 2 or not lb.CANONICAL_LEDGER.exists()
