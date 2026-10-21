@@ -36,3 +36,11 @@ Root `a9fccdc21` (safe_download revision pin + provenance ledger, new-model Step
 - Wrote held jobs 65-ds41-t33c-1017, 66-ds41-t41b-1017, 67-ds41-t51b-1017 in cpu-queue-f8/held-ds41-retarget/ (65, 67 released). 66 plain arm unconditional; speculative arms gated on 1017 DSpark drafter + DSPARK_1017_OK marker.
 - 1017 header read-only check: deepseek41, split 9, alignment 32, MXFP4 tensors; binary has mxfp4_8x8.
 - Staged evidence ds41-w51-t32-qdq-sizing and ds41-t33c-1017 in research worktree f8/ds41-evidence-2 (uncommitted); ds41-t33c-sept skipped (aborts only, no results).
+## KPF-17.1c — morning re-check failures diagnosed and fixed (subagent, workspace-f8, 08:50–09:45Z)
+
+- All six failures in jobs 25/26/40 were test defects, not fork defects; two were the subagent's own earlier mistakes (iSWA cells check in `11dbef15e`, clone check after `fresh()` in `a7af56dff`). Fixes on `experimental/kv-prefix-fork-p1r2-20261020`: `dd5bb0d3b` (server: `fork_src_busy` in timings and `/slots`) and `80a09c6ad` (tests). Main changes:
+  - `same_as_fresh` is now two-sided on top-2 logprobs, with drift < 0.45 and flip distance < 0.6. The floors were measured with the gates off.
+  - The P2 epoch rule follows `cache_n`.
+  - `dft_partial_noop` is documented as output-neutral on the fork path.
+- Verification (binary sha256 `1442c95d…`, `build.ok` refreshed): local q2 at 24 threads, honest 13/13/3 and 10 mutant arms FAIL. Queue: job 27 (35B+MTP) PASS 7/7; `28-kpf17-oracle-recheck-nproc` (192 threads) PASS 18/18, honest drift ≤ 0.157 and flip ≤ 0.050; job 29 (35B suite rerun) PASS 10/10. KPF-17.1a, 17.1b and 17.1c ticked.
+- Filed: CH-18.b (upstream SWA `pre_decode` re-decodes when pos_next ≤ n_swa) and KPF-13.1a (skip the private drafter copy at the fork for plain drafters). The p1r2 worktree is clean: the "uncommitted test_slot_fork.py" seen by the wrap-up was this pass's in-progress edit, now `80a09c6ad`, which is not yet on `fork`.
