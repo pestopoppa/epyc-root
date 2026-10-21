@@ -1,7 +1,7 @@
 {
   "session_id": "intake-deepseek-prodstack-20261021",
   "started_at": "2026-10-21T10:00:00Z",
-  "last_checkpoint": "2026-10-21T10:10:26Z",
+  "last_checkpoint": "2026-10-21T10:40:00Z",
   "stage": "stage2",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021",
@@ -9,13 +9,18 @@
   "operator_session": "workspace-f8",
   "topic": "Gap analysis vs the 2026-10-20 DeepInfer intake (intake-2116..2142): operator-pasted commentary on susun's X note 2112485918527590435 about DeepSeek's V4.1-Flash deployment post (Zhihu p/2095560295930508953 = intake-2136)",
   "entries_processed": [
-    "intake-2214"
+    "intake-2214",
+    "intake-2215",
+    "intake-2216"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2215,
+  "next_intake_id": 2217,
   "expansion_cap": 10,
-  "expansion_count": 0,
-  "expansion_entries": [],
+  "expansion_count": 2,
+  "expansion_entries": [
+    "intake-2215",
+    "intake-2216"
+  ],
   "expansion_refused": [],
   "re_encounters": {
     "intake-2136": "Zhihu deployment post resurfaced as the subject of the pasted X commentary; re-fetched via r.jina.ai 2026-10-21 (sha256 a87966c6255d), identical modulo zhida tokens; re-encounter + omitted-claims note appended to its dive_corrections"
@@ -29996,6 +30001,44 @@
       "rule": "Stage-2 on the one new entry (combined Stage-1+2, read raw); then up to four Stage-2b waves on recommended dive-surfaced sources",
       "source": "operator 2026-10-21 (steering seq 2)"
     },
-    "waves": []
+    "waves": [
+      {
+        "wave": 1,
+        "kind": "Stage-2 on the operator-pasted input (combined Stage-1+2) + Stage-2b dives of the two recommended dive-surfaced sources",
+        "entries": [
+          "intake-2214",
+          "intake-2215",
+          "intake-2216"
+        ],
+        "dispatched": "2026-10-21",
+        "second_reader": {
+          "intake-2214": "32/32 refound, 32/32 hash, yes 9 / partial 4 / no 0; partials = anchor gaps, closed by adding 8 anchors (40 total)",
+          "intake-2215": "pending",
+          "intake-2216": "pending"
+        },
+        "surfaced_selected_for_wave2": [
+          "arXiv 2602.16603 (FlowPrefill)",
+          "arXiv 2606.09061 (fairness-aware chunked prefill)",
+          "arXiv 2409.17264 (Medha)",
+          "arXiv 2508.16449 (GreenLLM)",
+          "arXiv 2601.21758 (EWSJF)"
+        ],
+        "surfaced_declined_proposed": [
+          "kvcache-ai/Mooncake repo",
+          "novitalabs/pegaflow",
+          "deepseek-ai/3FS (declined 2026-10-20)",
+          "SGLang model gateway docs (SMG entry exists)",
+          "Dynamo routing-concepts (intake-1785)",
+          "arXiv 2401.11181",
+          "vllm-ascend PR #12240",
+          "FleetOpt 2603.16514",
+          "1/W Law 2603.17280",
+          "vision paper 2603.21354",
+          "ServeGen 2505.09999",
+          "BurstGPT 2401.17644",
+          "vllm-project/semantic-router"
+        ]
+      }
+    ]
   }
 }

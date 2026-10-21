@@ -299114,12 +299114,13 @@
     - intake-1785 (Dynamo router worker cost, the existing load-term reference in within-role-placement)
     - intake-738 (DSpark paper arXiv 2607.05147)
   recommended_actions:
-  - Use the practitioner heuristics (weighted decode score, cold-session P2C, overload pre-filter, affinity-vs-pooling) as
-    extra replay ARMS of WP-15, scored on the dispatch.v1 log; do not adopt any as policy without the replay.
-  - Emit a per-role uncached-prompt-length histogram with candidate tier cuts from serving_calls so the length-pool question
-    (DI-126) and WP-15 read one table.
-  - Record the NUMA-locality caveat for host-side KV handover (slot save/restore page-cache node vs the restoring instance)
-    in the HSF swap-cost receipt.
+  - 'XP-A1..A3 (operator review via the Stage-3 plan): use the practitioner heuristics (weighted decode score, cold-session
+    P2C, overload pre-filter, affinity-vs-pooling) as extra replay ARMS of WP-15, scored on the dispatch.v1 log; adopt none
+    as policy without the replay.'
+  - 'XP-A4 (operator review via the Stage-3 plan): emit a per-role uncached-prompt-length histogram with candidate tier cuts
+    from serving_calls so the length-pool question (DI-126) and WP-15 read one table (HSF-4 refinement).'
+  - 'XP-A5 (monitor proposal): record the NUMA-locality caveat for host-side KV handover (slot save/restore page-cache node
+    vs the restoring instance) when the migration swap cost is next measured.'
   credibility_score: 1
   contradicting_evidence:
   - 'The ''no cache-aware routing'' design the note endorses rests on DeepSeek''s global 3FS store (any engine can hit any
@@ -299207,6 +299208,13 @@
     quote_sha256: ec1348c6660c22e803bb7c252aece8f46ef99db9e38961ee0f0e4258b92b49f6
     source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
     verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: tweet.text para 2 (fifo)
+    quote: 其实前不久我也做了一个（只不过链接失效了hh）,我当时是想给 pp 做的，但是我觉得无论 ep pp，这个思路是一致的
+    quote_sha256: ad7857cf6d7de6c9a7a5e4f8f5650caec5a6dba1d7f559d447c460f03d721408
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
   - claim_index: 4
     kind: page-and-quote
     locator: tweet.text para 3
@@ -299288,9 +299296,23 @@
     verified_by: research-intake/stage2
   - claim_index: 10
     kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L7
+    quote: 输出长度也是长尾分布，少数请求因为 thinking 会生成很长
+    quote_sha256: a9413915e10d8eb7ed0d9430801a0db000d85c55f2f57772268b555497c4ada0
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
     locator: HVEOqr4b0AAZT3j.transcript.txt L8
     quote: avg ctx length 会比较大，接近 300k 左右
     quote_sha256: 8a59d883430bdba034fd32c1df0afa300f51857f7ad6cadd362d1b1c7db53c74
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L18
+    quote: < 2k < 4k, compute tokens
+    quote_sha256: c9ab6ac418877a0e78e5c4b3b77c0abda2027ee6d0b263782dee5ca374f6ee53
     source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
     verified_by: research-intake/stage2
   - claim_index: 10
@@ -299340,6 +299362,41 @@
     locator: HVEOtYqbUAAA_HD.transcript.txt L3-L4
     quote: num waiting requests > 5, overload 的 workload
     quote_sha256: 0ec65b03194de464d54a4b03701fddd376c851607b6b00f63439021833cfb3c7
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L5-L6
+    quote: 长： tp/pp → dplb
+    quote_sha256: 7841c5c10b68756f14ee819268fe1bea9b16bc4a1fc53d1bc2f6c8feef6c980a
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L5-L6
+    quote: 短的 ep ,2k, lb
+    quote_sha256: e2c4e224f5969287b98c5698c1f4b42d30de08c90bb403ebb08387adb55086a3
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L9
+    quote: 大概率是均匀的
+    quote_sha256: 8d4296bb754f6c1ad9c282561c2836bc7edfb5c308d05ca4cf3598f4686c6718
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L12
+    quote: 本地肯定 快
+    quote_sha256: d2bb501982e5fd7486955df811d2c69fb25d09568c1dc04103accf147e9ee80f
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L18
+    quote: qp 爆炸
+    quote_sha256: eae186b8d424f3b3d451f53f7cbb6f474185d7138d4b397fe9b136d6cf36aeb9
     source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
     verified_by: research-intake/stage2
   - claim_index: 11
@@ -299423,7 +299480,8 @@
       decode-led question resolves to zhihu.md L136 (decode instances write Block KV). Cite the article, never this sentence.
   - claim_index: 8
     effect: unaffected
-    note: Verbatim copy of zhihu.md L136; identical to intake-2136 claim 0 anchor.
+    note: Verbatim copy of zhihu.md L136 (checked as a substring after stripping markdown bold); a superset of the intake-2136
+      claim-0 swap-in anchor, same content.
   - claim_index: 9
     effect: unaffected
     note: Matches zhihu.md L169-L187; no numbers added.
@@ -299456,16 +299514,647 @@
     claim_index: 9
     why: Restates the article's DSpark / async / SO sections.
   dive_corrections: '2026-10-21 combined Stage-1+Stage-2 (operator-pasted input; read raw via FxTwitter JSON + 3 images, read_depth
-    FULL). No Stage-1 digest existed to overturn. Recorded: (a) the relayed summary''s misattributions (PP-vs-EP is the author''s,
-    not the article''s; ''decode owns metadata'' garbles ''decode writes block KV''; ''xgrammar per a reply'' unverifiable
-    here, supported by intake-2116 code); (b) claim 7 TTL inversion vs zhihu.md L134; (c) ''Together explored bucketing''
-    provisional after 8 searches. Dive-surfaced sources: arXiv 2604.08075 (Token-Budget-Aware Pool Routing, canonical of withdrawn
-    2604.09613) and the vLLM-Ascend ShortRequestFirst scheduler doc selected for a Stage-2b wave; decline PROPOSED (operator
-    confirms at Stage 3; reasons also in the plan): kvcache-ai/Mooncake repo (companion of intake-472; NUMA awareness lives in its Transfer Engine, no
-    single-host consumer), novitalabs/pegaflow (GPU-cluster RDMA KV store; design reference only), deepseek-ai/3FS (declined
-    2026-10-20 in intake-2136; URL recorded for citation: https://github.com/deepseek-ai/3FS, design notes docs/design_notes.md),
-    SGLang model gateway docs (gateway already indexed as the Shepherd Model Gateway entry), Dynamo routing-concepts page
-    (intake-1785 covers it).'
+    FULL). No Stage-1 digest existed to overturn. Second reader (independent agent, 2026-10-21): re-find 32/32, hash 32/32,
+    support yes 9 / partial 4 / no 0; the four partials were anchor-coverage gaps (claims 3, 10, 11) closed by adding the
+    missing anchors; no transcription error between PNGs and transcripts. Recorded: (a) the relayed summary''s misattributions
+    (PP-vs-EP is the author''s, not the article''s; ''decode owns metadata'' garbles ''decode writes block KV''; ''xgrammar
+    per a reply'' unverifiable here, supported by intake-2116 code); (b) claim 7 TTL inversion vs zhihu.md L134; (c) ''Together
+    explored bucketing'' provisional after 8 searches. Dive-surfaced sources: arXiv 2604.08075 (Token-Budget-Aware Pool Routing,
+    canonical of withdrawn 2604.09613) and the vLLM-Ascend ShortRequestFirst scheduler doc selected for a Stage-2b wave; decline
+    PROPOSED (operator confirms at Stage 3; reasons also in the plan): kvcache-ai/Mooncake repo (companion of intake-472;
+    NUMA awareness lives in its Transfer Engine, no single-host consumer), novitalabs/pegaflow (GPU-cluster RDMA KV store;
+    design reference only), deepseek-ai/3FS (declined 2026-10-20 in intake-2136; URL recorded for citation: https://github.com/deepseek-ai/3FS,
+    design notes docs/design_notes.md), SGLang model gateway docs (gateway already indexed as the Shepherd Model Gateway entry),
+    Dynamo routing-concepts page (intake-1785 covers it).'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2215
+  arxiv_id: null
+  url: https://docs.vllm.ai/projects/ascend/en/latest/user_guide/feature_guide/short_request_first.html
+  source_type: blog
+  title: ShortRequestFirst Prefill Scheduling (vLLM-Ascend feature guide; three-lane prompt-length-tiered waiting queue with
+    aging)
+  categories:
+  - inference_serving
+  - local_inference
+  - kv_cache
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2214
+  verdict: adopt_patterns
+  authors:
+  - 'vLLM-Ascend contributors (Huawei Technologies copyright header); feature author immengzi (PR #11576, #12719)'
+  key_claims:
+  - Waiting requests are split into immediate / short / long lanes; short means num_prompt_tokens <= threshold (default 256,
+    unit = prompt tokens; threshold must be a non-negative int).
+  - 'Threshold guidance: sit at the valley between the short-request cluster and the long tail; with no traffic model start
+    at P70-P85 of prompt length and refine from the real histogram; never a midpoint and never near the longest prompts.'
+  - 'Anti-starvation: long_max_wait_ms (float, default 0 = strict short-first) is a fairness gate; only the HEAD of the long
+    lane is aged, from its enqueue time, and it is promoted only if a short request is actually waiting. The doc says to size
+    it inside [W_normal, W_slo] from the long-request waiting tail measured under strict short-first, not from mean short
+    TTFT.'
+  - Dispatch priority is immediate > aged-long > short > long; immediate = recovery requests (PREEMPTED, num_computed_tokens
+    > 0 or num_output_tokens > 0).
+  - Scope is the waiting-queue policy only (a vLLM RequestQueue replacement); schedule() is not overridden, so chunked-prefill
+    token budgeting and preemption stay upstream vLLM; the policy reorders admission and cannot preempt or shrink an in-flight
+    long prefill.
+  - 'Observability: warning_once after three consecutive aged-long promotions that jumped waiting shorts (read as threshold
+    too small), plus an aggregate stats log every 5 s (lane sizes, dispatch and prepend counters, promotions).'
+  - 'Compatibility: requires FCFS policy; rejected with batch_job_sched_config and on PD-disaggregated D nodes (kv_role=''kv_consumer'');
+    the doc also lists profiling-chunk scheduling as unsupported, but the code installs the SRF queue inside the profiling-chunk
+    scheduler (doc contradicts code).'
+  - 'No benchmark or TTFT figure is reported anywhere in the doc, the config reference or the origin PRs (NOT-FOUND-IN-SOURCE);
+    PR #11576 was tested by unit tests only.'
+  techniques:
+  - prompt-length-tiered waiting queue (three lanes)
+  - head-of-long-lane aging gate (long_max_wait_ms)
+  - recovery-first immediate lane (preempted / partially computed requests)
+  - degradation streak warning + periodic lane stats
+  - threshold tuning from prompt-length histogram (P70-P85 valley rule)
+  reported_results:
+  - 'None: no TTFT or throughput figure exists in the doc, config reference, release notes or PR bodies (NOT-FOUND-IN-SOURCE).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-2136
+    - intake-2214
+    intake_entry_notes:
+    - intake-2214 (the X note whose length-pool idea this is the only shipped OSS engine-level instance of)
+    - intake-2136 (DeepSeek length buckets at router level)
+  recommended_actions:
+  - 'SRF-A1: split DI-126''s trigger into queue-wait vs prefill-share components; lane reordering only addresses the former.'
+  - 'SRF-A2: record queue-wait ms and the admission verdict per serving record (KVU-15d refinement) so the queue-wait component
+    is measurable.'
+  - 'SRF-A3: knowledge-only tuning doctrine (threshold at the prompt-length valley, aging from the long-wait tail); re-check
+    the 16384 lease threshold against the :8083 new-token histogram.'
+  - 'SRF-A4: lane-aware pop_deferred_task() on an experimental branch only if the queue-wait component of DI-126 fires (monitor).'
+  credibility_score: null
+  contradicting_evidence:
+  - 'FlowPrefill (arXiv 2602.16603, web-search surfaced, not read): SJF-style ordering addresses decode-induced blocking but
+    not blocking caused by an in-flight long prefill; chunk-level preemption is argued to be needed for that case. Independent
+    evidence that the SRF scope limit matters.'
+  - 'Fairness-aware chunked-prefill scheduling (arXiv 2606.09061, web-search surfaced, not read): shortest-prefill-first can
+    postpone long requests indefinitely under sustained short arrivals; aging is the standard middle ground; consistent with
+    the doc, the generic critique.'
+  referenced_arxiv_ids: []
+  notes: 'Stage-2b wave 1 (2026-10-21), dive dir /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/dive-vllm-ascend-srf/.
+    Fetch: HTTP 200, final URL = canonical, src/short_request_first.html sha256 00dc362c49d13cac4ce537f480b0cea92f46f0c34c730adf25b59de9a6e7c25c
+    (106480 B), extracted text src/short_request_first.txt sha256 cd3448af44d0. Page banner ''latest developer preview docs''
+    (stable = v0.23.0), mkdocs-material; no build date on the page. Doc source docs/source/user_guide/feature_guide/short_request_first.md
+    @ 2164a24 is text-identical to the fetched page. Repo: shallow clone vllm-project/vllm-ascend HEAD 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    (2026-10-21), left in place under the dive dir, nothing built or installed. Implementation vllm_ascend/core/short_request_first_scheduler.py
+    (384 lines, sha256 75d5b6442064), config ascend_config.py:1560-1578, validation/install platform.py:1074-1098, secondary
+    installs patch/platform/patch_balance_schedule.py:126-134 and core/scheduler_profiling_chunk.py:93-104. Origin: release_notes.md:250
+    (v0.26.0rc1, 2026-09-03) cites PR #11576 (merged 2026-07-10, author immengzi), #12719 (merged 2026-07-24, decoupled onto
+    the standard FCFS/async path, vLLM base v0.25.1) and #12240 (batch-job-aware scheduler, a different feature). NOT READ:
+    tests/ut/core/* bodies beyond names; vLLM upstream Scheduler.schedule() (not in the clone); the batch-job-aware scheduler;
+    zh_CN locale files; the three web-search-surfaced arXiv papers (snippets only). Our-stack reads (read-only, outside the
+    lane worktree because it holds epyc-root only): llama.cpp @ ffc1bac tools/server/server-queue.{h,cpp} (deferred deque
+    popped from the FRONT with slot affinity, L63-L100) and server-context.cpp:4753-4755 (requests_deferred gauge only); epyc-orchestrator
+    @ 65fbdce3 src/scheduling/kv_pool_admission.py:59-62,159-163,761-803,907-916 (bounded short-pass rule without aging; DEFAULT_LONG_PREFILL_TOKENS=16384
+    chosen as about p90 of :8083 new-token prefill). Credibility null: documentation with no empirical claims. Adversarial
+    pass (3 searches, all secondary): vLLM core scheduler policy is fcfs or priority only; SGLang has LPM/FCFS/LOF/priority/DFS-weight
+    plus an experimental shortest-prefill-first per a secondary walkthrough (unverified).'
+  novelty_justification: Shortest-job-first with aging on a waiting queue is textbook; the only novelty is that it ships as
+    a default-off engine option with a tuning doctrine.
+  relevance_justification: DI-126 (kv-unified-stack-rollout.md:1363) is an open monitor about long prefills head-of-line blocking
+    short requests; this is the one shipped OSS engine-level policy for the queue-wait half of that problem, and its scope
+    limit (waiting queue only) sharpens the DI-126 trigger.
+  verdict_justification: 'adopt_patterns: the tuning doctrine and the trigger split transfer; the code does not (NPU install
+    mechanics, 256 default wrong for our traffic, our head-of-line locus is slot occupancy plus the shared prefill batch).'
+  source_revision: docs.vllm.ai ascend/en/latest fetched 2026-10-21 (sha256 00dc362c); implementation vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+  reader_should_conclude: A shipped, default-off, waiting-queue-only shortest-first-with-aging policy whose value is its tuning
+    doctrine (threshold at the prompt-length valley, P70-P85 start; aging bound from the long-wait tail measured under strict
+    short-first) and its cheap observability (promotion-streak warning, periodic lane stats). It has no benchmark behind it
+    and cannot touch an in-flight long prefill, so it addresses only the queue-wait share of short-request TTFT. On our stack
+    that share exists only when all np slots are busy (llama-server deferred deque) or when the orchestrator lease holds longs
+    back (where a bounded short-pass rule already exists); the prefill-share interference DI-126 is really about is KVU-16g's
+    budget, not this. Do NOT cite any TTFT gain for it and do NOT copy the 256-token default.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Fields (docs page)
+    quote: Requests with num_prompt_tokens <= threshold are treated as short requests.
+    quote_sha256: 13097fa3fd25f4e8db9a89acf053df9fe5f25861cf3e699db664df79692095a0
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: line-range
+    locator: vllm_ascend/core/short_request_first_scheduler.py:L151-L153 @ 2164a24
+    quote: "        if request.num_prompt_tokens <= self.threshold:\n            return self._short_queue\n        return\
+      \ self._long_queue"
+    quote_sha256: 56738f92c1f28794bd9aa20b2fce5aacd1aebb5a78693fe8c33af131b6c03740
+    source_revision: vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Threshold tuning (docs page)
+    quote: If you do not yet have a refined traffic model, start with P70-P85 of prompt length as an engineering baseline
+      and then refine it using the real request-length histogram.
+    quote_sha256: 79d9a777e0e0581c4a8c21f92fd09b0903e1d63d0929a39fccb84adbc75c74b4
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Scheduling behavior (docs page)
+    quote: if the oldest long request waits past long_max_wait_ms, it can jump ahead of waiting short requests
+    quote_sha256: aba55829a6d9b637dcaf425d4953dc4e6c0d333f9189ed6efb9b8ea57956fbcd
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: vllm_ascend/core/short_request_first_scheduler.py:L176-L177 @ 2164a24
+    quote: "            if wait_ms is not None and wait_ms >= self.long_max_wait_ms and self._short_queue:\n             \
+      \   return self._long_queue"
+    quote_sha256: 3d5ec77ad37f3aa4be7265dd597ac4407c2535c62f7b9d46f6880719d4a937be
+    source_revision: vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Scheduling behavior (docs page)
+    quote: immediate > aged-long > short > long
+    quote_sha256: 136a88d9e79334cdbc5b025624150b9e9cbe616ab272ef742e668a72111b265a
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: vllm_ascend/core/short_request_first_scheduler.py:L332-L334 @ 2164a24
+    quote: "        request.status == RequestStatus.PREEMPTED\n        or getattr(request, \"num_computed_tokens\", 0) > 0\n\
+      \        or getattr(request, \"num_output_tokens\", 0) > 0"
+    quote_sha256: 7a3c185ff588245e3b676dcc61f63964923d6df972df961280fb5e983f2606e6
+    source_revision: vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Scheduler compatibility (docs page)
+    quote: ShortRequestFirst changes only the waiting-queue policy. It requires FCFS scheduling and supports both synchronous
+      and asynchronous scheduling.
+    quote_sha256: f4fc465398fbe94b3c7c9b1ca9db858dce0b607d57022def50ebf1f57a656060
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: line-range
+    locator: vllm_ascend/platform.py:L1458-L1459 @ 2164a24
+    quote: "    ``short_request_first_scheduler`` does not override ``schedule()`` at all --\n    it only installs a request\
+      \ queue."
+    quote_sha256: 2ffd9207fdd9bb3fbf23166e577acd924193b3a281b079ac7593642a5620cb6a
+    source_revision: vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Degradation warning (docs page)
+    quote: If long requests are promoted ahead of waiting short requests for three consecutive dispatches, vLLM Ascend emits
+      a warning.
+    quote_sha256: 5c93036257d700ea5d34ddfd4e3b9e360fc43b31e9beaec9c07398d29c37ce81
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: vllm_ascend/core/short_request_first_scheduler.py:L47 @ 2164a24
+    quote: '    AGED_LONG_WARNING_STREAK = 3'
+    quote_sha256: 63ae4b8a943e630c8158d278d4059b24b296e528f78db391aeae073408ecae6c
+    source_revision: vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Scheduler compatibility (docs page)
+    quote: It is not supported with batch-job-aware scheduling, profiling-chunk scheduling, or on PD-disaggregated D nodes
+      (kv_role='kv_consumer').
+    quote_sha256: 7d0f1d879de7dfdef1a7eaa0a059a08088231daf024478ce9419b48ab93028c5
+    source_revision: docs.vllm.ai ascend/en/latest (developer preview; stable banner v0.23.0), fetched 2026-10-21, sha256
+      00dc362c
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: line-range
+    locator: vllm_ascend/platform.py:L1075-L1076 @ 2164a24
+    quote: "    # kv-consumer paths. When profiling-chunk is also enabled, the profiling\n    # chunk scheduler installs the\
+      \ SRF waiting queue itself."
+    quote_sha256: 6b8b97361a8f2a8a903758b53cc578f9196543cb117bd6b77db73afcc7d6ac40
+    source_revision: vllm-ascend @ 2164a24d1e509fe211b60c4635fa266e292bd8b4
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: 'GitHub PR #11576 body, section ''How was this patch tested?'''
+    quote: 'Added and updated unit tests for config parsing, queue behavior, scheduler integration, and scheduler-visible
+      ordering behavior:'
+    quote_sha256: 36d2b4161e456f8af8f4a6fb33c64b70b030bb5e449e9899740212fd944153e4
+    source_revision: 'GitHub PR #11576 body (api.github.com, fetched 2026-10-21, saved src/pr_11576.json), merged 2026-07-10T01:35:11Z'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: doc and code agree; threshold validated >= 0 (ascend_config.py:1574-1575); unit = prompt tokens (num_prompt_tokens).
+  - claim_index: 1
+    effect: unaffected
+    note: doc guidance only; no histogram or measurement backs the P70-P85 range in the source.
+  - claim_index: 2
+    effect: narrowed
+    note: code ages ONLY the head of the long lane from its enqueue time (L155-162, L194) and promotes only if the short lane
+      is non-empty (L176); a long request not at the head does not age independently; long_max_wait_ms <= 0 disables aging
+      (L156).
+  - claim_index: 3
+    effect: unaffected
+    note: L171-182 implements exactly immediate > aged-long > short > long; immediate predicate L329-335.
+  - claim_index: 4
+    effect: unaffected
+    note: the class is a RequestQueue; ShortRequestFirstAsyncScheduler installs it after AsyncScheduler.__init__ (L370-384);
+      install refuses a non-empty waiting queue and non-FCFS (L346-353). Chunked-prefill interaction is NOT stated in the
+      doc (NOT-FOUND-IN-SOURCE); by construction the upstream token budget applies unchanged to whichever request the lane
+      rule yields next.
+  - claim_index: 5
+    effect: narrowed
+    note: warning is warning_once (L207), emitted at most once per process, which the doc does not say; streak resets on any
+      short dispatch or when the short lane empties (L164-169, L220-232).
+  - claim_index: 6
+    effect: narrowed
+    note: profiling-chunk + SRF is not rejected by _check_ascend_config (only fcfs / batch_job / kv_consumer are, platform.py:1077-1094)
+      and scheduler_profiling_chunk.py:93-104 installs the SRF queue; the compatibility sentence is stale or conservative.
+      batch_job and kv_consumer rejections verified.
+  - claim_index: 7
+    effect: unaffected
+    note: 'verified absence: no TTFT/throughput number in the docs page, additional_config.md, release notes or PR bodies
+      #11576/#12719.'
+  dive_corrections: '2026-10-21 Stage-2b wave 1 (dive-vllm-ascend-srf): combined ingest+dive; source read FULL; implementation
+    pinned @ 2164a24; doc ''not supported with profiling-chunk'' contradicted by code (claim 6 narrowed); claim 2 narrowed
+    to head-of-lane aging; no measured numbers exist in the source; the policy reorders WAITING only and cannot preempt an
+    in-flight long prefill. Dive-surfaced: arXiv 2602.16603 (FlowPrefill) and arXiv 2606.09061 selected for wave 2; arXiv
+    2401.11181 (2024, disaggregated SJF/LJF prefill) and PR #12240 (batch-job scheduler, offline-batch concern) decline PROPOSED
+    (operator confirms at Stage 3).'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2216
+  arxiv_id: '2604.08075'
+  url: https://arxiv.org/abs/2604.08075
+  source_type: paper
+  title: Dual-Pool Token-Budget Routing for Cost-Efficient and Reliable LLM Serving
+  categories:
+  - inference_serving
+  - cost_aware_routing
+  - routing_intelligence
+  - kv_cache
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2214
+  verdict: adopt_patterns
+  authors:
+  - Xunzhuo Liu (vLLM Semantic Router Project)
+  - Bowei He (vLLM SR / MBZUAI / McGill, corresponding)
+  - Xue Liu (vLLM SR / MBZUAI / McGill / Mila)
+  - Andy Luo (AMD)
+  - Haichen Zhang (AMD)
+  - Huamin Chen (vLLM SR)
+  key_claims:
+  - 'Routing rule: each request goes to a short pool or a long pool by an estimated TOTAL token budget L_total = ceil(|r|
+    / c_k) + max_output_tokens, where |r| is the request byte length and c_k a per-category (code / prose / CJK / mixed) bytes-per-token
+    ratio; no tokenizer in the router, O(1) per dispatch, cold start c_0 = 4.0.'
+  - 'Route on L_total, not prompt length: routing on L_in alone caused preemption storms for short-prompt / long-generation
+    requests (L_in = 200, L_out = 8192 example); adding max_output_tokens removed the issue (prose anecdote, no table).'
+  - 'Online calibration: c_k is an EMA (beta 0.95) of |r| / usage.prompt_tokens from each response; the routing estimate is
+    biased conservative (c_k minus gamma sigma_k, gamma 1.0) because errors are asymmetric (long-to-short causes preemption,
+    short-to-long only wastes throughput). Simulated Azure trace, Table 5: converges within 3.5% after 50 observations per
+    category; mis-route rate drops from 4.1% (global static c = 4) to under 1%.'
+  - 'Threshold: B_short = 8192 is the default; any value in 4K-16K gives more than 80% of peak savings (Figure 6; curve values
+    reconstructed from the SVG: Azure 1K 18.2 / 2K 29.5 / 4K 37.1 / 8K 41.9 / 16K 39.8 / 32K 28.3 percent; LMSYS 21.4 / 28.8
+    / 30.9 / 31.3 / 29.1 / 22.7). The threshold is set empirically, not derived; a feasibility check (L_total above the short
+    pool C_max goes long) and a load-aware spillover wrap the threshold rule.'
+  - 'Pool definitions: SAME hardware (a homogeneous fleet partitioned); pools differ only in vLLM max_model_len (C_max 8K
+    vs 65K), hence max concurrent sequences (128 vs 16 per GPU), max batch (16K vs 8K) and throughput mu (11.2 vs 2.8 req/s
+    per instance, rho = 4.0). Mechanism: vLLM reserves C_max KV tokens per sequence.'
+  - 'Evaluation is SIMULATION ONLY: Llama-3-70B-Instruct BF16 on A100-80GB TP = 2 in a discrete-event simulator calibrated
+    against Vidur; traces = 100K requests with Poisson arrivals derived from the Azure LLM Inference Dataset and LMSYS-Chat-1M;
+    baseline = single pool with round-robin dispatch; SLOs P99 TTFT 2 s and P99 TPOT 80 ms near 90% utilization.'
+  - 'Headline numbers at 1,000 req/s, B_short 8192 (simulator outputs): GPU instances 358 to 208 on Azure (41.9%) and 358
+    to 246 on LMSYS (31.3%); 2.86M USD/yr at 2.21 USD/GPU-hr; preemption 47.3 to 8.7 per mille (5.4x), OOM 2.1 to 0.4 per
+    hour, success 99.69% to 99.95% (Azure, 90% util); TTFT P50 0.42 to 0.28 s, P99 1.82 to 1.71 s; LMSYS P99 TTFT slightly
+    worse (1.45 to 1.48 s). The MI300X / Qwen3-235B-A22B case study is an arithmetic projection, not a simulation.'
+  - 'Closed-form estimator: savings = alpha (1 - 1/rho) with alpha = short-traffic fraction F(B_short) and rho = mu(C_short)/mu(C_long).
+    The paper calls it a lower bound in Section 3 and an upper bound in Section 4.2 (predicted 60.0% vs simulated 41.9%, gap
+    18.1 pp); self-contradictory, and its own data support upper bound.'
+  - The withdrawn duplicate arXiv 2604.09613 (v2 withdrawn as a duplicate of this paper) reported different headline numbers
+    (17-39% GPU reduction) for the same traces, with no explanation of the revision.
+  techniques:
+  - Length-tiered dual pool (short-context / long-context) with per-pool max_model_len
+  - Tokenizer-free token-budget estimate from byte length (bytes-per-token ratio per content category)
+  - Closed-loop EMA calibration from usage.prompt_tokens with conservative (mean minus sigma) bias
+  - Route on total budget (prompt + max_output_tokens), feasibility check, load-aware spillover with final safety check
+  - Closed-form fleet savings estimator alpha (1 - 1/rho) for pre-deployment audit
+  - 'Deployment guidance: two pools suffice (a third adds about 2%); alert on a 5-minute preemption rate above 1% rather than
+    on utilization'
+  reported_results:
+  - 'Table 2 (simulated, 1,000 req/s): Azure 41.9% fewer GPU instances, P99 TTFT 1.82 to 1.71 s; LMSYS 31.3%, P99 TTFT 1.45
+    to 1.48 s (slightly worse)'
+  - 'Table 3 (Azure, 90% util): overall preemption 8.7 per mille vs 47.3; short pool 1.2 per mille / 0 OOM / 100% success;
+    long pool 38.6 per mille / 1.8 OOM per hour'
+  - 'Table 4 (Azure): TTFT P50 0.28 vs 0.42 s, P99 1.71 vs 1.82 s; TPOT P50 25 vs 28 ms, P99 62 vs 67 ms'
+  - 'Table 5: EMA relative error 1.4-3.5% at n = 50 per category; mis-route 0.2-0.8% vs 4.1% static'
+  - 'Section 4.6: at B_short 1024 alpha about 0.35 on Azure caps savings near 26% even with rho above 8; a 16K short pool
+    has only 2x the concurrency of 65K'
+  - 'Table 6 (projection): Qwen3-235B-A22B FP8 on MI300X TP 8, 8K pool 676 vs 32K pool 169 concurrent sequences; 15.4M USD/yr
+    cloud, 6.3M USD/yr on-prem'
+  - All of the above are simulator outputs or projections; no real-cluster measurement exists in the paper.
+  cross_references:
+    chapters: []
+    handoffs:
+    - within-role-placement-state-machine.md
+    - kv-unified-stack-rollout.md
+    - heterogeneous-slot-fabric-residency.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-2136
+    - intake-2214
+    - intake-2215
+    intake_entry_notes:
+    - intake-2214 (X note; this is the closest open paper to its length-pool idea)
+    - intake-2136 (DeepSeek router buckets by total input length; this paper routes on total budget)
+    - 'intake-2215 (vLLM-Ascend SRF: engine-level lane alternative to pools)'
+  recommended_actions:
+  - 'TB-A1 refine WP-15: score the replay rule on L_total = estimated prompt tokens + n_tokens_budget (both already in dispatch.v1),
+    not prompt length alone'
+  - 'TB-A2 refine WP-15: fit chars-per-token per client.class offline from the request_id join to serving_call.v1 real token
+    counts; report dispersion and the mis-route rate a conservative estimate would give'
+  - 'TB-A4 refine HSF-4: emit alpha(B) for B in {2K, 4K, 8K, 16K} from the append-length distribution and compute alpha (1
+    - 1/rho) with rho = measured full-vs-half shape speed ratio, as the ceiling of any length-tiering gain at single-host
+    scale'
+  - 'TB-A5 refine WP-15: add a candidate rule short to half instances / long to full instance and count sessions that cross
+    the threshold mid-session (stickiness migration cost, which the paper never models)'
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Internal: Section 3 says Equation 7 is a lower bound; Section 4.2 says it consistently provides an upper bound (60.0%
+    predicted vs 41.9% simulated).'
+  - 'Internal: Section 1.1 says 95% of Azure requests fit in 8K while Section 4.2 has alpha = 0.80 at B_short 8192; reconcilable
+    only if L_total includes max_output_tokens, which the text does not state; LMSYS alpha 0.68 at 8K with mean L_in 69.5
+    / L_out 214.5 is unexplained.'
+  - 'Internal: Table 1 mu is called measured but every result comes from a Vidur-calibrated discrete-event simulator; no real-cluster
+    run; rho is exactly 4.0.'
+  - 'External: the withdrawn duplicate 2604.09613 reported 17-39% GPU reduction and 1.2-2.0M USD/yr for the same traces; unexplained
+    revision to 31-42% and 2.86M.'
+  - 'External: no independent replication or critique found (4 searches); FleetOpt 2603.16514, the 1/W Law 2603.17280 and
+    the vision paper 2603.21354 share the author core (restatements, not corroboration); eval/reproduce.py is cited but no
+    repository URL exists in the paper.'
+  referenced_arxiv_ids:
+  - '2502.14617'
+  - '2601.21758'
+  - '2503.16525'
+  - '2601.10729'
+  - '2401.17644'
+  - '2602.11174'
+  - '2505.09999'
+  notes: 'Stage-2b wave 1 (2026-10-21), dive dir /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/dive-2604.08075/. Title
+    check: the brief believed the title was Token-Budget-Aware Pool Routing...; that is the WITHDRAWN duplicate 2604.09613
+    (v1 2026-03-13, v2 2026-04-14 withdrawn by Huamin Chen with the comment duplicate of arXiv:2604.08075); 2604.08075 v1
+    (9 Apr 2026, cs.CL, only version) is the canonical paper. Route: arXiv HTML rendering of v1 (LaTeXML) read in full from
+    a text dump (abstract, Sections 1-7, Algorithm 1, Tables 1-6, Figure 1-6 captions, refs 1-30; no appendix exists); PDF
+    fetched as backup, not rendered. Two passages truncated by a literal < in the dump were recovered from the raw HTML (Figure
+    1 caption; Section 4.6 left-slope paragraph). Figure 6 values are reconstructed from SVG polyline coordinates (the 8K
+    points match Table 2 exactly) and are not printed in the text. sha256: abs.html 27da4698ef44b00adec70480ccce47e8fe8aabde63073285e5965ae9e4360996;
+    abs-09613.html cc67abb9bf2736a4968a2dd817a987a1290c1624eb34e8ef1acfec0eb2bb5f50; paper.html 63b9416ced8aef39910b9455d821cb242398d5039a329999d496d1b4d62453de;
+    paper.pdf 08785d687ea9349aaac03ae3db1d4c01f2afd4410bb7f80f491426f92a5a562b. Anchors that spanned several passages in the
+    dive report were split here into one verbatim fragment per anchor row; quotes are re-findable in paper.txt/paper.html
+    modulo line-wrapping whitespace (the text dump breaks lines inside sentences). Credibility rubric: peer-reviewed 0 (arXiv
+    only), 12 months +1, known project / AMD co-authors +1, commercial bias -1 (vLLM Semantic Router product, AMD MI300X case
+    study), independent corroboration 0 = 1. NOT-FOUND-IN-SOURCE: a limitations section; cache-aware or prefix-cache routing
+    interaction with pools; sticky sessions; any real-hardware measurement; a code URL. Our-stack reads in the lane worktree:
+    within-role-placement-state-machine.md:439-441 (WP-15, WP-15.1 dispatch.v1 records prompt_chars and n_tokens_budget),
+    kv-unified-stack-rollout.md:378 (KVU-16g) and :1363 (DI-126), heterogeneous-slot-fabric-residency.md:316-317 (HSF-4 append
+    p50/p90/p99 467/5362/16413), gpu-serving-tie-in-program.md:335 (PB-QCOST-1).'
+  novelty_justification: Length-tiered pools and byte-based token estimation are known ideas; the contribution is the packaged
+    routing rule plus the closed-form alpha (1 - 1/rho) estimator, both only simulated.
+  relevance_justification: 'Bears directly on WP-15 (what signal to route on: prompt + max_tokens budget, both already logged)
+    and on HSF-4 / DI-126 (the alpha(B) ceiling decides whether any single-host tiering is worth a replay arm); medium because
+    the fleet-provisioning economics have no single-host consumer.'
+  verdict_justification: 'adopt_patterns: route-on-total-budget, offline chars-per-token calibration and the alpha (1 - 1/rho)
+    ceiling transfer as zero-compute replay inputs; the headline savings do not transfer and are simulator-only.'
+  source_revision: arXiv:2604.08075v1 (HTML, 9 Apr 2026); withdrawn duplicate 2604.09613v2 abs page read 2026-10-21
+  reader_should_conclude: 'A simulation-only, same-group-corroborated argument that length-tiering a vLLM fleet by max_model_len
+    pays when a large short fraction alpha exists and the engine reserves max-context KV per sequence so that concurrency
+    scales about 1/C_max. Cite only the transferable patterns: route on prompt plus max_output budget rather than prompt length;
+    calibrate a chars-to-tokens ratio from the server real usage.prompt_tokens; compute alpha (1 - 1/rho) from your own length
+    distribution as a CEILING before building anything; watch preemption and TTFT-under-long-prefill, not utilization. Do
+    NOT quote the 31-42% / 2.86M headline as expected gain (Vidur-calibrated simulator, internal inconsistencies, withdrawn
+    duplicate with other numbers). Nothing in the paper covers KV locality, sticky sessions or prefix-cache-aware routing,
+    which dominate a single-host per-instance-KV deployment.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Abstract
+    quote: Each request is routed based on its estimated total token budget, computed using a per-category bytes-to-token
+      ratio that is learned online via exponential moving average from usage.prompt_tokens feedback, eliminating the need
+      for a tokenizer.
+    quote_sha256: f2a6505ddfa87de062a2dc175d00ffda60e643ec8c80966f58ffbf7d3e550eb2
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 2.1, paragraph Why total budget, not prompt length.
+    quote: Early prototypes routed on $L_{\text{in}}$ alone. This caused preemption storms when “short-prompt, long-generation”
+      requests (e.g., creative writing with $L_{\text{in}}{=}200$ , $L_{\text{out}}{=}8192$ ) were sent to the short pool.
+      Routing on $L_{\text{total}}=L_{\text{in}}+L_{\text{out}}$ eliminated the issue.
+    quote_sha256: fff3c88dc17053f26d9d3f800e1e1a495b5edc23c29f2f3e64840655ae0155b8
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 2.1, paragraph Closed-loop calibration.
+    quote: 'with decay $\beta{=}0.95$ . Because routing errors are asymmetric — sending a long request to the short pool causes
+      preemption, while sending a short request to the long pool merely wastes some throughput — the router uses a conservative
+      estimate:'
+    quote_sha256: 47150e48fb0e99c825f00cd4ea49ec07b46f82d1b9a58b13d21f06f387b5a270
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 4.5, Table 5 text
+    quote: After 50 observations per category, the EMA ratio converges to within 3.5% of the true value. The conservative
+      estimate (Equation 5) reduces mis-routing — sending a request to a pool that cannot serve it — from 4.1% (global static)
+      to under 1% for all categories.
+    quote_sha256: 55fbafb896157b4bb893e913ea970aeae69e46a17655c8e9d3a2bb7339873d66
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 2.2, paragraph Choosing B_short.
+    quote: Empirically, a wide range of values between 4K and 16K tokens achieves near-optimal performance, making the system
+      robust to imperfect tuning. In practice, initializing $B_{\text{short}}{=}8192$ provides a reliable default across diverse
+      workloads.
+    quote_sha256: 8d8ea842ee7cc47ed0ac0487ee804466fabba4372ccd267e83b4ea280db4161c
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Figure 6 caption
+    quote: 'Figure 6: Savings vs. threshold. Any $B_{\text{short}}$ in 4K–16K delivers $>$ 80% of peak savings. The threshold
+      is forgiving.'
+    quote_sha256: c15c61c5f4992c4492ab9fb9cd9fc51065c9a15ead27427a14fc41fedd97bbe1
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 4.1, Table 1 Pool configurations (rows)
+    quote: Short $\mathcal{P}_{s}$ | 8K | 128 | 16K | 11.2 |
+    quote_sha256: 51c97be03dcb1463f291e0fb9d04ff0eef834c5e022ac852790b6800d61f1bf1
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 4.1, Table 1 Pool configurations (rows)
+    quote: Long $\mathcal{P}_{l}$ | 65K | 16 | 8K | 2.8 |
+    quote_sha256: 9b152f32f89ded488413e264a898ba3d5cce212b2306e2b043de5f2d07667590
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 4.1, Table 1 legend
+    quote: Here, $C_{\max}$ denotes the maximum supported context length, $N_{\text{seq}}$ the maximum number of concurrent
+      sequences per GPU, $B_{\text{batch}}$ the maximum batch size, and $\mu$ the measured throughput per instance.
+    quote_sha256: d87be3af8727899dd3fdd92415066e82aa3c500b385ff5513b4c056c3f66d2ae
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Section 4.1, paragraph Model and hardware.
+    quote: We simulate serving Llama-3-70B-Instruct (BF16, 80 layers, 8 KV heads, $d_{h}{=}128$ ) on NVIDIA A100-80GB GPUs
+      with tensor parallelism degree 2. Performance metrics, including throughput and latency, are obtained using a discrete-event
+      simulator calibrated against Vidur [28], which models prefill and decode phases, KV-cache allocation, batching behavior,
+      and queueing dynamics.
+    quote_sha256: 3cf30df5fe3c19c268495eb715a4de0c4b1325c721bafc47b69979f2319f3334
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Section 4.1, paragraph Baselines.
+    quote: 'We compare against two configurations: (1) Homogeneous, a single-pool deployment using round-robin dispatch; and
+      (2) Token-budget routing, our proposed method as described in Section 2, with threshold $B_{\text{short}}{=}8192$ and
+      load-aware spillover enabled.'
+    quote_sha256: cf81103c3591f746c69165aa2d72c1928b0d0e7fb97ec4c73e9eb56fdf0873c4
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Section 4.2, Table 2 text
+    quote: Token-budget routing reduces GPU instances by 41.9% on the Azure trace and 31.3% on LMSYS (Table 2). At $2.21/GPU-hr
+      (AWS p4d.24xlarge), the Azure savings amount to $238K/month or $2.86M/year.
+    quote_sha256: 6b4a71cc7f5c63c28fd0ab3f4fd6c2e06409dbad4b8f1b698ca130dd18749a7d
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Section 4.3, paragraph Aggregate effect.
+    quote: preemption drops 5.4 $\times$ (47.3 $\to$ 8.7‰), OOM drops 5.3 $\times$ , and the success rate rises from 99.69%
+      to 99.95%.
+    quote_sha256: 70279575351c5b5e303b89c25499279f83f2f9538d0371c01c921512de201932
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Section 4.4, Table 4 text
+    quote: TTFT at P50 improves by 33% (0.42 s $\to$ 0.28 s) and at P99 by 6% (1.82 s $\to$ 1.71 s). TPOT improves at both
+      percentiles (11% at P50, 7% at P99).
+    quote_sha256: 17a378563d302eedd219855b306f383feff7086610fbab7eac1768978fddafec
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Section 3, Eq. 7
+    quote: where $\alpha=F(B_{\text{short}})$ is the short-traffic fraction and $\rho=\mu(C_{S})/\mu(C_{H})$ is the throughput
+      gain ratio.
+    quote_sha256: d30d391ffba648f722c38b54a2e98727d20681bf65adc06856e99ef4638fb6c3
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Section 3, paragraph Why the formula is a conservative lower bound.
+    quote: 'Consequently, Equation 7 is a lower bound: realized savings are at least as large, and often larger, than the
+      formula’s prediction.'
+    quote_sha256: a6af40164d12bbca6399975ddf6ecf76e8957056da837d46e50c33d26c1fdde0
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Section 4.2, paragraph Model validation.
+    quote: The simulation yields 41.9% — a gap of 18.1 pp.
+    quote_sha256: ec773166dcd70768ad631e2340aedc5bbe12e97c5b3829705ab9e1734719a2a5
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Section 4.2, paragraph Model validation.
+    quote: 'The formula consistently provides an upper bound on realizable savings, which is its intended use: teams can compute
+      the ceiling cheaply, then simulate for precision.'
+    quote_sha256: 6f5520547a935f52d57633357dfe379f09603d85a4dcba14544aa3b3d9da6db7
+    source_revision: arXiv:2604.08075v1 HTML (paper.html sha256 63b9416ced8a; text dump paper.txt)
+    verified_by: research-intake/stage2b
+  - claim_index: 8
+    kind: heading-and-hash
+    locator: 'arXiv abs page of 2604.09613, Comments cell (raw HTML; renders as: duplicate of arXiv:2604.08075)'
+    quote: duplicate of <a href="https://arxiv.org/abs/2604.08075" data-arxiv-id="2604.08075" class="link-https">arXiv:2604.08075</a>
+    quote_sha256: 8959f769089e25da915f3967f70bdbae0329b01fc1e64f1725184a453d4568e6
+    source_revision: arXiv abs page 2604.09613 (abs-09613.html sha256 cc67abb9bf27), fetched 2026-10-21
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Routing rule confirmed verbatim (Eq. 3, Algorithm 1); signal is byte length / calibrated ratio plus max_output_tokens,
+      no prompt-token count at dispatch time.
+  - claim_index: 1
+    effect: unaffected
+    note: Stated as an early-prototype anecdote; no table quantifies the L_in-only preemption storm.
+  - claim_index: 2
+    effect: unaffected
+    note: Convergence numbers are from the simulated Azure trace with synthetic category tags; true c_k values are simulator
+      inputs.
+  - claim_index: 3
+    effect: narrowed
+    note: Figure 6 carries no numeric labels in the text; the per-threshold values are reconstructed from SVG coordinates
+      (8K points match Table 2); the threshold is chosen empirically, no derivation.
+  - claim_index: 4
+    effect: unaffected
+    note: Pools differ only in software config (max_model_len / N_seq / batch); hardware identical by construction.
+  - claim_index: 5
+    effect: unaffected
+    note: Simulation only; calibrated against Vidur is asserted without calibration error numbers; Table 1 mu described as
+      measured without method.
+  - claim_index: 6
+    effect: narrowed
+    note: All headline numbers are simulator outputs at 1,000 req/s; LMSYS P99 TTFT slightly worsens; MI300X numbers are arithmetic
+      projection; the withdrawn duplicate reported 17-39%.
+  - claim_index: 7
+    effect: unaffected
+    note: The claim records the contradiction itself; the paper asserts both lower bound (Section 3) and upper bound (Section
+      4.2) and its own data (60.0 vs 41.9) make it an upper bound.
+  - claim_index: 8
+    effect: unaffected
+    note: Withdrawal banner and the duplicate comment read from the 2604.09613 abs page; the 17-39% figure is from that abstract.
+  dive_corrections: '2026-10-21 Stage-2b wave 1 (research-intake/stage2b): combined ingest+dive; FULL read of arXiv:2604.08075v1
+    HTML; title corrected from the believed Token-Budget-Aware Pool Routing (that is the withdrawn duplicate 2604.09613) to
+    Dual-Pool Token-Budget Routing for Cost-Efficient and Reliable LLM Serving; the lower/upper-bound contradiction and the
+    withdrawn duplicate divergent headline numbers recorded; Figure 6 values reconstructed from SVG; no repository URL exists
+    in the paper. Dive-surfaced: Medha arXiv 2409.17264, GreenLLM arXiv 2508.16449 and EWSJF arXiv 2601.21758 (independent;
+    bear on whether tiering or in-instance scheduling answers the HOL symptom) selected for wave 2; decline PROPOSED (operator
+    confirms at Stage 3): FleetOpt 2603.16514, the 1/W Law 2603.17280 and the vision paper 2603.21354 (same author core, restatements),
+    ServeGen 2505.09999 and BurstGPT 2401.17644 (production length distributions; our own HSF-4 log distribution is the relevant
+    alpha), vllm-project/semantic-router (no evidence in the paper that the mechanism ships there).'
   handoffs_updated: []
   handoffs_created: []
   ingested_date: '2026-10-21'
