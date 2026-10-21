@@ -1,0 +1,188 @@
+name: LINT-SIGPIPE-GREP-Q synthetic source controls
+on:
+  push:
+    branches: [codex/lint-sigpipe-grep-q-source-20261021]
+    paths:
+      - .github/workflows/lint-sigpipe-grep-q-native.yml
+      - scripts/hooks/check_sigpipe_grep_q.py
+      - scripts/hooks/pre-commit.extras
+      - scripts/hooks/tests/test_sigpipe_grep_q.py
+      - scripts/ci/lint_sigpipe_grep_q_requirements.txt
+permissions:
+  contents: read
+jobs:
+  lint-sigpipe-grep-q-controls:
+    if: github.ref == 'refs/heads/codex/lint-sigpipe-grep-q-source-20261021'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ENROLLMENT_COMMIT: 881059341230c48178a18ed76cd4b65ede07ab6e
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize custody directory before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/lint-sigpipe-grep-q/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/lint-sigpipe-grep-q/result/status.json"
+      - name: Checkout exact source event commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout unchanged native carrier and shared grader
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install pinned hermetic fixture runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/lint-sigpipe-grep-q/venv"
+          python --version > "$RUNNER_TEMP/lint-sigpipe-grep-q/result/python-version.txt"
+          git --version > "$RUNNER_TEMP/lint-sigpipe-grep-q/result/git-version.txt"
+          "$RUNNER_TEMP/lint-sigpipe-grep-q/venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-deps --only-binary=:all: --require-hashes \
+            -r recipe/scripts/ci/lint_sigpipe_grep_q_requirements.txt \
+            2>&1 | tee "$RUNNER_TEMP/lint-sigpipe-grep-q/result/dependency-install.log"
+      - name: Capture exactly eleven synthetic cases through the existing carrier
+        id: capture
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/codex/lint-sigpipe-grep-q-source-20261021"
+          test "$GITHUB_SHA" = "$(git -C recipe rev-parse HEAD)"
+          test "$ENROLLMENT_COMMIT" != "__BIND_TO_PUBLISHED_E_BEFORE_S_COMMIT__"
+          git -C recipe merge-base --is-ancestor "$ENROLLMENT_COMMIT" "$GITHUB_SHA"
+          printf '{"state":"capture_started","exit_code":null}\n' > "$RUNNER_TEMP/lint-sigpipe-grep-q/result/status.json"
+          set +e
+          "$RUNNER_TEMP/lint-sigpipe-grep-q/venv/bin/python" carrier/scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE/recipe" \
+            --junit "$RUNNER_TEMP/lint-sigpipe-grep-q/result/original-junit.xml" \
+            --output "$RUNNER_TEMP/lint-sigpipe-grep-q/result/native" \
+            --repo "root=$GITHUB_WORKSPACE/recipe" \
+            --repo "carrier=$GITHUB_WORKSPACE/carrier" \
+            --read-path "$GITHUB_WORKSPACE/recipe/.github/workflows/lint-sigpipe-grep-q-native.yml" \
+            --read-path "$GITHUB_WORKSPACE/recipe/.github/workflows/tests.yml" \
+            --read-path "$GITHUB_WORKSPACE/recipe/scripts/hooks/check_sigpipe_grep_q.py" \
+            --read-path "$GITHUB_WORKSPACE/recipe/scripts/hooks/pre-commit.extras" \
+            --read-path "$GITHUB_WORKSPACE/recipe/scripts/hooks/tests/test_sigpipe_grep_q.py" \
+            --read-path "$GITHUB_WORKSPACE/recipe/scripts/hooks/install_git_hooks.sh" \
+            --read-path "$GITHUB_WORKSPACE/recipe/scripts/vidya/adapters/README.md" \
+            --read-path "$GITHUB_WORKSPACE/recipe/handoffs/active/vidya-belief-substrate-program.md" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/adapters/__init__.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/lattice.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/frames.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/ledger.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/scripts/vidya/cli.py" \
+            --read-path "$GITHUB_WORKSPACE/carrier/tests/vidya/test_ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/recipe/scripts/ci/lint_sigpipe_grep_q_requirements.txt" \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_warns_on_strings_pipeline_with_pipefail' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_warns_on_combined_grep_options_and_continuation' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_does_not_treat_grep_pattern_or_file_argument_as_option' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_no_warning_without_pipefail' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_no_warning_for_safe_count_redirection_or_file_input' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_ignores_comment_and_quoted_pipe' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_pipefail_reset_stops_later_warning' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_pipefail_enabled_before_same_line_pipeline' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_main_reads_staged_unsafe_blob_not_safe_worktree' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_main_ignores_unsafe_worktree_when_staged_blob_is_safe' \
+            --select 'scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_main_fails_open_on_git_scan_error_without_source_leak' \
+            -- "$RUNNER_TEMP/lint-sigpipe-grep-q/venv/bin/python" -m pytest -q \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_warns_on_strings_pipeline_with_pipefail \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_warns_on_combined_grep_options_and_continuation \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_does_not_treat_grep_pattern_or_file_argument_as_option \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_no_warning_without_pipefail \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_no_warning_for_safe_count_redirection_or_file_input \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_ignores_comment_and_quoted_pipe \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_pipefail_reset_stops_later_warning \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_pipefail_enabled_before_same_line_pipeline \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_main_reads_staged_unsafe_blob_not_safe_worktree \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_main_ignores_unsafe_worktree_when_staged_blob_is_safe \
+              scripts/hooks/tests/test_sigpipe_grep_q.py::SigpipeGrepQTests::test_main_fails_open_on_git_scan_error_without_source_leak \
+              --junitxml "$RUNNER_TEMP/lint-sigpipe-grep-q/result/original-junit.xml" \
+            2>&1 | tee "$RUNNER_TEMP/lint-sigpipe-grep-q/result/native-cli.log"
+          capture_rc=$?
+          printf '{"state":"capture_completed","exit_code":%s}\n' "$capture_rc" > "$RUNNER_TEMP/lint-sigpipe-grep-q/result/status.json"
+          exit "$capture_rc"
+      - name: Reopen the original receipt through the existing projector and shared grader
+        id: shared_grade
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/lint-sigpipe-grep-q/result/native/receipt.json"
+          grade="$RUNNER_TEMP/lint-sigpipe-grep-q/result/shared-grade.json"
+          if [[ ! -f "$receipt" ]]; then
+            printf '{"state":"no_native_receipt"}\n' > "$grade"
+            exit 0
+          fi
+          PYTHONPATH="$GITHUB_WORKSPACE/carrier" "$RUNNER_TEMP/lint-sigpipe-grep-q/venv/bin/python" - "$receipt" "$grade" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          from scripts.vidya.adapters.ci_conformance import (
+              native_rows, project_ci_conformance,
+          )
+          from scripts.vidya.claim_tuple import grade
+
+          rows = native_rows(sys.argv[1])
+          if len(rows) != 1:
+              Path(sys.argv[2]).write_text('{"state":"null_not_projected"}\n')
+              raise SystemExit(0)
+          q, t, reasons = grade(project_ci_conformance(rows[0]))
+          Path(sys.argv[2]).write_text(json.dumps(
+              {"state": "graded", "q": q, "t": t, "reasons": reasons},
+              sort_keys=True, separators=(",", ":"),
+          ) + "\n")
+          PY
+      - name: Finalize capture status envelope
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome || 'not_reached' }}
+          GRADE_OUTCOME: ${{ steps.shared_grade.outcome || 'not_reached' }}
+        run: |
+          python3 - "$RUNNER_TEMP/lint-sigpipe-grep-q/result" "$CAPTURE_OUTCOME" "$GRADE_OUTCOME" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          capture_outcome, grade_outcome = sys.argv[2:]
+          receipt = root / "native" / "receipt.json"
+          grade_path = root / "shared-grade.json"
+          status = {"capture_step": capture_outcome, "grade_step": grade_outcome}
+          if receipt.is_file():
+              record = json.loads(receipt.read_text())
+              status.update({"state": "native_receipt_recorded",
+                             "fixture_execution_conformant": record.get("fixture_execution_conformant"),
+                             "receipt_sha256": record.get("receipt_sha256")})
+          elif capture_outcome == "skipped" or capture_outcome == "not_reached":
+              status["state"] = "setup_failed_before_capture"
+          else:
+              status["state"] = "capture_failed_without_receipt"
+          if grade_path.is_file():
+              status["shared_grade"] = json.loads(grade_path.read_text())
+          (root / "status.json").write_text(json.dumps(status, sort_keys=True) + "\n")
+          PY
+      - name: Preserve original native receipt, request, readset, log and JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-sigpipe-grep-q-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lint-sigpipe-grep-q/result/
+          include-hidden-files: true
+          if-no-files-found: error
