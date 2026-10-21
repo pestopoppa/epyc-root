@@ -1,0 +1,27 @@
+{
+  "decision": "operator 2026-10-21: 'proceed with fix' - corpus retrieval OFF in the frozen model registry (index deleted 2026-07-04, CPL-4/5); effective at the next stack start",
+  "effective": "next orchestrator_stack.py start / API reload",
+  "landed": {
+    "epyc-inference-research": {
+      "commit": "ab702eca6b8a95086d7096e5569b185d5941da22",
+      "ref": "origin/main"
+    },
+    "epyc-orchestrator": {
+      "commit": "792955fc3e0562056193fd9f7881cacf195dad07",
+      "ref": "origin/main"
+    }
+  },
+  "pinned_sha256": {
+    "orchestrator:docs/generated/current_stack_summary.md": "96f2aeb0afc45a217e7283c4182c18e69a11f89f2777cf59e958baff1b846d8d",
+    "orchestrator:orchestration/derived/stack_priors.yaml": "3d21f563fa98f97bab87d46123d3a2e6ae31dfc4ac4e919ed33cd957d35f123d",
+    "orchestrator:orchestration/model_descriptors.yaml": "2f34c4e1dffd250b08189e1886ba14fbf5ec9375cf9b1547d602554d3996b149",
+    "orchestrator:orchestration/model_registry.yaml": "a7b705ba8cc5df2ea5dac0bb758181f148dab98d74367a976c8c93ac4e6550db",
+    "research:orchestration/model_registry.yaml": "0e6a63bb72234290af01ee809563b3c6fb149eb9abc87c8b6a1771c510ae3d2d"
+  },
+  "schema": "epyc.operator_receipt.v1",
+  "signature_channel": "terminal",
+  "signed_at": "2026-10-21T16:34:07.564973+00:00",
+  "signed_by": "Daniele",
+  "status": "ratified",
+  "token": "RATIFY-CORPUS-RETRIEVAL-OFF-20261021"
+}
