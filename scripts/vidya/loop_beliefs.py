@@ -26,22 +26,35 @@ exist to construct meaningful hypotheses, so a plan without it must be impossibl
 
 WHAT IT READS (nothing here grades). `Ledger.verify()/read_all()` -> `fold()` -> `gate.evaluate()`
 under the declared `POLICY`, WITHOUT writing a `query_served` frame. Claims are matched to the
-consumer's target(s) by applicability scope, never by nearness:
+consumer's target(s) by applicability scope, never by nearness, into THREE TIERS that are never
+mixed (belief redesign 2026-10-21, §7.1):
 
-  * persisted scope (VB-APPLICABILITY): a `source_observed` assertion carrying `applicability`.
-    The claim applies when it declares at least one of model_file/device, and EVERY dimension it
-    declares among model_file (basename), quant (case-folded), backend, device, context_tokens
-    equals the target's. A dimension the claim does not declare is not compared -- the producer
-    declared the scope, the reader does not narrow or widen it.
-  * declared scope table (`SOURCE_SCOPES`): sources written before VB-APPLICABILITY whose producer
-    contract pins the whole scope (same rule the AutoKernel reader used since 2026-09-25).
+  * target  -- the scope names the target's weights (model_file basename, or model_sha256) and
+               every other dimension it declares (quant, backend, device, context_tokens) equals
+               the target's. A device-only scope never reaches this tier.
+  * sibling -- a different file of the target's declared `MODEL_LINEAGE` family on the same
+               backend. Rendered "measured on <file>, recipe <r>; transfer unproven"; never
+               target evidence.
+  * host    -- device-only scopes (e.g. INF-70 roofline): at most 3 lines, labelled "host
+               ceiling, not about this model", and NOT reliance-eligible.
+  The declared scope table (`SOURCE_SCOPES`) covers sources written before VB-APPLICABILITY whose
+  producer contract pins the whole scope; it is tiered by the same rule.
 
-Matched claims are sorted into three decision-relevant buckets, each from fold/gate output only:
+Each matched claim gets a status from fold/gate output only:
 
-  * usable     -- gate ALLOW at the floor; the newest complete run per source. Reuse candidates.
-  * contested  -- gate refused for conflict/review/correction (evidence opposes, unadjudicated
-                  correction, dependency alert). A contradiction the planner must not build on.
+  * verified   -- gate ALLOW at the floor; the newest complete run per source. A negative result
+                  (null, regression, correctness refusal) is a verified claim with a negative
+                  `observation.outcome`, a dead end the planner can trust.
+  * contested  -- gate refused for conflict/review/correction. Must not be built on.
   * withdrawn  -- support retracted. A previously believed result that no longer stands.
+  * refuted    -- `belief.verdict(floor)` is Opposed: opposing evidence clears the floor.
+
+Rendering is value-bearing when the evidence frame carries the carrier's `observation` block
+(value, unit, n, effect vs anchor, floor, outcome, mechanism id), ranked inside the target tier
+(flagged, decisive, refusals, nulls, anchors/floors, older epochs), one line per (mechanism,
+recipe), followed by a tried-mechanisms index. Frames without an observation render their text
+exactly as before. v1 serving arm claims are hidden behind the v2 capture claim for the same
+receipt.
 
 Stdlib + ROOT `scripts/vidya` modules only; consumers in other repos run this file as a child
 process (`python3 loop_beliefs.py prepare ...`) so a slow ledger is killed at their deadline.
@@ -56,6 +69,7 @@ import hashlib
 import importlib.util
 import inspect
 import json
+import math
 import os
 import re
 import sys
@@ -68,7 +82,7 @@ HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 
-from fold import fold  # noqa: E402
+from fold import Verdict, fold  # noqa: E402
 from gate import Outcome, UsePolicy, evaluate  # noqa: E402
 from lattice import parse_grade  # noqa: E402
 from ledger import Ledger  # noqa: E402
@@ -86,9 +100,18 @@ DEFAULT_ESCALATE_AFTER_S = 3600.0
 EXIT_READY, EXIT_USAGE, EXIT_REFUSED = 0, 2, 3
 
 SECTION_HEADER = "## Belief-kernel evidence (Vidya ledger, read-only)"
-DEFAULT_MAX_CLAIMS = 12
-DEFAULT_MAX_BYTES = 10000
+#: Section budget (belief redesign §7.3): target 16 + sibling 8 + host 3 detailed claims, an
+#: 80-id tried-mechanisms index, 14 KB in all.
+DEFAULT_MAX_CLAIMS = 27
+DEFAULT_MAX_BYTES = 14000
+TIERS = ("target", "sibling", "host")
+TIER_CAPS = {"target": 16, "sibling": 8, "host": 3}
+INDEX_CAP = 80
+TRIED_JSON_CAP = 400
 CLAIM_TEXT_CAP = 440
+CONTEXT_TEXT_CAP = 220
+STATEMENT_CAP = 140
+EARLIER_CAP = 3
 REASON_CAP = 200
 FLAGGED_CAP = 8
 OMITTED_CAP = 24
@@ -96,9 +119,16 @@ OMITTED_CAP = 24
 #: it came from; an observation is shown AS an observation (its grade printed beside it).
 POLICY = {"use": "planner-context", "floor": "Judged/Located", "standard": "DV"}
 DEVICE_BY_BACKEND = {"gpu": "gfx90a", "cpu": "epyc-9655"}
-_MATCH_KEYS = ("model_file", "quant", "backend", "device", "context_tokens")
+#: Dimensions compared after the model identity (model_file / model_sha256) is settled.
+_MATCH_KEYS = ("quant", "backend", "device", "context_tokens")
 #: Gate reasons that mean "the evidence disagrees or is under review", not merely "too weak".
 _CONTESTED_MARKERS = ("conflict", "oppos", "correction", "review", "dependency")
+#: Flagged buckets, in render order (contested, withdrawn, then refuted).
+FLAG_BUCKETS = ("contested", "withdrawn", "refuted")
+#: `observation.outcome` vocabulary (belief redesign §4.1). Anything else reads as "" (no outcome).
+OUTCOMES = frozenset({"improved", "null", "regressed", "refused_correctness", "refused_scope",
+                      "divergence", "anchor", "floor"})
+_SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 REFUSAL_REASONS = ("ledger_missing", "sync_unavailable", "ingest_failed", "still_stale",
                    "chain_broken", "reader_error")
@@ -300,7 +330,12 @@ def state_digest(state: Mapping[str, Any]) -> str:
 
 @dataclass(frozen=True)
 class Target:
-    """What a planning step is about. Every field compared is compared exactly."""
+    """What a planning step is about. Every field compared is compared exactly.
+
+    `model_sha256`, `recipe` and `focus_symbols` are optional (belief redesign §7.5). The sha
+    identifies the weights even when the file name differs. `recipe` and `focus_symbols` only
+    change the ORDER of target-tier lines (same recipe first, then claims on a focus symbol);
+    they never filter. A consumer that passes none of them is read exactly as before."""
 
     model_file: str
     quant: str
@@ -308,11 +343,15 @@ class Target:
     device: str
     context_tokens: int | None = None
     label: str = ""
+    model_sha256: str = ""
+    recipe: str = ""
+    focus_symbols: tuple[str, ...] = ()
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> "Target":
         """`model_file`, or `model_path` reduced to its basename. An incomplete target raises:
-        it is not a wildcard. `device` defaults from the backend on this host."""
+        it is not a wildcard. `device` defaults from the backend on this host. `recipe` is taken
+        as given, else from an AutoKernel `surface` of the form `serving:<recipe>`."""
         model = str(raw.get("model_file") or "").strip()
         if not model and raw.get("model_path"):
             model = PurePath(str(raw["model_path"])).name
@@ -332,27 +371,89 @@ class Target:
         if depth is not None and (not isinstance(depth, int) or isinstance(depth, bool)
                                   or depth < 1):
             raise ValueError("context_tokens must be a positive integer when given")
-        return cls(context_tokens=depth, label=str(raw.get("label") or ""), **values)
+        sha = str(raw.get("model_sha256") or "").strip().lower()
+        if sha and not _SHA256_RE.fullmatch(sha):
+            raise ValueError("model_sha256 must be a 64-character hex digest when given")
+        recipe = str(raw.get("recipe") or "").strip()
+        surface = str(raw.get("surface") or "").strip()
+        if not recipe and surface.startswith("serving:"):
+            recipe = surface.removeprefix("serving:").strip()
+        focus = raw.get("focus_symbols") or ()
+        if isinstance(focus, str) or not isinstance(focus, (list, tuple)):
+            raise ValueError("focus_symbols must be a list of symbol names when given")
+        symbols = tuple(sorted({str(s).strip() for s in focus if str(s).strip()}))
+        return cls(context_tokens=depth, label=str(raw.get("label") or ""), model_sha256=sha,
+                   recipe=recipe, focus_symbols=symbols, **values)
 
     def as_dict(self) -> dict[str, Any]:
         return {"model_file": self.model_file, "quant": self.quant, "backend": self.backend,
                 "device": self.device, "context_tokens": self.context_tokens,
-                "label": self.label}
+                "label": self.label, "model_sha256": self.model_sha256, "recipe": self.recipe,
+                "focus_symbols": list(self.focus_symbols)}
 
 
-def applicability_matches(scope: Mapping[str, Any], target: Target) -> bool:
-    """Persisted-scope rule (see module doc): declares model_file or device, and every declared
-    dimension equals the target's."""
-    if not isinstance(scope, Mapping) or not (scope.get("model_file") or scope.get("device")):
+@dataclass(frozen=True)
+class ModelFamily:
+    """One declared lineage: GGUF files that share an architecture but differ in weights or
+    quant mix. Evidence measured on one member is shown to another as SIBLING context, labelled
+    "transfer unproven", and never counted as target evidence."""
+
+    family: str
+    members: Mapping[str, str]   # GGUF basename -> short label used in rendered lines
+    basis: str
+
+
+#: The declared lineage table (belief redesign §7.1), like `SOURCE_SCOPES`: a row exists only
+#: with a basis sentence. Files not listed here have no siblings.
+MODEL_LINEAGE: dict[str, ModelFamily] = {fam.family: fam for fam in (
+    ModelFamily(
+        family="DS41",
+        members={"DeepSeek-V4.1-Flash-Q4.gguf": "DS41-Q4",
+                 "DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf": "DS41-1017"},
+        basis=("both are DeepSeek-V4.1-Flash GGUFs from one producer directory "
+               "(models/antirez/deepseek-v4.1-flash-gguf/), same architecture; the 1017 file is "
+               "a different release with MXFP4 experts, so weights and quant mix differ")),
+    ModelFamily(
+        family="Q38FN",
+        members={"Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf": "Q38FN-UD-IQ4_XS",
+                 "Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf": "Q38FN-IQ4_XS-uniform"},
+        basis=("the same Qwen3.8-Flash-Next weights quantised two ways: the served unsloth "
+               "UD-IQ4_XS 3-shard mix and the IQ4_XS-uniform single file the INF-70 decode "
+               "campaign measured; this family has shown 15.2%-class artifact effects, so the "
+               "two are never cross-quoted")),
+)}
+_FAMILY_OF: dict[str, ModelFamily] = {name: fam for fam in MODEL_LINEAGE.values()
+                                      for name in fam.members}
+
+
+def model_label(model_file: str) -> str:
+    """Short label for a GGUF basename: the lineage label, else the basename without `.gguf`."""
+    for fam in MODEL_LINEAGE.values():
+        if model_file in fam.members:
+            return fam.members[model_file]
+    return re.sub(r"\.gguf$", "", model_file) if model_file else ""
+
+
+def _model_match(scope: Mapping[str, Any], target: Target) -> bool | None:
+    """None when the scope declares no model; else whether it names the target's weights
+    (basename, or model_sha256 when both sides carry one; a sha disagreement always fails)."""
+    file = scope.get("model_file")
+    sha = str(scope.get("model_sha256") or "").strip().lower()
+    if not file and not sha:
+        return None
+    if sha and target.model_sha256 and sha != target.model_sha256:
         return False
+    if file and PurePath(str(file)).name == target.model_file:
+        return True
+    return bool(sha and target.model_sha256 and sha == target.model_sha256)
+
+
+def _dims_match(scope: Mapping[str, Any], target: Target) -> bool:
     for key in _MATCH_KEYS:
         if key not in scope or scope[key] in (None, ""):
             continue
         value = scope[key]
-        if key == "model_file":
-            if PurePath(str(value)).name != target.model_file:
-                return False
-        elif key == "quant":
+        if key == "quant":
             if target.quant and str(value).upper() != target.quant.upper():
                 return False
         elif key == "context_tokens":
@@ -361,6 +462,52 @@ def applicability_matches(scope: Mapping[str, Any], target: Target) -> bool:
         elif str(value).strip().lower() != getattr(target, key):
             return False
     return True
+
+
+def applicability_matches(scope: Mapping[str, Any], target: Target) -> bool:
+    """TARGET tier (belief redesign §7.1): the scope names the target's weights (model_file
+    basename or model_sha256) and every other dimension it declares equals the target's. A
+    device-only scope never matches here -- it is host context, not evidence about a model."""
+    if not isinstance(scope, Mapping) or not _model_match(scope, target):
+        return False
+    return _dims_match(scope, target)
+
+
+def sibling_matches(scope: Mapping[str, Any], target: Target) -> bool:
+    """SIBLING tier: a different file in the target's declared `MODEL_LINEAGE` family, on the
+    target's backend (the scope must declare backend or device, and what it declares must
+    equal the target's). Quant is not compared: siblings differ in quant mix by definition."""
+    if not isinstance(scope, Mapping) or not scope.get("model_file"):
+        return False
+    if _model_match(scope, target) is not False:
+        return False
+    family = _FAMILY_OF.get(PurePath(str(scope["model_file"])).name)
+    if family is None or family is not _FAMILY_OF.get(target.model_file):
+        return False
+    backend, device = scope.get("backend"), scope.get("device")
+    if not backend and not device:
+        return False
+    if backend and str(backend).strip().lower() != target.backend:
+        return False
+    return not (device and str(device).strip().lower() != target.device)
+
+
+def host_matches(scope: Mapping[str, Any], target: Target) -> bool:
+    """HOST tier: no model declared, a device declared, every declared dimension equal (the
+    pre-tier device-only rule). Rendered as a host ceiling, never as evidence about a model."""
+    if not isinstance(scope, Mapping) or _model_match(scope, target) is not None:
+        return False
+    return bool(scope.get("device")) and _dims_match(scope, target)
+
+
+def tier_of(scope: Mapping[str, Any], target: Target) -> str | None:
+    if applicability_matches(scope, target):
+        return "target"
+    if sibling_matches(scope, target):
+        return "sibling"
+    if host_matches(scope, target):
+        return "host"
+    return None
 
 
 @dataclass(frozen=True)
@@ -435,7 +582,15 @@ def _omit(source_kind: str, reason: str, *, run: str | None = None,
 
 
 def _bucket(belief: Any, verdict: Any) -> str:
-    """contested | withdrawn | weak, for a claim the gate did not ALLOW. Fold/gate output only."""
+    """refuted | contested | withdrawn | weak, for a claim the gate did not ALLOW. Fold/gate
+    output only: `refuted` is `belief.verdict(floor) == Opposed` (opposition clears the floor and
+    support does not); the rest is the pre-tier rule unchanged."""
+    if belief is not None and hasattr(belief, "verdict"):
+        try:
+            if belief.verdict(_policy().floor) == Verdict.OPPOSED:
+                return "refuted"
+        except Exception:  # noqa: BLE001 -- a fixture belief without paths is not refuted
+            pass
     if belief is not None and getattr(belief, "retracted_support", None) \
             and not getattr(belief, "pro_witnesses", None):
         return "withdrawn"
@@ -455,23 +610,208 @@ def visible_frames(frames: list[Mapping[str, Any]], as_of: str) -> list[Mapping[
             or _ts(f["pubinfo"]["created_at"]) <= cutoff]
 
 
-def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
-                    max_claims: int = DEFAULT_MAX_CLAIMS, max_bytes: int = DEFAULT_MAX_BYTES,
-                    fold_result: Any = None, reply_field: str = "relies_on_claims",
-                    ) -> dict[str, Any]:
-    """The evidence half of a `ready` answer, from frames already verified."""
+# ---- reading one claim (defensive: the observation block may be absent, partial or malformed)
+
+
+_DECIMAL = re.compile(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?")
+
+
+def _num(value: Any) -> float | None:
+    """THE number reader for evidence fields. The canonical ledger encoding forbids floats, so
+    the carrier writes numeric observation fields as decimal strings; ints and (synthetic
+    fixtures only) floats are accepted too. Anything else, or a non-finite number, is absent."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, str):
+        text = value.strip()
+        if not _DECIMAL.fullmatch(text):
+            return None
+        value = float(text)
+    elif isinstance(value, int):
+        value = float(value)
+    elif not isinstance(value, float):
+        return None
+    return value if math.isfinite(value) else None
+
+
+def _count(value: Any) -> int | None:
+    """A positive integer count (n_pairs), as int or decimal-integer string."""
+    number = _num(value)
+    if number is None or number < 1 or number != int(number):
+        return None
+    return int(number)
+
+
+def _str(value: Any) -> str:
+    return " ".join(str(value).split()) if isinstance(value, (str, int, float)) \
+        and not isinstance(value, bool) else ""
+
+
+def _recency(stamp: str) -> float:
+    try:
+        moment = _ts(stamp)
+    except (TypeError, ValueError):
+        return 0.0
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    return moment.timestamp()
+
+
+def read_observation(evidence: Mapping[str, Any]) -> dict[str, Any]:
+    """The value-bearing part of an evidence assertion (belief redesign §4.1/§4.2): `metric`,
+    `value`, `unit` and the `observation` block. Every key is optional; anything malformed reads
+    as absent, so a frame written before the carrier change renders exactly as before."""
+    raw = evidence.get("observation") if isinstance(evidence, Mapping) else None
+    obs = raw if isinstance(raw, Mapping) else {}
+    mech = obs.get("mechanism")
+    if isinstance(mech, str):
+        mech = {"id": mech}
+    elif not isinstance(mech, Mapping):
+        mech = {}
+    outcome = _str(obs.get("outcome")).lower()
+    decisive = obs.get("decisive")
+    return {
+        "metric": _str(evidence.get("metric")) if isinstance(evidence, Mapping) else "",
+        "value": _num(evidence.get("value")) if isinstance(evidence, Mapping) else None,
+        "unit": _str(evidence.get("unit")) if isinstance(evidence, Mapping) else "",
+        "has_observation": bool(obs),
+        "outcome": outcome if outcome in OUTCOMES else "",
+        "outcome_native": _str(obs.get("outcome_native")),
+        "outcome_reason": _str(obs.get("outcome_reason")),
+        "anchor_value": _num(obs.get("anchor_value")),
+        "effect_rel": _num(obs.get("effect_rel")),
+        "noise_floor_rel": _num(obs.get("noise_floor_rel")),
+        "decisive": decisive if isinstance(decisive, bool) else None,
+        "n_pairs": _count(obs.get("n_pairs")),
+        "mechanism_id": _str(mech.get("id")),
+        "statement": _str(mech.get("statement")),
+        "falsifier": _str(mech.get("falsifier")),
+        "serving_claim_id": _str(obs.get("serving_claim_id")),
+        "retrofit": obs.get("retrofit") is True,
+    }
+
+
+def _table_scope(table: SourceScope) -> dict[str, Any]:
+    return {"model_file": table.model_file, "quant": table.quant, "backend": table.backend,
+            "device": table.device}
+
+
+def _tier(scope: Mapping[str, Any], targets: list[Target]) -> tuple[str | None, list[Target]]:
+    """The best tier this claim reaches for any target (target > sibling > host), and the
+    targets it reaches it for. A claim lands in exactly one tier."""
+    hits: dict[str, list[Target]] = {}
+    for target in targets:
+        tier = tier_of(scope, target)
+        if tier:
+            hits.setdefault(tier, []).append(target)
+    for tier in TIERS:
+        if tier in hits:
+            return tier, hits[tier]
+    return None, []
+
+
+_V1_SERVING = re.compile(r"^clm_legacy-serving:(?P<cap>[^:|]+):")
+_V2_SERVING = re.compile(r"^clm_legacy-serving-v2:(?P<cap>[^:|]+)")
+
+
+def _dedup_serving(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """v1 arm claims hidden behind the v2 capture claim for the same receipt (belief redesign
+    §7.4/§8): same capture id, or the same receipt locator. The ledger keeps both."""
+    caps, locators = set(), set()
+    for row in rows:
+        match = _V2_SERVING.match(row["raw_id"]) or _V2_SERVING.match(row["claim_id"])
+        if match:
+            caps.add(match["cap"])
+            if row["locator"]:
+                locators.add(row["locator"])
+    if not caps:
+        return rows, []
+    kept, hidden = [], []
+    for row in rows:
+        match = _V1_SERVING.match(row["raw_id"]) or _V1_SERVING.match(row["claim_id"])
+        if match and (match["cap"] in caps or (row["locator"] and row["locator"] in locators)):
+            hidden.append(row)
+        else:
+            kept.append(row)
+    return kept, hidden
+
+
+_SERVING_NUMBERS = ("metric", "value", "unit", "anchor_value", "effect_rel", "noise_floor_rel",
+                    "decisive", "n_pairs")
+
+
+def _merge_linked(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]],
+                                                         list[dict[str, Any]]]:
+    """An experiment claim whose `observation.serving_claim_id` names a serving-v2 claim for the
+    same capture becomes ONE line: the experiment claim (mechanism statement, falsifier,
+    producer verdict) carrying the serving claim's numbers. Both ids stay reliance-eligible
+    (`linked_claim_ids`). Only two usable claims on the same tier merge; a flagged partner is
+    shown on its own."""
+    by_id: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        by_id.setdefault(row["raw_id"], row)
+        by_id.setdefault(row["claim_id"], row)
+    merged: list[dict[str, Any]] = []
+    merged_ids: set[str] = set()
+    for row in rows:
+        link = row["serving_claim_id"]
+        if not link or row["claim_id"] in merged_ids:
+            continue
+        partner = by_id.get(link if link.startswith("clm_") else f"clm_{link}")
+        if (partner is None or partner is row or partner["claim_id"] in merged_ids
+                or partner["tier"] != row["tier"] or partner["status"] != "verified"
+                or row["status"] != "verified"):
+            continue
+        for key in _SERVING_NUMBERS:
+            if partner[key] not in (None, ""):
+                row[key] = partner[key]
+        for key in ("outcome", "outcome_native", "mechanism_id", "symbol", "recipe", "epoch",
+                    "build_sha", "np"):
+            if row[key] in (None, "") and partner[key] not in (None, ""):
+                row[key] = partner[key]
+        row["linked_claim_ids"] = sorted(set(row["linked_claim_ids"]) | {partner["claim_id"]})
+        merged_ids.add(partner["claim_id"])
+        merged.append(partner)
+    return [row for row in rows if row["claim_id"] not in merged_ids], merged
+
+
+def _mark_stale_epochs(rows: list[dict[str, Any]]) -> None:
+    """Per (tier, model, recipe, source kind) the newest row that declares an epoch names the
+    current epoch; a row on another epoch is stale (its number is not comparable, the fact that
+    it was tried still stands). Rows that declare no epoch are never stale."""
+    current: dict[tuple, tuple[float, str, str]] = {}
+    for row in rows:
+        if not row["epoch"]:
+            continue
+        key = (row["tier"], row["model_file"], row["recipe"], row["source_kind"])
+        cand = (row["recency"], row["revision"], row["epoch"])
+        if key not in current or cand > current[key]:
+            current[key] = cand
+    for row in rows:
+        key = (row["tier"], row["model_file"], row["recipe"], row["source_kind"])
+        row["stale_epoch"] = bool(row["epoch"]) and current[key][2] != row["epoch"]
+
+
+def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
+            fold_result: Any = None) -> dict[str, Any]:
+    """Every claim that applies to the targets, tiered and gated, before any cap. Usable rows
+    (gate ALLOW, newest complete run per source) are `rows`; refused-but-decision-relevant ones
+    are in `flagged`. Public so acceptance checks can count what the caps hide."""
     targets = list(targets)
     visible = visible_frames(frames, as_of)
     result = fold_result if fold_result is not None else fold(visible, as_of=as_of)
     policy = _policy()
     sources: dict[str, Mapping[str, Any]] = {}
+    source_prov: dict[str, Mapping[str, Any]] = {}
     claims: dict[str, Mapping[str, Any]] = {}
     support: dict[str, Mapping[str, Any]] = {}
     reasons: dict[str, tuple[str, ...]] = {}
     for frame in visible:
         kind, assertion = str(frame.get("frame_type", "")), frame.get("assertion") or {}
         if kind.endswith("source_observed/v1"):
-            sources[str(assertion.get("source_id", ""))] = assertion
+            sid = str(assertion.get("source_id", ""))
+            sources[sid] = assertion
+            source_prov[sid] = frame.get("provenance") or {}
         elif kind.endswith("claim_proposed/v1"):
             claims[str(assertion.get("claim_id", ""))] = assertion
         elif kind.endswith("evidence_supports_claim/v1"):
@@ -481,21 +821,29 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                                  (frame.get("provenance") or {}).get("grade_reasons") or ())
 
     omitted: list[dict[str, Any]] = []
-    flagged: dict[str, list[dict[str, Any]]] = {"contested": [], "withdrawn": []}
+    flagged: dict[str, list[dict[str, Any]]] = {b: [] for b in FLAG_BUCKETS}
     runs: dict[tuple[str, str | None], list[dict[str, Any]]] = {}
     expected: dict[tuple[str, str | None], frozenset] = {}
     seen: set[str] = set()
     matched_any = False
     for raw_id, claim in claims.items():
-        source = sources.get(str(claim.get("source_id", "")))
+        sid = str(claim.get("source_id", ""))
+        source = sources.get(sid)
         if source is None:
             continue
         kind = str(source.get("source_kind", ""))
         scope_raw = source.get("applicability")
         table = SOURCE_SCOPES.get(kind)
-        hits = ([t for t in targets if applicability_matches(scope_raw, t)] if scope_raw
-                else [t for t in targets if table is not None and table.applies_to(t)])
-        if not hits:
+        if scope_raw:
+            if not isinstance(scope_raw, Mapping):
+                continue
+            scope: Mapping[str, Any] = scope_raw
+        elif table is not None:
+            scope = _table_scope(table)
+        else:
+            continue
+        tier, hits = _tier(scope, targets)
+        if tier is None:
             continue
         matched_any = True
         claim_id = result.alias_map.get(raw_id, raw_id)
@@ -521,31 +869,50 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                 expected[(kind, run)] = table.expected_keys
         verdict = evaluate(claim_id, result, policy)
         belief = result.beliefs.get(claim_id)
-        row = {"claim_id": claim_id, "source_kind": kind, "run": run, "key": key,
-               "context_tokens": depth,
-               "grade": str(belief.pro) if belief is not None else "",
-               "locator": locator.split("|", 1)[0],
-               "revision": str(source.get("revision_observed", "")),
-               "protocol_id": str((support.get(raw_id) or {}).get("protocol_id") or ""),
-               "reps": (support.get(raw_id) or {}).get("reps"),
+        evidence = support.get(raw_id) or {}
+        obs = read_observation(evidence)
+        model_file = PurePath(str(scope.get("model_file") or "")).name if scope.get(
+            "model_file") else ""
+        pro = getattr(belief, "pro", None)
+        revision = str(source.get("revision_observed", ""))
+        np_value = scope.get("np")
+        row = {"claim_id": claim_id, "raw_id": raw_id, "source_kind": kind, "run": run,
+               "key": key, "context_tokens": depth,
+               "grade": str(pro) if pro is not None else "",
+               "grade_rank": (pro.q + pro.t, pro.q) if pro is not None else (0, 0),
+               "locator": locator.split("|", 1)[0], "revision": revision,
+               "recency": _recency(revision),
+               "protocol_id": str(evidence.get("protocol_id") or ""),
+               "reps": evidence.get("reps"),
                "text": str(claim.get("display_text", "")),
                "grade_reasons": reasons.get(raw_id, ()),
-               "targets": sorted({t.model_file for t in hits})}
+               "targets": sorted({t.model_file for t in hits}),
+               "target_keys": sorted({(t.model_file, t.backend) for t in hits}),
+               "tier": tier, "status": "verified",
+               "model_file": model_file, "label": model_label(model_file),
+               "backend": str(scope.get("backend") or hits[0].backend).strip().lower(),
+               "recipe": _str(scope.get("recipe")), "epoch": _str(scope.get("epoch")),
+               "build_sha": _str(scope.get("build_sha")),
+               "np": np_value if isinstance(np_value, int) and not isinstance(np_value, bool)
+               else None,
+               "symbol": _str(scope.get("symbol")), "op": _str(scope.get("op")),
+               "hit_recipes": sorted({t.recipe for t in hits if t.recipe}),
+               "hit_focus": sorted({s for t in hits for s in t.focus_symbols}),
+               "stale_epoch": False, "earlier": [], "linked_claim_ids": [], **obs}
+        row["retrofit"] = bool(obs["retrofit"] or source_prov.get(sid, {}).get("retrofit") is True)
         if not isinstance(row["reps"], int) or isinstance(row["reps"], bool):
             row["reps"] = None
         if verdict.outcome != Outcome.ALLOW:
             bucket = _bucket(belief, verdict)
             gate_reason = (verdict.reasons or [""])[0]
             if bucket in flagged:
-                flagged[bucket].append({**row, "gate_outcome": verdict.outcome,
+                flagged[bucket].append({**row, "status": bucket,
+                                        "gate_outcome": verdict.outcome,
                                         "gate_reason": _cap(gate_reason, REASON_CAP)})
             omitted.append(_omit(kind, f"gate_refused:{verdict.outcome}", run=run,
                                  claim_id=claim_id, detail=gate_reason))
             continue
         runs.setdefault((kind, run), []).append(row)
-
-    if not matched_any:
-        return _evidence_empty("no_applicable_claims", as_of=as_of, frontier=result.frontier)
 
     candidates: list[dict[str, Any]] = []
     run_rows: list[dict[str, Any]] = []
@@ -588,109 +955,366 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                              "reason": "superseded_run",
                              "claim_ids": sorted(row["claim_id"] for row in rows)})
 
-    candidates.sort(key=lambda row: (row["source_kind"], row["locator"]))
+    every = candidates + [row for bucket in FLAG_BUCKETS for row in flagged[bucket]]
+    kept, hidden = _dedup_serving(every)
+    hidden_ids = {row["claim_id"] for row in hidden}
+    for row in hidden:
+        omitted.append(_omit(row["source_kind"], "superseded_by_v2", run=row["run"],
+                             claim_id=row["claim_id"],
+                             detail="v1 arm claim; the v2 capture claim for the same receipt "
+                                    "is shown"))
+    candidates = [row for row in candidates if row["claim_id"] not in hidden_ids]
+    candidates, merged = _merge_linked(candidates)
+    merged_ids = {row["claim_id"] for row in merged}
+    for row in merged:
+        omitted.append(_omit(row["source_kind"], "merged_into_experiment_line", run=row["run"],
+                             claim_id=row["claim_id"],
+                             detail="serving-v2 numbers shown on the linked experiment claim"))
+    kept = [row for row in kept if row["claim_id"] not in merged_ids]
+    for bucket in FLAG_BUCKETS:
+        flagged[bucket] = [row for row in flagged[bucket] if row["claim_id"] not in hidden_ids]
+    _mark_stale_epochs(kept)
+    candidates.sort(key=lambda row: (row["source_kind"], row["locator"], row["claim_id"]))
     for bucket in flagged.values():
-        bucket.sort(key=lambda row: (row["source_kind"], row["locator"]))
-    section, shown, shown_flagged = render(targets, candidates, flagged,
-                                           frontier=result.frontier, as_of=as_of,
-                                           max_claims=max_claims, max_bytes=max_bytes,
-                                           reply_field=reply_field,
-                                           whole_runs=set(expected))
-    shown_ids = {row["claim_id"] for row in shown}
-    for row in candidates:
-        if row["claim_id"] not in shown_ids:
-            omitted.append(_omit(row["source_kind"], "bounded", run=row["run"],
-                                 claim_id=row["claim_id"],
-                                 detail=f"cap {max_claims} claims / {max_bytes} bytes"))
-    presented_runs: dict[tuple[str, str | None], list[str]] = {}
-    for row in shown:
-        presented_runs.setdefault((row["source_kind"], row["run"]), []).append(row["claim_id"])
-    run_rows = [{"source_kind": kind, "run": run, "status": "presented", "reason": "",
-                 "claim_ids": sorted(ids)} for (kind, run), ids in sorted(
-                     presented_runs.items(), key=lambda item: (item[0][0], str(item[0][1])))] \
-        + run_rows
-    flagged_ids = {b: [r["claim_id"] for r in rows] for b, rows in shown_flagged.items()}
-    status = "presented" if (shown or any(flagged_ids.values())) else "omitted"
-    return {
-        "status": status, "reasons": sorted({o["reason"] for o in omitted}),
-        "frontier": result.frontier, "as_of": as_of,
-        "claim_ids": [row["claim_id"] for row in shown],
-        "contested_claim_ids": flagged_ids["contested"],
-        "withdrawn_claim_ids": flagged_ids["withdrawn"],
-        "claims": [{k: row[k] for k in ("claim_id", "source_kind", "run", "grade", "locator")}
-                   for row in shown],
-        "flagged": {b: [{k: row[k] for k in ("claim_id", "source_kind", "grade", "locator",
-                                             "gate_outcome", "gate_reason")} for row in rows]
-                    for b, rows in shown_flagged.items()},
-        "runs": run_rows, "omitted": omitted[:OMITTED_CAP], "omitted_count": len(omitted),
-        "section": section,
-        "section_sha256": hashlib.sha256(section.encode()).hexdigest() if section else "",
-        "section_bytes": len(section.encode()),
-    }
+        bucket.sort(key=lambda row: (row["source_kind"], row["locator"], row["claim_id"]))
+    return {"fold": result, "frontier": result.frontier, "rows": candidates,
+            "flagged": flagged, "omitted": omitted, "run_rows": run_rows,
+            "whole_runs": set(expected), "matched_any": matched_any}
 
 
-def _evidence_empty(reason: str, *, as_of: str, frontier: int | None = None,
-                    error: str | None = None) -> dict[str, Any]:
-    return {"status": "omitted", "reasons": [reason], "frontier": frontier, "as_of": as_of,
-            "claim_ids": [], "contested_claim_ids": [], "withdrawn_claim_ids": [], "claims": [],
-            "flagged": {"contested": [], "withdrawn": []}, "runs": [], "omitted": [],
-            "omitted_count": 0, "section": "", "section_sha256": "", "section_bytes": 0,
-            **({"error": error} if error else {})}
+# ---- ranking (belief redesign §7.2)
+
+_OUTCOME_GROUP = {"improved": 1, "regressed": 1, "refused_correctness": 2, "refused_scope": 2,
+                  "divergence": 2, "null": 3, "anchor": 4, "floor": 4}
 
 
-def render(targets: list[Target], rows: list[dict[str, Any]],
-           flagged: Mapping[str, list[dict[str, Any]]], *, frontier: int | None, as_of: str,
-           max_claims: int = DEFAULT_MAX_CLAIMS, max_bytes: int = DEFAULT_MAX_BYTES,
-           reply_field: str = "relies_on_claims",
-           whole_runs: set[tuple[str, str | None]] | None = None,
-           ) -> tuple[str, list[dict[str, Any]], dict[str, list[dict[str, Any]]]]:
-    """Bounded, neutral block; ("", [], {}) when nothing fits. Contradiction/withdrawn flags are
-    packed first (they are the cheap, high-value lines); usable claims fill the rest."""
-    empty = {"contested": [], "withdrawn": []}
-    if (not rows and not any(flagged.values())) or max_claims < 1:
-        return "", [], empty
-    names = "; ".join(
-        f"{t.model_file} / {t.quant} / {t.backend} / {t.device}"
-        + (f" / context {t.context_tokens}" if t.context_tokens else "") for t in targets)
-    head = [SECTION_HEADER,
-            f"Target(s): {names}.",
-            "Ingested claims whose declared applicability scope equals the target. Grade is the "
-            f"folded claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
-    tail = [f"Optional reply field {reply_field}: a list of the USABLE claim ids above that "
-            "the proposal depends on; omit it when it depends on none. Contested or withdrawn "
-            "claims are not evidence for a proposal."]
-    body: list[str] = []
-    shown_flagged: dict[str, list[dict[str, Any]]] = {"contested": [], "withdrawn": []}
+def _group(row: Mapping[str, Any]) -> int:
+    """0 flagged · 1 current-epoch decisive (improved/regressed) · 2 correctness/scope refusals
+    and divergences · 3 nulls · 4 anchors/floors · 5 claims with no outcome (pre-observation
+    frames) · 6 older epochs."""
+    if row["status"] != "verified":
+        return 0
+    if row["stale_epoch"]:
+        return 6
+    return _OUTCOME_GROUP.get(row["outcome"], 5)
 
-    def size(lines: list[str]) -> int:
-        return len("\n".join(head + lines + tail).encode("utf-8")) + 120
 
-    titles = {"contested": ("### Contested -- the evidence disagrees or is under review; "
-                            "do not build on these without new evidence"),
-              "withdrawn": ("### Withdrawn -- support retracted; the result no longer "
-                            "stands")}
-    for bucket in ("contested", "withdrawn"):
-        rows_b = flagged.get(bucket) or []
-        if not rows_b:
+def _rank_key(row: Mapping[str, Any]) -> tuple:
+    group = _group(row)
+    flag_order = FLAG_BUCKETS.index(row["status"]) if row["status"] in FLAG_BUCKETS else 0
+    recipe_boost = 0 if row["recipe"] and row["recipe"] in row["hit_recipes"] else 1
+    focus_boost = 0 if row["symbol"] and row["symbol"] in row["hit_focus"] else 1
+    grade = (-row["grade_rank"][0], -row["grade_rank"][1])
+    inner = ((-row["recency"],) + grade) if group in (1, 4) else (grade + (-row["recency"],))
+    return (group, flag_order, recipe_boost, focus_boost) + inner + (row["claim_id"],)
+
+
+def _mechanism_key(row: Mapping[str, Any]) -> tuple | None:
+    if row["status"] != "verified":
+        return None
+    if row["mechanism_id"]:
+        return (row["model_file"], row["mechanism_id"], row["recipe"])
+    if row["outcome"] in ("anchor", "floor"):
+        return (row["model_file"], f"<{row['outcome']}>", row["recipe"], row["source_kind"])
+    return None
+
+
+def _fold_mechanisms(ranked: list[dict[str, Any]]) -> tuple[list[dict[str, Any]],
+                                                              list[dict[str, Any]]]:
+    """At most one detailed line per (mechanism, recipe): the best-ranked row carries the others
+    as `earlier` captures."""
+    reps: dict[tuple, dict[str, Any]] = {}
+    out, folded = [], []
+    for row in ranked:
+        key = _mechanism_key(row)
+        if key is None:
+            out.append(row)
+        elif key in reps:
+            reps[key]["earlier"].append(row)
+            folded.append(row)
+        else:
+            row["earlier"] = []
+            reps[key] = row
+            out.append(row)
+    return out, folded
+
+
+def _units(ranked: list[dict[str, Any]], whole: set) -> list[list[dict[str, Any]]]:
+    """Packing units in rank order. A run that declares its complete key set packs whole (a
+    truncated matrix would read as an incomplete one). Inside one rank bucket, units are
+    interleaved round-robin across source kinds so one large source cannot crowd the others
+    out of the cap."""
+    units: list[list[dict[str, Any]]] = []
+    run_unit: dict[tuple, list[dict[str, Any]]] = {}
+    for row in ranked:
+        key = (row["source_kind"], row["run"])
+        if key in whole and row["status"] == "verified":
+            if key in run_unit:
+                run_unit[key].append(row)
+                continue
+            run_unit[key] = [row]
+            units.append(run_unit[key])
+        else:
+            units.append([row])
+    out: list[list[dict[str, Any]]] = []
+    index = 0
+    while index < len(units):
+        bucket = _rank_key(units[index][0])[:4]
+        end = index
+        while end < len(units) and _rank_key(units[end][0])[:4] == bucket:
+            end += 1
+        queues: dict[str, list[list[dict[str, Any]]]] = {}
+        for unit in units[index:end]:
+            queues.setdefault(unit[0]["source_kind"], []).append(unit)
+        lanes = list(queues.values())
+        while any(lanes):
+            for lane in lanes:
+                if lane:
+                    out.append(lane.pop(0))
+        index = end
+    return out
+
+
+def _forced(unit: list[dict[str, Any]]) -> bool:
+    """The newest serving floor per recipe is always shown on the target tier."""
+    return any(r["outcome"] == "floor" and r["status"] == "verified" for r in unit)
+
+
+def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
+            flagged_cap: int = FLAGGED_CAP) -> list[list[dict[str, Any]]]:
+    chosen: set[int] = set()
+    count = 0
+    if force:
+        for i, unit in enumerate(units):
+            if _forced(unit):
+                chosen.add(i)
+                count += len(unit)
+    per_bucket: dict[str, int] = {}
+    for i, unit in enumerate(units):
+        if i in chosen or count + len(unit) > cap:
             continue
-        lines = [titles[bucket]]
-        for row in rows_b[:FLAGGED_CAP]:
-            line = (f"- {row['claim_id']} [{row['gate_outcome']}] {row['locator']}: "
-                    f"{_cap(row['text'], CLAIM_TEXT_CAP // 2)} (gate: "
-                    f"{_cap(row['gate_reason'], REASON_CAP // 2)})")
-            if size(body + lines + [line]) > max_bytes:
-                break
-            lines.append(line)
-            shown_flagged[bucket].append(row)
-        if shown_flagged[bucket]:
-            body.extend(lines)
+        status = unit[0]["status"]
+        if status in FLAG_BUCKETS:
+            if per_bucket.get(status, 0) >= flagged_cap:
+                continue
+            per_bucket[status] = per_bucket.get(status, 0) + 1
+        chosen.add(i)
+        count += len(unit)
+    return [units[i] for i in sorted(chosen)]
 
-    shown: list[dict[str, Any]] = []
-    described: set[tuple[str, str | None]] = set()
 
-    def lines_for(row: dict[str, Any], first: bool) -> list[str]:
-        lines: list[str] = []
-        if first:
+# ---- tried-mechanisms index
+
+_INDEX_CODE = {"improved": "improved", "regressed": "regressed", "null": "null",
+               "refused_correctness": "refused", "refused_scope": "refused-scope",
+               "divergence": "divergence", "": "recorded"}
+
+
+def tried_index(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One entry per (tier, model file, mechanism) on the target and sibling tiers: the
+    best-ranked capture's outcome, plus how many captures exist. Anchors and floors are not
+    mechanisms and are not indexed."""
+    best: dict[tuple, dict[str, Any]] = {}
+    counts: dict[tuple, int] = {}
+    for row in rows:
+        if row["tier"] == "host" or not row["mechanism_id"] or row["outcome"] in (
+                "anchor", "floor"):
+            continue
+        key = (row["tier"], row["model_file"], row["mechanism_id"])
+        counts[key] = counts.get(key, 0) + 1
+        if key not in best or _rank_key(row) < _rank_key(best[key]):
+            best[key] = row
+    order = sorted(best, key=lambda k: (TIERS.index(k[0]), model_label(k[1]), k[1],
+                                        _rank_key(best[k])))
+    out = []
+    for key in order:
+        row = best[key]
+        out.append({"mechanism_id": row["mechanism_id"], "outcome": row["outcome"] or "recorded",
+                    "outcome_native": row["outcome_native"], "effect_rel": row["effect_rel"],
+                    "noise_floor_rel": row["noise_floor_rel"],
+                    "reason": _cap(row["outcome_reason"], 80) if row["outcome_reason"] else "",
+                    "tier": row["tier"], "model_file": row["model_file"],
+                    "label": row["label"], "recipe": row["recipe"], "status": row["status"],
+                    "stale_epoch": row["stale_epoch"], "claim_id": row["claim_id"],
+                    "date": row["revision"], "captures": counts[key]})
+    return out
+
+
+def _index_text(entry: Mapping[str, Any]) -> str:
+    code = _INDEX_CODE.get(entry["outcome"] if entry["outcome"] != "recorded" else "",
+                           entry["outcome"])
+    if entry["effect_rel"] is not None:
+        detail = f"({entry['effect_rel'] * 100:+.1f}%)"
+    elif entry["reason"]:
+        detail = f"({_cap(entry['reason'], 40)})"
+    else:
+        detail = ""
+    text = f"{entry['mechanism_id']} {code}{detail}"
+    if entry["captures"] > 1:
+        text += f" x{entry['captures']}"
+    if entry["status"] != "verified":
+        text += f" [{entry['status']}]"
+    elif entry["stale_epoch"]:
+        text += " [stale epoch]"
+    return text
+
+
+# ---- rendering (belief redesign §7.3)
+
+TIER_TITLES = {
+    "target": "### Usable, target tier -- claims scoped to the target's own weights",
+    "sibling": ("### Usable, sibling tier -- measured on a sibling file of the same lineage "
+                "(other weights, quant or recipe); transfer unproven, never target evidence"),
+    "host": ("### Host tier -- host ceiling, not about this model; not evidence for a "
+             "proposal"),
+}
+FLAG_TITLES = {
+    "contested": ("### Contested -- the evidence disagrees or is under review; do not build on "
+                  "these without new evidence"),
+    "withdrawn": "### Withdrawn -- support retracted; the result no longer stands",
+    "refuted": "### Refuted -- opposing evidence clears the floor; do not rely on these",
+}
+STALE_NOTE = ("Older epochs (stale epoch -- the number is not comparable; the fact that the "
+              "mechanism was tried still stands):")
+_WORD = {"improved": "IMPROVED", "regressed": "REGRESSED", "null": "NULL",
+         "divergence": "DIVERGENCE"}
+
+
+def _fmt(value: float | None) -> str:
+    if value is None:
+        return ""
+    if abs(value) >= 1000:
+        return f"{value:.0f}"
+    return f"{value:.4g}"
+
+
+def _pct(rel: float | None, signed: bool = True) -> str:
+    if rel is None:
+        return ""
+    return f"{rel * 100:+.2f}%" if signed else f"{rel * 100:.2f}%"
+
+
+def _n_text(row: Mapping[str, Any], *, pairs_first: bool = True) -> str:
+    if pairs_first and row["n_pairs"]:
+        return f"{row['n_pairs']} pairs"
+    if row["reps"] is not None:
+        return f"n={row['reps']}"
+    if row["n_pairs"]:
+        return f"n={row['n_pairs']}"
+    return "n unrecorded"
+
+
+def _value_text(value: float | None, unit: str) -> str:
+    return f"{_fmt(value)} {unit}".strip() if value is not None else ""
+
+
+def _where(row: Mapping[str, Any], tier: str) -> str:
+    extras = []
+    if row["build_sha"]:
+        extras.append(f"build {row['build_sha'][:8]}")
+    if row["epoch"]:
+        extras.append(f"epoch {row['epoch'][:8]}")
+    if row["np"] is not None:
+        extras.append(f"np {row['np']}")
+    tail = (" " + " ".join(extras)) if extras else ""
+    if tier == "host":
+        return "host ceiling, not about this model"
+    if tier == "sibling":
+        recipe = f", recipe {row['recipe']}" if row["recipe"] else ""
+        return (f"sibling: measured on {row['model_file'] or row['locator']}{recipe}; "
+                f"transfer unproven{tail}")
+    name = row["label"] or row["model_file"] or "target"
+    recipe = f" {row['recipe']}" if row["recipe"] else ""
+    return f"{name}/{row['backend']}{recipe}{tail}"
+
+
+def _subject(row: Mapping[str, Any]) -> str:
+    if row["mechanism_id"]:
+        return row["mechanism_id"] + (f" @ {row['symbol']}" if row["symbol"] else "")
+    return row["symbol"] or row["metric"] or "measurement"
+
+
+def _what(row: Mapping[str, Any]) -> str:
+    """The value-bearing second line, or "" when the frame carries no value and no outcome."""
+    outcome, unit = row["outcome"], row["unit"]
+    value, anchor = row["value"], row["anchor_value"]
+    if outcome in _WORD:
+        detail = []
+        if value is not None:
+            detail.append(_value_text(value, unit)
+                          + (f" vs anchor {_value_text(anchor, unit)}" if anchor is not None
+                             else ""))
+        elif anchor is not None:
+            detail.append(f"anchor {_value_text(anchor, unit)}")
+        if row["noise_floor_rel"] is not None:
+            detail.append(f"floor {_pct(row['noise_floor_rel'], False)}")
+        detail.append(_n_text(row))
+        if row["decisive"] is not None:
+            detail.append("decisive" if row["decisive"] else "not decisive")
+        effect = f" {_pct(row['effect_rel'])} vs anchor" if row["effect_rel"] is not None else ""
+        text = f"{_subject(row)}: {_WORD[outcome]}{effect} ({'; '.join(detail)})"
+        if row["outcome_native"]:
+            text += f" -- producer verdict {row['outcome_native']}"
+        if outcome == "divergence" and row["outcome_reason"]:
+            text += f': "{_cap(row["outcome_reason"], REASON_CAP)}"'
+        return text
+    if outcome in ("refused_correctness", "refused_scope"):
+        gate = "correctness" if outcome == "refused_correctness" else "scope"
+        metric = f" ({row['metric']})" if row["metric"] and ":" in row["metric"] else ""
+        reason = f': "{_cap(row["outcome_reason"], REASON_CAP)}"' if row["outcome_reason"] else ""
+        return f"{_subject(row)}: REFUSED by the {gate} gate{metric}{reason}"
+    if outcome == "floor":
+        parts = [f"median {_value_text(value, unit)}" if value is not None else "",
+                 f"floor {_pct(row['noise_floor_rel'], False)}"
+                 if row["noise_floor_rel"] is not None else "",
+                 _n_text(row, pairs_first=False)]
+        return "serving floor: " + "; ".join(p for p in parts if p)
+    if outcome == "anchor":
+        return (f"{_subject(row)}: ANCHOR {_value_text(value, unit)} "
+                f"({_n_text(row, pairs_first=False)})").replace("  ", " ")
+    if value is not None:
+        return f"{_subject(row)}: {_value_text(value, unit)} ({_n_text(row, pairs_first=False)})"
+    return ""
+
+
+def _earlier_text(row: Mapping[str, Any]) -> str:
+    earlier = row.get("earlier") or []
+    if not earlier:
+        return ""
+    bits = []
+    for other in earlier[:EARLIER_CAP]:
+        label = other["outcome"] or "recorded"
+        eff = f" {_pct(other['effect_rel'])}" if other["effect_rel"] is not None else (
+            f" {_value_text(other['value'], other['unit'])}" if other["value"] is not None
+            else "")
+        stale = " stale epoch" if other["stale_epoch"] else ""
+        bits.append(f"{label}{eff} {other['revision'][:10]}{stale}".strip())
+    more = " ..." if len(earlier) > EARLIER_CAP else ""
+    return f" (+{len(earlier)} earlier captures: {'; '.join(bits)}{more})"
+
+
+def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[str]:
+    """One claim, value-bearing when its evidence frame carries an observation, else the
+    pre-observation text line."""
+    tier = row["tier"]
+    tags = [row["grade"] or "ungraded", row["status"]]
+    if row["retrofit"]:
+        tags.append("retrofit")
+    if row["stale_epoch"]:
+        tags.append("stale epoch")
+    linked = f" (+ {', '.join(row['linked_claim_ids'])})" if row.get("linked_claim_ids") else ""
+    head = f"- {row['claim_id']}{linked} [{' · '.join(tags)}] {_where(row, tier)}"
+    what = _what(row)
+    lines: list[str] = []
+    if what:
+        lines.append(head)
+        lines.append(f"  {what}{_earlier_text(row)}")
+        if tier == "target" and row["statement"]:
+            falsifier = (f"; falsifier: {_cap(row['falsifier'], STATEMENT_CAP // 2)}"
+                         if row["falsifier"] else "")
+            lines.append(f"  mechanism: {_cap(row['statement'], STATEMENT_CAP)}{falsifier}")
+    else:
+        if first_of_source and tier != "host":
             scope = SOURCE_SCOPES.get(row["source_kind"])
             run = f", run {row['run']}" if row["run"] else ""
             limits = f" Limits: {scope.limits}." if scope else ""
@@ -701,53 +1325,273 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
             facts.insert(0, f"context {row['context_tokens']}")
         if row["revision"]:
             facts.append(row["revision"])
-        lines.append(f"- {row['claim_id']} [{row['grade']}] {row['locator']} "
-                     f"({'; '.join(facts)}): {_cap(row['text'], CLAIM_TEXT_CAP)}")
-        if row["grade_reasons"]:
+        cap = CLAIM_TEXT_CAP if tier == "target" else CONTEXT_TEXT_CAP
+        lines.append(f"{head}: {row['locator']} ({'; '.join(facts)}): {_cap(row['text'], cap)}")
+        if tier == "target" and row["grade_reasons"]:
             lines.append(f"  grade notes: {_cap(row['grade_reasons'][0], REASON_CAP)}")
-        return lines
+    if row["status"] in FLAG_BUCKETS:
+        lines.append(f"  gate: {_cap(row.get('gate_reason') or '', REASON_CAP // 2)}")
+    return lines
 
-    # Packing unit: a whole run when the run declares its complete key set (a truncated matrix
-    # would read as an incomplete one), else one claim. Units are interleaved round-robin across
-    # source kinds so one large source cannot crowd every other source out of the cap.
+
+def _target_name(target: Target) -> str:
+    return f"{target.model_file} ({target.backend})"
+
+
+def banner_text(targets: list[Target], empty: list[Target]) -> str | None:
+    """The empty-target banner (belief redesign §7.3), or None when every target has beliefs."""
+    if not empty:
+        return None
+    names = ", ".join(_target_name(t) for t in empty)
+    if len(empty) == len(targets):
+        return (f"No beliefs are scoped to {names}. The lines below are sibling/host context "
+                "only.")
+    return f"No beliefs are scoped to {names}."
+
+
+def render(targets: list[Target], rows: list[dict[str, Any]],
+           flagged: Mapping[str, list[dict[str, Any]]], *, frontier: int | None, as_of: str,
+           max_claims: int = DEFAULT_MAX_CLAIMS, max_bytes: int = DEFAULT_MAX_BYTES,
+           reply_field: str = "relies_on_claims",
+           whole_runs: set[tuple[str, str | None]] | None = None,
+           tried: list[dict[str, Any]] | None = None, banner: str | None = None,
+           ) -> tuple[str, list[dict[str, Any]], dict[str, list[dict[str, Any]]], dict[str, Any]]:
+    """Bounded, tiered block. Returns (section, shown usable rows, shown flagged rows by bucket,
+    info). ("", [], {...}, info) when nothing fits. Tiers are never mixed: each has its own cap
+    and heading; flagged claims of any tier are listed first."""
+    empty_flags: dict[str, list[dict[str, Any]]] = {b: [] for b in FLAG_BUCKETS}
+    info: dict[str, Any] = {"tiers_shown": {t: 0 for t in TIERS}, "index_shown": 0,
+                            "folded": [], "selected": []}
+    flagged_rows = [row for b in FLAG_BUCKETS for row in (flagged.get(b) or [])]
+    if (not rows and not flagged_rows) or max_claims < 1:
+        return "", [], empty_flags, info
     whole = whole_runs or set()
-    by_kind: dict[str, list[list[dict[str, Any]]]] = {}
+    selected: dict[str, list[list[dict[str, Any]]]] = {}
+    remaining = max_claims
+    for tier in TIERS:
+        pool = [row for row in list(rows) + flagged_rows if row["tier"] == tier]
+        ranked, folded = _fold_mechanisms(sorted(pool, key=_rank_key))
+        info["folded"].extend(folded)
+        cap = max(0, min(TIER_CAPS[tier], remaining))
+        selected[tier] = _select(_units(ranked, whole), cap, force=(tier == "target"))
+        remaining -= sum(len(unit) for unit in selected[tier])
+    entries = list((tried or [])[:INDEX_CAP])
+    names = "; ".join(
+        f"{t.model_file} / {t.quant or 'quant unstated'} / {t.backend} / {t.device}"
+        + (f" / context {t.context_tokens}" if t.context_tokens else "")
+        + (f" / recipe {t.recipe}" if t.recipe else "") for t in targets)
+    head = [SECTION_HEADER] + ([banner] if banner else []) + [
+        f"Target(s): {names}.",
+        "Claims are tiered by declared applicability: target (the target's own weights), "
+        "sibling (same declared lineage, other weights or recipe; transfer unproven), host "
+        "(device-only scope; a ceiling, not about this model). Grade is the folded "
+        f"claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
+    tail = [f"Optional reply field {reply_field}: a list of the target- or sibling-tier claim "
+            "ids above that the proposal depends on; omit it when it depends on none. Host-tier "
+            "lines and contested, withdrawn or refuted claims are not evidence for a proposal."]
+
+    def compose() -> str:
+        body: list[str] = []
+        chosen = {tier: [row for unit in selected[tier] for row in unit] for tier in TIERS}
+        for bucket in FLAG_BUCKETS:
+            lines = []
+            for tier in TIERS:
+                for row in chosen[tier]:
+                    if row["status"] == bucket:
+                        lines.extend(row_lines(row))
+            if lines:
+                body.extend([FLAG_TITLES[bucket]] + lines)
+        for tier in TIERS:
+            usable = [row for row in chosen[tier] if row["status"] == "verified"]
+            if not usable:
+                continue
+            body.append(TIER_TITLES[tier])
+            described: set[tuple[str, str | None]] = set()
+            stale_noted = False
+            for row in usable:
+                if row["stale_epoch"] and not stale_noted:
+                    body.append(STALE_NOTE)
+                    stale_noted = True
+                key = (row["source_kind"], row["run"])
+                body.extend(row_lines(row, first_of_source=key not in described))
+                described.add(key)
+        if entries:
+            body.append("### Tried mechanisms -- every mechanism with a projected outcome here "
+                        "(the detailed lines above are capped; this index is not)")
+            groups: dict[tuple[str, str], list[str]] = {}
+            for entry in entries:
+                groups.setdefault((entry["tier"], entry["model_file"]), []).append(
+                    _index_text(entry))
+            for (tier, model_file), texts in groups.items():
+                label = model_label(model_file) or model_file
+                prefix = (f"Tried on {label}:" if tier == "target"
+                          else f"Tried on {label} (sibling; transfer unproven):")
+                line = prefix
+                for text in texts:
+                    if len(line) + len(text) + 2 > 220 and line != prefix:
+                        body.append(line)
+                        line = " "
+                    line += (" " if line in (prefix, " ") else "; ") + text
+                body.append(line)
+        shown_counts = {t: sum(len(u) for u in selected[t]) for t in TIERS}
+        flags = {b: sum(1 for t in TIERS for r in chosen[t] if r["status"] == b)
+                 for b in FLAG_BUCKETS}
+        total = {t: sum(1 for r in list(rows) + flagged_rows if r["tier"] == t) for t in TIERS}
+        count = (f"Shown {shown_counts['target']} of {total['target']} target, "
+                 f"{shown_counts['sibling']} of {total['sibling']} sibling, "
+                 f"{shown_counts['host']} of {total['host']} host claim(s) "
+                 f"({flags['contested']} contested, {flags['withdrawn']} withdrawn, "
+                 f"{flags['refuted']} refuted); tried index {len(entries)} of "
+                 f"{len(tried or [])} mechanism(s); bounded at {max_claims} claims / "
+                 f"{max_bytes} bytes.")
+        if not body:
+            return ""
+        return "\n".join(head + body + [count] + tail)
+
+    def trim_once() -> bool:
+        for tier in ("host", "sibling"):
+            if selected[tier]:
+                selected[tier].pop()
+                return True
+        if entries:
+            entries.pop()
+            return True
+        units = selected["target"]
+        for i in range(len(units) - 1, -1, -1):
+            if not _forced(units[i]):
+                units.pop(i)
+                return True
+        if units:
+            units.pop()
+            return True
+        return False
+
+    section = compose()
+    while section and len(section.encode("utf-8")) > max_bytes:
+        if not trim_once():
+            section = ""
+            break
+        section = compose()
+    if not section:
+        return "", [], empty_flags, info
+    shown: list[dict[str, Any]] = []
+    shown_flagged: dict[str, list[dict[str, Any]]] = {b: [] for b in FLAG_BUCKETS}
+    for tier in TIERS:
+        for unit in selected[tier]:
+            for row in unit:
+                info["selected"].append(row)
+                info["tiers_shown"][tier] += 1
+                if row["status"] == "verified":
+                    shown.append(row)
+                else:
+                    shown_flagged[row["status"]].append(row)
+    info["index_shown"] = len(entries)
+    return section, shown, shown_flagged, info
+
+
+def _claim_view(row: Mapping[str, Any]) -> dict[str, Any]:
+    return {"claim_id": row["claim_id"], "source_kind": row["source_kind"], "run": row["run"],
+            "grade": row["grade"], "locator": row["locator"], "tier": row["tier"],
+            "status": row["status"], "outcome": row["outcome"],
+            "mechanism_id": row["mechanism_id"], "value": row["value"], "unit": row["unit"],
+            "effect_rel": row["effect_rel"], "noise_floor_rel": row["noise_floor_rel"],
+            "anchor_value": row["anchor_value"], "n_pairs": row["n_pairs"],
+            "reps": row["reps"], "recipe": row["recipe"], "model_file": row["model_file"],
+            "stale_epoch": row["stale_epoch"], "retrofit": row["retrofit"],
+            "linked_claim_ids": list(row["linked_claim_ids"]),
+            "not_evidence": row["tier"] == "host"}
+
+
+def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
+                    max_claims: int = DEFAULT_MAX_CLAIMS, max_bytes: int = DEFAULT_MAX_BYTES,
+                    fold_result: Any = None, reply_field: str = "relies_on_claims",
+                    ) -> dict[str, Any]:
+    """The evidence half of a `ready` answer, from frames already verified."""
+    targets = list(targets)
+    col = collect(frames, targets, as_of=as_of, fold_result=fold_result)
+    if not col["matched_any"]:
+        return _evidence_empty("no_applicable_claims", as_of=as_of, frontier=col["frontier"],
+                               targets=targets)
+    rows, flagged, omitted = col["rows"], col["flagged"], col["omitted"]
+    every = rows + [row for bucket in FLAG_BUCKETS for row in flagged[bucket]]
+    tiers = {tier: sum(1 for row in every if row["tier"] == tier) for tier in TIERS}
+    target_keys = {key for row in every if row["tier"] == "target" for key in row["target_keys"]}
+    empty_targets = [t for t in targets if (t.model_file, t.backend) not in target_keys]
+    banner = banner_text(targets, empty_targets)
+    tried = tried_index(every)
+    section, shown, shown_flagged, info = render(
+        targets, rows, flagged, frontier=col["frontier"], as_of=as_of, max_claims=max_claims,
+        max_bytes=max_bytes, reply_field=reply_field, whole_runs=col["whole_runs"],
+        tried=tried, banner=banner)
+    shown_ids = {row["claim_id"] for row in info["selected"]}
+    folded_ids = {row["claim_id"] for row in info["folded"]}
     for row in rows:
-        kind_units = by_kind.setdefault(row["source_kind"], [])
-        key = (row["source_kind"], row["run"])
-        if (key in whole and kind_units
-                and (kind_units[-1][0]["source_kind"], kind_units[-1][0]["run"]) == key):
-            kind_units[-1].append(row)
-        else:
-            kind_units.append([row])
-    units: list[list[dict[str, Any]]] = []
-    queues = [list(by_kind[kind]) for kind in sorted(by_kind)]
-    while any(queues):
-        for queue in queues:
-            if queue:
-                units.append(queue.pop(0))
-    usable_lines: list[str] = []
-    for unit in units:
-        if len(shown) + len(unit) > max_claims:
+        if row["claim_id"] in shown_ids:
             continue
-        lines: list[str] = []
-        for index, row in enumerate(unit):
-            lines.extend(lines_for(row, index == 0 and (row["source_kind"], row["run"])
-                                   not in described))
-        header = [] if usable_lines else ["### Usable -- gate ALLOW at the declared floor"]
-        if size(body + usable_lines + header + lines) > max_bytes:
-            continue
-        usable_lines.extend(header + lines)
-        described.update((row["source_kind"], row["run"]) for row in unit)
-        shown.extend(unit)
-    body.extend(usable_lines)
-    if not shown and not any(shown_flagged.values()):
-        return "", [], empty
-    count = (f"Shown {len(shown)} of {len(rows)} usable claim(s), "
-             f"{len(shown_flagged['contested'])} contested, "
-             f"{len(shown_flagged['withdrawn'])} withdrawn; bounded at {max_claims} claims / "
-             f"{max_bytes} bytes.")
-    return "\n".join(head + body + [count] + tail), shown, shown_flagged
+        reason = "folded_into_mechanism_line" if row["claim_id"] in folded_ids else "bounded"
+        detail = ("an earlier capture of a mechanism shown on one line"
+                  if reason != "bounded" else f"cap {max_claims} claims / {max_bytes} bytes")
+        omitted.append(_omit(row["source_kind"], reason, run=row["run"],
+                             claim_id=row["claim_id"], detail=detail))
+    presented_runs: dict[tuple[str, str | None], list[str]] = {}
+    for row in shown:
+        presented_runs.setdefault((row["source_kind"], row["run"]), []).append(row["claim_id"])
+    run_rows = [{"source_kind": kind, "run": run, "status": "presented", "reason": "",
+                 "claim_ids": sorted(ids)} for (kind, run), ids in sorted(
+                     presented_runs.items(), key=lambda item: (item[0][0], str(item[0][1])))] \
+        + col["run_rows"]
+    flagged_ids = {b: [r["claim_id"] for r in rows_b] for b, rows_b in shown_flagged.items()}
+    host_ids = [row["claim_id"] for row in shown if row["tier"] == "host"]
+    in_section = {(e["tier"], e["model_file"], e["mechanism_id"])
+                  for e in tried[:info["index_shown"]]}
+    in_section |= {(r["tier"], r["model_file"], r["mechanism_id"]) for r in info["selected"]
+                   if r["mechanism_id"]}
+    tried_json = [{**entry, "in_section": (entry["tier"], entry["model_file"],
+                                           entry["mechanism_id"]) in in_section}
+                  for entry in tried[:TRIED_JSON_CAP]]
+    status = "presented" if (shown or any(flagged_ids.values())) else "omitted"
+    return {
+        "status": status, "reasons": sorted({o["reason"] for o in omitted}),
+        "frontier": col["frontier"], "as_of": as_of,
+        # Reliance-eligible ids: usable target- and sibling-tier claims shown in the section.
+        "claim_ids": [cid for row in shown if row["tier"] != "host"
+                      for cid in [row["claim_id"], *row["linked_claim_ids"]]],
+        "contested_claim_ids": flagged_ids["contested"],
+        "withdrawn_claim_ids": flagged_ids["withdrawn"],
+        "refuted_claim_ids": flagged_ids["refuted"],
+        # Shown as host context only; never evidence for a proposal (refused as reliance).
+        "host_claim_ids": host_ids, "not_evidence_claim_ids": host_ids,
+        "claims": [_claim_view(row) for row in shown],
+        "flagged": {b: [{k: row[k] for k in ("claim_id", "source_kind", "grade", "locator",
+                                             "gate_outcome", "gate_reason", "tier", "outcome",
+                                             "mechanism_id")} for row in rows_b]
+                    for b, rows_b in shown_flagged.items()},
+        "tiers": tiers, "tiers_shown": dict(info["tiers_shown"]),
+        "nonempty_target": tiers["target"] > 0,
+        "empty_targets": [t.model_file for t in empty_targets],
+        "banner": banner, "tried_index": tried_json,
+        "tried_index_count": len(tried),
+        "runs": run_rows, "omitted": omitted[:OMITTED_CAP], "omitted_count": len(omitted),
+        "section": section,
+        "section_sha256": hashlib.sha256(section.encode()).hexdigest() if section else "",
+        "section_bytes": len(section.encode()),
+    }
+
+
+def _evidence_empty(reason: str, *, as_of: str, frontier: int | None = None,
+                    error: str | None = None,
+                    targets: Iterable[Target] = ()) -> dict[str, Any]:
+    targets = list(targets)
+    return {"status": "omitted", "reasons": [reason], "frontier": frontier, "as_of": as_of,
+            "claim_ids": [], "contested_claim_ids": [], "withdrawn_claim_ids": [],
+            "refuted_claim_ids": [], "host_claim_ids": [], "not_evidence_claim_ids": [],
+            "claims": [], "flagged": {b: [] for b in FLAG_BUCKETS},
+            "tiers": {t: 0 for t in TIERS}, "tiers_shown": {t: 0 for t in TIERS},
+            "nonempty_target": False, "empty_targets": [t.model_file for t in targets],
+            "banner": banner_text(targets, targets) if targets else None,
+            "tried_index": [], "tried_index_count": 0, "runs": [], "omitted": [],
+            "omitted_count": 0, "section": "", "section_sha256": "", "section_bytes": 0,
+            **({"error": error} if error else {})}
 
 
 # ------------------------------------------------------------------------------ alarms
@@ -966,7 +1810,7 @@ def prepare(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[str, A
                                     escalate_after_s=escalate_after_s, alarm_state=alarm_state,
                                     alarm_config=alarm_config, api=alarm_api)
         return {**base, "status": "refused", "reason": exc.reason, "detail": exc.detail,
-                "ledger_state": None, "evidence": None, "alarm": alarm,
+                "ledger_state": None, "evidence": None, "banner": None, "alarm": alarm,
                 "last_known_good": _known_good_summary(kg_path)}
     except Exception as exc:  # noqa: BLE001 -- an unexpected failure is a refusal, never a plan
         detail = f"{type(exc).__name__}: {exc}"[:500]
@@ -974,13 +1818,14 @@ def prepare(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[str, A
                                     escalate_after_s=escalate_after_s, alarm_state=alarm_state,
                                     alarm_config=alarm_config, api=alarm_api)
         return {**base, "status": "refused", "reason": "reader_error", "detail": detail,
-                "ledger_state": None, "evidence": None, "alarm": alarm,
+                "ledger_state": None, "evidence": None, "banner": None, "alarm": alarm,
                 "last_known_good": _known_good_summary(kg_path)}
     cleared = clear_refusal_alarm(consumer, alarm_state=alarm_state, alarm_config=alarm_config,
                                   api=alarm_api)
     return {**base, "status": "ready", "reason": None, "detail": "",
             "targets": [t.as_dict() for t in parsed], "ledger_state": state,
             "ledger_state_digest": state_digest(state), "evidence": evidence,
+            "banner": evidence.get("banner"),
             "flag_counts": {k: len(flags[k]) for k in ("contested", "withdrawn")},
             "known_good_error": kg_error, "alarm": {"cleared": cleared}}
 
