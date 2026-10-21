@@ -10,7 +10,9 @@
 # (agents/shared/MEASUREMENT_POLICY.md -> Consolidated apply-time ratification). The two
 # changes this row fences are ALREADY LIVE and were operator-approved on 2026-10-21
 # ("Swap now, new era" / "Accept variants" / "Go"):
-#   1. live question pool swapped to corpus-ev19-20261021 (sha256 f8b53663...), 15:19:42Z;
+#   1. live question pool swapped to corpus-ev19-20261021 (sha256 f8b53663...) at 15:19:42Z,
+#      then to corpus-ev19b-20261021 (sha256 73a2ed5a...; = ev19 + 22 ARC rows re-derived) at
+#      16:13:44Z, still before any AutoPilot trial: ONE era, both shas recorded;
 #   2. f1_list scorer: normalised bare-None abstention accepted (orchestrator dd5bcf06).
 # This script records that boundary; it changes no scorer, pool or flag.
 #
@@ -26,7 +28,8 @@ RESEARCH_ROOT="${RESEARCH_ROOT:-/mnt/raid0/llm/epyc-inference-research}"
 ERAS="${ORCH_ROOT}/orchestration/instrument_eras.yaml"
 SCORER="${ORCH_ROOT}/scripts/benchmark/debug_scorer.py"
 POOL="${RESEARCH_ROOT}/benchmarks/prompts/question_pool.jsonl"
-POOL_SHA="f8b536632b0d95feee339333f46247125def384b6d36d65b39711155825d7f0a"
+POOL_SHA="73a2ed5aa87c38e554c818aff4b8c6dd865621c6134b4abacebfa9070a818f8b"
+EV19_POOL_SHA="f8b536632b0d95feee339333f46247125def384b6d36d65b39711155825d7f0a"
 OLD_POOL_SHA="64218c27e07400acf3b10a3cac05a410d5ee67814f353788ab75a19c84dde584"
 ERA_ID="E20-eval-corpus-ev19-quality"
 BOUNDARY="2026-10-21T15:19:42Z"   # moment the live pool was renamed into place
@@ -40,19 +43,23 @@ era_row() {
   - id: ${ERA_ID}
     from: "${BOUNDARY}"
     scope: eval_quality
-    corpus_version: corpus-ev19-20261021
+    corpus_version: corpus-ev19b-20261021
     pool_sha256: ${POOL_SHA}
-    prior_pool_sha256: ${OLD_POOL_SHA}   # backup: question_pool.jsonl.pre-corpus-ev19-20261021 beside the live pool
+    intermediate_pool_sha256: ${EV19_POOL_SHA}   # corpus-ev19-20261021, live 15:19:42Z-16:13:44Z; backup question_pool.jsonl.pre-corpus-ev19b-20261021
+    prior_pool_sha256: ${OLD_POOL_SHA}   # pre-EV-19 pool; backup question_pool.jsonl.pre-corpus-ev19-20261021
     note: >
       EV-19 corpus fix + tulving_episodic none-variant scorer. Operator 2026-10-21:
       "Swap now, new era" (swap the live pool to the fixed corpus), "Accept variants"
       (accept "- None" / "None." / "Answer: None" on tulving_episodic controls), final "Go".
-      (1) CORPUS corpus-ev19-20261021 (research 795cf9626, ledger benchmarks/prompts/corpus_revisions.json):
+      (1) CORPUS corpus-ev19b-20261021 = corpus-ev19-20261021 (research 795cf9626) + 22 ARC rows (research 2d3a7cbe8); ledger benchmarks/prompts/corpus_revisions.json:
       mmlu_pro 12,032 rows re-derived so scoring_config carries choices A-J (the live pool had
       scoring_config={} on all, so the 2,053 rows with gold I/J, 17.1%, could never pass);
       livecodebench 2,360 -> 704 rows with executable oracles (1,656 without a validated oracle
       EXCLUDED; the old substring oracle "def " passed any Python answer); real_suite_v1 1.0 -> 1.1
       (0007 executable oracle; 0006, 0034 not scorable).
+      thinking: 22 ARC rows with numeric source labels 1-4 (gold with no configured choices,
+      refused by the scorer, so excluded) re-derived: prompt relabelled A-D, gold mapped by
+      source position, scoring_config carries choices. No other row changed.
       (2) SCORER debug_scorer._score_f1_list (orchestrator dd5bcf06): a reply that is, as a WHOLE, a
       bare abstention is correct on an empty-gold control, modulo leading bullet, "Answer:" prefix,
       trailing punctuation, case and whitespace. "None" inside a longer answer, or a reply naming
@@ -67,9 +74,8 @@ era_row() {
       Sample sizes shift (livecodebench pool 2,360 -> 704): era-label by this id before any
       cross-boundary frontier or baseline comparison. Details:
       epyc-orchestrator data/autopilot/corpus_fix_ev19_history_impact.md.
-      KNOWN RESIDUAL (not fixed here, EV-19 full-pool self-check v2): 22 of 11,214 "thinking"
-      ARC rows carry gold "1"/"2"/"3" with empty choices; the scorer REFUSES them (excluded from
-      the denominator, never scored wrong). Every other suite self-checks 0 wrong.
+      SELF-CHECK (SELF_CHECK_VERSION 2, full pool of 77,823): 0 wrong, 0 scorer_error, no flagged
+      suite. Not checkable by design: llm_judge 3,806, code_execution 1,854, no expected 1,140.
 
 ROW
 }
@@ -96,7 +102,7 @@ text = text.replace(anchor, "\n" + row.rstrip("\n") + "\n" + anchor, 1)
 open(path, "w", encoding="utf-8").write(text)
 d = yaml.safe_load(open(path, encoding="utf-8"))
 rows = [e for e in d["eras"] if e.get("id") == era_id]
-assert len(rows) == 1 and rows[0]["scope"] == "eval_quality" and rows[0]["corpus_version"] == "corpus-ev19-20261021", rows
+assert len(rows) == 1 and rows[0]["scope"] == "eval_quality" and rows[0]["corpus_version"] == "corpus-ev19b-20261021", rows
 print("row parses:", rows[0]["id"], rows[0]["from"], rows[0]["scope"])
 PY
 }
