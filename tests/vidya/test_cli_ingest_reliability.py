@@ -17,13 +17,13 @@ def test_missing_corpus_never_materializes_ledger(adapter, label, mode, tmp_path
         raise AssertionError("missing corpus must not construct or lock a ledger")
     monkeypatch.setattr(cli, "_ledger", forbidden)
     missing = tmp_path / "absent"
-    assert cli.main(["ingest", adapter, "--root", str(missing), *mode]) == 2
+    assert cli.main(["ingest", adapter, "--root", str(missing), "--as-of", "2026-10-21T00:00:00Z", *mode]) == 2
     assert f"no such {label} corpus root: {missing}" in capsys.readouterr().err
     # Exercise the actual script entry point without any /mnt/raid0 dependency.
     ledger_dir = tmp_path / "must-not-materialize"
     direct = subprocess.run([sys.executable, str(ROOT / "scripts" / "vidya" / "cli.py"),
                              "--ledger", str(ledger_dir / "ledger.jsonl"),
-                             "ingest", adapter, "--root", str(missing), *mode],
+                             "ingest", adapter, "--root", str(missing), "--as-of", "2026-10-21T00:00:00Z", *mode],
                             cwd=tmp_path, capture_output=True, text=True, timeout=30)
     assert direct.returncode == 2, direct.stdout + direct.stderr
     assert f"no such {label} corpus root: {missing}" in direct.stderr
