@@ -326192,3 +326192,248 @@
     A.1 to A.4, V.1). These are injected by an LLM-generated injection prompt, not mechanical code. | Unanchored claim 5 withdrawn
     at Stage 4 (no supporting quote; not citable): Open-weight models are within a few points of frontier on Joint accuracy
     (text: GLM-5 25.3, Qwen3.5-122B 21.6, GPT-5.4 21.3), at a fraction of cost.'
+- id: intake-2341
+  arxiv_id: null
+  url: https://huggingface.co/ConwayResearch/Underdog-Bark-3.0-Clean
+  source_type: repo
+  title: 'Underdog Bark 3.0 Clean (ConwayResearch): 0.6B Parakeet-TDT ASR finetune, 180 MB entropy-coded low-bit weights,
+    built-in disfluency removal'
+  categories:
+  - multimodal
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-21'
+  authors:
+  - ConwayResearch (Conway Research)
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'SCOPE: this is a speech-to-TEXT (ASR/STT) model, not text-to-speech. HF pipeline_tag automatic-speech-recognition, base_model
+    nvidia/parakeet-tdt-0.6b-v3 (finetune), license CC-BY-4.0, English only, not gated. It is a Stage-1 candidate for the
+    STT half of the speech cascade, not a TTS candidate.'
+  - Model card claims 4.08% WER on cleaned DisfluencySpeech transcripts (250 clips) and 5.83% average over the Open ASR Leaderboard
+    7 English sets (LS clean 1.71, LS other 3.78, AMI 12.12, Earnings-22 8.55, GigaSpeech 9.76, SPGISpeech 2.66, VoxPopuli
+    2.23), against verbatim references, so removed fillers count as errors on AMI/GigaSpeech/Earnings-22.
+  - Card claims the verbatim foundation Bark 3.0 Plus averages 4.76% vs Parakeet TDT 0.6B v3 4.94%, Qwen3-ASR-0.6B 5.16%,
+    Whisper large-v3 6.04%; the card says Bark rows used its own scoring code and are not submitted leaderboard entries, and
+    baseline rows are leaderboard results as of 9 Oct 2026.
+  - 'Weights ship as model.bark (format bark-levels-v3): per-row fp16 levels plus one code per weight, ANS entropy-coded (constriction
+    library), 16 column classes per tensor; other matrices 5-6 bit per-row integers; decoding is exact. 180 MB download, about
+    1.25 GB in memory once unpacked per the card, so the compression is a storage/transfer format and the unpacked runtime
+    tensors are float.'
+  - Card claims a native Swift/MLX runtime transcribes a 136 s recording in about 4 s on an M5 Max including model load (vendor
+    figure, Apple silicon only); the reference loader is a stock transformers ParakeetForTDT (torch, device cpu/cuda/mps)
+    plus an MLX path.
+  techniques:
+  - ANS entropy-coded per-row-level (low-bit) weight packing with exact decode
+  - post-training disfluency removal (filler, false-start, repeat deletion) inside the ASR model
+  - Parakeet FastConformer encoder + TDT decoder
+  reported_results:
+  - 'AUTHOR-REPORTED (model card README, HF sha 6d34ed86, retrieved 2026-10-21): DisfluencySpeech cleaned-reference WER 4.08
+    (Bark 2.0 3.83, Bark 3.0 verbatim 16.53); verbatim-reference WER 13.85.'
+  - 'AUTHOR-REPORTED: Open ASR 7-set average 5.83 (Clean) vs 7.48 (Bark 2.0); download 180 MB vs 472 MB.'
+  - No CPU x86 or ROCm/gfx90a throughput is reported anywhere on the card.
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-2342
+    - intake-2343
+    - intake-2344
+    - intake-2345
+  expanded_from: null
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Self-reported and not a submitted leaderboard entry (card says so). The same Parakeet TDT 0.6B v3 baseline scores 4.94
+    average on the Bark card but 6.26 on the moondream parakeet-ultra card (e.g. AMI 9.42 vs 10.86, VoxPopuli 3.05 vs 5.88)
+    because the scoring pipelines differ; absolute WERs are not comparable across cards. Provisional: bounded web search returned
+    no independent replication of Bark numbers (zero hits for the model name).'
+  recommended_actions:
+  - '[unverified] Candidate STT backend for the conversation-stack bake-off beside whisper.cpp large-v3-turbo; needs an in-house
+    WER measurement under Annex S before any claim.'
+  - '[unverified] Evaluate the disfluency-cleaned output as a front end for the LLM turn (removes a separate cleanup step).'
+  notes: 'Stage-1 only, digest-depth (model card, README raw, HF API metadata, tree listing; bark_loader.py and NOTICE read
+    from disk; NO weights downloaded). Submission framing called Bark a TTS family; the card shows it is ASR. Retrieved 2026-10-21;
+    HF repo sha 6d34ed8639b2b9a33e764acf06748519bbb950cf, lastModified 2026-10-15, created 2026-10-15, 20 likes, downloads
+    0 at fetch. Files: model.bark, bark_loader.py, bark_mlx.py, mlx/{config.json,tokenizer.*,vocab.txt}, NOTICE, README.md,
+    bark_frontier.png; usedStorage 179979710 B. Raw artifacts sha256: README 2c25fdc16066d69aa3b4d9224b2355d5f458938fba600db820f615327a387243,
+    API json 2655150304f523e786578a4710a973fbd83f3ab64e9d3f80a2effcbc6c14406a (under /mnt/raid0/llm/tmp/intake-underdog-bark-20261021/,
+    scratch). URL resolved with no redirect (HTTP 200). Dedup: no collision on submitted or resolved URL across the full origin/main
+    intake_index.yaml sweep (unbounded). NOTICE: derives from nvidia/parakeet-tdt-0.6b-v3 and moondream/parakeet-ultra (both
+    CC-BY-4.0, attribution required). Portability judgement (our rule: missing ggml/platform support is never a decline):
+    the packed format decodes exactly to fp16/fp32 tensors so weights are portable to any runner; the nvidia base repo lists
+    a parakeet-tdt-0.6b-v3.q8_0.gguf sibling (tree listing observed 2026-10-21; which runtime consumes it was NOT checked),
+    a hint that a ggml route may exist for the architecture. The entropy-coded form buys download size only and does not by
+    itself speed up CPU decode. Both CPU contention (STT RTF >= 58 under a 96-thread LLM per conversation-stack.md) and GPU
+    placement are open questions the card does not address. Unverified in Stage 1: all benchmark numbers, the 1.25 GB memory
+    figure, the M5 Max timing, and whether cleanup removes content words (meaning-altering deletions) rather than only fillers.'
+- id: intake-2342
+  arxiv_id: null
+  url: https://huggingface.co/ConwayResearch/Underdog-Bark-3.0-Plus
+  source_type: repo
+  title: 'Underdog Bark 3.0 Plus (ConwayResearch): verbatim sibling of Bark 3.0 Clean, 180 MB'
+  categories:
+  - multimodal
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2341
+  verdict: worth_investigating
+  ingested_date: '2026-10-21'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - Verbatim ASR finetune of nvidia/parakeet-tdt-0.6b-v3, CC-BY-4.0, not gated, English (HF API retrieved 2026-10-21, repo
+    sha d4fab2f8b95681e5ad3cfb4e8c5f4e0c009b3deb); tags include coreml and mlx.
+  - Per the Clean card, Plus averages 4.76% on the Open ASR 7 English sets (author-reported, own scoring code).
+  techniques:
+  - ANS entropy-coded low-bit weights
+  - Parakeet FastConformer + TDT
+  reported_results:
+  - AUTHOR-REPORTED via the Clean model card only; the Plus README was fetched (sha256 c03cae79891fb0877b2bd927ad75244b4c1cd722bc38b51b991a5fabffeb7e7e)
+    but not read in detail in Stage 1.
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-2341
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: Stage-1 companion artifact of intake-2341; weights not downloaded. Likely the better STT candidate than Clean when
+    verbatim transcripts are wanted. Downloads 8, likes 6 at fetch.
+- id: intake-2343
+  arxiv_id: null
+  url: https://huggingface.co/moondream/parakeet-ultra
+  source_type: repo
+  title: 'moondream/parakeet-ultra: post-trained parakeet-tdt-0.6b-v3 (25 languages, full precision, Photon runtime)'
+  categories:
+  - multimodal
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2341
+  verdict: worth_investigating
+  ingested_date: '2026-10-21'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - Card claims Open ASR 7-English-set average 5.80 vs 6.26 for the original under its own scoring pipeline, FLEURS 9.55 vs
+    11.62, noise (MUSAN, 9 conditions) 5.82 vs 6.72, TED-LIUM long-form 1.94 vs 2.71.
+  - Card claims 9,743x real time on one NVIDIA B200 at 128 in flight vs 6,005x for NeMo (LibriSpeech test-clean); all accuracy
+    numbers are Photon on NVIDIA GPU.
+  techniques:
+  - post-training of Parakeet TDT 0.6B v3
+  - Photon inference runtime (closed per secondary reports)
+  reported_results:
+  - AUTHOR-REPORTED (README sha256 d4a8b60c83df734ea0373931ba9548f07bdcbab683d19c7f5777a6a83f0971c8, retrieved 2026-10-21,
+    repo sha 73175eb7aeb0d82f1e2a6b53b3aabc10a90bcd0b, 50,924 downloads, 101 likes, CC-BY-4.0).
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-2341
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: Parent of the Bark family per Bark NOTICE. Multilingual (25 languages) which matters for the it/de/fr speech language
+    gate in conversation-stack. Runtime is Photon; secondary reports (web search, low authority) say Photon and Kestrel Kernels
+    are closed source with a commercial-use agreement; NOT verified against moondream license pages. Weights are CC-BY-4.0
+    and architecture is stock ParakeetForTDT (config architectures observed), so a non-Photon runner is the build item.
+- id: intake-2344
+  arxiv_id: null
+  url: https://huggingface.co/moondream/parakeet-redux
+  source_type: repo
+  title: 'moondream/parakeet-redux: ternary (1.58-bit) Parakeet TDT 0.6B v3 encoder, 178 MB, CPU AVX-512 VNNI / NEON / Metal'
+  categories:
+  - multimodal
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2341
+  verdict: worth_investigating
+  ingested_date: '2026-10-21'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - Card claims every encoder weight is -1, 0 or +1, 178 MB, 113x real time on eight x86 CPU cores (2.5x the fastest other
+    Parakeet runtime the authors measured), within 0.3 WER of the original on English (6.55 vs 6.26) but worse in noise (9.04
+    vs 6.72) and business speech (6.96 vs 6.15).
+  techniques:
+  - ternary {-1,0,+1} encoder weights
+  - packed-weight CPU kernels (AVX-512 VNNI on x86, NEON on ARM)
+  reported_results:
+  - AUTHOR-REPORTED (README sha256 930055e6bac7d75114e719850ffaffc8d327e73b4295518c38c81399acd63e46, retrieved 2026-10-21,
+    repo sha 2bf128600aac4b16946f7ed8372e56117fe5e23b, 20,292 downloads, CC-BY-4.0; files model.safetensors, ternary.json,
+    config.json, tokenizer.json). Speeds are Photon only.
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-2341
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: 'Highest portable-mechanism interest of the set: our EPYC 9655 has AVX-512 VNNI and the measured speech problem is
+    CPU STT collapse under CPU LLM load (conversation-stack.md lines 100-101); a ternary encoder with ~178 MB footprint changes
+    the memory-bandwidth profile. Same low-bit-weights theme as the DS41/Q38FN lanes but for a small ASR encoder. Whether
+    the packed format is readable without Photon is unknown (ternary.json present; not opened). Noise regression is a risk
+    for real-human-recording evaluation.'
+- id: intake-2345
+  arxiv_id: '2406.08820'
+  url: https://arxiv.org/abs/2406.08820
+  source_type: paper
+  title: DisfluencySpeech -- Single-Speaker Conversational Speech Dataset with Paralanguage
+  categories:
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2341
+  verdict: not_applicable
+  ingested_date: '2026-10-21'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - Title only was resolved this run (arxiv.org/abs/2406.08820 page title matched). The Bark card uses its test set (250 clips)
+    as the cleanup benchmark; no other claim of the paper was read.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-2341
+  credibility_score: null
+  contradicting_evidence: null
+  notes: Id verified by fetching the abs page title on 2026-10-21; content not read. Single-speaker conversational dataset
+    is a possible small disfluency test set, but conversation-stack requires real human recordings for paralinguistic tests;
+    relevance low so no dive recommended. Dataset licence not checked.
