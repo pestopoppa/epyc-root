@@ -26,6 +26,19 @@ What it does around the command:
 It never touches a partial file it did not create in this run (mtime before the start) — those
 belong to a concurrent or earlier download; `--check` lists them.
 
+SEC-ART-1 provenance (handoffs/active/model-artifact-integrity.md). With `--hf-repo ORG/REPO [--revision REF]`
+the wrapper, BEFORE the command runs, resolves REF (default `main`) to a 40-hex commit sha through the HF API
+and, for `hf|huggingface-cli download ...` commands, appends `--revision <sha>` so the bytes fetched are the
+bytes pinned (no ref-moves-mid-download race). After a successful run it reads the tree at that sha
+(`?recursive=1&expand=1`) and appends one record to the PROVENANCE ledger
+(default <epyc-root>/data/provenance/model_downloads.jsonl, override --provenance-ledger / SAFE_DOWNLOAD_PROVENANCE_LEDGER):
+the resolved commit and, for every tree file present under --dest, its path, size, LFS sha256 (the oid; null for
+non-LFS files, which carry the git blob oid instead) and whether the local size matches. Nothing is hashed locally.
+The ledger is a TRACKED path, not logs/: provenance evidence must resolve in git history (a deleted or rewritten
+line shows in a diff) and survive log rotation/hygiene sweeps; records are ~1 KB per download. Append-only by
+convention (open mode "a"); commit it with the registry change that cites it. If the ref cannot be resolved the
+run is REFUSED (exit 2) unless --no-resolve.
+
 Exit code: the command's own exit code (130 on SIGINT); 2 usage/refusal; `--check`: 0 none, 3 found.
 Tests: tests/test_safe_download.py
 """
@@ -35,16 +48,25 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
 import time
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 PARTIAL_SUFFIXES = (".part", ".incomplete", ".aria2", ".crdownload")
 TMP_ROOTS = ("/tmp", "/var/tmp")
 DEFAULT_LEDGER = os.environ.get(
     "SAFE_DOWNLOAD_LEDGER", "/mnt/raid0/llm/epyc-root/logs/hygiene/partial_downloads.jsonl")
+DEFAULT_PROVENANCE_LEDGER = os.environ.get(
+    "SAFE_DOWNLOAD_PROVENANCE_LEDGER", "/mnt/raid0/llm/epyc-root/data/provenance/model_downloads.jsonl")
+LEDGER_SCHEMA = "model-download-ledger/1"
+HF_ENDPOINT = "https://huggingface.co"
+SHA40 = re.compile(r"^[0-9a-f]{40}$")
+HF_REPO_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$")
 PROJECT_ENV = {"HF_HOME": "/mnt/raid0/llm/cache/huggingface", "TMPDIR": "/mnt/raid0/llm/tmp"}
 
 
@@ -92,6 +114,62 @@ def ledger_write(ledger: str, rec: dict) -> None:
         print(f"safe_download: could not write ledger {ledger}: {exc}", file=sys.stderr)
 
 
+def hf_get_json(url: str):
+    """GET a HF API URL as JSON (HF_TOKEN honoured). Tests replace this function."""
+    req = urllib.request.Request(url, headers={"User-Agent": "epyc-safe-download/1"})
+    if os.environ.get("HF_TOKEN"):
+        req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
+    with urllib.request.urlopen(req, timeout=60) as resp:  # noqa: S310 - fixed https host
+        return json.load(resp)
+
+
+def resolve_revision(repo: str, ref: str) -> str:
+    """Resolve a branch/tag/sha to the 40-hex commit sha (a sha still round-trips the API, proving it exists)."""
+    info = hf_get_json(f"{HF_ENDPOINT}/api/models/{repo}/revision/{urllib.parse.quote(ref, safe='')}")
+    sha = info.get("sha", "")
+    if not SHA40.match(sha):
+        raise ValueError(f"HF returned no 40-hex commit sha for {repo}@{ref}: {sha!r}")
+    return sha
+
+
+def inject_revision(cmd: list[str], sha: str) -> list[str]:
+    """Pin `hf download` / `huggingface-cli download` to the resolved sha; other commands are left alone."""
+    is_hf = (len(cmd) >= 2 and os.path.basename(cmd[0]) in ("hf", "huggingface-cli") and cmd[1] == "download")
+    if not is_hf:
+        return cmd
+    out, i = [], 0
+    while i < len(cmd):                       # replace any caller --revision with the resolved sha
+        if cmd[i] == "--revision":
+            i += 2
+            continue
+        if cmd[i].startswith("--revision="):
+            i += 1
+            continue
+        out.append(cmd[i])
+        i += 1
+    return out + ["--revision", sha]
+
+
+def provenance_record(repo: str, requested: str, sha: str, dest: str, rc: int, argv: list[str]) -> dict:
+    """Ledger record: per-file LFS sha256 for tree files present under dest. Reads the tree API; hashes nothing."""
+    tree = hf_get_json(f"{HF_ENDPOINT}/api/models/{repo}/tree/{sha}?recursive=1&expand=1")
+    files = []
+    for e in tree:
+        if e.get("type") != "file":
+            continue
+        local = os.path.join(dest, e["path"])
+        if not os.path.isfile(local):
+            continue
+        lfs = e.get("lfs") or {}
+        size = os.path.getsize(local)
+        files.append({"path": e["path"], "size": size,
+                      "sha256": lfs.get("oid"), "git_oid": e.get("oid"), "lfs": bool(lfs),
+                      "size_matches_upstream": size == (lfs.get("size") if lfs else e.get("size"))})
+    return {"schema": LEDGER_SCHEMA, "at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "hf_repo": repo, "requested_revision": requested, "hf_revision": sha,
+            "dest": dest, "rc": rc, "argv": argv, "files": files}
+
+
 def cleanup(dest: str, start: float, rc: int, keep: bool, ledger: str, argv: list[str]) -> list[dict]:
     held = open_paths()
     rows = []
@@ -134,6 +212,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--keep-partial", action="store_true", help="on failure keep this run's partials to resume")
     ap.add_argument("--allow-tmp", action="store_true", help="permit a --dest under /tmp")
     ap.add_argument("--ledger", default=DEFAULT_LEDGER)
+    ap.add_argument("--hf-repo", help="ORG/REPO being downloaded: pin the revision and record the SEC-ART-1 ledger")
+    ap.add_argument("--revision", default="main", help="branch/tag/sha for --hf-repo (resolved to a commit sha)")
+    ap.add_argument("--no-resolve", action="store_true", help="with --hf-repo: proceed if the ref cannot be resolved (no ledger)")
+    ap.add_argument("--provenance-ledger", default=DEFAULT_PROVENANCE_LEDGER)
     a = ap.parse_args(raw)
 
     if a.check:
@@ -155,6 +237,22 @@ def main(argv: list[str] | None = None) -> int:
         print(f"REFUSED: --dest {a.dest} is under /tmp; large artifacts go under /mnt/raid0 "
               "(pass --allow-tmp for a deliberate small download)", file=sys.stderr)
         return 2
+    sha = None
+    if a.hf_repo:
+        if not HF_REPO_RE.match(a.hf_repo):
+            print(f"REFUSED: --hf-repo {a.hf_repo!r} is not ORG/REPO", file=sys.stderr)
+            return 2
+        try:
+            sha = resolve_revision(a.hf_repo, a.revision)
+        except Exception as exc:  # noqa: BLE001 - any resolution failure is a refusal
+            if not a.no_resolve:
+                print(f"REFUSED: cannot resolve {a.hf_repo}@{a.revision} to a commit sha ({exc}); "
+                      "pass --no-resolve to download unpinned (nothing is recorded)", file=sys.stderr)
+                return 2
+            print(f"safe_download: WARNING unpinned download, ledger skipped ({exc})", file=sys.stderr)
+        else:
+            cmd = inject_revision(cmd, sha)
+            print(f"safe_download: pinned {a.hf_repo}@{a.revision} -> {sha}", file=sys.stderr)
     os.makedirs(a.dest, exist_ok=True)
     env = dict(os.environ)
     for k, v in PROJECT_ENV.items():
@@ -182,6 +280,12 @@ def main(argv: list[str] | None = None) -> int:
     elif rc < 0:
         rc = 128 - rc
     cleanup(a.dest, start, rc, a.keep_partial, a.ledger, cmd)
+    if sha and rc == 0:
+        try:
+            ledger_write(a.provenance_ledger, provenance_record(a.hf_repo, a.revision, sha, a.dest, rc, cmd))
+        except Exception as exc:  # noqa: BLE001 - the download succeeded; say loudly the record did not
+            print(f"safe_download: ERROR provenance ledger NOT written: {exc}", file=sys.stderr)
+            return rc or 4
     return rc
 
 
