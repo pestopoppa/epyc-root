@@ -281,7 +281,7 @@ Plain bullets, deliberately not checkboxes: the tasks they point to own the chec
 
   This feeds the D11 ladder and the gate on CS-40.
 - [ ] **CS-11 — measure the CPU-placement alternative, for D3 completeness.** Measure the frontdoor (:8070) and :8074 under the `-t 56`@40-95 partition, which KVU-11b never measured, then compute the CPU-LLM loss against the GPU co-residency cost from CS-9. With the second MI210 present, this decides whether any speech component ever needs CPU placement. It can run before the second GPU arrives, in a quiet CPU window.
-  - [ ] **CS-8.L - operator Italian listen check** of the cascade G1 outputs in `/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out/wav/` (human ear; agent QA is circular). Filed 2026-10-21 by wrap-up 3c4ca599. CS-11 itself is armed for 2026-10-22 10:45Z (flag `/mnt/raid0/llm/tmp/cs11-20261022/flags/CS11_DONE`), GPU quiet.
+  - [ ] **CS-8.L - operator Italian listen check** of the cascade G1 outputs in `/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out/wav/` (human ear; agent QA is circular). Filed 2026-10-21 by wrap-up 3c4ca599. CS-11 itself was CANCELLED by the operator late 2026-10-21 (frontdoor moves to a GPU with the second card); its flag `CS11_DONE` is written "cancelled-by-operator" by a relay.
 
 ### Phase 2: commission the second MI210 with 35B-A3B plus the cascade
 
