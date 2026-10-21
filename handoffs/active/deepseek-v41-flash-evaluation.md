@@ -1397,7 +1397,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       `CPU_REPACK` `mxfp4_8x8_q8_0` GEMV that the 1017 server uses for every routed row, and both of its arms
       execute the same generic kernel. A real-weight harness is built (`w5a/mxfp4_repack_nmse.cpp`). It compares
       CPU_REPACK and plain-buffer MUL_MAT_ID against an f32 reference at n = 1 to 512, asserts that the weights
-      were repacked, and runs no server. It is armed as step W5A of the DS41-W6.2 slot driver, 2026-10-22T22:00Z.
+      were repacked, and runs no server. It is armed as step W5A of the DS41-W6.2 slot driver (starts >= 2026-10-22T23:30Z).
       Close this box when `w5a_kernel.jsonl` shows every case at or under 5e-4 with `repacked` true.
   - [ ] **DS41-W5b — raw-completion empty-EOS on article + question + `Answer:` prompts.** Both arms
     (Sept Q4 and 1017) emit EOS as the first token at 309-2041 prompt tokens. A question-first variant
@@ -1437,15 +1437,17 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     DS41-W6.1 already exists below.) Partial result: n=2 pairs block 2, A−B −1.9 pp, CI [−4.2, −0.0]; n=1 block 3,
     −0.9 pp; research `37cc352cc`. Needs ≥3 more pairs, run one server at a time, plus a greedy identity pass.
     The Sept DSpark drafter is kept until then.
-    - *(2026-10-21, ARMED; research `73aab47cc` + `d0b392982`, `artifacts/ds41_w6_dspark_1017_20261021/w6.2/`.)*
-      - Driver: `/mnt/raid0/llm/tmp/ds41-w5ab-w62-20261021/driver.sh`, PID 1360538 (setsid group). It dies on a
-        host reboot and nothing re-arms it.
-      - Start gate: it waits for 2026-10-22T22:00Z AND a fresh `compute-flags/DS41_AK_FLOOR_ENDED`, then takes ONE
-        build claim on 0-47.
+    - *(2026-10-21, ARMED; research `73aab47cc` + `d0b392982` + `c036eaa40`, `artifacts/ds41_w6_dspark_1017_20261021/w6.2/`.)*
+      - Driver: `/mnt/raid0/llm/tmp/ds41-w5ab-w62-20261021/driver2.sh`, PID 1645930 (setsid group). It dies on a
+        host reboot and nothing re-arms it. It replaced `driver.sh` PID 1360538 after the coordinator's window
+        change; that driver was stopped while still waiting.
+      - Start gate: CS-47 now runs first. The driver waits for the later of a fresh
+        `compute-flags/grants/cs47-latency.ended` and 2026-10-22T23:30Z, falling back to 23:35Z if the flag never
+        appears, then takes ONE build claim on 0-47.
       - Steps: W5A, then W5B, then pairs p3 A,B (+ full greedy pass), p4 B,A, p5 A,B, and p6 B,A if it fits.
         Arms run sequentially at `-t 48`, seeds `1000p+234+i`.
       - Every load passes a MemAvailable ≥ 400 GiB gate and a no-other-DS41-server gate. Every step is bounded
-        to the 2026-10-23T00:30Z hard stop.
+        to the 2026-10-23T02:00Z hard stop.
       - Timeline: `compute-flags/DS41_W62_TIMELINE.txt`. End flag: `compute-flags/DS41_W62_ENDED`.
       - Dry run PASS.
       - Post-run: `analyze_post.py --agent <id> --commit --push` (paired-t CI over all complete pairs, old plus
