@@ -1,0 +1,24 @@
+{
+  "MAIN_accepted": true,
+  "source": "56b782ebf20a88b356057983bf73594b5e22a907",
+  "run": 39617059382,
+  "attempt": 1,
+  "cases": 11,
+  "passed": 11,
+  "receipt_seal": "610399bb60f55ee6e3dffe541db0f9b83f53eaa8877753a10c57be4d59f81555",
+  "artifact_sha256": "sha256:8a7194ce64ab8bcaa0fd0f34fcd5af31d27d6f0a33dc6f401ad4e3fd1b196b9c",
+  "readset_rows": 18,
+  "grade": {
+    "q": "Judged",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ],
+    "state": "graded",
+    "t": "Located"
+  },
+  "scope": "Synthetic staged-shell source controls; no live hook activation, no inference/performance claim",
+  "completed_scoped_items": 2,
+  "tally_after_acceptance": 222,
+  "tally_equation": "220 previously published + 2 lint source/capture closures"
+}
