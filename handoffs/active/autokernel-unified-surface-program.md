@@ -1212,6 +1212,21 @@ the docker containers remain — a **candidate, unproven** source of that 800% p
         > Filed as evidence for the operator's OP-41 design, per U4-SEQ's own instruction, not as a new
         > decision or a broker-build task — OP-41's "no action now" ruling already covers this exact space
         > and remains unchanged by this incident.
+  - [ ] **U4-NOISE-1 — measure the GPU -> CPU timing contamination (bias AND noise inflation) per GPU condition, as the OP-41 co-scheduling input (operator 2026-10-21: "ultimately we will use GPU and CPU simultaneously in production ... measure a noise contribution of sorts ... assess whether work truly requires a quiet host or not").** Measurement only. It builds no broker, so the U4-SEQ ruling is untouched. Pre-registration: [`docs/design/gpu-cpu-noise-contribution-prereg-20261021.md`](../../docs/design/gpu-cpu-noise-contribution-prereg-20261021.md).
+    - Code: research `b65284539` `scripts/benchmark/gpu_cpu_noise/`. Pinned run tree: `/mnt/raid0/llm/worktrees/gpu-cpu-noise-run-20261021` (detached at `b65284539`). Run dir: `/mnt/raid0/llm/tmp/gpu-cpu-noise-20261021/`.
+    - W1 is canonical `bench_canonical.sh` llama-bench (Qwen3.6-35B-A3B-MTP-Q8_0, pp512 + tg128, 0-95 `-t 96`; each rep takes its own 0-95 claim).
+    - The GPU runs the champion `dd3d9721c` with 27B Q8 + DFlash2 at the receipt argv. Conditions:
+      - G0: idle;
+      - G1: resident, idle;
+      - G2: decode loop;
+      - G3: prefill-heavy;
+      - G4: G2 with host threads on node 1 (136-143), the MI210's own node;
+      - S8: 8 SMT spinners on 184-191, the SMT-only control.
+    - Shape: 10 seeded blocks, with runs of 5 reps and two G0 runs per block (in-session A/A).
+    - Power: VR=2 at 0.81 (process unit, df 40/80) and 1% bias at >=0.99. Plan: 325 reps, about 3.2 h, cap 3.5 h.
+    - The decision table classifies each condition, per timing class, as SHAREABLE, NOT-SHAREABLE or UNDECIDED. Classes: DG champion baselines (bias +-0.5%, VR<2), AK keep gates (bias +-1%, sigma_add <=1.28% = <=10% widening of the 2.793% serving floor), and IND indicative (always, labelled).
+    - Queue row `gpu-cpu-noise` in `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` (class `block-timing-quiet`, ready y, NOT armed). It runs only on a grant from workspace-58 (`regions=q0,q1,q2,q3,mi210_0`).
+    - Done when ANALYSIS.md exists for a session with >= 7 blocks and the decision table is applied to OP-41's design input here and to the quiet-host rule in `agents/shared/OPERATING_CONSTRAINTS.md` (operator amendment if it changes). Belief kernel: VB-GPU-CPU-NOISE-WIRE. (filed 2026-10-21)
 
 - **OP-40 IS NOW PART OF OP-41 — ONE item, owned by `ak-rebuild-20260828` (transferred 2026-09-08).**
   INF-70 closed today and, on an **operator ruling**, transferred its **OP-40** (unfenced tooling inside the
