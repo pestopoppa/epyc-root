@@ -26,3 +26,4 @@
 
 - epyc-orchestrator 644c6530 + 65fbdce3 (merged): minimal child env with per-task scratch HOME for run_shell/run_python_code (fenced and unfenced), python/python3 removed from run_shell and the find/awk/sed exec refusals applied unscoped, durable rotated JSONL tool-call audit log incl. refused/timeout/error. 10 suites 367 passed, 1 skipped.
 - SEC-EXEC-3/5 probes only: `unshare -rn` EPERM, Landlock ABI 6 (net rules available); re-probe as service user. web_fetch private-range deny still open. Handoff: `handoffs/active/model-exec-containment.md`.
+- **KVU-12.4/12.5 prep + KPF-18.0b.1** (workspace-f8, zero compute): research `2629df4ca` (slot-fit refusal, equal-argv ABA guard, 3 anchors, verdict script, PLAN §10 rule ratified by owner); launcher `/mnt/raid0/llm/tmp/kvu12-redo-20261021/window.sh`, window D4 19:10Z. KPF CPU+GPU runner fix (argv-derived `dflash2`, same-source unique cells), backups `*.pre-kpf180b1-20261021`; follow-up KPF-18.0b.2 opened.
