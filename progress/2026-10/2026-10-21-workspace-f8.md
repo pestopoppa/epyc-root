@@ -16,3 +16,8 @@
 - `t33.py` v2, `t41.py` v2, `ds41_ninv.cpp` v2 + `rank_ninv.py` in `/mnt/raid0/llm/tmp/ds41-parity-20261021/lib/` (v1 copies kept). Jobs 62-ds41-t33c-{sept,1017}, 63-ds41-t41b, 64-ds41-t51b queued.
 - 62-* first attempts ended rc=125 (pairguard stopped paired jobs when the q0 holder changed; not a harness fault) and were requeued unchanged.
 - Server-side serial n_probs gap filed as DS41-T4.1.2.
+
+
+## KPF-04 / KPF-17.3 / KPF-19.1 non-inference parts (subagent, workspace-f8)
+
+- KPF-04 staging page `docs/reference/kv-prefix-fork-radix-lesson-and-vllm-copy-vs-share.md` (cite-check clean). KPF-17.3 was already implemented and passing (jobs 20/30). KPF-19.1: plain-drafter fork is independent of `PARTIAL_ONLY` (`seq_cp_attn` shares the drafter KV); DFlash2 is an SWA drafter, so it needs its own run (KPF-19.1a). Added `dft_no_transfer` mutation and a port-owner check in the test harness (`82c16126f`, `fork` remote). Job 28 first run was stopped by the coordinator (old runner picked q3) and is requeued with the corrected skip_load static check.
