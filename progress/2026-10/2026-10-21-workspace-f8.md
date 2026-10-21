@@ -31,3 +31,8 @@
 Root `a9fccdc21` (safe_download revision pin + provenance ledger, new-model Step 0, SEC-ART-4 design text in model-artifact-integrity.md) and orchestrator `a9a3365a` (registry pin validator warn/strict, backfill planner). Tests: 11 + 13 + 4 passed. Pending: SEC-ART-1.1 backfill + strict flip.
 ## kvu-restore-triage (worktree root-kvu-triage)
 - Re-added old KVU-21 (#29510 A/B arm) as KVU-22 in handoffs/active/kv-unified-stack-rollout.md; triaged 20 restored open items: 1 superseded (CPU-FA-VKQ-1 by Yfa fold / V11-086 EXCL), 19 open (no evidence found); no ticks. index_state --check clean.
+
+## DS41 retarget to 1017 MXFP4 (subagent, operator ruling 2026-10-21)
+- Wrote held jobs 65-ds41-t33c-1017, 66-ds41-t41b-1017, 67-ds41-t51b-1017 in cpu-queue-f8/held-ds41-retarget/ (65, 67 released). 66 plain arm unconditional; speculative arms gated on 1017 DSpark drafter + DSPARK_1017_OK marker.
+- 1017 header read-only check: deepseek41, split 9, alignment 32, MXFP4 tensors; binary has mxfp4_8x8.
+- Staged evidence ds41-w51-t32-qdq-sizing and ds41-t33c-1017 in research worktree f8/ds41-evidence-2 (uncommitted); ds41-t33c-sept skipped (aborts only, no results).
