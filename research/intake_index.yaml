@@ -281208,7 +281208,20 @@
     2026-10-20 STAGE-2 CLOSE-OUT: dive-surfaced github.com/deepseek-ai/3FS DECLINED per the dive recommendation: distributed
     RDMA filesystem at 100 PiB scale has no single-host consumer; the transferable lessons (EC read fan-out, LRU GC under
     a watermark, SWA state RAM-only with a short TTL) are recorded in this entry. Carried to the Stage-3 plan for operator
-    confirmation.'
+    confirmation.
+
+
+    2026-10-21 RE-ENCOUNTER (session intake-deepseek-prodstack-20261021, operator-pasted commentary on this post, minted
+    as intake-2214): same URL, not re-minted. Re-fetched today through r.jina.ai (sha256 a87966c6255d; 49854 B; identical
+    to the 2026-10-20 copy after stripping the expiring zhida entity-link tokens; direct curl 403, api.zhihu.com 40362,
+    web.archive.org and archive.ph blocked). Article statements the relayed summary carries that this entry''s key_claims
+    omit, verified in the re-fetched text: parallelism spec (prefill EP2-8/DP2-8 on 8-card machines, decode EP64-128
+    super-nodes, L13/L44-L45); Vision Encoder deployed single-card on the cheapest available GPU with its own load balancer
+    (random machine, then the card with the fewest image patches, L46/L101); structured output compiled on separate SO
+    machines, asynchronously, fetched before the request enters the engine (L184-L187); async scheduling pipeline
+    (L175-L176); the three design goals incl. KV retention of 72 h or more (L12-L14). NOT in the article: the PP-vs-EP
+    prefill position (X author, intake-2214 claim 4). Garbled in the relay: ''decode instances own block metadata''
+    (article: decode instances write Block KV to the store, L136).'
 - id: intake-2137
   arxiv_id: '2601.04426'
   url: https://arxiv.org/abs/2601.04426
@@ -298998,3 +299011,461 @@
   - Trigger prose at G15 dispatch (mi210 roadmap) and at a GDN >= 8% CPU-prefill profile (cpu-prefill); no decode path (declined
     row).
   ingested_date: '2026-10-20'
+
+- id: intake-2214
+  arxiv_id: null
+  url: https://x.com/SuJinYan123/status/2112485918527590435
+  source_type: blog
+  title: 'susun (@SuJinYan123) X note, 2026-10-20: a practitioner''s read of DeepInfer and of DeepSeek''s V4.1-Flash deployment
+    post (load balancers, prefill/decode routing, EPLB, KV tiers), plus the author''s own 7 Oct 2026 routing-strategy notes'
+  categories:
+  - inference_serving
+  - cost_aware_routing
+  - routing_intelligence
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  expanded_from: null
+  verdict: adopt_patterns
+  authors:
+  - susun (@SuJinYan123)
+  key_claims:
+  - 'Author''s assessment of the DeepInfer repo: of limited value to a serving-framework developer because several components
+    are not open; the author reads the release as supporting a per-model, per-repo kernel organisation.'
+  - 'The valuable material is the Zhihu deployment post (intake-2136): it fixes DeepSeek''s internal parallelism (decode =
+    classic wide-EP, EP64-class) and the value lies in the load balancers; length bucketing is called production-grade, open
+    routers are not known to do it, and the author recalls Together AI having explored it earlier (recollection; no source
+    given and none found in 8 searches).'
+  - 'Author''s reading of the prefill router: no cache-aware routing at all, with pooling as the fallback; compute tokens
+    are the load-balance metric across and within DP groups (restates intake-2136 claim 5).'
+  - 'Time-budget batching as the author understands it: chunk size is not fixed, the per-step time is; an offline-profiled
+    cost table lets the scheduler pick the batch that fits the budget. The author built a similar estimator for a PP deployment
+    and argues the idea is the same for EP or PP.'
+  - 'Author''s position on prefill parallelism: models trained with per-layer heterogeneity are PP-unfriendly; a full DeepSeek-style
+    EP prefill needs substantial traffic and many prefill workers; small and medium deployments favour PP with a few prefill
+    workers, only large deployments favour EP.'
+  - Decode balancing is, as the author expected, a combination of KV-cache usage and running-request count, tuned case by
+    case; the author's own note writes it as a weighted score a*kv_cache_usage + b*num_running and decomposes per-step decode
+    cost into compute intensity, KV cache and MLA terms that all scale with num_running.
+  - 'EPLB is redundancy traded for balance; an online EPLB exists (the author is unsure whether it is open-sourced); more
+    replicas cost VRAM with diminishing throughput return, so the operating point is case by case. Autoscaling: prefill by
+    aggregate compute tokens, decode by num_running (restates intake-2136 claim 7).'
+  - 'KV cache as read by the author: 3FS with a 3-day TTL ''buys'' 0.5-1% hit rate, and KV management is decode-led so outputs
+    are hit too (posed as a question). The primary (intake-2136, zhihu.md L134/L136) says the opposite direction for TTL:
+    a TTL near 3 days COSTS chatbot traffic 0.5-1% hit rate relative to 7 days, and that decode instances WRITE block KV to
+    the store. The commentary''s TTL sentence must not be cited.'
+  - 'The author singles out the swap-in sentence as the key I/O insight and quotes it verbatim from the article: swap-in from
+    shm to HBM runs in an engine-process thread to overlap per-layer H2D with forward; GDR via the RDMA NIC saturates PCIe
+    without SMs because the CUDA copy engine is slow on fine-grained KV blocks (identical to intake-2136 claim 0).'
+  - DSpark variable-length verification is confirmed live; asynchronous scheduling is skipped by the author; the structured-output
+    library is praised. No numbers added beyond the article.
+  - 'Author''s 7 Oct 2026 notes (image 1): agentic workloads have mostly short prefill requests with a few very long ones,
+    long-tailed outputs due to thinking, and an average context near 300k in the author''s unnamed deployment; two ways to
+    track prefix locality for routing: a router-owned hash table (request -> machine, with a back-of-envelope 100k-token /
+    1 TB / 10 GB/s / 100 s / 60 s cost line) or KV insert/remove events fed to a router-side radix tree with compute tokens;
+    long/short pools cut at about 2k / 4k compute tokens, short pool for throughput (EP), long pool for latency (PP/TP), thresholds
+    to be set from offline traffic analysis; Mooncake Store and PegaFlow p2p RDMA named as shared-KV substrates for a prefill
+    pool.'
+  - 'Author''s 7 Oct 2026 notes (image 2), prefill cache-aware policy order: (1) overload filter first (num waiting requests
+    > 5); (2) dplb long/short pools (long: TP/PP; short: EP, ~2k, load-balanced); (3) cache-aware = scan the workers'' cache-hit
+    state and pick the one with the most hit; cold sessions (turn 1) are placed by power-of-two-choices / least-sessions and
+    are roughly uniform; the short pool ignores cache hit and relies on pooling; least-compute-tokens is the control-overhead
+    criterion; local is always faster; incast / hot-spot: Mooncake Store''s allocation can put data on NUMA0 while the NIC
+    is on NUMA1 (RoCE congestion signal, QP blow-up), so destination memory should be allocated in the NUMA group of the GPU/NIC.'
+  - 'Author''s 7 Oct 2026 notes (image 3), decode side: dplb, pools, score a*kv_cache_usage + b*num_running (see claim 5).'
+  techniques:
+  - weighted decode instance score a*kv_usage + b*num_running
+  - overload pre-filter before cache-aware routing (queue depth > N)
+  - power-of-two-choices / least-sessions cold-session placement
+  - short pool ignores prefix affinity, pooling as fallback
+  - router-owned prefix hash table vs KV-event-fed radix tree
+  - long/short prefill pools cut from offline traffic percentiles
+  - NUMA-group-local placement of KV store destination memory relative to GPU/NIC
+  - time-budget batch solving from an offline-profiled cost table
+  reported_results:
+  - 'Author-reported, unnamed deployment, no denominator: average decode context ''close to 300k''; most prefill requests
+    short with a few very long (image 1). Not an EPYC number.'
+  - No measurement in the post itself; every DeepSeek figure it mentions (EP64, 3-day TTL, 0.5-1%, +6% DSpark) is a restatement
+    of intake-2136 and must be cited from there (and the TTL direction is inverted here).
+  cross_references:
+    chapters: []
+    handoffs:
+    - within-role-placement-state-machine.md
+    - kv-unified-stack-rollout.md
+    - heterogeneous-slot-fabric-residency.md
+    - kv-prefix-fork-and-paged-attention.md
+    - numa-prefill-decode-disaggregation.md
+    - gpu-serving-tie-in-program.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-2136
+    - intake-2116
+    - intake-2119
+    - intake-472
+    - intake-1785
+    - intake-738
+    intake_entry_notes:
+    - intake-2136 (the Zhihu deployment post this note comments on; every DeepSeek figure lives there)
+    - 'intake-2116 (DeepInfer code dive: confirms xgrammar GrammarCompiler and the ZOS scheduler the note skips)'
+    - 'intake-2119 (DualPath: the decode balancing rule the article cites)'
+    - intake-472 (Mooncake paper, named in image 1/2 as a shared-KV substrate)
+    - intake-1785 (Dynamo router worker cost, the existing load-term reference in within-role-placement)
+    - intake-738 (DSpark paper arXiv 2607.05147)
+  recommended_actions:
+  - Use the practitioner heuristics (weighted decode score, cold-session P2C, overload pre-filter, affinity-vs-pooling) as
+    extra replay ARMS of WP-15, scored on the dispatch.v1 log; do not adopt any as policy without the replay.
+  - Emit a per-role uncached-prompt-length histogram with candidate tier cuts from serving_calls so the length-pool question
+    (DI-126) and WP-15 read one table.
+  - Record the NUMA-locality caveat for host-side KV handover (slot save/restore page-cache node vs the restoring instance)
+    in the HSF swap-cost receipt.
+  credibility_score: 1
+  contradicting_evidence:
+  - 'The ''no cache-aware routing'' design the note endorses rests on DeepSeek''s global 3FS store (any engine can hit any
+    prefix, intake-2136 claim 0/5); for a fleet with per-instance KV and no shared store (our frontdoor: one full + two half
+    llama-server instances) it is contested by every prefix-aware router (SGLang gateway cache_aware policy, llm-d prefix-cache-aware
+    routing, Dynamo overlap credit, intake-1785) whose premise is that ignoring affinity re-prefills the prefix. Internal:
+    the note''s TTL sentence inverts the article''s direction (zhihu.md L134). The ''Together explored bucketing'' recollection
+    was not found in 8 bounded searches (provisional, not proof of absence).'
+  referenced_arxiv_ids: []
+  notes: 'Operator-pasted material 2026-10-21 (main session workspace-f8 relayed a blog-style summary of this X post titled
+    ''A Practitioner''s Reading of DeepSeek''s Production Inference Stack''; the summary text itself was not supplied verbatim
+    to this lane, so the X post is the entry and the summary is treated as an unverified relay). Raw source: x.com returns
+    402; text recovered through the public FxTwitter mirror API (api.fxtwitter.com/SuJinYan123/status/2112485918527590435,
+    JSON sha256 441fc263bc82, tweet.text sha256 0fe3784231cb, is_note_tweet true, created 2026-10-20T10:07:45Z, 49,401 views,
+    21 replies at fetch) saved under /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/xpost/. The three attached images
+    (the author''s 7 Oct 2026 outline notes) were downloaded from pbs.twimg.com, read in full and transcribed line by line
+    to *.transcript.txt beside each PNG (sha256s in the anchors); image anchors quote the transcript and carry kind file-hash.
+    Replies could not be retrieved (no public endpoint), so the relayed claim that a reply names xgrammar as the structured-output
+    engine is NOT verified from this source; it is independently supported by intake-2116''s code read (DeepInfer SOMatcherBuilder
+    uses xgrammar GrammarCompiler). Relay-vs-source check: the relayed summary attributes ''PP vs EP trade-off for heterogeneous
+    layers'' to the article, but it is the X author''s own position (tweet para 3), absent from zhihu.md; ''decode instances
+    own block metadata'' garbles the article''s ''Block KVCache 由 decode 实例落盘存储'' (decode instances write block KV to the
+    store); ''online EPLB mentioned'' is the author''s aside. Together AI bucketing: 8 bounded searches found no public Together
+    write-up (provisional). Dedup: X URL and status id absent from the index (unbounded grep of url/notes/anchors); the Zhihu
+    URL collides with intake-2136 and was recorded there as a re-encounter, not minted again.'
+  novelty_justification: The article content is already in intake-2136/2116; new are the practitioner heuristics in the images
+    (weighted decode score, cold-session P2C, overload pre-filter, affinity-vs-pooling order, router-side prefix tracking
+    options, NUMA-group placement of store memory) and the PP-vs-EP prefill position.
+  relevance_justification: WP-15 (within-role-placement-state-machine.md:439) is an open replay of KV-length-aware instance
+    selection on the frontdoor fleet with no rule arms beyond DualPath; DI-126 is an open length-tier monitor; the orchestrator
+    today selects by session stickiness and region locks only (concurrency_aware.py:1535-1544 @ 65fbdce). The heuristics are
+    cheap replay arms, not new infrastructure.
+  verdict_justification: 'adopt_patterns: the routing heuristics transfer as offline replay arms; nothing here is a measured
+    result, so no adopt_component or new_opportunity.'
+  source_revision: api.fxtwitter.com status JSON 2112485918527590435 retrieved 2026-10-21 (sha256 441fc263bc82); images HVEOqr4b0AAZT3j
+    / HVEOtYqbUAAA_HD / HVEOvaUbEAAbbH2 (sha256 ff6c8c0630ca / 93c28c07973750 / 2c674b7679e2)
+  reader_should_conclude: 'Cite this entry ONLY for the author''s own routing heuristics as design hypotheses (claims 5, 10-12)
+    and for the PP-vs-EP prefill position (claim 4). Every DeepSeek figure or mechanism must be cited from intake-2136 (article)
+    or intake-2116 (code), never from here. Never cite the TTL sentence (claim 7: direction inverted vs the article), the
+    300k average context (author''s unnamed deployment), or ''Together explored bucketing'' (unverified recollection). ''No
+    cache-aware routing'' is valid only with a shared KV store; on a per-instance-KV fleet it is a hypothesis WP-15 must price,
+    not a design rule.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: tweet.text para 1
+    quote: 感觉 git repo 本身，对我们这样研发来说意义不太大，有一点点吧，但是好些东西没开。但是论证了我 kern 的想法，per model per repo 。
+    quote_sha256: 2c40f7dfab27dbafee094a7eb3f097318ed5417d140f3e0a516c54090bb45cb2
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: tweet.text para 2
+    quote: 主要是确定了一些 ds 内部的并行，decode 侧就还是经典的 wideep，ep64 什么的。
+    quote_sha256: 2475376e8ceb063b84a5f291b2d8af70f62a170c2a0b39a41d653915c8333919
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: tweet.text para 2
+    quote: 有价值的就在几个 load balancer，第一个是分桶（这个其实是比较生产的），不知道开源 router 有没有人做，但生产来说，其实之前 together 就探索过一下。
+    quote_sha256: e7bd9e4a0d534aa9ab24663a9f6725351d7f8a7bb529185b76d50d7c17181027
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: tweet.text para 2
+    quote: prefill 的路由策略很有意思，不做任何的 cache aware，靠池化兜底。
+    quote_sha256: 92e7ebd4d709cbad1a5218bd93fbabb91bf61e3b784dcdbf3eecb859f19c4d6d
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: tweet.text para 2
+    quote: dp group 直接用 compute tokens 作为负载 平衡的指标，dp 组内，也是。
+    quote_sha256: f959a14219ce5a0e68b930c6fff58189ac7fed3a96dc3411652de8d8a99757aa
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: tweet.text para 2 (fifo)
+    quote: 不固定 chunk size，然后固定“耗时”，总之就是一个离线你先跑出来嘛，然后给个表，然后让 scheduler 去估到合适的时间，组 batch。
+    quote_sha256: ec1348c6660c22e803bb7c252aece8f46ef99db9e38961ee0f0e4258b92b49f6
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: tweet.text para 3
+    quote: 当然现在模型训成 每一个 Layer 都不一样的，那天生也就对 pp 不友好，那也没招。但是 ep 要完整做完 ds 这一套，需要不少流量和 prefill worker。总的来说在中小部署我看好 pp（几个 prefill
+      worker 这种），大部署我才看好 ep。
+    quote_sha256: 4660acd23513fc6e46e7f1e4992cdf83a3e44c2e4ff877295bc1781f79b2f120
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: tweet.text para 4
+    quote: decode 和我想的也差不多，就是一个 kv cache + num running 的组合是吧。当然具体怎么调配就是一个 case by case 的事情。
+    quote_sha256: 4b9a8612d37b47bcb4db74283b37e29348c290816939091f1b3717d304c48fa0
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: file-hash
+    locator: HVEOvaUbEAAbbH2.transcript.txt L4-L5
+    quote: a * kv cache usage + b * num running
+    quote_sha256: da9bc2d06248e7183d42e0bfdbb5ac2bec6123d462c12e2ffd369d84d8ecd15e
+    source_revision: image HVEOvaUbEAAbbH2.png sha256 2c674b7679e2, transcript sha256 769380c57e51
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: tweet.text para 5
+    quote: eplb 呢，就是冗余换 lb 吧。不过有个在线的 eplb，不知道开源出来没有。这里的 trade off 就是，eplb 会占用更多显存是吧，但是呢它也能提升吞吐，而且越复制收益越小，所以要找到一个比较合适的点。
+    quote_sha256: dc816765a5845fb21f91c6b42d3a31bc906931a53c7165910134b6fc7c23b4b8
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: tweet.text para 6
+    quote: 然后是 router 的pd 动态扩缩容，prefill 还是  整体compute tokens，deocde 是 num running。
+    quote_sha256: 13362b416e432cbe2c0a3d10855e2fcc0400de866e4cf5f542a9d3b39cdff338
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: tweet.text para 7
+    quote: kv cache 呢就是 3fs，然后 3天的 ttl，能换到 0.5 - 1% 的命中率。kv cache 管理由 decode 主导？这样输出也能被 hit。
+    quote_sha256: 1b50ce637e37b4da01a5de72e829760e87602dc7e5931aa304980c5b7a07fe13
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: page-and-quote
+    locator: tweet.text para 8
+    quote: 换入从 shm 到 HBM 在 engine 进程内的线程里做，目标是实现逐层 H2D （Host-to-Device） 传输与前向计算重叠，由于 CUDA copy engine 对于 KVCache Block 细粒度的拷贝性能不佳，换入使用
+      GDR 实现，用 RDMA 网卡就能打满 PCIe 带宽，并且不占 SM。
+    quote_sha256: 74a2772acc7291fb8404df621ee293bbb14af1e9a9cf4733728f5d27d7053387
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 9
+    kind: page-and-quote
+    locator: tweet.text paras 9-11
+    quote: dspark 变长验证，这个真上了，挺好的。
+    quote_sha256: 5f19308605bff6fe2483c069b30ab6e5761f9c9f6a38f56a74e3925d98cfaf28
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 9
+    kind: page-and-quote
+    locator: tweet.text paras 9-11
+    quote: 异步调度，先忽略。
+    quote_sha256: 2460b85655b66591f04760d6b6fc90c0566276418a319adb3d29a4b55ba67f46
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 9
+    kind: page-and-quote
+    locator: tweet.text paras 9-11
+    quote: ds弄了一个结构化输出库，good!
+    quote_sha256: 0b9bf03fccdcfaf5236c90d3eca02bc6761cd99d196ad206ae9e3cbc51c9d022
+    source_revision: fxtwitter JSON tweet.text for X status 2112485918527590435, retrieved 2026-10-21 (text sha256 0fe3784231cb)
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L4
+    quote: 特点：大部分请求都很短，只有少数请求很长
+    quote_sha256: 6ecae2214b5f6b1db41bd4156a3a210b04fe167e5b613d42e420419ff815c709
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L8
+    quote: avg ctx length 会比较大，接近 300k 左右
+    quote_sha256: 8a59d883430bdba034fd32c1df0afa300f51857f7ad6cadd362d1b1c7db53c74
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L15
+    quote: router 那边维护一个自己的哈希，request a → machine a, hit 100k token, machine a 100k cache, 1TB, 10GB/s, 100s, 60s, router,
+    quote_sha256: dd1a24269acbada02b4572ae64fe1af65d283cc1b6cf64460a737079d6190faf
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L16
+    quote: 'kv event: insert/remove → router, router → radix tree, compute tokens'
+    quote_sha256: fed6caa8bcec08c7afa13f7ae06671c522896d328fd7c69f80f5bb6f3f6c0180
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L19
+    quote: prefill 池子，共享 kv cache，mooncake store, peagflow p2p rdma
+    quote_sha256: 38f9a5e7032ab17d89596b2a851ccdc6f085525c27b52e430280a3861eab68f3
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L21-L23
+    quote: < 2k：短，throughput, ep
+    quote_sha256: 5a1484426dd2ffa16572a160ce77ff022b09aee6a060b0d4cfb9d0d60d4aaff7
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L21-L23
+    quote: '2k : 长池，长 prompt latency, pp, tp'
+    quote_sha256: 16b1e15ac19808e1f6d7fcb98e2b318ac23bf7afe5e0a4ff0da4b36fa3df6c96
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: file-hash
+    locator: HVEOqr4b0AAZT3j.transcript.txt L21-L23
+    quote: 长，短，这里需要离线用流量。
+    quote_sha256: c83e11e89038b58c1b6183a465098bacb5d8011cb6875e98c4af371d16cf6ddf
+    source_revision: image HVEOqr4b0AAZT3j.png sha256 ff6c8c0630ca, transcript sha256 3488ef3b1582
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L3-L4
+    quote: num waiting requests > 5, overload 的 workload
+    quote_sha256: 0ec65b03194de464d54a4b03701fddd376c851607b6b00f63439021833cfb3c7
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L7
+    quote: cache aware → 过 一遍这些 worker 的 cache hit 命中情况，选一个 hit 最多的就好.
+    quote_sha256: 47464d853bb31a8cdfb6bb7532d4de99a761327d32f67cf41f1369b6b3e9b016
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L8
+    quote: 冷 session 的分配问题： turn1，pod0, 分配问题，power of two, least sesion
+    quote_sha256: 12075c4ec686e3056ec33b574e89a3ac05439016fce841227883ff7674bb7c46
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L10
+    quote: 短池不管 cache hit, cache hit 由池化兜底
+    quote_sha256: c44d092050b0a0056d87888ddabf9522eef124400e4c960acc25c258894be8db
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L11
+    quote: least compute tokens → control overhead
+    quote_sha256: 57d588a1084effbb3f9e4bd41cbcbf53852995b83cb577fa1984c0482b14133c
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L14
+    quote: mooncake store 有个分配算法：machine A，evict 了。 moonckae store，numa0 的数据， numa1 的网卡。 roce 阻塞信号.
+    quote_sha256: 0221e9e1a2e2edaa25e43d47c80c8303844d6ab375efc0390cf015f5833c854d
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: file-hash
+    locator: HVEOtYqbUAAA_HD.transcript.txt L19
+    quote: 'mooncake: dst mem numa → numa0 group'
+    quote_sha256: 35065ff21c5513453714a89fc3bcb4a7ef97d50f607c091b2bafe645ccbb6d8a
+    source_revision: image HVEOtYqbUAAA_HD.png sha256 93c28c07973750, transcript sha256 1524a26cca72
+    verified_by: research-intake/stage2
+  - claim_index: 12
+    kind: file-hash
+    locator: HVEOvaUbEAAbbH2.transcript.txt L5
+    quote: decode step 成本分布：算力强度, kv cache, mla, → num running
+    quote_sha256: abce8222df8ecaf3d9a7edca8b31d9f68204434a139fb0b33b8638aa5463abda
+    source_revision: image HVEOvaUbEAAbbH2.png sha256 2c674b7679e2, transcript sha256 769380c57e51
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Author opinion, quoted verbatim; no factual content to test.
+  - claim_index: 1
+    effect: narrowed
+    note: '''Together explored bucketing'' is an unsourced recollection; 8 bounded searches (Together docs, blog, jobs) found
+      no public write-up. Recorded as provisional, not as fact.'
+  - claim_index: 2
+    effect: unaffected
+    note: Matches zhihu.md L91-L93 (intake-2136 claim 5).
+  - claim_index: 3
+    effect: unaffected
+    note: Matches zhihu.md L93 (time budget in ns, chunk solved from cost(q,c)); the author's own PP estimator is unverifiable
+      (link dead per the author).
+  - claim_index: 4
+    effect: unaffected
+    note: Author position; NOT in the article (relayed summary misattributes it).
+  - claim_index: 5
+    effect: unaffected
+    note: Tweet para 4 plus image 3; the article gives only the heuristic direction (zhihu.md L97), the weighted form is the
+      author's.
+  - claim_index: 6
+    effect: unaffected
+    note: '''Online EPLB'' is the article''s periodic re-assignment (zhihu.md L105-L108); whether more than that exists is
+      the author''s speculation.'
+  - claim_index: 7
+    effect: reattributed
+    note: The TTL direction in the post is inverted relative to zhihu.md L134 (3-day TTL costs chatbot 0.5-1% hit rate); the
+      decode-led question resolves to zhihu.md L136 (decode instances write Block KV). Cite the article, never this sentence.
+  - claim_index: 8
+    effect: unaffected
+    note: Verbatim copy of zhihu.md L136; identical to intake-2136 claim 0 anchor.
+  - claim_index: 9
+    effect: unaffected
+    note: Matches zhihu.md L169-L187; no numbers added.
+  - claim_index: 10
+    effect: unaffected
+    note: Transcribed from image 1; the 300k figure and the hash-table cost line are the author's own and carry no denominator.
+  - claim_index: 11
+    effect: unaffected
+    note: Transcribed from image 2; the NUMA incast remarks concern RoCE/NIC placement in a GPU cluster.
+  - claim_index: 12
+    effect: unaffected
+    note: Transcribed from image 3.
+  depends_on:
+  - entry: intake-2136
+    claim_index: 2
+    why: Restates the article's prefill router; if the article's description were retracted this claim would change.
+  - entry: intake-2136
+    claim_index: 3
+    why: Restates the article's time-budget chunk solving.
+  - entry: intake-2136
+    claim_index: 6
+    why: Restates the article's EPLB and autoscaling signals.
+  - entry: intake-2136
+    claim_index: 7
+    why: Misreads the article's TTL figure; its correction rests on the article text.
+  - entry: intake-2136
+    claim_index: 8
+    why: Verbatim copy of the article's swap-in sentence.
+  - entry: intake-2136
+    claim_index: 9
+    why: Restates the article's DSpark / async / SO sections.
+  dive_corrections: '2026-10-21 combined Stage-1+Stage-2 (operator-pasted input; read raw via FxTwitter JSON + 3 images, read_depth
+    FULL). No Stage-1 digest existed to overturn. Recorded: (a) the relayed summary''s misattributions (PP-vs-EP is the author''s,
+    not the article''s; ''decode owns metadata'' garbles ''decode writes block KV''; ''xgrammar per a reply'' unverifiable
+    here, supported by intake-2116 code); (b) claim 7 TTL inversion vs zhihu.md L134; (c) ''Together explored bucketing''
+    provisional after 8 searches. Dive-surfaced sources: arXiv 2604.08075 (Token-Budget-Aware Pool Routing, canonical of withdrawn
+    2604.09613) and the vLLM-Ascend ShortRequestFirst scheduler doc selected for a Stage-2b wave; decline PROPOSED (operator
+    confirms at Stage 3; reasons also in the plan): kvcache-ai/Mooncake repo (companion of intake-472; NUMA awareness lives in its Transfer Engine, no
+    single-host consumer), novitalabs/pegaflow (GPU-cluster RDMA KV store; design reference only), deepseek-ai/3FS (declined
+    2026-10-20 in intake-2136; URL recorded for citation: https://github.com/deepseek-ai/3FS, design notes docs/design_notes.md),
+    SGLang model gateway docs (gateway already indexed as the Shepherd Model Gateway entry), Dynamo routing-concepts page
+    (intake-1785 covers it).'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
