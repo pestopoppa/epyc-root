@@ -576,6 +576,7 @@ First live run of the redundancy harness (24 rubric cases / 72 criteria, synthet
     disagreement-driven adjudication rate. It has no threshold-accept first stage, no fallback attribution and no
     sequential end-to-end latency, and URE-2a (`decision-aware-routing.md`) needs all three. The hosted-Jev arm is
     dropped, so the old credentials / resolved-hosted-identity trigger no longer applies.
+- [ ] **CJ-18 — Judge-family affinity on the frozen CJ-15 fixture, and the CJ-17 acceptance clause (zero inference).** (a) On the frozen CJ-15 fixture rows that carry per-judge typed verdicts, compute discrete CAPA and plain error consistency for every judge pair and every judge-versus-generating-role pair, with bootstrap intervals and invalids and abstentions in the denominator; report whether the proposed first-stage judge and the incumbent are correlated beyond their accuracies (own implementation of about 40 lines, no dependency; about 3 hours). (b) Add to CJ-17 acceptance: each judged comparison records the judge family and each arm family and carries the judge-arm CAPA row; a same-family judge is permitted but flagged. The recorded 27B versus 35B-A3B head-to-head used one Qwen-family judge over Qwen-family arms. Evidence: intake-2323#record; the weak-to-strong scaling claim of that paper is not used. Acceptance: the CAPA table exists and CJ-17 acceptance carries the clause. Estimate: 0.5 day.
 
 ## MAIN-reviewed JEV refinement — 2026-10-06 (CJ-13)
 
