@@ -11,36 +11,23 @@
   "last_compile": "2026-10-21T09:19:40Z",
   "last_touch": {
     "advanced": {
-      "added": 28,
-      "changed": 14,
+      "added": 0,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-10-21T11:44:26Z",
+    "at": "2026-10-21T13:02:52Z",
     "scope_paths": [
       "handoffs/active/autokernel-champion-aggregate.md",
-      "handoffs/active/conversational-memory-eval-instrument.md",
-      "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "handoffs/active/episodic-memory-integrity.md",
-      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "handoffs/active/model-artifact-integrity.md",
-      "handoffs/active/model-exec-containment.md",
-      "handoffs/active/qwen-chat-template-evaluation.md",
-      "handoffs/active/qwen38-27b-replace-qwen36.md",
-      "handoffs/active/repl-embedding-retrieval.md",
-      "handoffs/active/repl-turn-efficiency.md",
-      "handoffs/active/streaming-llm-baseline.md",
-      "handoffs/active/vidya-belief-substrate-program.md",
-      "handoffs/completed"
+      "handoffs/active/deepseek-v41-flash-evaluation.md"
     ],
     "scope_types": [
-      "docs",
       "progress"
     ]
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-21T11:44:26Z",
+  "scan_time": "2026-10-21T13:02:52Z",
   "schema_version": 1,
-  "source_set_hash": "6f1f1f2ac87f2a407af533e0f586e96121fc0cf68879a5117dc2f70a8371acc5",
+  "source_set_hash": "005667ef032a1bee3cca1003d67826d4426b88bb50c34da354c3d4a5ce978d71",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -131,10 +118,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9e3db820b48f325d8e3d7422e650dd67c3e2c6379b3079d98e867fea8fc6ceca",
-      "modified": "2026-10-21T11:39:24Z",
+      "content_hash": "6369daf737f87faf2fadf266e4cfff170d017feb560a291ff267b34058c7bff5",
+      "modified": "2026-10-21T13:02:18Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 102933,
+      "size": 104245,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -395,10 +382,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d8a0bd4185c104314bd10db296f1e57fe842118feec1586bd4c65081f743fe00",
-      "modified": "2026-10-21T11:39:24Z",
+      "content_hash": "aaad2d9532008e8269275fae70db939993ffa4482a9555c381fbfca03eea6fbf",
+      "modified": "2026-10-21T13:02:18Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 189893,
+      "size": 190041,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -9731,10 +9718,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c5080ef035da71d702307d86a0702ee4dd96d861a93ab231d574bba397da3796",
-      "modified": "2026-10-21T11:41:51Z",
+      "content_hash": "e5aa13ecc8e1a77ce54c43b37cf736d6fc02ce0babf5b308bc6fc55ecfb654c7",
+      "modified": "2026-10-21T13:02:18Z",
       "path": "progress/2026-10/2026-10-21-wrapup-3c4ca599-c.md",
-      "size": 1851,
+      "size": 2250,
       "title": "2026-10-21 wrap-up 3c4ca599-c (operator-invoked /wrap-up, boundary: DP-F amendment Stage 4 applied)",
       "type": "progress"
     },
