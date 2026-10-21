@@ -447,6 +447,14 @@ including the dispatches whose nudge says nothing about subagents.
   root, with worktrees named `/mnt/raid0/llm/worktrees/<id>-<purpose>` — and the subagent writes
   nowhere else. That is what lets the wrap-up's scratch step (§ *Filesystem and Storage*) clean up
   after the whole fan-out by listing one directory.
+- **Every subagent brief says how to READ and where to WRITE the repo (2026-10-21).** The `/workspace`
+  shared clone can sit hundreds of commits behind `origin/main` (2026-10-21: about 400) and can carry a
+  peer's staged change (a hygiene-hook edit was riding its index), so a file read from it describes an old
+  tree. Read through `git fetch origin && git show origin/main:<path>` or a fresh worktree off
+  `origin/main`; never trust a working-tree read in the shared clone for current state. Write only in the
+  subagent's own worktree; a subagent that edited the shared clone directly (it happened more than once on
+  2026-10-21) is stopped and corrected, its stray hunks reverted by path, and a staged peer change is left
+  alone. This is the read-side twin of the pathspec/private-index rules in `agents/commands/wrap-up.md`.
 - **Every subagent brief requires a CPU-region claim for local compute.** Builds, self-launched servers and
   test suites run as `/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build
   --tag <tag> -- <cmd>`, so they queue behind a held window instead of running inside it. `taskset`, `nice` or

@@ -1,0 +1,440 @@
+{
+  "defects": [],
+  "no_grade_recompute": true,
+  "no_tests_import_build_retry": true,
+  "source_paths_disjoint": true,
+  "sources": [
+    {
+      "caps": [
+        {
+          "identity": {
+            "dev": 2431,
+            "ino": 205564154,
+            "mode": 384,
+            "mtime_ns": 1791467558609510669,
+            "nonce_sha256_43": "406aae93ddebc3c03856ec90490ef282368ace906d15f70c799835e705d4ceb9",
+            "sha256": "b9bd62d5e30889da59dfb0949311ea894e91435c0e81a45f971448b080ec74cc",
+            "size": 44
+          },
+          "identity_equality_release_unlink": true,
+          "name": "wrapup"
+        },
+        {
+          "identity": {
+            "dev": 2431,
+            "ino": 205564154,
+            "mode": 384,
+            "mtime_ns": 1791467565400539198,
+            "nonce_sha256_43": "64449218965a9e3d87cf20a1dbfecb5f8d09b9b3e16e2cd75854b3fce943a2c8",
+            "sha256": "e85889a334f01af05ba5e50ae0b5d29861b90bdb359cf065cf7887952b1bfcc4",
+            "size": 44
+          },
+          "identity_equality_release_unlink": true,
+          "name": "push"
+        }
+      ],
+      "custody": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/proposal-native-final-bound-PREP-20261008/bound-84c441/originals",
+      "defects": [],
+      "exact_path_delta": [
+        ".github/workflows/aud10-proposal-fixtures.yml",
+        ".github/workflows/m12f-proposal-fixtures.yml",
+        "scripts/ci/proposal_fixture_native/bootstrap.py",
+        "scripts/ci/proposal_fixture_native/capture.py",
+        "scripts/ci/proposal_fixture_native/expected-cases.json",
+        "scripts/ci/proposal_fixture_native/requirements.txt",
+        "scripts/ci/proposal_fixture_native/source-map.json"
+      ],
+      "input_sha256": "60e1b7a8fc200f1462aca6ce16fbd3da160172a8ac9e77acfb8872b85c9b754a",
+      "journals": [
+        {
+          "commands": 77,
+          "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/proposal-native-final-bound-PREP-20261008/bound-84c441/actual-operation/journal.jsonl",
+          "raw_hash_or_exit_defects": [],
+          "sequence_contiguous": true,
+          "sha256": "d3f667fd6dafcaa7aa95f78beb06e83c2353188548a84a6401689b102aa56d11"
+        },
+        {
+          "commands": 9,
+          "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/proposal-native-final-bound-PREP-20261008/bound-84c441/originals/journal.jsonl",
+          "raw_hash_or_exit_defects": [],
+          "sequence_contiguous": true,
+          "sha256": "23e10e3ff6d78811814c75427de15051e093825af9d9fba73fecee87d5f74b0d"
+        }
+      ],
+      "original_hashes": {
+        "0.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "0.stdout": "cf744ccf3b9547c3700d5ff21686f08c8c7bba653b18f541c3aaedf802f8fb42",
+        "1.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "1.stdout": "726668e1763467a4969fe6c4b5c56acaf315d40fb5b9965a90c7a81d7f115b05",
+        "2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "2.stdout": "84baeb096afa46cc237cfea452cb77e6338fe7ea1606a8a5c2517122173e0105",
+        "3.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "3.stdout": "e9717088c29008cc0850f508113a2b0fb3c72795bd4eaa3ca9dea08e580a2fd2",
+        "37787880862-artifact-11555410470.zip": "60356b199025c93875387958b998d7d4490a6f0c62136b43750053141d326886",
+        "37787880862-artifact-11555410470.zip-inspection.json": "17233301de41e132b38c53e1c9f94f9f9a75de4ca6e1644f4e6abab10fdaa8c4",
+        "37787880862-artifacts.json": "64803c79e2c73c6c8ce13e96302fdc523030c7364fee2a2bb0ea41e2101c2b1e",
+        "37787880862-jobs.json": "6803a51d9689486a2c60b673406affa823ee8eb2198e67fdbd742f1bb74ef76f",
+        "37787880862-logs.zip": "f622c72fa94230dfe00731cce2cea981bf8b7d9a97cd8a4ae94ac7229744e69a",
+        "37787880862-logs.zip-inspection.json": "1629a9d2e72e918204e5c54dca007e22239219b08d18872c4283f3b4f8a544fc",
+        "37787880862-run.json": "1e7b601f710c58bff7472bffbbf4f351f2ecc345e6ed492a2cc1d50a0a162666",
+        "37787880868-artifact-11554484392.zip": "1927c585bc23f53254cfd8dc387492c85b915663f79230bf21cb17c4b830b9a7",
+        "37787880868-artifact-11554484392.zip-inspection.json": "75252555d983726f0b0893e31af183beabe7854e0ac36ba92a9e7c0356bed7ec",
+        "37787880868-artifacts.json": "5b07df5433541dcb7074b2db8d5711d5364049d0e2c2fa664fa39e99d1af957f",
+        "37787880868-jobs.json": "46d98c87aca39f3d04b8cc469cbd19fe8b6e7c6cd13b2046749fd7a4f75ac7fa",
+        "37787880868-logs.zip": "e9717088c29008cc0850f508113a2b0fb3c72795bd4eaa3ca9dea08e580a2fd2",
+        "37787880868-logs.zip-inspection.json": "0ef19db695b76ca38cabe8f45c3e2e525e4c309d3a3111588c24fb01828e8df9",
+        "37787880868-run.json": "79b41a27b04af7e0285ec31bf055e723967a9228d3a985fe167806eedc200f59",
+        "4.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "4.stdout": "1927c585bc23f53254cfd8dc387492c85b915663f79230bf21cb17c4b830b9a7",
+        "5.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "5.stdout": "50b3194ca15f1cf62f0f6d5757e6c5a25774af589181e5002def4fd75e784107",
+        "6.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "6.stdout": "e395d25a9d16027fe143deb063d165b625c5075278aed5353497f1d6832d4e7f",
+        "7.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "7.stdout": "f622c72fa94230dfe00731cce2cea981bf8b7d9a97cd8a4ae94ac7229744e69a",
+        "8.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "8.stdout": "60356b199025c93875387958b998d7d4490a6f0c62136b43750053141d326886",
+        "DONE.flag": "1c312b6d035ed4c36ea6d173ee58efe448128f48503bfd6fa1a09bb4c51ffd75",
+        "SUCCESS.flag": "d41c5bf1e3c11ca5b482d1730f22fa00cc03c63fb46ed886986095ae1c8e6071",
+        "journal.jsonl": "23e10e3ff6d78811814c75427de15051e093825af9d9fba73fecee87d5f74b0d",
+        "results.json": "24a6003cf560b6e480d978715a78cc2ad38946523f75ffc81e82831d19e400a2"
+      },
+      "package": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/proposal-native-final-bound-PREP-20261008/bound-84c441",
+      "receipts": [
+        {
+          "case_count": 63,
+          "checks": {
+            "all_passed_exit0": true,
+            "artifact_API_original_digest_size_head_run": true,
+            "attempt1": true,
+            "captured_repository_read_bytes": true,
+            "enrollment_identity": true,
+            "expected_case_exact_set": true,
+            "generated_output_hashes": true,
+            "jobs_original_all_success_attempt1": true,
+            "junit_case_multiset": true,
+            "junit_hash": true,
+            "log_hash": true,
+            "original_run_head_attempt1_success": true,
+            "readset_bytes": true,
+            "recipe_identity": true,
+            "request_hash": true,
+            "request_identity": true,
+            "request_readset": true,
+            "selfseal": true,
+            "source_map_all25_git_identities": true,
+            "source_map_carrier_enrollment": true,
+            "stored_grade_Judged_Located": true,
+            "stored_original_before_after": true
+          },
+          "file": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/proposal-native-final-bound-PREP-20261008/bound-84c441/originals/37787880862-artifact-11555410470.zip-extracted/result/native/receipt.json",
+          "generated_output_count": 0,
+          "readset_count": 41,
+          "repositories": {
+            "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+            "enrollment": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+            "recipe": "9ed97e6efb044a91c4ed51ec0febaf518efe084e"
+          },
+          "runner": {
+            "attempt": "1",
+            "job": "source-fixture-controls",
+            "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+            "python": "3.13.15",
+            "run_id": "37787880862"
+          },
+          "sha256": "3b27bf05deeae8aff438560652cdc062bf6b7de42aa596ef00489192aecadc29",
+          "summary": {
+            "counts": {
+              "collected": 63,
+              "error": 0,
+              "executed": 63,
+              "failure": 0,
+              "passed": 63,
+              "skipped": 0
+            }
+          }
+        },
+        {
+          "case_count": 26,
+          "checks": {
+            "all_passed_exit0": true,
+            "artifact_API_original_digest_size_head_run": true,
+            "attempt1": true,
+            "captured_repository_read_bytes": true,
+            "enrollment_identity": true,
+            "expected_case_exact_set": true,
+            "generated_output_hashes": true,
+            "jobs_original_all_success_attempt1": true,
+            "junit_case_multiset": true,
+            "junit_hash": true,
+            "log_hash": true,
+            "original_run_head_attempt1_success": true,
+            "readset_bytes": true,
+            "recipe_identity": true,
+            "request_hash": true,
+            "request_identity": true,
+            "request_readset": true,
+            "selfseal": true,
+            "source_map_all25_git_identities": true,
+            "source_map_carrier_enrollment": true,
+            "stored_grade_Judged_Located": true,
+            "stored_original_before_after": true
+          },
+          "file": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/proposal-native-final-bound-PREP-20261008/bound-84c441/originals/37787880868-artifact-11554484392.zip-extracted/result/native/receipt.json",
+          "generated_output_count": 0,
+          "readset_count": 41,
+          "repositories": {
+            "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+            "enrollment": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+            "recipe": "9ed97e6efb044a91c4ed51ec0febaf518efe084e"
+          },
+          "runner": {
+            "attempt": "1",
+            "job": "source-fixture-controls",
+            "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+            "python": "3.13.15",
+            "run_id": "37787880868"
+          },
+          "sha256": "efaf3911bc62a1be22a0063d2de976b9fa79aedbd86efe03184a1b4a224b38b0",
+          "summary": {
+            "counts": {
+              "collected": 26,
+              "error": 0,
+              "executed": 26,
+              "failure": 0,
+              "passed": 26,
+              "skipped": 0
+            }
+          }
+        }
+      ],
+      "source_identity": {
+        "UTC": "2026-10-08T13:52:48.864681+00:00",
+        "blobs": {
+          ".github/workflows/aud10-proposal-fixtures.yml": "6f8ec46675b9c0429a4c370b47cc5572cbf41d92",
+          ".github/workflows/m12f-proposal-fixtures.yml": "7d71147e599f995810a39d54387645ba7864f3c0",
+          "scripts/ci/proposal_fixture_native/bootstrap.py": "e6d8dcd489ef1cc2dcefe8acaad7d163bab54cdd",
+          "scripts/ci/proposal_fixture_native/capture.py": "771fdc3adfd87db405caba6d476eda988f77c323",
+          "scripts/ci/proposal_fixture_native/expected-cases.json": "10e1e38fa2ced2cf32ae5eeef146cb83cad389ba",
+          "scripts/ci/proposal_fixture_native/requirements.txt": "a26ad9215b105b07d7cb32940fc8914e28d95bba",
+          "scripts/ci/proposal_fixture_native/source-map.json": "e0a8e2edc24c9314ecb338392432a05b83fadb8b"
+        },
+        "commit": "9ed97e6efb044a91c4ed51ec0febaf518efe084e",
+        "main_unchanged": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+        "metric_hook_inference_apply": false,
+        "parent": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+        "prospective_existing_carrier_only": true,
+        "tree": "881ff18a73a5ffd24299a88ef0a964697045aac6"
+      },
+      "zip_safety": [
+        {
+          "crc_error": null,
+          "duplicate": false,
+          "entries": 16,
+          "file": "37787880868-logs.zip",
+          "unsafe": []
+        },
+        {
+          "crc_error": null,
+          "duplicate": false,
+          "entries": 52,
+          "file": "37787880862-artifact-11555410470.zip",
+          "unsafe": []
+        },
+        {
+          "crc_error": null,
+          "duplicate": false,
+          "entries": 16,
+          "file": "37787880862-logs.zip",
+          "unsafe": []
+        },
+        {
+          "crc_error": null,
+          "duplicate": false,
+          "entries": 52,
+          "file": "37787880868-artifact-11554484392.zip",
+          "unsafe": []
+        }
+      ]
+    },
+    {
+      "caps": [
+        {
+          "identity": {
+            "dev": 2431,
+            "ino": 205691917,
+            "mode": 384,
+            "mtime_ns": 1791467679250479312,
+            "nonce_sha256_43": "5e8c5b0aef44224a484c6bcc2d368da19b591c0679541063bd41d0fe832bbae5",
+            "sha256": "8bc8d43d6e74bc34eb0ace6bec0ed7ac653c1d31c5ac73d944ed44d9c9a7ff6e",
+            "size": 44
+          },
+          "identity_equality_release_unlink": true,
+          "name": "wrapup"
+        },
+        {
+          "identity": {
+            "dev": 2431,
+            "ino": 205691917,
+            "mode": 384,
+            "mtime_ns": 1791467684217832440,
+            "nonce_sha256_43": "c4cc5f400d1776ed89303c48676132659af89cb118c1a153b5a67a3d164010a9",
+            "sha256": "540c656fe46f581833c7a56be2d514da5c9ba6f6a9f40617a5f5cc0cac7af4e3",
+            "size": 44
+          },
+          "identity_equality_release_unlink": true,
+          "name": "push"
+        }
+      ],
+      "custody": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl49-s05-corrected-roster-implementation-PREP-20261008/s05-originals-8168cb17089e60c098ffa8b9a501440e1435ebaf",
+      "defects": [],
+      "exact_path_delta": [
+        ".github/workflows/evl49-s05-source-native.yml",
+        "proposed/evl49-s05/README.md",
+        "proposed/evl49-s05/capture_s05_native.py",
+        "proposed/evl49-s05/plan.json",
+        "proposed/evl49-s05/s05_sourceprep.py",
+        "proposed/evl49-s05/test_s05_native.py",
+        "proposed/evl49-s05/test_s05_sourceprep.py"
+      ],
+      "input_sha256": "7facfeae1bb4f9f0401160d574b8f2cb77aa25775b723f4814f3ced227341e81",
+      "journals": [
+        {
+          "commands": 77,
+          "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl49-s05-corrected-roster-implementation-PREP-20261008/bound-PREP/actual-operation/journal.jsonl",
+          "raw_hash_or_exit_defects": [],
+          "sequence_contiguous": true,
+          "sha256": "a07f16e36e8de59d8f9163ae9987f5d8fa68334e939cd365016138b0169183b4"
+        },
+        {
+          "commands": 10,
+          "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl49-s05-corrected-roster-implementation-PREP-20261008/s05-originals-8168cb17089e60c098ffa8b9a501440e1435ebaf/journal.jsonl",
+          "raw_hash_or_exit_defects": [],
+          "sequence_contiguous": true,
+          "sha256": "9797bf205aeccf61937709c234f034e94468834567e1afeb6537296393a90747"
+        }
+      ],
+      "original_hashes": {
+        "0.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "0.stdout": "70957c2d3f0523bcb56cc4cea54ec64722e94d575d0009f1f25ff0cda5e0989a",
+        "1.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "1.stdout": "70957c2d3f0523bcb56cc4cea54ec64722e94d575d0009f1f25ff0cda5e0989a",
+        "2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "2.stdout": "70957c2d3f0523bcb56cc4cea54ec64722e94d575d0009f1f25ff0cda5e0989a",
+        "3.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "3.stdout": "70957c2d3f0523bcb56cc4cea54ec64722e94d575d0009f1f25ff0cda5e0989a",
+        "4.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "4.stdout": "70957c2d3f0523bcb56cc4cea54ec64722e94d575d0009f1f25ff0cda5e0989a",
+        "5.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "5.stdout": "d8cd12d89ac2d7c4c3926068f8aabf0f2d728b6f1fc2941f558fa2d7db91f735",
+        "6.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "6.stdout": "ea7e8da130c58c62231ad540a5257e4ea9660563b4bcb6a20093d37fa7db554a",
+        "7.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "7.stdout": "d204c3de8cf57b20f99bd4d471274618cf26a3b480f80d980922de6ecc8aedcd",
+        "8.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "8.stdout": "24e1af957455cc02410b2e6f8d403b34d0406de3c371f83d0193280edf099893",
+        "9.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "9.stdout": "e5eea2c03c1a446eb8019a59367c30d99c7ab01ec8aef72fc4c78033a279ad76",
+        "DONE.flag": "5540ed221f6e0f27b5eee0a18244f1011f50020b1e606c8b193a2502e09dcb7a",
+        "SUCCESS.flag": "085bc95d48bf1b8d519fdbe15e871af600acee2d04c0d6deaeb4eb16c50897c8",
+        "custody-summary.json": "0dea433e788770cddcca649bc6b59297b9c5bb0c50c5515d3afc2afe2aca18f8",
+        "journal.jsonl": "9797bf205aeccf61937709c234f034e94468834567e1afeb6537296393a90747",
+        "original-artifact.zip": "e5eea2c03c1a446eb8019a59367c30d99c7ab01ec8aef72fc4c78033a279ad76",
+        "original-artifacts.json": "48e6221e7280786bff287e394e0998bb0e1c5ae7d26731ab4e54eb26c41bbaad",
+        "original-jobs.json": "b4a85a45af503d0fc359095a40b7ed037a23e210c5d26cb5bab98d9a3f098110",
+        "original-logs.zip": "24e1af957455cc02410b2e6f8d403b34d0406de3c371f83d0193280edf099893",
+        "original-run.json": "afd241f0915a52e96b89c7f743a911725bd0b63dbb19acefc56d67b49ee19d8b"
+      },
+      "package": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl49-s05-corrected-roster-implementation-PREP-20261008/bound-PREP",
+      "receipts": [
+        {
+          "case_count": 1,
+          "checks": {
+            "all_passed_exit0": true,
+            "artifact_API_original_digest_size_head_run": true,
+            "attempt1": true,
+            "captured_repository_read_bytes": true,
+            "enrollment_identity": true,
+            "generated_output_hashes": true,
+            "jobs_original_all_success_attempt1": true,
+            "junit_case_multiset": true,
+            "junit_hash": true,
+            "log_hash": true,
+            "original_run_head_attempt1_success": true,
+            "readset_bytes": true,
+            "recipe_identity": true,
+            "request_hash": true,
+            "request_identity": true,
+            "request_readset": true,
+            "selfseal": true,
+            "stored_grade_Judged_Located": true,
+            "stored_original_before_after": "N/A: not stored by S05 list-grade"
+          },
+          "file": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/evl49-s05-corrected-roster-implementation-PREP-20261008/s05-originals-8168cb17089e60c098ffa8b9a501440e1435ebaf/original-artifact.zip-extracted/_temp/s05-native-result/native/receipt.json",
+          "generated_output_count": 48,
+          "readset_count": 2764,
+          "repositories": {
+            "app": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+            "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+            "enrollment": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+            "recipe": "8168cb17089e60c098ffa8b9a501440e1435ebaf",
+            "research": "3caaf22fa853daab5c5ae055ca46b67809e2c938"
+          },
+          "runner": {
+            "attempt": "1",
+            "job": "s05-source-native",
+            "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+            "python": "3.13.15",
+            "run_id": "37788149043"
+          },
+          "sha256": "b3f775d703576016624553a200d50129f1b5debcf2bbbab058e96b440bc5884b",
+          "summary": {
+            "counts": {
+              "collected": 1,
+              "error": 0,
+              "executed": 1,
+              "failure": 0,
+              "passed": 1,
+              "skipped": 0
+            }
+          }
+        }
+      ],
+      "source_identity": {
+        "UTC": "2026-10-08T13:54:47.351327+00:00",
+        "blobs": {
+          ".github/workflows/evl49-s05-source-native.yml": "1815af08187b0ee2debf41f724db95ca8f04ff6c",
+          "proposed/evl49-s05/README.md": "bdb79d7c8b634de86a1aa213269c2c638dc17d28",
+          "proposed/evl49-s05/capture_s05_native.py": "72fd7c45c26bca887acb588f9544a921f6b8ff8e",
+          "proposed/evl49-s05/plan.json": "5349b2d8faa1bed509d5a98e6e48bfa969f11402",
+          "proposed/evl49-s05/s05_sourceprep.py": "64acaeb774dac4149075d85ac49343ecb5c809d3",
+          "proposed/evl49-s05/test_s05_native.py": "62f0ddd883797fb310184e39de2b8dcf12fed2e4",
+          "proposed/evl49-s05/test_s05_sourceprep.py": "34b3a9e68adc26f4ef25c45363180557be547a00"
+        },
+        "commit": "8168cb17089e60c098ffa8b9a501440e1435ebaf",
+        "main_unchanged": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+        "metric_hook_inference_apply": false,
+        "parent": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+        "prospective_existing_carrier_only": true,
+        "tree": "a8f0fbf640781d03ddab3a98757f3fee747d4f57"
+      },
+      "zip_safety": [
+        {
+          "crc_error": null,
+          "duplicate": false,
+          "entries": 19,
+          "file": "original-logs.zip",
+          "unsafe": []
+        },
+        {
+          "crc_error": null,
+          "duplicate": false,
+          "entries": 2871,
+          "file": "original-artifact.zip",
+          "unsafe": []
+        }
+      ]
+    }
+  ],
+  "status": "PREP_READ_ONLY"
+}

@@ -1,5 +1,6 @@
 """Original direct compare -> archive -> strict reader -> existing ledger, no compute."""
 import copy
+import dataclasses
 import hashlib
 import json
 import os
@@ -134,3 +135,61 @@ def test_mutated_projected_rows_and_rehashed_unearned_protocol_are_refused(sourc
     path.write_text(json.dumps(receipt))
     with pytest.raises(ProjectionError, match="belief rows differ"):
         _native(path)
+
+
+# --- VB-LOOP-SCOPE: applicability from the capture's own fields ---------------------------------
+
+def test_scope_comes_from_the_captures_own_recipe_and_resolved_launch(source):
+    row, _, _, path = source
+    inputs = row["belief_capture"]["inputs"]
+    for native in _native(path):
+        tup = reader.project(native)
+        arm = tup.extra["arm"]
+        resolved = inputs["resolved_arms"][arm]
+        assert tup.applicability["model_file"] == inputs["recipe"]["model"] == "/fixture-model"
+        assert tup.applicability["backend"] == resolved["backend"] == "cpu"
+        assert tup.applicability["kernel"] == {"build_path": inputs["build_paths"][arm],
+                                               "execution_digest": resolved["execution_digest"]}
+        # Not stated by the record, so never declared: the reader then does not compare them.
+        assert not {"device", "quant", "context_tokens", "run_id"} & set(tup.applicability)
+        assert grade(tup) == grade(dataclasses.replace(tup, applicability={}))
+
+
+def test_unresolved_capture_declares_model_but_no_backend(tmp_path, monkeypatch):
+    research = os.environ.get("EPYC_RESEARCH_ROOT")
+    if not research:
+        pytest.skip("EPYC_RESEARCH_ROOT must select the matching direct-serving producer")
+    monkeypatch.syspath_prepend(str(Path(research) / "scripts/kernel_rnd"))
+    from autokernel.loop.test_serving_beliefs import archived
+    _, _, _, path = archived(tmp_path, monkeypatch, resolved=False)
+    for native in _native(path):
+        assert native["applicability"] == {"model_file": "/fixture-model",
+                                           "kernel": {"build_path": native["claim"]["extra"]["build_path"]}}
+
+
+def test_a_capture_contradicting_its_own_model_declares_no_scope():
+    row = {"extra": {"arm": "anchor"}}
+    source = {"comparison": {"belief_capture": {"inputs": {
+        "recipe": {"model": "/m/a.gguf"}, "build_paths": {"anchor": "/b"},
+        "resolved_arms": {"anchor": {"backend": "cpu", "model": {"path": "/m/b.gguf"}}}}}}}
+    assert reader._applicability(source, row) == {}
+    source["comparison"]["belief_capture"]["inputs"]["resolved_arms"]["anchor"]["model"] = {
+        "path": "/m/a.gguf"}
+    assert reader._applicability(source, row) == {"model_file": "/m/a.gguf", "backend": "cpu",
+                                                  "kernel": {"build_path": "/b"}}
+
+
+def test_producer_time_store_ingest_is_idempotent(source, tmp_path):
+    from scoped_ingest import ingest_scoped_store
+
+    _, _, _, path = source
+    ledger = Ledger(tmp_path / "scoped-ledger.jsonl")
+    as_of = datetime.now(timezone.utc).isoformat()
+    first = ingest_scoped_store(ledger, path.parent.parent, as_of=as_of)
+    assert first["receipts_read"] == 1 and first["new_claims"] == 2
+    assert first["frames_appended"] == 6 and ledger.verify() == []
+    sources = [r.frame for r in ledger.read_all() if r.frame["frame_type"].endswith("source_observed/v1")]
+    assert all(f["assertion"]["applicability"]["model_file"] == "/fixture-model" for f in sources)
+    second = ingest_scoped_store(ledger, path.parent.parent, as_of=as_of)
+    assert second["receipts_known"] == 1 and second["receipts_read"] == 0
+    assert second["frames_appended"] == 0 and len(ledger) == 6

@@ -1,0 +1,32 @@
+{
+  "state": "MAIN-ACCEPTED EXACT PRIVATE TWO NORMAL MERGES",
+  "UTC": "2026-10-08T14:24:56.430239+00:00",
+  "operation": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/native14-normal-OWN-integration-PREP-v1-20261008/actual-operation",
+  "journal_sha256": "8ca92dd611b61b306e615e93196310cdaddea2bfc79cffeddc63379a517f2dd8",
+  "original_commands_verified": 194,
+  "all_raw_exit_zero": true,
+  "all_raw_stream_hashes_verified": true,
+  "cap44_three_equal_released_unlinked": true,
+  "exact14_blob_and_working_byte_scope_verified": true,
+  "merges": [
+    {
+      "commit": "5cb8108d2ad44122dace8403867728755063b46b",
+      "parents": [
+        "84c441145cca9b088dfe7b9687e01b9e03156f75",
+        "9ed97e6efb044a91c4ed51ec0febaf518efe084e"
+      ],
+      "tree": "881ff18a73a5ffd24299a88ef0a964697045aac6"
+    },
+    {
+      "commit": "5821eb145377354e12f00162e843804a7d75d5c5",
+      "parents": [
+        "5cb8108d2ad44122dace8403867728755063b46b",
+        "8168cb17089e60c098ffa8b9a501440e1435ebaf"
+      ],
+      "tree": "ab06b1c01f50a9144ae15362c300334156fb4c1c"
+    }
+  ],
+  "public_main_unchanged": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+  "published": false,
+  "metric_hook_inference_apply": false
+}

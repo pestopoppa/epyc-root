@@ -1,0 +1,7 @@
+CH-21 real-model acceptance (hybrid --cache-reuse engine fix) - PASS 2026-10-21
+Build: cpu-20261021-f9c01ce0e-c-nemotron
+C2 tip: experimental/c-plus-nemotron-bolt-20261021 @ 49550eda5
+Run by: workspace-5c, script run_ch21_check_fixed.sh
+Qwen3.6-35B-A3B-MTP-Q8_0: PASS (disable line present; n_cache_reuse absent in generation_settings; reuse request served; per-request ignore line=1)
+Qwen3.8-27B-Q8_0:         PASS (disable line present; n_cache_reuse absent in generation_settings; reuse request served; per-request ignore line=1)
+Raw evidence: ch21-f9c01ce0e.out, ch21-f9c01ce0e/ (server logs and responses).

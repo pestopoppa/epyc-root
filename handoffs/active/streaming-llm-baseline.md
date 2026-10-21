@@ -124,6 +124,10 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - **PS-2 CLOSED, no task filed**: our context-shift path is Reset-PE (`seq_rm` + `seq_add -n_discard`); the source reports the difference insignificant and recovered Figure 14 puts Reset PE ahead at 4 of 5 budgets within one SE. intake-1327's closure confirmed. `intake-1315#record`.
 - **Three numeric corrections carried against the source**, so the sweep session does not re-quote them: Table 1's 128K cell is the vanilla-SWA value (11.26×, not 11.7×); W=16384 does **not** match full attention (28.74 vs 31.14, first match at W=32768); the "seconds" axis is **derived**, nothing was timed. `intake-1315#record`.
 
+## Note 2026-10-21 — V11-098 context-shift check (wrap-up 3c4ca599-c)
+
+The hybrid/recurrent `can_shift` guard (V11-098, `experimental/hybrid-cache-reuse-guard-20261021` @ `8b08c9f25`, pending fold, not in production) turns server `--context-shift` off on hybrid and pure-recurrent models, where it used to be enabled and shift attention KV against a stale recurrent state. The impact check found no production reliance on context shift: the default is off, and a context overflow without it is loud (the request errors; nothing is silently dropped). This sweep is not affected: it ran dense Qwen3-1.7B Q8 (a dense model still reports `can_shift` 1), so the StreamingLLM sink+window path through context shift is unchanged.
+
 ## Progress checklist
 
 - [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) ✅

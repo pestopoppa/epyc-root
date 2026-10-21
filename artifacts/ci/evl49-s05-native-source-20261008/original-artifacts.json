@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 11555610836,
+      "node_id": "MDg6QXJ0aWZhY3QxMTU1NTYxMDgzNg==",
+      "name": "evl49-s05-original-37788149043-1",
+      "size_in_bytes": 21738330,
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/11555610836",
+      "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/11555610836/zip",
+      "expired": false,
+      "digest": "sha256:e5eea2c03c1a446eb8019a59367c30d99c7ab01ec8aef72fc4c78033a279ad76",
+      "created_at": "2026-10-08T13:56:10Z",
+      "updated_at": "2026-10-08T13:56:10Z",
+      "expires_at": "2026-11-07T13:56:06Z",
+      "workflow_run": {
+        "id": 37788149043,
+        "repository_id": 1166910746,
+        "head_repository_id": 1166910746,
+        "head_branch": "codex/evl49-s05-source-native-20261008",
+        "head_sha": "8168cb17089e60c098ffa8b9a501440e1435ebaf"
+      }
+    }
+  ]
+}

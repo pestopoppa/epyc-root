@@ -1240,3 +1240,13 @@ score. If `routing_classifier` is ever enabled (LRC-2), first apply the DAR-LAT-
 the fast-path result (around :411). Otherwise saturated roles bypass the guard.
 
 **Evaluation caution (2026-09-26, intake-1821#7).** In EvoHarnessBench's delegation study, specialist-selection precision stays around 90%, yet 78–86% of trials that reach every required specialist still fail their verifier: a metric that scores only role choice misses the dominant failure. GPT-5-only and enterprise-workflow-only, so a hypothesis for our traces. If LRC-2 is evaluated for rollout, report realized task outcome beside role agreement; decision-aware-routing.md DAR-LAT-3 already grades realized quality per request.
+
+## Evaluation protocol: cost-of-pass objective needs a reliability floor (ROUTE-COP-GUARD, 2026-10-21)
+
+Any learned-router or controller evaluation that reports or optimises the cost-of-pass frontier (`cost_per_attempt / pass_rate`) applies the floor in `routing-intelligence.md` section "Router objective: cost-of-pass needs a reliability floor" before a candidate counts as on the frontier:
+
+- Declare `tau` (and `k` if the surface retries) before the run; admit only candidates with pass rate (or pass^k) at or above `tau`; list the excluded candidates and their unguarded cost-of-pass in the report.
+- A cheap near-random policy is the standing adversarial case and is included in every frontier run as a control candidate; the evaluation fails if it is admitted.
+- State that retries are not independent when context carries over: a carried-context surface reports its measured k-attempt pass rate, not `pass_rate ** k`.
+
+Code and test: `epyc-orchestrator` `scripts/analysis/cop_frontier.py`, `tests/unit/test_cop_frontier.py`.

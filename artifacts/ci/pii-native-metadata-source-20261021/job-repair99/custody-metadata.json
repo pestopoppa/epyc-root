@@ -1,0 +1,14 @@
+{
+  "scope": "nonportable public metadata subset",
+  "private_KEEP": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-pii-job-metadata-repair-20261021",
+  "original_artifact_id": 12350024657,
+  "original_artifact_size": 40717045,
+  "original_artifact_sha256": "64708def67c8c2eb4b11029a474463d1bb89c8b708527afb8dae858bbc453022",
+  "included": "byte-exact native receipt/request/JUnit/shared grade and original API run/jobs/artifact metadata",
+  "excluded": "40MB original ZIP; raw4609 readset sidecars, logs, staged PII originals and alias copies",
+  "reopen_limit": "The public subset cannot independently reopen the strict receipt; complete originals remain in private KEEP custody.",
+  "original_failed_constructor": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-pii-job-metadata-repair-20261021/bound-v1/actual-operation/failure.json",
+  "original_failed_watcher": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-pii-job-metadata-repair-20261021/bound-v1/WATCHER-FAILURE.json",
+  "normal_push_result": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-pii-job-metadata-repair-20261021/existing-OWN-resume-v2/actual-operation/result.json",
+  "extra_task_closures": 0
+}

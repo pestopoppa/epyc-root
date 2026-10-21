@@ -1,0 +1,28 @@
+{
+  "python": "3.13.15 (main, Aug  6 2026, 02:15:18) [GCC 13.3.0]",
+  "executable": "/home/runner/work/_temp/s05-venv/bin/python",
+  "dependencies": {
+    "pytest": "9.0.3",
+    "iniconfig": "2.3.0",
+    "pip": "26.2.1",
+    "PyYAML": "6.0.3",
+    "Pygments": "2.20.0",
+    "pluggy": "1.6.0",
+    "packaging": "26.0"
+  },
+  "prompt_projection_scope": "Reuse original pinned E1 saved43 prompt bytes; verify ordered qids exactly against generator and adapt qid to id for unchanged dry loader. No resampling and no equivalence claim to ignored current1.35GB question pool. Current-real-pool owner acceptance remains separate.",
+  "original_saved_prompts_sha256": "7952bad327e0986eb8db63e054e4eb7822c05e82cac85c1dff81290df1fee976",
+  "projection_sha256": "afac82ea34b507aa3a4d769b39da3a42df2325727f53ca408c680643338fd5da",
+  "environment_allowlist": {
+    "PATH": "/opt/hostedtoolcache/Python/3.13.15/x64/bin:/opt/hostedtoolcache/Python/3.13.15/x64:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+    "PYTHONPATH": null,
+    "LD_LIBRARY_PATH": "/opt/hostedtoolcache/Python/3.13.15/x64/lib",
+    "OMP_NUM_THREADS": null,
+    "OMP_PROC_BIND": null,
+    "OMP_PLACES": null,
+    "KMP_BLOCKTIME": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0"
+  }
+}

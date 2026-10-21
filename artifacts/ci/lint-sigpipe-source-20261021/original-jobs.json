@@ -1,0 +1,145 @@
+{
+  "jobs": [
+    {
+      "check_run_url": "https://api.github.com/repos/pestopoppa/epyc-root/check-runs/119280791847",
+      "completed_at": "2026-10-21T14:29:02Z",
+      "conclusion": "success",
+      "created_at": "2026-10-21T14:28:14Z",
+      "head_branch": "codex/lint-sigpipe-grep-q-source-20261021",
+      "head_sha": "56b782ebf20a88b356057983bf73594b5e22a907",
+      "html_url": "https://github.com/pestopoppa/epyc-root/actions/runs/39617059382/job/119280791847",
+      "id": 119280791847,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "lint-sigpipe-grep-q-controls",
+      "node_id": "CR_kwDORY2lGs8AAAAbxbBxJw",
+      "run_attempt": 1,
+      "run_id": 39617059382,
+      "run_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/runs/39617059382",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000003616,
+      "runner_name": "GitHub Actions 1000003616",
+      "started_at": "2026-10-21T14:28:17Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-21T14:28:19Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-10-21T14:28:18Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:19Z",
+          "conclusion": "success",
+          "name": "Initialize custody directory before setup",
+          "number": 2,
+          "started_at": "2026-10-21T14:28:19Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:35Z",
+          "conclusion": "success",
+          "name": "Checkout exact source event commit",
+          "number": 3,
+          "started_at": "2026-10-21T14:28:19Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:42Z",
+          "conclusion": "success",
+          "name": "Checkout unchanged native carrier and shared grader",
+          "number": 4,
+          "started_at": "2026-10-21T14:28:35Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:49Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 5,
+          "started_at": "2026-10-21T14:28:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:54Z",
+          "conclusion": "success",
+          "name": "Install pinned hermetic fixture runner",
+          "number": 6,
+          "started_at": "2026-10-21T14:28:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:56Z",
+          "conclusion": "success",
+          "name": "Capture exactly eleven synthetic cases through the existing carrier",
+          "number": 7,
+          "started_at": "2026-10-21T14:28:54Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:56Z",
+          "conclusion": "success",
+          "name": "Reopen the original receipt through the existing projector and shared grader",
+          "number": 8,
+          "started_at": "2026-10-21T14:28:56Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:56Z",
+          "conclusion": "success",
+          "name": "Finalize capture status envelope",
+          "number": 9,
+          "started_at": "2026-10-21T14:28:56Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:58Z",
+          "conclusion": "success",
+          "name": "Preserve original native receipt, request, readset, log and JUnit",
+          "number": 10,
+          "started_at": "2026-10-21T14:28:56Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 18,
+          "started_at": "2026-10-21T14:28:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:58Z",
+          "conclusion": "success",
+          "name": "Post Checkout unchanged native carrier and shared grader",
+          "number": 19,
+          "started_at": "2026-10-21T14:28:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:58Z",
+          "conclusion": "success",
+          "name": "Post Checkout exact source event commit",
+          "number": 20,
+          "started_at": "2026-10-21T14:28:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T14:28:58Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "started_at": "2026-10-21T14:28:58Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/jobs/119280791847",
+      "workflow_name": "LINT-SIGPIPE-GREP-Q synthetic source controls"
+    }
+  ],
+  "total_count": 1
+}

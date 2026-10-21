@@ -1,0 +1,26 @@
+{
+  "family": "CJ10",
+  "original_receipt_path": "/home/runner/work/_temp/ni08-grade-inputs/CJ10/extracted/cj10-native-original/native/receipt.json",
+  "original_receipt_file_sha256": "7cade244d39c40f39d884d2281a882232ebab0f88b3918236347f0bad1abd854",
+  "reader_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "native_value": true,
+  "counts": {
+    "collected": 59,
+    "error": 0,
+    "executed": 59,
+    "failure": 0,
+    "passed": 59,
+    "skipped": 0
+  },
+  "shared_grade": [
+    "Judged",
+    "Located",
+    [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  ],
+  "new_native_execution": false,
+  "ledger_append": false,
+  "note": "Secondary read-only grade output; original native receipt remains unchanged."
+}

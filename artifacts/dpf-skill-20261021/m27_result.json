@@ -1,0 +1,612 @@
+{
+ "advisory_only": true,
+ "embeddings_readable": {
+  "dim": 1024,
+  "id_map_len": 57,
+  "index_ntotal": 57,
+  "missing_embedding": 0,
+  "skills": 57,
+  "vectors_read": 57
+ },
+ "episodic_source_composition_all_rows": {
+  "counts": {
+   "autopilot": 4301,
+   "eval_or_external": 28161,
+   "pre_label_legacy": 30736,
+   "seed": 1316
+  },
+  "interactive_label_available": false,
+  "n": 64514
+ },
+ "nothing_distilled": true,
+ "pair_census_backup": {
+  "band": [
+   0.6,
+   0.85
+  ],
+  "examples": [
+   {
+    "a": "route_74ffc335",
+    "b": "route_bbc10a40",
+    "cosine": 0.8099,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:architect_general"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_2604b8b8",
+    "cosine": 0.7344,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:frontdoor"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_f5f1e03b",
+    "cosine": 0.6742,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:frontdoor"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_0ca5fbb2",
+    "cosine": 0.8266,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:architect_general",
+     "ROLE_MODEL:frontdoor"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_aaece2fd",
+    "cosine": 0.828,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:architect_general"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_f9c22d16",
+    "cosine": 0.7306,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:frontdoor"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_fc99024d",
+    "cosine": 0.7762,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:30b",
+     "ROLE_MODEL:frontdoor"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_1d7c5eab",
+    "cosine": 0.8047,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:architect_general"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_90c7b2c8",
+    "cosine": 0.8316,
+    "only_a": [],
+    "only_b": [
+     "ROLE_MODEL:frontdoor"
+    ]
+   },
+   {
+    "a": "route_74ffc335",
+    "b": "route_5a17c7b5",
+    "cosine": 0.8018,
+    "only_a": [
+     "ROLE_MODEL:architect_coding"
+    ],
+    "only_b": [
+     "ROLE_MODEL:235b"
+    ]
+   }
+  ],
+  "pairs_in_band": 357,
+  "pairs_in_band_literals_differ": 334,
+  "pairs_same_task_type": 416,
+  "pairs_total": 1596
+ },
+ "retrieval_floors": {
+  "effectiveness_below_cut_all_skills": 0,
+  "floors": {
+   "20": {
+    "at_or_above_floor": 0,
+    "below_effectiveness_0.3": 0
+   },
+   "5": {
+    "at_or_above_floor": 0,
+    "below_effectiveness_0.3": 0
+   }
+  },
+  "max": 2,
+  "n": 57,
+  "retrieval_count_distribution": {
+   "0": 46,
+   "1": 10,
+   "2": 1
+  }
+ },
+ "skilllearnbench_lint_ext": {
+  "per_config": {
+   "b1-one-shot-claude-haiku-4-5": {
+    "n": 72,
+    "negcap": 2,
+    "pii_any": 0
+   },
+   "b1-one-shot-claude-opus-4-6": {
+    "n": 53,
+    "negcap": 1,
+    "pii_any": 0
+   },
+   "b1-one-shot-claude-sonnet-4-6": {
+    "n": 54,
+    "negcap": 1,
+    "pii_any": 0
+   },
+   "b1-one-shot-gemini-3-flash-preview": {
+    "n": 53,
+    "negcap": 0,
+    "pii_any": 0
+   },
+   "b1-one-shot-gemini-3.1-flash-lite-preview": {
+    "n": 42,
+    "negcap": 0,
+    "pii_any": 0
+   },
+   "b1-one-shot-gemini-3.1-pro-preview": {
+    "n": 42,
+    "negcap": 1,
+    "pii_any": 0
+   },
+   "b2-self-feedback-claude-haiku-4-5": {
+    "n": 67,
+    "negcap": 5,
+    "pii_any": 0
+   },
+   "b2-self-feedback-claude-opus-4-6": {
+    "n": 50,
+    "negcap": 0,
+    "pii_any": 0
+   },
+   "b2-self-feedback-claude-sonnet-4-6": {
+    "PII_ID": 1,
+    "n": 55,
+    "negcap": 3,
+    "pii_any": 1
+   },
+   "b2-self-feedback-gemini-3-flash-preview": {
+    "n": 56,
+    "negcap": 0,
+    "pii_any": 0
+   },
+   "b2-self-feedback-gemini-3.1-flash-lite-preview": {
+    "n": 40,
+    "negcap": 0,
+    "pii_any": 0
+   },
+   "b2-self-feedback-gemini-3.1-pro-preview": {
+    "n": 42,
+    "negcap": 2,
+    "pii_any": 0
+   },
+   "b3-teacher-feedback-claude-haiku-4-5": {
+    "PII_ID": 1,
+    "n": 95,
+    "negcap": 4,
+    "pii_any": 1
+   },
+   "b3-teacher-feedback-claude-opus-4-6": {
+    "PII_ID": 1,
+    "n": 52,
+    "negcap": 3,
+    "pii_any": 1
+   },
+   "b3-teacher-feedback-claude-sonnet-4-6": {
+    "PII_ID": 1,
+    "PII_PATH": 1,
+    "n": 47,
+    "negcap": 5,
+    "pii_any": 2
+   },
+   "b3-teacher-feedback-gemini-3-flash-preview": {
+    "n": 65,
+    "negcap": 3,
+    "pii_any": 0
+   },
+   "b3-teacher-feedback-gemini-3.1-flash-lite-preview": {
+    "PII_ID": 1,
+    "n": 61,
+    "negcap": 2,
+    "pii_any": 1
+   },
+   "b3-teacher-feedback-gemini-3.1-pro-preview": {
+    "n": 28,
+    "negcap": 1,
+    "pii_any": 0
+   },
+   "b4-skill-creator-claude-haiku-4-5": {
+    "PII_ID": 2,
+    "n": 59,
+    "negcap": 6,
+    "pii_any": 2
+   },
+   "b4-skill-creator-claude-opus-4-6": {
+    "n": 43,
+    "negcap": 2,
+    "pii_any": 0
+   },
+   "b4-skill-creator-claude-sonnet-4-6": {
+    "n": 43,
+    "negcap": 2,
+    "pii_any": 0
+   },
+   "b4-skill-creator-gemini-3-flash-preview": {
+    "n": 51,
+    "negcap": 2,
+    "pii_any": 0
+   },
+   "b4-skill-creator-gemini-3.1-flash-lite-preview": {
+    "n": 37,
+    "negcap": 3,
+    "pii_any": 0
+   },
+   "b4-skill-creator-gemini-3.1-pro-preview": {
+    "n": 34,
+    "negcap": 1,
+    "pii_any": 0
+   },
+   "human_authored": {
+    "n": 36,
+    "negcap": 6,
+    "pii_any": 0
+   }
+  },
+  "unlabelled_success": "not computable: corpus has no source-trajectory outcome label"
+ },
+ "skilllearnbench_pair_census": "not computable: no stored embeddings in the corpus (needs an embedder run)",
+ "skills_db_lint_ext": {
+  "n": 57,
+  "negative_capability_examples": [],
+  "negative_capability_flagged": 0,
+  "pii_seed_flagged_by_class": {},
+  "source_outcome_counts": {
+   "failure": 18,
+   "success": 39
+  },
+  "unlabelled_success_flagged": 18
+ },
+ "source_role": {
+  "ids_resolved": 0,
+  "ids_total": 85,
+  "per_skill": {
+   "esc_007467a4": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_16a81756": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_37cd6e24": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_591fabfa": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_6468d25d": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_7ade44db": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_80f1ac30": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_928c7902": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_e3c88cb3": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_efca39b4": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_fb4f75fc": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "esc_fd022d34": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_08eb1b36": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_0bc4c645": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_0db81a10": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_1218570c": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_194eb25f": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_1bbf04e4": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_3ecb8134": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_42cba6bd": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_4cac5973": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_52d523c8": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_6c91c69f": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_770db9b3": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_78330356": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_80d6ee3e": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_90efec61": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_9ff4a699": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_d683c7a2": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "fail_f85e05d0": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_022239d5": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_0af344b1": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_0ca5fbb2": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_1d7c5eab": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_2604b8b8": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_48b0710c": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_53c7d55e": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_5a17c7b5": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_5a7d435b": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_6ac0627a": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_74ffc335": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_7eee706d": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_89f6223b": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_8c6cd236": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_90c7b2c8": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_9691fdf2": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_aaece2fd": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_ae89a907": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_b9e3cad8": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_bbc10a40": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_dcc98b48": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_e26169a9": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_f5f1e03b": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_f65b5355": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_f9c22d16": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_fbdb2ceb": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   },
+   "route_fc99024d": {
+    "of": 10,
+    "resolved": 0,
+    "top_role": "unresolved"
+   }
+  },
+  "searched": [
+   "episodic.db",
+   "episodic.db.pre-repair-20260727T210348Z",
+   "episodic.db.pre-reseed-20260727T220715Z"
+  ],
+  "skills_by_top_role": {
+   "unresolved": 57
+  }
+ }
+}

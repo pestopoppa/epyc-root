@@ -1,0 +1,68 @@
+{
+  "schema": "ni08.nib83.synthetic-native-source-map.v1",
+  "status": "BOUND_REVIEW_ONLY_MAIN_K_REQUIRED",
+  "enrollment_root": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "branch": "codex/ni08-nib83-native-source-20261021",
+  "carrier_root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "carrier_readset": [
+    "scripts/ci/native_conformance.py",
+    "scripts/vidya/adapters/ci_conformance.py",
+    "scripts/vidya/claim_tuple.py"
+  ],
+  "enrollment_readset": [
+    {
+      "path": "scripts/vidya/adapters/README.md",
+      "sha256": "f248f74f2bd7e3c4f3ec4ac26f4137835f5cda234332075115b9d4c0215afdd8",
+      "blob": "200e4f1776586cc016b3840a16d840ed3108af05",
+      "bytes": 314905
+    },
+    {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "sha256": "f9fb9ee95cf304fd1a12dadfcf30c7fbc7e7ff730a455b70692a6a9065d70df7",
+      "blob": "ee379bbba8564a8fa4031b6413c3e7ed33a8d2bf",
+      "bytes": 442108
+    }
+  ],
+  "payload_readset": [
+    {
+      "path": ".github/workflows/nib83-native-controls.yml",
+      "bytes": 1728,
+      "sha256": "283bdcdc16ff048b8fe2e046691989e7e319991f16acc00e72d1fec521be1b48",
+      "blob": "9ba79f9543f2e63de4a878b12d1960b951fd6468"
+    },
+    {
+      "path": "scripts/ci/nib83_native/capture.py",
+      "bytes": 3858,
+      "sha256": "bbb080ab6879ceb56232f47f69eea751059babf09c5578454d9c8d02eeb6891e",
+      "blob": "e179e6c55fd0c2d22ed34bec8723d62440d9b9af"
+    },
+    {
+      "path": "scripts/ci/nib83_native/expected-cases.json",
+      "bytes": 968,
+      "sha256": "b1618f87835958276c0a634076d82157fb0cb1f668304bc7fd453e8724a5b959",
+      "blob": "5ab8fb5a0185e0a81629e40ee89289b6c398d52b"
+    },
+    {
+      "path": "scripts/ci/nib83_native/postE17_histogram.py",
+      "bytes": 4047,
+      "sha256": "cf94c699f3f9912defb622534177415ef8c628241489ea88d425add638780a79",
+      "blob": "44243fc5aa70fe2b9c4aae86d0fd6e412df7d6a8"
+    },
+    {
+      "path": "scripts/ci/nib83_native/run_controls.py",
+      "bytes": 1631,
+      "sha256": "ef733fc73d992b28127e409379adde4b17adb29cbbf1394e119b794a91d00165",
+      "blob": "c5622a9a0f5fa161c2f03c5d900664c5fd4b7511"
+    },
+    {
+      "path": "scripts/ci/nib83_native/test_histogram_controls.py",
+      "bytes": 3238,
+      "sha256": "8b9f579db81ca4de3180380f5ce9ad1d1210b13e8af347b90042d9cb3525b7cb",
+      "blob": "d45edc899b3cbcc531ebf8a5e79767e590dc31e2"
+    }
+  ],
+  "expected_original_cases": 7,
+  "synthetic_only": true,
+  "real_cohort_found": false,
+  "native_schema_proof": "APP-native-schema-bindings.json outside recipe payload; future bound carrier/readset preserves exact native producer source references"
+}

@@ -1,0 +1,170 @@
+{
+  "reader_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "reader_sources": [
+    {
+      "path": "scripts/ci/native_conformance.py",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "Gitblob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249
+    },
+    {
+      "path": "scripts/vidya/claim_tuple.py",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "Gitblob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447
+    },
+    {
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "Gitblob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260
+    },
+    {
+      "path": "scripts/vidya/adapters/__init__.py",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "Gitblob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    }
+  ],
+  "originals": [
+    {
+      "family": "CJ10",
+      "artifact": {
+        "id": 12343884021,
+        "node_id": "MDg6QXJ0aWZhY3QxMjM0Mzg4NDAyMQ==",
+        "name": "cj10-source-native-39597112001-1",
+        "size_in_bytes": 746101,
+        "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343884021",
+        "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343884021/zip",
+        "expired": false,
+        "digest": "sha256:31780f8f15cb6bf14c352d072e9f392f0d9dcae49f651425b12f8792a273b528",
+        "created_at": "2026-10-21T12:08:39Z",
+        "updated_at": "2026-10-21T12:08:39Z",
+        "expires_at": "2027-01-19T12:07:28Z",
+        "workflow_run": {
+          "id": 39597112001,
+          "repository_id": 1166910746,
+          "head_repository_id": 1166910746,
+          "head_branch": "codex/cj10-source-conformance-parquet-20261021",
+          "head_sha": "c2ea59e08305b85dd929b075c2a8f9845533c19e"
+        }
+      },
+      "run": {
+        "id": 39597112001,
+        "head_sha": "c2ea59e08305b85dd929b075c2a8f9845533c19e",
+        "head_branch": "codex/cj10-source-conformance-parquet-20261021",
+        "run_attempt": 1,
+        "event": "push"
+      },
+      "receipt_sha256": "7cade244d39c40f39d884d2281a882232ebab0f88b3918236347f0bad1abd854"
+    },
+    {
+      "family": "S05",
+      "artifact": {
+        "id": 12344415582,
+        "node_id": "MDg6QXJ0aWZhY3QxMjM0NDQxNTU4Mg==",
+        "name": "s05-observer-original-39596455619-1",
+        "size_in_bytes": 20984577,
+        "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12344415582",
+        "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12344415582/zip",
+        "expired": false,
+        "digest": "sha256:81d4036f829f0012ad84039673f5d7e21627ed57f5a15badc8e3ff6232039af5",
+        "created_at": "2026-10-21T12:03:21Z",
+        "updated_at": "2026-10-21T12:03:21Z",
+        "expires_at": "2027-01-19T12:02:24Z",
+        "workflow_run": {
+          "id": 39596455619,
+          "repository_id": 1166910746,
+          "head_repository_id": 1166910746,
+          "head_branch": "codex/evl49-s05-observer-native-20261008",
+          "head_sha": "549d1c158b00c23a1766be5759ee710cdc9a6af6"
+        }
+      },
+      "run": {
+        "id": 39596455619,
+        "head_sha": "549d1c158b00c23a1766be5759ee710cdc9a6af6",
+        "head_branch": "codex/evl49-s05-observer-native-20261008",
+        "run_attempt": 1,
+        "event": "push"
+      },
+      "receipt_sha256": "3117de071c44d81688c40c8814fb11d22dd1068cfef59405b79258dd1a1ce761"
+    },
+    {
+      "family": "CJ14",
+      "artifact": {
+        "id": 12343853648,
+        "node_id": "MDg6QXJ0aWZhY3QxMjM0Mzg1MzY0OA==",
+        "name": "cj14-source-native-39596520546-1",
+        "size_in_bytes": 915738,
+        "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343853648",
+        "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343853648/zip",
+        "expired": false,
+        "digest": "sha256:4964507ca5af7770726352dd513e0b4a8999bcc00da79f0cd5e01ea1f4893a6a",
+        "created_at": "2026-10-21T12:03:51Z",
+        "updated_at": "2026-10-21T12:03:51Z",
+        "expires_at": "2027-01-19T12:02:55Z",
+        "workflow_run": {
+          "id": 39596520546,
+          "repository_id": 1166910746,
+          "head_repository_id": 1166910746,
+          "head_branch": "codex/cj14-redundancy-conformance-20261021",
+          "head_sha": "450315aa95003a0f67e6c6f8e6f3838b23ced81d"
+        }
+      },
+      "run": {
+        "id": 39596520546,
+        "head_sha": "450315aa95003a0f67e6c6f8e6f3838b23ced81d",
+        "head_branch": "codex/cj14-redundancy-conformance-20261021",
+        "run_attempt": 1,
+        "event": "push"
+      },
+      "receipt_sha256": "fe54270bbf555c39972839b03c6fe652ae2d9c704ee5c14ee339ee662e0e16e8"
+    },
+    {
+      "family": "CJ567",
+      "artifact": {
+        "id": 12343174529,
+        "node_id": "MDg6QXJ0aWZhY3QxMjM0MzE3NDUyOQ==",
+        "name": "cj567-source-original-39596675122-1",
+        "size_in_bytes": 103495195,
+        "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343174529",
+        "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343174529/zip",
+        "expired": false,
+        "digest": "sha256:1dc407462b016b413002e93fd99883efea4f09017a0fd434e279f1b925ed2704",
+        "created_at": "2026-10-21T12:05:44Z",
+        "updated_at": "2026-10-21T12:05:44Z",
+        "expires_at": "2027-01-19T12:04:07Z",
+        "workflow_run": {
+          "id": 39596675122,
+          "repository_id": 1166910746,
+          "head_repository_id": 1166910746,
+          "head_branch": "codex/cj567-source-native-20261021",
+          "head_sha": "a5324801166a3409b09e110a44edce1ef3e4c869"
+        }
+      },
+      "run": {
+        "id": 39596675122,
+        "head_sha": "a5324801166a3409b09e110a44edce1ef3e4c869",
+        "head_branch": "codex/cj567-source-native-20261021",
+        "run_attempt": 1,
+        "event": "push"
+      },
+      "receipt_sha256": "65b6bb44a451ae582f26eaba87dceca251f5542864588a4f24af8b239e205954"
+    }
+  ],
+  "batch_script_sha256": "11eaf639f6d1cf3550a00c573a50172b9ae915e2716ac747f30b43822342265c",
+  "safe_download_sha256": "05c54cb105380dd1aa728a230024689f0630825642a72913ecf4abe5a9d2e8d6",
+  "secondary_read_only": true,
+  "prior_failed_custodian": {
+    "CJ567": {
+      "path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-cj567-source-ready-20261021-v4-own-commit/cj567-originals-a5324801166a3409b09e110a44edce1ef3e4c869/watcher-failure.json",
+      "sha256": "d68bf314a235391eff49fbf00beafd7328c74e291dc354c913060e37dc83702d",
+      "note": "Original timeout custodian preserved; no rerun/reseal; existingsecondaryacquisitionalready recovered identical original archive."
+    }
+  },
+  "branch": "codex/ni08-secondary-native-grades-20261021"
+}

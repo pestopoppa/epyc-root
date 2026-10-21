@@ -1,0 +1,60 @@
+name: CJ14 prospective source conformance
+on:
+  push:
+    branches: ['codex/cj14-redundancy-conformance-20261021']
+permissions:
+  contents: read
+jobs:
+  pure-beam-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      ROOT_ENROLLMENT_PIN: a4b6bac87b4c9692271e12caa7bfd9a37c4e643a
+    steps:
+      - name: Checkout exact copied source proposal
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout unchanged existing native producer and sidecar writer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout independently published prospective enrollment
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.ROOT_ENROLLMENT_PIN }}
+          path: enrollment
+          persist-credentials: false
+      - name: Checkout exact APP source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: fc02209d38d5a1cf0deb0c4e994935aab4f528a7
+          path: app
+          persist-credentials: false
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Install locked fixture dependency closure
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/cj14-venv"
+          "$RUNNER_TEMP/cj14-venv/bin/python" -m pip install --require-hashes --no-deps --only-binary=:all: -r recipe/proposed/cj14/requirements.txt 2>&1 | tee "$RUNNER_TEMP/cj14-dependency-install.log"
+      - name: Capture whole pure BEAM modules through existing native producer
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/cj14-venv/bin/python" -I recipe/proposed/cj14/capture.py
+      - name: Preserve original hosted success or failure artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cj14-source-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cj14-native-original/
+            ${{ runner.temp }}/cj14-dependency-install.log

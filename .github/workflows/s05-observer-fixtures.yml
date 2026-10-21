@@ -1,0 +1,61 @@
+name: S05 raw observer synthetic originals
+on:
+  push:
+    branches: [codex/evl49-s05-observer-native-20261008]
+permissions:
+  contents: read
+jobs:
+  raw-observer-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ENROLLMENT_PIN: a4b6bac87b4c9692271e12caa7bfd9a37c4e643a
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ENROLLMENT_PIN }}
+          path: enrollment
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 8168cb17089e60c098ffa8b9a501440e1435ebaf
+          path: leaf
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Isolated synthetic fixture environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/observer-venv"
+          "$RUNNER_TEMP/observer-venv/bin/python" -m pip install --only-binary=:all: --require-hashes -r enrollment/scripts/ci/vb_rtg23w9_native_requirements.txt
+          mkdir "$RUNNER_TEMP/observer-test"
+          cp recipe/proposed/evl49-s05-observer/s05_observer.py recipe/proposed/evl49-s05-observer/test_s05_observer.py "$RUNNER_TEMP/observer-test/"
+          cp leaf/proposed/evl49-s05/s05_sourceprep.py "$RUNNER_TEMP/observer-test/"
+      - name: Original selected synthetic cases through existing native producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/observer-venv/bin/python" -B recipe/proposed/evl49-s05-observer/capture_observer_fixtures.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: s05-observer-original-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/observer-result
+          if-no-files-found: error

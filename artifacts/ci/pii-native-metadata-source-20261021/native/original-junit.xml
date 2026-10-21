@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="52" time="44.962" timestamp="2026-10-21T12:02:27.085410+00:00" hostname="runnervm8k3b6"><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-suite-id-0]" time="0.842"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-suite-url-0]" time="0.835"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-suite-id-1]" time="0.835"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-suite-url-1]" time="0.848"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-suite-id-2]" time="0.839"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-suite-url-2]" time="0.848"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-keep-commands-and-hook-events.jsonl]" time="0.858"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[original-keep-commit-operation-receipt.json]" time="0.873"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[single-object-id]" time="0.862"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[single-object-url]" time="0.856"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[single-object-keep]" time="0.842"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-key]" time="0.873"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-type]" time="0.865"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[leading-zero]" time="0.870"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-url-key]" time="0.863"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-host]" time="0.857"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-route]" time="0.856"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[query]" time="0.863"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[fragment]" time="0.860"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[owner-account]" time="0.844"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[id-mixed-account]" time="0.867"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[url-mixed-account]" time="0.866"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[outside-ci]" time="0.898"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-record]" time="1.122"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[wrong-native-name]" time="0.847"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[keep-wrong-key]" time="0.858"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[keep-wrong-root]" time="0.848"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[keep-other-file]" time="0.847"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[keep-mixed-account]" time="0.858"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[keep-wrong-artifact]" time="0.872"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[id-secret]" time="0.899"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[url-secret]" time="0.878"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[keep-secret]" time="0.875"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[bare-secret]" time="0.836"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[bare-account]" time="0.862"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[json-account]" time="0.872"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[bank-account]" time="0.880"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[card-account]" time="0.872"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[customer-account]" time="0.856"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[iban-account]" time="0.843"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[routing-account]" time="0.851"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_exact_staged_native_metadata_boundaries[ssn-account]" time="0.849"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-suite-id-0]" time="0.859"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-suite-url-0]" time="0.846"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-suite-id-1]" time="0.843"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-suite-url-1]" time="0.859"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-suite-id-2]" time="0.856"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-suite-url-2]" time="0.877"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-keep-commands-and-hook-events.jsonl]" time="0.856"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_original_hook_reproduces_eight_metadata_false_positives[original-keep-commit-operation-receipt.json]" time="0.856"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_staged_original_wins_over_opposite_worktree[False]" time="0.838"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase><testcase classname="test_pii_native_metadata" name="test_staged_original_wins_over_opposite_worktree[True]" time="0.858"><system-out>--------------------------------- Captured Log ---------------------------------
+
+--------------------------------- Captured Out ---------------------------------
+
+</system-out><system-err>--------------------------------- Captured Err ---------------------------------
+
+</system-err></testcase></testsuite></testsuites>

@@ -1,0 +1,3 @@
+{"task": "UTM-V7", "run": "python -m src.user_modeling.write_audit (default store path)",
+ "db": "~/.epyc-orchestrator/user_profiles.db", "result": "store_not_found",
+ "reason": "features().user_modeling defaults to False; no user_profiles.db exists on this host (find over /mnt/raid0/llm found none), so there are zero profile entries to audit"}

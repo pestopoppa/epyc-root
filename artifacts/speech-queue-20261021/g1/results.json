@@ -1,0 +1,133 @@
+{
+ "config": {
+  "arms": [
+   "tts_rt",
+   "stt"
+  ],
+  "n_per_lang": 60,
+  "procs": 20,
+  "regions": "q0",
+  "deadline": "2026-10-21T11:15:00Z",
+  "out": "/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out",
+  "missing": [],
+  "prompts": {
+   "en": 60,
+   "it": 60
+  },
+  "est_runtime_min": "10-25",
+  "utc": "2026-10-21T10:10:00.298776+00:00",
+  "cpus_used": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "prompts_sha256": "037f5cd196537ac851cf2199beafc218af24b9025723ba4cfdd076d3be71ddf6",
+  "shas": {
+   "ggml-large-v3-turbo.bin": "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69",
+   "whisper-cli": "093cdb5736b50eb8567b0367f24bf0bcaf947f5ddca9f140f43e47531d31330c",
+   "test.tsv": "74c046239374deeb60fa63f258f907388093a32bcaa3140965f70ef05c79f7ca",
+   "region-lock": "8fc626c83abde029a1eccb81b0803315972d589c7eb3fa839f6ae8dadd51ed34",
+   "python": "2874a0b9344d06b7767aebb1e6e25a759ffcbdb544e99400ecc74dc6092d1174",
+   "qwen-tts": "1781c49cef8d9c079ca7d50cb8c84704d698701f20cee9806fba3ecd3067c311",
+   "qwen-talker-0.6b-base-Q8_0.gguf": "d54dbaf10591421fa764ed630d764efa717ae40cd959bd48c66d4eb1af226426",
+   "qwen-tokenizer-12hz-Q8_0.gguf": "1883beeed99348fc35e23dd225e9082f93f6f8c109330a33d935baa8acdbfd94",
+   "nprocs_shim.so": "d3103d7ab45e0a5fe9473d7dd401e5462f39c06174b4a64109af6e387e3b3eb4",
+   "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+  },
+  "qwen_cmd": "qwen-tts --model M --codec C --lang <Language> --seed 1234 --ref-wav REF -o OUT (stdin=text); SHIM_NPROCS=2 (1 thread)"
+ },
+ "summary": {
+  "tts_rt|en|forced": {
+   "n": 59,
+   "wer_sum": 1.5345191732632841,
+   "cer_sum": 0.48479800867911815,
+   "words": 1061,
+   "errs": 29.0,
+   "corpus_wer": 0.027332704995287466,
+   "mean_cer": 0.008216915401340986
+  },
+  "tts_rt|en|auto": {
+   "n": 59,
+   "wer_sum": 1.5345191732632841,
+   "cer_sum": 0.48479800867911815,
+   "words": 1061,
+   "errs": 29.0,
+   "corpus_wer": 0.027332704995287466,
+   "mean_cer": 0.008216915401340986
+  },
+  "tts_rt|it|forced": {
+   "n": 60,
+   "wer_sum": 1.5764714817346395,
+   "cer_sum": 0.6168702489408386,
+   "words": 1100,
+   "errs": 28.0,
+   "corpus_wer": 0.025454545454545455,
+   "mean_cer": 0.010281170815680644
+  },
+  "tts_rt|it|auto": {
+   "n": 60,
+   "wer_sum": 1.5764714817346395,
+   "cer_sum": 0.6168702489408386,
+   "words": 1100,
+   "errs": 28.0,
+   "corpus_wer": 0.025454545454545455,
+   "mean_cer": 0.010281170815680644
+  },
+  "stt|en|forced": {
+   "n": 60,
+   "wer_sum": 2.88996505588308,
+   "cer_sum": 1.2666934399176006,
+   "words": 1072,
+   "errs": 51.0,
+   "corpus_wer": 0.04757462686567164,
+   "mean_cer": 0.02111155733196001
+  },
+  "stt|en|auto": {
+   "n": 60,
+   "wer_sum": 2.88996505588308,
+   "cer_sum": 1.2666934399176006,
+   "words": 1072,
+   "errs": 51.0,
+   "corpus_wer": 0.04757462686567164,
+   "mean_cer": 0.02111155733196001
+  },
+  "stt|it|forced": {
+   "n": 60,
+   "wer_sum": 1.538758184988162,
+   "cer_sum": 0.5177157242179247,
+   "words": 1100,
+   "errs": 29.0,
+   "corpus_wer": 0.026363636363636363,
+   "mean_cer": 0.008628595403632078
+  },
+  "stt|it|auto": {
+   "n": 60,
+   "wer_sum": 1.538758184988162,
+   "cer_sum": 0.5177157242179247,
+   "words": 1100,
+   "errs": 29.0,
+   "corpus_wer": 0.026363636363636363,
+   "mean_cer": 0.008628595403632078
+  }
+ },
+ "n_items": 239,
+ "finished_utc": "2026-10-21T10:56:07.380519+00:00",
+ "note": "screening numbers: pinned simple normaliser, NOT the Annex S P-STT-1 pipeline; Italian intelligibility needs the human listen check (wav/ dir)"
+}

@@ -263,3 +263,5 @@ as submission; an empty-normalised fragment matching every pane), 29 tests**; **
 > [ESC-7 draft](../../coordination/inference-batch/esc7-measurement-amendment-draft.md); math
 > columns fill from the overnight E7c run. Alias changes:
 > [runbook](https://github.com/pestopoppa/epyc-orchestrator/blob/main/docs/runbooks/role-alias-change-runbook.md).
+
+> **2026-10-21 NI08 checkpoint.** Accepted scope is **220 = 145 existing checkbox closures + 75 scoped children**. Six source-capture tasks passed 200 controls; these counts are not task closures or quality/inference adoption. Full source/governance integration remains pending. OP-M12F and OP-AUD10 remain queued; NIB77 default RETAIN and unproven current stewardship persist. [Current continuation](../../docs/reference/ni08-non-inference-continuation.md).

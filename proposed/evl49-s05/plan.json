@@ -1,0 +1,236 @@
+{
+  "status": "BOUND_MAIN_REVIEWED",
+  "enrollment_commit": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+  "enrollment_readme_sha256": "3fd2ae47d1d944b12e6b09973ed77a6a5711f54184692b2980b847eb12c0006a",
+  "enrollment_handoff_sha256": "da048055163870886b39e1229cecf1400afbd8fb00a9636939516022d1005713",
+  "app_commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+  "research_commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+  "carrier_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "requirements": "scripts/ci/vb_rtg23w9_native_requirements.txt",
+  "dependencies": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "Pygments": "2.20.0",
+    "pytest": "9.0.3",
+    "PyYAML": "6.0.3"
+  },
+  "selection": "test_corrected_roster_and_unchanged_dry_plan",
+  "junit_classname": "proposed.evl49-s05.test_s05_native",
+  "output_root": "s05-generated",
+  "research_reads": [
+    "scripts/benchmark/e5_cell_manifests.py",
+    "scripts/benchmark/server_numa_np_sweep.py",
+    "scripts/benchmark/server_np_sweep.py",
+    "scripts/lib/canonical_recipe.py",
+    "scripts/lib/instrument_era.py",
+    "data/batched_decode/E5_STAGE_B_RUNBOOK.md",
+    "data/batched_decode/e1-pbench3-clean-20260703T1912Z/selected_prompts.jsonl"
+  ],
+  "root_reads": [
+    "scripts/ci/native_conformance.py",
+    "scripts/vidya/adapters/ci_conformance.py",
+    "scripts/vidya/claim_tuple.py",
+    "scripts/vidya/lattice.py",
+    "scripts/vidya/frames.py",
+    "scripts/vidya/canonical.py"
+  ],
+  "prompt_projection": "Reuse original pinned E1 saved43 prompt bytes; verify ordered qids exactly against generator and adapt qid to id for unchanged dry loader. No resampling and no equivalence claim to ignored current1.35GB question pool. Current-real-pool owner acceptance remains separate.",
+  "claim_scope": "One fresh source-only successor case; actual33 generated manifest bytes plus roster and two model-free saved-E1-input dry plans; no owner observation, current-pool identity, readiness or benchmark warrant. Existing v5 originals remain unchanged.",
+  "source_pins": [
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/e5_cell_manifests.py",
+      "bytes": 59777,
+      "sha256": "80bf824bb70fbb2e838e35ad9db0dea776c59b7b72acb5cd6aaebd49e28ef870",
+      "blob": "21d623581d31e235a719f0db1775b3321025dfa1"
+    },
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/server_numa_np_sweep.py",
+      "bytes": 142744,
+      "sha256": "782eef4c3841a30964a45ad1bd2cf6cb59382723bb18038039c2dbba246720cc",
+      "blob": "ac4355855aa03bfc38a4133aa321648c9d3aa571"
+    },
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/benchmark/server_np_sweep.py",
+      "bytes": 46562,
+      "sha256": "915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d",
+      "blob": "dd9df7dbea2c8e1f50a7835b04cbcd121a408804"
+    },
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/lib/canonical_recipe.py",
+      "bytes": 54212,
+      "sha256": "3d71f755e9b537df46fee99fa3869bcd4dff6d2884e7600cb86a44d203a726de",
+      "blob": "413caa76227f88f2cf59b97c4890f2acae96ecc7"
+    },
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "scripts/lib/instrument_era.py",
+      "bytes": 12415,
+      "sha256": "3851c7500bc8ed6fe60ca5d752abfc136aab290f3ded366e07404c7adcdd56f1",
+      "blob": "08d1cf1936d5537114524a40b147cb59fb6f9422"
+    },
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "data/batched_decode/E5_STAGE_B_RUNBOOK.md",
+      "bytes": 15063,
+      "sha256": "c1184225892b258b0942e55f740a88cdbb3bfa4023fff012d33a4d132d7b3442",
+      "blob": "9bee9121b1e0eac28523177511ba527bd2c44095"
+    },
+    {
+      "repository": "research",
+      "commit": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+      "path": "data/batched_decode/e1-pbench3-clean-20260703T1912Z/selected_prompts.jsonl",
+      "bytes": 37933,
+      "sha256": "7952bad327e0986eb8db63e054e4eb7822c05e82cac85c1dff81290df1fee976",
+      "blob": "eee2aaa5e1722f9a6a67cb0a6b757f41d631ebea"
+    },
+    {
+      "repository": "app",
+      "commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+      "path": "orchestration/instrument_eras.yaml",
+      "bytes": 34710,
+      "sha256": "d7e03daea1684d997630973100014009e8530fe4a237a0b4f834ab95e2d497c1",
+      "blob": "326195fe681accca30e76c20816b1a80ac1f26b2"
+    },
+    {
+      "repository": "app",
+      "commit": "352d4208931a6cf1ee21363fce390f6ae26bb81f",
+      "path": "uv.lock",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+      "blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7"
+    },
+    {
+      "repository": "carrier",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/ci/native_conformance.py",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461"
+    },
+    {
+      "repository": "carrier",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd"
+    },
+    {
+      "repository": "carrier",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/claim_tuple.py",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "blob": "309af769e45245fd1452482eb2e0592a86a4a79f"
+    },
+    {
+      "repository": "carrier",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/lattice.py",
+      "bytes": 8539,
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+      "blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01"
+    },
+    {
+      "repository": "carrier",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/frames.py",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14"
+    },
+    {
+      "repository": "carrier",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "path": "scripts/vidya/canonical.py",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b"
+    },
+    {
+      "repository": "enrollment",
+      "commit": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+      "path": "scripts/vidya/adapters/README.md",
+      "bytes": 294629,
+      "sha256": "3fd2ae47d1d944b12e6b09973ed77a6a5711f54184692b2980b847eb12c0006a",
+      "blob": "6eb3a85f62cb7496615cffcd3e206bbf8f868490"
+    },
+    {
+      "repository": "enrollment",
+      "commit": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "bytes": 410059,
+      "sha256": "da048055163870886b39e1229cecf1400afbd8fb00a9636939516022d1005713",
+      "blob": "4a9d5ed30d578d7bf3b95892ff1e4dd96a6f0348"
+    },
+    {
+      "repository": "enrollment",
+      "commit": "84c441145cca9b088dfe7b9687e01b9e03156f75",
+      "path": "scripts/ci/vb_rtg23w9_native_requirements.txt",
+      "bytes": 675,
+      "sha256": "dd9a9e3abf22f585479eed68ef6384442e9f181bfee391b4aaddde591f0c63e6",
+      "blob": "3bb3e36ee811bb9e545640eb7534cad49806de22"
+    }
+  ],
+  "expected_generated_outputs": [
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np1.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np4.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np8.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np16.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np32.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C2-np8.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C2-np16.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C3-np1.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C3-np2.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C3-np4.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C3-np8.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np1-full.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np4-full.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np8-full.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np16-full.json",
+    "s05-generated/manifests/qwen36_q8_0/qwen36_q8_0-C1-np32-full.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np1.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np4.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np8.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np16.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np32.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1b-np4.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1b-np8.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1b-np16.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C3-np1.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C3-np2.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C3-np4.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C3-np8.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np1-full.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np4-full.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np8-full.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np16-full.json",
+    "s05-generated/manifests/qwen3_next_80b/qwen3_next_80b-C1-np32-full.json",
+    "s05-generated/manifests/ROSTER-MANIFEST.json",
+    "s05-generated/synthetic/stdout.raw",
+    "s05-generated/synthetic/stderr.raw",
+    "s05-generated/synthetic/argv-exit.json",
+    "s05-generated/generation/stdout.raw",
+    "s05-generated/generation/stderr.raw",
+    "s05-generated/generation/argv-exit.json",
+    "s05-generated/harness-w1/stdout.raw",
+    "s05-generated/harness-w1/stderr.raw",
+    "s05-generated/harness-w1/argv-exit.json",
+    "s05-generated/harness-w4/stdout.raw",
+    "s05-generated/harness-w4/stderr.raw",
+    "s05-generated/harness-w4/argv-exit.json",
+    "s05-generated/dry/w1/manifest.json",
+    "s05-generated/dry/w4/manifest.json"
+  ]
+}

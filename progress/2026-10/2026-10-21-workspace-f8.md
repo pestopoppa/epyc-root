@@ -56,3 +56,7 @@ Root `a9fccdc21` (safe_download revision pin + provenance ledger, new-model Step
 ## HSF-4 log half and WP-15 precondition check (hsf4-wp15)
 - HSF-4: per-role uncached-prompt histogram and alpha(B) from llama-server logs, 16,087 requests, rho=1.325; sub-bullet added, box left open (source rate unmeasured).
 - WP-15: 0 dispatch.v1 windows; arms not run; WP-15.3 filed for the capture. Evidence /mnt/raid0/llm/tmp/hsf4-wp15-20261021/.
+
+## Handoff notes: CT-12.5 fold into C2, KPF-18 items 3 and 4 (notes-ct12-kpf18)
+- CT-12.5: sub-bullet recording CT-12.3b folded into candidate C2 (`9a44414c4` @ `49550eda5`, patch-id identical to `6dfbc9e86`), tests pass on the folded build; tick deferred to the champion CAS.
+- KPF-18.0d item 3 cumulative from records: fork 10/13 tokens-identical vs A/A 12/13 (observation grade, n small); (subsets: the earlier 6/8 vs 7/8 line = w1c groups 0-4 + g1 groups 5-7; the three g1 records alone = 7/8 vs 8/8 — both consistent with these totals). Item 4 (prefill budget): control 2/2 bit-identical, vs_fresh 0/2 (min prefix 35, max KL 0.0017), structural checks OK; judge against KPF-18.0e placement floor.

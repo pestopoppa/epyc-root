@@ -1,0 +1,56 @@
+[11:25:07] inside claim: items=a,b,c,d run=/mnt/raid0/llm/tmp/champ-consolidation-20261020/runs/blockB-20261021T112507Z
+[11:25:10] host busy ~172% of one CPU (192 threads) over 2 s
+[11:25:10] MemAvailable 1097 GiB (DS41 --no-mmap needs ~540)
+[11:25:10] (a) DS41 C vs champion, 5 pairs
+surface   ds41  recipe ds41-00d118d44-cpu-t48-dspark-b2 [np1 draft-dspark aggregate_tok_s cpu=0-95 env=GGML_IQK=1,LLAMA_SPEC_EXACT=batched-greedy-inexact,OMP_DYNAMIC=false,OMP_PLACES=cores,OMP_PROC_BIND=spread,OMP_WAIT_POLICY=active #fe8ee8f377db]
+launch    execution_digest cdb0535c47ad674b  template_hash fe8ee8f377dbee46
+argv      /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/llama-server -m /mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf ... /mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf -ngld 0 --spec-type draft-dspark --spec-draft-n-max 2 --no-kv-unified --device-draft none --no-mmap --no-webui --load-threads 48
+requests  1 frozen request(s) from ds41-decode.prompt-manifest.json  digest e50732d9ce365259
+anchor    /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c  exec 41a62a5e0350602a
+candidate /mnt/raid0/llm/kernels/builds/cpu-20261020-f0c96dc1f  exec b97de242de984646
+floor     4.533% unit=process provenance=verified
+NOTE      floor differs from the expected 3.412% -- the loop's own selector is authoritative
+admission matched frame equal; floor record valid for these requests/pairs
+RESULT    anchor 23.15 vs candidate 20.18 tok/s -> -12.821%  floor 4.533  decisive=True  [1734s]
+[11:54:10] (b) Q38FN C vs champion, 5 pairs
+surface   q38fn  recipe q38fn-dd6c9cdbd-cpu-t48-mtp-d4 [np1 draft-mtp aggregate_tok_s cpu=0-95 env=GGML_FA_SPLIT_KV=0,GGML_FUSED_DECODE_OFF=1,GGML_IQK=1,GGML_NOHUGEPAGE_PROCESS=1,OMP_DYNAMIC=false,OMP_PLACES=cores,OMP_PROC_BIND=spread,OMP_WAIT_POLICY=active #41c359b39eb0]
+launch    execution_digest 10931bc26f1902be  template_hash 41c359b39eb07817
+argv      /mnt/raid0/llm/llama.cpp-experimental-q38fn-20261004/build-cpu/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf ... /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf -ngld 0 --spec-type draft-mtp --spec-draft-n-max 4 --no-kv-unified --device-draft none --draft-p-min 0.5 --no-mmap --no-webui
+requests  1 frozen request(s) from q38fn-decode.prompt-manifest.json  digest 57c9006dfde7443a
+anchor    /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c  exec 97b0080bc951cace
+candidate /mnt/raid0/llm/kernels/builds/cpu-20261020-f0c96dc1f  exec 280a727de0236c6a
+floor     NONE -- absent (no calibrated floor for this surface); decisive will be None (sign claim only)
+admission matched frame equal; uncalibrated (no floor record carried)
+RESULT    anchor 50.11 vs candidate 50.99 tok/s -> +1.747%  floor None  decisive=None  [281s]
+[11:58:51] (c) Q38FN greedy identity champion / C
+arm CHAMP: taskset -c 0-95 numactl --interleave=all /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/bin/llama-server ... port 18761 (drafter stripped) LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/bin
+arm C: taskset -c 0-95 numactl --interleave=all /mnt/raid0/llm/kernels/builds/cpu-20261020-f0c96dc1f/bin/llama-server ... port 18761 (drafter stripped) LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/cpu-20261020-f0c96dc1f/bin
+prompts: p1,p2 (10-03 XFER-4) + p3 frozen q38fn-decode-p01 (102 prompt tokens); n_predict 128, n_probs 2
+C vs CHAMP: p1: IDENTICAL; p2: IDENTICAL; p3: IDENTICAL
+[11:59:45] (d1) DS41 champion dd3d9721c vs b0ba1d427 (ten unledgered keeps), 5 pairs
+surface   ds41  recipe ds41-00d118d44-cpu-t48-dspark-b2 [np1 draft-dspark aggregate_tok_s cpu=0-95 env=GGML_IQK=1,LLAMA_SPEC_EXACT=batched-greedy-inexact,OMP_DYNAMIC=false,OMP_PLACES=cores,OMP_PROC_BIND=spread,OMP_WAIT_POLICY=active #fe8ee8f377db]
+launch    execution_digest cdb0535c47ad674b  template_hash fe8ee8f377dbee46
+argv      /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/llama-server -m /mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf ... /mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf -ngld 0 --spec-type draft-dspark --spec-draft-n-max 2 --no-kv-unified --device-draft none --no-mmap --no-webui --load-threads 48
+requests  1 frozen request(s) from ds41-decode.prompt-manifest.json  digest e50732d9ce365259
+anchor    /mnt/raid0/llm/kernels/builds/cpu-20261004-b0ba1d427  exec 0270c7ee266ede10
+candidate /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c  exec 41a62a5e0350602a
+floor     4.533% unit=process provenance=verified
+NOTE      floor differs from the expected 3.412% -- the loop's own selector is authoritative
+admission matched frame equal; floor record valid for these requests/pairs
+RESULT    anchor 25.89 vs candidate 26.15 tok/s -> +1.015%  floor 4.533  decisive=False  [1598s]
+[12:26:30] (d2) Q38FN champion dd3d9721c vs b0ba1d427, 5 pairs
+surface   q38fn  recipe q38fn-dd6c9cdbd-cpu-t48-mtp-d4 [np1 draft-mtp aggregate_tok_s cpu=0-95 env=GGML_FA_SPLIT_KV=0,GGML_FUSED_DECODE_OFF=1,GGML_IQK=1,GGML_NOHUGEPAGE_PROCESS=1,OMP_DYNAMIC=false,OMP_PLACES=cores,OMP_PROC_BIND=spread,OMP_WAIT_POLICY=active #41c359b39eb0]
+launch    execution_digest 10931bc26f1902be  template_hash 41c359b39eb07817
+argv      /mnt/raid0/llm/llama.cpp-experimental-q38fn-20261004/build-cpu/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf ... /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf -ngld 0 --spec-type draft-mtp --spec-draft-n-max 4 --no-kv-unified --device-draft none --draft-p-min 0.5 --no-mmap --no-webui
+requests  1 frozen request(s) from q38fn-decode.prompt-manifest.json  digest 57c9006dfde7443a
+anchor    /mnt/raid0/llm/kernels/builds/cpu-20261004-b0ba1d427  exec 537fb4f30f0a9a8f
+candidate /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c  exec 97b0080bc951cace
+floor     NONE -- absent (no calibrated floor for this surface); decisive will be None (sign claim only)
+admission matched frame equal; uncalibrated (no floor record carried)
+RESULT    anchor 48.23 vs candidate 49.08 tok/s -> +1.758%  floor None  decisive=None  [290s]
+[12:31:21] (d3) Q38FN greedy identity b0ba1d427 / dd3d9721c
+arm B0: taskset -c 0-95 numactl --interleave=all /mnt/raid0/llm/kernels/builds/cpu-20261004-b0ba1d427/bin/llama-server ... port 18761 (drafter stripped) LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/cpu-20261004-b0ba1d427/bin
+arm CHAMP: taskset -c 0-95 numactl --interleave=all /mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/bin/llama-server ... port 18761 (drafter stripped) LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c/bin
+prompts: p1,p2 (10-03 XFER-4) + p3 frozen q38fn-decode-p01 (102 prompt tokens); n_predict 128, n_probs 2
+CHAMP vs B0: p1: IDENTICAL; p2: IDENTICAL; p3: IDENTICAL
+[12:32:17] done rc=0

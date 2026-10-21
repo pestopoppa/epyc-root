@@ -1,0 +1,38 @@
+{
+ "pinned_utc": "2026-10-21T09:55:22Z",
+ "reason": "Block B items a and d1 run on the Sept Q4 + DSpark recipe; 5c will repoint deepseek_v41_flash_recipe.py to 1017 and delete the Sept Q4 after Block B, so every artifact is pinned here",
+ "target_gguf": {
+  "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf",
+  "sha256_from_resolved_recipe": "a5e2e2c3ada4b2e98d9f9e4b50f6d9c2a12c2c96f5da165c07e13aff9264984e",
+  "bytes": 518596067328,
+  "mtime": "2026-09-23T07:01:28Z"
+ },
+ "drafter_gguf": {
+  "path": "/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf",
+  "sha256_from_resolved_recipe": "522ce00dedffc369019a6f5917bcd3dfcb343cf7cfdd36c3758e471177b0f3c5",
+  "bytes": 10004008256,
+  "mtime": "2026-09-23T11:44:26Z"
+ },
+ "recipe": {
+  "name": "ds41-00d118d44-cpu-t48-dspark-b2",
+  "template_hash": "fe8ee8f377dbee464891bbf23a35f091dfd1402136ef4062d96a171e24b0612b",
+  "execution_digest": "cdb0535c47ad674b82428bdf2b10825e8133b9ea4f0e47bfd40ce23ecba7d623"
+ },
+ "expected_floor_pct_process_unit": 3.412,
+ "code_root": "/mnt/raid0/llm/worktrees/research-ds41-run10",
+ "launch_json": {
+  "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/ds41-cpu-t48-dspark.launch.json",
+  "sha256": "83be159fdd0700cfe09f1879470b1d2456425d693daa8fc5018d798cbe73de9d",
+  "bytes": 10744
+ },
+ "adoption_receipt": {
+  "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/runtime-adoptions/runtime-recipe-adoption-dfd1fec2e06ec71b.json",
+  "sha256": "aa4e40da71bb3dda7d0f8eadf9f5d865c78baeea4820e4c4205856f1534173d1",
+  "bytes": 8213
+ },
+ "prompt_manifest": {
+  "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/ds41-decode.prompt-manifest.json",
+  "sha256": "cb033a1d30099e99f33cf91ad96d5e3d841c717cb4eca1e06e5a76f1fa74a190",
+  "bytes": 1040
+ }
+}

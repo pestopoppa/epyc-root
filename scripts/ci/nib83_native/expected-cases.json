@@ -1,0 +1,35 @@
+{
+  "schema": "ni08.nib83.synthetic-native-seven.v1",
+  "expected_count": 7,
+  "case_identities": [
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_class_counts"
+    },
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_cutover"
+    },
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_historical_mixed_era"
+    },
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_malformed_rows"
+    },
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_missing_error_unknown_category"
+    },
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_missing_timestamp"
+    },
+    {
+      "classname": "test_histogram_controls.NativeCohortControls",
+      "name": "test_unparseable_timestamp"
+    }
+  ],
+  "outcomes": "UNEXECUTED"
+}

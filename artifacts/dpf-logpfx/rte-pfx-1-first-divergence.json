@@ -1,0 +1,178 @@
+[
+ {
+  "prefix_stable_order": false,
+  "scenario": "turn counter only",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9581,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "new last output",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9605,
+  "n1_chars": 9224,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "variable preview changed",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "state_preview_change",
+  "prefix_share_of_n1": 0.9581,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "state key order changed",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "key_order",
+  "prefix_share_of_n1": 0.9581,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "state grew by one variable",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9559,
+  "n1_chars": 9269,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "routing context dropped after turn 0",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "history_rewrite",
+  "prefix_share_of_n1": 0.9581,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "tool block edited (negative control)",
+  "first_divergence_char": 595,
+  "first_divergence_tok_est": 148,
+  "section": "tools",
+  "cause_class": "tool_block_edit",
+  "prefix_share_of_n1": 0.0744,
+  "n1_chars": 7996,
+  "PREFIX_BLOCK_DIVERGENCE": true
+ },
+ {
+  "prefix_stable_order": false,
+  "scenario": "graph tail: session log grows",
+  "first_divergence_char": 8860,
+  "first_divergence_tok_est": 2215,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9504,
+  "n1_chars": 9322,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "turn counter only",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9723,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "new last output",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9747,
+  "n1_chars": 9224,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "variable preview changed",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "state_preview_change",
+  "prefix_share_of_n1": 0.9723,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "state key order changed",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "key_order",
+  "prefix_share_of_n1": 0.9723,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "state grew by one variable",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.97,
+  "n1_chars": 9269,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "routing context dropped after turn 0",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "history_rewrite",
+  "prefix_share_of_n1": 0.9723,
+  "n1_chars": 9247,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "tool block edited (negative control)",
+  "first_divergence_char": 595,
+  "first_divergence_tok_est": 148,
+  "section": "tools",
+  "cause_class": "tool_block_edit",
+  "prefix_share_of_n1": 0.0744,
+  "n1_chars": 7996,
+  "PREFIX_BLOCK_DIVERGENCE": true
+ },
+ {
+  "prefix_stable_order": true,
+  "scenario": "graph tail: session log grows",
+  "first_divergence_char": 8991,
+  "first_divergence_tok_est": 2247,
+  "section": "state",
+  "cause_class": "volatile_field",
+  "prefix_share_of_n1": 0.9645,
+  "n1_chars": 9322,
+  "PREFIX_BLOCK_DIVERGENCE": false
+ }
+]

@@ -1,0 +1,15 @@
+{
+  "grades": [
+    {
+      "measurement_id": "ci-fixture:9564519f1d364ccac89783209432d23aae9e82fe8e34a52fc1dddc7713d78cf9",
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "native_value_preserved": true,
+  "new_grade_authored": false
+}

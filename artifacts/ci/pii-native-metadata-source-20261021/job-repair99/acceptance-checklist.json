@@ -1,0 +1,78 @@
+{
+  "source": "7aa479e3fb3c6b2c9d7a105fed4402ef02762d3b",
+  "run": 39611159181,
+  "attempt": 1,
+  "native": true,
+  "counts": {
+    "collected": 99,
+    "error": 0,
+    "executed": 99,
+    "failure": 0,
+    "passed": 99,
+    "skipped": 0
+  },
+  "receipt_sha256": "59ef94c90492e03464b1828a2fc03b95533392d9e47c553ebe60fc1e929f9640",
+  "receipt_seal": "75dc9ed78a0ef01b0009cf3c9ccf9a0863c3d3a8c2aa3c58d108123648cd1b79",
+  "readset_rows": 4609,
+  "verified_sidecar_pins": 4612,
+  "selected_JUnit_exact_multiset": true,
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "hook_readset_pins": [
+    {
+      "name": "/home/runner/work/epyc-root/epyc-root/baseline/scripts/hooks/pii_precommit.sh",
+      "sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e"
+    },
+    {
+      "name": "/home/runner/work/epyc-root/epyc-root/carrier/scripts/hooks/pii_precommit.sh",
+      "sha256": "7c379778864639f8d7f4c4d6c5d1dec6cb75f208670f14c480cef8540b473df3"
+    },
+    {
+      "name": "/home/runner/work/_temp/pii-policy/scripts/hooks/pii_precommit.sh",
+      "sha256": "1d0e817ee8bbf19664d2c25b6593e2f6da111785c891da6436a50ac8db389853"
+    },
+    {
+      "name": "/home/runner/work/epyc-root/epyc-root/job-baseline/scripts/hooks/pii_precommit.sh",
+      "sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10"
+    },
+    {
+      "name": "/home/runner/work/epyc-root/epyc-root/recipe/scripts/hooks/pii_precommit.sh",
+      "sha256": "1d0e817ee8bbf19664d2c25b6593e2f6da111785c891da6436a50ac8db389853"
+    }
+  ],
+  "observed_same_source_runs": [
+    {
+      "id": 39611159131,
+      "path": ".github/workflows/tests.yml",
+      "name": "tests",
+      "head_sha": "7aa479e3fb3c6b2c9d7a105fed4402ef02762d3b",
+      "run_attempt": 1,
+      "event": "push",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/pestopoppa/epyc-root/actions/runs/39611159131"
+    },
+    {
+      "id": 39611159181,
+      "path": ".github/workflows/pii-native-metadata-source.yml",
+      "name": "PII job metadata repair staged original controls",
+      "head_sha": "7aa479e3fb3c6b2c9d7a105fed4402ef02762d3b",
+      "run_attempt": 1,
+      "event": "push",
+      "status": "queued",
+      "conclusion": null,
+      "html_url": "https://github.com/pestopoppa/epyc-root/actions/runs/39611159181"
+    }
+  ],
+  "public_canonical_apply": false,
+  "extra_task_closures": 0,
+  "original_refusal_preserved": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-pii-job-metadata-repair-20261021/bound-v1/actual-operation/failure.json"
+}

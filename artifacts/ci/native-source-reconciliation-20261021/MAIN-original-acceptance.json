@@ -1,0 +1,20 @@
+{
+  "state": "MAIN-ACCEPTED ORIGINAL NORMAL LINEAGE RECONCILIATION",
+  "UTC": "2026-10-21T10:25:30.998560+00:00",
+  "commit": "e44e5f47d4abb6cf125c64d7a9538d13eded7d50",
+  "parents": [
+    "9075c7a9302b8eeff774c8fc00b14e92035c7b48",
+    "5821eb145377354e12f00162e843804a7d75d5c5"
+  ],
+  "tree": "e5f69298a5b412c3f4c36567cd1774cbd483173b",
+  "journal_sha256": "d5399729379c4ca794c2cebbf6aeac237a585e034e83eb7021a93f213b364edf",
+  "verified_raw_commands": 117,
+  "all_raw_exit0_and_stream_hashes": true,
+  "cap44_three_equal_released_unlinked": true,
+  "exact14_committed_and_working_byte_scope": true,
+  "OWN_clean": true,
+  "public_main_before": "9075c7a9302b8eeff774c8fc00b14e92035c7b48",
+  "published": false,
+  "original_config_origin_refusal_preserved": true,
+  "metric_hook_inference_apply": false
+}

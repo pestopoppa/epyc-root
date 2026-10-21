@@ -6844,3 +6844,32 @@ Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-
 - Instrument hygiene (progress 2026-10-20): a `strings X | grep -q P` under `pipefail` produced SIGPIPE false "DEP_MISSING" results; fixed with `grep -qaF`. The CS-45 v1 speech QA was circular (the same ASR placed and judged the cut); independent gates with a second ASR flagged 12 of 12 human-rejected pairs. ([workspace-f8 progress](../progress/2026-10/2026-10-20-workspace-f8.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md))
 
 Sources: [HIL design](../docs/design/harness-improvement-loop-design-20261006.md); [eval-tower-verification](../handoffs/active/eval-tower-verification.md); [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md); [workspace-f8 progress](../progress/2026-10/2026-10-20-workspace-f8.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md).
+
+## Accepted saved-E1 source planning and its measurement boundary — 2026-10-21
+
+**Confidence: verified engineering source/custody findings; bounded source conformance only.**
+
+The original copied-proposal capture at ROOT `9ed97e6efb044a91c4ed51ec0febaf518efe084e` preserves hosted 63/26 fixture cases. The S05 capture at `8168cb17089e60c098ffa8b9a501440e1435ebaf` preserves native TRUE outer 1/1, the corrected saved-E1 33-manifest roster, two W1/W4 unchanged-harness dry plans, 48 generated outputs and 2,764 native input entries. These are source-conformance observations through the existing `ci-fixture-conformance` carrier and shared Judged/Located ladder, not quality, performance, current-pool readiness or owner-window observations.
+
+The corrected saved-E1 grid is pinned by ordered roster SHA-256 `c577e45a0d37682b1d536df5c12ce86fe43807b9f25fd08e0ae74d312a96ef2e`; source generation and W1/W4 dry planning are achieved findings. Saved planning inputs do not prove the current prompt pool, placement or an owner observation window. Public metadata excludes the complete 2,764 input members and 48 generated-output members; retained original ZIP custody is required to reopen the complete native receipt. No historical tuple is reconstructed.
+
+The four reviewed commits are reconciled in normal isolated merge `e44e5f47d4abb6cf125c64d7a9538d13eded7d50`, parents `9075c7a9302b8eeff774c8fc00b14e92035c7b48` and `5821eb145377354e12f00162e843804a7d75d5c5`, exact 14-path tree `e5f69298a5b412c3f4c36567cd1774cbd483173b`. MAIN independently accepted all 117 original command records, source bytes and four-commit ancestry. The first attempt's refusal is retained: only Git config origin presentation differed (`file:.git/config` versus `file:/workspace/.git/config`); values never changed. The successful second attempt used separately bound exact normal ROOT/OWN snapshots. The reconciliation was reviewed before publication; governance receipts record the actual subsequent run.
+
+The six prospective source validations subsequently passed 200 hosted native controls in their original captures: NIB83, CJ10 prompt provenance, S05 observer launcher, CJ14 redundancy, CJ5/6/7 fixtures and typed PII metadata. Their task-wrap receipts and the [current source registry](../scripts/vidya/adapters/README.md) preserve the exact source, native denominator and shared grade. These source controls do not establish live observations, inference efficacy, security or protocol-grade readiness; retained FALSE/NULL originals remain evidence.
+
+### Source References
+
+- [Proposal original source capture](../artifacts/ci/proposal-native-fixtures-20261008/README.md).
+- [S05 roster, original custody and public exclusions](../artifacts/ci/evl49-s05-native-source-20261008/README.md).
+- [MAIN original reconciliation acceptance](../artifacts/ci/native-source-reconciliation-20261021/README.md).
+- [Current source registry](../scripts/vidya/adapters/README.md).
+
+
+## Peer intake reporting refinements — 2026-10-21
+
+The published peer handoffs add design and reporting clauses, rather than new benchmark results. The [HIL design](../docs/design/harness-improvement-loop-design-20261006.md) specifies a model-free failure taxonomy and charges improver work alongside cached/uncached token and claim-occupancy costs. The [delegation handoff](../handoffs/active/delegation-context-preassembly.md) requires matched-token retrieval and serial-chain comparators; [REPL efficiency](../handoffs/active/repl-turn-efficiency.md) distinguishes fixed-plan and best-of-K selection arms, with selector-validity and dependence checks. [Injection evaluation](../handoffs/active/qwen-chat-template-evaluation.md) limits claims to the tested static fixtures. These are filed specifications; execution and protocol amendments retain their own gates.
+
+
+### Peer non-inference close-outs retain their narrower scope — 2026-10-21
+
+The [DP-F gate record](../progress/2026-10/2026-10-21-dpf-gates.md) reports native checks and files concrete timeout/corpus follow-ups; its CJ-18 fixture has one judge pair and 15/18 invalid LLM judgments, so it supplies no judge-affinity conclusion. The [specification close-outs](../progress/2026-10/2026-10-21-dpf-specs.md) include the prefix-stagger design; its timing run still needs a window. The [injection record](../progress/2026-10/2026-10-21-dpf-sec.md) closes source/fixture clauses while CT-18's live step remains open; warn-only scanning and canary fixtures provide no general injection-resistance guarantee. These peer closures remain attributed to their published owners, independently of NI08's eight accepted capture/source closures.

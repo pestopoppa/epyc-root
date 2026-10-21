@@ -1,0 +1,12 @@
+{
+  "commit": "8168cb17089e60c098ffa8b9a501440e1435ebaf",
+  "run_id": "37788149043",
+  "attempt": 1,
+  "conclusion": "success",
+  "native_count": 1,
+  "scope": "original source custody only; no owner observations/current-pool/inference/performance or new grade",
+  "native_value": true,
+  "generated_outputs": 48,
+  "readset_count": 2764,
+  "receipt_sha256": "b3f775d703576016624553a200d50129f1b5debcf2bbbab058e96b440bc5884b"
+}

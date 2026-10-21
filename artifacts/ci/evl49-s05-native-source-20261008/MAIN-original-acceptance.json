@@ -1,0 +1,28 @@
+{
+  "state": "MAIN-ACCEPTED ORIGINAL SOURCE AND PROSPECTIVE CAPTURE",
+  "UTC": "2026-10-08T14:19:24.829588+00:00",
+  "audit_path": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/native-independent-audit-PREP-20261008/audit.json",
+  "audit_sha256": "2ff8fa9303a9e69a528d71f493a34a0734ee39631a6dc1dddd5ce31e54ee30f7",
+  "main_independent_checks": [
+    "77+77 raw command exits and stream hashes",
+    "two released/unlinked 44-byte capabilities per source",
+    "exact private refs, seven-file deltas, clean worktrees, main84c unchanged",
+    "native selfseals, request/JUnit/log hashes, all41/41/2764 input bytes",
+    "all48 S05 generated outputs",
+    "63/26/1 original JUnit identity multisets and zero failure/error/skip"
+  ],
+  "accepted_sources": [
+    "9ed97e6efb044a91c4ed51ec0febaf518efe084e",
+    "8168cb17089e60c098ffa8b9a501440e1435ebaf"
+  ],
+  "accepted_tasks": [
+    "VB-PROPOSAL-FIXTURE-CAPTURE",
+    "VB-EVL49-S05-CORRECTED-ROSTER-CAPTURE"
+  ],
+  "source_integration_approved": false,
+  "s05_parent_complete": false,
+  "decision_grade": false,
+  "metric_hook_installation_inference_approved": false,
+  "s05_grade_before_after_not_stored": true,
+  "original_failure_history_unchanged": true
+}
