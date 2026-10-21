@@ -49,3 +49,12 @@ Canonical list: *Owner duties* above. The incident behind it (2026-10-22 overnig
 ## Reference implementation
 
 CT-18 Skill-Inject: `/mnt/raid0/llm/tmp/ct18-run-20261021/filler_worker.sh` (`ct18-worker`, CPU) and `filler_arch.sh` (`ct18-arch`, mi210_0 + host threads 184-191). They are generated from one template; `.ended` rc 124 = hard end, 4 = refused, 2 = unusable grant, 143 = launcher signalled.
+
+## Prior check (proposed 2026-10-21, pending workspace-58 / stage-3 agreement)
+
+Origin: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` section 4 (change B) -- bookings were armed without anyone checking prior results, so the same instrument was booked twice on one build. This is a **proposal**: nothing validates it yet, and no queue row or GRANT line is required to carry it until workspace-58 (calendar owner) and stage-3 agree.
+
+- Before a row enters the QUEUE table (and before a GRANT is written for it), run `scripts/coordination/prior_check.py` (stdlib, zero compute, read-only, nice 19, self-limits to 20 s). It searches the belief ledger, AutoKernel campaign stores (`experiments.db` opened `mode=ro`, `serving-floor.*`, `serving-beliefs/`), research `artifacts/`, and the run records under `/mnt/raid0/llm/tmp/*/`.
+- Pass the model (file or basename), the recipe/argv (file, hash or `--argv "..."`), the decision/metric keywords, and the build sha or execution digest the booking will use: e.g. `prior_check.py --model <gguf> --argv "<launch argv>" --metric floor --decision KVU-12.1 --build <sha>`. Add `--tag` for campaign aliases the model name does not contain (`ds41`, `q38fn`).
+- Put its last line in the row notes / GRANT context, verbatim: `prior=<path> [(<flag>)]` or `prior=none (checked <UTC ts>)`. `none` is a dated statement that the lookup ran; a path is a **lead the booker opens and cites or rejects in one line** -- the tool never declares a booking redundant. Flags: `STALE-transferable` (other build, quality axis -- transfers once parity is proven, MEASUREMENT_POLICY), `STALE` (other build, axis unclear), `build-unknown` (the record states no build), `RETRACTED`. A `STALE-speed` hit (other build, speed axis: era-fenced) is listed in the output but never emitted as `prior=` -- the speed axis must be re-measured.
+- `--json` gives the ranked candidate list for machine use (`epyc.prior_check.v1`). Exit 0 always except 2 for malformed inputs. Full contract: the module docstring.
