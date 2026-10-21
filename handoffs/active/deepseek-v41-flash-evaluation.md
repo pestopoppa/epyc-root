@@ -1456,6 +1456,8 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
+  - [ ] **DS41-W8a — give the DS41-1017 AK target a prefill surface.** The campaign target runs `-np 1`, no drafter, one cached 45-token prompt, so it cannot see prefill; seed S5 (`akm-ds41-1017-mxfp4-mmid-gemm-tiles`, the likely cause of the −29.9% pp512 vs Sept Q4_K) stays record-only until the target adds `--keep-dimensions prefill_at_depth` with a `--longctx-surface` (or the W6 drafter's verify shapes). Needs its own floor (new recipe). (filed 2026-10-21 from the AK-seeding report)
+  - [ ] **DS41-W8b — in-place / mmap-friendly MXFP4 CPU repack (non-AK engineering).** The repack copies all experts into ~276 GiB of anonymous RAM per server (INC-20261021-earlyoom-session-kills); `block_mxfp4` and `block_mxfp4x8` are both 17 B per 32 weights, so the repack only reorders bytes and could run in place. AK's `capacity` dimension is a pass/fail guard, so a memory-only win can never be kept by AK. First verify the RssFile figure with `smaps_rollup` (the target runs `--no-mmap`). Experimental branch only; a fold is a champion-owner decision. (filed 2026-10-21)
 - [ ] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
   repetition loops). Record `(arch, index_topk, candidate settings, window)` from the load log.
 - [ ] DS41-T2 — Sparse-attention disposition: dense-mask vs sparse gather, and a top-k /
