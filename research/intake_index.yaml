@@ -254742,8 +254742,17 @@
     (eval-tower).'
   source_revision: arXiv:2609.20804v1 (only version as of 2026-10-20; submitted 17 Sep 2026)
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-folding-progressive.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - dive-verified 2026-10-20 (Stage 2, FULL read); observation-masking/elision family owned by tool-output-compression.md; routing of the dive's actionables is decided at Stage 3
+  - 'Routed to owner tasks: CF-AB-1, HIL-10, HIL-9, TOC-SP-5, TOC-SP-9.'
+  - 'Durable records: K8, M14.'
+  - 9 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   notes: 'Stage-1 analyst read: arXiv:2609.20804v1 (abs + html route; html read to char 100000 of 163580);
     fetch_status: partial (html read first 100000 of 163580 chars; later appendix unread). EPYC fit (unverified):
     The orchestrator''s REPL/agent loop manages long tool-output contexts on local models with bounded
@@ -254760,10 +254769,6 @@
     search not run (credibility<3, verdict adopt_patterns); not a negative result. Authors/figures from
     the abs page and html digest via WebFetch (small-model summary), not raw download. Re-verify every
     figure against primary source before citing; this entry is stage1-unverified.'
-  integration_disposition: knowledge_only
-  disposition_evidence:
-  - dive-verified 2026-10-20 (Stage 2, FULL read); observation-masking/elision family owned by tool-output-compression.md;
-    routing of the dive's actionables is decided at Stage 3
   read_depth: FULL
   claim_anchors:
   - anchor_id: A01
@@ -255053,23 +255058,10 @@
   - claim_index: 3
     effect: narrowed
     note: Confirmed; add Mistral Terminal-Bench reversal and bundled-interface confound.
-  dive_corrections: '2026-10-20 dive (FULL read of arXiv:2609.20804v1 HTML, sha256 f2d4814c...; Stage-1
-    read 100000 of 163580 chars and did not reach Appendix 7-9). Stage-1 numbers all reproduce. Changes:
-    (a) key_claim 0 narrowed - planning/action-space ablated only at T4/128k, action-space arm bundled,
-    no factorial; (b) key_claim 2 narrowed - ''cheapest'' means lowest mean cost among MANAGED tiers (7/8
-    panels) at comparable accuracy; T1 elision-only is within noise of T4 on accuracy, T3 wins some 32k
-    cells, T0 is cheaper at >=96k; (c) T0 control hard-terminates at the window, so the managed-vs-T0
-    gap is overflow avoidance by construction; (d) Mistral Terminal-Bench reversal for bash-only (+6.7pp)
-    added; (e) cost is OpenRouter list price x tokens on BF16 SGLang models (Nemotron-3 30B/120B/550B,
-    Mistral-Medium-3.5-128B), no local-lineup or CPU number; (f) paper cites intake-2007 (Lewis 2026)
-    and intake-2008 (Liu 2026) as related work only - no evidential dependency in either direction. Stage-1
-    ''dive: no'' superseded: relevance medium-high for tool-output-compression recall decisions. credibility_score
-    2 -> 3. Surfaced sources: ACON (arXiv 2510.00615) = intake-2150, VISTA (arXiv 2606.30005) = intake-2151
-    and LCM (arXiv 2605.04050) = intake-2152 were ingested-and-dived as Stage-2b entries; the LCM paper
-    tests no agent recovery (only OOLONG aggregation; losslessness is storage, not recovery), so the recall
-    null stands unrefined by it. Declined: arXiv 2604.02547 (monitor; method-only trajectory encoding),
-    arXiv 2509.10769 AgentArch (decline; enterprise tasks, tangential), arXiv 2609.00006 Harness Engineering
-    source-code study (decline for now; descriptive survey, no number to verify).'
+  dive_corrections: |-
+    2026-10-20 dive (FULL read of arXiv:2609.20804v1 HTML, sha256 f2d4814c...; Stage-1 read 100000 of 163580 chars and did not reach Appendix 7-9). Stage-1 numbers all reproduce. Changes: (a) key_claim 0 narrowed - planning/action-space ablated only at T4/128k, action-space arm bundled, no factorial; (b) key_claim 2 narrowed - 'cheapest' means lowest mean cost among MANAGED tiers (7/8 panels) at comparable accuracy; T1 elision-only is within noise of T4 on accuracy, T3 wins some 32k cells, T0 is cheaper at >=96k; (c) T0 control hard-terminates at the window, so the managed-vs-T0 gap is overflow avoidance by construction; (d) Mistral Terminal-Bench reversal for bash-only (+6.7pp) added; (e) cost is OpenRouter list price x tokens on BF16 SGLang models (Nemotron-3 30B/120B/550B, Mistral-Medium-3.5-128B), no local-lineup or CPU number; (f) paper cites intake-2007 (Lewis 2026) and intake-2008 (Liu 2026) as related work only - no evidential dependency in either direction. Stage-1 'dive: no' superseded: relevance medium-high for tool-output-compression recall decisions. credibility_score 2 -> 3. Surfaced sources: ACON (arXiv 2510.00615) = intake-2150, VISTA (arXiv 2606.30005) = intake-2151 and LCM (arXiv 2605.04050) = intake-2152 were ingested-and-dived as Stage-2b entries; the LCM paper tests no agent recovery (only OOLONG aggregation; losslessness is storage, not recovery), so the recall null stands unrefined by it. Declined: arXiv 2604.02547 (monitor; method-only trajectory encoding), arXiv 2509.10769 AgentArch (decline; enterprise tasks, tangential), arXiv 2609.00006 Harness Engineering source-code study (decline for now; descriptive survey, no number to verify).
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-23: Dive-surfaced source left unread at the wave cap: Stage-2 sources recorded in the dive_corrections of intakes 1991, 1995, 1999, 2007 and 2008: arXiv 2604.02547 (monitor), 2509.10769, 2609.00006, 2603.00729, 2603.26830, 2601.22047 (id unverified), 2608.19013, MemoryArena and MemoryBench -> M14. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
   reader_should_conclude: Cite the overflow-avoidance decomposition (managed-vs-T0 gap 35.7pp at 32k down
     to 2.7pp at 128k on SWE-Bench; T0 hard-terminates at the window) and the recall-tool null (T2-T1 -0.36pp;
     56.3% of T2/T4 settings never call recall_event). Do not cite 'cheapest strategy' without 'among managed
@@ -255524,7 +255516,16 @@
   verification: dive-verified
   handoffs_updated:
   - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - dive-verified 2026-10-20 (Stage 2, FULL paper read); pattern-level only, design input for HIL-2/HIL-4; routing decided at Stage 3
+  - 'Routed to owner tasks: AK-PM-18, HIL-10, HIL-11, HIL-9, M-23, MHS-13.'
+  - 'Durable records: K1, K7, M13.'
+  - 12 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   notes: 'Stage-1 analyst read: arXiv:2610.14224v1 (html route; text read to char 100000 of 169089); fetch_status:
     partial (read first 100k of 169k chars; Appendix F limitations truncated). EPYC fit (unverified):
     Relevant to the autopilot/PromptForge self-optimisation loop and the harness-improvement handoff:
@@ -255539,10 +255540,6 @@
     weaken evidence. Analyst notes: Contradiction pass not run (credibility 3, verdict adopt_patterns
     only; bounded budget). Provisional. Re-verify every figure against primary source before citing; this
     entry is stage1-unverified.'
-  integration_disposition: monitor
-  disposition_evidence:
-  - dive-verified 2026-10-20 (Stage 2, FULL paper read); pattern-level only, design input for HIL-2/HIL-4;
-    routing decided at Stage 3
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -256290,7 +256287,16 @@
   verification: dive-verified
   handoffs_updated:
   - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/unified-trace-memory-service.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - dive-verified 2026-10-20 (Stage 2, FULL read); pattern fits memory handoffs only where a measured reward exists; routing decided at Stage 3
+  - 'Routed to owner tasks: AK-PM-18, HIL-10, UTM-R1.'
+  - 'Durable records: K1, K4.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   notes: 'Stage-1 analyst read: arXiv:2610.12668v1 (html route; read to char 100000 of 103474); fetch_status:
     ok (cited works shown by title only, no arXiv IDs in source). EPYC fit (unverified): Editing stored
     reflections with later evidence maps onto the episodic/trace memory handoffs and the belief-kernel
@@ -256305,10 +256311,6 @@
     handoffs but unproven on open models. Analyst notes: Contradiction pass not run. Backbone names (Claude
     Opus 4.8, GPT-5.5, Gemini 3.7 Flash) as reported by the fetch digest. Re-verify every figure against
     primary source before citing; this entry is stage1-unverified.'
-  integration_disposition: monitor
-  disposition_evidence:
-  - dive-verified 2026-10-20 (Stage 2, FULL read); pattern fits memory handoffs only where a measured
-    reward exists; routing decided at Stage 3
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -258186,8 +258188,18 @@
   - '[unverified] Consider an old-tool-result shortening arm in REPL context management tests; owner agentic-serving-harness-fixes.md.'
   source_revision: arXiv:2608.26218v1 (only version as of 2026-10-20; submitted 26 Aug 2026)
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-folding-progressive.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - dive-verified 2026-10-20 (Stage 2, FULL read); same context-trimming family and owner as intake-1991; routing decided at Stage 3
+  - 'Routed to owner tasks: CF-AB-1, HIL-9, TOC-SP-9, VB-HIL-WRITE-FIELDS, VB-SKILLBANK-AB-WRITE, VB-TOC-AB-WRITE.'
+  - 'Durable records: K2, M7.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   notes: 'Stage-1 analyst read: arXiv:2608.26218v1 (abs page digest only); fetch_status: partial (abs
     page digest only). EPYC fit (unverified): Local models often run with constrained effective context,
     which is exactly the regime where the paper reports gains; the observation-trimming treatment is cheap
@@ -258197,10 +258209,6 @@
     Analyst notes: Credibility estimate: arXiv-only +0, recent +1, no major lab, no corroboration = 1;
     I scored 2 generously for large cohort; treat as 1-2. Contradiction pass not run. Re-verify every
     figure against primary source before citing; this entry is stage1-unverified.'
-  integration_disposition: knowledge_only
-  disposition_evidence:
-  - dive-verified 2026-10-20 (Stage 2, FULL read); same context-trimming family and owner as intake-1991;
-    routing decided at Stage 3
   read_depth: FULL
   claim_anchors:
   - anchor_id: A01
@@ -258626,7 +258634,15 @@
   verification: dive-verified
   handoffs_updated:
   - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'dive-verified 2026-10-20 (Stage 2, FULL read); credibility 1; design caution only, trigger: a per-role scaffold-subset ablation is scheduled'
+  - 'Routed to owner tasks: HIL-9, MHS-15.'
+  - 'Durable records: K2, M8.'
+  - 5 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   notes: 'Stage-1 analyst read: arXiv:2605.05716v1 (abs page digest only); fetch_status: partial (abs
     page digest only). EPYC fit (unverified): Supports ablating orchestrator and REPL scaffolding components
     per role and model size rather than stacking features by default; the 8B-vs-70B sign flips matter
@@ -258635,10 +258651,6 @@
     per-role component ablation; evidence base narrow. Analyst notes: Abstract only; no full text. Credibility
     estimate rough. Contradiction pass not run. Re-verify every figure against primary source before citing;
     this entry is stage1-unverified.'
-  integration_disposition: monitor
-  disposition_evidence:
-  - 'dive-verified 2026-10-20 (Stage 2, FULL read); credibility 1; design caution only, trigger: a per-role
-    scaffold-subset ablation is scheduled'
   read_depth: FULL
   claim_anchors:
   - anchor_id: A01
@@ -282813,8 +282825,15 @@
     no existing entry with this arxiv_id/url; it appears only inside intake-886 contradicting_evidence
     and intake-1992 referenced_arxiv_ids. Credibility rubric: recent +1, authority +1 (established senior
     author), vendor bias -1, no peer review, no independent corroboration = 1.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-10, HIL-11, HIL-9.'
+  - 'Durable records: K1, K4, K5, K6, M9, M16.'
+  - 11 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite for: a worked two-phase protocol shape (tune on T1, test on arriving T2
     without re-tuning, then re-tune), and one vendor-authored data point that a regression-rejecting selector
     held gains where prompt-only evolution overfit to task-specific lessons. Do not carry: that RELAI-VCL
@@ -282937,20 +282956,12 @@
   - claim_index: 7
     effect: unaffected
     note: Quote re-found; text does not say whether the 59.1 drop is real or measurement variance.
-  dive_corrections: '2026-10-20 Stage-2b read the full paper from disk. (1) Corrects the description in
-    intake-886 contradicting_evidence: that entry says a SECOND optimization pass gave GEPA negative transfer;
-    the paper shows GEPA''s negative transfer (54.5 vs 56.8 baseline) follows the FIRST pass (Phase 1)
-    when evaluated on the union, and after the second pass GEPA is at 72.7 (in-sample). Its label ''independent''
-    narrows to independent of the GEPA and Meta-Harness authors only; the authors develop RELAI-VCL. (2)
-    intake-1995 notes (c) say GEPA and Meta-Harness gains ''fail to compound'': narrowed to GEPA overfits
-    then recovers in-sample, Meta Harness stalls. (3) Index-owner action, not applied here.
+  dive_corrections: |-
+    2026-10-20 Stage-2b read the full paper from disk. (1) Corrects the description in intake-886 contradicting_evidence: that entry says a SECOND optimization pass gave GEPA negative transfer; the paper shows GEPA's negative transfer (54.5 vs 56.8 baseline) follows the FIRST pass (Phase 1) when evaluated on the union, and after the second pass GEPA is at 72.7 (in-sample). Its label 'independent' narrows to independent of the GEPA and Meta-Harness authors only; the authors develop RELAI-VCL. (2) intake-1995 notes (c) say GEPA and Meta-Harness gains 'fail to compound': narrowed to GEPA overfits then recovers in-sample, Meta Harness stalls. (3) Index-owner action, not applied here.
 
+    2026-10-20 SEA-Eval (arXiv:2604.08988, intake-2156) dived: no general cross-episode metric needed in HIL-2; conditional memory-feature leg only. Declined (wave-1 dive): github.com/relai-ai/Continual-Learning-Terminal-Bench (kept candidates only, rejected ones not released; decline for now, operator may override), arXiv 2604.04247 Combee, arXiv 2603.18718 MemMA, arXiv 2601.18226 Yunjue agent, arXiv 2509.04642 Maestro (no EPYC consumer).
 
-    2026-10-20 SEA-Eval (arXiv:2604.08988, intake-2156) dived: no general cross-episode metric needed
-    in HIL-2; conditional memory-feature leg only. Declined (wave-1 dive): github.com/relai-ai/Continual-Learning-Terminal-Bench
-    (kept candidates only, rejected ones not released; decline for now, operator may override), arXiv
-    2604.04247 Combee, arXiv 2603.18718 MemMA, arXiv 2601.18226 Yunjue agent, arXiv 2509.04642 Maestro
-    (no EPYC consumer).'
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-24: Dive-surfaced source left unread at the wave cap: arXiv 2604.04247 Combee; 2603.18718 MemMA; 2601.18226 Yunjue; 2509.04642 Maestro -> decline: no EPYC consumer; HC-FLG-06: Operator-flag source: relai-ai/Continual-Learning-Terminal-Bench repository (recommend monitor on a continual-stream pilot suite) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
 - id: intake-2144
   arxiv_id: '2605.30621'
   url: https://arxiv.org/abs/2605.30621
@@ -283062,8 +283073,15 @@
     Identifier resolved: abs page title matches. Dedup: no existing entry. Credibility rubric: recent
     +1, authority +1, one partial corroboration (Harness^2 independently finds a same-model editor suffices)
     +1, no confirmed peer review = 3, held down in practice by single-run cells.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-10, HIL-11, HIL-9, M-23.'
+  - 'Durable records: K6, M9.'
+  - 8 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite for: (a) a factorial design that separates who writes harness updates
     from who benefits, (b) skill-load rate and adherence as diagnostics that explain a null harness gain,
     (c) one multi-benchmark data point that a small evolver wrote skills yielding gains of similar size
@@ -283333,12 +283351,16 @@
     as a backslash before percent signs). Dedup: arXiv id 2607.08124 had no entry in research/intake_index.yaml
     at origin/main (swept unbounded 2026-10-20); it appears only in referenced_arxiv_ids lists of intake-1995
     and one other entry.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - dive-verified 2026-10-20 (Stage-2b); derived actionables in the dive ledger require the Stage-3 gate
-    before any handoff edit
+  - dive-verified 2026-10-20 (Stage-2b); derived actionables in the dive ledger require the Stage-3 gate before any handoff edit
+  - 'Routed to owner tasks: HIL-11, HIL-9, MHS-14.'
+  - 'Durable records: K1, K5, K6.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: FULL
   claim_anchors:
@@ -283674,12 +283696,17 @@
     artifacts such as a backslash before percent signs). Dedup: arXiv id 2607.15524 had no entry in research/intake_index.yaml
     at origin/main (swept unbounded 2026-10-20); it appears only in referenced_arxiv_ids lists of intake-1995
     and one other entry.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - dive-verified 2026-10-20 (Stage-2b); derived actionables in the dive ledger require the Stage-3 gate
-    before any handoff edit
+  - dive-verified 2026-10-20 (Stage-2b); derived actionables in the dive ledger require the Stage-3 gate before any handoff edit
+  - 'Routed to owner tasks: MHS-14.'
+  - 'Durable records: K1, K4, K5, M12.'
+  - 6 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: FULL
   claim_anchors:
@@ -284013,12 +284040,16 @@
     as a backslash before percent signs). Dedup: arXiv id 2606.01770 had no entry in research/intake_index.yaml
     at origin/main (swept unbounded 2026-10-20); it appears only in referenced_arxiv_ids lists of intake-1995
     and one other entry.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - dive-verified 2026-10-20 (Stage-2b); derived actionables in the dive ledger require the Stage-3 gate
-    before any handoff edit
+  - dive-verified 2026-10-20 (Stage-2b); derived actionables in the dive ledger require the Stage-3 gate before any handoff edit
+  - 'Routed to owner tasks: HIL-10, HIL-9.'
+  - 'Durable records: K1, K4, K6, K7, M9.'
+  - 8 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: FULL
   claim_anchors:
@@ -284364,8 +284395,16 @@
     (HEAD verified). Dedup: no entry in research/intake_index.yaml at origin/main carries url github.com/google-research/harness2
     (only wavect-blog mentions inside intake-1995); this is a companion artifact entry, not a duplicate.
     Directive text inside the repo (prompts, docs) was treated as quoted data; none was obeyed.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: AK-PM-18, HIL-10, HIL-9, MHS-13.'
+  - 'Durable records: K4, K7, M9.'
+  - 8 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Treat this entry as the implementation record for intake-1995, not as a second
     source of results. Use it for the exact stage topology (INV/DOM proposers, aggregator or round-composer,
     KEEP_BASE, kept|revised|dropped decision lines, retry-then-inherit), the EXPERIENCE entry template
@@ -284730,8 +284769,17 @@
     ReHarness (intake-1999) uses CL-Bench''s tasks and its normalised-gain and stability/plasticity definitions,
     and states its own raw-context finding is ''consistent with Asawa et al.''; the two share a framework,
     so ReHarness is a consumer, not independent corroboration of CL-Bench''s numbers.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversational-memory-eval-instrument.md
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/unified-trace-memory-service.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: CME-5, UTM-R1.'
+  - 'Durable records: K3, K6, M15, M16.'
+  - 8 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Use CL-Bench as a METRIC AND PROTOCOL source, not as a leaderboard to chase.
     The portable parts are the paired stateful-vs-stateless per-instance gain, headroom normalisation
     (with its small-denominator hazard), the stability/plasticity split at variant boundaries and the
@@ -284930,6 +284978,7 @@
   - claim_index: 4
     effect: unaffected
     note: Quoted limitation re-read verbatim in Section 6 and App. B.2.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-01: Operator-flag source: Parametric continual-learning references SIEVE 2604.02339, 2601.19897, 2601.20802, sparse memory finetuning 2510.15103, SEAL 2506.10943 (recommend monitor under the weights-lane trigger) -> M16; HC-FLG-02: Operator-flag source: SWE-Bench-CL 2507.00014 and LifelongAgentBench 2505.11942 (recommend decline, reversible) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2150
   arxiv_id: '2510.00615'
   url: https://arxiv.org/abs/2510.00615
@@ -285055,8 +285104,15 @@
     handoffs_updated is set, because the validator requires a handoff for ''integrated''). Dive evidence:
     Ledger rows ACON-L2, ACON-L3, ACON-L4 routed to tool-output-compression.md / HIL-2 / REPL-EMB owners
     as drafts in DIVE.md; no handoff edited in Stage 2b.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: TOC-SP-3, TOC-SP-7.'
+  - 'Durable records: K2, K6, M7.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: ACON is a procedure for tuning an LLM compaction prompt from paired success/fail
     trajectories, validated only on gpt-4.1-class hosted agents with peak-token proxies. Use it for the
     tuning loop and the contrastive-pair measurement design (TOC-SP-3), and for its own admission that
@@ -285310,8 +285366,16 @@
     handoffs_updated is set, because the validator requires a handoff for ''integrated''). Dive evidence:
     Ledger rows VISTA-L1, VISTA-L2, VISTA-L3, VISTA-L5 routed to tool-output-compression.md / HIL-2 /
     REPL-EMB owners as drafts in DIVE.md; no handoff edited in Stage 2b.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9, TOC-SP-5, TOC-SP-6.'
+  - 'Durable records: K4, M7.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'VISTA shows that exposing per-block size/age/status to the agent, with byte-exact
     file recovery, beats fixed masking and clearing on a 1M-token tool benchmark (50.7 vs 28.0/26.7).
     It refines, and does not contradict, the intake-1991 recall null: recovery tools only paid off when
@@ -285528,8 +285592,17 @@
     handoffs_updated is set, because the validator requires a handoff for ''integrated''). Dive evidence:
     Ledger rows LCM-L1, LCM-L2 routed to tool-output-compression.md / HIL-2 / REPL-EMB owners as drafts
     in DIVE.md; no handoff edited in Stage 2b.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: TOC-SP-3.'
+  - 'Durable records: K4, K5, K7, M12.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'LCM is a vendor design paper whose only evidence is OOLONG aggregation, where
     the gain over Claude Code comes from out-of-context map operators. It does NOT test agent recovery
     of compacted content and so does not bound the intake-1991 recall null. Reusable patterns: summary-must-be-shorter
@@ -285779,8 +285852,17 @@
     handoffs_updated is set, because the validator requires a handoff for ''integrated''). Dive evidence:
     Ledger rows YUJ-L1, YUJ-L3, YUJ-L4, YUJ-L6 routed to tool-output-compression.md / HIL-2 / REPL-EMB
     owners as drafts in DIVE.md; no handoff edited in Stage 2b.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-folding-progressive.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: CF-AB-1, HIL-9, TOC-SP-9.'
+  - 'Durable records: K2, K4, K5, M7.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: The repo gives exact reusable constants for age-tiered tool-result elision and
     public per-task outcomes that reproduce the paper arithmetic, but it is the author's own data. At
     HEAD the stall detector is only an equal-observation notice, the treatment is bundled (28 differing
@@ -286057,13 +286139,18 @@
     not component subsets, and the best scaffold (s2/s3) is the MORE structured one at L2 for Anthropic.
     The two papers are in tension on ''less scaffolding is better''; the reconciling variable is model
     capability/family, which neither isolates.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - HIL-2 checklist wording change is a design-doc edit owned by the harness-improvement-loop handoff;
-    no code task. Delegation scaffold arm is trigger-gated behind HS-4 P0.4 freeze (harness-improvement-loop-design-20261006.md
-    HIL-2 section).
+  - HIL-2 checklist wording change is a design-doc edit owned by the harness-improvement-loop handoff; no code task. Delegation scaffold arm is trigger-gated behind HS-4 P0.4 freeze (harness-improvement-loop-design-20261006.md HIL-2 section).
+  - 'Routed to owner tasks: HIL-9, VB-HIL-WRITE-FIELDS.'
+  - 'Durable records: K2, M12, M16.'
+  - 9 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite only as: scaffold/loop structure is a model-conditional variable on GAIA
     with frontier API models, so a single-scaffold number is not a model property. Never cite the 28-point
     figure without saying robust slice (primary is 14). Never cite it as evidence about local llama.cpp
@@ -286202,6 +286289,7 @@
   depends_on: []
   second_reader: 'Second reader (Haiku): re-find 15/15 yes; support 11 yes/3 partial/0 no; five anchors
     fixed or added afterwards (G08, G11, G16, G17; see DIVE.md).'
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-03: Operator-flag source: METR long software tasks 2503.14499 (recommend decline, cite as background) -> M16; HC-FLG-04: Operator-flag source: Forecasting Frontier Language Model Agent Capabilities 2502.15850 (recommend decline) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2155
   arxiv_id: '2603.08993'
   url: https://arxiv.org/abs/2603.08993
@@ -286304,13 +286392,16 @@
     Haiku 4.5) is the stronger detector but is a model call per block pair; leave it as a monitored option.
     Relation to intake-2008: this is the same phenomenon at the prompt-text level; the 2008 dive''s 2008-L5
     ledger row asked exactly this question and is answered here.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Cheap structural lint is a candidate row owned by the PromptForge/HIL-3 guard-extraction work; held
-    at monitor until the operator or the Stage-3 plan accepts the row, per the Stage-2 no-handoff-edit
-    rule.
+  - Cheap structural lint is a candidate row owned by the PromptForge/HIL-3 guard-extraction work; held at monitor until the operator or the Stage-3 plan accepts the row, per the Stage-2 no-handoff-edit rule.
+  - 'Routed to owner tasks: HIL-9, MHS-15.'
+  - 'Durable records: K4, M8.'
+  - 9 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite the structural-rule inventory and the v2 corrections; never cite the 152
     findings, the 'different models find different things' claim, or the architecture-failure correlation
     as established. Never cite 'a compiler would catch 95%' without noting it is 20 of 21 hand-labeled
@@ -286548,8 +286639,16 @@
     rubric: not peer-reviewed 0, recent +1, authority +1 (university group), bias -1 (benchmark authors
     overlap the top-ranked system''s authors), corroboration 0 = 1. The project website''s per-task data
     was not fetched.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversational-memory-eval-instrument.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K2, K5, K6, M6, M16.'
+  - 10 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite for: (a) a fixed-order sequence design (repeat, then variant, then interference
     after unrelated tasks) and a congested-memory condition as ways to expose memory-dependent effects,
     (b) the observation that distillation failure and retrieval failure share one token signature and
@@ -286735,12 +286834,10 @@
     effect: narrowed
     note: The cited -38.9% reproduces as (A3-A2)/A2 from Table 2, a correlated-stream increment, not an
       orthogonal-interference measurement.
-  dive_corrections: '2026-10-20 Stage-2b read the paper from disk (v3, with v1 diffed). No Stage-1 entry
-    existed; the only prior knowledge was the title and a one-line citation in the 2605.30621 dive. Outcome:
-    the paper does NOT establish a cross-episode metric that HIL-2 must adopt (see DIVE.md). For the wave-1
-    entries: the question ''does HIL-2 need a cross-episode metric beyond held-out transfer'' is answered
-    no for the general checklist, with one conditional leg for memory-accumulating features; this should
-    be recorded in their dive_corrections by main.'
+  dive_corrections: |-
+    2026-10-20 Stage-2b read the paper from disk (v3, with v1 diffed). No Stage-1 entry existed; the only prior knowledge was the title and a one-line citation in the 2605.30621 dive. Outcome: the paper does NOT establish a cross-episode metric that HIL-2 must adopt (see DIVE.md). For the wave-1 entries: the question 'does HIL-2 need a cross-episode metric beyond held-out transfer' is answered no for the general checklist, with one conditional leg for memory-accumulating features; this should be recorded in their dive_corrections by main.
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-05: Operator-flag source: GenericAgent 2604.17091 (recommend monitor under the first re-distil trigger) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
 - id: intake-2157
   arxiv_id: '2606.00408'
   url: https://arxiv.org/abs/2606.00408
@@ -286873,8 +286970,16 @@
     to a tool that no agent invokes. Hardware and platform are irrelevant; the mechanism (rule-based placeholdering
     with a recoverable store) is trivially portable and needs no model call. The numbers are from H100-served
     open models with 128K-1M windows and temperature 1.0 on search tasks, not coding and not EPYC wall-time.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-folding-progressive.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: CF-AB-1, HIL-10, HIL-9, TOC-SP-3, TOC-SP-7, TOC-SP-8.'
+  - 'Durable records: M7.'
+  - 10 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Observation masking is a regime-dependent, turn-increasing, token-saving intervention:
     large gain for mid-accuracy models fed good evidence, near zero or negative for strong models, with
     the extra turns paid in every regime. Use it to (a) justify stratifying every EPYC compaction A/B
@@ -287093,8 +287198,15 @@
     HIL 3.6 candidate arms; tool-output-compression.md Phase 3d as a reference point for agent-mediated
     vs rule-based. Not relevant to UFH-07 or TOC-SP-3 directly (Focus summarizes agent history, not one
     tool output).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: TOC-SP-7.'
+  - 'Durable records: K6, M7.'
+  - 4 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Active Context Compression (Focus) is a small N=5 feasibility demonstration
     of agent-initiated, cadence-prompted checkpoint-and-prune; its own text shows the cadence had to be
     externally mandated. Its value to EPYC is as a named baseline (reproduced by VISTA) and as a design
@@ -287270,8 +287382,15 @@
     bodies, experience/ (one PONG smoke-test log, model mimo-v2.5). Nothing executed. Quarantine: prompt
     text inside the repo was treated as data. Negative findings (dead `incumbent` in the SQL judge; ExecutionReward
     unused in the live loop) are grep results over the clone, not runtime observations.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K4, K5, K7, M9.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -287579,8 +287698,13 @@
     results (Fig. 3 ablations, Fig. 4 scaling) were not readable from text; claims about them are limited
     to what the text states. Task board, hypothesis log and pass/fail verdict files are NOT in the paper;
     they appear only in the repo (see the repo entry).
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Durable records: K6.'
+  - 1 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: FULL
   claim_anchors:
@@ -287783,8 +287907,13 @@
     ~60 algorithm and agent files (arc, mcp, swe, skillbench, polybench agents; gepa, meta_harness, navigation
     prompts; tests; examples). Negative finding (get_failed_approaches uncalled) is a repository-wide
     grep, run on both main and the AAH branch.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable records: K4, M8.'
+  - 3 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -287948,8 +288077,15 @@
     grep. NOT read: agents/{polybench,ctf_dojo,futurex} internals, benchmark scorers, protocol/adaptation
     operators (tree routing), prompts, data. Negative findings (no importer of egl.py; egl_threshold unread;
     no ''Expected-Gain'' string) are repository-wide grep over *.py, *.md, *.yaml, *.sh on this clone.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K4, M8.'
+  - 4 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -288183,8 +288319,14 @@
     sha256 ddb717a642039231eaa371e1cabf6065018141053f37856ccf9059cf797c3276
   notes: Whole HTML read from disk (paper.flat.txt, 119,604 chars); appendices G-K (transcript case studies)
     skimmed, not line-read. Code repo github.com/yf-he/EvoTest not cloned (declined, see DIVE.md).
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable records: K7, M8.'
+  - 3 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: FULL
   claim_anchors:
@@ -288390,8 +288532,15 @@
     saved but unread). Dedup: research/intake_index.yaml on origin/main (2330d05ef) has no entry for arXiv
     2609.08175 (the id appears only inside other entries'' reference lists or notes), so a new entry rather
     than a re-encounter note.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-10, HIL-9, MHS-16.'
+  - 'Durable records: K5, K6, M9.'
+  - 8 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -288695,8 +288844,15 @@
     abstract (''Github'') but no URL is in the extracted text; repo not cloned. Dedup: research/intake_index.yaml
     on origin/main (2330d05ef) has no entry for arXiv 2608.10178 (the id appears only inside other entries''
     reference lists or notes), so a new entry rather than a re-encounter note.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-11, HIL-9, MHS-14.'
+  - 'Durable records: K1, K4, K7, M16.'
+  - 10 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -288891,6 +289047,7 @@
     score, the instance-token memory filter and the retention metric are portable and cheap; the headline
     gains rest on small splits, one run per cell and API models, and the paper concedes no compute-matched
     baseline.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-07: Operator-flag source: HarnessForge 2606.01779 (recommend monitor under the weights-lane trigger) -> M16; HC-FLG-08: Operator-flag source: MUSE-Autoskill 2605.27366 (recommend monitor under the skillbank-gate trigger) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2166
   arxiv_id: '2606.14249'
   url: https://arxiv.org/abs/2606.14249
@@ -289002,8 +289159,15 @@
     not compared. Dedup: research/intake_index.yaml on origin/main (2330d05ef) has no entry for arXiv
     2606.14249 (the id appears only inside other entries'' reference lists or notes), so a new entry rather
     than a re-encounter note.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-10, HIL-9, MHS-14, MHS-16.'
+  - 'Durable records: K4, K6, K7.'
+  - 9 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -289272,8 +289436,14 @@
     Dedup: research/intake_index.yaml on origin/main (2330d05ef) has no entry for arXiv 2605.09650 (the
     id appears only inside other entries'' reference lists or notes), so a new entry rather than a re-encounter
     note.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Durable records: K4, K6.'
+  - 3 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   verification: dive-verified
   read_depth: PARTIAL
   claim_anchors:
@@ -289439,8 +289609,16 @@
     absent from research/intake_index.yaml at origin/main (unbounded grep for ''pgasawa'', ''continual-learning-bench'').
     Parent paper arXiv:2606.05661 is the wave-1 CL-Bench entry (intake-2149); the brief mandates expanded_from
     as a string list.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversational-memory-eval-instrument.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: CME-5, CME-6.'
+  - 'Durable records: K4, K7, M6.'
+  - 6 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Use the repo as a SOURCE OF TASKS, SCORERS AND ARTIFACTS, not as a turnkey
     local benchmark. A local llama-server/orchestrator /v1 endpoint is not a supported configuration:
     LiteLLM is called without api_base in the ICL path, credentials are API keys only, and routing is
@@ -289690,8 +289868,15 @@
     2604.20087 has no entry in research/intake_index.yaml at origin/main (unbounded grep); it is mentioned
     inside the notes of intake-096 only. Quarantine: no directive in the source was acted on. The paper
     says ''Our data and code are open-source'' (cxcscmu/SkillLearnBench); not read.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: M-23, M-24, M-25.'
+  - 'Durable records: K3, M16.'
+  - 10 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite SkillLearnBench for PROTOCOL and for three transferable cautions, not
     for effect sizes: (1) a distilled skill must be both adopted and correct, so report skill-usage rate
     beside accuracy; (2) learned skills can score below no-skill on open-ended/instance-specific categories,
@@ -289911,6 +290096,7 @@
   - claim_index: 0
     effect: unaffected
     note: Task counts, methods, generators, solver set-up re-read from section 3-4 and App. N.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-19: Dive-surfaced source left unread at the wave cap: arXiv 2602.08004 Agent Skills data-driven analysis; Wu and Zhang procedural-memory survey (TechRxiv) -> decline: taxonomy only, no mechanism; HC-UNR-20: Dive-surfaced source left unread at the wave cap: arXiv 2602.01869 (cited as ProcMEM) -> decline: identifier unverified (the abstract title no longer matches), so it is not persisted; HC-FLG-10: Operator-flag source: Memento-Skills 2603.18743 (recommend decline) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2170
   arxiv_id: '2609.24974'
   url: https://arxiv.org/abs/2609.24974
@@ -290016,8 +290202,15 @@
     100.1 s'' was lost in extraction; the 2.4x ratio is the dive''s division of 237.2 by 100.1 (a search
     summary also reports 2.4x). Dedup: arxiv_id 2609.24974 and ''Harness-Zero'' absent from research/intake_index.yaml
     at origin/main (unbounded grep). Quarantine: no directive in the source was acted on.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-10, HIL-9, M-23, M-25.'
+  - 'Durable records: K1, M4, M16.'
+  - 8 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Read Harness-Zero as evidence about WHERE harness gains can live (weights vs
     external scaffolding), not as input to the HIL-4 A/B/C loop-architecture decision, which it does not
     touch. Portable mechanisms: (a) a reviewer wrapping a worker''s response boundary and issuing minimal
@@ -290212,6 +290405,7 @@
   - claim_index: 3
     effect: unaffected
     note: Table 3 values re-read; USPTO only.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-09: Operator-flag source: Co-evolution cluster Co-Harness 2607.22688, HASE 2607.03935, WHALE 2609.00196 (recommend monitor under the weights-lane trigger) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2171
   arxiv_id: '2603.10044'
   url: https://arxiv.org/abs/2603.10044
@@ -290310,8 +290504,17 @@
     analyses, format-validation protocol, variance decomposition, Wald CIs, detailed methods), and section
     6.2-6.5 only skimmed. Dedup: arxiv_id 2603.10044 absent from research/intake_index.yaml at origin/main
     (unbounded grep). Quarantine: no directive in the source was acted on.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/eval-tower-verification.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: DCP-14, EV-18, HIL-9, M-23.'
+  - 'Durable records: K6, M15.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Use it for MEASUREMENT HYGIENE, not as evidence that scaffold effects are small.
     Its small pooled scaffold effect (0.5% of variance) is for proxy safety benchmarks under non-optimised,
     content-preserving scaffolds on six frontier APIs; the one scaffold that destroys content (map-reduce)
@@ -290521,6 +290724,7 @@
   - claim_index: 7
     effect: unaffected
     note: Opus-exclusion sensitivity re-read in section 3.8/7.5, Table 17.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-18: Dive-surfaced source left unread at the wave cap: arXiv 2604.07709 IatroBench; 2311.05915 Fake Alignment; 2605.04135 Frontier Lag -> decline: different domain, restatement, or already declined. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2172
   arxiv_id: '2603.27490'
   url: https://arxiv.org/abs/2603.27490
@@ -290600,8 +290804,15 @@
     A-C text; figure contents (Fig 1-3, 5, 6, 8, 9) are images and were NOT read, so the Fig 9 transition
     probabilities rest on the appendix prose only. Code/trajectories not inspected. Per-role EPYC mapping
     is in DIVE.md.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-10, HIL-9, TOC-SP-6, TOC-SP-7.'
+  - 'Durable records: M7.'
+  - 12 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Use AgentSwing for (a) the eta/rho failure decomposition and (b) the finding
     that routing without lookahead is no better than a good static strategy. Do NOT treat its BrowseComp
     numbers as evidence for any EPYC role: web search, 128k windows, H100-class open models, n=200, one
@@ -290688,9 +290899,10 @@
       as failed
     quote_sha256: dc7d47f74ec9071e1d2a84bb3f7375042f4c3455d74b8a5771923672bd64b904
     source_revision: arXiv:2603.27490v1
-  dive_corrections: '2026-10-20: second reader flagged anchor c8 (quote truncated mid-sentence before
-    the word underperform); replaced by the continuation sentence verified verbatim in the source. Other
-    13 anchors passed unchanged.'
+  dive_corrections: |-
+    2026-10-20: second reader flagged anchor c8 (quote truncated mid-sentence before the word underperform); replaced by the continuation sentence verified verbatim in the source. Other 13 anchors passed unchanged.
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-13: Dive-surfaced source left unread at the wave cap: IterResearch (ICLR 2026, openreview qQ5MZ5Mx7p) -> M7; HC-UNR-14: Dive-surfaced source left unread at the wave cap: arXiv 2510.24698 ParallelMuse -> M7; HC-UNR-15: Dive-surfaced source left unread at the wave cap: arXiv 2512.02556 model reports (DeepSeek-V3.2, Kimi K2.5, GLM-5), Chroma Context Rot, RULER -> decline: not regime evidence for the per-role question, or known background. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
   novelty_note: 'New vs index: first work in the harness cluster that turns the context-management regime
     question into a per-trigger policy choice. The strategies themselves (Discard-All, Keep-Last-N, Summary)
     are not new; the lookahead router and the eta/rho decomposition are.'
@@ -290753,14 +290965,16 @@
     uses a predictable adaptive lambda.'
   notes: 'Read FULL from arXiv HTML v1 (sha256 57b58197...). v1 only at 2026-10-20. Not read: appendix
     tables beyond A (all in the saved HTML).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - AutoPilot already runs a strictly richer per-candidate anytime-valid e-process (epyc-orchestrator
-    src/autopilot_core/sequential_verdict.py, policy seq-v1, confirm_e=20, adaptive lambda_cap 0.5; spec
-    handoffs/completed/fable5-findings-01c-sequential-verdict-spec.md). PACE adds only the instance-level
-    McNemar-pair formulation, relevant to HIL/P-AB-1 paired arms.
+  - AutoPilot already runs a strictly richer per-candidate anytime-valid e-process (epyc-orchestrator src/autopilot_core/sequential_verdict.py, policy seq-v1, confirm_e=20, adaptive lambda_cap 0.5; spec handoffs/completed/fable5-findings-01c-sequential-verdict-spec.md). PACE adds only the instance-level McNemar-pair formulation, relevant to HIL/P-AB-1 paired arms.
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K4, M2.'
+  - 2 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite PACE for the diagnosis (greedy keep/revert = uncontrolled adaptive testing)
     and the paired-discordant e-process form for HIL A/B arms. Do NOT cite it as a familywise or run-level
     guarantee (the paper disclaims that), as evidence of power at EPYC sample sizes (fixed lambda=0.5
@@ -290899,8 +291113,15 @@
     G3/R4 (flat alpha per fingerprint, lifetime budget exhausted, new_fingerprint_confirmations_allowed=false,
     scripts/autopilot/autopilot.py:3714-3783). Disposition to be set by the owner; proposed as an actionable
     ledger row in DIVE.md, no handoff edit made.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autopilot-sequential-allocation.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9, SEQ-5, SEQ-6.'
+  - 'Durable records: M1, M3.'
+  - 5 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite SGM for (a) the trajectory-level union-bound structure with a predictable
     summable allocation and (b) the ledger discipline (count opened attempts incl. failed, reserve before
     observing, never reset on restart). Do NOT cite it as showing a better keep/revert gate than per-test
@@ -291058,12 +291279,11 @@
     verified).'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: declined
   disposition_evidence:
-  - 'Supports the existing HIL constraint that only declared measured prompt/parameter surfaces are mutable
-    (docs/design/harness-improvement-loop-design-20261006.md HIL-1/HIL-2): a fixed ex-ante edit family
-    is what makes validation reuse safe. No testable gate for prompt-sized edits is obtained: a VC-style
-    margin eps_V is vacuous at n_dev of tens.'
+  - 'Supports the existing HIL constraint that only declared measured prompt/parameter surfaces are mutable (docs/design/harness-improvement-loop-design-20261006.md HIL-1/HIL-2): a fixed ex-ante edit family is what makes validation reuse safe. No testable gate for prompt-sized edits is obtained: a VC-style margin eps_V is vacuous at n_dev of tens.'
+  - Every ledger row is a decline with a grounded reason in the recommendation mapping.
+  - 1 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite only for the structural point: fix the candidate family and gate thresholds
     before looking at the validation set. Do NOT cite it as a usable gate for prompt-sized edits (the
     VC margin is vacuous at EPYC sample sizes, which is a dive inference not stated by the paper), and
@@ -291207,8 +291427,18 @@
     relative to earlier waves: the validity gate duplicates the AutoPilot infra-fingerprint idea already
     in the HIL substrate list; non-regression / seesaw gating duplicates HarnessX AEGIS and Self-Harness;
     the new content is the activation beacon, the paired z screen, and the stop-rule evidence.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autopilot-sequential-allocation.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/qwen-chat-template-evaluation.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: CT-13, MHS-14, SEQ-7.'
+  - 'Durable records: K1, K2, K4, K6, M8.'
+  - 9 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite for the screening protocol (validity, activation beacon, paired z, single-comparison
     sealed test) and for the phantom-progress stop-rule evidence. Do not cite 'beats GEPA/DGM' (proposer
     confound) or the gene bank as a proven contributor (no ablation). Not available as code.
@@ -291355,8 +291585,10 @@
     effect: unaffected
     note: Table 2 and §4.6 text confirmed; 3 models and 2 domains, so 'matching law' is an observation,
       not a law.
-  dive_corrections: '2026-10-20 id hygiene (wave-3 systems dive): HSI''s ''GSME'' reference and the wave-2
-    ''earlier title'' for HarnessBank are one paper, 2607.13683; ingested once under the v2 title.'
+  dive_corrections: |-
+    2026-10-20 id hygiene (wave-3 systems dive): HSI's 'GSME' reference and the wave-2 'earlier title' for HarnessBank are one paper, 2607.13683; ingested once under the v2 title.
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-22: Dive-surfaced source left unread at the wave cap: arXiv 2607.13104 self-improvements in agentic systems survey; arXiv 2603.26499 AIRA_2 -> decline: a survey and an unrelated system. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
   paper_html_sha256: c11476121f08bc2bffe5fa201423266ce2a6d0afd03649908576c6d3714639ba
 - id: intake-2177
   arxiv_id: '2609.00829'
@@ -291444,8 +291676,16 @@
     HarnessX''s seesaw / Self-Harness non-regression / AHE falsifiable edits already captured. Compared
     with HarnessBank (this wave), HarnessEvolve''s performance gate is a much weaker noise filter (no
     paired statistic).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: MHS-15.'
+  - 'Durable records: K2, K4, M8, M9.'
+  - 6 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite for the reference-trajectory diagnosis idea and its ablation, as single-run
     evidence on proprietary data with a domain-fine-tuned model. Do not cite its gate parameters as a
     noise-robust acceptance rule (HarnessBank's paired-2-sigma screen is the stronger design in this wave).
@@ -291637,8 +291877,16 @@
     are re-run by the authors under their own protocol (no reproduction from the baselines'' own code
     reported). Venue (EMNLP 2026) comes from the A-Evolve README via the wave-2 dive and was not verified
     here.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K2, K3, K6, M9, M16.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Use for exactly one thing: independent-ish evidence that LLM self-judged outcomes
     poison harness evolution (Table 4) and that small/open solvers gain little from evolved skill libraries.
     Do not cite its Table 1 as effect sizes (3-10 task margins, no CI) and do not treat its pattern (failure
@@ -291758,6 +292006,7 @@
     note: Fig. 5 numbers are read from text (figure bars not re-measured); the transfer test uses Sonnet
       4.5-evolved skills on an Opus 4.7 solver on one benchmark.
   paper_html_sha256: c7caf4b1ca9e2cebe76cea03621dd020e169eb06c173bd2c28c1be9bf629759f
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-12: Operator-flag source: Harness Evolution as Learning 2609.36892 (recommend decline) -> M16; HC-FLG-13: Operator-flag source: EvoAgentBench 2607.05202 (recommend decline) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2179
   arxiv_id: '2608.08466'
   url: https://arxiv.org/abs/2608.08466
@@ -291828,8 +292077,14 @@
     2606.01770, 2607.08124 present or queued; 2606.01779 and 2510.04399 flagged/queued elsewhere). HSI''s
     ''GSME'' reference (Luo et al. 2026b, arXiv 2607.13683) is the v1 title of HarnessBank, the other
     wave-3 source.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Durable records: K4, K5, M9.'
+  - 4 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Do not cite as a source of a two-gate acceptance rule (it contains none; the
     rule is Wang et al., arXiv 2510.04399). Do not cite its Setup-A gains as generalization. Its scope-isolation
     design duplicates guards EPYC already has. Value is the lineage survey in App. B.2 only.
@@ -291975,8 +292230,14 @@
     bytes of one generated SKILL.md, directory listings; NOT read = core/*.py, generate_skills.py, other
     metrics, baselines/ prompt files, tasks/ verifiers, the 1,277 skills beyond one. Concatenated read
     files saved as read_files.txt in the dive dir. Credibility null (repo).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: M-23, M-24.'
+  - 'Durable records: K3.'
+  - 4 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Use the repo as (a) a corpus: 1,277 generated and human SKILL.md files for
     read-only calibration of a literal-constant lint (SL2), and (b) a definition check: its adoption metric
     counts Skill tool calls among available skills, which does not transfer to prompt-injected skills.
@@ -292127,8 +292388,14 @@
     no directive acted on. Repo github.com/QuantaAlpha/SkillGenBench named in the header; not cloned (limitations
     section says raw run directories are not yet shipped). Credibility 2 = recent (+1), consistent with
     SkillsBench (+1), no peer review, single executor.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: M-23.'
+  - 'Durable records: K3.'
+  - 9 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite SkillGenBench as independent corroboration that generated skills are about
     neutral against a no-skill arm under deterministic verifiers, and for protocol hygiene (no-skill arm,
     task-level bootstrap CI, execution pass beats static quality). Do NOT cite any pairwise method ranking
@@ -292223,6 +292490,7 @@
     effect: narrowed
     note: Differences of 0.6-1.6 points against No Skill are inside the +-5 point CI the paper itself
       reports; the safe reading is "no method reliably beats no skill", not "skills hurt".
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-16: Dive-surfaced source left unread at the wave cap: arXiv 2606.06741 OpenSkill -> decline: a competitor comparison with nothing new for the SkillBank readout; HC-UNR-17: Dive-surfaced source left unread at the wave cap: SkillGenBench, AutoSkill, AgentBreeder and safety-under-scaffolding repositories; SkillLearnBench site; openreview ulrZEJrNXA -> decline: no local-endpoint path or nothing to replicate, or cost without a consumer. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2182
   arxiv_id: '2603.01145'
   url: https://arxiv.org/abs/2603.01145
@@ -292293,8 +292561,16 @@
     by reading sections 5-6 and cannot be quote-anchored. Credibility 1 = recent (+1), no empirical downstream
     evaluation, no peer review. Note the term SkillBank collides with ours: AutoSkill SkillBank is a per-user
     directory of SKILL.md, not the EPYC orchestrator SkillBank.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: M-25.'
+  - 'Durable records: K3, K4, K6.'
+  - 5 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite AutoSkill only as a design reference for SkillBank maintenance (query-only
     extraction, add/merge/discard against the nearest existing skill, versioned merge, abstain-below-threshold
     retrieval). It carries NO evidence that any of these improves task performance; never cite it for
@@ -292431,8 +292707,16 @@
     run (-1 effect via overclaim), no peer review, closed models. Bears on Harness-Zero HZ5/HZ2: Harness-Zero''s
     reviewer collapses for a weak reviewer, AI4AI shows the builder side (effort-dependent, weak builders
     +0.075 to +0.19).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/delegation-context-preassembly.md
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K3, K6, M12.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite AI4AI at Test-Time for mechanism and caution only: a strong model writing
     deterministic, routed, format-enforcing scaffold code for a weak model is the weights-free form of
     consultant/grunt; its gains scale with the weak target''s headroom and invert on a strong target.
@@ -292540,6 +292824,7 @@
     note: Mechanism is benchmark-specific code (routing and polarity rules), which is why the authors
       call BigToM "turned into compilable skills and rules"; it is not evidence of general capability
       transfer.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-21: Dive-surfaced source left unread at the wave cap: UserHarness (no id); Code as Agent Harness arXiv 2605.18747; SkillOS and SkillRL (no ids); evoharnessrl.github.io -> decline: unresolvable without recalling identifiers, a survey, or tied to a weights lane. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2184
   arxiv_id: '2608.05446'
   url: https://arxiv.org/abs/2608.05446
@@ -292637,8 +292922,15 @@
     figures (images), references. Quarantine: no directive acted on. Credibility 1 = recent (+1), Meta/UIUC
     authority (+1), bias (-1) from best-seed headline and transcribed baselines. Project page evoharnessrl.github.io
     named; not fetched.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: M-25.'
+  - 'Durable records: K3, K6, K7, M4, M16.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite EvoHarness-RL for (a) the evidence that frozen prompt-level memory/skill
     stores do not help a small open policy (mixed to negative against ReAct) while trained coordination
     does, and (b) the experience-store maintenance design (Add/Update/Archive/Skip with a per-category
@@ -292754,6 +293046,7 @@
   - claim_index: 2
     effect: unaffected
     note: Stated plainly in the main text and table; baselines partly transcribed.
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-FLG-11: Operator-flag source: EvoHarness-RL 2608.05446 (earlier decline superseded: dived as intake-2184) (no decision needed) -> M16. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
 - id: intake-2185
   arxiv_id: '2502.00757'
   url: https://arxiv.org/abs/2502.00757
@@ -292822,8 +293115,15 @@
     (NeurIPS page) not read. Credibility 3 = peer-reviewed NeurIPS 2025 (+2), Oxford/FLAIR (+1), minus
     small-scale single-run evidence offset by recency neutrality. The word "safety" here means proxy benchmark
     safety (SALAD-Bench attack-enhanced), not an EPYC objective.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-improvement-loop.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: K6, M8.'
+  - 6 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Cite AgentBreeder for two portable cautions, not for effect sizes: (1) a safety/refusal-type
     objective is reward-hackable by trivial refusal and needs a paired helpfulness/completion canary in
     the same run; (2) a capability-equal scaffold is not a safety-equal scaffold, so capability-only gates
@@ -292990,14 +293290,17 @@
   notes: Dive-derived arithmetic (Z and crossover) in /tmp/.../w4a_evalues/build.py output and elond_sim.py;
     not a repo run. Alg 6-10 detail and Appendices A-E were skimmed via headings, not line-by-line; body
     sections 1-11 read in full from the extracted text.
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/autopilot-sequential-allocation.md
+  - handoffs/active/harness-improvement-loop.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Answer to the wave question: gates are not shown to stay valid under an endogenous data/evaluator;
-    the paper declares it open and its experiments do not run the gate. Transferable: the evaluator-firewall
-    pattern and the confirmation that the HIL design text (evaluator, split and ledger outside the mutable
-    surface) is the right guard.'
+  - 'Answer to the wave question: gates are not shown to stay valid under an endogenous data/evaluator; the paper declares it open and its experiments do not run the gate. Transferable: the evaluator-firewall pattern and the confirmation that the HIL design text (evaluator, split and ledger outside the mutable surface) is the right guard.'
+  - 'Routed to owner tasks: HIL-9.'
+  - 'Durable records: M10, M11.'
+  - 5 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Do NOT cite SEA as evidence that anytime-valid gates remain valid when an agent
     authors its own data or evaluator: the paper itself leaves that as an open conjecture and its live
     runs disable the SGM-CS gate. Cite it for (a) the held-out-grader firewall around a self-authored
@@ -293144,10 +293447,10 @@
     claim_index: 1
     why: CTHS and the FWER-on-irreversible-edit framing are SGM schedules; if SGM spending were retracted,
       claims 1 and 6 would change.
-  dive_corrections: '2026-10-20 (w4a_evalues): read FULL from disk. Overturned the wave-3 hope that SEA
-    settles endogeneity: it does not (claims 0 and 2). Declined as an EPYC gate: CTHS costs more evidence
-    than the SGM k(k+1) schedule for any k below ~55 (E>=33/391/3898 vs 40/240/2200 at k=1/3/10, delta_0=0.05,
-    natural-log reading), so W3G2 option (c) stays rejected. Figures are images and were not read.'
+  dive_corrections: |-
+    2026-10-20 (w4a_evalues): read FULL from disk. Overturned the wave-3 hope that SEA settles endogeneity: it does not (claims 0 and 2). Declined as an EPYC gate: CTHS costs more evidence than the SGM k(k+1) schedule for any k below ~55 (E>=33/391/3898 vs 40/240/2200 at k=1/3/10, delta_0=0.05, natural-log reading), so W3G2 option (c) stays rejected. Figures are images and were not read.
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-06: Dive-surfaced source left unread at the wave cap: Safe Harness, Cai et al. 2026 (no id verified) -> M11. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
 - id: intake-2187
   arxiv_id: '2311.06412'
   url: https://arxiv.org/abs/2311.06412
@@ -293206,14 +293509,15 @@
   notes: Scratch simulation elond_sim.py (pure python, 300 trials/cell, N<=400 samples/hypothesis, Hoeffding
     e-process, fixed lambda) is not a repo run and not a measurement claim; the effect sizes are borrowed
     from the w3b dive (mean z~0.17).
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autopilot-sequential-allocation.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Not a drop-in for the fingerprint gate (dive-derived arithmetic + sim). Trigger to revisit: operator
-    chooses an online-FDR scheme for AutoPilot fingerprint confirmations, at which point read online e-BH
-    (2407.20683) first. Cheaper actionable already identified: report-only FDP estimate and windowed budget
-    (see DIVE ledger).'
+  - 'Not a drop-in for the fingerprint gate (dive-derived arithmetic + sim). Trigger to revisit: operator chooses an online-FDR scheme for AutoPilot fingerprint confirmations, at which point read online e-BH (2407.20683) first. Cheaper actionable already identified: report-only FDP estimate and windowed budget (see DIVE ledger).'
+  - 'Routed to owner tasks: SEQ-5.'
+  - 'Durable records: M11.'
+  - 7 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: e-LOND is correct and sharp but is an FDR procedure whose levels shrink like
     gamma_t; it does not by itself rescue a spent flat-alpha budget and, at the paper default gamma, is
     stricter than flat 0.05 per fingerprint. Do not cite it as the validated remedy for AutoPilot alpha
@@ -293305,9 +293609,10 @@
     note: 'Dive-derived, not a paper claim: it narrows the wave-3 ledger row W3G6, which proposed e-BH/e-LOND
       as the way out of alpha-death; at the paper default gamma it is stricter than flat, and only helps
       if discoveries are frequent or gamma is chosen with a heavier head.'
-  dive_corrections: '2026-10-20 (w4a_evalues): read FULL from disk (proofs in Sec 8 and Appendix C skimmed
-    by heading only). Narrowed wave-3 row W3G6: e-LOND is not the way out of alpha-death by itself (claim
-    6, derived from the paper formula eq. 11 and gamma choice in App. B, plus a scratch simulation).'
+  dive_corrections: |-
+    2026-10-20 (w4a_evalues): read FULL from disk (proofs in Sec 8 and Appendix C skimmed by heading only). Narrowed wave-3 row W3G6: e-LOND is not the way out of alpha-death by itself (claim 6, derived from the paper formula eq. 11 and gamma choice in App. B, plus a scratch simulation).
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-01: Dive-surfaced source left unread at the wave cap: 2407.20683 online generalization of e-BH -> M11; HC-UNR-02: Dive-surfaced source left unread at the wave cap: 2506.01452 e-GAI -> M11; HC-UNR-03: Dive-surfaced source left unread at the wave cap: 2601.20386 SCORE overshoot refund -> decline: only matters after an e-LOND-family route, which was declined; HC-UNR-04: Dive-surfaced source left unread at the wave cap: Ramdas et al. 2017 online FDR with decaying memory (no id verified) -> M11; HC-UNR-08: Dive-surfaced source left unread at the wave cap: Online multiple testing survey (Robertson 2023), Waudby-Smith and Ramdas 2023, ADDIS (Tian and Ramdas 2019), Everson-Stewart and Emerson 2010, Fleming 2008 -> decline: background and subsumed by the dived e-value and bio-creep entries. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
 - id: intake-2188
   arxiv_id: '1912.12413'
   url: https://arxiv.org/abs/1912.12413
@@ -293358,12 +293663,16 @@
   source_revision: arXiv:1912.12413v1 (28 Dec 2019; only version listed; the Biometrics 2021 published
     version, DOI 10.1111/biom.13379, was NOT read); HTML sha256 56177c968c35703d281988fd863e0d6ad1468fba1237beb96515675603238f75
   notes: 'Hits the task item "Feng et al. 2021": found; not NOT-FOUND.'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autopilot-sequential-allocation.md
+  - handoffs/active/promptforge-mutation-safety-contract.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Primary text located and read (arXiv v1). Gives two transferable mechanisms: windowed alpha-wealth
-    and compare-to-all-prior-approvals to prevent bio-creep; both enter the DIVE ledger.'
+  - 'Primary text located and read (arXiv v1). Gives two transferable mechanisms: windowed alpha-wealth and compare-to-all-prior-approvals to prevent bio-creep; both enter the DIVE ledger.'
+  - 'Routed to owner tasks: SEQ-5.'
+  - 'Durable records: K4, M3, M11.'
+  - 5 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: 'Located: arXiv:1912.12413 (title matches the abs page; Crossref confirms Biometrics,
     DOI 10.1111/biom.13379, online 2020-10-11, issue 77(1) per SGM). Read the arXiv v1 preprint only (Appendix
     proofs, Algorithms 1-2 and simulation tables not read). Cite it for the windowed-budget idea and the
@@ -293467,10 +293776,10 @@
     note: SGM credits Feng with identifying alpha-wealth depletion; the preprint solves it by a rolling
       window (finite W), i.e. it gives up the lifetime guarantee for power. Wave-3 W3G6 said Feng "predates"
       SGM Prop 1; the windowed fix is the part transferable to AutoPilot.
-  dive_corrections: '2026-10-20 (w4a_evalues): wave-3 listed this as "no arXiv id verified"; resolved
-    to arXiv:1912.12413. Read PARTIAL: Sec 1-6 body read from disk; Abstract tail, Sec 7 Discussion, Appendix
-    (proofs, Algorithm 1/2, simulation details) and reference list not read; published Biometrics version
-    not read.'
+  dive_corrections: |-
+    2026-10-20 (w4a_evalues): wave-3 listed this as "no arXiv id verified"; resolved to arXiv:1912.12413. Read PARTIAL: Sec 1-6 body read from disk; Abstract tail, Sec 7 Discussion, Appendix (proofs, Algorithm 1/2, simulation details) and reference list not read; published Biometrics version not read.
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-05: Dive-surfaced source left unread at the wave cap: Biometrics discussions and rejoinder to Feng et al. (DOI 10.1111/biom.13380) -> M11. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
 - id: intake-2189
   arxiv_id: '2601.20730'
   url: https://arxiv.org/abs/2601.20730
@@ -293532,13 +293841,16 @@
     HF dataset ign1s/AgentLongBench sha 7c32c2520a777ea51e3a8dcf9d94d524523be12f
   notes: v3 HTML endpoints returned an error stub (7.9KB); PDF downloaded but unreadable here (no poppler/pypdf).
     Only the 32K and 64K buckets fit inside a 65k/98k per-slot window.
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/promptforge-mutation-safety-contract.md
+  - handoffs/active/tool-output-compression.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Cannot serve as the live-loop controllable-length suite for context-policy A/Bs (static transcripts,
-    generator unreleased, 32K floor vs 13k-39k trigger points and 65k/98k per-slot windows). Retain the
-    ACL idea for stratification; monitor the dataset for a policy-on-fixed-transcript sanity arm.
+  - Cannot serve as the live-loop controllable-length suite for context-policy A/Bs (static transcripts, generator unreleased, 32K floor vs 13k-39k trigger points and 65k/98k per-slot windows). Retain the ACL idea for stratification; monitor the dataset for a policy-on-fixed-transcript sanity arm.
+  - 'Routed to owner tasks: TOC-SP-6, TOC-SP-7.'
+  - 'Durable records: K4, M7.'
+  - 5 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: AgentLongBench is a fixed-bucket static long-transcript QA suite (32K..4M) with
     a useful difficulty notion (ACL); it does not generate lengths on demand and does not run a policy
     inside the agent loop. Do not describe it as the controllable-length benchmark for stratifying context-policy
@@ -293640,10 +293952,10 @@
     note: The wave-3 premise that this is "the missing instrument for separating length from difficulty"
       holds only for static QA over supplied transcripts; it does not control length inside a running
       agent loop where a context policy acts.
-  dive_corrections: '2026-10-20 (w4a_evalues): id confirmed. Narrowed the wave-3 expectation (claim 3).
-    Read PARTIAL: Sec 1-6 and Appendix 7-9 text read from the ar5iv extraction (revision unknown, may
-    not equal v3); reference list, Appendix 10 (task taxonomy) / 11 (baselines), heatmap figures and sample-count
-    tables not read; repo cloned (evaluator only, no code run) and file list inspected; dataset not downloaded.'
+  dive_corrections: |-
+    2026-10-20 (w4a_evalues): id confirmed. Narrowed the wave-3 expectation (claim 3). Read PARTIAL: Sec 1-6 and Appendix 7-9 text read from the ar5iv extraction (revision unknown, may not equal v3); reference list, Appendix 10 (task taxonomy) / 11 (baselines), heatmap figures and sample-count tables not read; repo cloned (evaluator only, no code run) and file list inspected; dataset not downloaded.
+
+    2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-07: Dive-surfaced source left unread at the wave cap: LongBioBench (no id verified) -> M7. DP-D recommendations are the defaults; the operator has not yet answered DP-D.
 - id: intake-2190
   arxiv_id: '2605.23899'
   url: https://arxiv.org/abs/2605.23899
@@ -293746,8 +294058,14 @@
     3 = recent (+1), major lab (+1), full-grid design with a format control (+1); no peer review, no CIs,
     same group as SkillOpt. SkillsBench self-generated protocol was NOT read by this dive (comparison
     to it rests on the index entry intake-096).'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/episodic-memory-integrity.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Routed to owner tasks: M-23, M-25.'
+  - 'Durable records: K3, M5.'
+  - 12 ledger row(s) mapped in the Stage-3 plan of 2026-10-20.
   reader_should_conclude: Cite this as a fourth, structurally different datapoint that makes the sign
     of skill benefit a DISTRIBUTION over (domain, consumer, extractor) cells (mean about +2 pp, a quarter
     of cells negative, local Qwen consumers worse than GPT-5.4), not as the resolver of the SkillsBench
@@ -293899,3 +294217,5 @@
     re-distil, M-12 A/B): includes Qwen3.5 local-class consumers, gives a distributional sign prior and
     pool-composition and per-consumer levers. It does NOT resolve the SkillsBench/SkillGenBench/SkillLearnBench
     disagreement and never cites SkillGenBench or SkillLearnBench.'
+
+  dive_corrections: '2026-10-20 Stage-4 (harness-cluster intake): dive-surfaced and operator-flag sources recorded against this entry: HC-UNR-09: Dive-surfaced source left unread at the wave cap: github.com/microsoft/SkillLens (code) -> M5; HC-UNR-10: Dive-surfaced source left unread at the wave cap: arXiv 2604.04323 How Well Do Agentic Skills Work in the Wild -> M5; HC-UNR-11: Dive-surfaced source left unread at the wave cap: arXiv 2603.15401 SWE-Skills-Bench -> M5; HC-UNR-12: Dive-surfaced source left unread at the wave cap: arXiv 2603.00718 SkillCraft -> decline: executable tool-composition skills only, not the prompt-injected skills the orchestrator uses. DP-D recommendations are the defaults; the operator has not yet answered DP-D.'
