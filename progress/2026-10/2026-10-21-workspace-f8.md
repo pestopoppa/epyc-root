@@ -21,3 +21,8 @@
 ## KPF-04 / KPF-17.3 / KPF-19.1 non-inference parts (subagent, workspace-f8)
 
 - KPF-04 staging page `docs/reference/kv-prefix-fork-radix-lesson-and-vllm-copy-vs-share.md` (cite-check clean). KPF-17.3 was already implemented and passing (jobs 20/30). KPF-19.1: plain-drafter fork is independent of `PARTIAL_ONLY` (`seq_cp_attn` shares the drafter KV); DFlash2 is an SWA drafter, so it needs its own run (KPF-19.1a). Added `dft_no_transfer` mutation and a port-owner check in the test harness (`82c16126f`, `fork` remote). Job 28 first run was stopped by the coordinator (old runner picked q3) and is requeued with the corrected skip_load static check.
+
+## SEC-EXEC-1/2/4 model-exec containment (subagent, workspace-f8)
+
+- epyc-orchestrator 644c6530 + 65fbdce3 (merged): minimal child env with per-task scratch HOME for run_shell/run_python_code (fenced and unfenced), python/python3 removed from run_shell and the find/awk/sed exec refusals applied unscoped, durable rotated JSONL tool-call audit log incl. refused/timeout/error. 10 suites 367 passed, 1 skipped.
+- SEC-EXEC-3/5 probes only: `unshare -rn` EPERM, Landlock ABI 6 (net rules available); re-probe as service user. web_fetch private-range deny still open. Handoff: `handoffs/active/model-exec-containment.md`.
