@@ -52,8 +52,8 @@ RECEIPT_REL="artifacts/operator/receipts/$GATE_ID.json"
 # ---- pins (filled by the preparing agent; the operator verifies by reading them) ----
 ORCH_REPO="${ORCH_REPO:-/workspace/repos/epyc-orchestrator}"
 RESEARCH_REPO="${RESEARCH_REPO:-/mnt/raid0/llm/epyc-inference-research}"
-ORCH_LANE_SHA="291972e5d41f1db7be31bd5807886391307b0f68"
-RESEARCH_LANE_SHA="f75d8fa784eb6ffc9967f855cf1449c3c28e4cab"
+ORCH_LANE_SHA="792955fc3e0562056193fd9f7881cacf195dad07"
+RESEARCH_LANE_SHA="ab702eca6b8a95086d7096e5569b185d5941da22"
 ORCH_LANE_WT="/mnt/raid0/llm/worktrees/corpus-flagoff-orch-20261021"
 RESEARCH_LANE_WT="/mnt/raid0/llm/worktrees/corpus-flagoff-research-20261021"
 # sha256 of each changed file AS IT EXISTS at the lane commit (content, not git blob ids)
