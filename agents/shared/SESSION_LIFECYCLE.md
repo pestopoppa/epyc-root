@@ -104,7 +104,7 @@ dashboard sees checkbox state only (axiom above).
   hook, no cron and no nightshift task that calls it, and there must not be one. A per-task wrap-up
   is invoked by the session doing the work.
 - **A main dispatches a wrap-up subagent at major work boundaries, unprompted (operator, 2026-10-21).**
-  Examples: the end of an intake campaign's Stage 4, a champion milestone. This is a session
+  Examples: the end of an intake campaign's Stage 4, a champion milestone. When the main's own compaction is looming it dispatches the wrap-up PREEMPTIVELY, before the context is lost (operator, 2026-10-21). This is a session
   action taken by the main, not a hook, so it does not conflict with the no-auto-trigger rule above.
   It covers the per-task steps and a consolidation of what the per-task shards left. Index
   PRUNING and the wiki compilation sweep still run only inside an operator-invoked `/wrap-up`
