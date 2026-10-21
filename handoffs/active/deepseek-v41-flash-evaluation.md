@@ -245,12 +245,12 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
   compressed layers at `compress_rope_theta=160000`, pure-SWA layers use theta=10000 with YaRN off.
   `rms_norm_eps=1e-20`, and the top-k normalization hardcodes 1e-20 rather than norm_eps.
   - *(2026-10-20, workspace-f8.)* RoPE (interleaved pairs, inverse rotation, YaRN placement) anchored and MATCH; only the top-k renorm epsilon remains: official model.py:825 adds 1e-20, ours clamps 6.1035e-5 at src/llama-graph.cpp:2260 @ dd3d9721c; evidence /mnt/raid0/llm/tmp/zero-inference-20261020/DS41-B12.1/REPORT.md.
-- [ ] **DS41-B12 — Three unresolved graph divergences** (answerable only by reading `ds4.c`'s V4.1
+- [x] **DS41-B12 — Three unresolved graph divergences** (answerable only by reading `ds4.c`'s V4.1
   graph against `src/models/deepseek4.cpp`, do this first in B1): (a) the artifact has **no
   `output_hc_*`**, so how V4.1 collapses the 4 hyper-connection streams at the head is unspecified
   by the weights; (b) `attn_compressor_gate` exists on layers {2,8,14} but **not on layer 20**
   (ratio 1), so layer 20's compressor is an ungated projection; (c) ratios 1/2 vs our 4/128 change
-  the pooling factor and therefore the DSv4 cache geometry.
+  the pooling factor and therefore the DSv4 cache geometry. ✅ 2026-10-20 closed by DS41-B12.1: (a) head collapse, (b) layer-20 ungated compressor, (c) ratio 1/2 geometry all MATCH official model.py vs champion dd3d9721c (evidence `/mnt/raid0/llm/tmp/zero-inference-20261020/DS41-B12.1/REPORT.md`); DS41-B11 stays open for the top-k renorm epsilon only.
 - DS41-B13 (DSpark drafter wired, 1.56x on batched verify) and B13b (block 2 is the recipe default) are done, with their superseded in-progress and original-scope boxes; detail in the completed sibling.
 - [ ] **DS41-B14 — Rollback is value-level, not a position rewind.** Every cache here is
   destructively mutated: the 128-slot window ring for all blocks, the compressor's fixed-size

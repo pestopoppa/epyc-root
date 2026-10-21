@@ -260,6 +260,7 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   - *(2026-10-20.)* #26004 and #30574 are already in the champion (`dd3d9721c`, slotdraft fold); the pull reconciles with that fold rather than re-applying them.
   - *(2026-10-20, workspace-f8.)* upstream list recorded: #30514 MERGED e467e5b5e (not in champion), #26004 MERGED 033df86b6 (champion port 1c999e15b), #30574 MERGED ea736c1d5 (champion port deb387b8b), #30580 MERGED 61ad80bf9 (not in champion; SWA threshold still at server-context.cpp:3759 @ dd3d9721c), #30141 and #29480 OPEN. Launch recipe: frontdoor (draft_max 4) and :8083 (draft_max 7) pass --spec-draft-n-max but no p-min; registry has no draft_p_min; launcher would emit --draft-p-min at orchestrator_stack.py:483. Full-build checks (KPF-19.1, KVU-12.2 gate b, Gemma restore, checkpoint size) still pending; evidence /mnt/raid0/llm/tmp/zero-inference-20261020/CH-18/REPORT.md.
 
+- [ ] **CH-20 — CAS champion candidate C (`f0c96dc1f`) after the owed gates.** Owed: bundle gate (a-d incl. dd3d9721c vs b0ba1d427), KVU-19a 64-case harness (KPF-17a), DCA 400K/500K needle A/B and YaRN native-window gate, EXL3 model-level windows, GPU NEEDS-MEASUREMENT items under `/mnt/raid0/llm/tmp/champ-consolidation-20261020/measure/`; port plan for the GLM Q4_K/kquant keeps is the next consolidation step. Champion ref has not moved. (filed 2026-10-20)
 ## The champion as built — 2026-08-27
 
 `ak/champion/llama-cpp-0db32c06e3e5` @ `5c278648a4af2735587b4023613310ccf2341f46` — 35 files,

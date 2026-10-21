@@ -1613,6 +1613,7 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 ## VB-AK-HISTORY — AutoKernel closed-history replay capture (filed 2026-10-20)
 
 - [ ] **VB-AK-HISTORY — Keep AK-HR-1 and AK-HR-2 retrospective and wire the prospective AK-HR-3 fields on the WRITE side before their first post-change run.** The census and diagnostic read historical stores that have no producer hook, so they emit zero ClaimTuples and are reported as descriptive census (the VB-TD-21-CENSUS stance). The fields AK-HR-3 adds (attempt-to-call key, cumulative budget, failure class, stage seconds, typed knob descriptor) are written natively with self-hashed receipts and projected through `ClaimTuple` and `claim_tuple.grade()` only (no new ladder, no backfill). Add the candidate source row to `scripts/vidya/adapters/README.md` with this plan's text now; the ROOT reader is not required before AK-HR-3 lands.
+  - 2026-10-20 (checkbox NOT ticked, factual): source row added at `scripts/vidya/adapters/README.md:275`; AK-HR-3 nullable fields written natively (research `fef9b11ae`, `578e546ea`, `6e9ed20aa`); open: re-run AK-HR-1 on a post-change store and confirm the fields project through `claim_tuple.grade()` with self-hashed receipts.
 
 ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a)
 
