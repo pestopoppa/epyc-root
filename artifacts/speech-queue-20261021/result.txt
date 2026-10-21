@@ -1,0 +1,7 @@
+device AMD Instinct MI210 arch gfx90a:sramecc+:xnack- CUs=104
+A full-GPU stream           : 143.71 ms
+B mask  50% (52 CUs)         : 285.96 ms  (expect ~287.41 if the mask is honoured)
+B mask  25% (26 CUs)         : 526.97 ms  (expect ~574.82 if the mask is honoured)
+C masked  llm-alone 200.16 ms, speech-alone 165.22 ms, concurrent(both done) 202.86 ms
+D unmasked llm-alone 143.65 ms, concurrent with speech-sized stream 188.95 ms
+VERDICT-INPUT: mask honoured iff B50 ~2x and B25 ~4x of A; isolation iff C concurrent ~= max(C llm-alone,C speech-alone) while D shows interference

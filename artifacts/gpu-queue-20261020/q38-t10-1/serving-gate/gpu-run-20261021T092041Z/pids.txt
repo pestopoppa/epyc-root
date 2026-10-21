@@ -1,0 +1,2 @@
+gpu_off 645844
+gpu_dflash2 3174201

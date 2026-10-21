@@ -1,0 +1,5 @@
+<string>:5: UserWarning: Failed validator: GCN_ARCH_NAME (Triggered internally at /app/pytorch/aten/src/ATen/hip/tunable/Tunable.cpp:366.)
+torch 2.7.0+gitf717b2a hip 6.4.43483-a187df25c avail True
+AMD Instinct MI210 gfx90a:sramecc+:xnack- 68702699520
+matmul ok 51.051490783691406
+vllm 0.10.1rc2.dev410+g6663000a3

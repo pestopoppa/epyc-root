@@ -1,0 +1,20 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=900.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /opt/rocm/bin/hipcc -O2 --offload-arch=gfx90a /mnt/raid0/llm/tmp/speech-queue-20261020/scripts/cu_mask_probe.cpp -o /mnt/raid0/llm/tmp/speech-queue-20261020/cu_mask_out/cu_mask_probe
+/mnt/raid0/llm/tmp/speech-queue-20261020/scripts/cu_mask_probe.cpp:13:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   13 |     hipDeviceSynchronize(); auto t0=std::chrono::steady_clock::now();
+      |     ^~~~~~~~~~~~~~~~~~~~
+/mnt/raid0/llm/tmp/speech-queue-20261020/scripts/cu_mask_probe.cpp:15:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   15 |     hipDeviceSynchronize(); double ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-t0).count();
+      |     ^~~~~~~~~~~~~~~~~~~~
+2 warnings generated when compiling for gfx90a.
+/opt/rocm/lib/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/lld)
+/opt/rocm/lib/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/lld)
+/mnt/raid0/llm/tmp/speech-queue-20261020/scripts/cu_mask_probe.cpp:13:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   13 |     hipDeviceSynchronize(); auto t0=std::chrono::steady_clock::now();
+      |     ^~~~~~~~~~~~~~~~~~~~
+/mnt/raid0/llm/tmp/speech-queue-20261020/scripts/cu_mask_probe.cpp:15:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   15 |     hipDeviceSynchronize(); double ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-t0).count();
+      |     ^~~~~~~~~~~~~~~~~~~~
+2 warnings generated when compiling for host.
+/opt/rocm/lib/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/ld.lld)
+/opt/rocm/lib/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/lib/llvm/bin/ld.lld)

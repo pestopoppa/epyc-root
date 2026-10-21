@@ -1,0 +1,49 @@
+{
+ "phase": "gpu",
+ "status": "COMPLETE",
+ "error": null,
+ "servers": [
+  {
+   "label": "gpu_off",
+   "pid": 645844,
+   "dead_after": true,
+   "expect_gpu": true,
+   "samples": 567,
+   "libs": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libllama-common.so.0.0.10340",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libllama-server-impl.so",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libllama.so.0.0.10340"
+   ],
+   "vram_ready_gib": 41.12,
+   "vram_peak_gib": 41.46,
+   "busy_max": 100,
+   "busy_nonzero_samples": 465,
+   "child_in_kfd_samples": 566
+  },
+  {
+   "label": "gpu_dflash2",
+   "pid": 3174201,
+   "dead_after": true,
+   "expect_gpu": true,
+   "samples": 186,
+   "libs": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libllama-common.so.0.0.10340",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libllama-server-impl.so",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261006-4348de400/bin/libllama.so.0.0.10340"
+   ],
+   "vram_ready_gib": 47.83,
+   "vram_peak_gib": 48.62,
+   "busy_max": 100,
+   "busy_nonzero_samples": 150,
+   "child_in_kfd_samples": 185
+  }
+ ]
+}

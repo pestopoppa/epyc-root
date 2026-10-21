@@ -395,10 +395,20 @@ def judge_role(out, items, role, tag, spec_label, phase_info):
               'regression_given_baseline_pass': cp_block(reg, bpass),
               'denominator_note': 'regression rate = k / n_clean (filed spec); gains rate = k / baseline-FAIL clean prompts; regression_given_baseline_pass is informational'})
     r['regression_upper_95_one_sided'] = r['regressions']['one_sided_95_upper']
+    # Q38-T10.1a (2026-10-21): predeclared 'Net, paired' rule inputs (PREDECLARED_RULE.md sha256 350a2a2031495f2a0e6334c507b4bbcbcc8cc4e64a995187761d2db92979ffb3).
+    # R = base PASS & spec FAIL, G = base FAIL & spec PASS over clean prompts; FAIL iff one-sided exact sign test P(X>=R | n=R+G, p=.5) < 0.05.
+    nd = reg + gain
+    p_one = (sum(math.comb(nd, i) for i in range(reg, nd + 1)) / 2 ** nd) if nd else 1.0
+    p_two = min(1.0, 2 * sum(math.comb(nd, i) for i in range(0, min(reg, gain) + 1)) / 2 ** nd) if nd else 1.0
+    r['net_paired'] = {'R': reg, 'G': gain, 'discordant': nd, 'both_pass': sum(1 for x in rows if x['outcome'] == 'SAME_PASS'), 'both_fail': sum(1 for x in rows if x['outcome'] == 'SAME_FAIL'),
+                       'p_one_sided_exact_R_gt_G': p_one, 'p_two_sided_exact': p_two, 'alpha': 0.05, 'rule_sha256': '350a2a2031495f2a0e6334c507b4bbcbcc8cc4e64a995187761d2db92979ffb3',
+                       'rule_verdict': 'FAIL' if p_one < 0.05 else 'PASS', 'strict_reading_informational': 'FAIL' if reg > 0 else 'PASS'}
     if aa_id != n: r['verdict'] = 'VOID_AA'
     elif not guards_ok: r['verdict'] = 'VOID_GUARDS'
     elif clean < MIN_N: r['verdict'] = 'INSUFFICIENT_N'
     else: r['verdict'] = 'PASS' if r['regression_upper_95_one_sided'] < THRESHOLD else 'FAIL'
+    r['verdict_strict_upper_bound_informational'] = r['verdict']
+    if r['verdict'] in ('PASS', 'FAIL'): r['verdict'] = r['net_paired']['rule_verdict']   # operator rule 2026-10-21 decides; the 5% upper-bound reading is informational
     return r
 
 def judge(out, status_by_phase):
@@ -420,7 +430,7 @@ def judge(out, status_by_phase):
     (out / 'per_prompt.tsv').write_text('\n'.join(tsv) + '\n')
     line = {}
     for ph, rr in res.items():
-        line[ph] = {k: rr.get(k) for k in ('verdict', 'aa_identical', 'n_clean', 'baseline_pass', 'token_identical_clean', 'regression_upper_95_one_sided')}
+        line[ph] = {k: rr.get(k) for k in ('verdict', 'net_paired', 'verdict_strict_upper_bound_informational', 'aa_identical', 'n_clean', 'baseline_pass', 'token_identical_clean', 'regression_upper_95_one_sided')}
         line[ph].update({'regressions': (rr.get('regressions') or {}).get('k'), 'gains': (rr.get('gains') or {}).get('k'), 'excluded': len(rr.get('excluded_truncated', []))})
     line['parity'] = overall
     (out / 'judge_line.json').write_text(json.dumps(line))
@@ -437,9 +447,9 @@ def write_result(rc, verdict, note, run):
 def claim_cmd(phase, span, inner_args):
     me = [sys.executable, '-I', str(Path(__file__).resolve())] + inner_args
     if phase == 'gpu':
-        rl = [str(RL), 'run', '--gpu-quiet', 'exclusive', '--role', 'bench', '--tag', 'q38t101-gate-gpu', '--timeout-s', '900', '--']
+        rl = [str(RL), 'run', '--gpu-quiet', 'exclusive', '--role', 'build', '--tag', 'q38t101-gate-gpu', '--timeout-s', '900', '--']   # 2026-10-21 main directive: GPU-only work claims only the quarter holding its pinned host threads (q3), not 0-95; q3 was held by champ-consolidation-c2-job (pinned 72-87,168-183, disjoint from the gate's 184-191) so the claim is gpu-quiet only, no region
     else:
-        rl = [str(RL), 'run', '--gpu-quiet', 'shared', '--cpu-list', CPU_LIST, '--role', 'bench', '--tag', 'q38t101-gate-cpu', '--timeout-s', '900', '--']
+        rl = [str(RL), 'run', '--gpu-quiet', 'shared', '--cpu-list', CPU_LIST, '--role', 'build', '--tag', 'q38t101-gate-cpu', '--timeout-s', '900', '--']
     return ['timeout', '--signal=TERM', '--kill-after=120', str(span)] + rl + me
 
 def validate():
