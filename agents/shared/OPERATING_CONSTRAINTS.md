@@ -449,6 +449,14 @@ including the dispatches whose nudge says nothing about subagents.
   important work logging in between major/thorough /wrap-up which you should trigger/dispatch at
   major work boundaries"*. The boundary dispatch is in `agents/shared/SESSION_LIFECYCLE.md` →
   *Wrap-up cadence*.
+- **Dispose of a finished subagent; never reuse it for a new task (operator, 2026-10-21).** Once a
+  subagent's task is approved and closed out, it is done. A new task gets a FRESH subagent so stale
+  context does not weigh it down. If the concurrency cap is full, queue the new task until a slot
+  frees; never resume a finished agent with an unrelated brief. Resuming the same agent to continue
+  ITS OWN task (review fixes, close-out, a wait-then-test step) is fine. Operator: *"subagents
+  shoudl be disposed once they've finished their tasks and updated logs, progress report, and
+  relevant handoffs. Stale context shoudln't weigh down new tasks that require subagent
+  dispatching"*.
 - **Every subagent result is PROPOSED work.** Review its evidence and diffs, and run validation,
   before accepting it.
 - **A main observed working serially is a defect in these files, not a nudge target.** Fix it here.
