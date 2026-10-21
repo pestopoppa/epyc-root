@@ -1,0 +1,401 @@
+{
+ "advisory_only": true,
+ "skilllearnbench": {
+  "categories": {
+   "b1-one-shot-claude-haiku-4-5": {
+    "COL": 2,
+    "FILE": 33,
+    "ID": 8,
+    "NUM": 24,
+    "PATH": 27,
+    "PORT": 4,
+    "ROLE_MODEL": 5
+   },
+   "b1-one-shot-claude-opus-4-6": {
+    "COL": 15,
+    "FILE": 16,
+    "ID": 3,
+    "NUM": 13,
+    "PATH": 4,
+    "PORT": 3,
+    "ROLE_MODEL": 4
+   },
+   "b1-one-shot-claude-sonnet-4-6": {
+    "COL": 8,
+    "FILE": 27,
+    "ID": 4,
+    "NUM": 15,
+    "PATH": 18,
+    "PORT": 6,
+    "ROLE_MODEL": 4
+   },
+   "b1-one-shot-gemini-3-flash-preview": {
+    "COL": 8,
+    "FILE": 18,
+    "ID": 2,
+    "NUM": 9,
+    "PATH": 6,
+    "PORT": 2,
+    "ROLE_MODEL": 3
+   },
+   "b1-one-shot-gemini-3.1-flash-lite-preview": {
+    "COL": 5,
+    "FILE": 13,
+    "NUM": 5,
+    "PATH": 4,
+    "PORT": 1,
+    "ROLE_MODEL": 1
+   },
+   "b1-one-shot-gemini-3.1-pro-preview": {
+    "COL": 5,
+    "FILE": 15,
+    "ID": 1,
+    "NUM": 4,
+    "PATH": 1,
+    "PORT": 3,
+    "ROLE_MODEL": 2
+   },
+   "b2-self-feedback-claude-haiku-4-5": {
+    "COL": 6,
+    "FILE": 23,
+    "ID": 7,
+    "NUM": 29,
+    "PATH": 15,
+    "PORT": 2,
+    "ROLE_MODEL": 6
+   },
+   "b2-self-feedback-claude-opus-4-6": {
+    "COL": 12,
+    "FILE": 15,
+    "ID": 6,
+    "NUM": 14,
+    "PATH": 11,
+    "PORT": 4,
+    "ROLE_MODEL": 6
+   },
+   "b2-self-feedback-claude-sonnet-4-6": {
+    "COL": 14,
+    "FILE": 28,
+    "ID": 9,
+    "NUM": 24,
+    "PATH": 22,
+    "PORT": 4,
+    "ROLE_MODEL": 6
+   },
+   "b2-self-feedback-gemini-3-flash-preview": {
+    "COL": 9,
+    "FILE": 17,
+    "ID": 1,
+    "NUM": 6,
+    "PATH": 8,
+    "PORT": 2,
+    "ROLE_MODEL": 3
+   },
+   "b2-self-feedback-gemini-3.1-flash-lite-preview": {
+    "COL": 3,
+    "FILE": 7,
+    "NUM": 3,
+    "PATH": 5,
+    "PORT": 2,
+    "ROLE_MODEL": 1
+   },
+   "b2-self-feedback-gemini-3.1-pro-preview": {
+    "COL": 13,
+    "FILE": 16,
+    "ID": 3,
+    "NUM": 9,
+    "PATH": 7,
+    "PORT": 3,
+    "ROLE_MODEL": 2
+   },
+   "b3-teacher-feedback-claude-haiku-4-5": {
+    "COL": 18,
+    "FILE": 31,
+    "ID": 6,
+    "NUM": 17,
+    "PATH": 29,
+    "PORT": 6,
+    "ROLE_MODEL": 2
+   },
+   "b3-teacher-feedback-claude-opus-4-6": {
+    "COL": 16,
+    "FILE": 35,
+    "ID": 5,
+    "NUM": 13,
+    "PATH": 28,
+    "PORT": 5,
+    "ROLE_MODEL": 2
+   },
+   "b3-teacher-feedback-claude-sonnet-4-6": {
+    "COL": 13,
+    "FILE": 27,
+    "ID": 2,
+    "NUM": 12,
+    "PATH": 29,
+    "PORT": 2,
+    "ROLE_MODEL": 3
+   },
+   "b3-teacher-feedback-gemini-3-flash-preview": {
+    "COL": 15,
+    "FILE": 29,
+    "ID": 2,
+    "NUM": 7,
+    "PATH": 20,
+    "PORT": 4,
+    "ROLE_MODEL": 2
+   },
+   "b3-teacher-feedback-gemini-3.1-flash-lite-preview": {
+    "COL": 12,
+    "FILE": 32,
+    "ID": 1,
+    "NUM": 11,
+    "PATH": 31,
+    "PORT": 2,
+    "ROLE_MODEL": 3
+   },
+   "b3-teacher-feedback-gemini-3.1-pro-preview": {
+    "COL": 5,
+    "FILE": 10,
+    "ID": 1,
+    "NUM": 4,
+    "PATH": 3,
+    "PORT": 1,
+    "ROLE_MODEL": 1
+   },
+   "b4-skill-creator-claude-haiku-4-5": {
+    "COL": 13,
+    "FILE": 30,
+    "ID": 5,
+    "NUM": 22,
+    "PATH": 23,
+    "PORT": 4,
+    "ROLE_MODEL": 6
+   },
+   "b4-skill-creator-claude-opus-4-6": {
+    "COL": 16,
+    "FILE": 15,
+    "ID": 3,
+    "NUM": 10,
+    "PATH": 11,
+    "PORT": 2,
+    "ROLE_MODEL": 4
+   },
+   "b4-skill-creator-claude-sonnet-4-6": {
+    "COL": 10,
+    "FILE": 26,
+    "ID": 5,
+    "NUM": 10,
+    "PATH": 21,
+    "PORT": 2,
+    "ROLE_MODEL": 1
+   },
+   "b4-skill-creator-gemini-3-flash-preview": {
+    "COL": 13,
+    "FILE": 18,
+    "ID": 2,
+    "NUM": 10,
+    "PATH": 4,
+    "PORT": 2,
+    "ROLE_MODEL": 3
+   },
+   "b4-skill-creator-gemini-3.1-flash-lite-preview": {
+    "COL": 5,
+    "FILE": 18,
+    "ID": 1,
+    "NUM": 5,
+    "PATH": 16,
+    "PORT": 2,
+    "ROLE_MODEL": 2
+   },
+   "b4-skill-creator-gemini-3.1-pro-preview": {
+    "COL": 7,
+    "FILE": 11,
+    "ID": 5,
+    "NUM": 9,
+    "PATH": 4,
+    "PORT": 2,
+    "ROLE_MODEL": 2
+   },
+   "human_authored": {
+    "COL": 6,
+    "FILE": 27,
+    "ID": 4,
+    "NUM": 14,
+    "PATH": 7,
+    "PORT": 2,
+    "ROLE_MODEL": 5
+   }
+  },
+  "rows": {
+   "b1-one-shot-claude-haiku-4-5": {
+    "flagged_any": 55,
+    "flagged_grounded": 35,
+    "n": 72,
+    "no_source": 0
+   },
+   "b1-one-shot-claude-opus-4-6": {
+    "flagged_any": 30,
+    "flagged_grounded": 24,
+    "n": 53,
+    "no_source": 0
+   },
+   "b1-one-shot-claude-sonnet-4-6": {
+    "flagged_any": 37,
+    "flagged_grounded": 33,
+    "n": 54,
+    "no_source": 0
+   },
+   "b1-one-shot-gemini-3-flash-preview": {
+    "flagged_any": 29,
+    "flagged_grounded": 21,
+    "n": 53,
+    "no_source": 0
+   },
+   "b1-one-shot-gemini-3.1-flash-lite-preview": {
+    "flagged_any": 20,
+    "flagged_grounded": 11,
+    "n": 42,
+    "no_source": 0
+   },
+   "b1-one-shot-gemini-3.1-pro-preview": {
+    "flagged_any": 22,
+    "flagged_grounded": 17,
+    "n": 42,
+    "no_source": 0
+   },
+   "b2-self-feedback-claude-haiku-4-5": {
+    "flagged_any": 46,
+    "flagged_grounded": 36,
+    "n": 67,
+    "no_source": 0
+   },
+   "b2-self-feedback-claude-opus-4-6": {
+    "flagged_any": 33,
+    "flagged_grounded": 27,
+    "n": 50,
+    "no_source": 0
+   },
+   "b2-self-feedback-claude-sonnet-4-6": {
+    "flagged_any": 44,
+    "flagged_grounded": 36,
+    "n": 55,
+    "no_source": 0
+   },
+   "b2-self-feedback-gemini-3-flash-preview": {
+    "flagged_any": 31,
+    "flagged_grounded": 23,
+    "n": 56,
+    "no_source": 0
+   },
+   "b2-self-feedback-gemini-3.1-flash-lite-preview": {
+    "flagged_any": 14,
+    "flagged_grounded": 12,
+    "n": 40,
+    "no_source": 0
+   },
+   "b2-self-feedback-gemini-3.1-pro-preview": {
+    "flagged_any": 28,
+    "flagged_grounded": 24,
+    "n": 42,
+    "no_source": 0
+   },
+   "b3-teacher-feedback-claude-haiku-4-5": {
+    "flagged_any": 55,
+    "flagged_grounded": 48,
+    "n": 95,
+    "no_source": 0
+   },
+   "b3-teacher-feedback-claude-opus-4-6": {
+    "flagged_any": 46,
+    "flagged_grounded": 44,
+    "n": 52,
+    "no_source": 0
+   },
+   "b3-teacher-feedback-claude-sonnet-4-6": {
+    "flagged_any": 40,
+    "flagged_grounded": 35,
+    "n": 47,
+    "no_source": 0
+   },
+   "b3-teacher-feedback-gemini-3-flash-preview": {
+    "flagged_any": 45,
+    "flagged_grounded": 38,
+    "n": 65,
+    "no_source": 0
+   },
+   "b3-teacher-feedback-gemini-3.1-flash-lite-preview": {
+    "flagged_any": 48,
+    "flagged_grounded": 46,
+    "n": 61,
+    "no_source": 0
+   },
+   "b3-teacher-feedback-gemini-3.1-pro-preview": {
+    "flagged_any": 14,
+    "flagged_grounded": 12,
+    "n": 28,
+    "no_source": 0
+   },
+   "b4-skill-creator-claude-haiku-4-5": {
+    "flagged_any": 46,
+    "flagged_grounded": 43,
+    "n": 59,
+    "no_source": 0
+   },
+   "b4-skill-creator-claude-opus-4-6": {
+    "flagged_any": 30,
+    "flagged_grounded": 24,
+    "n": 43,
+    "no_source": 0
+   },
+   "b4-skill-creator-claude-sonnet-4-6": {
+    "flagged_any": 33,
+    "flagged_grounded": 28,
+    "n": 43,
+    "no_source": 0
+   },
+   "b4-skill-creator-gemini-3-flash-preview": {
+    "flagged_any": 28,
+    "flagged_grounded": 21,
+    "n": 51,
+    "no_source": 0
+   },
+   "b4-skill-creator-gemini-3.1-flash-lite-preview": {
+    "flagged_any": 26,
+    "flagged_grounded": 23,
+    "n": 37,
+    "no_source": 0
+   },
+   "b4-skill-creator-gemini-3.1-pro-preview": {
+    "flagged_any": 19,
+    "flagged_grounded": 11,
+    "n": 34,
+    "no_source": 0
+   },
+   "human_authored": {
+    "flagged_any": 31,
+    "flagged_grounded": 15,
+    "n": 36,
+    "no_source": 0
+   }
+  }
+ },
+ "skills_db": {
+  "by_category": {
+   "NUM": 1,
+   "ROLE_MODEL": 32
+  },
+  "examples": {
+   "NUM": [
+    "0.175"
+   ],
+   "ROLE_MODEL": [
+    "architect_coding",
+    "architect_general",
+    "frontdoor",
+    "architect_coding"
+   ]
+  },
+  "flagged_any": 33,
+  "n": 57
+ }
+}

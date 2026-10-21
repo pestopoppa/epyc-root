@@ -25,7 +25,16 @@ SYNTHETIC_SECRET = "SYNTHETIC_RAW_ANSWER_MUST_NOT_ESCAPE"
 def _producer_belief_rows():
     root_value = os.environ.get(RESEARCH_ROOT_ENV)
     if not root_value:
-        pytest.fail(f"{RESEARCH_ROOT_ENV} must name the explicit research Git checkout")
+        # Unset: use the standard research checkout when it carries the pinned producer commit,
+        # otherwise skip (an explicitly set but wrong value below still fails loudly).
+        default = Path("/workspace/repos/epyc-inference-research")
+        has_pin = default.is_dir() and subprocess.run(
+            ["git", "-C", str(default), "cat-file", "-e", f"{RESEARCH_COMMIT}^{{commit}}"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        if not has_pin:
+            pytest.skip(f"{RESEARCH_ROOT_ENV} unset and {default} lacks pinned commit "
+                        f"{RESEARCH_COMMIT[:12]}")
+        root_value = str(default)
     root = Path(root_value)
     if not root.is_absolute() or not root.is_dir():
         pytest.fail(f"{RESEARCH_ROOT_ENV} must name an existing absolute directory")
