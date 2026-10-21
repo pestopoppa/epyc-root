@@ -707,6 +707,58 @@ def _ingest_autokernel_serving(args) -> int:
     return _emit(report, args.json, human)
 
 
+def _ingest_autokernel_experiments(args) -> int:
+    """Belief-redesign P1-C: AutoKernel `experiments.db` rows -> loop beliefs.
+
+    DRY RUN by default: reads the stores read-only, projects every row, prints counts, touches no
+    ledger. Writing needs an EXPLICIT ledger path (`--ledger`, never the env/default resolution)
+    and refuses the canonical ledger unless `--i-own-the-canonical-ledger` is given.
+    """
+    from adapters import autokernel_experiments as exp  # noqa: PLC0415
+    from claim_tuple import ProjectionError  # noqa: PLC0415
+
+    stores = [Path(s) for s in (args.store or [])]
+    if not stores or any(not (s / "experiments.db").is_file() for s in stores):
+        print("autokernel-experiments needs --store <dir holding experiments.db> (repeatable); "
+              f"got {[str(s) for s in stores]}", file=sys.stderr)
+        return 2
+    if args.since_rowid is not None and len(stores) != 1:
+        print("--since-rowid is a per-store high-water mark: use it with exactly one --store",
+              file=sys.stderr)
+        return 2
+    explicit = getattr(args, "ingest_ledger", None) or args.ledger
+    write = bool(explicit) and not args.dry_run
+    target = None
+    try:
+        if write:
+            if not args.as_of:
+                print("writing needs --as-of <explicit ingest timestamp>", file=sys.stderr)
+                return 2
+            target = exp.check_ledger_target(
+                explicit, i_own_canonical=getattr(args, "i_own_the_canonical_ledger", False))
+        report = exp.ingest(stores, as_of=args.as_of, ledger_path=target,
+                            since_rowid=args.since_rowid)
+    except (ProjectionError, ValueError, OSError) as exc:
+        print(f"autokernel-experiments refused: {exc}", file=sys.stderr)
+        return 2
+    human = [f"stores={len(report['stores'])}  rows read={report['rows_read']}  "
+             f"projected={report['projected']}  frames="
+             f"{'(dry run) ' if report['dry_run'] else ''}{report['frames']}  "
+             f"retrofit={report['retrofit']}  seconds={report['seconds']}",
+             f"by disposition: {report['by_disposition'] or '(none)'}",
+             f"by outcome: {report['by_outcome'] or '(none)'}",
+             f"by scope basis: {report['by_scope_basis'] or '(none)'}",
+             f"not projected: {report['not_projected'] or '(none)'}",
+             f"by status: {report['by_status'] or '(none)'}"]
+    if not report["carrier_ready"]:
+        human.append("note: ClaimTuple.observation is not available in this tree; "
+                     "observation/scope keys ride in tuple.extra until the carrier lands")
+    if report["projection_errors"]:
+        human.append("projection errors:")
+        human.extend(f"  {line}" for line in report["projection_errors"][:5])
+    return _emit(report, args.json, "\n".join(human))
+
+
 def _ingest_file_source(args) -> int:
     """The file-shaped adapters (``ingest_sources.SOURCES``): KB-RAG query length, SC75
     INF-70 serving arms, and every sidecar reader that had no ingest name before 2026-09-16."""
@@ -731,7 +783,7 @@ def cmd_ingest(args) -> int:
     # VB-LOOP-SCOPE: these paths project outside the lock and hold it only for their own
     # dedup-read + append (scoped_ingest.append_scoped), so a slow corpus read never blocks
     # every other writer of the shared ledger.
-    if args.adapter == "autokernel-serving" or (
+    if args.adapter in ("autokernel-serving", "autokernel-experiments") or (
             getattr(args, "only_new", False) and args.adapter in ("autokernel", "inf70")):
         return _cmd_ingest(args)
     with _ledger(args).write_lock():
@@ -739,6 +791,9 @@ def cmd_ingest(args) -> int:
 
 
 def _cmd_ingest(args) -> int:
+    if not args.as_of and args.adapter != "autokernel-experiments":
+        print(f"ingest {args.adapter} needs --as-of <explicit ingest timestamp>", file=sys.stderr)
+        return 2
     if getattr(args, "only_new", False) and args.adapter not in (
             *_FILE_SOURCES, "autokernel", "inf70", "autokernel-serving"):
         print("--only-new is supported only for file-shaped sources, autokernel and inf70",
@@ -748,6 +803,8 @@ def _cmd_ingest(args) -> int:
         return _ingest_file_source(args)
     if args.adapter == "autokernel-serving":
         return _ingest_autokernel_serving(args)
+    if args.adapter == "autokernel-experiments":
+        return _ingest_autokernel_experiments(args)
     if args.adapter == "autokernel":
         return _ingest_autokernel(args)
     if args.adapter == "inf70":
@@ -947,7 +1004,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     i = sub.add_parser("ingest", help="run a source adapter")
     i.add_argument("adapter", choices=["intake", "autokernel", "inf70", "autokernel-serving",
-                                       *_FILE_SOURCES])
+                                       "autokernel-experiments", *_FILE_SOURCES])
     i.add_argument("--path", action="append",
                    help="file or directory for a file-shaped source (repeatable)")
     i.add_argument("--index", help="path to intake_index.yaml")
@@ -955,8 +1012,20 @@ def build_parser() -> argparse.ArgumentParser:
                                   f"(default {AUTOKERNEL_CORPUS_ROOT}) or for the "
                                   f"inf70 adapter (default {INF70_CORPUS_ROOT})")
     i.add_argument("--limit", type=int, help="only the first N entries")
-    i.add_argument("--as-of", required=True, help="explicit ingest timestamp")
+    i.add_argument("--as-of", help="explicit ingest timestamp (required by every adapter "
+                                   "except a dry-run autokernel-experiments)")
     i.add_argument("--dry-run", action="store_true", help="report without appending")
+    i.add_argument("--store", action="append",
+                   help="autokernel-experiments: a loop store dir holding experiments.db "
+                        "(repeatable)")
+    i.add_argument("--since-rowid", type=int,
+                   help="autokernel-experiments: only rows with rowid above this (one store)")
+    i.add_argument("--ledger", dest="ingest_ledger",
+                   help="autokernel-experiments: ledger to WRITE (explicit; without it the run is "
+                        "a dry run). Same as the global --ledger")
+    i.add_argument("--i-own-the-canonical-ledger", action="store_true",
+                   help="autokernel-experiments: allow --ledger to be the canonical ledger "
+                        "(owning session only)")
     i.add_argument("--only-new", action="store_true",
                    help="skip claims with live evidence (file-shaped sources); for autokernel "
                         "and inf70, also re-scope live unscoped claims (scoped_ingest.py)")
