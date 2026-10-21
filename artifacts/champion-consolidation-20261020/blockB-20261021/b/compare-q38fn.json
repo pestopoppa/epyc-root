@@ -1,0 +1,221 @@
+{
+ "schema": "epyc.fold.gate_compare.v1",
+ "surface": "q38fn",
+ "code_root": "/mnt/raid0/llm/worktrees/research-q38fn-run1",
+ "anchor_build": "/mnt/raid0/llm/kernels/builds/cpu-20261020-dd3d9721c",
+ "candidate_build": "/mnt/raid0/llm/kernels/builds/cpu-20261020-f0c96dc1f",
+ "floor_provenance": "absent (no calibrated floor for this surface)",
+ "wall_s": 281.0,
+ "comparison": {
+  "schema": "epyc.autokernel.serving_ab.v2",
+  "recipe": "q38fn-dd6c9cdbd-cpu-t48-mtp-d4",
+  "recipe_hash": "41c359b39eb0781710ee2ed8c0fa0cb90596ede4af2da96000bbc06c78a26986",
+  "recipe_env": {
+   "GGML_FA_SPLIT_KV": "0",
+   "GGML_FUSED_DECODE_OFF": "1",
+   "GGML_IQK": "1",
+   "GGML_NOHUGEPAGE_PROCESS": "1",
+   "OMP_DYNAMIC": "false",
+   "OMP_PLACES": "cores",
+   "OMP_PROC_BIND": "spread",
+   "OMP_WAIT_POLICY": "active"
+  },
+  "recipe_describe": "q38fn-dd6c9cdbd-cpu-t48-mtp-d4 [np1 draft-mtp aggregate_tok_s cpu=0-95 env=GGML_FA_SPLIT_KV=0,GGML_FUSED_DECODE_OFF=1,GGML_IQK=1,GGML_NOHUGEPAGE_PROCESS=1,OMP_DYNAMIC=false,OMP_PLACES=cores,OMP_PROC_BIND=spread,OMP_WAIT_POLICY=active #41c359b39eb0]",
+  "metric": "aggregate_tok_s",
+  "np": 1,
+  "pairs": 5,
+  "anchor_tok_s": 50.11004635962257,
+  "candidate_tok_s": 50.98551413911956,
+  "effect": 0.017470903403562055,
+  "effect_pct": 1.7470903403562055,
+  "effect_unit": "process",
+  "floor_unit": null,
+  "noise_floor_pct": null,
+  "decisive": null,
+  "anchor_samples": [
+   47.50678456267036,
+   48.1098648902099,
+   50.7049975320927,
+   50.11004635962257,
+   50.90689844153303
+  ],
+  "candidate_samples": [
+   50.98551413911956,
+   50.09953368293414,
+   51.08882050880873,
+   48.860631157202974,
+   51.04739890571127
+  ],
+  "anchor_spread": {
+   "n": 5,
+   "median": 50.11004635962257,
+   "mean": 49.46771835722571,
+   "sd": 1.3931052881103854,
+   "cv_pct": 2.78,
+   "min": 47.50678456267036,
+   "max": 50.90689844153303,
+   "range_pct": 6.785,
+   "p95_dev_pct": 5.195,
+   "max_dev_pct": 5.195,
+   "runs": [
+    47.50678456267036,
+    48.1098648902099,
+    50.7049975320927,
+    50.11004635962257,
+    50.90689844153303
+   ]
+  },
+  "candidate_spread": {
+   "n": 5,
+   "median": 50.98551413911956,
+   "mean": 50.416379678755334,
+   "sd": 0.8596535134652011,
+   "cv_pct": 1.686,
+   "min": 48.860631157202974,
+   "max": 51.08882050880873,
+   "range_pct": 4.37,
+   "p95_dev_pct": 4.168,
+   "max_dev_pct": 4.168,
+   "runs": [
+    50.98551413911956,
+    50.09953368293414,
+    51.08882050880873,
+    48.860631157202974,
+    51.04739890571127
+   ]
+  },
+  "residency": {
+   "schema": "epyc.autokernel.serving_residency.v1",
+   "backend": "cpu",
+   "status": "not_applicable",
+   "invocations": 10,
+   "resident": 0,
+   "proven": 0,
+   "resident_floor_bytes": 1073741824,
+   "gpu_residency": "not_applicable",
+   "cpu_placement": "unproven",
+   "contention": "unproven",
+   "peak_vram_bytes": 13094912,
+   "median_vram_bytes": 13094912,
+   "peak_kfd_processes": 0,
+   "sclk_min_mhz": 800,
+   "sclk_max_mhz": 800,
+   "clock_stable": true,
+   "samples": 1128,
+   "covers_request_phase": true,
+   "window_start": 1792583650.5815163,
+   "window_end": 1792583931.4985363
+  },
+  "measurement_plan": {
+   "instrument": "matched_process_v2",
+   "estimator": "median(candidate)/median(anchor)-1;paired-bootstrap-p95.v1",
+   "unit": "process",
+   "pairs": 5,
+   "stopping": "fixed_pairs",
+   "order_algorithm": "autokernel.evaluator.statistics.OrderSchedule.v1",
+   "seed": "8d48778b035cb0a982ca641d70e81e7e",
+   "orders": [
+    [
+     "anchor",
+     "candidate"
+    ],
+    [
+     "candidate",
+     "anchor"
+    ],
+    [
+     "anchor",
+     "candidate"
+    ],
+    [
+     "candidate",
+     "anchor"
+    ],
+    [
+     "candidate",
+     "anchor"
+    ]
+   ]
+  },
+  "launch_membership": [
+   {
+    "ordinal": 0,
+    "pair_index": 0,
+    "arm": "anchor",
+    "arm_sample_index": 0,
+    "residency_sha256": "0066c06af094dafda48d5e2985792d2dc7aeaaa9192445d084ddda1597e2d53c"
+   },
+   {
+    "ordinal": 1,
+    "pair_index": 0,
+    "arm": "candidate",
+    "arm_sample_index": 0,
+    "residency_sha256": "e4178bf4a42593c491ba640f8283ef01a6c7940939b9a6e8e86e1fd125c8e089"
+   },
+   {
+    "ordinal": 2,
+    "pair_index": 1,
+    "arm": "candidate",
+    "arm_sample_index": 1,
+    "residency_sha256": "0865c24de972e60d534fe2f80e76d7b93bcec6eade5cf54c4b4875afec345fdc"
+   },
+   {
+    "ordinal": 3,
+    "pair_index": 1,
+    "arm": "anchor",
+    "arm_sample_index": 1,
+    "residency_sha256": "9c0611e9138b00fa13ab3b6db34949aac892a63f30665bf78e59a08509a5346a"
+   },
+   {
+    "ordinal": 4,
+    "pair_index": 2,
+    "arm": "anchor",
+    "arm_sample_index": 2,
+    "residency_sha256": "eb60ed9a889d90a2a3942d2f09241390377b26f440c8c710a44dd6db7e164d14"
+   },
+   {
+    "ordinal": 5,
+    "pair_index": 2,
+    "arm": "candidate",
+    "arm_sample_index": 2,
+    "residency_sha256": "44fafaf0e66b04a48708e0065f558f45deadcfd34550056df3699534a1db616e"
+   },
+   {
+    "ordinal": 6,
+    "pair_index": 3,
+    "arm": "candidate",
+    "arm_sample_index": 3,
+    "residency_sha256": "ab41ea0a36e3684260598f5449105483b7ba9039bcfc004fa7fd7831581a84c9"
+   },
+   {
+    "ordinal": 7,
+    "pair_index": 3,
+    "arm": "anchor",
+    "arm_sample_index": 3,
+    "residency_sha256": "1de48f9c2ea3ac95d2539bd04c640b2beebaccd20fe79e172d8e12576f39520b"
+   },
+   {
+    "ordinal": 8,
+    "pair_index": 4,
+    "arm": "candidate",
+    "arm_sample_index": 4,
+    "residency_sha256": "81973e075daa675d36284c524d5a7c159065954a70a1e1aa0af2c58e2ac32321"
+   },
+   {
+    "ordinal": 9,
+    "pair_index": 4,
+    "arm": "anchor",
+    "arm_sample_index": 4,
+    "residency_sha256": "4df07a9948bc00b244088d0292e4e514e0bb1032f3ee624a04393c1bb85def3a"
+   }
+  ],
+  "floor_sha256": null,
+  "request_digest": "57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640",
+  "floor_request_digest": null
+ },
+ "omitted_large_keys": {
+  "anchor_residency": "3425742 bytes JSON, full file kept at /mnt/raid0/llm/tmp/champ-consolidation-20261020/runs/blockB-20261021T112507Z/b/compare-q38fn.json",
+  "candidate_residency": "3122066 bytes JSON, full file kept at /mnt/raid0/llm/tmp/champ-consolidation-20261020/runs/blockB-20261021T112507Z/b/compare-q38fn.json",
+  "belief_capture": "26854 bytes JSON, full file kept at /mnt/raid0/llm/tmp/champ-consolidation-20261020/runs/blockB-20261021T112507Z/b/compare-q38fn.json"
+ }
+}
