@@ -273,6 +273,135 @@ def project(native):
                       applicability=dict(native["applicability"]))
 
 
+# --- v2: ONE value-bearing claim per capture (loop-belief redesign §5.1, P1-B) ----------------
+#
+# v1 above projects each ARM as its own claim and carries no comparison: a planner reading it sees
+# two rates and has to re-derive the effect, the floor and whether it was decisive. v2 reads the
+# SAME source bytes through the SAME strict reader (`_source` / `_rows`, unchanged) and projects
+# the capture once: value = candidate median, with the anchor, the relative effect, the floor and
+# the decisive flag on the evidence frame (`ClaimTuple.observation`). The v1 arm claims stay in
+# the ledger (§8: no retraction, which would read as "withdrawn"); the reader hides them behind v2
+# by the shared receipt locator. Same locator, same receipt digest, same ladder -- so a v2 claim
+# grades exactly as its v1 arms do (`Judged/Located`: no protocol is ever cited here).
+
+ADAPTER_ID_V2 = "vidya.adapters.autokernel_legacy_serving/v2"
+SOURCE_KIND_V2 = "autokernel-legacy-serving-v2"
+MEASUREMENT_PREFIX_V2 = "legacy-serving-v2:"
+
+
+def _outcome(native):
+    """The normalized §4.1 outcome from the comparison's OWN decisive flag and effect sign.
+
+    `decisive` is the producer's |effect| >= floor test; the metric is higher_better (checked
+    in `_rows`), so a decisive positive effect is an improvement. No floor (runtime arms) means
+    the producer decided nothing, and no outcome is stated rather than one being guessed.
+    """
+    decisive, effect = native.get("decisive"), native.get("effect")
+    if decisive is False:
+        return "null"
+    if decisive is True and type(effect) in (int, float) and math.isfinite(effect):
+        return "improved" if effect > 0 else "regressed" if effect < 0 else "null"
+    return None
+
+
+def _v2_row(source, rows):
+    """The capture-level claim. Every number is a native field the strict reader just replayed."""
+    comparison = source["comparison"]
+    capture = comparison["belief_capture"]
+    inputs = capture["inputs"]
+    arms = {row["extra"]["arm"]: row for row in rows}
+    anchor, candidate = arms["anchor"], arms["candidate"]
+    scopes = {arm: _applicability(source, row) for arm, row in arms.items()}
+    scope = dict(scopes["candidate"])
+    # Both arms must agree on the model they ran; a capture contradicting itself declares none.
+    if scopes["anchor"].get("model_file") != scope.get("model_file"):
+        scope = {}
+    if scope:
+        epoch = source.get("epoch")
+        if isinstance(epoch, str) and epoch.strip():
+            scope["epoch"] = epoch
+        recipe = comparison.get("recipe")
+        if isinstance(recipe, str) and recipe.strip():
+            scope["recipe"] = recipe
+        np_ = inputs["recipe"].get("np")
+        if type(np_) is int and np_ > 0:
+            scope["np"] = np_
+        scope["scope_basis"] = "native"
+    effect = comparison.get("effect")
+    floor = comparison.get("noise_floor_pct")
+    observation = {"anchor_value": comparison["anchor_tok_s"], "n_pairs": inputs["pairs"]}
+    if type(effect) in (int, float) and math.isfinite(effect):
+        observation["effect_rel"] = effect
+    if type(floor) in (int, float) and math.isfinite(floor):
+        observation["noise_floor_rel"] = floor / 100.0
+    if isinstance(comparison.get("decisive"), bool):
+        observation["decisive"] = comparison["decisive"]
+    outcome = _outcome(comparison)
+    if outcome:
+        observation["outcome"] = outcome
+    mechanism = source.get("mechanism_id")
+    if isinstance(mechanism, str) and mechanism.strip() and len(mechanism) <= 200:
+        observation["mechanism"] = {"id": mechanism}
+    model = PurePath(str(inputs["recipe"].get("model") or "")).name or "unknown-model"
+    effect_text = (f"{effect * 100:+.2f}%" if "effect_rel" in observation else "effect unstated")
+    floor_text = (f"floor {floor:.3f}%" if "noise_floor_rel" in observation else "no floor")
+    verdict = {"improved": "IMPROVED", "regressed": "REGRESSED", "null": "NULL"}.get(
+        outcome, "UNDECIDED")
+    claim = (f"{model} [{comparison.get('recipe') or 'recipe?'}] {mechanism or 'mechanism?'}: "
+             f"candidate {comparison['candidate_tok_s']:.2f} t/s vs anchor "
+             f"{comparison['anchor_tok_s']:.2f} t/s ({effect_text}, {floor_text}, "
+             f"{inputs['pairs']} pairs) -- {verdict}; direct serving A/B observation, protocol "
+             "unqualified")
+    dates = [datetime.fromisoformat(row["date"]) for row in (anchor, candidate)]
+    return ({"measurement_id": f"{MEASUREMENT_PREFIX_V2}{capture['capture_id']}",
+             "metric": comparison["metric"], "value": comparison["candidate_tok_s"],
+             "unit": "t/s", "metric_direction": "higher_better", "category": "CANDIDATE",
+             "claim": claim, "date": max(dates).isoformat(), "protocol_id": "",
+             "reps": inputs["pairs"], "reps_basis": candidate["reps_basis"],
+             "extra": {"capture_id": capture["capture_id"],
+                       "native_sha256": capture["native_sha256"],
+                       "native_schema": comparison["schema"],
+                       "v1_measurement_ids": [anchor["measurement_id"],
+                                              candidate["measurement_id"]],
+                       "build_paths": dict(inputs["build_paths"]),
+                       "anchor_execution_digest": anchor["extra"]["execution_digest"],
+                       "candidate_execution_digest": candidate["extra"]["execution_digest"],
+                       "recipe_hash": comparison["recipe_hash"],
+                       "request_digest": comparison.get("request_digest"),
+                       "model_path": inputs["recipe"].get("model")}},
+            scope, observation)
+
+
+def native_rows_v2(receipt, *, receipt_locator, receipt_sha256, attestation_present=True):
+    """One native row per capture, read by the unchanged strict reader; [] for a non-receipt."""
+    if not isinstance(receipt, dict) or receipt.get("schema") != RECEIPT_SCHEMA:
+        return []
+    try:
+        source = _source(receipt, receipt_locator)
+        rows = _rows(source, receipt)
+        claim, scope, observation = _v2_row(source, rows)
+    except (OSError, ValueError, KeyError, TypeError, OverflowError, RecursionError) as exc:
+        raise ProjectionError(f"legacy serving v2 source refused: {exc}") from exc
+    return [{"receipt": receipt, "receipt_locator": receipt_locator,
+             "receipt_sha256": receipt_sha256, "attestation_present": attestation_present,
+             "claim": claim, "applicability": scope, "observation": observation}]
+
+
+@register(SOURCE_KIND_V2)
+def project_v2(native):
+    rows = native_rows_v2(native["receipt"], receipt_locator=native["receipt_locator"],
+                          receipt_sha256=native["receipt_sha256"],
+                          attestation_present=native["attestation_present"])
+    if native not in rows:
+        raise ProjectionError("legacy serving v2 projected row differs")
+    return ClaimTuple(**native["claim"], source_kind=SOURCE_KIND_V2,
+                      attestation_locator=native["receipt_locator"],
+                      attestation_sha256=native["receipt_sha256"],
+                      attestation_present=native["attestation_present"],
+                      applicability=dict(native["applicability"]),
+                      observation=dict(native["observation"]))
+
+
 class PlannerFeedback:
     """One loop's bounded observation recall, not scientific admission or ranking.
 

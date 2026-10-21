@@ -186,10 +186,122 @@ def test_producer_time_store_ingest_is_idempotent(source, tmp_path):
     ledger = Ledger(tmp_path / "scoped-ledger.jsonl")
     as_of = datetime.now(timezone.utc).isoformat()
     first = ingest_scoped_store(ledger, path.parent.parent, as_of=as_of)
-    assert first["receipts_read"] == 1 and first["new_claims"] == 2
-    assert first["frames_appended"] == 6 and ledger.verify() == []
+    # Two v1 arm claims plus, since P1-B, one v2 capture claim beside them.
+    assert first["receipts_read"] == 1 and first["new_claims"] == 3
+    assert first["v2_projected"] == 1
+    assert first["frames_appended"] == 9 and ledger.verify() == []
     sources = [r.frame for r in ledger.read_all() if r.frame["frame_type"].endswith("source_observed/v1")]
     assert all(f["assertion"]["applicability"]["model_file"] == "/fixture-model" for f in sources)
     second = ingest_scoped_store(ledger, path.parent.parent, as_of=as_of)
     assert second["receipts_known"] == 1 and second["receipts_read"] == 0
-    assert second["frames_appended"] == 0 and len(ledger) == 6
+    assert second["frames_appended"] == 0 and len(ledger) == 9
+
+
+# --- P1-B: one value-bearing v2 claim per capture, from three REAL captures --------------------
+#
+# Fixtures: tests/vidya/fixtures/belief_p1/serving/{ds41,q38fn,runtime_ab}, derived from real
+# AutoKernel captures by `derive_fixtures.py` (residency bulk trimmed, seal re-derived; every
+# number the adapter reads is the original). PROVENANCE.json names each original.
+
+P1_SERVING = ROOT / "tests/vidya/fixtures/belief_p1/serving"
+
+
+def _p1_receipt(label):
+    paths = sorted((P1_SERVING / label / "serving-beliefs").glob("*.json"))
+    assert len(paths) == 1, f"derive the P1 fixtures first ({label})"
+    return paths[0]
+
+
+def _v2(path):
+    raw = path.read_bytes()
+    return reader.native_rows_v2(json.loads(raw), receipt_locator=f"autokernel:{path}",
+                                 receipt_sha256=hashlib.sha256(raw).hexdigest())
+
+
+@pytest.mark.parametrize("label", ["ds41", "q38fn", "runtime_ab"])
+def test_v2_projects_one_value_bearing_claim_per_real_capture(label):
+    path = _p1_receipt(label)
+    v1 = [reader.project(n) for n in _native(path)]
+    (native,) = _v2(path)
+    tup = reader.project_v2(native)
+    source = json.loads((path.parent / "sources" / path.name).read_text())
+    comparison = source["comparison"]
+    arms = {t.extra["arm"]: t for t in v1}
+    assert tup.measurement_id == f"legacy-serving-v2:{path.stem}"
+    assert tup.source_kind == "autokernel-legacy-serving-v2" and tup.category == "CANDIDATE"
+    assert tup.value == comparison["candidate_tok_s"] == arms["candidate"].value
+    assert tup.observation["anchor_value"] == comparison["anchor_tok_s"] == arms["anchor"].value
+    assert tup.observation["n_pairs"] == tup.reps == comparison["pairs"]
+    assert tup.observation["effect_rel"] == comparison["effect"]
+    assert tup.observation["mechanism"] == {"id": source["mechanism_id"]}
+    assert "retrofit" not in tup.observation  # a producer capture, not a retrofit
+    # Same receipt, same locator: the reader's v1/v2 dedup key (§7.4).
+    assert {t.attestation_locator for t in v1} == {tup.attestation_locator}
+    assert tup.attestation_sha256 == arms["anchor"].attestation_sha256
+    assert grade(tup)[:2] == ("Judged", "Located") == grade(arms["candidate"])[:2]
+    assert tup.applicability["model_file"] == arms["candidate"].applicability["model_file"]
+    assert tup.applicability["epoch"] == source["epoch"]
+    assert tup.applicability["recipe"] == comparison["recipe"]
+    assert tup.applicability["np"] == comparison["np"]
+    assert tup.applicability["scope_basis"] == "native"
+    assert f"{comparison['candidate_tok_s']:.2f} t/s" in tup.claim
+
+
+def test_v2_decisive_capture_states_its_floor_and_signed_outcome():
+    (native,) = _v2(_p1_receipt("ds41"))
+    obs = reader.project_v2(native).observation
+    assert obs["decisive"] is True
+    assert obs["outcome"] == ("improved" if obs["effect_rel"] > 0 else "regressed")
+    assert 0 < obs["noise_floor_rel"] < 1
+
+
+def test_v2_runtime_capture_without_a_floor_states_no_outcome():
+    (native,) = _v2(_p1_receipt("runtime_ab"))
+    obs = reader.project_v2(native).observation
+    assert "noise_floor_rel" not in obs and "decisive" not in obs and "outcome" not in obs
+
+
+@pytest.mark.parametrize("label", ["ds41", "q38fn", "runtime_ab"])
+def test_v2_frames_carry_the_numbers_and_ids_are_byte_stable(label):
+    from claim_tuple import to_frames
+
+    (native,) = _v2(_p1_receipt(label))
+    first = to_frames(reader.project_v2(native), as_of="t", adapter_id=reader.ADAPTER_ID_V2)
+    again = to_frames(reader.project_v2(_v2(_p1_receipt(label))[0]), as_of="t",
+                      adapter_id=reader.ADAPTER_ID_V2)
+    assert [f["frame_id"] for f in first] == [f["frame_id"] for f in again]
+    evidence = first[2]["assertion"]
+    assert evidence["metric"] == "aggregate_tok_s" and evidence["unit"] == "t/s"
+    assert float(evidence["value"]) == pytest.approx(native["claim"]["value"], rel=1e-11)
+    assert first[2]["frame_type"].endswith("evidence_supports_claim/v1")
+
+
+def test_v2_mutated_native_row_is_refused():
+    (native,) = _v2(_p1_receipt("q38fn"))
+    mutated = copy.deepcopy(native)
+    mutated["observation"]["anchor_value"] = 1.0
+    with pytest.raises(ProjectionError, match="v2 projected row differs"):
+        reader.project_v2(mutated)
+
+
+def test_v2_ignores_non_receipts():
+    assert reader.native_rows_v2({"schema": "epyc.autokernel.serving_ab.v1"},
+                                 receipt_locator="autokernel:/x", receipt_sha256="") == []
+
+
+def test_v2_capture_whose_arms_disagree_on_the_model_declares_no_scope():
+    rows = [{"extra": {"arm": "anchor", "execution_digest": None}, "measurement_id": "a",
+             "date": "2026-10-01T00:00:00+00:00", "reps_basis": "r"},
+            {"extra": {"arm": "candidate", "execution_digest": None}, "measurement_id": "c",
+             "date": "2026-10-01T00:00:01+00:00", "reps_basis": "r"}]
+    source = {"epoch": "e", "mechanism_id": "akm-x", "comparison": {
+        "schema": "epyc.autokernel.serving_ab.v2", "recipe": "r", "metric": "aggregate_tok_s",
+        "anchor_tok_s": 10.0, "candidate_tok_s": 11.0, "effect": 0.1, "noise_floor_pct": 3.0,
+        "decisive": True, "recipe_hash": "h", "belief_capture": {
+            "capture_id": "c" * 64, "native_sha256": "n" * 64, "inputs": {
+                "pairs": 2, "recipe": {"model": "/m/a.gguf", "np": 1},
+                "build_paths": {"anchor": "/a", "candidate": "/c"},
+                "resolved_arms": {"anchor": {"backend": "cpu", "model": {"path": "/m/b.gguf"}},
+                                  "candidate": {"backend": "cpu"}}}}}}
+    claim, scope, obs = reader._v2_row(source, rows)
+    assert scope == {} and obs["outcome"] == "improved" and claim["value"] == 11.0
