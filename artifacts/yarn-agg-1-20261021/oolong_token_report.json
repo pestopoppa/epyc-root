@@ -1,0 +1,516 @@
+{
+ "tokenizer": "/mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw/tokenizer.json",
+ "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+ "n_source": "model_tokenizer_json",
+ "n_contexts": 48,
+ "per_nominal_length": {
+  "131072": {
+   "nominal_target": 131072,
+   "n": 16,
+   "real_min": 89419,
+   "real_median": 110768.5,
+   "real_max": 122120,
+   "zone": "native",
+   "bins": [
+    "65536-98304",
+    "98304-131072"
+   ],
+   "flags": [
+    "nominal_mismatch"
+   ]
+  },
+  "262144": {
+   "nominal_target": 262144,
+   "n": 16,
+   "real_min": 179722,
+   "real_median": 222455.5,
+   "real_max": 239818,
+   "zone": "native",
+   "bins": [
+    "163840-196608",
+    "196608-229376",
+    "229376-262144"
+   ],
+   "flags": [
+    "nominal_mismatch"
+   ]
+  },
+  "524288": {
+   "nominal_target": 524288,
+   "n": 16,
+   "real_min": 371962,
+   "real_median": 447286.0,
+   "real_max": 472304,
+   "zone": "beyond-native",
+   "bins": [
+    "360448-393216",
+    "393216-425984",
+    "425984-458752",
+    "458752-491520"
+   ],
+   "flags": [
+    "nominal_mismatch"
+   ]
+  }
+ },
+ "targets": {
+  "128K": {
+   "target_real": 131072,
+   "n_contexts_within_10pct": 1,
+   "n_in_expected_zone": 1,
+   "constructible": false
+  },
+  "240K": {
+   "target_real": 245760,
+   "n_contexts_within_10pct": 9,
+   "n_in_expected_zone": 9,
+   "constructible": true
+  },
+  "400K": {
+   "target_real": 409600,
+   "n_contexts_within_10pct": 10,
+   "n_in_expected_zone": 10,
+   "constructible": true
+  },
+  "500K": {
+   "target_real": 512000,
+   "n_contexts_within_10pct": 4,
+   "n_in_expected_zone": 4,
+   "constructible": false
+  }
+ },
+ "contexts": [
+  {
+   "context_len": 131072,
+   "context_window_id": 40021,
+   "real_n": 117731,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "negation",
+   "n_chars": 384019
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 40022,
+   "real_n": 117098,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "negation",
+   "n_chars": 382505
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 60021,
+   "real_n": 103107,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "formality",
+   "n_chars": 306607
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 60022,
+   "real_n": 107854,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "formality",
+   "n_chars": 331448
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 20021,
+   "real_n": 104441,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "imdb",
+   "n_chars": 443999
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 20022,
+   "real_n": 113873,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "imdb",
+   "n_chars": 484742
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 90021,
+   "real_n": 116326,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "app_reviews",
+   "n_chars": 349220
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 90022,
+   "real_n": 122120,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "app_reviews",
+   "n_chars": 371906
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 50021,
+   "real_n": 89419,
+   "bin": "65536-98304",
+   "zone": "native",
+   "dataset": "yahoo",
+   "n_chars": 280662
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 50022,
+   "real_n": 92525,
+   "bin": "65536-98304",
+   "zone": "native",
+   "dataset": "yahoo",
+   "n_chars": 292855
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 70021,
+   "real_n": 111861,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "multinli",
+   "n_chars": 398686
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 70022,
+   "real_n": 109676,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "multinli",
+   "n_chars": 390051
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 30021,
+   "real_n": 105864,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "agnews",
+   "n_chars": 392486
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 30022,
+   "real_n": 105751,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "agnews",
+   "n_chars": 392640
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 80008,
+   "real_n": 114705,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "metaphors",
+   "n_chars": 353726
+  },
+  {
+   "context_len": 131072,
+   "context_window_id": 80006,
+   "real_n": 114677,
+   "bin": "98304-131072",
+   "zone": "native",
+   "dataset": "metaphors",
+   "n_chars": 353013
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 40024,
+   "real_n": 235777,
+   "bin": "229376-262144",
+   "zone": "native",
+   "dataset": "negation",
+   "n_chars": 771446
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 40025,
+   "real_n": 234461,
+   "bin": "229376-262144",
+   "zone": "native",
+   "dataset": "negation",
+   "n_chars": 765658
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 60025,
+   "real_n": 217748,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "formality",
+   "n_chars": 673487
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 20024,
+   "real_n": 214312,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "imdb",
+   "n_chars": 915814
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 20025,
+   "real_n": 222204,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "imdb",
+   "n_chars": 949430
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 90024,
+   "real_n": 231393,
+   "bin": "229376-262144",
+   "zone": "native",
+   "dataset": "app_reviews",
+   "n_chars": 697589
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 90025,
+   "real_n": 239818,
+   "bin": "229376-262144",
+   "zone": "native",
+   "dataset": "app_reviews",
+   "n_chars": 726785
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 50024,
+   "real_n": 181981,
+   "bin": "163840-196608",
+   "zone": "native",
+   "dataset": "yahoo",
+   "n_chars": 577693
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 50025,
+   "real_n": 179722,
+   "bin": "163840-196608",
+   "zone": "native",
+   "dataset": "yahoo",
+   "n_chars": 563078
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 70024,
+   "real_n": 225429,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "multinli",
+   "n_chars": 803060
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 70025,
+   "real_n": 222707,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "multinli",
+   "n_chars": 788254
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 30024,
+   "real_n": 212113,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "agnews",
+   "n_chars": 781821
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 30025,
+   "real_n": 212510,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "agnews",
+   "n_chars": 787839
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 80009,
+   "real_n": 229353,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "metaphors",
+   "n_chars": 704657
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 80010,
+   "real_n": 229337,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "metaphors",
+   "n_chars": 705838
+  },
+  {
+   "context_len": 262144,
+   "context_window_id": 60001,
+   "real_n": 203569,
+   "bin": "196608-229376",
+   "zone": "native",
+   "dataset": "formality",
+   "n_chars": 597123
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 40027,
+   "real_n": 469576,
+   "bin": "458752-491520",
+   "zone": "beyond-native",
+   "dataset": "negation",
+   "n_chars": 1534236
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 40028,
+   "real_n": 469216,
+   "bin": "458752-491520",
+   "zone": "beyond-native",
+   "dataset": "negation",
+   "n_chars": 1529466
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 20027,
+   "real_n": 425037,
+   "bin": "393216-425984",
+   "zone": "beyond-native",
+   "dataset": "imdb",
+   "n_chars": 1795445
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 20028,
+   "real_n": 419888,
+   "bin": "393216-425984",
+   "zone": "beyond-native",
+   "dataset": "imdb",
+   "n_chars": 1784934
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 90027,
+   "real_n": 472304,
+   "bin": "458752-491520",
+   "zone": "beyond-native",
+   "dataset": "app_reviews",
+   "n_chars": 1429346
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 90028,
+   "real_n": 468802,
+   "bin": "458752-491520",
+   "zone": "beyond-native",
+   "dataset": "app_reviews",
+   "n_chars": 1413523
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 50027,
+   "real_n": 373123,
+   "bin": "360448-393216",
+   "zone": "beyond-native",
+   "dataset": "yahoo",
+   "n_chars": 1189195
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 50028,
+   "real_n": 377543,
+   "bin": "360448-393216",
+   "zone": "beyond-native",
+   "dataset": "yahoo",
+   "n_chars": 1199485
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 70027,
+   "real_n": 447595,
+   "bin": "425984-458752",
+   "zone": "beyond-native",
+   "dataset": "multinli",
+   "n_chars": 1588888
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 70028,
+   "real_n": 446977,
+   "bin": "425984-458752",
+   "zone": "beyond-native",
+   "dataset": "multinli",
+   "n_chars": 1586992
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 30027,
+   "real_n": 425644,
+   "bin": "393216-425984",
+   "zone": "beyond-native",
+   "dataset": "agnews",
+   "n_chars": 1575533
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 30028,
+   "real_n": 426939,
+   "bin": "425984-458752",
+   "zone": "beyond-native",
+   "dataset": "agnews",
+   "n_chars": 1570274
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 80012,
+   "real_n": 459666,
+   "bin": "458752-491520",
+   "zone": "beyond-native",
+   "dataset": "metaphors",
+   "n_chars": 1419472
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 80013,
+   "real_n": 459241,
+   "bin": "458752-491520",
+   "zone": "beyond-native",
+   "dataset": "metaphors",
+   "n_chars": 1414865
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 60003,
+   "real_n": 371962,
+   "bin": "360448-393216",
+   "zone": "beyond-native",
+   "dataset": "formality",
+   "n_chars": 1006509
+  },
+  {
+   "context_len": 524288,
+   "context_window_id": 60004,
+   "real_n": 449428,
+   "bin": "425984-458752",
+   "zone": "beyond-native",
+   "dataset": "formality",
+   "n_chars": 1421612
+  }
+ ]
+}
