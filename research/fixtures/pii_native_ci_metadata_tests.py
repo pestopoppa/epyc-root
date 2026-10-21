@@ -76,3 +76,10 @@ def test_staged_original_wins_over_opposite_worktree(repo,staged_account):
     assert process.returncode==int(staged_account)
     item=record['inputs'][0]
     assert (path.parent/item['artifact']['name']).read_text()==row['text']
+
+@pytest.mark.parametrize('row',[r for r in ROWS if r['id'].startswith('original-job-')],ids=[r['id'] for r in ROWS if r['id'].startswith('original-job-')])
+def test_published_f250_hook_reproduces_job_metadata_false_positives(repo,row):
+    stage(repo,row)
+    process,record,_=run(repo,Path(os.environ['PII_NATIVE_JOB_BASELINE']))
+    assert process.returncode==1 and b'[account_number]' in process.stderr
+    assert record['pii_staged_policy_check_passed'] is False

@@ -1,7 +1,7 @@
-name: PII native metadata staged original controls
+name: PII job metadata repair staged original controls
 on:
   push:
-    branches: [codex/pii-native-metadata-source-20261021]
+    branches: [codex/pii-job-metadata-repair-source-20261021]
 permissions:
   contents: read
 jobs:
@@ -35,6 +35,12 @@ jobs:
           persist-credentials: false
           repository: pestopoppa/epyc-root
           ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: job-baseline
+          persist-credentials: false
+          repository: pestopoppa/epyc-root
+          ref: 587a47edd8c1b791b2eed8a228c5f2647734a348
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.13.15'
@@ -49,6 +55,7 @@ jobs:
         shell: bash
         env:
           PII_NATIVE_POLICY: ${{ runner.temp }}/pii-policy
+          PII_NATIVE_JOB_BASELINE: ${{ github.workspace }}/job-baseline/scripts/hooks/pii_precommit.sh
           PII_NATIVE_BASELINE: ${{ github.workspace }}/baseline/scripts/hooks/pii_precommit.sh
           PII_NATIVE_FIXTURES: ${{ github.workspace }}/recipe/research/fixtures/pii_native_ci_metadata_controls.jsonl
         run: |

@@ -412,6 +412,23 @@ is_native_ci_metadata_account_line() {
         break
       fi
     done
+  elif [[ "$path" =~ ^artifacts/ci/.+/original-jobs[.]json$ ]]; then
+    # GitHub original job metadata only; numeric account matches must equal
+    # the sole typed job ID, even when the URL also contains a short run ID.
+    for field in id url html_url check_run_url; do
+      case "$field" in
+        id) value='([1-9][0-9]*)' ;;
+        url) value='"https://api[.]github[.]com/repos/[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+/actions/jobs/([1-9][0-9]*)"' ;;
+        html_url) value='"https://github[.]com/[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+/actions/runs/[1-9][0-9]*/job/([1-9][0-9]*)"' ;;
+        check_run_url) value='"https://api[.]github[.]com/repos/[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+/check-runs/([1-9][0-9]*)"' ;;
+      esac
+      property='^[[:space:]]*"'"$field"'"[[:space:]]*:[[:space:]]*'"$value"'[[:space:]]*,?[[:space:]]*$'
+      object='^[[:space:]]*[{][[:space:]]*"'"$field"'"[[:space:]]*:[[:space:]]*'"$value"'[[:space:]]*[}][[:space:]]*$'
+      if [[ "$line" =~ $property || "$line" =~ $object ]]; then
+        token="${BASH_REMATCH[1]}"
+        break
+      fi
+    done
   elif [[ "$path" =~ ^artifacts/ci/full-checkpoint-[0-9]{8}/KEEP[0-9]+-recheck[.]json$ ]]; then
     # This receipt family retains one known owned NI08 operation directory.
     value='"/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/hg5-v2-daca-11649-ROOT18-source-and-dual-native-PREP-v2-exact-reader-literals-20261008/operations/([1-9][0-9]{18})-[0-9a-f]{8}/(commands-and-hook-events[.]jsonl|commit-operation-receipt[.]json)"'
