@@ -1340,6 +1340,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - Also fetched: the unsloth 1017 imatrix (`models/unsloth/DeepSeek-V4.1-Flash-1017-GGUF/`, sha256
     `22ed7e8f...`). All 120 expert tensors have an entry under the same name. It is kept for a requant,
     should W3 ever be needed.
+  - 2026-10-21 NOTE (ETA above is stale): `download_1017.log` shows PAUSED 2026-10-20T23:19:58Z by nemotron-bolt-dl (operator: prioritize Nemotron), RESUMED 2026-10-21T02:15:26Z, and `ALL DONE` at 08:22:38Z with `download_1017.done` present; all nine shards logged OK with sha256 and total 501,602,535,360 B on disk in the served model dir. Checkbox untouched (main reviews the close).
 - [x] DS41-W2 — **Disk / Sept Q4 disposition.** ✅ 2026-10-20: operator approved deleting
   `/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf`
   (518,596,067,328 B). The deletion is executed in W7. Until then it stays as the only loadable DS41
