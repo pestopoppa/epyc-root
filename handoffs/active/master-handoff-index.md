@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-AKX6-OWNER | Name an owner for AKX-AUTO-6 (one AK floor recalibration per champion advance): its handoff names `ak-ds41-main`, which is not live; f8 is building the floor registry and needs the interface owner. | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) AKX-AUTO-6 | 2026-10-21 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](non-inference-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-TRAILTOKEN | Provide an HF read token (env only, never written to files) for gated `PatronusAI/TRAIL` so HIL-14a can score TRAIL. | [harness-improvement-loop.md](harness-improvement-loop.md) HIL-14a | 2026-10-21 |
 | OP-YARNLABELS | Hand-label the 50-item YARN-JUDGE-1 blind sheet (judge-calibration ground truth; agent labels are circular). | [yarn-context-extension-research.md](yarn-context-extension-research.md) YARN-JUDGE-1 | 2026-10-21 |
@@ -132,9 +133,9 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1136 | 37 | 2026-07-29 |
+| inference-research | 61 | 1137 | 37 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
-| research-evaluation | 43 | 531 | 17 | 2026-07-29 |
+| research-evaluation | 43 | 532 | 17 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 52 | 654 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 130 | 17 | 2026-07-29 |
