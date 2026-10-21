@@ -271,3 +271,4 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 
 - [ ] **DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#record).** Adopt the FlashMLA sparse-decode contract: int32 indices (page*page_size + offset, -1 = invalid), per-query topk_length, attn_sink, optional extra index set; write the CPU oracle test first (dense masked FA over the same gathered rows must match bit-for-bit). Consumer: DS41-C123.1.
   - *(2026-10-20.)* Contract + scalar reference + two dense-masked oracles on `experimental/intake-fixes-20261020` @ 6b8291de5; oracle test queued.
+  - [x] **DSA-IDX.1 oracle** ✅ 2026-10-21: `test-dsa-sparse-attn-oracle` pass=11 fail=0 (sparse reference == dense-masked oracle bit-for-bit; invalid indices rejected) on `experimental/intake-fixes-20261020` @ 6b8291de5.

@@ -745,3 +745,12 @@ showed no statistically significant math decrease. The damage is localised twice
 to the weaker model, which converges with intake-276's scale-dependent result from an independent
 study. Any evaluation of a conciseness intervention must therefore report **per-suite, never
 aggregate**.
+
+## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
+
+- [ ] **RC-CVEC-HOOKS — Re-resolve control-vector hook coverage and fail loud on a silent no-op.** At ffc1bac82 qwen35.cpp:198 and qwen35moe.cpp:221 call build_cvec while qwen4exp.cpp does not (only a comment at L391): amend the stale Qwen3.5 blocker (FlowSteer line, L129) and the Action 8 compatibility note (L209), record that a control vector on Qwen3.8-Flash-Next is ignored on v10, and make the SEAL harness assert a measurable logit change whenever a vector is loaded (intake-2201#record).
+- [ ] **RC-CVEC-SAFETY — Behavioural safety gate for every candidate steering vector.** Add refusal rate and false-refusal rate on a public harmful/benign prompt set, plus harmless-prompt KL or perplexity, to the SEAL control-vector evaluation at each scale (scripts/seal/eval_cvectors.py and seal_multi_role_regression_check.py measure accuracy and tokens only); the behavioural shift is the pass/fail gate and cosine with one refusal direction is a diagnostic only, because refusal can span a multi-dimensional cone (intake-2204#03, intake-2211#02, intake-2202#04).
+
+- Trigger (no checkbox): a steering or reasoning-compression plan names Qwen3.8-Flash-Next as its target. Then open the build_cvec hook for qwen4exp on llama.cpp-experimental under the four-step kernel workflow; apply the vector per residual branch (four branches, intake-2205#02) and report per-branch norms.
+- Trigger (no checkbox): a projection-mode or affine steering vector is trialled on a lineup model AND produces incoherent output or a harmless-prompt KL above 0.1. Then evaluate affine concept editing (projection toward the null-class mean, intake-2203#00) as the fallback.
+- Trigger (no checkbox): RC-CVEC-SAFETY measures a non-trivial refusal or false-refusal shift for a candidate vector. Then run the offline per-layer cosine screen against a difference-of-means refusal direction for that model and check whether the shift lies along more than one refusal direction (intake-2204#03, intake-2211#02).

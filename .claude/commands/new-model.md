@@ -20,10 +20,20 @@ stubs an aborted or finished run would otherwise leave behind (logged to
 `logs/hygiene/partial_downloads.jsonl`). One download at a time on this host.
 
 ```bash
-python3 scripts/utils/safe_download.py --dest /mnt/raid0/llm/models/<org>/<repo> -- \
+python3 scripts/utils/safe_download.py --dest /mnt/raid0/llm/models/<org>/<repo> \
+    --hf-repo <org>/<repo> --revision <commit-sha-or-ref> -- \
     hf download <org>/<repo> --include '<pattern>' --local-dir /mnt/raid0/llm/models/<org>/<repo>
 # --keep-partial keeps a FAILED run's stubs for a resume; --check <dir> lists leftovers
 ```
+
+`--hf-repo` / `--revision` (SEC-ART-1): the wrapper resolves the ref to a 40-hex commit sha, forces
+`hf download --revision <sha>`, and on success appends the sha plus each file's LFS sha256 to
+`data/provenance/model_downloads.jsonl` (commit it). **Always pass `--revision`** (a reviewed sha, or a ref
+you accept being frozen now); unresolvable refs are refused. Copy `hf_repo`, `hf_revision` and each GGUF's
+`sha256` from that ledger line into the registry entry's `model:` block in Step 4
+(`roles.<role>.model.{hf_repo,hf_revision,sha256}`; `registry_validator.py` warns while missing and fails on
+malformed values or, with `REGISTRY_ARTIFACT_PINS_STRICT=1`, on missing ones). A GGUF you quantized or
+patched locally has no upstream oid: leave `sha256` for the local-hash pass (SEC-ART-2).
 
 ### Step 1: Run Onboarding
 

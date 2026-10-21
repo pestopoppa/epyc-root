@@ -1503,3 +1503,12 @@ Operationally the intake bound three tasks to the owner handoff: REPL-EMB-2.5 (i
 - [Intake index](../research/intake_index.yaml) — `intake-1964` dive_corrections (2026-10-20) and `intake-2009` claim anchors.
 - [Internal KB handoff](../handoffs/active/internal-kb-rag.md) — current equivalents for the agent-memory pattern.
 - [2026-10-20 progress note](../progress/2026-10/2026-10-20.md) — scope, dispositions and operator steering for the batch.
+
+## Compiled Update — 2026-10-21 (sweep 3): the EG2 adopted configuration is BM25 + EG2 @256, RRF (operator ruling)
+
+- REPL-EMB-2.2 run result (frozen at launch, 2026-10-20): primary deciding set n = 346, lexical baseline grep recall@5 0.538 (bm25 0.451); the registered kill rule FAILED on the registered arms (e.g. hybrid-BGE-large 0.480, diff -0.058). The box was ticked at close-out after the rule was applied and the operator decision recorded. ([repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md), 2026-10-20)
+- Operator ruling 2026-10-20 (verbatim in the handoff): keep the BM25 hybrid; the adopted configuration is BM25 + EG2 @256 fused with `rrf_fuse`, the measured arm (recall@5 0.676); grep stays the baseline, not a fusion leg. FP16 is the stored-vector format only; EG2 inference stays BF16. Package open item N-4 (extra grep-fused arm) is NOT NEEDED. It ships with v11 together with the stack change and store migration, never piecemeal. ([stack-change package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md))
+- A post-freeze, non-deciding supplementary grep+EG2 arm, rebuilt approximately from cached top-10 rankings (under-reads the real BM25 hybrid by 0.017 pooled), read pooled recall@5 0.682, +0.145 vs grep, CI [0.101, 0.191]; it does not change the registered verdict. ([progress 2026-10-20](../progress/2026-10/2026-10-20.md))
+- TOC-SP-3 (not run): a verified-quote receipt for the spill worker summary, sharing one failing-log set with REPL-EMB-3.1/3.2. ([tool-output-compression](../handoffs/active/tool-output-compression.md))
+
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [eg2 package](../docs/design/eg2-embedder-adoption-stack-change-package.md); [progress 2026-10-20](../progress/2026-10/2026-10-20.md); [tool-output-compression](../handoffs/active/tool-output-compression.md).

@@ -300,3 +300,7 @@ One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing t
 - [ ] AW-8: gemma4-26B-A4B-as-filter reproduction of Endless-Terminals Stages I-IV (~50-100 wall-hr)
 - [ ] AW-8 Phase 1.5: corroboration probe on released Agent-World-8B/14B weights (SWE-Bench/GAIA)
 - [ ] AW-9 (GPU-gated): multi-env GRPO training, deferred on MI210 GRPO smoke
+
+## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
+
+- Trigger (no checkbox): Phase 1.5 (SFT on public Agent-World trajectories) moves from optional to scheduled. Then require the frontier-f3 F3-W3-P1 per-sample poison screen on those trajectories (intake-2210#03).

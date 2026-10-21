@@ -572,6 +572,7 @@ _FILE_SOURCES = (
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
     "ufh13-thesis-measurement",
     "ak-actor-seat",
+    "ds41-1017-validation",
 )
 
 

@@ -171,6 +171,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/workspace/repos/epyc-inference-research/data/gpu-mi210/kv-quant-27b-v10-sweep"),
            note="v10 MI210 KV-quant sweep sidecars; pre-hook/failed runs yield no claims",
            task="VB-KVQ-V10"),
+    Source("ds41-1017-validation", "ds41_1017_validation",
+           _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
+           note="INF-77 DS41-W5/W6 1017 MXFP4-experts validation rows; each binds the 9 shard sha256s "
+                "and the drafter digest (or its null reason) at write time; no backfill",
+           task="VB-DS41-1017-WIRE"),
     Source("kv-prefix-fork", "kv_prefix_fork",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="KPF-18 runner `epyc.kpf.run.v1` records (kpf18_gate.py Run.finish); pre-hook runs yield no claims",
