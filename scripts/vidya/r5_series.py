@@ -36,7 +36,7 @@ from fold import fold  # noqa: E402
 from ledger import Ledger  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER = REPO_ROOT / ".vidya" / "ledger.jsonl"
+LEDGER = __import__("ledger_home").default_ledger_path(REPO_ROOT)
 
 FT_QUERY = "epyc.vidya/frame/query_served/v1"
 FT_DISPOSITION = "epyc.vidya/frame/obligation_disposition/v1"

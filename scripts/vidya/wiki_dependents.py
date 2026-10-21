@@ -311,7 +311,7 @@ def main() -> int:
     from fold import fold
     from ledger import Ledger
 
-    frames = [r.frame for r in Ledger(str(REPO / ".vidya" / "ledger.jsonl")).read_all()]
+    frames = [r.frame for r in Ledger(str(__import__("ledger_home").default_ledger_path(REPO))).read_all()]
     res = fold(frames, as_of="2026-08-10T16:00:00Z")
     rep = report(res)
 

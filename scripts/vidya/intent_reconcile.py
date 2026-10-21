@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ledger import Ledger  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER = REPO_ROOT / ".vidya" / "ledger.jsonl"
+LEDGER = __import__("ledger_home").default_ledger_path(REPO_ROOT)
 FT_INTENT = "epyc.vidya/frame/human_intent_recorded/v1"
 
 # Where a genuine operator ratification leaves a durable trace.

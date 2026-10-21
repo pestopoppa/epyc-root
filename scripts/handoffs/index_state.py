@@ -81,7 +81,17 @@ MASTER = ACTIVE / "master-handoff-index.md"
 #: `research/` holds the intake index itself and `progress/` is a historical record, so gating
 #: either would report the corpus citing itself rather than anyone relying on it.
 SCANNED_PREFIXES = ("handoffs/", "wiki/", "docs/")
-VIDYA_LEDGER = REPO_ROOT / ".vidya" / "ledger.jsonl"
+def _vidya_ledger() -> Path:
+    """The ONE canonical ledger (scripts/vidya/ledger_home.py), never a per-worktree copy."""
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "vidya"))
+    try:
+        from ledger_home import default_ledger_path  # noqa: PLC0415
+        return default_ledger_path(REPO_ROOT)
+    finally:
+        sys.path.pop(0)
+
+
+VIDYA_LEDGER = _vidya_ledger()
 CITE_TIMEOUT = 120   # cite-check over a commit's changed paths: ~0.5s per file today
 INGEST_TIMEOUT = 180  # ledger rebuild reads the whole intake index (~5s measured)
 
@@ -842,8 +852,8 @@ def citation_check() -> list[str]:
     Fast path: `git diff --name-only HEAD` shows nothing under the scanned paths, so there is
     nothing new to gate and the phase passes without invoking vidya at all. Otherwise the phase
     runs cite-check over exactly the changed paths (positional), at the current UTC time — a
-    one-file commit does not re-audit the whole tree. If the ledger is missing it is rebuilt
-    first (`ingest intake`), since cite-check has nothing to fold without it.
+    one-file commit does not re-audit the whole tree. If the canonical ledger is missing or
+    stale it is brought current first (`cli.py sync`, incremental), since cite-check folds it.
 
     Exit mapping: 0 passes; 3 means blocking citations (`dangling`/`overturned`/`conflicted`)
     and fails the commit with the gate's own listing plus the fix options; any other exit fails
@@ -870,19 +880,28 @@ def citation_check() -> list[str]:
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     cli = [sys.executable, str(REPO_ROOT / "scripts" / "vidya" / "cli.py")]
-    if not VIDYA_LEDGER.exists():
-        print("cite-check: ledger missing, rebuilding with ingest intake")
+    # Missing OR stale (index folded since the ledger last saw it) -> incremental sync, not a
+    # silent 24% `unknown`. `sync` is idempotent, append-only and takes the host-wide write lock.
+    try:
+        stale_rc = subprocess.run(cli + ["--ledger", str(VIDYA_LEDGER), "sync", "--check"],
+                                  cwd=REPO_ROOT, capture_output=True, text=True, timeout=60,
+                                  env=env).returncode
+    except (subprocess.TimeoutExpired, OSError):
+        stale_rc = 1
+    if stale_rc != 0 or not VIDYA_LEDGER.exists():
+        print("cite-check: ledger missing or stale, syncing with `cli.py sync`")
         try:
-            heal = subprocess.run(cli + ["ingest", "intake", "--as-of", now], cwd=REPO_ROOT,
-                                  capture_output=True, text=True, timeout=INGEST_TIMEOUT, env=env)
+            heal = subprocess.run(cli + ["--ledger", str(VIDYA_LEDGER), "sync", "--as-of", now],
+                                  cwd=REPO_ROOT, capture_output=True, text=True,
+                                  timeout=INGEST_TIMEOUT, env=env)
         except (subprocess.TimeoutExpired, OSError) as exc:
-            return [f"cite-check: ledger rebuild failed ({exc}) — run "
-                    "scripts/vidya/cli.py ingest intake --as-of <now> manually"]
+            return [f"cite-check: ledger sync failed ({exc}) — run "
+                    "scripts/vidya/cli.py sync manually"]
         if heal.returncode != 0:
-            return ["cite-check: ledger rebuild failed:\n" + (heal.stdout or heal.stderr).rstrip()]
+            return ["cite-check: ledger sync failed:\n" + (heal.stdout or heal.stderr).rstrip()]
 
     try:
-        out = subprocess.run(cli + ["cite-check", "--as-of", now] + changed, cwd=REPO_ROOT,
+        out = subprocess.run(cli + ["--ledger", str(VIDYA_LEDGER), "cite-check", "--as-of", now] + changed, cwd=REPO_ROOT,
                              capture_output=True, text=True, timeout=CITE_TIMEOUT, env=env)
     except (subprocess.TimeoutExpired, OSError) as exc:
         return [f"cite-check: citation gate failed ({exc}) — run "

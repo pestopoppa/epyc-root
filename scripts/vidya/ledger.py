@@ -20,6 +20,8 @@ of their hard-won behaviours are adopted here deliberately:
 
 from __future__ import annotations
 
+import contextlib
+import fcntl
 import hashlib
 import json
 import os
@@ -49,6 +51,9 @@ GENESIS_PREV_HASH = "sha256:" + "0" * 64
 # every earlier `as_of` (the 2026-08-10 incident: 895 future-stamped frames).
 # Skew allowance covers honest clock drift; day-scale mis-stamps are refused.
 MAX_FUTURE_SKEW_SECONDS = 300
+
+
+_HELD_LOCKS: dict[str, list] = {}
 
 
 class LedgerIntegrityError(Exception):
@@ -140,6 +145,39 @@ class Ledger:
         self._cached_head: tuple[int, str] | None = None
         self._cached_size: int | None = None
 
+    @contextlib.contextmanager
+    def write_lock(self):
+        """Host-wide exclusive writer lock (flock on ``<ledger>.lock``), re-entrant per process.
+
+        The canonical ledger is shared by every session, so two concurrent ingests would otherwise
+        fork the hash chain. ``append`` takes it itself; bulk ingest (``cli.py ingest``) holds it
+        across the whole run so dedup-read and append are one critical section. Re-entrancy is
+        keyed by lock path across Ledger objects, so nested use cannot self-deadlock. Blocks until
+        acquired; the kernel drops it with the process, so a crash cannot wedge it. The head cache
+        stays safe across waits because it is only trusted while the file size is unchanged.
+        """
+        key = os.path.abspath(str(self.path)) + ".lock"
+        held = _HELD_LOCKS.get(key)
+        if held is None:
+            fd = os.open(key, os.O_RDWR | os.O_CREAT | os.O_CLOEXEC, 0o664)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX)
+            except BaseException:
+                os.close(fd)
+                raise
+            held = _HELD_LOCKS[key] = [fd, 0]
+        held[1] += 1
+        try:
+            yield
+        finally:
+            held[1] -= 1
+            if held[1] == 0:
+                del _HELD_LOCKS[key]
+                try:
+                    fcntl.flock(held[0], fcntl.LOCK_UN)
+                finally:
+                    os.close(held[0])
+
     # -- reading ---------------------------------------------------------
 
     def read_all(self, *, repair_report: list | None = None) -> list[LedgerRecord]:
@@ -207,6 +245,10 @@ class Ledger:
         (torn-tail repair) legitimately carry none.
         """
         _refuse_future_stamp(frame)
+        with self.write_lock():
+            return self._append_locked(frame, frame_hash=frame_hash)
+
+    def _append_locked(self, frame: dict, *, frame_hash: str | None = None) -> LedgerRecord:
         is_new = not self.path.exists()
         cached = self._valid_cached_head()
         if cached is not None:

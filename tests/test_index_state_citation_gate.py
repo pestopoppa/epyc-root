@@ -38,8 +38,20 @@ class _Result:
         self.stderr = stderr
 
 
+def _sub(cmd):
+    """vidya subcommand of `python cli.py --ledger L <sub> ...`."""
+    return cmd[cmd.index("--ledger") + 2] if "--ledger" in cmd else cmd[2]
+
+
 class CitationGatePhaseTest(unittest.TestCase):
-    def _run(self, results, ledger_exists=True):
+    def _run(self, results, ledger_exists=True, fresh=True):
+        inner = results
+
+        def results(cmd):  # noqa: F811 - freshness probe answered here; tests script the rest
+            if cmd[0] != "git" and _sub(cmd) == "sync" and "--check" in cmd:
+                return _Result(0 if fresh else 1)
+            return inner(cmd)
+
         with patch.object(index_state, "VIDYA_LEDGER",
                           SimpleNamespace(exists=lambda: ledger_exists)), \
              patch.object(index_state.subprocess, "run") as m:
@@ -78,8 +90,8 @@ class CitationGatePhaseTest(unittest.TestCase):
         self.assertIn("intake-2602", joined, "the gate's own listing must be surfaced")
         self.assertIn("#record", joined)
         self.assertIn("#NN", joined)
-        self.assertEqual(len(calls), 2)
-        self.assertEqual(calls[1].args[0][0], sys.executable)
+        self.assertEqual(len(calls), 3)  # git diff, sync --check, cite-check
+        self.assertEqual(calls[2].args[0][0], sys.executable)
 
     def test_unexpected_exit_fails_with_captured_output(self):
         def results(cmd):
@@ -94,26 +106,48 @@ class CitationGatePhaseTest(unittest.TestCase):
 
     # ---- ledger self-heal -------------------------------------------------
 
-    def test_missing_ledger_rebuilds_before_cite_check(self):
+    def test_missing_ledger_syncs_before_cite_check(self):
         def results(cmd):
             if cmd[0] == "git":
                 return _Result(0, stdout="docs/citation-policy.md\n")
-            return _Result(0, stdout="entries read=1068  frames=1\nclean\n")
+            return _Result(0, stdout="sync: ingested\nclean\n")
 
         errs, calls = self._run(results, ledger_exists=False)
-        self.assertEqual(errs, [], "a clean run after a rebuild must pass")
-        kinds = ["git" if c.args[0][0] == "git" else c.args[0][2] for c in calls]
-        self.assertEqual(kinds, ["git", "ingest", "cite-check"])
-        ingest = calls[1].args[0]
-        self.assertEqual(ingest[2:4], ["ingest", "intake"])
-        as_of = ingest[ingest.index("--as-of") + 1]
+        self.assertEqual(errs, [], "a clean run after a sync must pass")
+        kinds = ["git" if c.args[0][0] == "git" else _sub(c.args[0]) for c in calls]
+        self.assertEqual(kinds, ["git", "sync", "sync", "cite-check"])
+        sync = calls[2].args[0]
+        as_of = sync[sync.index("--as-of") + 1]
         self.assertIsNotNone(re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", as_of),
                              "as-of must be current UTC, ISO-8601 with Z")
-        cite = calls[2].args[0]
-        self.assertEqual(cite[2:6], ["cite-check", "--as-of", as_of, "docs/citation-policy.md"],
+        cite = calls[3].args[0]
+        self.assertEqual(cite[cite.index("cite-check"):], ["cite-check", "--as-of", as_of,
+                                                          "docs/citation-policy.md"],
                          "cite-check must run on the changed paths only, at the same as-of")
 
-    def test_rebuild_failure_fails_the_phase(self):
+    def test_stale_ledger_triggers_incremental_sync_not_unknown(self):
+        def results(cmd):
+            if cmd[0] == "git":
+                return _Result(0, stdout="wiki/x.md\n")
+            return _Result(0, stdout="ok\n")
+
+        errs, calls = self._run(results, ledger_exists=True, fresh=False)
+        self.assertEqual(errs, [])
+        kinds = ["git" if c.args[0][0] == "git" else _sub(c.args[0]) for c in calls]
+        self.assertEqual(kinds, ["git", "sync", "sync", "cite-check"])
+        self.assertNotIn("--check", calls[2].args[0], "the second sync is the real ingest")
+
+    def test_fresh_ledger_does_not_sync(self):
+        def results(cmd):
+            if cmd[0] == "git":
+                return _Result(0, stdout="wiki/x.md\n")
+            return _Result(0, stdout="ok\n")
+
+        _, calls = self._run(results, fresh=True)
+        kinds = ["git" if c.args[0][0] == "git" else _sub(c.args[0]) for c in calls]
+        self.assertEqual(kinds, ["git", "sync", "cite-check"])
+
+    def test_sync_failure_fails_the_phase(self):
         def results(cmd):
             if cmd[0] == "git":
                 return _Result(0, stdout="wiki/x.md\n")
@@ -121,9 +155,9 @@ class CitationGatePhaseTest(unittest.TestCase):
 
         errs, calls = self._run(results, ledger_exists=False)
         self.assertEqual(len(errs), 1)
-        self.assertIn("ledger rebuild failed", errs[0])
+        self.assertIn("ledger sync failed", errs[0])
         self.assertIn("ingest exploded", errs[0])
-        self.assertEqual(len(calls), 2, "cite-check must not run after a failed rebuild")
+        self.assertEqual(len(calls), 3, "cite-check must not run after a failed sync")
 
 
 if __name__ == "__main__":
