@@ -1437,6 +1437,22 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     `--require-serving-floor` (`577f50d44`) and `--serving-calibration-only` (`c5997024e`). New campaign
     `ak-ds41-1017-cpu-decode-20261021`; the old campaign `ak-ds41-cpu-decode-20260923` is SUPERSEDED (operator).
     The floor is booked for 2026-10-22 18:00–22:00Z (launcher PID 4188290).
+  - *(2026-10-21, seeds; W8 stays open until the loop has run on them.)* Two operator-inbox notes were seeded into the
+    new store (the inbox is re-read on every iteration by `controller/inbox.read_inbox`; the same channel as old
+    notes 10–74): `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-1017-cpu-decode-20261021/store/inbox/30-ds41-1017-mxfp4-seeds-20261021.md`
+    (sha256 `40d5eebe…`) and `…/31-ds41-1017-carried-lessons-20261021.md` (sha256 `88d0ab29…`).
+    - Source finding: MXFP4 is in neither the iqk repack-diversion list (`repack.cpp:4547`) nor
+      `iqk_typeA_supported`, so the experts run CPU_REPACK `mxfp4_8x8_q8_0`. Its `forward_mul_mat_id` calls one
+      `gemv` per routed row (never `gemm`), quantizes src1 on 1–6 threads, and builds the row map on thread 0
+      alone. None of the champion's MMID keeps reach that path.
+    - Seeds S1–S4 target the N=1 decode the target measures:
+      - S1 `akm-ds41-1017-mxfp4-mmid-flat-activation-quant`, a port of the champion's `4348de400`;
+      - S2 `akm-ds41-1017-mxfp4-gemv-weight-prefetch`;
+      - S3 `akm-ds41-1017-mxfp4-gemv-zmm-two-groups`;
+      - S4 `akm-ds41-1017-mxfp4-gemv-vector-e8m0-scale`.
+    - S5 `akm-ds41-1017-mxfp4-mmid-gemm-tiles` (the likely cause of the −29.9% pp512, research `da71fa603`) is
+      record-only. This target (`-np 1`, no drafter, cached 45-token prompt) cannot see prefill.
+    - Memory (276 GiB repack copy) is not an AK objective. The `capacity` dimension is only a guard.
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
