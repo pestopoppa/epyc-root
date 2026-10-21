@@ -45,6 +45,8 @@ something else, and caps at `Judged`; a bound one caps at `Verified`, per §4.5.
 from __future__ import annotations
 
 import hashlib
+import math
+import re
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
@@ -117,6 +119,147 @@ def propositions_are_identical(decided: str, claim: str) -> bool:
     return bool(left) and left == right
 
 
+# --- applicability and observation: WHERE a claim holds and WHAT was measured --------------
+#
+# Both are inert to grading. `applicability` is the native scope (VB-APPLICABILITY, extended by
+# the loop-belief redesign §4.1); `observation` is the measured content a planner needs -- the
+# anchor, the relative effect, the floor it was judged against, the producer's own verdict and
+# the mechanism. Neither is ever inferred on read: an adapter projects what the record states.
+
+APPLICABILITY_KEYS = frozenset({
+    "model_file", "quant", "backend", "device", "context_tokens", "kernel", "run_id",
+    "run_expected_keys",
+    # loop-belief redesign §4.1/§4.2 -- each only when the native record (or, for
+    # `scope_basis="store_manifest"`, the store's pinned manifest) states it.
+    "model_sha256", "build_sha", "epoch", "recipe", "np", "surface", "symbol", "op", "shape",
+    "scope_basis", "role", "stack_regime", "config_key",
+})
+# `native`: every scope key came from the record itself. `store_manifest`: the record carries no
+# scope of its own and the store's manifest pinned it (the SOURCE_SCOPES basis, §3.1).
+SCOPE_BASES = frozenset({"native", "store_manifest"})
+
+OBSERVATION_KEYS = frozenset({
+    "anchor_value", "effect_rel", "noise_floor_rel", "decisive", "n_pairs", "outcome",
+    "outcome_native", "outcome_reason", "mechanism", "retrofit",
+    # Lane C link (2026-10-21): an experiment-row claim names the capture-level serving claim
+    # its numbers live on, instead of copying them. `legacy-serving-v2:<capture_id>` (or the
+    # same with the `clm_` prefix) -- the join key is the capture id, nothing looser.
+    "serving_claim_id",
+})
+_SERVING_CLAIM_ID = re.compile(r"(clm_)?legacy-serving-v2:[0-9a-f]{64}")
+# The normalized outcome vocabulary (§4.1). `outcome_native` keeps the producer's own status
+# verbatim beside it, so the normalization can always be audited against the record.
+OBSERVATION_OUTCOMES = frozenset({
+    "improved", "null", "regressed", "refused_correctness", "refused_scope", "divergence",
+    "anchor", "floor",
+})
+MECHANISM_KEYS = frozenset({"id", "statement", "falsifier"})
+_OBS_NUMBERS = ("anchor_value", "effect_rel", "noise_floor_rel")
+_OBS_TEXT_LIMITS = {"outcome_native": 120, "outcome_reason": 300}
+_MECHANISM_LIMITS = {"id": 200, "statement": 240, "falsifier": 240}
+_HEX64 = re.compile(r"[0-9a-f]{64}")
+_GIT_SHA = re.compile(r"[0-9a-f]{7,64}")
+
+
+def _finite_number(value: object) -> bool:
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+FRAME_FLOAT_FORMAT = ".12g"
+
+
+def frame_scalar(value: Any) -> Any:
+    """The frame encoding of one observed number -- THE rule, used for every value-bearing key.
+
+    `canonical.py` refuses floats outright (the certified path carries none), but a measured rate
+    or a relative effect is a float. So:
+
+      * a float is carried as a decimal STRING with 12 significant digits,
+        `format(x, ".12g")` -- e.g. 0.0205 -> "0.0205", 81.1165241567493 -> "81.1165241567",
+        81.0 -> "81", 1.5e-05 -> "1.5e-05" (Python's `g` may use an exponent);
+      * an int stays a JSON int; bool, str and None stay themselves.
+
+    Adapters put plain Python numbers in `value` / `observation`; only the carrier encodes. A
+    reader recovers every numeric key with `float(x)` (an int or such a string), never guessing
+    a precision.
+    """
+    if isinstance(value, float):
+        return format(value, FRAME_FLOAT_FORMAT)
+    return value
+
+
+def frame_observation(observation: dict[str, Any]) -> dict[str, Any]:
+    """`observation` in its frame encoding (floats -> decimal strings, nested mechanism copied)."""
+    out: dict[str, Any] = {}
+    for key, value in observation.items():
+        out[key] = dict(value) if isinstance(value, dict) else frame_scalar(value)
+    return out
+
+
+def _validate_observation(tup: "ClaimTuple") -> None:
+    """Refuse an observation that is not what §4.1 declares. Missing keys are fine (a record
+    states what it states); a wrong type, an unknown key or an over-long verbatim text is not."""
+    obs = tup.observation
+    if not isinstance(obs, dict):
+        raise ProjectionError("observation must be a mapping")
+    if not obs:
+        return
+    unknown = set(obs) - OBSERVATION_KEYS
+    if unknown:
+        raise ProjectionError(f"observation contains unknown fields: {sorted(unknown)}")
+    for name in _OBS_NUMBERS:
+        if name in obs and not _finite_number(obs[name]):
+            raise ProjectionError(f"observation.{name} must be a finite number")
+    for name in ("decisive", "retrofit"):
+        if name in obs and type(obs[name]) is not bool:
+            raise ProjectionError(f"observation.{name} must be a boolean")
+    if "n_pairs" in obs and not (type(obs["n_pairs"]) is int and obs["n_pairs"] >= 1):
+        raise ProjectionError("observation.n_pairs must be a positive integer")
+    if "outcome" in obs and obs["outcome"] not in OBSERVATION_OUTCOMES:
+        raise ProjectionError(
+            f"observation.outcome must be one of {sorted(OBSERVATION_OUTCOMES)} "
+            f"(got {obs['outcome']!r}); the producer's own word goes in outcome_native")
+    for name, limit in _OBS_TEXT_LIMITS.items():
+        if name in obs:
+            value = obs[name]
+            if not isinstance(value, str) or not value.strip() or len(value) > limit:
+                raise ProjectionError(
+                    f"observation.{name} must be a non-empty string of at most {limit} chars "
+                    "(the adapter truncates the verbatim text; the carrier never does)")
+    if "serving_claim_id" in obs and not (
+            isinstance(obs["serving_claim_id"], str)
+            and _SERVING_CLAIM_ID.fullmatch(obs["serving_claim_id"])):
+        raise ProjectionError(
+            "observation.serving_claim_id must be `legacy-serving-v2:<64-hex capture id>` "
+            "(optionally `clm_`-prefixed)")
+    if "mechanism" in obs:
+        mech = obs["mechanism"]
+        if not isinstance(mech, dict) or "id" not in mech or set(mech) - MECHANISM_KEYS:
+            raise ProjectionError(
+                f"observation.mechanism must be a mapping with an `id` and only "
+                f"{sorted(MECHANISM_KEYS)}")
+        for name, value in mech.items():
+            if (not isinstance(value, str) or not value.strip()
+                    or len(value) > _MECHANISM_LIMITS[name]):
+                raise ProjectionError(
+                    f"observation.mechanism.{name} must be a non-empty string of at most "
+                    f"{_MECHANISM_LIMITS[name]} chars")
+    # A value-bearing observation is about a NUMBER; the number it is about must be one.
+    if not _finite_number(tup.value):
+        raise ProjectionError(
+            "a tuple carrying an observation must carry a finite numeric `value` -- the "
+            "observation is emitted beside it on the evidence frame")
+    if __package__:
+        from .canonical import CanonicalizationError, canonical_bytes
+    else:
+        from canonical import CanonicalizationError, canonical_bytes
+    try:
+        canonical_bytes({"observation": frame_observation(obs), "value": frame_scalar(tup.value),
+                         "unit": tup.unit, "metric": tup.metric})
+    except CanonicalizationError as exc:
+        raise ProjectionError(f"observation is not canonical JSON: {exc}") from exc
+
+
 @dataclass(frozen=True)
 class ClaimTuple:
     """`MEASUREMENT.md:13` — (metric, protocol-id, n/reps, date, attestation ref) — plus the two
@@ -176,18 +319,23 @@ class ClaimTuple:
     extra: dict[str, Any] = field(default_factory=dict)
     # VB-APPLICABILITY: native declarations only, inert with respect to grading.
     # Run identity and expected keys, when declared, live in this same scope.
-    # Last field preserves existing positional constructors.
     applicability: dict[str, Any] = field(default_factory=dict)
+    # Loop-belief redesign §4.1: WHAT was measured -- the anchor, the effect, the floor, the
+    # producer's own outcome and the mechanism -- so a planner reads a number, not a sentence.
+    # Inert to grading exactly like `applicability`: `grade()` never reads it, and a test pins
+    # grade(t) == grade(replace(t, observation={})) for every fixture. `to_frames` emits it
+    # (with metric/value/unit) into the EVIDENCE assertion only when present, so every tuple
+    # that carries none keeps its byte-identical frames (the SC57 precedent).
+    # Last field preserves existing positional constructors.
+    observation: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not isinstance(self.applicability, dict):
             raise ProjectionError("applicability must be a mapping")
-        allowed = {"model_file", "quant", "backend", "device", "context_tokens",
-                   "kernel", "run_id", "run_expected_keys"}
-        if set(self.applicability) - allowed:
+        if set(self.applicability) - APPLICABILITY_KEYS:
             raise ProjectionError("applicability contains unknown fields")
         for name, value in self.applicability.items():
-            if name == "context_tokens":
+            if name == "context_tokens" or name == "np":
                 valid = type(value) is int and value > 0
             elif name == "kernel":
                 valid = (isinstance(value, str) and bool(value.strip())) or (
@@ -197,6 +345,12 @@ class ClaimTuple:
                     isinstance(key, str) and key.strip() for key in value)
                 if valid:
                     valid = len(value) == len(set(value))
+            elif name == "model_sha256":
+                valid = isinstance(value, str) and _HEX64.fullmatch(value) is not None
+            elif name == "build_sha":
+                valid = isinstance(value, str) and _GIT_SHA.fullmatch(value) is not None
+            elif name == "scope_basis":
+                valid = value in SCOPE_BASES
             else:
                 valid = isinstance(value, str) and bool(value.strip())
             if not valid:
@@ -210,6 +364,7 @@ class ClaimTuple:
                 canonical_bytes(self.applicability)
             except CanonicalizationError as exc:
                 raise ProjectionError(f"applicability is not canonical JSON: {exc}") from exc
+        _validate_observation(self)
         # Only IDENTITY and LABELS are structural. `date`, `protocol_id`, `reps` and the
         # attestation are gradable elements: a measurement missing them is a real measurement with
         # a low grade, and refusing to represent it would delete the very thing the ladder exists
@@ -696,11 +851,27 @@ def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
                         "revision_observed": tup.date}
     if tup.applicability:
         source_assertion["applicability"] = dict(tup.applicability)
+    evidence_assertion = {"claim_id": claim_id, "evidence_id": f"evd_{ident}",
+                          "grade": {"Q": q, "T": t}, "source_id": source_id,
+                          "protocol_id": tup.protocol_id, "reps": tup.reps,
+                          "category": tup.category, "metric_direction": tup.metric_direction}
+    # Loop-belief redesign §4.2: the measured content rides on the EVIDENCE frame, because it is
+    # a property of the measurement. All four keys are conditional on `observation`, so a tuple
+    # without one emits the byte-identical assertion -- and frame_id -- it always did (the SC57
+    # precedent above). `fold` reads claim_id/grade/evidence_id/source_id from this frame and
+    # ignores the rest, so none of them can move a grade, a verdict or a gate outcome.
+    retrofit = False
+    if tup.observation:
+        evidence_assertion.update(metric=tup.metric, value=frame_scalar(tup.value),
+                                  unit=tup.unit, observation=frame_observation(tup.observation))
+        # §6: a projection of a record that predates its producer's hook says so in the
+        # envelope, where the intake adapter already says it.
+        retrofit = tup.observation.get("retrofit") is True
     return [
         make_frame(
             frame_type="epyc.vidya/frame/source_observed/v1",
             assertion=source_assertion,
-            provenance={"method": adapter_id, "about": ident, "retrofit": False},
+            provenance={"method": adapter_id, "about": ident, "retrofit": retrofit},
             actor=adapter_id, authority_scope=authority, created_at=as_of),
         make_frame(
             frame_type="epyc.vidya/frame/claim_proposed/v1",
@@ -709,10 +880,7 @@ def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
             actor=adapter_id, authority_scope=authority, created_at=as_of),
         make_frame(
             frame_type="epyc.vidya/frame/evidence_supports_claim/v1",
-            assertion={"claim_id": claim_id, "evidence_id": f"evd_{ident}",
-                       "grade": {"Q": q, "T": t}, "source_id": source_id,
-                       "protocol_id": tup.protocol_id, "reps": tup.reps,
-                       "category": tup.category, "metric_direction": tup.metric_direction},
+            assertion=evidence_assertion,
             provenance={"evidence": f"evd_{ident}", "about": claim_id, "method": adapter_id,
                         "grade_reasons": reasons, "reps_basis": tup.reps_basis},
             actor=adapter_id, authority_scope=authority, created_at=as_of),
