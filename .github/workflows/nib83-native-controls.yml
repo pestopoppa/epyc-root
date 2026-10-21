@@ -1,0 +1,45 @@
+name: NIB83 opt-in E17 native-row synthetic controls
+on:
+  push:
+    branches: [codex/ni08-nib83-native-source-20261021]
+permissions:
+  contents: read
+jobs:
+  native-seven:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONNOUSERSITE: '1'
+      PYTHONHASHSEED: '0'
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+    steps:
+      - name: Initialize setup-failure custody
+        run: |
+          mkdir -m 700 -p "$RUNNER_TEMP/nib83-native-result"
+          printf '{"state":"setup_pending","native_value":null,"capture_started":false}\n' > "$RUNNER_TEMP/nib83-native-result/setup-status.json"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Original synthetic native capture and existing shared grade
+        run: python recipe/scripts/ci/nib83_native/capture.py
+      - name: Retain original success or failure custody
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nib83-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/nib83-native-result
+          if-no-files-found: error
+          retention-days: 90

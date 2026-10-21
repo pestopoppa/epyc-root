@@ -41,6 +41,12 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
 | OP-FLAGSRC | 17 flagged sources: recommend the table in DP-D. | harness-improvement-loop.md | 2026-10-20 |
 | OP-AMENDCAND | Two further MEASUREMENT amendment candidates: recommend hold. DP-E. | conversational-memory-eval-instrument.md CME-6 | 2026-10-20 |
+| OP-INJSENT | DP-G: model-facing "data, not instructions" sentence (conflicts with `debugger_system.md:8`). Recommend (a) no sentence now; run CT-18 and test (c) a boundary-only sentence plus per-call datamark; default (a). Plan DP-G (amendment sha 2edfb066). | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) CT-18 | 2026-10-21 |
+| OP-INJPOLICY | DP-H: switch `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY` default from `source` to `warn`. Recommend (b) `warn`; default (a) keep `source`. An orchestrator default, not a registry entry; the operator signs it. DP-H. | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) CT-19 | 2026-10-21 |
+| OP-CHUNKKV | DP-I: chunk-KV reuse depth beyond phase 1. Recommend option 1 as running plus the phase-3 skeleton in parallel, with the hybrid affine-state phase decided at the phase 0 drift-curve gate; KPF-64 runs beside it; default option 1. DP-I. | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) KPF-62 | 2026-10-21 |
+| OP-POSTCAP | DP-J: post-cap and operator-flagged sources, one table with per-row recommendations (default: monitor all). DP-J table in the amendment. | [harness-improvement-loop.md](harness-improvement-loop.md) M26 | 2026-10-21 |
+| OP-AUTOLAB1457 | DP-K: convert the intake-1457 (AutoLab) decline to knowledge_only plus a repo monitor. Recommend (a) convert; default (b) keep the decline, no index edit. DP-K. | [autokernel-research-loop.md](autokernel-research-loop.md) M23 | 2026-10-21 |
+| OP-AMENDCAND2 | DP-L: three further MEASUREMENT amendment candidates (area under cumulative-solved-by-turn curve, scorer-validity precondition, replicate-floor rule). Recommend (a) hold; human-amendment only, nothing drafted into any protocol. DP-L. | [harness-improvement-loop.md](harness-improvement-loop.md) HIL-20 | 2026-10-21 |
 | OP-M12F | Choose prospective EPYC v3 ordering eligibility (recommend gold≥2, partial retrieval zero) or retain v2. [Concrete metric/source package](../../artifacts/operator/decisions/M12f-EPYC-v3-20261008/README.md); SC67 protocol admission remains separate. | [episodic-memory-integrity.md](episodic-memory-integrity.md) M-12f | 2026-10-08 |
 | OP-AUD10 | Approve the tested clean-only Bash hook and name its live steward (recommend codex-ni-main), name another steward, or retain current settings. [Exact D9 package](../../artifacts/operator/decisions/D9-AUD10-clean-only-20261008/README.md). | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) AUD-10 | 2026-10-08 |
 | OP-LR11-LR13 | Ratify bounded additive close-time inventory and subagent scratch/records rules, or retain current policy. [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md); recommendation A, typed human terminal signature required. | [non-inference-backlog.md](non-inference-backlog.md) LR-11 / LR-13 | 2026-10-07 |
@@ -119,12 +125,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1124 | 35 | 2026-07-29 |
+| inference-research | 61 | 1133 | 35 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
-| research-evaluation | 43 | 500 | 15 | 2026-07-29 |
+| research-evaluation | 43 | 529 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 52 | 628 | 18 | 2026-07-29 |
-| user-facing-harness | 14 | 119 | 16 | 2026-07-29 |
+| routing-and-optimization | 52 | 644 | 18 | 2026-07-29 |
+| user-facing-harness | 14 | 129 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

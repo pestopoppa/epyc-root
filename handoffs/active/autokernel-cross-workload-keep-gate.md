@@ -697,6 +697,7 @@ Global constraints:
 - [ ] **AKX-P4c — belief kernel write side.**
   - Census rows and blast-radius rows are verified structural findings. Filed 2026-09-15 as **SC81** in `vidya-belief-substrate-program.md`, with a candidate source row in `scripts/vidya/adapters/README.md` (CLAUDE.md: surface the wiring immediately, not at P0). Tick this item when SC81 lands with AKX-P0a.
   - Non-regression rows reuse the existing serving A/B archive/belief export (INF-73 "Aggregate serving gates feed the original archive and belief consumer").
+- [ ] **AKX-CHK-1 — Check that a keep-gate timeout cannot render as a pass (AKX-ALL-17 G5).** Check only, zero compute: confirm the AK campaign correctness and keep-gate result record carries ran, skipped and timed-out counts and that a wall-clock timeout cannot be rendered as a pass or as an empty summary; confirm any branch-versus-baseline timing comparison asserts neither arm hit its own timeout. If the record can, file the gap against AKX-ALL-17 (intake-2325#record). Acceptance: a written finding with the code references, and a gap task filed if the answer is no. Estimate: 0.5 day.
 
 ---
 

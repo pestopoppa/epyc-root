@@ -1,0 +1,90 @@
+name: CJ567 source fixture original controls
+on:
+  push:
+    branches: [codex/cj567-source-native-20261021]
+permissions:
+  contents: read
+jobs:
+  source-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      UV_PYTHON_DOWNLOADS: never
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: enrollment
+          persist-credentials: false
+          repository: pestopoppa/epyc-root
+          ref: a4b6bac87b4c9692271e12caa7bfd9a37c4e643a
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: carrier
+          persist-credentials: false
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: app
+          persist-credentials: false
+          repository: pestopoppa/epyc-orchestrator
+          ref: 352d4208931a6cf1ee21363fce390f6ae26bb81f
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: research
+          persist-credentials: false
+          repository: pestopoppa/epyc-inference-research
+          ref: 3caaf22fa853daab5c5ae055ca46b67809e2c938
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: official
+          persist-credentials: false
+          repository: allenai/IFBench
+          ref: 1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: nltk
+          persist-credentials: false
+          repository: nltk/nltk_data
+          ref: 550b6625bcef1f2abff2ff770a5a0d272c9c6b2a
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            packages/corpora/stopwords.zip
+            packages/taggers/averaged_perceptron_tagger_eng.zip
+            packages/tokenizers/punkt.zip
+            packages/tokenizers/punkt_tab.zip
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Frozen official environment and original seed setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --require-hashes -r recipe/proposed/cj567/bootstrap-requirements.txt
+          cd official
+          uv sync --frozen --group dev --no-install-project --python "$(command -v python)"
+          cd ..
+          official/.venv/bin/python -B recipe/proposed/cj567/prepare_environment.py
+      - name: Original controls through existing native producer
+        shell: bash
+        env:
+          CJ567_OFFICIAL: ${{ github.workspace }}/official
+          CJ567_RESEARCH: ${{ github.workspace }}/research
+          NLTK_DATA: ${{ github.workspace }}/official/ifbench/.nltk_data
+          PYTHONPATH: ${{ runner.temp }}/cj567-fixture:${{ github.workspace }}/app:${{ github.workspace }}/official
+        run: |
+          set -euo pipefail
+          official/.venv/bin/python -B recipe/proposed/cj567/capture.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: cj567-source-original-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cj567-result
+          if-no-files-found: error
