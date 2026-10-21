@@ -1,0 +1,82 @@
+{
+  "alpha": 0.05,
+  "arms": {
+    "no_hint": {
+      "flip_rate": 0.1,
+      "hint_chars": 0,
+      "n_error": 0,
+      "n_fail": 9,
+      "n_pass": 1,
+      "n_started": 10,
+      "restart_turn": 2,
+      "wilson95": [
+        0.017876212896073978,
+        0.4041500295247722
+      ]
+    },
+    "placebo": {
+      "flip_rate": 0.2,
+      "hint_chars": 60,
+      "n_error": 0,
+      "n_fail": 8,
+      "n_pass": 2,
+      "n_started": 10,
+      "restart_turn": 2,
+      "wilson95": [
+        0.056682150937766844,
+        0.5098375308778678
+      ]
+    },
+    "targeted": {
+      "flip_rate": 0.7,
+      "hint_chars": 60,
+      "n_error": 0,
+      "n_fail": 3,
+      "n_pass": 7,
+      "n_started": 10,
+      "restart_turn": 2,
+      "wilson95": [
+        0.39677814534597083,
+        0.892208733443606
+      ]
+    },
+    "wrong_step": {
+      "flip_rate": 0.1,
+      "hint_chars": 60,
+      "n_error": 0,
+      "n_fail": 9,
+      "n_pass": 1,
+      "n_started": 10,
+      "restart_turn": 5,
+      "wilson95": [
+        0.017876212896073978,
+        0.4041500295247722
+      ]
+    }
+  },
+  "claim_allowed": true,
+  "contrasts_vs_targeted": {
+    "no_hint": {
+      "diff": 0.6,
+      "fisher_one_sided_p": 0.009883305548940223
+    },
+    "placebo": {
+      "diff": 0.49999999999999994,
+      "fisher_one_sided_p": 0.03488925934746368
+    },
+    "wrong_step": {
+      "diff": 0.6,
+      "fisher_one_sided_p": 0.009883305548940223
+    }
+  },
+  "decisive": true,
+  "denominator_policy": "all samples started; errors counted as non-flips and reported",
+  "hint_sha_chars": 60,
+  "label": "format example, synthetic counts, NOT a measurement",
+  "original_outcome": "fail",
+  "restart_turn": 2,
+  "run_id": "EXAMPLE-run",
+  "schema": "replay_flip_report/v1",
+  "task_key": "EXAMPLE-task",
+  "verdict": "targeted step flips outcome beyond no_hint, placebo and wrong_step"
+}

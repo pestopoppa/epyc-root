@@ -192,3 +192,51 @@ This is the spec that HIL-2 checklist item 13 (failure decomposition) rests on. 
 10. Control ladder (W4-GRADE-G2). Any structural-signal claim reports a linear run-size baseline, a composition baseline, task-level resampling (not run-level) and a degree-matched counterfeit.
 
 Reference agreement values for the labelled-sample clause (AgentRx, Who&When Pro, TraceElephant, REFLECT, LongRCA) are in `/mnt/raid0/llm/tmp/dive-dpfw4-agentrx/GROUP_W4E.md`; they are cited, not copied, and the metrics differ so the values are not comparable with each other.
+
+## HIL-16 / HIL-18 build design (2026-10-21, lane hil16-18)
+
+Orchestrator commit on lane `lane/hil16-18-20261021`. Everything below is non-inference machinery; the
+runs are separate window-guarded follow-ups.
+
+### HIL-16 prefix-preserving replay tier
+
+- **Recording** (`src/trace/replay/`, flag `replay_recording`, default off, implies step events): one
+  `model_turn` trace-store row per root-LM turn (prompt bytes and raw output content-addressed in a
+  sha256 CAS, call kwargs, `step_mark` = ordinal of the next `tool_step`, a hash chain over every prompt and
+  output so far). `tool_step` rows gain `args_cas` / `output_cas` only when a CAS is attached, so HIL-13a
+  rows are unchanged with the flag off. Hook site: `_execute_turn` right after the primary LLM output.
+- **Driver** (`driver.py`): `ReplayDriver.check_prefix(k)` makes the harness rebuild each prompt from its
+  own state and compares the BYTES to the recorded prompt; tool calls are served from the CAS with tool
+  name and argument hash checked and every recorded call must be consumed. Any difference is a
+  `PrefixDivergence`; `run_from` then makes no model call. From turn k the live model and tools take over,
+  with an optional patch appended to the turn-k prompt. The harness is a protocol (`reset`, `build_prompt`,
+  `execute`); the production binding to the graph turn loop is a follow-up because prompt determinism
+  (timestamps, ordering) can only be established on a real flag-on recording.
+- **Arms** (`build_arms`): targeted (hint at k), no_hint (restart at k, nothing added), placebo (neutral text
+  of exactly the hint's length at k), wrong_step (the same hint at a deterministic turn j != k, preferring
+  |j-k| >= 2). Each arm runs n seeded samples at temperature > 0; every sample started stays in the
+  denominator, errors and diverged prefixes counted as non-flips and shown beside the rates.
+- **Checker**: the existing benchmark scorer (`scripts/benchmark/answer_scoring_vendored.score_response`)
+  supplied as `--scorer`; tasks without a deterministic scorer are out of scope.
+- **Report** (`replay_flip_report/v1`, example `artifacts/dpf-hil-20261021/replay_flip_report.example.json`,
+  synthetic counts): per-arm n, pass/fail/error, flip-rate, Wilson 95%; targeted-minus-control differences
+  with one-sided Fisher p. `decisive` is true only if the targeted flip-rate beats ALL three controls at
+  alpha 0.05; a missing control arm or a non-failed original gives `claim_allowed=false`. A flip that a
+  placebo or wrong-step arm matches is reported as "not distinguished from controls".
+
+### HIL-18 spectrum attribution
+
+- **Key** (`src/trace/spectrum.py`): `(role, tool, exit_status)`; status precedence exit code, then error
+  flag plus class, then ok; none captured gives `unknown`, flagged ambiguous and never guessed. A local
+  model enters only through `relabel_ambiguous(traces, judge)`, called for unknown-status steps alone.
+- **Ranking**: presence spectrum per replay, Kulczynski2 `0.5*(ef/(ef+nf) + ef/(ef+ep))`, deterministic
+  tie-break. A task is eligible when pass-rate is strictly in (0,1) over >= 20 labelled replays.
+- **Wrapper** (`src/trace/spectrum_replay.py`, `scripts/trace/spectrum_replay.py`): `run` replays each task
+  N times through `/chat` (refuses unless `WINDOW_CONFIRMED=1`, aborts if no step events join), labels
+  with the benchmark scorer, appends a manifest; `report` is offline. The report carries per-task top keys,
+  agreement with the L2 categories (failed runs flagged per category, top-m key at the flagged step, and
+  the unclassified count), optional human-overlap hits, and the join accounting (replays started / with
+  steps / unlabelled). ChatRequest has no temperature, so replay variance comes from the role sampler and
+  eligibility, not an assumption, decides which tasks count.
+- **Not built**: role-ablation Shapley credit (gated on a usable ranking and the 1-2 week dependency-edge
+  derivation).
