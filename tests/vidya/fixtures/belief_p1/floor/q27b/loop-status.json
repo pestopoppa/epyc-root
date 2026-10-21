@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.autokernel.loop_status.v1",
+  "surface": "serving:q27b-9a3f1392a-gpu-dflash2-np1",
+  "target": {
+    "campaign_id": "ak-27b-gpu-verify-20261004",
+    "original_target": {
+      "execution": {
+        "backend": "gpu",
+        "build": {
+          "kind": "build",
+          "path": "/mnt/raid0/llm/tmp/ak-27b-gpu-run1-20261004/anchor-9a3f1392a/bin/llama-server",
+          "ref": "local:q27b:9a3f1392a:llama-server",
+          "schema": "epyc.autokernel.local_artifact.v1",
+          "sha256": "ffbbe30ec8d91c8f7abc341d587070837bdb77918983fda85b2677437cf22877"
+        },
+        "model": {
+          "kind": "model",
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "ref": "local:q27b:model-q8_0",
+          "schema": "epyc.autokernel.local_artifact.v1",
+          "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348"
+        }
+      }
+    },
+    "selected_id": "q27b-9a3f1392a-gpu-dflash2-np1"
+  }
+}
