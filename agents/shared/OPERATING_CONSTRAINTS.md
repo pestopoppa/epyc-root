@@ -373,6 +373,18 @@ must pass this test:
 - **Something genuinely needs a choice → present it as a decision package** (below) and *keep going on
   everything that does not depend on the answer*. A pending decision blocks its own item, never the rest.
 
+- **Missing software, platform or license is never a blocker (operator, 2026-10-21; platform/license rule first ruled 2026-10-20).** After a dive declined CacheClip because
+  "it needs plumbing we don't have": *"WE CAN BUILD PLUMBING WE DON'T HAVE!"*, *"I've told you amillion
+  times. The blocker should NEVER be missing software"*, *"we can always build it ourselves"*. Missing
+  software, plumbing, kernels, server features, a platform port, or upstream "not supported" is a **build
+  cost to estimate and plan**, never a blocker, decline reason, or reason to downgrade a recommendation.
+  Only real technical constraints limit (e.g. recurrent state not splittable by position, which bounds
+  the payoff; a measured quality loss) and they call for a workaround design. Anything missing
+  from llama.cpp or llama-server (a server option, cache path, kernel, op) is built on a
+  `llama.cpp-experimental` branch and folded into the champion, per CLAUDE.md → *Experimental Kernel
+  Workflow* (operator, 2026-10-21: "We can always build it and fold it into our champion kernels!");
+  it is never a limit. Intake form: `research-intake` Phase 4c.
+
 Mentioning something in passing is fine. Mentioning it **instead of doing it** is the failure.
 
 **Three shapes that look like diligence and are not:**

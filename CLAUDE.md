@@ -136,6 +136,7 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 ## Research Intake
 
 - **Never dismiss a research source, model, or technique as "not applicable" without asking the user first** — existing infrastructure often makes things feasible. When in doubt, flag for review.
+- **Missing software, plumbing, kernels, server features, platform ports or upstream "not supported" are never a decline reason** — they are build costs to estimate and plan (operator, 2026-10-21). Only real technical constraints limit; they call for a workaround design. See `agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't Defer*.
 
 ## Belief Kernel — wiring new sources
 

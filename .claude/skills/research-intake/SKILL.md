@@ -225,7 +225,12 @@ explicitly not yet task lines. Mark each `[unverified]`.
 
 **4c — Explicit declines.** Every entry at `relevance >= medium` not recommended for a dive gets a
 one-line reason. A silent drop is a defect. **Not a valid reason (operator, 2026-10-20):**
-"overlaps existing handoffs", "weak evidence" or "training-heavy". An entry at `relevance >=
+"overlaps existing handoffs", "weak evidence" or "training-heavy". **Also not valid
+(operator, 2026-10-20): platform mismatch (e.g. CUDA-only, other OS or vendor) and license.
+Also not valid (operator, 2026-10-21): missing software or plumbing** — no server feature, kernel, platform port, or
+upstream "not supported"; these are build costs to estimate and plan, never a decline or a downgrade.
+Only a real technical constraint limits (a mathematical property such as recurrent state not being
+splittable by position, or a measured quality loss), and it calls for a workaround design. An entry at `relevance >=
 medium`, or with `adopt_patterns` as its disposition, MUST be recommended for a Stage-2 dive;
 only a reason specific to that entry (duplicate of a dived entry, source unreachable) declines it.
 
