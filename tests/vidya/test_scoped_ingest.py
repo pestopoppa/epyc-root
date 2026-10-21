@@ -96,8 +96,11 @@ def test_rescope_emits_one_source_frame_and_is_benign_to_fold_and_gate():
     # ... and the loop reader now sees the scope (last source_observed per source_id wins).
     seen_before = lb.evaluate_frames(existing, [TARGET], as_of=AS_OF)
     seen_after = lb.evaluate_frames(existing + kept, [TARGET], as_of=AS_OF)
-    assert "clm_inf70_a" not in seen_before["claim_ids"]
-    assert "clm_inf70_a" in seen_after["claim_ids"]
+    # A device-only scope is HOST tier (belief redesign §7.1): shown as host context, never a
+    # reliance-eligible claim id.
+    assert "clm_inf70_a" not in [c["claim_id"] for c in seen_before["claims"]]
+    assert "clm_inf70_a" in seen_after["host_claim_ids"]
+    assert "clm_inf70_a" not in seen_after["claim_ids"]
 
 
 def test_rescope_is_idempotent():
