@@ -1,0 +1,16 @@
+outcome|model_id|n
+success|qwen3.6-35b-a3b-mtp-q8_0|2081
+success|unknown|2005
+success|qwen3-next-80b-a3b-q4_k_m|1160
+failure|qwen3.6-35b-a3b-mtp-q8_0|535
+failure|qwen3-next-80b-a3b-q4_k_m|109
+success|qwen3.6-27b-mtp-q8_0|102
+success|gemma4-26b-a4b-it-orig-q4_k_m|73
+success|qwen3.5-122b-a10b-q4_k_m|45
+failure|unknown|41
+failure|gemma4-26b-a4b-it-orig-q4_k_m|32
+failure|qwen3.6-27b-mtp-q8_0|22
+success|qwen3-vl-30b-a3b-q4_k_m|18
+failure|qwen3.5-122b-a10b-q4_k_m|11
+success|qwen3.8-27b-q8_0|2
+failure|qwen3.8-27b-q8_0|1
