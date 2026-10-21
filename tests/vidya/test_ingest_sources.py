@@ -245,6 +245,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
         # Actual accepted writer -> strict reader/CLI ledger custody: tests/test_hg5_request_event_reader.py.
         "hg5-request-event",
+        # Exact producer pin + 9-shard binding refusal: test_ds41_1017_validation_adapter.py.
+        "ds41-1017-validation",
         # Actual prospective DTAP producer/private CLI: test_dtap_timeout_report.py.
         "dtap-timeout-report",
         # Actual private native gate/frames and CLI dry-run privacy roundtrip:
