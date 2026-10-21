@@ -1,0 +1,4 @@
+{"purpose": "P1-K fixtures: runner-authored KPF-18 item-7 records, copied UNMODIFIED (record_sha256 covers the body, so trimming would void them)",
+ "gpu27b_item7": {"source": "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run-c", "files": "belief_measurements.jsonl + rows/ (A1,B1,A2,B2)", "model": "Qwen3.8-27B-Q8_0", "backend": "gpu"},
+ "cpu35b_item7": {"source": "/mnt/raid0/llm/tmp/kv-prefix-fork/p1r-20261020/kpf18cpu/rerun-20261021/item7", "files": "first two lines (A1,B1) + their rows", "model": "Qwen3.6-35B-A3B-MTP-Q8_0", "backend": "cpu"},
+ "copied": "2026-10-21"}
