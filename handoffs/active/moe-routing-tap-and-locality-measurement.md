@@ -120,3 +120,9 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - DI-137 (intake-2139): knowledge-only: records the 5.7x fetch-vs-read break-even that rules out per-step MoonEP-style prefetch at decode on this host; RT-7 (already proposed) remains the decision instrument
 - DI-145 (intake-2141): knowledge-only: UltraEP is retained as the reference for exact-load planning and for the finding that history windows go stale in prefill/training; its runtime is NVLink-domain EP infrastructure with no EPYC consumer. Re-open only if RT-6 shows an oracle-vs-history gap at T>=512 that the CPU prefill path (cpu-prefill-compute-large-models.md) could exploit.
 - DI-146 (intake-2141): knowledge-only: main session carries the narrowing into intake-2138 claim 6 (see claim_corrections).
+
+## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
+
+- [ ] **RT-5.1 — Expert-load statistics rider for RT-5/RT-6.** COMPUTE-GATED — FILE ONLY. Add per-layer MaxVio, MinVio and inactive-expert ratio (intake-2195#record definitions) to the RT-5/RT-6 offline analysis of RT-1 traces (numpy, no inference), reported against the same chance baselines.
+
+- Trigger (no checkbox): a first-party report names the load-balancing method used to train Qwen3.8-Flash-Next or DeepSeek-V4.1-Flash. Then interpret the RT-5 skew statistics against that training objective (intake-2195#05).

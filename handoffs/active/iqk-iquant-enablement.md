@@ -310,3 +310,10 @@ paths). Findings ordered by leverage:
   The post-`6c44557bf` thread-safety rerun passed. Historical HIP was `56/59`, all 3 failures
   classified baseline with paired differentials; exact-tip HIP is `59/62` with the same three
   failure classes, not green.
+
+## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
+
+- [ ] **NEW-11 — iqk coverage table for the ISTA-DASLab GSQ-RCO Q38FN builds (text only, no weights).** From the four published tensor-allocation files, compute per build the byte-weighted share of routed-expert bytes on iqk-accelerated types versus native fallback types (Q2_0, IQ4_NL, IQ1_M) before any download decision (intake-2206#01).
+- [ ] **NEW-10 — GSQ-RCO arm for Q38FN versus served UD-IQ4_XS.** After NEW-11 and an operator disk/download call, pull IQ3_XXS and IQ3_S from ISTA-DASLab at sha ed59f920 (not the community relay); v10 load smoke, then PPL plus mean KLD and same-top-1 against one shared reference, then coherence at production prompt length; only on a pass, the serving-shape bench; record which layers fall back to non-iqk types; the card's --lazy-mode flag does not exist in v10 (intake-2206#04).
+
+- Trigger (no checkbox): the GSQ code release adds a GGUF IQ-type or Q2_0 export path or a Qwen3.8-Flash-Next recipe. Then assess self-quantising with it (the paper's GGUF evidence covers K-quants only, intake-2207#01).

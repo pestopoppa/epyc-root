@@ -5015,3 +5015,7 @@ Verified outcome (dive-verified entries): two-Spark aggregate bandwidth (546 GB/
 Gated lever (durable prose, no checkbox): raise effective CPU streaming from ~140 toward 270 GB/s via the dispatch and barrier floor. Owned by the existing INF-70 axes above, CAFE-5/CAFE-6 and AKX-ALL-25 (autokernel-all-devices-all-dimensions.md); trigger = Q38P-1 shows weight-path streaming below 60% of read-sum (268 GB/s). Any lever under it keeps the CAFE-1 keep rule (>= +1.0% above the window floor, greedy identity 100%, matched-process A/B with >= 5 interleaved pairs) and reports per-op-class GB/s per row (C1).
 
 Knowledge retentions (no task): compare external Q38FN numbers only with model variant, checkpoint experts, K, concurrency and median-vs-peak stated (proposed C1 clause, carried to the next wiki compile); RecoverSSM (vLLM PR 58863, open) does not apply to our O(1) rs_idx rollback, trigger = merge with a K>=5 gain > 5% or Q38P-1 showing the K+1 state-write term > 3% of step bytes; the 5-of-10 routed-expert cut is declined for now (operator, 2026-10-07), reopen only if Q38P-1 shows expert bytes dominate and the streaming lever is closed.
+
+## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
+
+- Trigger (no checkbox): the first Q38FN MTP acceptance measurement on our harness. Then record it next to the vendor four-step mean accepted length (intake-2205#05) with the prompt mix noted; vendor numbers are never an EPYC baseline.

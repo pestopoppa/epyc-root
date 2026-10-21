@@ -484,3 +484,7 @@ operator-approved profile window.
 Update this handoff first; append `progress/YYYY-MM/YYYY-MM-DD.md` with the profile artifact
 + compute-vs-BW verdict; if PC-0 falsifies the premise, close this stub and note it in the
 inference-acceleration-index.
+
+## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
+
+- Trigger (no checkbox): a profile of a GDN-hybrid cold prefill (Qwen3.8-27B or Flash-Next) at p>=16k shows the gated-delta-net op at >= 8% of CPU time (PC-4d measured 1-2% at p8192). Then assess a chunked WY-form CPU GDN kernel (intake-2213#06).
