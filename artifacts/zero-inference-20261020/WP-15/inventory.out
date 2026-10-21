@@ -1,0 +1,4 @@
+8070 launches 3002 n_slots,n_ctx_slot ('4', '65536') last_stamp(min.sec.ms.us) ('11682', '43', '315', '485') mtime 1791700102.72509
+8080 launches 1519 n_slots,n_ctx_slot ('1', '262144') last_stamp(min.sec.ms.us) ('11682', '33', '880', '624') mtime 1791700102.72509
+8180 launches 1149 n_slots,n_ctx_slot ('1', '262144') last_stamp(min.sec.ms.us) ('11682', '24', '754', '664') mtime 1791700102.7250402
+serving_calls rows 19 by port {'8083': 11, 'None': 6, '8070': 2}

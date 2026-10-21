@@ -1,0 +1,7 @@
+# KPF-DOC-1 (2026-10-20)
+Patch (not applied): /mnt/raid0/llm/tmp/zero-inference-20261020/KPF-DOC-1/KPF-DOC-1.patch  (unified diff vs worktree handoff; `patch -p0` dry-run OK). Generator make_patch.py; verification scripts map.py, ends.py, locate.sh (all read-only git show).
+Trees: v10 ffc1bac82; champion dd3d9721c (e33229348 was the pre-port tip); p1r a1f0c8cf9 (= e33229348 + 6 KPF commits); p1r2 14d603f3a (= dd3d9721c + 7 KPF commits). Tag format [v10 . champ . p1r . p1r2].
+Verification: every v10 ref in the handoff checked at ffc1bac82. All correct except pre_decode end (3737 stated, actual 3733). Cross-tree: mapped by anchor regex; ranges flagged identical/changed (map.json).
+KEY FINDING - the task premise is half wrong: `is_last_user_message || near_prompt_end` is NOT a KPF departure. It exists in v10 (server-context.cpp:3718), e33229348 (:3863) and dd3d9721c (:4102). The real departures are: `common_prompt_checkpoint::pinned` (common/common.h:1130 in p1r/p1r2; absent in champ), `checkpoint_at` (server-task.h:72), and the `ckpt_pinned ||` term prepended to that spacing condition (p1r :4449, p1r2 :4688) plus create_checkpoint(..., pinned) (p1r :2802). The patch records these corrected.
+Also noted: champion line numbers moved +229 between e33229348 and dd3d9721c (ports of #26004/#30574), so the handoff's "champion e33229348" numbers are stale; the paged-attn scaffold files (llama-kv-block.h etc.) exist in none of the four trees.
+Proposed checkbox: `- [x] KPF-DOC-1 ...` once the owning session applies the patch (the patch already flips the box).
