@@ -1,0 +1,664 @@
+{
+  "archive_bytes": 19801279,
+  "archives": [
+    {
+      "bytes": 37733,
+      "git_blob": "56d35b5d204d64480f71edc0f5f82aebce6730b6",
+      "path": "packages/corpora/stopwords.zip",
+      "sha256": "48c0e52d8b52546e827f53761fb30300c0ab94f70660d28bd65ba0a86270946b",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/corpora/stopwords.zip",
+      "zip_safe_crc": true
+    },
+    {
+      "bytes": 1539115,
+      "git_blob": "b792e19546a5711218a05f4029ef17c8d62cd839",
+      "path": "packages/taggers/averaged_perceptron_tagger_eng.zip",
+      "sha256": "6025f530624335c67d6547d44757b357b4e79bae030a0383e9887a92c1718f0b",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/taggers/averaged_perceptron_tagger_eng.zip",
+      "zip_safe_crc": true
+    },
+    {
+      "bytes": 13905355,
+      "git_blob": "da7ffbd1e6fd6cc5c2f6879c2d4da23c7691944c",
+      "path": "packages/tokenizers/punkt.zip",
+      "sha256": "51c3078994aeaf650bfc8e028be4fb42b4a0d177d41c012b6a983979653660ec",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt.zip",
+      "zip_safe_crc": true
+    },
+    {
+      "bytes": 4319076,
+      "git_blob": "5e5ff6137d5ee6025e400d1c3a7b21914c48b635",
+      "path": "packages/tokenizers/punkt_tab.zip",
+      "sha256": "e57f64187974277726a3417ca6f181ec5403676c717672eef6a748a7b20e0106",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt_tab.zip",
+      "zip_safe_crc": true
+    }
+  ],
+  "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+  "no_imports_execution_or_network_during_scoring": true,
+  "resource_count": 4,
+  "scoring_not_run": true,
+  "seed_bytes": 53924312,
+  "seed_files": {
+    "corpora/stopwords/README": {
+      "bytes": 909,
+      "sha256": "e0365fde880eadb522f844cba2774529969b66b7406db7643cf260dcd77d6541"
+    },
+    "corpora/stopwords/albanian": {
+      "bytes": 1274,
+      "sha256": "859d62fe39637d302674ebe782cf7c69c5aaa07dd281fe4c7421f7e436d89776"
+    },
+    "corpora/stopwords/arabic": {
+      "bytes": 6348,
+      "sha256": "0df01c0a184d8c15077c6f0ee70e25e0c0308d827b92b14a19f5f819a0c465d0"
+    },
+    "corpora/stopwords/azerbaijani": {
+      "bytes": 967,
+      "sha256": "79fa359ae8c021f86c6fe6e56853396da7be9c8c7a30de45cda311ed199b26ae"
+    },
+    "corpora/stopwords/basque": {
+      "bytes": 2202,
+      "sha256": "6285e4424de3fd2791dbbe2bc3ff23ed009bac3bfced3ea4b927b5b63d246bf0"
+    },
+    "corpora/stopwords/belarusian": {
+      "bytes": 2332,
+      "sha256": "aae410578a8dc24917613e26b155161cc307f7f5ab68f8833f1f21fa73f5fbaa"
+    },
+    "corpora/stopwords/bengali": {
+      "bytes": 5443,
+      "sha256": "98b5906451961ef0118dcf9d99e6e7351266126bcc36789b17070decd394591b"
+    },
+    "corpora/stopwords/catalan": {
+      "bytes": 1558,
+      "sha256": "4749664544c92acea8dbb9db108830effcb2863e1b7761ae366ffb7683d96c07"
+    },
+    "corpora/stopwords/chinese": {
+      "bytes": 5560,
+      "sha256": "1d4460e24f29b27460a845ead1652bac94d10c4fc2d26926e615e6a715f177ce"
+    },
+    "corpora/stopwords/danish": {
+      "bytes": 424,
+      "sha256": "1bedc9cf5a8830dacf8c4ee0d8b301f0801861756ad0d504431d01047f961b0c"
+    },
+    "corpora/stopwords/dutch": {
+      "bytes": 453,
+      "sha256": "e5a2a7c390fe3ad0c0a132586ed11492b635d66a1f426cd89677f80b07bc76a6"
+    },
+    "corpora/stopwords/english": {
+      "bytes": 1048,
+      "sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+    },
+    "corpora/stopwords/finnish": {
+      "bytes": 1579,
+      "sha256": "952af766edc9b8e7ddc877fc464cbd94b91754b5621fdfdd7020568fd4813fcd"
+    },
+    "corpora/stopwords/french": {
+      "bytes": 813,
+      "sha256": "58ac7f7c074b70dc0fc86f6fcf40b2c227e9f95627e90e57971d5cce1e30e2e9"
+    },
+    "corpora/stopwords/german": {
+      "bytes": 1362,
+      "sha256": "f0c25acd7ec02a31f6679d9664ec5222ca846fdbc58db96160f4e7c0ddb0f7ea"
+    },
+    "corpora/stopwords/greek": {
+      "bytes": 2167,
+      "sha256": "7a97c6dc81144f7e8fcfe976025954ca3731f78a75d1fd86aa87f261fd195dae"
+    },
+    "corpora/stopwords/hebrew": {
+      "bytes": 1836,
+      "sha256": "aa52b26f09363630dba725eceb6a8348bea30c05be69a084ec2b58d79bab3c5a"
+    },
+    "corpora/stopwords/hinglish": {
+      "bytes": 5958,
+      "sha256": "0c88c0952998450c27270ea9c9a55f3f0d1fa787236212ce69a8fcc7bae1389d"
+    },
+    "corpora/stopwords/hungarian": {
+      "bytes": 1227,
+      "sha256": "64a68b5ebaa616b25bd976ac915c326f2ea8cce8b59a0ac8c5728b980ae4fb0c"
+    },
+    "corpora/stopwords/indonesian": {
+      "bytes": 6446,
+      "sha256": "127b5c39ef7456965b15905277e49a8936e39b3c0d67ceda1b7757ea4d913b57"
+    },
+    "corpora/stopwords/italian": {
+      "bytes": 1654,
+      "sha256": "293d7841f198e4012f49e8e5653c3bfd073a58cea1259fa2c0fcec894167b628"
+    },
+    "corpora/stopwords/kazakh": {
+      "bytes": 3880,
+      "sha256": "a74c693991e04a54eec6a03dbc4338080fecb62ca2a087d62659fed71bbb6410"
+    },
+    "corpora/stopwords/nepali": {
+      "bytes": 3610,
+      "sha256": "866321e2fe1bcf7d34814464e25eaf365e70b0de40aebee98d761b78b7936b3d"
+    },
+    "corpora/stopwords/norwegian": {
+      "bytes": 851,
+      "sha256": "f7e5b42208ccf1b1f282f9e0f8570e464272762bda5718b6b26750f510a688dc"
+    },
+    "corpora/stopwords/portuguese": {
+      "bytes": 1286,
+      "sha256": "6e7b98378c6b728266a83ebf035d927abf16b9e0d815d6204d81d90d896bcc9b"
+    },
+    "corpora/stopwords/romanian": {
+      "bytes": 1910,
+      "sha256": "0ab53d21cbde00c6bf367706a0243c646140ba564cce7e83ac33d80f8923e957"
+    },
+    "corpora/stopwords/russian": {
+      "bytes": 1235,
+      "sha256": "1743191192b4a4f77fcc216499455dc00c1b8626fdd407076a8deefff80e3d59"
+    },
+    "corpora/stopwords/slovene": {
+      "bytes": 15980,
+      "sha256": "65d95c97bdddaf5c719c8069eb242cccdf135826ad2e676038ade33835b50042"
+    },
+    "corpora/stopwords/spanish": {
+      "bytes": 2176,
+      "sha256": "6125eadf28ba664a60bf4296147bcbd40b80be93670056fdb229960ac15e2310"
+    },
+    "corpora/stopwords/swedish": {
+      "bytes": 559,
+      "sha256": "2a9d9d756bc4257d49329994f805c712cd5ab6746162e2082752238766c1c0c8"
+    },
+    "corpora/stopwords/tajik": {
+      "bytes": 1818,
+      "sha256": "9fb8e95452b1ca28f77d4779e0705eccd681dc6e51e5216002a42129cd9a4238"
+    },
+    "corpora/stopwords/tamil": {
+      "bytes": 1963,
+      "sha256": "0b66d268cb5258577466d56db8de387e5651f7c603a52774fbae0da646bc97e9"
+    },
+    "corpora/stopwords/turkish": {
+      "bytes": 260,
+      "sha256": "f2c7f0c2bd3dba42da700776266831853a3b5f1207fada5c15207334109abb57"
+    },
+    "corpora/stopwords/uzbek": {
+      "bytes": 2358,
+      "sha256": "23b042a68c64545ef94bbd016cbf20d6d1e042cfe77ec13960d9dd49c8fb30d9"
+    },
+    "taggers/averaged_perceptron_tagger_eng/averaged_perceptron_tagger_eng.classes.json": {
+      "bytes": 285,
+      "sha256": "d152ffa69d45b8357276341a3d592c6c025911d52ec0d9068d4f382560dd48b6"
+    },
+    "taggers/averaged_perceptron_tagger_eng/averaged_perceptron_tagger_eng.tagdict.json": {
+      "bytes": 25788,
+      "sha256": "4c713731cb06727736962bc8cd94ad919217a040e76691059af99bc0c2c9c246"
+    },
+    "taggers/averaged_perceptron_tagger_eng/averaged_perceptron_tagger_eng.weights.json": {
+      "bytes": 5677744,
+      "sha256": "789e8e35f6fac656d9b7eccea29ba4e8a137cbb5b525dd31f39e4291a9e80832"
+    },
+    "tokenizers/punkt/.DS_Store": {
+      "bytes": 6148,
+      "sha256": "24344a0387309358be715e1b803ec962c9a0800fd7b60a2492a681db81f91873"
+    },
+    "tokenizers/punkt/PY3/README": {
+      "bytes": 8574,
+      "sha256": "d3251cae66a9359bd68c039e3a46172a05ca9df0b27dcdfa23ae594d68d27ec4"
+    },
+    "tokenizers/punkt/PY3/czech.pickle": {
+      "bytes": 1119050,
+      "sha256": "64b0734b6fbe8e8d7cac79f48d1dd9f853824e57c4e3594dadd74ba2c1d97f50"
+    },
+    "tokenizers/punkt/PY3/danish.pickle": {
+      "bytes": 1191710,
+      "sha256": "6189c7dd254e29e2bd406a7f6a4336297c8953214792466a790ea4444223ceb3"
+    },
+    "tokenizers/punkt/PY3/dutch.pickle": {
+      "bytes": 693759,
+      "sha256": "fda0d6a13f02e8898daec7fe923da88e25abe081bcfa755c0e015075c215fe4c"
+    },
+    "tokenizers/punkt/PY3/english.pickle": {
+      "bytes": 406697,
+      "sha256": "5cad3758596392364e3be9803dbd7ebeda384b68937b488a01365f5551bb942c"
+    },
+    "tokenizers/punkt/PY3/estonian.pickle": {
+      "bytes": 1499502,
+      "sha256": "b364f72538d17b146a98009ad239a8096ce6c0a8b02958c0bc776ecd0c58a25f"
+    },
+    "tokenizers/punkt/PY3/finnish.pickle": {
+      "bytes": 1852226,
+      "sha256": "6a4b5ff5500ee851c456f9dd40d5fc0d8c1859c88eb3178de1317d26b7d22833"
+    },
+    "tokenizers/punkt/PY3/french.pickle": {
+      "bytes": 553575,
+      "sha256": "28e3a4cd2971989b3cb9fd3433a6f15d17981e464db2be039364313b5de94f29"
+    },
+    "tokenizers/punkt/PY3/german.pickle": {
+      "bytes": 1463575,
+      "sha256": "ddcbbe85e2042a019b1a6e37fd8c153286c38ba201fae0f5bfd9a3f74abae25c"
+    },
+    "tokenizers/punkt/PY3/greek.pickle": {
+      "bytes": 876006,
+      "sha256": "85dabc44ab90a5f208ef37ff6b4892ebe7e740f71fb4da47cfd95417ca3e22fd"
+    },
+    "tokenizers/punkt/PY3/italian.pickle": {
+      "bytes": 615089,
+      "sha256": "68a94007b1e4ffdc4d1a190185ca5442c3dafeb17ab39d30329e84cd74a43947"
+    },
+    "tokenizers/punkt/PY3/malayalam.pickle": {
+      "bytes": 221207,
+      "sha256": "1f8cf58acbdb7f472ac40affc13663be42dafb47c15030c11ade0444c9e0e53d"
+    },
+    "tokenizers/punkt/PY3/norwegian.pickle": {
+      "bytes": 1181271,
+      "sha256": "4ff7a46d1438b311457d15d7763060b8d3270852c1850fd788c5cee194dc4a1d"
+    },
+    "tokenizers/punkt/PY3/polish.pickle": {
+      "bytes": 1738386,
+      "sha256": "624900ae3ddfb4854a98c5d3b8b1c9bb719975f33fee61ce1441dab9f8a00718"
+    },
+    "tokenizers/punkt/PY3/portuguese.pickle": {
+      "bytes": 611919,
+      "sha256": "02a0b7b25c3c7471e1791b66a31bbb530afbb0160aee4fcecf0107652067b4a1"
+    },
+    "tokenizers/punkt/PY3/russian.pickle": {
+      "bytes": 33020,
+      "sha256": "549762f8190024d89b511472df21a3a135eee5d9233e63ac244db737c2c61d7e"
+    },
+    "tokenizers/punkt/PY3/slovene.pickle": {
+      "bytes": 734444,
+      "sha256": "52ef2cc0ed27d79b3aa635cbbc40ad811883a75a4b8a8be1ae406972870fd864"
+    },
+    "tokenizers/punkt/PY3/spanish.pickle": {
+      "bytes": 562337,
+      "sha256": "164a50fadc5a49f8ec7426eae11d3111ee752b48a3ef373d47745011192a5984"
+    },
+    "tokenizers/punkt/PY3/swedish.pickle": {
+      "bytes": 979681,
+      "sha256": "b0f7d538bfd5266633b09e842cd92e9e0ac10f1d923bf211e1497972ddc47318"
+    },
+    "tokenizers/punkt/PY3/turkish.pickle": {
+      "bytes": 1017038,
+      "sha256": "ae68ef5863728ac5332e87eb1f6bae772ff32a13a4caa2b01a5c68103e853c5b"
+    },
+    "tokenizers/punkt/README": {
+      "bytes": 8574,
+      "sha256": "d3251cae66a9359bd68c039e3a46172a05ca9df0b27dcdfa23ae594d68d27ec4"
+    },
+    "tokenizers/punkt/czech.pickle": {
+      "bytes": 1265552,
+      "sha256": "5ba73d293c7d7953956bcf02f3695ec5c1f0d527f2a3c38097f5593394fa1690"
+    },
+    "tokenizers/punkt/danish.pickle": {
+      "bytes": 1264725,
+      "sha256": "ea29760a0a9197f52ca59e78aeafc5a6f55d05258faf7db1709b2b9eb321ef20"
+    },
+    "tokenizers/punkt/dutch.pickle": {
+      "bytes": 742624,
+      "sha256": "4a8e26b3d68c45c38e594d19e2d5677447bfdcaa636d3b1e7acfed0e9272d73c"
+    },
+    "tokenizers/punkt/english.pickle": {
+      "bytes": 433305,
+      "sha256": "dda37972ae88998a6fd3e3ec002697a6bd362b32d050fda7d7ca5276873092aa"
+    },
+    "tokenizers/punkt/estonian.pickle": {
+      "bytes": 1596714,
+      "sha256": "3867fee26a36bdb197c64362aa13ac683f5f33fa4d0d225a5d56707582a55a1d"
+    },
+    "tokenizers/punkt/finnish.pickle": {
+      "bytes": 1951656,
+      "sha256": "1a9e17b3d5b4df76345d812b8a65b1da0767eda5086eadcc11e625eef0942835"
+    },
+    "tokenizers/punkt/french.pickle": {
+      "bytes": 583482,
+      "sha256": "de05f3d5647d3d2296626fb83f68428e4c6ad6e05a00ed4694c8bdc8f2f197ee"
+    },
+    "tokenizers/punkt/german.pickle": {
+      "bytes": 1526714,
+      "sha256": "eab497fa085413130c8fd0fb13b929128930afe2f6a26ea8715c95df7088e97c"
+    },
+    "tokenizers/punkt/greek.pickle": {
+      "bytes": 1953106,
+      "sha256": "21752a6762fad5cfe46fb5c45fad9a85484a0e8e81c67e6af6fb973cfc27d67c"
+    },
+    "tokenizers/punkt/italian.pickle": {
+      "bytes": 658331,
+      "sha256": "dcb2717d7be5f26e860a92e05acf69b1123a5f4527cd7a269a9ab9e9e668c805"
+    },
+    "tokenizers/punkt/malayalam.pickle": {
+      "bytes": 221207,
+      "sha256": "1f8cf58acbdb7f472ac40affc13663be42dafb47c15030c11ade0444c9e0e53d"
+    },
+    "tokenizers/punkt/norwegian.pickle": {
+      "bytes": 1259779,
+      "sha256": "e4a97f8f9a03a0338dd746bcc89a0ae0f54ae43b835fa37d83e279e1ca794faf"
+    },
+    "tokenizers/punkt/polish.pickle": {
+      "bytes": 2042451,
+      "sha256": "16127b6d10933427a3e90fb20e9be53e1fb371ff79a730c1030734ed80b90c92"
+    },
+    "tokenizers/punkt/portuguese.pickle": {
+      "bytes": 649051,
+      "sha256": "bb01bf7c79a4eadc2178bbd209665139a0e4b38f2d1c44fef097de93955140e0"
+    },
+    "tokenizers/punkt/russian.pickle": {
+      "bytes": 33027,
+      "sha256": "bc984432fbe31f7000014f8047502476889169c60f09be5413ca09276b16c909"
+    },
+    "tokenizers/punkt/slovene.pickle": {
+      "bytes": 832867,
+      "sha256": "7dac650212b3787b39996c01bd2084115493e6f6ec390bab61f767525b08b8ea"
+    },
+    "tokenizers/punkt/spanish.pickle": {
+      "bytes": 597831,
+      "sha256": "271dc6027c4aae056f72a9bfab5645cf67e198bf4f972895844e40f5989ccdc3"
+    },
+    "tokenizers/punkt/swedish.pickle": {
+      "bytes": 1034496,
+      "sha256": "40d50ebdad6caa87715f2e300b1217ec92c42de205a543cc4a56903bd2c9acfa"
+    },
+    "tokenizers/punkt/turkish.pickle": {
+      "bytes": 1225013,
+      "sha256": "d3ae47d76501d027698809d12e75292c9c392910488543342802f95db9765ccc"
+    },
+    "tokenizers/punkt_tab/README": {
+      "bytes": 8574,
+      "sha256": "d3251cae66a9359bd68c039e3a46172a05ca9df0b27dcdfa23ae594d68d27ec4"
+    },
+    "tokenizers/punkt_tab/czech/abbrev_types.txt": {
+      "bytes": 462,
+      "sha256": "8eb1feb5a6a46f9bd8f6a5ae58e218428a65b459b5ebd61668d83fa80acfc329"
+    },
+    "tokenizers/punkt_tab/czech/collocations.tab": {
+      "bytes": 1390,
+      "sha256": "fd58f549658c8389be32577e232187be9376c79708f66c60388a84916c8f3f3d"
+    },
+    "tokenizers/punkt_tab/czech/ortho_context.tab": {
+      "bytes": 684150,
+      "sha256": "451cb1a68a03ba88ced1247e6bb48c442e87dce1c9f463104618fac509866cd4"
+    },
+    "tokenizers/punkt_tab/czech/sent_starters.txt": {
+      "bytes": 352,
+      "sha256": "42f1de18ab29f9842113b87ec020202c0c25316c97d37f968435a7c7ee3018ca"
+    },
+    "tokenizers/punkt_tab/danish/abbrev_types.txt": {
+      "bytes": 1130,
+      "sha256": "4a358b26b7ba372cab3cedeb43b4e99a76ae9d01150493964141eb42a62e4a6e"
+    },
+    "tokenizers/punkt_tab/danish/collocations.tab": {
+      "bytes": 1693,
+      "sha256": "b003d3b839afd47afa81d64620a1cf15b75b944212a7f3ee6a7571f041ae02ec"
+    },
+    "tokenizers/punkt_tab/danish/ortho_context.tab": {
+      "bytes": 743835,
+      "sha256": "59d7ccda7b1eef6cbcddb6d2f1930c255a5d43600e66e32eff28eab8190c0727"
+    },
+    "tokenizers/punkt_tab/danish/sent_starters.txt": {
+      "bytes": 415,
+      "sha256": "f8dd41bdb1bb633574b22d38205e1c073639a0b80cb9591964bf92d84317527f"
+    },
+    "tokenizers/punkt_tab/dutch/abbrev_types.txt": {
+      "bytes": 434,
+      "sha256": "dcd4af07101692c986049ba07abcd6b7c1a2464ef4e46a932cf92d6e220388dd"
+    },
+    "tokenizers/punkt_tab/dutch/collocations.tab": {
+      "bytes": 623,
+      "sha256": "9a013563bce4637595a6db9d2eeb0ab3f68685d704ae20d97ad718aa91afbe4a"
+    },
+    "tokenizers/punkt_tab/dutch/ortho_context.tab": {
+      "bytes": 428403,
+      "sha256": "e2077b5748564a9666e437c0a96ea9c5bed0fe3ab5c756535584785d3af20fc9"
+    },
+    "tokenizers/punkt_tab/dutch/sent_starters.txt": {
+      "bytes": 310,
+      "sha256": "734454acc5952d91a1dfaca8cdfdabb715d8cdd35789c749528639d80751f45c"
+    },
+    "tokenizers/punkt_tab/english/abbrev_types.txt": {
+      "bytes": 619,
+      "sha256": "92a3e070f43d9b4c5534758ca40ad7343b04e7e29bfe0c2eb658a39445a4f779"
+    },
+    "tokenizers/punkt_tab/english/collocations.tab": {
+      "bytes": 594,
+      "sha256": "8e2da1225e4dd2cc9dba261ee231ccb134859e21b46006e7f472c5ee269af0cf"
+    },
+    "tokenizers/punkt_tab/english/ortho_context.tab": {
+      "bytes": 236303,
+      "sha256": "4bbcca25ed3d3f06c02402abf8419b9f033b8adc06e7b482eca4e45f81a5dc4c"
+    },
+    "tokenizers/punkt_tab/english/sent_starters.txt": {
+      "bytes": 241,
+      "sha256": "f3f8535483e1dba487241b764945168123bca3209a9645e59acd1225dc76edac"
+    },
+    "tokenizers/punkt_tab/estonian/abbrev_types.txt": {
+      "bytes": 224,
+      "sha256": "0307878fb32af1e21d8f3ba0644e39c89602f2f8aa4e4304943f7e9e0fd081b2"
+    },
+    "tokenizers/punkt_tab/estonian/collocations.tab": {
+      "bytes": 1825,
+      "sha256": "f1400a7ebf3c82a3d5aac886eb5bf06a1a840946cf052bb1532da7c25094797f"
+    },
+    "tokenizers/punkt_tab/estonian/ortho_context.tab": {
+      "bytes": 936992,
+      "sha256": "768b7e6e2ba93ff096e244af175c343b1a73463c4a1b99beebe6a9aa57ea1d78"
+    },
+    "tokenizers/punkt_tab/estonian/sent_starters.txt": {
+      "bytes": 679,
+      "sha256": "7ade7bb8ca7c527aac09517a6efbdf4f749e9a9fc0e43d2856c58be847030c83"
+    },
+    "tokenizers/punkt_tab/finnish/abbrev_types.txt": {
+      "bytes": 484,
+      "sha256": "7829baabcb5d69e26232839a1f5b6bc6d12b0e59b7f0a65f6ab1c163acbeb800"
+    },
+    "tokenizers/punkt_tab/finnish/collocations.tab": {
+      "bytes": 3046,
+      "sha256": "4d717a1b4d1fb7108ca9c9ed2cc63f8b4813cfaf73819e96fce79495ddc48292"
+    },
+    "tokenizers/punkt_tab/finnish/ortho_context.tab": {
+      "bytes": 1189717,
+      "sha256": "43e55a8bfa977561337a09105c570036df11346c6f91e57d8631520eefb26167"
+    },
+    "tokenizers/punkt_tab/finnish/sent_starters.txt": {
+      "bytes": 810,
+      "sha256": "ab81cf3b774ef068ac98adb99fcb3b1a05caf0423bdfa302bdc285e15597567f"
+    },
+    "tokenizers/punkt_tab/french/abbrev_types.txt": {
+      "bytes": 245,
+      "sha256": "01747ecfed08830d582d8c94634b63a36da316c0a67feec2871cf03f0dd5c657"
+    },
+    "tokenizers/punkt_tab/french/collocations.tab": {
+      "bytes": 334,
+      "sha256": "8ddf150ef5a0d22694e7c4d807f80b6d55da731ca81ea139633f560b378af990"
+    },
+    "tokenizers/punkt_tab/french/ortho_context.tab": {
+      "bytes": 334275,
+      "sha256": "7090ef4292647d4fe137159bd768a5304015d0614d59fdcfc30b2389634365ac"
+    },
+    "tokenizers/punkt_tab/french/sent_starters.txt": {
+      "bytes": 233,
+      "sha256": "b45a1ebdae9cdf46cf2e8be016b4718bf4f825445fc783d445faf0cfb2d569f8"
+    },
+    "tokenizers/punkt_tab/german/abbrev_types.txt": {
+      "bytes": 246,
+      "sha256": "259e5d78bc9d61a12d55ba47552c4e9c5ca08364d78a4669e864fd6de86818e3"
+    },
+    "tokenizers/punkt_tab/german/collocations.tab": {
+      "bytes": 527,
+      "sha256": "f77bd513f42e8179f5c932111c312be353d5913387d0bfe90a95c109111bca25"
+    },
+    "tokenizers/punkt_tab/german/ortho_context.tab": {
+      "bytes": 943500,
+      "sha256": "023887e78cfb919f1a00f9a96a88f42131582748cf833fd469490ee66596307c"
+    },
+    "tokenizers/punkt_tab/german/sent_starters.txt": {
+      "bytes": 762,
+      "sha256": "fe4b63edbdd33f78ba0a755f035680a864948b145ae82fc99072440a62a77acd"
+    },
+    "tokenizers/punkt_tab/greek/abbrev_types.txt": {
+      "bytes": 570,
+      "sha256": "0d56253b7ebc83f0f2403479bcf2b8ea51ffdea89ee60e34018eb32e4750d683"
+    },
+    "tokenizers/punkt_tab/greek/collocations.tab": {
+      "bytes": 118,
+      "sha256": "0fd732534d56177c80874125ca894ae60aee7b052ee2865a405b454cfd737a6f"
+    },
+    "tokenizers/punkt_tab/greek/ortho_context.tab": {
+      "bytes": 632838,
+      "sha256": "a87e4467791f974f808c0d396f6c82cd3a014d4fb4458a2287e2fcbce7084e9c"
+    },
+    "tokenizers/punkt_tab/greek/sent_starters.txt": {
+      "bytes": 567,
+      "sha256": "1a450aec85164e3fbfeb814768c9f120abd7139726af5bb5e2a577096739ca8e"
+    },
+    "tokenizers/punkt_tab/italian/abbrev_types.txt": {
+      "bytes": 534,
+      "sha256": "5d406f6bfb35e55f6bea282bf148bdcc9e4677860eb01a8e67c34b894274ac50"
+    },
+    "tokenizers/punkt_tab/italian/collocations.tab": {
+      "bytes": 53,
+      "sha256": "8167b58a049bb04de8d692ed33d72963503a061717cd37cacb33bb2d00669caf"
+    },
+    "tokenizers/punkt_tab/italian/ortho_context.tab": {
+      "bytes": 369822,
+      "sha256": "462ffd48bc1c9b86efe66d04d826cd1e7a5745be871b8121759ed2920a967370"
+    },
+    "tokenizers/punkt_tab/italian/sent_starters.txt": {
+      "bytes": 208,
+      "sha256": "4dc2cdfda34d4f286e5875d6b62b148771a799a71f0d45b504da23cb61b59d51"
+    },
+    "tokenizers/punkt_tab/malayalam/abbrev_types.txt": {
+      "bytes": 4714,
+      "sha256": "1ea2cd01629c8cbeac0799d39383e10c4d6948734c255d37e3ceda550ba62464"
+    },
+    "tokenizers/punkt_tab/malayalam/collocations.tab": {
+      "bytes": 3422,
+      "sha256": "71bc38e42133f288c660a338169d8858944135282ad4166a2c5d23cc8a06ed73"
+    },
+    "tokenizers/punkt_tab/malayalam/ortho_context.tab": {
+      "bytes": 118161,
+      "sha256": "5289e43f46ef3679f4ebbed95ef1fad5b64dd7aa8957042adb2b661cc6ae4425"
+    },
+    "tokenizers/punkt_tab/malayalam/sent_starters.txt": {
+      "bytes": 106,
+      "sha256": "918c902aa9d0b72700410258274ae335da51148fee7fc27095ab4114b23a245c"
+    },
+    "tokenizers/punkt_tab/norwegian/abbrev_types.txt": {
+      "bytes": 496,
+      "sha256": "beced74076edabe64f45effb823012d1396db41f35fa1d8be2ac6b69bf7bc40f"
+    },
+    "tokenizers/punkt_tab/norwegian/collocations.tab": {
+      "bytes": 869,
+      "sha256": "9c815b01e2f7518552b53f09012644df1fa0d8c7642baff9dc5f61e85e0be422"
+    },
+    "tokenizers/punkt_tab/norwegian/ortho_context.tab": {
+      "bytes": 734070,
+      "sha256": "57ea2aa129de6ae414cd0cbecba8b2399c4fde775a2145776a7e8f1023f3f183"
+    },
+    "tokenizers/punkt_tab/norwegian/sent_starters.txt": {
+      "bytes": 378,
+      "sha256": "2b49ef0f0c2e1b4e8b06aee1172e4d88ce6ad01486fe4182cff6fc443a73ddeb"
+    },
+    "tokenizers/punkt_tab/polish/abbrev_types.txt": {
+      "bytes": 973,
+      "sha256": "426ea37ca486d0dcc3653653c613d853d0bb3929037f8ee6bf6c12ddae873aa1"
+    },
+    "tokenizers/punkt_tab/polish/collocations.tab": {
+      "bytes": 1101,
+      "sha256": "961653f0606d85ecb8a760cad4f69df123f010bc4b35de0253feb2d7869666b4"
+    },
+    "tokenizers/punkt_tab/polish/ortho_context.tab": {
+      "bytes": 1066577,
+      "sha256": "f770804067012ee5707ffc65d90523180e09bab09230a49251777be821a1a4f6"
+    },
+    "tokenizers/punkt_tab/polish/sent_starters.txt": {
+      "bytes": 518,
+      "sha256": "8564076ae22be3d549a3f097a18458ac2967d65bd28dad7cc223c53f5ce27d1b"
+    },
+    "tokenizers/punkt_tab/portuguese/abbrev_types.txt": {
+      "bytes": 301,
+      "sha256": "cd5c3cf9c4c8b766bc9edbc96444b0e2189b837b26c583aa2cce83a18e4285f5"
+    },
+    "tokenizers/punkt_tab/portuguese/collocations.tab": {
+      "bytes": 64,
+      "sha256": "a150d2ca3b8bd9d87cd25f2e1d2142607cdf9344efe914bd034af6017a16d841"
+    },
+    "tokenizers/punkt_tab/portuguese/ortho_context.tab": {
+      "bytes": 363124,
+      "sha256": "2d9c143f7b322fc74738a21e0b2b04feed1668245ac93e5a8e5399e6e0d8ed8a"
+    },
+    "tokenizers/punkt_tab/portuguese/sent_starters.txt": {
+      "bytes": 209,
+      "sha256": "7b7f4a1586b1df8592bf294c8dd0d19aaf90740d78ce3b40a31eff2b9669d15e"
+    },
+    "tokenizers/punkt_tab/russian/abbrev_types.txt": {
+      "bytes": 15363,
+      "sha256": "75191526be516a9918948fe3ad46f6c2c4dee14314359a899b8c2ebf496cb631"
+    },
+    "tokenizers/punkt_tab/russian/collocations.tab": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tokenizers/punkt_tab/russian/ortho_context.tab": {
+      "bytes": 10,
+      "sha256": "b296cba91006569d3ef79eb2cff2378bf5be5b75e9e83ea119b883d3c3ee69b6"
+    },
+    "tokenizers/punkt_tab/russian/sent_starters.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tokenizers/punkt_tab/slovene/abbrev_types.txt": {
+      "bytes": 280,
+      "sha256": "b1d6b16d1d2b3c0c4132c1528b9843d1557f7f544044db27f4e8d2d6985faf2b"
+    },
+    "tokenizers/punkt_tab/slovene/collocations.tab": {
+      "bytes": 1131,
+      "sha256": "4c10daafdff496e369f3a8809bebf187abc851df630457ae93c7ca4fda350651"
+    },
+    "tokenizers/punkt_tab/slovene/ortho_context.tab": {
+      "bytes": 445129,
+      "sha256": "3ba826bdd7e5543af7af8e317d4652ba8b47fd812157855a6274ec1387a46b3e"
+    },
+    "tokenizers/punkt_tab/slovene/sent_starters.txt": {
+      "bytes": 358,
+      "sha256": "85ae14dadef3c4c9f753491d84919abb10e09003adfe248794d4a597fabc5793"
+    },
+    "tokenizers/punkt_tab/spanish/abbrev_types.txt": {
+      "bytes": 234,
+      "sha256": "246a4b3efbad45b63eb9672b718574b535acef6d656f24dc17a46d13a38efba1"
+    },
+    "tokenizers/punkt_tab/spanish/collocations.tab": {
+      "bytes": 74,
+      "sha256": "fa5ea7dbf61f2b1c12180d660a3012c9faaf4962eb12549d77af95e2a40be65d"
+    },
+    "tokenizers/punkt_tab/spanish/ortho_context.tab": {
+      "bytes": 337707,
+      "sha256": "1346ecfc57b26174987ffa9bd4a2558a66f46592a513da3859648790351df370"
+    },
+    "tokenizers/punkt_tab/spanish/sent_starters.txt": {
+      "bytes": 289,
+      "sha256": "4d4f7380ba16380b6158e9e8ead6973c52f27e3c9c88af63f15a41c490998319"
+    },
+    "tokenizers/punkt_tab/swedish/abbrev_types.txt": {
+      "bytes": 208,
+      "sha256": "1e1a78bd5e7fd6e7eb4b15b751a23d441cda845d5fc0b631958177b2f504da00"
+    },
+    "tokenizers/punkt_tab/swedish/collocations.tab": {
+      "bytes": 136,
+      "sha256": "bd2260433c94617ba7cf6102e4c1035099a72e5a2f6b60734639252e41633c04"
+    },
+    "tokenizers/punkt_tab/swedish/ortho_context.tab": {
+      "bytes": 616904,
+      "sha256": "d48c5705d0570993628e539ca211f05cdb5aad7adfcc6ed7b24310941bfac9f8"
+    },
+    "tokenizers/punkt_tab/swedish/sent_starters.txt": {
+      "bytes": 295,
+      "sha256": "6f0f7a6773f7488a23bafc6c29e7d4554e792d89c6b7a89fbd6a83bec85ef767"
+    },
+    "tokenizers/punkt_tab/turkish/abbrev_types.txt": {
+      "bytes": 424,
+      "sha256": "de56078c5eeb3fe07e24eab67c4aaf44e2181cbe80edd976cb1622819599d6fd"
+    },
+    "tokenizers/punkt_tab/turkish/collocations.tab": {
+      "bytes": 273,
+      "sha256": "061ce2981776a8f875da4f24bebd7e138f8da1d9057b43d07f580148ec106a33"
+    },
+    "tokenizers/punkt_tab/turkish/ortho_context.tab": {
+      "bytes": 642682,
+      "sha256": "fc214227f99d5ea3ee70d208df16b1984eab375d1946ed379061c6cf5c1718be"
+    },
+    "tokenizers/punkt_tab/turkish/sent_starters.txt": {
+      "bytes": 613,
+      "sha256": "93239fb55b5d2ae6d945a84a94e118ba8a816326b17cdc11ba8111bea0c97828"
+    }
+  }
+}
