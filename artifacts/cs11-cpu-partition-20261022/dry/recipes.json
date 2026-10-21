@@ -1,0 +1,181 @@
+{
+ "orch_head": "65fbdce3",
+ "roles": {
+  "frontdoor": {
+   "port": 8070,
+   "cmd": [
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8070",
+    "-np",
+    "4",
+    "-c",
+    "262144",
+    "-t",
+    "96",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--mlock",
+    "--no-mmap",
+    "--cache-ram",
+    "32768",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "4",
+    "--reasoning",
+    "off",
+    "--slot-save-path",
+    "/mnt/raid0/llm/cache/kv_slots/frontdoor",
+    "--device",
+    "none",
+    "--device-draft",
+    "none"
+   ],
+   "numa_prefix": [
+    "numactl",
+    "--interleave=all",
+    "--",
+    "taskset",
+    "-c",
+    "0-95"
+   ],
+   "declared_env": {
+    "LD_LIBRARY_PATH": "/usr/lib/llvm-20/lib",
+    "OMP_PROC_BIND": "spread",
+    "OMP_PLACES": "cores",
+    "OMP_WAIT_POLICY": "active",
+    "OMP_DYNAMIC": "false",
+    "KMP_BLOCKTIME": "10",
+    "GGML_IQK": "1"
+   },
+   "binary_override": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+   "ld_paths": [],
+   "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+   "numa_cfg": {
+    "instances": [
+     [
+      "0-95",
+      8070,
+      96
+     ],
+     [
+      "0-47,96-143",
+      8080,
+      48
+     ],
+     [
+      "48-95,144-191",
+      8180,
+      48
+     ]
+    ],
+    "full_instance_idx": 0,
+    "placement_policy": "burst_prefer_split",
+    "numactl_policy_instances": {
+     "0": "interleave=all",
+     "1": "interleave=0,1",
+     "2": "interleave=2,3"
+    },
+    "mlock": true,
+    "numa_pre_evict_gib": 40
+   }
+  },
+  "architect_general": {
+   "port": 8074,
+   "cmd": [
+    "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8074",
+    "-np",
+    "1",
+    "-c",
+    "262144",
+    "-t",
+    "96",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16",
+    "--mlock",
+    "--no-mmap",
+    "--cache-ram",
+    "32768",
+    "-md",
+    "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "4",
+    "--draft-p-min",
+    "0.5",
+    "--reasoning",
+    "off",
+    "--slot-save-path",
+    "/mnt/raid0/llm/cache/kv_slots/architect_general",
+    "--device",
+    "none",
+    "--device-draft",
+    "none"
+   ],
+   "numa_prefix": [
+    "numactl",
+    "--interleave=all",
+    "--",
+    "taskset",
+    "-c",
+    "0-95"
+   ],
+   "declared_env": {
+    "LD_LIBRARY_PATH": "/usr/lib/llvm-20/lib",
+    "OMP_PROC_BIND": "spread",
+    "OMP_PLACES": "cores",
+    "OMP_WAIT_POLICY": "active",
+    "OMP_DYNAMIC": "false",
+    "KMP_BLOCKTIME": "10",
+    "GGML_IQK": "1"
+   },
+   "binary_override": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+   "ld_paths": [],
+   "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+   "numa_cfg": {
+    "instances": [
+     [
+      "0-95",
+      8074,
+      96
+     ]
+    ],
+    "mlock": true,
+    "numa_pre_evict_gib": 40,
+    "numactl_policy": "interleave=all",
+    "spec_overrides": {
+     "draft_max": 4,
+     "p_split": 0
+    }
+   }
+  }
+ }
+}
