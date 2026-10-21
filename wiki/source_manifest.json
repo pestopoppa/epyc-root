@@ -9,10 +9,27 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-21T20:35:58Z",
-  "mode": "touch",
-  "scan_time": "2026-10-21T20:35:58Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 6,
+      "removed": 0
+    },
+    "at": "2026-10-21T20:40:40Z",
+    "scope_paths": [
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-10/2026-10-21-workspace-f8.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-21T20:40:40Z",
   "schema_version": 1,
-  "source_set_hash": "30151aaba22bda99c8a4449f60550f072582a9fb9032af817fb7ea259f2a075f",
+  "source_set_hash": "c376e6d75d97626f3d339ec67703f76d342d19d4883c283ea0cb56b53ac38996",
   "sources": [
     {
       "content_hash": "33c95f48ca460114e16c4944e8343e8f23a82e71824542d72fec59e0700a74f3",
@@ -103,10 +120,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b30fe8830fd9f83f7c107eb8b8164f05feb0aa8288fbbe975fcca77387f74a30",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "93aa80798066d9fdd0cfa6bbfe9b73d23db7cc3f1a9c7511340c3795b950144f",
+      "modified": "2026-10-21T20:39:42Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 113558,
+      "size": 114803,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -639,10 +656,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b89ca0602f4a93f133593f68f955fc0fc79efe198dc8ba11c9bda80ef52c2350",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "0658a42a3bce15d35f9fc466ab20136e5337db3a8639ac9d21aab239c5838fb6",
+      "modified": "2026-10-21T20:39:42Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 93554,
+      "size": 94717,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -727,18 +744,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4d6def7068fbe65191d0ac3300fb563363781ec3367e5b0de1b704b891753498",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "49e60f0a60eb933f9e9b02b81a224e74a6cafdfe2686fecaf5e3101493668fd3",
+      "modified": "2026-10-21T20:39:42Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 125071,
+      "size": 125718,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
     {
-      "content_hash": "219fb676ad9d21eadda79b26bf570d2b7190b5be2ee5ff6b58006051bb01e0af",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "7c647db25738e5c051cfe757dad271e51a1fe91282a8be76735e98769e44fd45",
+      "modified": "2026-10-21T20:39:42Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 159230,
+      "size": 159504,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -1423,10 +1440,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "57d239cd00270b2845d01a6176c5c927cbcd26bdb1ae63729f33c289792a21c6",
-      "modified": "2026-10-21T20:27:14Z",
+      "content_hash": "4ac4bc4d9caf6d150e8a44e6329445fb3726a959a259af8f8ece7a7d14366d8e",
+      "modified": "2026-10-21T20:39:42Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 465453,
+      "size": 472396,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9871,10 +9888,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "6f5343fba0eba5e1794b0504e8af64eaf18b35cca5b04d87363e2efa32406152",
-      "modified": "2026-10-21T20:25:39Z",
+      "content_hash": "6874ab236b6350ee1bed66b0688f6d4aa38231fb3d84d05f0449141a0830d5e0",
+      "modified": "2026-10-21T20:39:42Z",
       "path": "progress/2026-10/2026-10-21-workspace-f8.md",
-      "size": 16532,
+      "size": 22627,
       "title": "2026-10-21 \u2014 workspace-f8",
       "type": "progress"
     },
