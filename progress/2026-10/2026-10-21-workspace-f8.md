@@ -12,3 +12,7 @@
 - **Wrap-up audit**: experimental branches pushed to `fork` (kv-prefix-fork-p1r2 `dd5bb0d3b`, intake-fixes `b51a0047d`; ct12, kpf17a, slotdraft already current). Scratch evidence copied to research `artifacts/f8-evidence-20261021/` with SHA256SUMS. The p1r2 worktree carries an UNCOMMITTED edit to `tools/server/tests/unit/test_slot_fork.py` (patch saved in the evidence dir).
 
 - Backdoor/cvec intake no-compute batch: NEW-11 coverage table, AMSB-C390-0 review record, F3-W3-P1 poison screen (orch bc61f308), RC-CVEC-HOOKS partial (preflight + text fix). Research c5661c5f9, root e988b11bd.
+## DS41 parity harness fixes (T3.3c / T4.1.1 / T5.1.1)
+- `t33.py` v2, `t41.py` v2, `ds41_ninv.cpp` v2 + `rank_ninv.py` in `/mnt/raid0/llm/tmp/ds41-parity-20261021/lib/` (v1 copies kept). Jobs 62-ds41-t33c-{sept,1017}, 63-ds41-t41b, 64-ds41-t51b queued.
+- 62-* first attempts ended rc=125 (pairguard stopped paired jobs when the q0 holder changed; not a harness fault) and were requeued unchanged.
+- Server-side serial n_probs gap filed as DS41-T4.1.2.
