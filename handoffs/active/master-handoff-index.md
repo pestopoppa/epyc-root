@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](non-inference-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-PQP | Lifetime promotion error budget: recommend (a) status quo plus the SEQ-5 ledger; options in the plan DP-A. Human-amendment only. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
 | OP-ABSEQ | Sequential paired e-process for P-AB-1: recommend (a) no amendment. DP-B. | harness-improvement-loop.md HIL-9 item 11 | 2026-10-20 |
 | OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
@@ -125,11 +126,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1132 | 37 | 2026-07-29 |
+| inference-research | 61 | 1134 | 37 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 43 | 520 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 52 | 651 | 18 | 2026-07-29 |
+| routing-and-optimization | 52 | 654 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 127 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
