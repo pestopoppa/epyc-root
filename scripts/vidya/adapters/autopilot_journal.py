@@ -270,8 +270,8 @@ def belief_scope_applicability(row: dict) -> tuple[dict, str]:
         scope[dst] = value
     try:
         # The carrier owns the scope rules; validate by constructing, never by a second copy.
-        ClaimTuple(measurement_id="belief-scope-check", metric="belief_scope_check",
-                   claim="belief_scope check", applicability=scope)
+        ClaimTuple(measurement_id="belief-scope-check", metric="belief_scope_check", value=0,
+                   date="", category="CANDIDATE", claim="belief_scope check", applicability=scope)
     except ProjectionError as exc:
         return {}, f"belief_scope refused by the carrier ({exc}): not scoped"
     return scope, ""
