@@ -15,8 +15,11 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
   AC4  Qwen3.8-27B-Q8_0 gpu: >=3 target-tier claims, including the serving floor (81.1 t/s,
        floor 0.81%, n=10) and 2 mechanisms refused by the correctness gate ("MUL_MAT failed on
        ROCm0").
-  AC5  Qwen3.6-35B-A3B and Qwen3-VL-30B: target tier 0 with the banner; the five CPU models do
-       not get identical usable sets.
+  AC5  (amended 2026-10-21, after the rehearsal backfill) the five CPU models' usable sets are
+       PAIRWISE distinct; Qwen3-VL-30B has target tier 0 with the banner; Qwen3.6-35B-A3B's
+       target-tier claims, if any, all come from sources scoped to that model (their model_file
+       is the target's) -- their source kinds are reported. The original "35B target tier 0"
+       predated the KPF-18 35B CPU item-7 claims (lane K), which are real 35B beliefs.
   AC7  (needs --before) every claim in the pre-backfill copy keeps its grade, verdict and gate
        outcome; the pre-backfill frames are an unchanged prefix of the post-backfill copy.
        Adapter-fixture frame ids are pinned by tests/vidya/test_claim_tuple.py (lane A), not here.
@@ -242,17 +245,30 @@ def ac4(r: Reader) -> dict[str, Any]:
 
 def ac5(r: Reader) -> dict[str, Any]:
     details, ok = [], True
-    for name in ("Qwen3.6-35B", "Qwen3-VL-30B"):
-        ev, _ = r.read(name)
-        banner = ev["section"] == "" or (bool(ev["banner"]) and ev["banner"] in ev["section"])
-        good = ev["tiers"]["target"] == 0 and banner and bool(ev["banner"])
-        ok &= good
-        details.append(f"{name}: target {ev['tiers']['target']}, banner {banner}, usable "
-                       f"{len(ev['claim_ids'])}")
+    ev, _ = r.read("Qwen3-VL-30B")
+    banner = bool(ev["banner"]) and (ev["section"] == "" or ev["banner"] in ev["section"])
+    vl_ok = ev["tiers"]["target"] == 0 and banner
+    ok &= vl_ok
+    details.append(f"Qwen3-VL-30B: target {ev['tiers']['target']} (need 0), banner {banner}, "
+                   f"usable {len(ev['claim_ids'])}")
+    ev, col = r.read("Qwen3.6-35B")
+    model = r.target("Qwen3.6-35B").model_file
+    rows = _tier_rows(col)
+    foreign = [x["claim_id"] for x in rows if x["model_file"] != model]
+    kinds: dict[str, int] = {}
+    for x in rows:
+        kinds[x["source_kind"]] = kinds.get(x["source_kind"], 0) + 1
+    ok &= not foreign
+    details.append(f"Qwen3.6-35B: target {len(rows)}, all scoped to {model} {not foreign}"
+                   + (f" (foreign: {foreign[:5]})" if foreign else "")
+                   + f"; source kinds {dict(sorted(kinds.items())) or '{}'}; usable "
+                   f"{len(ev['claim_ids'])}")
     usable = {name: frozenset(r.read(name)[0]["claim_ids"]) for name in CPU_FIVE}
-    distinct = len(set(usable.values()))
-    ok &= distinct > 1
-    details.append(f"distinct usable sets across the five CPU models: {distinct}")
+    names = list(CPU_FIVE)
+    same = [(a, b) for i, a in enumerate(names) for b in names[i + 1:] if usable[a] == usable[b]]
+    ok &= not same
+    details.append(f"usable sets pairwise distinct across the five CPU models {not same}"
+                   + (f" (identical: {same})" if same else ""))
     return _check("AC5", ok, "; ".join(details))
 
 

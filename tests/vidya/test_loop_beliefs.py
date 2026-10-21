@@ -1085,3 +1085,52 @@ def test_claim_without_device_matches_gpu_target_and_is_never_host(tmp_path, ala
         assert not lb.host_matches(scope, lb.Target.from_mapping(raw))
     # same file on a cpu target: backend differs, so no tier at all (not host, not target)
     assert lb.tier_of(scope, lb.Target.from_mapping({**ARCHITECT_T, "backend": "cpu"})) is None
+
+
+class _StubReader:
+    """Just enough of p1_acceptance.Reader for ac5: per-target (evaluation, collection)."""
+
+    def __init__(self, evs, rows35):
+        self.evs, self.rows35 = evs, rows35
+
+    def read(self, name, quant=None):
+        rows = self.rows35 if name == "Qwen3.6-35B" else []
+        return self.evs[name], {"rows": rows, "flagged": {b: [] for b in lb.FLAG_BUCKETS}}
+
+    def target(self, name, quant=None):
+        import p1_acceptance as acc
+        return lb.Target.from_mapping(acc.TARGETS[name])
+
+
+def _ac5_inputs(*, vl_target=0, vl_banner="No beliefs are scoped to Qwen3-VL-30B.",
+                model35="Qwen3.6-35B-A3B-MTP-Q8_0.gguf", same_sets=False):
+    import p1_acceptance as acc
+    evs = {}
+    for i, name in enumerate(acc.CPU_FIVE):
+        ids = ["clm_shared"] if same_sets and name in ("DS41-Q4", "Q38FN") else [f"clm_{i}"]
+        evs[name] = {"tiers": {"target": 0}, "banner": "", "section": "x", "claim_ids": ids}
+    evs["Qwen3-VL-30B"].update(tiers={"target": vl_target}, banner=vl_banner,
+                               section=f"{vl_banner}\nmore")
+    rows35 = [{"claim_id": f"clm_kpf{i}", "tier": "target", "model_file": model35,
+               "source_kind": "kv-prefix-fork-measurement"} for i in range(3)]
+    return evs, rows35
+
+
+def test_ac5_amended_passes_when_35b_target_claims_are_scoped_to_the_35b():
+    import p1_acceptance as acc
+    result = acc.ac5(_StubReader(*_ac5_inputs()))
+    assert result["pass"], result["detail"]
+    assert "kv-prefix-fork-measurement': 3" in result["detail"]
+    assert "pairwise distinct across the five CPU models True" in result["detail"]
+
+
+@pytest.mark.parametrize("kw,why", [
+    ({"vl_target": 2}, "Qwen3-VL-30B: target 2"),
+    ({"vl_banner": ""}, "banner False"),
+    ({"model35": "Qwen3.8-27B-Q8_0.gguf"}, "foreign"),
+    ({"same_sets": True}, "identical: [('DS41-Q4', 'Q38FN')]"),
+])
+def test_ac5_amended_fails_on_each_leg(kw, why):
+    import p1_acceptance as acc
+    result = acc.ac5(_StubReader(*_ac5_inputs(**kw)))
+    assert not result["pass"] and why in result["detail"], result["detail"]
