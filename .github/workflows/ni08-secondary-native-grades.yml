@@ -1,0 +1,35 @@
+name: NI08 secondary original shared grades
+on:
+  push:
+    branches: ['codex/ni08-secondary-native-grades-20261021']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-read-only-grades:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: recipe/proposed/ni08-secondary-grades/carrier4c0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Reopen same originals and project through existing shared reader
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -I recipe/proposed/ni08-secondary-grades/acquire_and_grade.py
+      - name: Preserve secondary grade outputs and original acquisition custody
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni08-secondary-shared-grades-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni08-secondary-grades/
