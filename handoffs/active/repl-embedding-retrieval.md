@@ -338,3 +338,9 @@ MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), compared on concurrency × tasks/h
 | Spill summary (to replace) | `src/repl_environment/environment.py` `_spill_output` (~:716) |
 | Document REPL search | `src/repl_document.py:221` `_search_sections` |
 | Existing embedder client | `orchestration/repl_memory/parallel_embedder.py` |
+
+## Cache-friendly inlining spec — 2026-10-21
+
+REPL-EMB has no inlining path (search returns pointers; reads go through `get`/`peek`). The shared helper and the integration spec landed on epyc-orchestrator origin/main as `fc02209d` (`docs/design/cache-friendly-injection-repl-emb-spec.md`).
+
+- [ ] **REPL-EMB-CFI — if an inlining mode is ever built, route it through `src/prompt_builders/reusable_blocks.py` per the spec** (chunk text byte-for-byte, no score/rank in the block, neutralisation kept, hashes logged only, OAB-12 pull accounting counts inlined bytes). Gate: the CFI-1 quality A/B in `episodic-memory-integrity.md`. Not startable until an inlining mode exists. (filed 2026-10-21)
