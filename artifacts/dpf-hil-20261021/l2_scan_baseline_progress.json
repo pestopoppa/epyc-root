@@ -1,0 +1,426 @@
+{
+ "categories_implemented": [
+  "tool_error",
+  "truncation",
+  "loop",
+  "premature_wrap_up",
+  "zero_step_violation",
+  "invalid_invocation"
+ ],
+ "categories_judge_only_unimplemented": [
+  "fabricated_fact",
+  "instruction_not_followed"
+ ],
+ "category_rates": {
+  "invalid_invocation": {
+   "failed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 11942,
+    "rate": 0.0
+   },
+   "passed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 137358,
+    "rate": 0.0
+   }
+  },
+  "loop": {
+   "failed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 11942,
+    "rate": 0.0
+   },
+   "passed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 137358,
+    "rate": 0.0
+   }
+  },
+  "premature_wrap_up": {
+   "failed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 11942,
+    "rate": 0.0
+   },
+   "passed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 137358,
+    "rate": 0.0
+   }
+  },
+  "tool_error": {
+   "failed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 11942,
+    "rate": 0.0
+   },
+   "passed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 137358,
+    "rate": 0.0
+   }
+  },
+  "truncation": {
+   "failed": {
+    "ci95_task_resampled": [
+     0.0035,
+     0.0061
+    ],
+    "fires": 55,
+    "n": 11942,
+    "rate": 0.0046
+   },
+   "passed": {
+    "ci95_task_resampled": [
+     0.0,
+     0.0
+    ],
+    "fires": 0,
+    "n": 137358,
+    "rate": 0.0
+   }
+  },
+  "zero_step_violation": {
+   "failed": {
+    "ci95_task_resampled": [
+     null,
+     null
+    ],
+    "fires": 0,
+    "n": 0,
+    "rate": null
+   },
+   "passed": {
+    "ci95_task_resampled": [
+     null,
+     null
+    ],
+    "fires": 0,
+    "n": 0,
+    "rate": null
+   }
+  }
+ },
+ "coverage": {
+  "denominator_failed": 11942,
+  "mechanical_signature": 55,
+  "share_mechanical_signature": 0.0046,
+  "share_unclassified": 0.9954,
+  "unclassified": 11887
+ },
+ "crosswalk": {
+  "fabricated_fact": {
+   "agentrx": [],
+   "epyc_addition": false,
+   "judge_only": true,
+   "trail": [
+    "Language-only",
+    "Tool-related"
+   ]
+  },
+  "instruction_not_followed": {
+   "agentrx": [
+    "Instruction/Plan Adherence Failure"
+   ],
+   "epyc_addition": false,
+   "judge_only": true,
+   "trail": [
+    "Instruction Non-compliance"
+   ]
+  },
+  "invalid_invocation": {
+   "agentrx": [
+    "Invalid Invocation"
+   ],
+   "epyc_addition": false,
+   "trail": [
+    "Formatting Errors"
+   ]
+  },
+  "loop": {
+   "agentrx": [],
+   "epyc_addition": true,
+   "trail": [
+    "Resource Abuse"
+   ]
+  },
+  "premature_wrap_up": {
+   "agentrx": [],
+   "epyc_addition": true,
+   "trail": [
+    "Goal Deviation"
+   ]
+  },
+  "tool_error": {
+   "agentrx": [
+    "System Failure"
+   ],
+   "epyc_addition": false,
+   "trail": [
+    "Rate Limiting",
+    "Authentication Errors",
+    "Service Errors",
+    "Resource Not Found",
+    "Timeout Issues"
+   ]
+  },
+  "truncation": {
+   "agentrx": [],
+   "epyc_addition": true,
+   "trail": [
+    "Resource Exhaustion"
+   ]
+  },
+  "zero_step_violation": {
+   "agentrx": [
+    "Instruction/Plan Adherence Failure"
+   ],
+   "epyc_addition": false,
+   "trail": [
+    "Instruction Non-compliance"
+   ]
+  }
+ },
+ "domain_split": {
+  "counts": {
+   "agent": 202,
+   "infra": 224,
+   "model_api": 1746,
+   "none_wrong_outcome": 9770
+  },
+  "denominator_failed": 11942
+ },
+ "first_visible_deviation": {
+  "by_category": {
+   "truncation": 55
+  },
+  "first_equals_last_event": 55,
+  "n_failed_with_event": 55
+ },
+ "header": "This report reads only status, exception, category and count fields (and the declared per-step structured fields). There is no decision-to-provenance edge in the recorded traces (intake-2315#record): each 'first visible deviation' is a first-event label, not a counterfactual root cause.",
+ "length_distribution": {
+  "failed": {
+   "n": 0
+  },
+  "passed": {
+   "n": 0
+  }
+ },
+ "loop_counter_source": "src.graph.helpers",
+ "loop_ratio": {
+  "by_role_model_arm": {},
+  "note": "read within task across paired arms; never pooled with-loop versus without-loop (intake-2338#record)",
+  "within_task_paired_arms": {}
+ },
+ "n": {
+  "failed": 11942,
+  "passed": 137358,
+  "traces": 149300,
+  "unknown_outcome": 0
+ },
+ "reads": [
+  "outcome",
+  "status",
+  "exception",
+  "role",
+  "model_pin",
+  "arm",
+  "task_key",
+  "step_cap",
+  "ctx_limit",
+  "step fields in l2.model.STEP_FIELDS"
+ ],
+ "step_ratio_per_role": {
+  "rows": {
+   "ARCHITECT": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Answer: D": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Clarify task: repeat request or write song?": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Complete filtering, add KMeans, handle column count": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Complete problem description and solution logic": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Complete problem description before coding": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Implement frequency counter and add test assertion": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "None": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Provide complete function signatures and task context.": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Provide full Python snippet with variable name.": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "SELF": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Select C as answer": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "Select safe, empathetic startup name and verify medical claims": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "WORKER": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "architect_coding": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "architect_critic": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "architect_general": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "coder_escalation": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "frontdoor": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "ingest_long_context": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "mock": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "output_answer": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "plan_review": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "request_full_problem_statement": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "toolrunner": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "verifier": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "vision_escalation": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "worker_explore": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "worker_general": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "worker_math": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   },
+   "worker_vision": {
+    "failed_n": 0,
+    "passed_n": 0,
+    "ratio_failed_over_passed": null
+   }
+  },
+  "step_cap": null,
+  "zero_step_traces_excluded": true
+ }
+}

@@ -1,0 +1,22 @@
+[
+ "20260610_074342_claude_claude-fable-5_05_topk_bitonic.jsonl",
+ "20260428_040539_claude_claude-opus-4-7_01_fp8_gemm.jsonl",
+ "20260613_042257_claude_claude-opus-4-8_02_kda_cutlass.jsonl",
+ "20260630_125256_claude_claude-sonnet-5_01_fp8_gemm.jsonl",
+ "20260427_230711_codex_gpt-5.5_01_fp8_gemm.jsonl",
+ "20260709_172635_codex_gpt-5.6-sol_01_fp8_gemm.jsonl",
+ "20260610_105505_cursor_composer-2.5-fast_02_kda_cutlass.jsonl",
+ "20260910_202114_deepseek-claude_deepseek-flash_01_fp8_gemm.jsonl",
+ "20260614_163128_deepseek-claude_deepseek-v4-pro_01_fp8_gemm.jsonl",
+ "20260618_143530_gemini_gemini-3.1-pro-preview_05_topk_bitonic.jsonl",
+ "20260610_121946_gemini_gemini-3.5-flash_01_fp8_gemm.jsonl",
+ "20260708_132148_grok_grok-4.5_01_fp8_gemm.jsonl",
+ "20260813_072757_grok_grok-4.6_01_fp8_gemm.jsonl",
+ "20260611_005705_grok_grok-build_01_fp8_gemm.jsonl",
+ "20260707_072331_hy3-claude_tencent_hy3-preview_01_fp8_gemm.jsonl",
+ "20260709_090111_hy3_hy3_01_fp8_gemm.jsonl",
+ "20260612_051152_kimi-claude_kimi-k2.7-code_01_fp8_gemm.jsonl",
+ "20260428_110049_kimi_kimi-k2.6_03_paged_attention.jsonl",
+ "20260715_203916_kinetic-claude_kinetic-0715_01_fp8_gemm.jsonl",
+ "20260706_192143_longcat-claude_LongCat-2.0_01_fp8_gemm.jsonl"
+]

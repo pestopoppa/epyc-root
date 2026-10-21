@@ -1,0 +1,369 @@
+{
+ "detector_config": {
+  "loop_threshold": 2,
+  "schemas": "none for foreign tool names"
+ },
+ "kernelbench_hard": {
+  "detectors_firing_on_none": [
+   "truncation",
+   "premature_wrap_up",
+   "invalid_invocation"
+  ],
+  "firing_counts": {
+   "invalid_invocation": 0,
+   "loop": 1,
+   "premature_wrap_up": 0,
+   "tool_error": 9,
+   "truncation": 0,
+   "zero_step_violation": 1
+  },
+  "n_files": 20,
+  "per_file": [
+   {
+    "categories": [],
+    "file": "20260610_074342_claude_claude-fable-5_05_topk_bitonic.jsonl",
+    "n_tool_steps": 9
+   },
+   {
+    "categories": [],
+    "file": "20260428_040539_claude_claude-opus-4-7_01_fp8_gemm.jsonl",
+    "n_tool_steps": 174
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260613_042257_claude_claude-opus-4-8_02_kda_cutlass.jsonl",
+    "n_tool_steps": 290
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260630_125256_claude_claude-sonnet-5_01_fp8_gemm.jsonl",
+    "n_tool_steps": 222
+   },
+   {
+    "categories": [],
+    "file": "20260427_230711_codex_gpt-5.5_01_fp8_gemm.jsonl",
+    "n_tool_steps": 151
+   },
+   {
+    "categories": [],
+    "file": "20260709_172635_codex_gpt-5.6-sol_01_fp8_gemm.jsonl",
+    "n_tool_steps": 96
+   },
+   {
+    "categories": [],
+    "file": "20260610_105505_cursor_composer-2.5-fast_02_kda_cutlass.jsonl",
+    "n_tool_steps": 108
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260910_202114_deepseek-claude_deepseek-flash_01_fp8_gemm.jsonl",
+    "n_tool_steps": 177
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260614_163128_deepseek-claude_deepseek-v4-pro_01_fp8_gemm.jsonl",
+    "n_tool_steps": 70
+   },
+   {
+    "categories": [],
+    "file": "20260618_143530_gemini_gemini-3.1-pro-preview_05_topk_bitonic.jsonl",
+    "n_tool_steps": 65
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260610_121946_gemini_gemini-3.5-flash_01_fp8_gemm.jsonl",
+    "n_tool_steps": 66
+   },
+   {
+    "categories": [
+     "zero_step_violation"
+    ],
+    "file": "20260708_132148_grok_grok-4.5_01_fp8_gemm.jsonl",
+    "n_tool_steps": 0
+   },
+   {
+    "categories": [],
+    "file": "20260813_072757_grok_grok-4.6_01_fp8_gemm.jsonl",
+    "n_tool_steps": 121
+   },
+   {
+    "categories": [],
+    "file": "20260611_005705_grok_grok-build_01_fp8_gemm.jsonl",
+    "n_tool_steps": 168
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260707_072331_hy3-claude_tencent_hy3-preview_01_fp8_gemm.jsonl",
+    "n_tool_steps": 77
+   },
+   {
+    "categories": [],
+    "file": "20260709_090111_hy3_hy3_01_fp8_gemm.jsonl",
+    "n_tool_steps": 48
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260612_051152_kimi-claude_kimi-k2.7-code_01_fp8_gemm.jsonl",
+    "n_tool_steps": 140
+   },
+   {
+    "categories": [],
+    "file": "20260428_110049_kimi_kimi-k2.6_03_paged_attention.jsonl",
+    "n_tool_steps": 89
+   },
+   {
+    "categories": [
+     "loop",
+     "tool_error"
+    ],
+    "file": "20260715_203916_kinetic-claude_kinetic-0715_01_fp8_gemm.jsonl",
+    "n_tool_steps": 499
+   },
+   {
+    "categories": [
+     "tool_error"
+    ],
+    "file": "20260706_192143_longcat-claude_LongCat-2.0_01_fp8_gemm.jsonl",
+    "n_tool_steps": 155
+   }
+  ]
+ },
+ "traceelephant": {
+  "agreement": {
+   "ALL|baseline_first_error": {
+    "exact": 0,
+    "has_prediction": 6,
+    "n": 218,
+    "within1": 1,
+    "within5": 1
+   },
+   "ALL|baseline_last_step": {
+    "exact": 5,
+    "has_prediction": 218,
+    "n": 218,
+    "within1": 11,
+    "within5": 72
+   },
+   "ALL|detector_fvd": {
+    "exact": 2,
+    "first_equals_last": 16,
+    "has_prediction": 22,
+    "n": 218,
+    "within1": 5,
+    "within5": 9
+   },
+   "captain-agent|baseline_first_error": {
+    "exact": 0,
+    "has_prediction": 0,
+    "n": 85,
+    "within1": 0,
+    "within5": 0
+   },
+   "captain-agent|baseline_last_step": {
+    "exact": 0,
+    "has_prediction": 85,
+    "n": 85,
+    "within1": 4,
+    "within5": 37
+   },
+   "captain-agent|detector_fvd": {
+    "exact": 0,
+    "has_prediction": 0,
+    "n": 85,
+    "within1": 0,
+    "within5": 0
+   },
+   "magentic-one|baseline_first_error": {
+    "exact": 0,
+    "has_prediction": 0,
+    "n": 89,
+    "within1": 0,
+    "within5": 0
+   },
+   "magentic-one|baseline_last_step": {
+    "exact": 5,
+    "has_prediction": 89,
+    "n": 89,
+    "within1": 7,
+    "within5": 29
+   },
+   "magentic-one|detector_fvd": {
+    "exact": 0,
+    "first_equals_last": 3,
+    "has_prediction": 3,
+    "n": 89,
+    "within1": 0,
+    "within5": 0
+   },
+   "swe-agent|baseline_first_error": {
+    "exact": 0,
+    "has_prediction": 6,
+    "n": 44,
+    "within1": 1,
+    "within5": 1
+   },
+   "swe-agent|baseline_last_step": {
+    "exact": 0,
+    "has_prediction": 44,
+    "n": 44,
+    "within1": 0,
+    "within5": 6
+   },
+   "swe-agent|detector_fvd": {
+    "exact": 2,
+    "first_equals_last": 13,
+    "has_prediction": 19,
+    "n": 44,
+    "within1": 5,
+    "within5": 9
+   }
+  },
+  "detector_categories_fired": {
+   "invalid_invocation": 11,
+   "loop": 9,
+   "tool_error": 6
+  },
+  "detectors_firing_on_none": [
+   "truncation",
+   "premature_wrap_up"
+  ],
+  "gold": "human decisive step (mistake_step)",
+  "n_traces": 218,
+  "note": "zero_step_violation is trace-level (no step index) and excluded from step agreement"
+ },
+ "trail": {
+  "status": "not available: dataset gated (HTTP 401), no HF token on host"
+ },
+ "whowhen_pro_text": {
+  "n_traces": 6257,
+  "per_mode_N": {
+   "A.1": 31,
+   "A.2": 287,
+   "A.3": 1207,
+   "A.4": 53,
+   "C.1": 27,
+   "C.2": 33,
+   "C.3": 346,
+   "PL.1": 90,
+   "R.1": 621,
+   "R.2": 1089,
+   "R.3": 739,
+   "R.4": 1120,
+   "V.1": 128,
+   "V.2": 486
+  },
+  "scope": "injected behaviour, not natural frequency",
+  "targets": {
+   "loop": {
+    "construction_only_baseline": {
+     "f1": 0.2912,
+     "fn": 0,
+     "fp": 258,
+     "precision": 0.1704,
+     "recall": 1.0,
+     "rule": "n_steps >= 30",
+     "tp": 53
+    },
+    "detector": "loop",
+    "detector_score": {
+     "fn": 20,
+     "fp": 92,
+     "label": "loop",
+     "n_positive": 53,
+     "n_total": 6257,
+     "precision": 0.264,
+     "recall": 0.6226,
+     "scored": true,
+     "tp": 33
+    },
+    "mode": "A.4"
+   },
+   "output_format": {
+    "construction_only_baseline": {
+     "f1": 0.1417,
+     "fn": 63,
+     "fp": 2650,
+     "precision": 0.0779,
+     "recall": 0.7805,
+     "rule": "n_steps >= 3",
+     "tp": 224
+    },
+    "detector": "invalid_invocation",
+    "detector_score": {
+     "fn": 287,
+     "fp": 0,
+     "label": "output_format",
+     "n_positive": 287,
+     "n_total": 6257,
+     "precision": null,
+     "recall": 0.0,
+     "scored": true,
+     "tp": 0
+    },
+    "mode": "A.2"
+   },
+   "premature_wrap_up": {
+    "construction_only_baseline": {
+     "f1": 0.4579,
+     "fn": 37,
+     "fp": 2733,
+     "precision": 0.2998,
+     "recall": 0.9693,
+     "rule": "n_steps >= 2",
+     "tp": 1170
+    },
+    "detector": "premature_wrap_up",
+    "detector_score": {
+     "fn": 1207,
+     "fp": 0,
+     "label": "premature_wrap_up",
+     "n_positive": 1207,
+     "n_total": 6257,
+     "precision": null,
+     "recall": 0.0,
+     "scored": true,
+     "tp": 0
+    },
+    "mode": "A.3"
+   },
+   "tool_error": {
+    "construction_only_baseline": {
+     "f1": 0.0307,
+     "fn": 0,
+     "fp": 1958,
+     "precision": 0.0156,
+     "recall": 1.0,
+     "rule": "n_steps <= 0",
+     "tp": 31
+    },
+    "detector": "tool_error",
+    "detector_score": {
+     "fn": 31,
+     "fp": 329,
+     "label": "tool_error",
+     "n_positive": 31,
+     "n_total": 6257,
+     "precision": 0.0,
+     "recall": 0.0,
+     "scored": true,
+     "tp": 0
+    },
+    "mode": "A.1"
+   }
+  }
+ }
+}
