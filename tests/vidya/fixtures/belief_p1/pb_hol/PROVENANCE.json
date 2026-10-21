@@ -1,0 +1,5 @@
+{"purpose": "P1-L fixture: PB-HOL-1 run 20261021T160010Z",
+ "source": "/mnt/raid0/llm/tmp/pb-hol-1/runs/20261021T160010Z",
+ "summary.json": "copied unmodified",
+ "pb_hol_1.jsonl": "TRIMMED to the run rows' kind/phase/budget/arm/rep/short_ttft_ms (the only fields the adapter re-derives from); the original is 86 KB of per-run timing detail",
+ "copied": "2026-10-21"}
