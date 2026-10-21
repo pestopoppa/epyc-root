@@ -1359,6 +1359,33 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     repack, not iqk. It was x1.00 at N=1 and x1.04 at N=3 against Q4_K iqk *before* the keeps
     (DS41-C114a).
   - This starts a new DS41 measurement era.
+  - *(2026-10-21, correctness half.)* Port `experimental/ds41-ak-20261005` @ `3376147f8`, CPU build `build-cpu`
+    (binaries built 4 min after HEAD, tree clean), q0 (`region-lock --role build --cpu-list 0-23`), `-t 24`.
+    Results, harness and capture rows: `epyc-inference-research/data/ds41-1017-w5-20261021/` (SUMMARY.md).
+    The rows are written by the VB-DS41-1017-WIRE producer and bind the 9 shard sha256s. No protocol id,
+    so they are OBSERVATIONS.
+    - Load: **PASS.** 9-shard split load, 1046 tensors, `deepseek41`, `general.alignment=32`. The direct-IO
+      reader rounds its offsets to `st_blksize`, so no 16 KiB assumption bites. Both arms log
+      `unused tensor blk.N.exp_probs_b_vl.bias` on all 40 layers; that is not new in 1017.
+    - Coherence: **PASS.** Paired `coherence_gate`, base = Sept Q4, cand = 1017, greedy. 0 regressions over
+      5 items at 7/41/65/235/2041 prompt tokens. The p220 `BOTH_BAD` is the needle scorer missing Sept's
+      `(1,6)` spacing; both arms answer correctly. 1017 is also coherent at 2030 prompt tokens. Shared
+      quirk: a raw prompt of article + question + `Answer:` gets an immediate EOS in both arms at 309+
+      tokens (DS41-W5b).
+    - ppl (wiki.test.raw, c=512, 32 chunks): 1017 **2.6675 ± 0.0675** vs Sept Q4 **2.6122 ± 0.0655**
+      (+2.1%, within 1 sigma). This is a different finetune, not a pure quant delta. It is measured
+      without the W5.1 FP8 round trip.
+    - NMSE spot checks: **not run** (DS41-W5a).
+    - Serving speed: ABA timing per the operator ruling of 2026-10-21 (A1 16:40Z, B beside f8 G1, A2 to 19:05Z).
+  - [ ] **DS41-W5a — NMSE spot checks for the MXFP4 expert path.** The CPU-only build has no second backend,
+    so `test-backend-ops` has nothing to compare against. Use a served-shape MUL_MAT_ID MXFP4 case set (the
+    `served_shape_cases.py` lane profile from the 1017 GGUF) against an f32-dequant reference, cap 5e-4.
+    (derived 2026-10-21 from DS41-W5)
+  - [ ] **DS41-W5b — raw-completion empty-EOS on article + question + `Answer:` prompts.** Both arms
+    (Sept Q4 and 1017) emit EOS as the first token at 309-2041 prompt tokens. A question-first variant
+    answers fine at 2030 tokens. Check whether this is a template/BOS effect (DS41-T3.3b) or model
+    behaviour before using raw-completion prompts in any long-prompt gate. Rows:
+    `data/ds41-1017-w5-20261021/raw/coh-1017-len.rows.jsonl`. (derived 2026-10-21 from DS41-W5)
 - [ ] DS41-W6 — **DSpark drafter for 1017.** The 1017 MTP shards changed, so the Sept drafter
   `models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` no longer matches the target.
   - unsloth's `dspark-DeepSeek-V4.1-Flash-1017-Q8_0.gguf` (7,976,914,240 B) does not load as is. It is
@@ -1509,11 +1536,20 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - [ ] **DS41-CED.1 — CED-aware prefill spike on the experimental DS41 port (intake-2117#record, intake-2116#record, intake-2125#record).** Behind a default-off flag in deepseek41.cpp, after layer 19 keep only a tail of prompt rows for decoder layers 20-39 while layer 20's KV-source path (compressor, index K, shared plane) still runs on every row: arm (a) EXACT tail = last 20x128+128 = 2688 rows (decoder SWA receptive field, YOCO-exact for the compressed plane), arm (b) vendor bounded replay = last KEEP in {134, 140} rows (approximate). Report per arm: last-row logit max-abs/KL vs full prefill (arm (a) must sit inside the f32 reduction-order floor measured by an A/A full-prefill pair; if not, the exactness premise is falsified and the non-tail-local decoder state is named), decode-continuation greedy identity for 128 tokens, and prefill t/s at 8K/32K/128K next to the layer-count bound 0.5*(1 - tail/N). Correctness first (build-role claim, region-lock 0-95), timing only in a CPU window; production v10 untouched; arm (b) never becomes a default without DS41-CED.2.
 - [ ] **DS41-CED.2 — Quality gate for the approximate decoder bounded replay before any default (intake-2117#record, intake-2127#record, intake-2128#record).** Frozen prompt manifest with sha256; incumbent = full prefill on the same binary; arms = replay tail k in {134, 256, 512, 2688(exact)}. Measure: teacher-forced KL and top-1 agreement on the final 256 tokens and at cache-resume offsets; passkey/NIAH at 2K/8K/16K/32K; RULER variable tracing and multi-hop QA at the same lengths (stacked-SWA collapse case); short-context parity (HellaSwag/WinoGrande/ARC subsets) with paired-bootstrap CI; the coherence gate at production prompt length. Holdout = a second prompt manifest drawn after the k is chosen; count every invalid/timeout. Predeclared rule: the smallest k whose every long-context metric is within the full-prefill A/A noise floor becomes the candidate default; if none below 2688 passes, ship arm (a) only and record the negative.
 - [ ] **DS41-W5.1 — Port fidelity vs the 1017 reference code deltas (intake-2121#record).** The 1017 inference/model.py quantize-dequantizes the attention output to FP8 (block 32, ue8m0) before wo_a in the main and DSpark attention (L787, L1073) and always publishes shared index_k (L548); our wo_a call site (deepseek41.cpp:1221 @ dd3d9721c) has no round trip. (1) read-only: confirm the index-key owner path matches L548 when no compression group completes; (2) per-op fixture: NMSE of the layer output with vs without the round trip; add a flag-gated emulation only if NMSE exceeds the Q8_0 activation noise. Correctness class (shard + build-role claim), no quiet host.
+  - *(2026-10-21, part 1, static read; source `/mnt/raid0/llm/tmp/ds41-w51-20261021/REPORT.md`.)* For the
+    1017 config, the index-key owner path matches reference L548. KV sources are layers 2/8/14/20, and
+    index-source layers 24-36 all resolve to owner 20. The port stops walking back at a ratio change and the
+    reference does not; this config cannot reach that case.
+  - *(2026-10-21, part 2, same report.)* On a synthetic fixture, the FP8 e4m3/ue8m0/32 round trip before
+    wo_a gives NMSE ~7e-4, against Q8_0 noise of 2.9e-5 to 1.25e-4 (6-25x). That exceeds the gate, so an
+    emulation is recommended.
+  - [ ] **DS41-W5.1a — flag-gated FP8 (e4m3, ue8m0, block 32) QDQ of the attention output before wo_a (main + DSpark, deepseek41.cpp ~1221), default off, then a real-model ppl/NMSE A/B on the 1017 build.** (derived 2026-10-21 from /mnt/raid0/llm/tmp/ds41-w51-20261021/REPORT.md)
 - [ ] **DS41-T3.2 — KV fake-quant attribution for reference parity (intake-2117#record, intake-2116#record).** The official reference round-trips window KV (FP8 ue8m0/32), main compressed KV (FP4 E2M1 + E4M3 per 16) and indexer K/Q (FP4 E8M0/32) before caching (model.py L546/L552/L707/L760/L1042); the port stores at the llama.cpp KV type with no QDQ. (1) On a layer-truncated fixture run the reference with its QDQ on and off to size its own sensitivity; (2) add an opt-in QDQ graph op on the experimental port; (3) re-run the DS41-T3 logit comparison with it on and label the claim kv_fakequant_matched. Never read a T3 divergence as a port defect before (1)-(3). Correctness class.
 - [ ] **DS41-B3.1 — Make the Engram gate exact at dot == +0.0 (intake-2124#record).** Replace ggml_sgn(dot) in the deepseek41.cpp engram gate with a +1-at-zero sign (copysign semantics of inference/model.py and the trained kernel); pure graph change, no new op. Done when a zero-key row's gate equals the reference value and decode logits are bit-identical elsewhere on the T1 smoke.
   - *(2026-10-20.)* Implemented as `sgn = 1 - 2*step(-dot)` on `experimental/intake-fixes-20261020` @ abcd831fb, queued for tests: exact at +0.0; at -0.0 it still yields +1 where torch copysign yields -1 — decide whether that case matters before closing.
   - *(2026-10-21.)* `test-dsv41-engram-gate` pass=14 fail=0 (graph-level, small tensors: exact at +0.0, bit-identical elsewhere) on `experimental/intake-fixes-20261020` @ 6b8291de5.
   - [ ] **DS41-B3.1.1 — T1 smoke decode-logit bit-identity on the real model, and decide the −0.0 case** (it still yields +1 where torch copysign gives −1).
+    - *(2026-10-21.)* The −0.0 case was decided: it does not matter. dot = sum·rstd·dim^-0.5 has positive scales, and RN summation from a +0 accumulator never yields −0.0, so the fix's +1 matches torch copysign. Only the T1 real-model smoke remains.
 - [x] **DS41-B12.1 — Cite-and-close DS41-B12 (a)(b)(c) and anchor DS41-B11 from source (intake-2116#record).** Head collapse = last FFN sub-layer pre-mix (official model.py:1268; DeepInfer deepseek.py:229-232; ours deepseek41.cpp:1372); layer-20 compressor gate absent because the single-token softmax is 1 (model.py:461-462); ratio 1/2 non-overlapping APE-free geometry; RoPE per intake-2116#record. Tick DS41-B12 with these anchors; DS41-B11 stays open only for the top-k renorm epsilon (dormant trigger below). No compute. ✅ 2026-10-20 — B12 (a) head collapse, (b) layer-20 ungated compressor, (c) ratio 1/2 geometry all MATCH official model.py vs champion dd3d9721c deepseek41.cpp; evidence /mnt/raid0/llm/tmp/zero-inference-20261020/DS41-B12.1/REPORT.md.
 - [ ] **DS41-T3.3 — Token-id parity of the DS41 serving path against two official renderers (intake-2118#record, intake-2121#record).** Oracles: the 1017 encoding/encoding.py (it differs from the September copy: tool-result-only user turns no longer start a turn) and deepseek-recipe @ 935817c. Render the 5 goldens plus tool, thinking, effort, mid-system and reasoning-retention cases (the second reader found the recipe drops reasoning for non-prefix assistant turns where encoding.py keeps it), tokenize with the DS41 GGUF vocab and diff against llama-server /apply-template + /tokenize as served; report the first divergence per case and which oracle disagrees. Host-side only, no inference.
   - [x] **DS41-T3.3 first run (job 60) — harness finding, not a parity result** ✅ 2026-10-20: 0/14 token-identical vs both encodings because neither DS41 GGUF (Sept Q4, 1017 shard 1) carries `tokenizer.chat_template` and llama.cpp has no V4/V4.1 built-in (`src/llama-chat.cpp` stops at deepseek3/deepseek-ocr), so the server rendered its ChatML fallback. Results `/mnt/raid0/llm/tmp/ds41-parity-20261021/ds41-t33-token-parity/`.
