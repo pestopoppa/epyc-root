@@ -83,3 +83,70 @@ def test_check_lists_partials(tmp_path, capsys):
     assert sd.main(["--check", str(tmp_path)]) == 3
     assert "a.aria2" in capsys.readouterr().out
     assert sd.main(["--check", str(tmp_path / "empty-nonexistent")]) == 0
+
+
+# ---- SEC-ART-1: revision pinning + provenance ledger (mocked HF API, no network) ----
+COMMIT = "e" * 40
+OID = "f" * 64
+
+
+def _fake_hf(monkeypatch, calls, fail_resolve=False):
+    def fake(url):
+        calls.append(url)
+        if "/revision/" in url:
+            if fail_resolve:
+                raise OSError("offline")
+            return {"sha": COMMIT}
+        assert f"/tree/{COMMIT}?recursive=1&expand=1" in url
+        return [{"type": "file", "path": "w.gguf", "oid": "a1", "size": 4, "lfs": {"oid": OID, "size": 4}},
+                {"type": "file", "path": "config.json", "oid": "b2", "size": 2},
+                {"type": "file", "path": "not-downloaded.gguf", "oid": "c3", "size": 9, "lfs": {"oid": "9" * 64, "size": 9}},
+                {"type": "directory", "path": "sub"}]
+    monkeypatch.setattr(sd, "hf_get_json", fake)
+
+
+def test_hf_download_is_pinned_and_ledgered(tmp_path, monkeypatch):
+    calls: list[str] = []
+    _fake_hf(monkeypatch, calls)
+    dest, prov = tmp_path / "m", tmp_path / "prov" / "dl.jsonl"
+    script = (f'mkdir -p {dest}; printf abcd > {dest}/w.gguf; printf {{}} > {dest}/config.json; '
+              f'echo "$@" > {tmp_path}/args')
+    rc = sd.main(["--dest", str(dest), "--allow-tmp", "--ledger", str(tmp_path / "l.jsonl"),
+                  "--hf-repo", "org/repo", "--revision", "main", "--provenance-ledger", str(prov),
+                  "--", *sh(script + "; true"), "x"])
+    assert rc == 0
+    rec = [json.loads(x) for x in prov.read_text().splitlines()]
+    assert len(rec) == 1 and rec[0]["schema"] == sd.LEDGER_SCHEMA
+    assert rec[0]["hf_revision"] == COMMIT and rec[0]["requested_revision"] == "main"
+    by = {f["path"]: f for f in rec[0]["files"]}
+    assert set(by) == {"w.gguf", "config.json"}                # only files that exist under dest
+    assert by["w.gguf"]["sha256"] == OID and by["w.gguf"]["lfs"] and by["w.gguf"]["size_matches_upstream"]
+    assert by["config.json"]["sha256"] is None and by["config.json"]["git_oid"] == "b2"
+
+
+def test_inject_revision_only_for_hf_download_and_replaces_caller_revision():
+    assert sd.inject_revision(["hf", "download", "o/r", "--revision", "main"], COMMIT) == \
+        ["hf", "download", "o/r", "--revision", COMMIT]
+    assert sd.inject_revision(["huggingface-cli", "download", "o/r", "--revision=v1"], COMMIT)[-2:] == \
+        ["--revision", COMMIT]
+    assert sd.inject_revision(["curl", "-O", "u"], COMMIT) == ["curl", "-O", "u"]
+
+
+def test_unresolvable_ref_is_refused_unless_no_resolve(tmp_path, monkeypatch):
+    _fake_hf(monkeypatch, [], fail_resolve=True)
+    prov = tmp_path / "dl.jsonl"
+    base = ["--dest", str(tmp_path / "m"), "--allow-tmp", "--ledger", str(tmp_path / "l.jsonl"),
+            "--hf-repo", "org/repo", "--provenance-ledger", str(prov)]
+    ran = tmp_path / "ran"
+    assert sd.main([*base, "--", *sh(f"touch {ran}")]) == 2 and not ran.exists()
+    assert sd.main([*base, "--no-resolve", "--", *sh(f"touch {ran}")]) == 0
+    assert ran.exists() and not prov.exists()                  # unpinned run records nothing
+
+
+def test_failed_download_writes_no_provenance_and_bad_repo_refused(tmp_path, monkeypatch):
+    _fake_hf(monkeypatch, [])
+    prov = tmp_path / "dl.jsonl"
+    common = ["--dest", str(tmp_path / "m"), "--allow-tmp", "--ledger", str(tmp_path / "l.jsonl"),
+              "--provenance-ledger", str(prov)]
+    assert sd.main([*common, "--hf-repo", "org/repo", "--", *sh("exit 5")]) == 5 and not prov.exists()
+    assert sd.main([*common, "--hf-repo", "../etc", "--", *sh("true")]) == 2

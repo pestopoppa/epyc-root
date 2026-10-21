@@ -58,3 +58,66 @@ weights with extra sidecar files under misleading labels (intake-2197#record).
 
 - Prompt-level defences and rendered-sentinel hashes are not template-backdoor protection (intake-2200#record); the defence is hashing the template bytes that will be served.
 - The 2602.03085 scanner is advisory at most (no code release; untested on GGUF, MoE, tool-call targets or >14B).
+
+## SEC-ART-4 design (design only; no code landed)
+
+**Gap.** `served_template_sha256_12` is read only by `scripts/validate/reasoning_effort_certifications.py`
+(`_bound_template_sha`, which truncates any sha to 12 hex). `orchestrator_stack.py:_append_runtime_serving_flags`
+only checks that a `chat_template_file` path EXISTS before emitting `--chat-template-file`; nothing compares bytes,
+and a role with no `chat_template_file` silently serves the GGUF-embedded `tokenizer.chat_template`.
+
+**Registry field.** `roles.<role>.chat_template.served_template_sha256` = 64 lowercase hex (sha256 of the exact
+effective template bytes). The existing `served_template_sha256_12` stays and must equal its first 12 chars
+(validator error otherwise), so the certification reader keeps working unchanged. Compiled through
+`registry_compiler.compile_lean` as-is (roles pass through); `registry_validator.py` gains
+`_check_template_pins(registry, strict)`: shape check always an error, missing is WARN until the lineup is
+backfilled, then flipped by `REGISTRY_TEMPLATE_PINS_STRICT=1` (same switch design as SEC-ART-1).
+
+**New module `src/registry/template_pin.py`** (pure, no llama-server import):
+- `read_gguf_chat_template(gguf_path) -> bytes | None` - reads ONLY the GGUF header metadata (magic, version,
+  n_tensors, n_kv, then the KV records; stop at key `tokenizer.chat_template`, type STRING = 8; length-prefixed
+  uint64 + raw bytes). Never touches tensor data, so it is a few KB of I/O even on a 40 GB file. Returns None if
+  the key is absent. Handles GGUF v2/v3 only; any other version raises `TemplatePinError`.
+- `effective_template_bytes(chat_template_file: str | None, gguf_path: str) -> tuple[bytes, str]` - mirrors
+  llama-server precedence: `--chat-template-file` bytes if the flag is emitted, else the GGUF template. The second
+  value is the source label (`file:<path>` / `gguf:<path>`). A command carrying `--chat-template` (inline) is
+  refused outright (cannot be pinned by path; the launcher never emits it today).
+- `template_sha256(data: bytes) -> str` (64 hex), `check_template_pin(role, effective, pinned) -> None` raising
+  `TemplatePinError(role, source, expected, actual)`; the message carries both full digests and the source path.
+
+**Launcher wiring.** In `scripts/server/orchestrator_stack.py` add `_verify_served_template(role_name, cmd, flags)`
+and call it from `build_server_command` after the per-mode builder returns `cmd` (so it sees the FINAL argv, not
+the registry's intent) and before `start_server` reaches either `subprocess.Popen` (lines ~1907/1980). It parses
+`--chat-template-file` and `-m/--model` out of `cmd`, calls `effective_template_bytes`, and compares with the
+role's pin from `_stack_prior_launch(role_name)` (extend that tuple's `flags` with `served_template_sha256`).
+On mismatch it raises `TemplatePinError`; `start_server` converts it to the same refuse-and-return-None path the
+missing-path ValueError takes, prints `REFUSED <role>: template sha256 <actual> != pinned <expected> (<source>)`
+and writes a `kind: template_pin_refusal` line to the stack-change ledger. Embedders and aux services without a
+chat template (`embedding_mode`) skip the check; a role with a template-bearing model and NO pin is a WARN in
+non-strict mode and a refusal under `REGISTRY_TEMPLATE_PINS_STRICT=1`. The check also runs in `cmd_start`'s
+validate-only path (`stack_commands.cmd_start` -> `validate_or_raise` neighbourhood) so `--validate-only`
+reports pin failures without starting anything. No `--jinja` flag handling changes.
+
+**TOCTOU.** The hash is of bytes read by the launcher, llama-server re-reads the file microseconds later. For
+file templates, close the window by launching with a content-addressed copy: SEC-ART-6 serves overrides from
+`.../chat-templates/sha256/<64hex>.jinja` (read-only), so the path itself names the pinned digest and the launch
+check becomes a belt-and-braces recheck. Until SEC-ART-6, the launcher re-hashes after `Popen` has logged the
+banner (cheap) and `stack_log_banner.write_launch_banner` records the digest so a post-launch swap is visible.
+
+**Test plan** (foreground, orchestrator venv, fixtures only, no server):
+1. `tests/unit/test_template_pin.py`: build a minimal GGUF in `tmp_path` (struct-packed header, two KVs, one with
+   `tokenizer.chat_template`, zero tensors) - assert `read_gguf_chat_template` returns the exact bytes; a GGUF
+   without the key returns None; a truncated header and a v1 magic raise `TemplatePinError`; a 1 GiB sparse file
+   with the same header proves no full-file read (assert `os.read` total < 1 MB via monkeypatched open).
+2. File precedence: `effective_template_bytes(file, gguf)` returns the file bytes and `file:` label; with
+   `None` returns the GGUF bytes and `gguf:` label.
+3. One-byte mutation: copy the template, flip one byte -> `check_template_pin` raises with both digests; the
+   unmodified copy passes. Same for the GGUF-embedded path (mutate one byte inside the KV value).
+4. `tests/unit/test_orchestrator_stack_template_pin.py`: with `subprocess.Popen` patched to raise if reached,
+   `start_server` on a registry fixture whose pin mismatches returns None/raises and Popen is NEVER called;
+   matching pin reaches Popen. Inline `--chat-template` argv is refused.
+5. Validator: 64-hex shape errors, 12-char prefix consistency error, WARN-vs-strict switch (mirrors
+   `tests/unit/test_registry_artifact_pins.py`).
+6. Live-registry backfill check (read-only): for each lineup role with `chat_template_file`, the hash of the
+   file equals the existing `served_template_sha256_12` prefix (expected `1443ea9ab4bb` for the terse template,
+   25808 bytes); roles that use a GGUF-embedded template are listed for the header-read backfill.
