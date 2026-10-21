@@ -1496,6 +1496,24 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
   - [ ] **DS41-W8a — give the DS41-1017 AK target a prefill surface.** The campaign target runs `-np 1`, no drafter, one cached 45-token prompt, so it cannot see prefill; seed S5 (`akm-ds41-1017-mxfp4-mmid-gemm-tiles`, the likely cause of the −29.9% pp512 vs Sept Q4_K) stays record-only until the target adds `--keep-dimensions prefill_at_depth` with a `--longctx-surface` (or the W6 drafter's verify shapes). Needs its own floor (new recipe). (filed 2026-10-21 from the AK-seeding report)
+    - *(2026-10-21, note; W8a stays open.)* Traced on research `c036eaa40` (autokernel code = `c5997024e`).
+      **W8a does not invalidate the 2026-10-22 decode floor.** The decode floor path is built only from the
+      launch template, the anchor execution digest and the frozen decode requests (`run.py` 1113-1127, 1615-1636,
+      3302-3311). `longctx.derive_launch` builds a SEPARATE recipe, `ds41-1017-cpu-t48-nospec-lc32k-2e0d3fb7`
+      (hash `7959844b...`, `-c 35840`). That recipe has its own slot and its own 24-pair floor under
+      `store/longctx/<target>/` (`longctx.py` 256-286, 669-784). `serial_run` classes both flags as keep policy
+      (`serial_run.py` 331-361). A dry-run with both flags added differs from the armed one only by the two
+      flags (same target revision, recipe `a22332136f30`, floor dir). **Gap:** `--serving-calibration-only`
+      never calibrates the longctx surface, because `ensure_slot`/`ensure_floor` run only inside a keep A/B. So
+      adding the flags to tomorrow's launcher would add nothing. Decision: (a) keep tomorrow's run as armed.
+      Prepared:
+      - spec `inputs/ds41-1017-longctx-32k.longctx.json` (digest `2e0d3fb7`; depth 32768, tail 2048,
+        wikitext2, tokenizer round-trip checked);
+      - args, dry-runs and a 16-line research patch `w8a-longctx-calibration-only.patch` that calibrates the
+        surface in the calibration-only exit (test files pass), all in `/mnt/raid0/llm/tmp/ds41-1017-w8a-20261021/`;
+      - FILLERS row `ds41-1017-w8a-longctx-floor` (block-timing-quiet, ~2.5-4.5 h, ready n).
+
+      Next: land the patch on research main, then book the block after the decode floor exists.
   - [ ] **DS41-W8b — in-place / mmap-friendly MXFP4 CPU repack (non-AK engineering).** The repack copies all experts into ~276 GiB of anonymous RAM per server (INC-20261021-earlyoom-session-kills); `block_mxfp4` and `block_mxfp4x8` are both 17 B per 32 weights, so the repack only reorders bytes and could run in place. AK's `capacity` dimension is a pass/fail guard, so a memory-only win can never be kept by AK. First verify the RssFile figure with `smaps_rollup` (the target runs `--no-mmap`). Experimental branch only; a fold is a champion-owner decision. (filed 2026-10-21)
 - [ ] DS41-T1 — Load plus short-context coherence smoke on CPU with the canonical env (abort on
   repetition loops). Record `(arch, index_topk, candidate settings, window)` from the load log.
