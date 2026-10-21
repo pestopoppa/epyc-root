@@ -27,3 +27,7 @@ if [ -n "$_vac_staged" ]; then
         "$(git rev-parse --show-toplevel)" $_vac_staged || status=1
 fi
 unset _vac_staged
+
+# Mass-deletion warning (warn-only, never sets $status): a commit that removes >30% of a
+# handoffs/active/*.md without moving it to completed/archived (origin: 465954bc0, +12/-892).
+python3 "${HOOK_SRC_DIR}/handoff_mass_deletion_warn.py" "$@" || true
