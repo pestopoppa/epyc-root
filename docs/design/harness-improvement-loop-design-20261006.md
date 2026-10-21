@@ -125,7 +125,7 @@ The HIL-4 decision package is complete as a deliverable; the operator choice amo
 
 **Additional neutral evidence rows (HIL-21, 2026-10-21; selects no option).**
 
-- AHE (`intake-1132#record`): full-harness evolution. Four numbers: cost 10 iterations, about 32 h, 96 concurrent rollouts; same-task gain +7.3 pp; transfer gain +0.4 pp on SWE-bench (inside noise); regression blindness, regression prediction about 2x random (precision 11.8% / recall 11.1% vs random 5.6% / 5.4%). Caveats: same-task evaluation, one campaign, a frontier evolver. Neutral between A, B and C.
+- AHE (`intake-1132#record`): full-harness evolution. Four numbers: cost 10 iterations, about 32 h, 96 concurrent rollouts; same-task gain +7.3 pp; transfer gain +0.4 pp on SWE-bench (inside noise); regression blindness, regression prediction about 2x random (precision 11.8% / recall 11.1% vs random 5.6% / 5.4%). Caveats: same-task evaluation, k=2 (a task passes only if both rollouts pass), one campaign, a frontier evolver. Neutral between A, B and C.
 - Harness choice conditions on the model tier for open-weight backbones (`intake-2328#record`), so per-model-by-harness priors are the unit.
 - A harness comparison holds the model fixed and a model comparison holds the harness fixed (`intake-1354#record`).
 - No HIL-4 option is selected by these rows; OP-HIL4 stays open.
@@ -184,5 +184,11 @@ This is the spec that HIL-2 checklist item 13 (failure decomposition) rests on. 
 5. Step-ratio column. Report the failed/successful mean-step ratio per role as a baseline column, with the step cap and the zero-step exclusion stated.
 6. Labelled-sample clause. Use at least 30 overlap traces and three annotators where affordable (two minimum). Report category kappa or alpha, and step agreement exact, within 1 and within 5, the consensus rate per step, and nDCG@5 against the consensus ranking. Reconcile by discussion before any label is used as gold. Record two step fields per trace: first visible deviation and first unrecoverable step. An acceptance review of pre-filled labels is reported separately and never as agreement.
 7. Repair-test control. Any attribution-guided repair test includes a random-location edit arm of equal size.
+
+**Mapping-table additions (2026-10-21 audit, text only).** Three source rows of the HIL-12 mapping table had no exact text above and are added here.
+
+8. Expected-null note (W2-TRAIL-T1). TRAIL humans labelled Formatting plus Instruction Non-compliance as 353 of 841 and called System Execution errors rare, so a mechanical-first scan cannot be assumed to cover most failure mass and instruction-following needs a judge. When execution defects are near zero the report records an expected-null note, consistent with HIL-9 item 13.
+9. Last-event sanity baseline (W3-TELEMETRY-S2). A trivial rule that always picks the last event is the sanity baseline for the `first visible deviation` label, reported beside the share where first event equals last event.
+10. Control ladder (W4-GRADE-G2). Any structural-signal claim reports a linear run-size baseline, a composition baseline, task-level resampling (not run-level) and a degree-matched counterfeit.
 
 Reference agreement values for the labelled-sample clause (AgentRx, Who&When Pro, TraceElephant, REFLECT, LongRCA) are in `/mnt/raid0/llm/tmp/dive-dpfw4-agentrx/GROUP_W4E.md`; they are cited, not copied, and the metrics differ so the values are not comparable with each other.
