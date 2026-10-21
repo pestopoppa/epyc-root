@@ -1,0 +1,52 @@
+task_id,language,internet,cpu_only,max_score_2h,mean_headroom,n_models,glm_sd,ds_sd,outcome
+ad_placement_optimization,C++,False,True,65.2,9.7,5,14.3,16.3,sd_excluded
+anchorhead_text_adventure,Python,False,True,15.0,13.06,5,0.6,8.1,selected
+ann_vector_search_qps,Python,False,True,27.5,24.12,5,17.5,3.0,sd_excluded
+apple_incremental_game,Python,False,True,42.7,4.34,5,1.1,0.1,below_top8
+arc_compiler_runtime,Python,False,True,55.5,5.88,5,3.5,4.7,below_top8
+bipedalwalker_locomotion_rl,Python,False,True,16.7,7.36,5,2.1,4.3,below_top8
+borden_source_inversion,Python,False,True,20.1,19.88,5,13.7,3.6,selected
+carleson_formalization,Lean 4,False,True,6.0,8.24,5,0.7,1.5,language
+college_english_exam_bank,Python,True,True,30.7,11.58,5,1.3,10.3,internet
+combinatorial_games_formalization,Lean 4,False,True,14.5,14.42,5,3.1,0.9,language
+cta_risk_budget_optimization,Python,False,True,46.0,5.14,5,0.7,4.1,below_top8
+dabic_gravity_inversion,Python,False,True,15.9,4.43,4,0.7,2.9,below_top8
+dcss_dungeon_ai,Python,False,True,8.9,3.96,5,4.3,3.7,below_top8
+equivalence_class_divide_and_conquer,C++,False,True,14.5,7.2,5,2.0,3.5,below_top8
+exchange_core_throughput,Java,False,True,40.7,25.78,5,12.9,17.9,language
+ffmpeg_swscale_reimplementation,C++,False,True,9.9,6.36,5,3.9,5.9,below_top8
+flt_regular_formalization,Lean 4,False,True,43.7,26.8,5,13.4,11.3,language
+git_rewrite_in_zig,C++,False,True,22.0,6.02,5,1.9,2.1,below_top8
+graph_node_classification,Python,False,True,59.4,3.98,5,8.7,8.1,below_top8
+grid_turing_robot,Python,False,True,40.4,3.14,5,5.9,6.0,below_top8
+integer_compression_codec,C++,False,True,69.4,5.72,5,4.3,8.1,below_top8
+jagua_nesting_optimization,Rust,False,True,22.4,12.32,5,8.2,16.7,language
+juliet_vulnerability_analyzer,Python,False,True,81.0,12.08,5,4.6,8.4,selected
+k12_math_recommendation,Python,False,True,38.5,8.06,5,8.2,2.2,selected
+lean_analysis_proofs,Lean 4,False,True,17.9,11.6,5,,2.7,language
+molecular_self_assembly,Python,False,True,22.4,3.86,5,5.9,3.5,below_top8
+nethack_dungeon_agent,Python,False,True,29.7,9.84,5,16.2,2.3,sd_excluded
+new_foundations_consistency,Lean 4,False,True,28.9,31.9,5,27.5,4.9,language
+openrct2_theme_park_ai,Python,False,True,35.1,3.0,5,9.5,2.6,below_top8
+openttd_transport_ai,Python,False,True,50.0,6.3,5,0.0,26.4,sd_excluded
+order_addition_permutation_optimization,Python,False,True,22.6,18.1,5,9.8,11.3,selected
+ordinal_notation_well_foundedness,Coq,False,True,13.7,10.12,5,0.0,1.7,language
+pfr_formalization,Lean 4,False,True,32.4,21.26,5,1.4,5.4,language
+portfolio_risk_calibration,Python,False,True,20.1,7.9,5,14.2,6.9,below_top8
+rust_multicrate_reconstruction,Rust,False,True,27.5,12.95,4,21.4,2.4,language
+schemathesis_config_modernization,Python,False,True,82.5,3.9,5,4.2,2.9,below_top8
+schemathesis_datagen_pipeline,Python,False,True,68.0,2.72,5,7.0,5.3,below_top8
+schemathesis_reporting_observability,Python,False,True,76.6,2.92,5,1.5,11.7,below_top8
+smt_solver,Python,False,True,10.3,4.06,5,,1.7,below_top8
+sphere_eversion_formalization,Lean 4,False,True,45.0,21.28,5,21.3,7.7,language
+treant_forest,Python,False,True,14.5,4.74,5,2.4,4.8,below_top8
+tree_block_partitioning,C++,False,True,28.8,10.24,5,4.5,0.9,selected
+triangulation_coloring_optimization,Python,False,True,74.1,2.34,5,1.5,10.3,below_top8
+trinity_text_adventure,Python,False,True,25.0,9.62,5,5.7,3.8,selected
+tryst_text_adventure,Python,False,True,32.1,20.9,5,4.4,3.3,selected
+vehicle_routing_time_windows,Python,False,True,88.7,7.52,5,8.1,6.6,below_top8
+vibrating_path_graph_coloring,Python,False,True,19.7,7.18,5,3.2,5.1,below_top8
+vliw_kernel_optimization,Python,False,True,75.7,17.7,5,25.1,19.1,sd_excluded
+warehouse_forklift_routing,Python,False,True,9.8,1.57,4,0.3,0.0,below_top8
+wesnoth_tactical_ai,Python,False,True,84.0,8.42,5,11.0,31.5,sd_excluded
+wireless_electricity_layout,C++,False,True,10.9,2.3,5,9.8,0.0,below_top8
