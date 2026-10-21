@@ -228,14 +228,16 @@ fi
 
 # ---------------------------------------------------------------- apply
 push_locked() { # name repo sha
-  local name="$1" repo="$2" sha="$3" tok
-  tok="$(mktemp /mnt/raid0/llm/tmp/corpus-flagoff-push-token.XXXXXX)"; chmod 600 "$tok"
+  local name="$1" repo="$2" sha="$3" tokdir tok
+  # serialized_push --acquire writes the token itself; a pre-created (empty) file is refused.
+  tokdir="$(mktemp -d /mnt/raid0/llm/tmp/corpus-flagoff-push-token.XXXXXX)"; chmod 700 "$tokdir"
+  tok="$tokdir/lease.token"
   python3 "$PUSHER" --agent "$LOCK_AGENT" --repo "$repo" --lock-name push --acquire --token-file "$tok" >/dev/null \
-    || { rm -f "$tok"; die "$name: could not take the push lock"; }
+    || { rmdir "$tokdir" 2>/dev/null; die "$name: could not take the push lock"; }
   local rc=0
   AGENT_ID="$LOCK_AGENT" EPYC_PUSH_LOCK_HOLDER="$LOCK_AGENT" git -c safe.directory='*' -C "$repo" push origin "$sha:refs/heads/main" || rc=$?
   python3 "$PUSHER" --agent "$LOCK_AGENT" --repo "$repo" --lock-name push --release --token-file "$tok" >/dev/null || say "WARN: $name push lock release failed — check serialized_push.py --status"
-  rm -f "$tok"
+  rm -f "$tok"; rmdir "$tokdir" 2>/dev/null
   [ "$rc" -eq 0 ] || die "$name: git push rejected (rc=$rc). Nothing else was pushed after this point; re-run to resume."
   say "  pushed $name $sha -> origin/main"
 }
