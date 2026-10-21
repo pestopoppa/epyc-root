@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Belief-redesign Phase-1 acceptance checks AC1-AC5, AC7, AC8, run against a LEDGER COPY.
+"""Belief-redesign Phase-1 acceptance checks AC1-AC5, AC7-AC9, run against a LEDGER COPY.
 
 Read-only. It never writes a ledger, a known-good snapshot or an alarm: instead of `prepare()`
 (which writes both) it runs the same read path `prepare()` runs once the ledger is current --
@@ -20,6 +20,10 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
   AC7  (needs --before) every claim in the pre-backfill copy keeps its grade, verdict and gate
        outcome; the pre-backfill frames are an unchanged prefix of the post-backfill copy.
        Adapter-fixture frame ids are pinned by tests/vidya/test_claim_tuple.py (lane A), not here.
+  AC9  (belief redesign §12.7) role architect_critic (27B gpu; spec_draft, kv_profile, routing)
+       returns PB-HOL-1 in the KNOB tier (and reports where KPF-18 item 7 landed); role frontdoor
+       (Qwen3.6-35B cpu) returns the KPF-18 item-7 arms as target context; the lineup target
+       (--stack-regime) returns "No beliefs at this regime" until the first post-restart trial.
   AC8  10 random mechanism ids from the DS41 and Q38FN experiments.db stores each appear in the
        answer (detailed line, section index or answer `tried_index`) with an outcome.
 
@@ -37,6 +41,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import sqlite3
 import sys
 import time
@@ -74,6 +79,16 @@ TARGETS: dict[str, dict[str, Any]] = {
                                        "Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf"),
                      "quant": "Q4_K_M", "backend": "cpu"},
 }
+ROLE_TARGETS: dict[str, dict[str, Any]] = {
+    "architect_critic": {**TARGETS["27B"], "role": "architect_critic",
+                         "label": "role:architect_critic",
+                         "knob_families": ["spec_draft", "kv_profile", "routing"]},
+    "frontdoor": {**TARGETS["Qwen3.6-35B"], "role": "frontdoor", "label": "role:frontdoor",
+                  "knob_families": ["spec_draft", "kv_profile"]},
+}
+PBHOL_RE = re.compile(r"pb.?hol", re.I)
+KPF_RE = re.compile(r"kpf.?18|prefix.?fork", re.I)
+ITEM7_RE = re.compile(r"item.?7|kpf18-run-c", re.I)
 CPU_FIVE = ("DS41-Q4", "DS41-1017", "Q38FN", "Qwen3.6-35B", "Qwen3-VL-30B")
 CAMPAIGNS = Path("/mnt/raid0/llm/autokernel/campaigns")
 DEFAULT_STORES = {
@@ -280,6 +295,50 @@ def ac7(before_path: Path, r: Reader) -> dict[str, Any]:
                              + "; adapter-fixture frame ids: tests/vidya/test_claim_tuple.py")
 
 
+def _identity(row: dict[str, Any]) -> str:
+    return " ".join(str(row.get(k) or "") for k in ("source_kind", "claim_id", "locator", "text"))
+
+
+def ac9(r: Reader, stack_regime: str) -> dict[str, Any]:
+    details, ok = [], True
+    rows_by_role = {}
+    for role, raw in ROLE_TARGETS.items():
+        target = lb.Target.from_mapping(raw)
+        col = lb.collect(r.frames, [target], as_of=r.as_of, fold_result=r.result)
+        ev = lb.evaluate_frames(r.frames, [target], as_of=r.as_of, fold_result=r.result)
+        rows_by_role[role] = (col, ev)
+    col, ev = rows_by_role["architect_critic"]
+    every = col["rows"] + [x for b in lb.FLAG_BUCKETS for x in col["flagged"][b]]
+    pbhol_knob = [x for x in every if x["tier"] == "knob" and PBHOL_RE.search(_identity(x))]
+    pbhol_any = [x for x in every if PBHOL_RE.search(_identity(x))]
+    kpf = [x for x in every if KPF_RE.search(_identity(x)) and ITEM7_RE.search(_identity(x))]
+    shown = PBHOL_RE.search(ev["section"]) is not None or any(
+        c["claim_id"] in {x["claim_id"] for x in pbhol_knob} for c in ev["claims"])
+    ok &= bool(pbhol_knob) and shown
+    details.append(f"architect_critic: PB-HOL-1 knob-tier {len(pbhol_knob)} (of {len(pbhol_any)} "
+                   f"PB-HOL claims; tiers {sorted({x['tier'] for x in pbhol_any})}), shown {shown}"
+                   f"; KPF-18 item 7 {len(kpf)} in tiers {sorted({x['tier'] for x in kpf})}")
+    col, ev = rows_by_role["frontdoor"]
+    every = col["rows"] + [x for b in lb.FLAG_BUCKETS for x in col["flagged"][b]]
+    arms = [x for x in every if x["tier"] in ("knob", "target")
+            and KPF_RE.search(_identity(x)) and ITEM7_RE.search(_identity(x))]
+    ok &= bool(arms)
+    details.append(f"frontdoor: KPF-18 item-7 arms {len(arms)} in tiers "
+                   f"{sorted({x['tier'] for x in arms})}")
+    lineup = lb.Target.from_mapping({"scope": "lineup", "stack_regime": stack_regime,
+                                     "knob_families": ["kv_compaction", "orchestrator"],
+                                     "label": "lineup"})
+    ev = lb.evaluate_frames(r.frames, [lineup], as_of=r.as_of, fold_result=r.result)
+    if ev["tiers"]["lineup"]:
+        details.append(f"lineup {stack_regime or 'unrecorded'}: {ev['tiers']['lineup']} "
+                       "post-restart trial claim(s) present (banner no longer expected)")
+    else:
+        good = bool(ev["banner"]) and "No beliefs at this regime" in ev["banner"]
+        ok &= good
+        details.append(f"lineup {stack_regime or 'unrecorded'}: 0 claims, banner {good}")
+    return _check("AC9", ok, "; ".join(details))
+
+
 def _store_mechanisms(store: Path) -> dict[str, list[str]]:
     db = store / "experiments.db"
     marks = ",".join("?" for _ in PROJECTED_STATUSES)
@@ -334,6 +393,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--store", action="append", default=[], metavar="FAMILY=DIR",
                         help="AC8 store dir (DS41= or Q38FN=; repeatable; replaces defaults)")
     parser.add_argument("--seed", type=int, default=20261022)
+    parser.add_argument("--stack-regime", default="",
+                        help="AC9 lineup target's stack_regime (AP-55 infra_fingerprint digest)")
     parser.add_argument("--skip", action="append", default=[], help="check to skip, e.g. AC8")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
@@ -377,6 +438,8 @@ def main(argv: list[str] | None = None) -> int:
                        else _check("AC7", False, "not run: --before <pre-backfill copy> missing"))
     if "AC8" not in skip:
         results.append(ac8(reader, stores, args.seed))
+    if "AC9" not in skip:
+        results.append(ac9(reader, args.stack_regime))
     summary = {"ledger": str(ledger), "before": args.before, "as_of": as_of,
                "frames": len(reader.frames), "fold_seconds": reader.fold_seconds,
                "checks": results, "pass": all(r["pass"] for r in results)}

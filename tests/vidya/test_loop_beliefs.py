@@ -519,10 +519,10 @@ def _loop(ident, *, model=DS41_Q4, quant="Q8_0", backend="cpu", device="epyc-965
           epoch="c42cd5615dfb0000", build="7ef803926107aaaa", symbol="ggml_iqk_try_mul_mat_id",
           date="2026-10-04T04:37:38Z", reason="", native="measured_null", decisive=False,
           metric="aggregate_tok_s", unit="t/s", serving_claim_id=None, observation=True,
-          model_sha256=None, locator=None):
+          model_sha256=None, locator=None, scope_keys=None):
     """One loop belief's three frames, §4.1 shape. `observation=False` gives an old-style frame
     (applicability only, no value-bearing evidence keys)."""
-    scope = {"backend": backend, "device": device}
+    scope = {k: v for k, v in (("backend", backend), ("device", device)) if v}
     if model:
         scope["model_file"] = f"{MODELS}/{model}"
     if quant:
@@ -552,7 +552,8 @@ def _loop(ident, *, model=DS41_Q4, quant="Q8_0", backend="cpu", device="epyc-965
             obs["serving_claim_id"] = serving_claim_id
         evidence = {"metric": metric, "value": value, "unit": unit, "observation": obs}
     return _reseal(to_frames(tup, as_of=WRITTEN, adapter_id="fixture/v1"),
-                   scope_extra=extra if observation else {}, evidence_extra=evidence,
+                   scope_extra={**(extra if observation else {}), **(scope_keys or {})},
+                   evidence_extra=evidence,
                    retrofit=observation)
 
 
@@ -612,7 +613,7 @@ def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
     stranger = _loop("stranger", model="Some-Other-Model-Q8_0.gguf", mech="akm-stranger")
     path = _write(tmp_path, *q4, uniform, stranger)
     _, ev = _ev(tmp_path, alarm, path, DS41_1017_T)
-    assert ev["tiers"] == {"target": 0, "sibling": 3, "host": 0}
+    assert ev["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 3, "host": 0}
     sibling_lines = [line for line in ev["section"].splitlines()
                      if line.startswith("- ") and "transfer unproven" in line]
     assert len(sibling_lines) == 3
@@ -622,7 +623,7 @@ def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
     assert set(ev["claim_ids"]) == {_cid(b) for b in q4}       # sibling ids are reliance-eligible
     assert _cid(stranger) not in ev["section"]
     _, q38 = _ev(tmp_path, alarm, path, Q38_T)                 # uniform file is UD's sibling
-    assert q38["tiers"] == {"target": 0, "sibling": 1, "host": 0}
+    assert q38["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 1, "host": 0}
     assert f"measured on {Q38_UNI}" in q38["section"]
 
 
@@ -635,7 +636,7 @@ def test_section_caps(tmp_path, alarm):
     hosts = [_host(f"host-{i}") for i in range(6)]
     path = _write(tmp_path, *own, *sib, *hosts)
     _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
-    assert ev["tiers"] == {"target": 30, "sibling": 12, "host": 6}
+    assert ev["tiers"] == {"knob": 0, "target": 30, "lineup": 0, "sibling": 12, "host": 6}
     assert ev["tiers_shown"]["target"] <= lb.TIER_CAPS["target"] == 16
     assert ev["tiers_shown"]["sibling"] <= lb.TIER_CAPS["sibling"] == 8
     assert ev["tiers_shown"]["host"] <= lb.TIER_CAPS["host"] == 3
@@ -901,4 +902,164 @@ def test_existing_answer_keys_are_kept(tmp_path, alarm):
         assert {"claim_id", "source_kind", "run", "grade", "locator", "tier", "status",
                 "outcome", "mechanism_id", "value", "unit", "effect_rel"} <= set(claim)
     empty = lb._evidence_empty("no_applicable_claims", as_of=AS_OF)
-    assert empty["tiers"] == {"target": 0, "sibling": 0, "host": 0} and empty["banner"] is None
+    assert empty["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 0, "host": 0}
+    assert empty["banner"] is None
+
+
+# ------------------------------------------------------------------------------ knob / lineup (§12)
+
+Q27 = "Qwen3.8-27B-Q8_0.gguf"
+ARCHITECT_T = {"model_path": f"/mnt/raid0/llm/models/{Q27}", "quant": "Q8_0", "backend": "gpu",
+               "role": "architect_critic",
+               "knob_families": ["spec_draft", "kv_profile", "routing"]}
+LINEUP_T = {"scope": "lineup", "stack_regime": "regime-r1",
+            "knob_families": ["orchestrator", "kv_compaction"]}
+
+
+def _gpu27(ident, **kw):
+    kw.setdefault("mech", None)
+    kw.setdefault("outcome", "")
+    return _loop(ident, model=Q27, quant="Q8_0", backend="gpu", device="gfx90a",
+                 recipe=None, epoch=None, build=None, symbol=None, **kw)
+
+
+def test_knob_tier_ranks_above_plain_target_and_prints_knobs(tmp_path, alarm):
+    pbhol = _gpu27("pb-hol-1:off:short", kind="pb-hol-1", value="22.05", unit="x",
+                   metric="short_ttft_ratio_b_over_a",
+                   scope_keys={"knob_family": "routing", "role": "architect_critic",
+                          "varied": ["short_slot_index_order"],
+                          "knobs": {"np": "3", "kv_unified": "on"}})
+    kpf = _gpu27("kpf18:item7:B1", kind="kv-prefix-fork", value="25", unit="s",
+                 scope_keys={"knob_family": "slot_serving", "varied": ["slot_fork"]})
+    plain = _gpu27("plain-27b", value="81.12")
+    bogus = _gpu27("bogus-family", value="1", scope_keys={"knob_family": "not_a_family"})
+    path = _write(tmp_path, kpf, plain, bogus, pbhol)
+    _, ev = _ev(tmp_path, alarm, path, ARCHITECT_T)
+    tiers = {c["claim_id"]: c["tier"] for c in ev["claims"]}
+    assert tiers[_cid(pbhol)] == "knob"
+    assert tiers[_cid(kpf)] == "target"        # slot_serving is not a family this role changes
+    assert tiers[_cid(plain)] == "target" and tiers[_cid(bogus)] == "target"
+    assert ev["tiers"]["knob"] == 1 and ev["tiers"]["target"] == 3
+    assert ev["claims"][0]["claim_id"] == _cid(pbhol)          # knob ranks first
+    assert _cid(pbhol) in ev["claim_ids"]                       # reliance-eligible
+    section = ev["section"]
+    assert section.index("### Usable, knob tier") < section.index("### Usable, target tier")
+    line = next(l for l in section.splitlines() if l.startswith(f"- {_cid(pbhol)} "))
+    assert ("role architect_critic family routing varied [short_slot_index_order] "
+            "knobs {kv_unified=on, np=3}") in line
+    assert ev["claims"][0]["knob_family"] == "routing"
+    assert ev["claims"][0]["varied"] == ["short_slot_index_order"]
+    # the same claim with no families on the target is plain target evidence
+    _, plain_ev = _ev(tmp_path, alarm, path, {k: v for k, v in ARCHITECT_T.items()
+                                              if k != "knob_families"})
+    assert plain_ev["tiers"]["knob"] == 0 and plain_ev["tiers"]["target"] == 4
+
+
+def test_target_knob_families_are_declared_vocabulary():
+    target = lb.Target.from_mapping({**ARCHITECT_T, "knob_families": ["routing", "spec_draft"]})
+    assert target.knob_families == ("routing", "spec_draft") and target.role == "architect_critic"
+    assert lb.Target.from_mapping({**ARCHITECT_T, "knob_families": None,
+                                   "knob_family": "kv_profile"}).knob_families == ("kv_profile",)
+    with pytest.raises(ValueError):
+        lb.Target.from_mapping({**ARCHITECT_T, "knob_families": ["routng"]})
+    lineup = lb.Target.from_mapping(LINEUP_T)
+    assert lineup.is_lineup and lineup.key == ("lineup", "regime-r1")
+    assert lineup.as_dict()["scope"] == "lineup"
+
+
+def test_knob_and_target_share_the_target_budget(tmp_path, alarm):
+    knob = [_gpu27(f"k-{i:02d}", value=f"{i}", scope_keys={"knob_family": "spec_draft"})
+            for i in range(20)]
+    plain = [_gpu27(f"p-{i:02d}", value=f"{i}") for i in range(20)]
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, *knob, *plain), ARCHITECT_T)
+    shown = ev["tiers_shown"]
+    assert shown["knob"] + shown["target"] <= lb.TIER_CAPS["target"]
+    assert shown["knob"] == 16 and shown["target"] == 0         # knob outranks plain target
+    assert ev["section_bytes"] <= lb.DEFAULT_MAX_BYTES
+
+
+def _lineup_claim(ident, regime):
+    return _loop(ident, model=None, quant="", backend="", device="", kind="autopilot-journal",
+                 mech=None, outcome="", value="0.81", unit="q/s", metric="quality_per_second",
+                 recipe=None, epoch=None, build=None, symbol=None,
+                 scope_keys={"stack_regime": regime, "knob_family": "orchestrator",
+                        "varied": ["memrl_retrieval.top_k"]})
+
+
+def test_lineup_target_matches_only_its_stack_regime(tmp_path, alarm):
+    old_regime = _lineup_claim("ap-trial-1480", "regime-r0")
+    path = _write(tmp_path, old_regime, _gpu27("plain-27b", value="81.12"))
+    ans, ev = _ev(tmp_path, alarm, path, LINEUP_T)
+    assert ev["tiers"]["lineup"] == 0 and ev["nonempty_target"] is False
+    assert ans["banner"] == ("No beliefs at this regime (regime-r1). The lines below are "
+                             "sibling/host context only.")
+    assert ev["empty_targets"] == ["lineup:regime-r1"]
+    # the first post-restart trial at this regime
+    new = _lineup_claim("ap-trial-1506", "regime-r1")
+    path = _write(tmp_path, old_regime, new, name="after.jsonl")
+    _, ev = _ev(tmp_path, alarm, path, LINEUP_T)
+    assert ev["tiers"]["lineup"] == 1 and ev["nonempty_target"] is True and ev["banner"] is None
+    assert ev["claim_ids"] == [_cid(new)]
+    assert "### Usable, lineup tier" in ev["section"] and "lineup regime regime-r1" in ev["section"]
+
+
+def test_per_role_and_lineup_targets_in_one_answer(tmp_path, alarm):
+    pbhol = _gpu27("pb-hol-1:off:short", value="22.05", scope_keys={"knob_family": "routing"})
+    ans, ev = _ev(tmp_path, alarm, _write(tmp_path, pbhol), [ARCHITECT_T, LINEUP_T])
+    assert ev["tiers"]["knob"] == 1 and ev["nonempty_target"] is True
+    assert ans["banner"] == "No beliefs at this regime (regime-r1)."
+    assert "role architect_critic" in ev["section"] and "lineup / regime regime-r1" in ev["section"]
+
+
+def test_bridge_shaped_role_and_lineup_targets_parse():
+    """P1-J (orchestrator f0e670a1) sends exactly these shapes; neither may land in
+    target_errors. The lineup target has no model and no backend."""
+    role = lb.Target.from_mapping({"model_path": f"/mnt/raid0/llm/models/{Q27}", "quant": "Q8_0",
+                                   "backend": "gpu", "role": "architect_critic",
+                                   "label": "role:architect_critic",
+                                   "knob_families": ["spec_draft", "kv_profile", "routing"]})
+    assert role.role == "architect_critic" and not role.is_lineup
+    lineup = lb.Target.from_mapping({"scope": "lineup", "stack_regime": "sha256:abc",
+                                     "knob_families": ["kv_compaction", "orchestrator"],
+                                     "label": "lineup"})
+    assert lineup.is_lineup and (lineup.model_file, lineup.backend) == ("", "")
+    assert lineup.knob_families == ("kv_compaction", "orchestrator")
+    for family in ("spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
+                   "orchestrator"):
+        assert family in lb.KNOB_FAMILIES
+    unrecorded = lb.Target.from_mapping({"scope": "lineup", "label": "lineup"})
+    assert unrecorded.is_lineup and unrecorded.stack_regime == ""
+    assert not lb.lineup_matches({"stack_regime": ""}, unrecorded)
+
+
+def test_lineup_target_through_prepare_is_not_a_target_error(tmp_path, alarm):
+    ans, ev = _ev(tmp_path, alarm, _write(tmp_path, _gpu27("x", value="1")),
+                  [ARCHITECT_T, {"scope": "lineup", "stack_regime": "sha256:abc",
+                                 "knob_families": ["kv_compaction", "orchestrator"],
+                                 "label": "lineup"}])
+    assert "target_errors" not in ev and len(ans["targets"]) == 2
+    assert ans["targets"][1]["scope"] == "lineup"
+
+
+def test_p1_acceptance_script_runs_on_a_fixture_ledger(tmp_path, capsys):
+    """The acceptance script itself (not the Phase-1 numbers): it runs end to end on a small
+    ledger, refuses the canonical path, and AC9 passes on PB-HOL-1 / KPF-18 item-7 shaped claims."""
+    import p1_acceptance as acc
+    pbhol = _gpu27("pb-hol-1:20261021T160010Z:off:short", kind="pb-hol-1", value="22.05",
+                   scope_keys={"knob_family": "routing", "varied": ["short_slot_index_order"]})
+    kpf27 = _gpu27("kpf18:kpf18-run-c:item7:B1", kind="kv-prefix-fork", value="25",
+                   scope_keys={"knob_family": "slot_serving", "varied": ["slot_fork"]})
+    kpf35 = _loop("kpf18:kpf18cpu:item7:B1", model=None, quant="Q8_0", kind="kv-prefix-fork",
+                  mech=None, outcome="", value="40", unit="s", recipe=None, epoch=None,
+                  build=None, symbol=None,
+                  scope_keys={"model_file": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+                              "knob_family": "slot_serving", "varied": ["slot_fork"]})
+    path = _write(tmp_path, pbhol, kpf27, kpf35)
+    rc = acc.main(["--ledger", str(path), "--as-of", AS_OF, "--skip", "AC7", "--skip", "AC8",
+                   "--json"])
+    out = json.loads(capsys.readouterr().out)
+    checks = {c["check"]: c for c in out["checks"]}
+    assert rc == 1 and not out["pass"]                 # AC1-AC5 need the real backfill
+    assert checks["AC9"]["pass"], checks["AC9"]["detail"]
+    assert set(checks) == {"AC1", "AC2", "AC3", "AC4", "AC5", "AC9"}
+    assert acc.main(["--ledger", str(lb.CANONICAL_LEDGER)]) == 2 or not lb.CANONICAL_LEDGER.exists()
