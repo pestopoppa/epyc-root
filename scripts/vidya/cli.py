@@ -573,6 +573,7 @@ _FILE_SOURCES = (
     "ufh13-thesis-measurement",
     "ak-actor-seat",
     "ds41-1017-validation",
+    "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
 )
 
 

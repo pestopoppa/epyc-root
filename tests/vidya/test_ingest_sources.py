@@ -220,6 +220,10 @@ BUILDERS = {
     "typed-decisions-measurement": _typed_decisions,
     "ak-actor-seat": _ak_actor_seat,
     "ufh13-thesis-measurement": _ufh13_thesis,
+    "toc-ab": lambda tmp: _helpers("test_prospective_ab_carriers").toc_write(tmp),
+    "skillbank-ab": lambda tmp: _helpers("test_prospective_ab_carriers").sk_write(tmp),
+    "harness-improvement": lambda tmp: _helpers("test_prospective_ab_carriers").hil_write(tmp),
+    "ak-history": lambda tmp: _helpers("test_prospective_ab_carriers").ak_write(tmp),
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.
