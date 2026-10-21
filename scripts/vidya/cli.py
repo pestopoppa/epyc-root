@@ -750,9 +750,6 @@ def _ingest_autokernel_experiments(args) -> int:
              f"by scope basis: {report['by_scope_basis'] or '(none)'}",
              f"not projected: {report['not_projected'] or '(none)'}",
              f"by status: {report['by_status'] or '(none)'}"]
-    if not report["carrier_ready"]:
-        human.append("note: ClaimTuple.observation is not available in this tree; "
-                     "observation/scope keys ride in tuple.extra until the carrier lands")
     if report["projection_errors"]:
         human.append("projection errors:")
         human.extend(f"  {line}" for line in report["projection_errors"][:5])

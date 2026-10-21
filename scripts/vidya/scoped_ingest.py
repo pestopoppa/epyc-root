@@ -409,7 +409,7 @@ def _floor_frames(store: Path, *, as_of: str, known: set[str], refused_memo: dic
     report["floors_listed"] += len(paths)
     if not paths:
         return []
-    manifest = store_manifest.load(store)
+    manifest = store_manifest.resolve(store)
     out: list[dict] = []
     for path in paths:
         stat = path.stat()

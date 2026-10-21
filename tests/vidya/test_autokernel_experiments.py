@@ -4,8 +4,8 @@ The fixture DB is built here with the REAL schema (`sqlite3 'file:...?mode=ro' .
 ak-27b-gpu-verify-20261004/store/experiments.db, 2026-10-21) and one row per status the adapter
 distinguishes. No real store is touched, no ledger but a tmp one is written.
 
-These tests hold on both sides of the carrier integration (lane A's `ClaimTuple.observation`):
-they read the observation and the full applicability through `observation_of` / `applicability_of`.
+The store manifest is `_ak_store_manifest.resolve(store)` (two strategies, one owner): the loop's
+`loop-status.json` target first, else the uniform native `research_scope` of the store's rows.
 """
 import hashlib
 import json
@@ -198,9 +198,15 @@ def store(tmp_path):
     return make_store(tmp_path)
 
 
-MANIFEST = {"store_path": "/fixture/store", "label": "Q38FN cpu", "model_file":
-            "/mnt/raid0/llm/models/Q38FN-UD-IQ4_XS.gguf", "quant": "UD-IQ4_XS", "backend": "cpu",
-            "device": "epyc-9655", "recipe": "q38fn-cpu-t48", "np": 1}
+MANIFEST = {"store": "/fixture/store", "label": "Q38FN cpu", "strategy": "row_scope",
+            "recipe": "q38fn-cpu-t48",
+            "scope": {"model_file": "/mnt/raid0/llm/models/Q38FN-UD-IQ4_XS.gguf",
+                      "quant": "UD-IQ4_XS", "backend": "cpu", "device": "epyc-9655",
+                      "recipe": "q38fn-cpu-t48", "np": 1, "scope_basis": "store_manifest"}}
+STATUS_MANIFEST = {"store": "/fixture/store", "strategy": "loop_status", "recipe": "r-selected",
+                   "scope": {"model_file": "/mnt/raid0/llm/models/Q38FN-UD-IQ4_XS.gguf",
+                             "backend": "cpu", "recipe": "r-selected",
+                             "scope_basis": "store_manifest"}}
 
 
 def projected(store, manifest=None):
@@ -342,7 +348,7 @@ def test_measurement_fields(store):
     assert len(obs["mechanism"]["statement"]) == 240 and len(obs["mechanism"]["falsifier"]) == 240
     assert "+2.05% vs anchor" in kept.claim and "floor 3.41%" in kept.claim
     assert "producer verdict KEPT" in kept.claim
-    assert kept.claim.endswith(f"[serving claim {CAPTURE[:16]}]")
+    assert obs["serving_claim_id"] == f"legacy-serving-v2:{CAPTURE}"
     scope = exp.applicability_of(kept)
     assert scope["build_sha"] == BUILD and scope["epoch"] == EPOCH
     assert scope["surface"].endswith("iqk_dispatch.cpp") and scope["symbol"] == "ggml_iqk_try_mul_mat_id"
@@ -462,24 +468,32 @@ def test_refusal_row_with_native_scope_is_native(store):
 def test_row_without_research_scope_takes_the_store_manifest(store):
     scope = exp.applicability_of(projected(store)["measured_null"])
     assert scope["scope_basis"] == "store_manifest"
-    assert scope["model_file"] == MANIFEST["model_file"] and scope["quant"] == "UD-IQ4_XS"
+    assert scope["model_file"] == MANIFEST["scope"]["model_file"] and scope["quant"] == "UD-IQ4_XS"
     assert scope["backend"] == "cpu" and scope["device"] == "epyc-9655"
-    assert scope["recipe"] == "q38fn-cpu-t48" and scope["np"] == 1
+    assert scope["recipe"] == "q38fn-cpu-t48" and scope["np"] == 1  # row_scope: the shared recipe
     assert "model_sha256" not in scope  # only when recorded
 
 
+def test_a_loop_status_manifest_scopes_model_and_backend_but_not_the_recipe(store):
+    scope = exp.applicability_of(projected(store, STATUS_MANIFEST)["measured_null"])
+    assert scope["scope_basis"] == "store_manifest" and scope["backend"] == "cpu"
+    assert scope["model_file"] == STATUS_MANIFEST["scope"]["model_file"]
+    assert "recipe" not in scope  # the loop's selected recipe is not the row's own
+
+
 def test_no_native_scope_and_no_manifest_scope_is_honestly_unscoped(store):
-    bare = {"store_path": "/fixture/store"}
+    bare = {"store": "/fixture/store", "strategy": "none", "scope": {}}
     scope = exp.applicability_of(projected(store, bare)["measured_null"])
     assert "scope_basis" not in scope and "model_file" not in scope
     assert scope["epoch"] == EPOCH  # identity keys are still stated
 
 
-def test_store_manifest_derivation_uses_one_uniform_native_scope(store, tmp_path):
+def test_store_manifest_row_strategy_uses_one_uniform_native_scope(store, tmp_path):
     manifest = exp.build_store_manifest(store)
-    assert manifest["model_file"] == MODEL and manifest["quant"] == "Q8_0"
-    assert manifest["recipe"] == "q27b-gpu-dflash2-np1" and manifest["store_path"] == str(store.resolve())
-    assert manifest["scope_derivation"].startswith("uniform")
+    assert manifest["strategy"] == "row_scope" and manifest["store"] == str(store.resolve())
+    scope = manifest["scope"]
+    assert scope["model_file"] == MODEL and scope["quant"] == "Q8_0"
+    assert scope["recipe"] == "q27b-gpu-dflash2-np1" and scope["scope_basis"] == "store_manifest"
     other = native_scope()
     other["model"] = {"path": "/mnt/raid0/llm/models/other.gguf"}
     mixed = make_store(tmp_path, name="mixed", fixture=[
@@ -488,9 +502,31 @@ def test_store_manifest_derivation_uses_one_uniform_native_scope(store, tmp_path
         ("b", "kept", {"campaign_id": "c", "epoch_sha256": EPOCH},
          {"comparison": comparison(), "research_scope": other})])
     derived = exp.build_store_manifest(mixed)
-    assert "model_file" not in derived and "different scopes" in derived["scope_derivation"]
-    overridden = exp.build_store_manifest(mixed, overrides={"model_file": "/x/y.gguf", "backend": "cpu"})
-    assert overridden["model_file"] == "/x/y.gguf" and overridden["backend"] == "cpu"
+    assert derived["strategy"] == "none" and derived["scope"] == {}
+    overridden = exp.build_store_manifest(mixed, label="L", overrides={
+        "model_file": "/x/y.gguf", "backend": "cpu"})
+    assert overridden["scope"] == {"model_file": "/x/y.gguf", "backend": "cpu"}
+    assert overridden["label"] == "L"
+
+
+def test_store_manifest_loop_status_strategy_wins_over_rows(store):
+    status = {"schema": "epyc.autokernel.loop_status.v1", "target": {
+        "selected_id": "r-selected", "campaign_id": "camp",
+        "original_target": {"execution": {"backend": "CPU", "model": {
+            "path": "/models/status.gguf", "sha256": "ab" * 32}}}}}
+    (store / "loop-status.json").write_text(json.dumps(status))
+    manifest = exp.build_store_manifest(store)
+    assert manifest["strategy"] == "loop_status" and manifest["recipe"] == "r-selected"
+    assert manifest["scope"]["model_file"] == "/models/status.gguf"
+    assert manifest["scope"]["backend"] == "cpu" and manifest["scope"]["model_sha256"] == "ab" * 32
+    assert manifest["store"] == str(store.resolve())
+
+
+def test_one_module_owns_both_manifest_strategies():
+    from adapters import _ak_store_manifest as owner
+
+    assert exp.store_scope is owner
+    assert {"load", "load_from_rows", "resolve", "row_scope"} <= set(owner.__all__)
 
 
 # ------------------------------------------------------------------------------ identity
@@ -498,7 +534,7 @@ def test_store_manifest_derivation_uses_one_uniform_native_scope(store, tmp_path
 
 def test_measurement_id_is_byte_stable(store, tmp_path):
     first, second = projected(store), projected(store)
-    digest = hashlib.sha256(MANIFEST["store_path"].encode()).hexdigest()[:16]
+    digest = hashlib.sha256(MANIFEST["store"].encode()).hexdigest()[:16]
     for name, tup in first.items():
         if tup is None:
             continue
@@ -514,7 +550,7 @@ def test_measurement_id_depends_on_store_and_attempt_only(store):
     base = exp.project(row, store_manifest=MANIFEST).measurement_id
     moved = exp.project({**row, "rowid": 99999}, store_manifest=MANIFEST).measurement_id
     changed_text = exp.project({**row, "statement": "different"}, store_manifest=MANIFEST).measurement_id
-    other_store = exp.project(row, store_manifest={**MANIFEST, "store_path": "/other"}).measurement_id
+    other_store = exp.project(row, store_manifest={**MANIFEST, "store": "/other"}).measurement_id
     explicit = exp.project(row, store_manifest={**MANIFEST, "store_digest": "ab" * 32}).measurement_id
     assert base == moved == changed_text
     assert other_store != base and explicit == f"ak-exp:v1:{'ab' * 8}:{aid('kept')}"
@@ -542,7 +578,8 @@ def test_frames_are_byte_stable_across_runs(store):
 def test_serving_capture_joins_by_capture_id_not_belief_receipt_id(store):
     tuples = projected(store)
     assert tuples["kept"].extra["serving_claim_id"] == f"legacy-serving-v2:{CAPTURE}"
-    assert CAPTURE[:16] in tuples["kept"].claim
+    assert exp.observation_of(tuples["kept"])["serving_claim_id"] == f"legacy-serving-v2:{CAPTURE}"
+    assert "serving_claim_id" not in exp.observation_of(tuples["gate_correctness"])
     # belief_receipt_id is the planner-evidence receipt: provenance, never the join key
     assert tuples["kept"].extra["belief_receipt_id"] == RECEIPT
     assert tuples["gate_correctness"].extra["belief_receipt_id"] == RECEIPT
@@ -663,3 +700,13 @@ def test_dry_run_flag_beats_an_explicit_ledger(store, tmp_path):
     assert cli.main(["ingest", "autokernel-experiments", "--store", str(store), "--ledger",
                      str(target), "--as-of", "2026-10-21T12:00:00Z", "--dry-run"]) == 0
     assert not target.exists()
+
+
+def test_frames_carry_the_observation_on_the_evidence_assertion(store):
+    tup = projected(store)["kept"]
+    evidence = [f for f in to_frames(tup, as_of="2026-10-21T12:00:00Z", adapter_id=exp.ADAPTER_ID)
+                if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    assertion = evidence["assertion"]
+    assert assertion["observation"]["outcome"] == "improved"
+    assert assertion["observation"]["effect_rel"] == "0.0205"  # carrier encodes floats as strings
+    assert assertion["metric"] == "aggregate_tok_s" and assertion["unit"] == "t/s"
