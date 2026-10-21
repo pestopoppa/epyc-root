@@ -1,7 +1,7 @@
 {
   "session_id": "intake-deepseek-prodstack-20261021",
   "started_at": "2026-10-21T10:00:00Z",
-  "last_checkpoint": "2026-10-21T10:40:00Z",
+  "last_checkpoint": "2026-10-21T11:40:00Z",
   "stage": "stage2",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021",
@@ -11,15 +11,25 @@
   "entries_processed": [
     "intake-2214",
     "intake-2215",
-    "intake-2216"
+    "intake-2216",
+    "intake-2217",
+    "intake-2218",
+    "intake-2219",
+    "intake-2220",
+    "intake-2221"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2217,
+  "next_intake_id": 2222,
   "expansion_cap": 10,
-  "expansion_count": 2,
+  "expansion_count": 7,
   "expansion_entries": [
     "intake-2215",
-    "intake-2216"
+    "intake-2216",
+    "intake-2217",
+    "intake-2218",
+    "intake-2219",
+    "intake-2220",
+    "intake-2221"
   ],
   "expansion_refused": [],
   "re_encounters": {
@@ -30013,8 +30023,8 @@
         "dispatched": "2026-10-21",
         "second_reader": {
           "intake-2214": "32/32 refound, 32/32 hash, yes 9 / partial 4 / no 0; partials = anchor gaps, closed by adding 8 anchors (40 total)",
-          "intake-2215": "pending",
-          "intake-2216": "pending"
+          "intake-2215": "14/14 refound, 14/14 hash, 7/7 line ranges; yes 6 / partial 2 / no 0",
+          "intake-2216": "19/19 refound, 19/19 hash; yes 8 / partial 1 / no 0"
         },
         "surfaced_selected_for_wave2": [
           "arXiv 2602.16603 (FlowPrefill)",
@@ -30037,6 +30047,33 @@
           "ServeGen 2505.09999",
           "BurstGPT 2401.17644",
           "vllm-project/semantic-router"
+        ]
+      },
+      {
+        "wave": 2,
+        "kind": "Stage-2b dives of every source wave 1 recommended",
+        "entries": [
+          "intake-2217 (EWSJF 2601.21758)",
+          "intake-2218 (Medha 2409.17264 v5)",
+          "intake-2219 (fairness-aware chunked prefill 2606.09061)",
+          "intake-2220 (GreenLLM 2508.16449)",
+          "intake-2221 (FlowPrefill 2602.16603)"
+        ],
+        "dispatched": "2026-10-21",
+        "second_reader": "pending (3 readers dispatched)",
+        "surfaced_selected_for_wave3": [
+          "arXiv 2601.11589 (LAPS; recommended by the Medha and GreenLLM dives)",
+          "arXiv 2609.07883 (SLOWEAVE; recommended by the 2606.09061 dive)"
+        ],
+        "surfaced_declined_proposed": [
+          "Ascendra 2504.20828 and QUARTZ (priority alternatives to a static cutoff; three scheduler papers already dived)",
+          "throttLL eM 2408.05235 and Shi et al. GreenLLM (energy axis / name collision)",
+          "Elastic KV Cache 2608.23658, FairBatching 2510.14392 (adjacent framing)",
+          "Learning-to-Rank 2408.15792 (size estimator beyond prompt length; no DI-126 trigger yet)",
+          "Fairness in Serving LLMs 2401.00588 (dedup-check first; generic fairness scheduler)",
+          "layered prefill 2510.08055, Laser, SLOs-Serve 2504.08784, PolyServe 2507.17769 (layer-level preemption / multi-SLO; no SLO classes here)",
+          "Multi-Segment Attention 2606.02964 (title only)",
+          "QwenTrace (trace, no id resolved)"
         ]
       }
     ]

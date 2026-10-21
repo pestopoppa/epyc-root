@@ -299792,9 +299792,11 @@
   dive_corrections: '2026-10-21 Stage-2b wave 1 (dive-vllm-ascend-srf): combined ingest+dive; source read FULL; implementation
     pinned @ 2164a24; doc ''not supported with profiling-chunk'' contradicted by code (claim 6 narrowed); claim 2 narrowed
     to head-of-lane aging; no measured numbers exist in the source; the policy reorders WAITING only and cannot preempt an
-    in-flight long prefill. Dive-surfaced: arXiv 2602.16603 (FlowPrefill) and arXiv 2606.09061 selected for wave 2; arXiv
-    2401.11181 (2024, disaggregated SJF/LJF prefill) and PR #12240 (batch-job scheduler, offline-batch concern) decline PROPOSED
-    (operator confirms at Stage 3).'
+    in-flight long prefill. Second reader (independent agent, 2026-10-21): re-find 14/14, hash 14/14, line-range locators
+    7/7; support yes 6 / partial 2 / no 0 (claim 4 chunked-prefill consequence is an inference already flagged NOT-FOUND-IN-SOURCE;
+    claim 7 absence statement reaches sources the reader was not given). Dive-surfaced: arXiv 2602.16603 (FlowPrefill) and
+    arXiv 2606.09061 selected for wave 2; arXiv 2401.11181 (2024, disaggregated SJF/LJF prefill) and PR #12240 (batch-job
+    scheduler, offline-batch concern) decline PROPOSED (operator confirms at Stage 3).'
   handoffs_updated: []
   handoffs_created: []
   ingested_date: '2026-10-21'
@@ -300150,11 +300152,1636 @@
     HTML; title corrected from the believed Token-Budget-Aware Pool Routing (that is the withdrawn duplicate 2604.09613) to
     Dual-Pool Token-Budget Routing for Cost-Efficient and Reliable LLM Serving; the lower/upper-bound contradiction and the
     withdrawn duplicate divergent headline numbers recorded; Figure 6 values reconstructed from SVG; no repository URL exists
-    in the paper. Dive-surfaced: Medha arXiv 2409.17264, GreenLLM arXiv 2508.16449 and EWSJF arXiv 2601.21758 (independent;
-    bear on whether tiering or in-instance scheduling answers the HOL symptom) selected for wave 2; decline PROPOSED (operator
-    confirms at Stage 3): FleetOpt 2603.16514, the 1/W Law 2603.17280 and the vision paper 2603.21354 (same author core, restatements),
-    ServeGen 2505.09999 and BurstGPT 2401.17644 (production length distributions; our own HSF-4 log distribution is the relevant
-    alpha), vllm-project/semantic-router (no evidence in the paper that the mechanism ships there).'
+    in the paper. Second reader (independent agent, 2026-10-21): re-find 19/19 (whitespace-normalised), hash 19/19; support
+    yes 8 / partial 1 / no 0 (claim 3 Figure-6 curve not printed in the text, already narrowed); three reported_results spot-checks
+    match; a paper-internal arithmetic looseness in the Section 4.6 left-slope sentence noted. Dive-surfaced: Medha arXiv
+    2409.17264, GreenLLM arXiv 2508.16449 and EWSJF arXiv 2601.21758 (independent; bear on whether tiering or in-instance
+    scheduling answers the HOL symptom) selected for wave 2; decline PROPOSED (operator confirms at Stage 3): FleetOpt 2603.16514,
+    the 1/W Law 2603.17280 and the vision paper 2603.21354 (same author core, restatements), ServeGen 2505.09999 and BurstGPT
+    2401.17644 (production length distributions; our own HSF-4 log distribution is the relevant alpha), vllm-project/semantic-router
+    (no evidence in the paper that the mechanism ships there).'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2217
+  arxiv_id: '2601.21758'
+  url: https://arxiv.org/abs/2601.21758
+  source_type: paper
+  title: 'EWSJF: An Adaptive Scheduler with Hybrid Partitioning for Mixed-Workload LLM Inference'
+  categories:
+  - inference_serving
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2216
+  verdict: adopt_patterns
+  authors:
+  - Bronislav Sidik
+  - Chaya Levi
+  - Joseph Kampeas
+  key_claims:
+  - 'Job size is the input prompt length b only: the scheduler uses input-side statistics (no output-length prediction), and
+    the per-request compute cost C_prefill(b) is an estimated prefill cost for input length b whose functional form is NOT-FOUND-IN-SOURCE
+    (§2.3, §4.1).'
+  - 'Starvation control is a single score on each queue''s head-of-line request, Score = qf * (w_base + w_urg * W_t/C_prefill(b)
+    + w_fair * log(b+1)) with qf = q_i/(b+1): urgency is wait time normalised by estimated prefill cost, the log(b+1) term
+    boosts long jobs, and the weights are learned; no numeric weights, no aging threshold and no weight schedule are given
+    anywhere (§4.1, §4.4.1, Thm A.1).'
+  - 'Scheduling locus is the waiting queue / batch construction above the engine (vLLM admission), not in-batch or iteration-level:
+    the tactical loop picks the arg-max-score queue, greedily fills a batch from it, then backfills from adjacent length queues;
+    O(k) per step (§3.2, Alg. 1, §5).'
+  - Queues are contiguous prompt-length intervals found by Refine-and-Prune (k-means k=3, recursive split at gaps > alpha
+    * mean gap, utility-based merge down to max_queues), re-run roughly every 10 minutes; 32 queues was the throughput optimum
+    on their trace; gap-falling requests get a temporary bubble queue with a 10% tolerance (L <= max_len*1.10 or L >= min_len*0.90)
+    (§4.2, §4.3, §6.4, Alg. 2).
+  - 'Evaluation: 4x NVIDIA A100-80GB, LLaMA-2-13B-Chat with tensor parallelism, vLLM v0.11.0, a bimodal synthetic mix (32-4096
+    input tokens, 80% short / 20% long, Poisson arrivals); the only baseline with numbers is vLLM FCFS; Greedy SJF is named
+    as a baseline but has no numeric rows; Sarathi and Orca are discussed, not compared (§6.1-6.3).'
+  - 'Headline throughput: token throughput over FCFS ranges from +5.2% (10 req/s, 200k requests) to +54.1% (100 req/s, 10k
+    requests), +36.1% at 500 req/s on 200k requests; requests/s is sometimes below FCFS at 10 req/s (7.88 vs 8.13; 5.15 vs
+    5.38); the best short-prompt run is 163.92 vs 90.40 tok/s (Tables 4-10).'
+  - 'The "up to 4x" reduction in average TTFT for short requests appears only in the abstract and conclusion; no TTFT, TPOT
+    or p99 table exists, and tail latency is reported qualitatively as "High" vs "Lower" (Table 10). Per-length-class latency
+    numbers: NOT-FOUND-IN-SOURCE.'
+  - 'Adaptation horizon: the Bayesian meta-optimiser runs trials of 10-15 minutes and converges in 5-8 trials (about 50-120
+    min); the authors list as limitations length-only features, multi-minute adaptation, no formal fairness guarantee, and
+    single-node scope (§4.4, App. B, Limitations).'
+  - Weights are context-aware per queue, e.g. w_urg(mean_b_q) = a_u * mean_b_q + b_u so short queues weight urgency and long
+    queues weight fairness; the fitted coefficients are NOT-FOUND-IN-SOURCE (§4.1, §4.4.1).
+  techniques:
+  - 'Cost-normalised aging score for queue ordering: wait time divided by estimated prefill cost, plus a log-length fairness
+    boost (replaces fixed head-of-long-lane aging with a parameter-free ordering once C_prefill is known).'
+  - 'Learned prompt-length partitioning (Refine-and-Prune: k-means seed, gap-ratio recursive split, utility merge) instead
+    of a fixed three-lane split.'
+  - Adjacent-queue backfill after the primary queue is drained, to keep batches full.
+  - On-demand bubble queue for requests that fall in a gap between length partitions (10% boundary tolerance).
+  - Bayesian meta-optimisation of scoring and partitioning parameters on a multi-objective reward (compactness, load balance,
+    queue-count penalty, user-experience penalty).
+  reported_results:
+  - 'Short-prompt workload (30k requests): FCFS 90.40 tok/s / 8.45 req/s / 3548 s vs EWSJF 30 queues 163.92 tok/s / 12.25
+    req/s / 2449 s (Table 8); note FCFS generated 320,783 tokens vs 396k-401k for every EWSJF row on the same request set.'
+  - 'Long-prompt workload (10k requests): FCFS 39.24 tok/s vs EWSJF 40 queues 61.88 tok/s (+57%) (Table 9).'
+  - 'Mixed workload token-throughput speedup over FCFS: 10k requests +13.3% (10 req/s) to +54.1% (100 req/s); 30k +19.9% to
+    +48.7%; 50k +10.4% to +39.4% (500 req/s); 200k +5.2% to +36.1% (500 req/s) (Tables 4-7).'
+  - GPU utilisation ~65% -> ~80% (short) and ~60% -> ~78% (long) (Table 10).
+  - 'Queue-count sweep: 5 queues 144.2 tok/s, 10: 160.5, 30: 163.9, 32 (refined): 168.2, 40: 162.5 (Tables 3, 8).'
+  - Meta-optimiser converges in 5-8 trials of 10-15 min each (App. B).
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2216
+    - intake-2215
+  recommended_actions:
+  - 'EW-A1: refine DI-126 (kv-unified-stack-rollout.md:1363) prose: if the queue-wait component fires, the candidate in-instance
+    ordering rule is a static cost-normalised aging score (wait_ms / estimated_prefill_ms, plus a log-length boost) over the
+    llama-server deferred deque, not a learned optimiser; cite this entry for the formula shape only, with weights to be fitted
+    from our own serving_calls/dispatch.v1 records.'
+  - 'EW-A2: refine SRF-A1 (intake-2215) prose: EWSJF is the same waiting-queue lever with the lane count learned (32 on their
+    trace) instead of fixed at three and with adjacent-lane backfill; it still supplies no numeric weight schedule, so SRF-A1
+    stays unnumbered.'
+  - 'EW-A3: no task: Refine-and-Prune and the Bayesian meta-optimiser are non-applicable at our request rates (frontdoor serves
+    a handful of agents, not 10-500 req/s) and their 50-120 min adaptation horizon is longer than our bursts.'
+  - 'EW-A4: no task: nothing here touches in-batch or iteration-level scheduling; KVU-16g (decode-aware prefill budget) and
+    KVU-15a (long-prefill lease) are unaffected and the paper calls that layer orthogonal.'
+  - 'EW-A5: knowledge only: record the credibility defects (no latency table behind the 4x claim, no SJF numbers, token-count
+    mismatch between schedulers, reference-list anomalies) so the entry is not cited for numbers.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Internal: Table 8 shows FCFS producing 320,783 tokens vs 396,183-401,570 for every EWSJF configuration on the same 30k-request
+    set (Table 9: 117,625 vs 133,217-134,288), so part of the tok/s gain is more tokens generated, not faster service; the
+    cause (timeouts, truncation, nondeterminism) is not discussed.'
+  - 'Internal: Theorem A.1 states starvation freedom "given w_fair > 0" but the proof relies on the w_urg * W_t/C_prefill(b)
+    term growing with wait time; the log(b+1) "fairness" term is wait-independent.'
+  - 'Internal: Greedy SJF is declared a baseline (§6.3) but no table contains an SJF row; §6.1 says rates 10-40 req/s were
+    evaluated while Tables 6-7 go to 500 req/s; "Density-Weighted Scoring" is named in the abstract but the scoring function
+    has no density term (density only appears in the pruning utility, Eq. 3).'
+  - 'Reference list: Orca is attributed to Sheng et al. (OSDI 22) although the OSDI 22 Orca paper is by Yu, Jeong, Kim, Kim
+    and Chun (from prior knowledge, not re-verified); the "FIFO is not fair" citation is given as arXiv 2402.01831 by Li et
+    al., while a web search for the title "Fairness in Serving Large Language Models" resolves to arXiv 2401.00588 by Sheng
+    et al.; three cited IDs look like placeholders (2403.00000, 2404.00000, 2403.12345); vLLM RFC citations are "omitted for
+    double-blind review".'
+  - 'External: the KDD 26 proceedings line is the paper''s own template header; a web search found no evidence of peer-reviewed
+    publication (preprint v1 only, 29 Jan 2026). The anonymous code link was not fetched or verified in this dive.'
+  - 'Context (prior knowledge, unverified here): vLLM already exposes a priority scheduling policy option, so "vLLM (Default)
+    ... None (Static Policy)" in Table 1 understates the engine the paper patches.'
+  referenced_arxiv_ids:
+  - '2408.15792'
+  - '2305.13144'
+  - '2402.01831'
+  - '2408.00741'
+  - '2404.08509'
+  - '2401.11181'
+  - '2403.00000'
+  - '2404.00000'
+  - '2403.12345'
+  notes: 'Stage-2b combined ingest+dive, 2026-10-21 wave 2 (research-intake). Source: arXiv abs page (title, 3 authors, v1
+    only, submitted 29 Jan 2026, cs.DC; KDD 26 header is self-declared) and version-pinned HTML https://arxiv.org/html/2601.21758v1
+    (sha256 0c82de038ececec461dba7bb10d6a7743a08168bbefd3c178448701fe7094b04), read in full from disk; files under /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/dive-2601.21758/
+    (abs.html, paper.html, paper.txt, claim_anchors.json, SHA256SUMS). Anchor quotes for claims 1 and 3 contain U+00A0 after
+    "Section" and "Table" exactly as in the source; do not normalise before hashing. Adversarial pass: 3 WebSearch calls (paper
+    identity; the 2402.01831 / Orca attribution check; the citing paper 2604.08075, which no search result returned, so the
+    "cited as [9] by 2604.08075" relation is taken from the dispatch brief, not verified). Pinned reads at /mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021
+    @ b4f1578a: kv-unified-stack-rollout.md:172-187 (KVU-15a flock lease, cached-prefix credit), :378 (KVU-16g decode-aware
+    prefill budget, experimental tree), :1114 (KVU-16g-2 enable in v11 package), :1363 (DI-126 monitor), intake-2136 (DI-126
+    origin), intake-2214 (DI-126 length-histogram action). intake-2215 and intake-2216 are NOT on disk in the pinned worktree
+    (last id intake-2214) nor in the live /workspace index at dive time; their content (SRF three-lane queue with head-of-long-lane
+    aging and no numbers; dual-pool routing) is taken from the dispatch brief. The llama-server deferred-deque FIFO-with-slot-affinity
+    fact is likewise taken from the brief (the frozen tree is outside the pinned path). Answer to the dispatch question: beyond
+    SRF this paper adds (a) an explicit ordering score with a cost-normalised aging term and (b) a learned lane count with
+    adjacent-lane backfill; it adds NO size estimator beyond prompt length (C_prefill(b) unspecified) and NO numeric weight
+    schedule, and NO per-class latency table. The one number to take if DI-126 fires is the 50-120 min adaptation horizon
+    (5-8 trials x 10-15 min), which rules out the learned variant for our bursty few-agent traffic and points to the static
+    score; for the TTFT lever itself the number is NOT-FOUND-IN-SOURCE. Slot affinity caveat: EWSJF has no cache-aware term,
+    so score ordering on the deferred deque would have to be composed with LCP slot selection, which the paper does not address.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §2.3 Predictive Cost Modeling
+    quote: EWSJF avoids these issues by relying solely on input-side statistics and adapting online via Bayesian meta-optimization,
+      eliminating the need for workload-specific retraining while remaining robust to distributional drift.
+    quote_sha256: 32d17df0f099b5d1043358a527ff427e2c79b330db76dea1d64ecc9dcb27fcac
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §6.3 Baselines, 'Why EWSJF Wins'
+    quote: By incorporating a Density-Weighted Scoring function (Section 4.4), EWSJF prevents long requests from “dying” in
+      the queue and maintains fairness comparable to FCFS.
+    quote_sha256: 7d7659f373b62384fc9a4cfbf7e4c59b6b0c99e3db68f48cb0733391bfa36b29
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §3.2 Tactical Loop, Batch Builder bullet
+    quote: 'Batch Builder: Selects the highest-scoring queue and constructs a batch by greedily pulling requests. If capacity
+      remains, it backfills the batch with requests from adjacent queues to maximize GPU utilization.'
+    quote_sha256: 095d931dc0db1e53a65e9c9620a49b0dc6a4e80e9e1c80abff8bcac077ade9ee
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §6.4 Queue Clustering Analysis
+    quote: Table 3 shows that while standard K-Means suggests 5–10 queues, the Refine-and-Prune algorithm identifies that
+      32 queues maximize throughput.
+    quote_sha256: 59e1f71c0f0c724cfcbd1e1e079c82e78e6764634fe028a6a28cd9f1da1c5887
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §6.2 Experimental Setup, Software
+    quote: Software. EWSJF was implemented as a pluggable scheduler within vLLM v0.11.0. All benchmarks used the LLaMA-2-13B-Chat
+      model with tensor parallelism enabled.
+    quote_sha256: 82cb3b787b9914bf301572266abcc92f4a387f2424524db1560c5398eb4f9223
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: §6.5 Performance Under Load, Summary
+    quote: Gains range from modest improvements at low load (e.g., +5.2% at 10 req/s, 200k requests) to substantial boosts
+      under high contention (e.g., +54.1% at 100 req/s, 10k requests).
+    quote_sha256: 898450d6d7cd14ad6b164f81a40faab0d45121882f73f2a93846d4b0adf825b4
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Abstract
+    quote: Implemented in vLLM, EWSJF improves end-to-end throughput by over 30% and reduces average Time-To-First-Token for
+      short requests by up to 4
+    quote_sha256: 8ddef294c1e2ddd609e7646e8c83b3f8699efbe1bc1e54055d7eee67d611d3e3
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Limitations (after §7)
+    quote: Second, the Bayesian meta-optimizer adapts over multi-minute intervals, which may be insufficient for extremely
+      bursty or adversarial traffic patterns.
+    quote_sha256: 3b1bf3321559c059404970eca3e75a8fba66e4f2f7d5419c65e4240b7e9c229f
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 8
+    kind: heading-and-hash
+    locator: §4.1 Learnable and Context-Aware Scoring
+    quote: allowing the scheduler to emphasize urgency in short queues and fairness in long queues.
+    quote_sha256: 9118d027b2557d11db3681597795000f8aecbb772a2c43eaba3cd9c17cf831aa
+    source_revision: arXiv:2601.21758v1 HTML
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Length-only is stated; the estimator C_prefill(b) is named but never defined (no formula, no fit), so "size estimator"
+      reduces to prompt length.
+  - claim_index: 1
+    effect: narrowed
+    note: Formula and terms verified; no numeric weights or schedule exist; theorem premise (w_fair) and proof (w_urg term)
+      disagree.
+  - claim_index: 2
+    effect: unaffected
+    note: Locus verified as waiting-queue admission / batch construction; the paper explicitly leaves iteration-level scheduling
+      to the engine.
+  - claim_index: 3
+    effect: unaffected
+    note: Mechanism and the 32 / 10-minute / 1.10-0.90 constants are present; alpha and max_queues values are NOT-FOUND-IN-SOURCE.
+  - claim_index: 4
+    effect: narrowed
+    note: Setup verified; the SJF baseline has no numbers and Sarathi/Orca are never run, so "vs FCFS/SJF/Sarathi" collapses
+      to "vs FCFS".
+  - claim_index: 5
+    effect: narrowed
+    note: Numbers transcribed from Tables 4-10; tok/s gains are partly more tokens generated (Table 8/9 token columns), and
+      req/s is below FCFS at the lowest rate in two of four scales.
+  - claim_index: 6
+    effect: narrowed
+    note: The 4x TTFT figure has no table, no conditions and no percentile; treat as an abstract-only assertion.
+  - claim_index: 7
+    effect: unaffected
+    note: Trial length and convergence count are in §4.4 and App. B; limitations verbatim.
+  - claim_index: 8
+    effect: narrowed
+    note: Linear meta-policy form verified; coefficients and the fairness-weight analogue are NOT-FOUND-IN-SOURCE.
+  reader_should_conclude: Cite this entry only for the shape of a waiting-queue ordering score (wait time / estimated prefill
+    cost, plus a log-length boost) and for the observation that a learned lane count with adjacent-lane backfill beat FCFS
+    on a vLLM A100 synthetic mix. Do not cite it for any latency number (none is tabulated), for weight values (none are given),
+    or as a comparison against SJF or Sarathi (never run). For our stack it refines DI-126 / SRF-A1 prose only; the learned
+    optimiser is non-applicable at our request rates and adaptation horizon.
+  dive_corrections: '2026-10-21 Stage-2b wave 2: Stage-1 framing of this paper as a job-size-prioritised (weighted SJF) in-instance
+    scheduler with per-class latency results was narrowed: job size is prompt length only, the cost estimator is undefined,
+    the weights are learned but never reported, the SJF and Sarathi baselines carry no numbers, and the headline 4x TTFT claim
+    has no supporting table; the verified contribution is the score shape and the learned length partition, both prose-level
+    for our stack.'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2218
+  arxiv_id: '2409.17264'
+  url: https://arxiv.org/abs/2409.17264
+  source_type: paper
+  title: 'No Request Left Behind: Tackling Heterogeneity in Long-Context LLM Inference with Medha'
+  categories:
+  - inference_serving
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2216
+  verdict: adopt_patterns
+  authors:
+  - Amey Agrawal
+  - Haoran Qiu
+  - Junda Chen
+  - Íñigo Goiri
+  - Chaojie Zhang
+  - Rayyan Shahid
+  - Ramachandran Ramjee
+  - Alexey Tumanov
+  - Esha Choukse
+  key_claims:
+  - 'Problem statement (convoy / HOL): with quadratic attention a 100K-token request costs about 10,000x a 1K one, so in a
+    non-preemptive system (LoongServe, FCFS) every short request arriving behind a long prefill waits for that whole prefill,
+    which can take minutes; the paper measures this on Llama-3 8B / 16 A100 at 0.75 QPS as 8x higher short-request TTFT with
+    1% long requests and 30x P50 / 174x P90 with 5% long requests (128K-1M tokens).'
+  - 'Chunked-prefill read amplification is a non-issue for GQA models on modern kernels: the arithmetic intensity of a chunked
+    attention step is c * h_q / h_kv (depends on chunk size, not on context length), so on H100 with Llama-3 70B chunks of
+    about 40 tokens saturate compute and 32-token chunks cost only 11% more than 2048-token chunks at 1M context (Figure 3b).
+    The paper attributes the opposite earlier finding (Sarathi 2023) to older kernels that did not parallelise over both query
+    and KV dimensions.'
+  - 'Adaptive chunking: a long prefill is MLP-bound early (needs large chunks for efficiency) and attention-bound late (small
+    chunks suffice), so Medha starts with large chunks and shrinks them as the KV cache grows, keeping iteration time roughly
+    constant; this is implemented implicitly by a batch packer that fills a fixed per-iteration time budget t_target (derived
+    from the decode TPOT SLO, e.g. 20 ms) by binary-searching the largest chunk that fits, using a runtime model (Vidur, under
+    5% error).'
+  - 'LARS (Length-Aware Relative Slack) ordering: priority = slack / total work (rho); FCFS causes convoys, EDF starves long
+    requests until they pass their deadline and then convoys everyone (measured: EDF degrades to FCFS-like at 1.75 QPS), while
+    LARS lets short requests preempt only when their relative slack falls below the long request''s. Knobs: t_target (20 ms
+    example), rho_max maximum yield fraction (0.4 example), at most one long prefill per batch, per-request deadlines d_i
+    as inputs; the scheduler is claimed to run with sub-millisecond overhead.'
+  - 'Multi-prefill batching: a late-stage small chunk of a long prefill saturates attention but leaves the MLP memory-bound,
+    so an early-stage chunk of a short prefill can be co-packed almost free; long prefills yield (1 - rho) of the budget.
+    Isolated effect: up to 1.8x lower median TTFT vs plain LARS at 1.75 QPS (Figure 13, Llama-3 8B, TP8-SPP2).'
+  - 'Static length pools are evaluated as a baseline (6.5): LoongServe with 2 of 8 context-parallel instances reserved for
+    requests under 8192 tokens loses up to 20% of long-request completions vs Medha (10% vs plain LoongServe) through fragmentation,
+    and the paper concludes pools do not remove the convoy effect; the text reports completion rate and decode latency for
+    this arm, not the short-request TTFT distribution.'
+  - 'Multi-node mechanisms: Stream Pipeline Parallelism pipelines successive chunks of ONE request across pipeline stages
+    (1.64x lower 1M-token prefill latency than context parallelism on Llama-3 8B/H100, 80%+ scaling to 128 GPUs) and KV-Cache
+    Parallelism shards KV reads of one sequence across GPUs with online-softmax merge (about 40% lower TPOT for 10M-token
+    decode at p_kvp=2 on Llama-3 8B, 2x lower TPOT at 1.75 QPS for 70B 3D vs 2D). Both exist because a single device cannot
+    hold or finish a million-token prefill; neither applies within one GPU.'
+  - 'Headline: 5.7x throughput and 30x P50 / 174x P99 lower latency than LoongServe/Sarathi on a 5%-long mix (Llama-3 8B,
+    16 A100, TP8-SPP2 vs LoongServe TP2-CP4 / Sarathi TP8-PP2); Sarathi with static 512/2048 chunks reaches TPOT of 1 s on
+    late chunks of long sequences, which is the interference adaptive chunking removes.'
+  techniques:
+  - chunked prefill as the preemption primitive (fine-grained time-sharing of one instance)
+  - adaptive chunking via a fixed per-iteration time budget derived from the decode TPOT SLO (binary search over chunk size
+    with a runtime model)
+  - LARS relative-slack priority (slack / total work) with EDF/FCFS failure analysis
+  - space-sharing yield fraction (1 - rho, capped at rho_max) and at most one long prefill per batch
+  - multi-prefill batching (early-stage MLP-bound chunk packed with late-stage attention-bound chunk)
+  - Stream Pipeline Parallelism (chunk-level pipelining of one request across PP stages) [multi-node]
+  - KV-Cache Parallelism (sequence-sharded KV reads with online-softmax merge, progressive scale-out) [multi-node]
+  - prefill-time lookup cache precomputed by simulation for remaining-work estimates
+  reported_results:
+  - 'Llama-3 8B, 2x DGX-A100 (16 GPUs), ShareGPT4 + 5% long (128K-1M, Medha-SWE trace generated with Gemini-Flash-1.5): at
+    0.75 QPS Medha 30x lower median TTFT than LoongServe; at 1.25 QPS about 5x higher usable capacity; P90 TTFT under 10 s
+    at 5% long; LoongServe shows 8x degradation at 1% long.'
+  - 'Decode: LoongServe about 5x higher TPOT than Medha even with no long requests (attributed to fragmentation); Sarathi
+    static chunks reach TPOT up to 1 s on long sequences.'
+  - 'Scheduler ablation (Figure 13, 1.75 QPS): FCFS and EDF collapse under the convoy; LARS and Medha both fix it; multi-prefill
+    batching adds up to 1.8x lower median TTFT over plain LARS.'
+  - 'Reserved-pool baseline (Figure 14): up to 20% fewer long-request completions than Medha, 10% fewer than plain LoongServe;
+    Medha lowest decode latency of the three.'
+  - 'Chunk efficiency (Figure 3b, Llama-3 70B, 8 H100, 1M context): 32-token chunks +11% attention time vs 2048-token chunks.'
+  - 'Llama-3 70B, 128 H100: 3D (SPP4+KVP2+TP8) vs 2D (SPP8+TP8) similar TTFT, over 2x lower P50/P90 TPOT at 1.75 QPS; SPP
+    85% scaling efficiency at degree 8; 50-60% MFU prefill, up to 92% MBU decode (Appendix B).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - gpu-serving-tie-in-program.md
+    - within-role-placement-state-machine.md
+    experiments: []
+    intake_entries:
+    - intake-2216
+    - intake-2215
+    - intake-2214
+  recommended_actions:
+  - 'MD-A1 refine KVU-16g-2 / gpu_slot.sh: add a short-prefill-under-long-prefill arm (80k neighbour prefilling, nothing decoding,
+    1k request arrives 2 s in) and verify whether --prefill-budget-target-ms bounds the iteration when NO slot decodes; the
+    KVU-16g text caps prompt tokens only while any slot generates, which is exactly the Medha case it would miss.'
+  - 'MD-A2 refine WP-15 / TB-A5 scoring: report the long-request completion or throughput delta beside the short-TTFT tail
+    for any pool rule, because the only pool evidence in the literature (Medha 6.5) shows the cost lands on long requests.'
+  - 'MD-A3 refine DI-126 trigger text: a colliding short request''s TTFT rising by more than one prefill iteration (1.3-1.8
+    s per the PB-QCOST-1 fit) is the budget failing, not queue wait; join iteration ms at collision time.'
+  - 'MD-A4 knowledge-only for PB-QCOST-1: Medha''s 32-token-chunk-is-free result does not transfer; our fitted intercept is
+    324 ms per iteration, so shrinking chunks here has a floor that H100/FlashInfer does not; keep the quadratic budget, do
+    not copy small chunks.'
+  - 'MD-A5 decline LARS, SPP, KVP: per-request deadlines do not exist on our API, and SPP/KVP need a second device (monitor
+    with DI-016''s second-MI210 trigger).'
+  credibility_score: 3
+  contradicting_evidence:
+  - Sarathi (Agrawal et al. 2023, same first author) reported chunked prefill as inefficient for long contexts; the paper
+    itself attributes the reversal to newer kernels (FlashInfer/FA2), so the read-amplification claim is kernel-specific and
+    our PB-QCOST-1 fit (324 ms intercept) is a local counter-datum for MI210.
+  - FlowPrefill (arXiv 2602.16603, Feb 2026) independently frames the same HOL problem but argues fixed small chunking still
+    costs efficiency and proposes operator-level preemption instead; it corroborates the problem, not Medha's chunk-size finding.
+  - No independent replication or venue acceptance found (3 searches); all numbers are the authors' own on Azure clusters
+    against baselines they configured; the reserved-pool arm (6.5) has no short-TTFT figure in the text.
+  referenced_arxiv_ids:
+  - '2407.07000'
+  - '2308.16369'
+  - '2307.11088'
+  - '2311.09431'
+  - '2307.08691'
+  - '2408.15792'
+  - '2310.01889'
+  - '2404.16283'
+  - '2506.05508'
+  - '2407.00079'
+  - '2403.05530'
+  - '2401.00588'
+  - '1909.08053'
+  - '2105.13120'
+  - '2102.07988'
+  - '2305.05920'
+  - '2501.15383'
+  - '2411.01783'
+  - '2402.05136'
+  - '2401.09670'
+  - '2308.12908'
+  - '2309.11235'
+  notes: 'Versions: v1 2024-09-25, v2 2025-03-26, v3 2025-05-09, v4 2025-06-18, v5 2025-11-26 (dived: v5, sha256 of paper.html
+    3f54d9d1ebba4b1c3076393fa5df1f03916ce4a34f1e707e969b183c69ad3906; abs.html ec6153a6808430e1fbd089bb619c4fa7ad1804387909ae6a36eb7ee566cd0143).
+    The v4 title seen in search results is "Medha: Efficient LLM Inference on Multi-Million Context Lengths Without Approximation";
+    v5 reframes the paper around heterogeneity and preemption, so pre-v5 citations describe a different emphasis. Affiliations:
+    Microsoft, Georgia Tech, UC San Diego. No venue or code link in the HTML (NOT-FOUND-IN-SOURCE). Built on Sarathi-Serve
+    with ZeroMQ and FlashInfer; Vidur supplies runtime predictions. Figures are captions only in HTML; all numbers above come
+    from text/captions. Medha-SWE trace is synthetic (Gemini-generated answers over GitHub repos, prefill P50 393K / P90 839K,
+    decode P50 518). Scoring: peer-reviewed 0 (no venue found), recency +1 (v5 within 12 months; v1 is 25 months old), major
+    lab +1, commercial bias 0, corroboration +1 (FlowPrefill on the problem framing) = 3.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §1 Introduction, Motivation paragraph
+    quote: These spikes occur because arriving short requests must wait for the entire prefill computation of the long request
+      to complete — which can take several minutes.
+    quote_sha256: 0caacfc0f7f4bbe3929c9c1f57e58a4b4304603fba7bb284b16861be9dd756fe
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §3.1 Debunking KV-Cache Read Amplification, Arithmetic Intensity Analysis
+    quote: The critical insight is that arithmetic intensity for chunked attention depends solely on chunk size, not total
+      context length.
+    quote_sha256: 2042e2e678df6fb0d034e30b3b9bb798fa0d1a07c1d64be524b36d87657ed9ef
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §3.2 Managing Interference with Adaptive Chunking, Resolving the Tradeoff; §4.3 Iterative Batch Packing
+    quote: The policy begins a prefill with large chunks and dynamically shrinks them as the bottleneck shifts, thereby maintaining
+      a predictably low iteration time.
+    quote_sha256: 01e889563b076edd2636ab821bcdf34ea05cc993e6fc62858fa6f8e4667af704
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §4.1 An SLO-Aware Prioritization Policy, LARS paragraph
+    quote: Short requests still receive priority when urgent (low relative slack), but long requests aren’t perpetually starved
+      as in EDF. The result is a natural balance that avoids both convoy effects and starvation.
+    quote_sha256: bf456f256b4a1335d97a0863a11dccc49cde52edba34e2d317d486bb6726f57b
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §4.2 Multi-Prefill Batching Policy
+    quote: To leverage this slack, the scheduler co-locates two prefill chunks in the same batch with complementary profiles
+      – packing a short, early-stage (MLP-dominant) chunk and one long, late-stage (Attention-dominant) chunk.
+    quote_sha256: cf9d25746af882370ee604ef95141379b48f02bcf912cf93582dea220ffe6120
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: '§6.5 Alternate Scheduling Approaches: Multiple Request Pools'
+    quote: This reservation increases contention for long prefills, leading to up to 20% lower completions for long requests
+      compared to Medha, and 10% lower than default LoongServe.
+    quote_sha256: ad8a209948cf29bca792567f35ca2c85fea7da9d5fab257d27017484617418a1
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: §3.3 Scalable Parallelism for Preemptive Inference, opening sentence
+    quote: To achieve interactive latency for million-token requests, preemptive chunking must be combined with a scalable,
+      multi-node parallelism strategy.
+    quote_sha256: 681d30ab77817c48a0bd4f48fb701dea0af194eb583e593312c40daafb7ba066
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: §4.3 Dynamic Batch Packing, Iterative Batch Packing paragraph (budget = the mechanism behind the headline)
+    quote: 'Critically, this fixed-budget approach naturally implements adaptive chunking (Section 3.2): early-phase prefills
+      with empty KV caches fit large chunks within the budget, while late-phase prefills with populated KV caches are constrained
+      to smaller chunks.'
+    quote_sha256: 767c7f4a707ff903f5880bbe5b125540f02baab18803f8b2324d1d6c83b34f48
+    source_revision: arXiv:2409.17264v5 HTML
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Measured against LoongServe (CP, no chunking) and Sarathi with STATIC chunks on 16 A100; the 30x/174x are the no-preemption
+      baseline at 128K-1M-token longs. A server already running chunked prefill (llama-server -ub 2048) is not the baseline
+      this number describes.
+  - claim_index: 1
+    effect: narrowed
+    note: H100 + FlashInfer specific; our PB-QCOST-1 fit has a 324 ms per-iteration intercept on MI210, so the small-chunk
+      regime is not free here.
+  - claim_index: 2
+    effect: unaffected
+    note: Mechanism is a time budget with a cost model; this is what KVU-16g + PB-QCOST-1 already implement (quadratic q*c
+      term), minus the LARS ordering.
+  - claim_index: 3
+    effect: narrowed
+    note: Requires per-request deadlines and total-work estimates; the EDF collapse is shown only at 1.75 QPS in one figure.
+  - claim_index: 4
+    effect: narrowed
+    note: The 1.8x is multi-prefill batching over plain LARS at high load; isolated gain, authors' own ablation.
+  - claim_index: 5
+    effect: narrowed
+    note: One configuration (2 of 8 CP instances reserved, threshold 8192, 5% long); the text gives long-completion and decode
+      numbers, no short-TTFT figure for the pool arm, so "pools do not solve the convoy" is asserted for short requests, measured
+      only as a throughput cost on long ones.
+  - claim_index: 6
+    effect: narrowed
+    note: SPP/KVP are multi-device; nothing to pipeline or shard within one MI210.
+  - claim_index: 7
+    effect: narrowed
+    note: Headline numbers are authors' own on Azure clusters, no venue, no independent replication found.
+  reader_should_conclude: 'Medha is the strongest written argument that the HOL symptom for mixed short/long traffic is solved
+    INSIDE an instance by time-budgeted chunked prefill, and its one pool experiment says static length pools pay for short-TTFT
+    relief with long-request throughput. On our stack the in-instance lever already exists as KVU-16g (decode-aware budget)
+    plus the PB-QCOST-1 quadratic fit; what Medha adds is the observation that the budget must bind whenever ANOTHER prefill
+    is waiting, not only while something decodes, and that pool rules must be scored on long-request throughput too. Do not
+    transfer the 32-token-chunk efficiency, the 5.7x/30x/174x headlines (non-chunked baselines, 16-128 GPUs, million-token
+    requests), LARS (needs deadlines), or SPP/KVP (multi-device). The deciding single-server measurement is a two-request
+    collision on :8083: short TTFT under an 80k prefill with nothing decoding, budget off vs on.'
+  dive_corrections: '2026-10-21 Stage-2b wave 2: dived v5 (2025-11-26) in full from the arXiv HTML; the v4 title differs (search-result
+    data) and pre-v5 citations emphasise million-token scaling rather than heterogeneity. Three WebSearches found no venue,
+    no replication and no independent critique; FlowPrefill 2602.16603 and LAPS 2601.11589 surfaced as later same-problem
+    work. No intake id assigned; entry not written to research/intake_index.yaml.'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2219
+  arxiv_id: '2606.09061'
+  url: https://arxiv.org/abs/2606.09061
+  source_type: paper
+  title: Fairness-Aware and Latency-Controllable Scheduling for Chunked-Prefill LLM Serving
+  categories:
+  - inference_serving
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2215
+  verdict: adopt_patterns
+  authors:
+  - Haoxin Liu (Xidian University, co-first)
+  - Jiayi Wang (Xidian University, co-first)
+  - Yueshen Xu (Xidian University, corresponding)
+  - Rui Li (Xidian University)
+  key_claims:
+  - 'PROBLEM (qualitative only): in chunked-prefill engines decode is admitted first and prefill candidates share the residual
+    per-iteration token budget, so the prefill ORDER decides service share. FCFS lets a long prompt at the head consume the
+    residual budget for many rounds (chunk-level head-of-line blocking of short prompts); shortest-prefill-first can delay
+    long requests indefinitely under sustained short arrivals. No fairness or starvation METRIC is defined anywhere (no Jain
+    index, max-wait, per-class TTFT or starvation count): NOT-FOUND-IN-SOURCE.'
+  - 'POLICY: Aging priority P_i(n) = alpha*(t - a_i) + beta*r_i(n) with alpha > 0 (waiting-time weight), beta < 0 (remaining
+    prefill tokens r_i(n), decremented by each scheduled chunk c_i). The only knob is the ratio alpha/|beta|: small = close
+    to shortest-prefill-first, large = close to FCFS. There is NO aging bound, NO hard starvation threshold and NO SLO term
+    in the aging policy (the paper says so explicitly); priority is continuous. Maintained as a max-heap on the key K_i(n)
+    = -alpha*a_i + beta*r_i(n) (the shared alpha*t drops out), O(k log n) per round for k selected requests.'
+  - 'BUDGET INTERACTION: aging runs only after decode slots are reserved; it ranks prefill candidates and hands out the residual
+    budget in that order, chunk = min(remaining tokens, residual budget); unfinished requests are re-queued with the updated
+    key. It changes which prefill gets the next budget, never the chunking, KV management or backend. Benefit therefore needs
+    fine granularity: it is reported for 256/512-token chunks and vanishes at 1024.'
+  - 'HEADLINE (Sarathi-Serve, 1x RTX 4090, Qwen3-8B, max context 512, max gen 512, ShareGPT 200 requests at a fixed 0.1 s
+    inter-arrival, median prompt 19.0 tokens / P90 179.4, baseline = Sarathi default FCFS only): chunk 256 mean E2E 118.72
+    -> 106.56 s (-10.24%), mean TTFT 107.82 -> 95.67 s (-11.27%), P95 E2E 195.73 -> 183.58 s, P95 TTFT 184.86 -> 172.73 s;
+    chunk 512 mean E2E -6.75%, mean TTFT -7.11%; chunk 1024 mean E2E 109.38 -> 110.59 s (Aging slightly WORSE), P95 equal.
+    Decomposition: model execution time unchanged (10.85 vs 10.86 s), all gain is queue wait (107.77 -> 95.63 s). Mean TTFT
+    near 100 s means the trace is a saturated backlog drain, not an SLO regime. No SJF/SPF arm, no throughput figure, no per-class
+    (short vs long) TTFT, no P99 for the aging experiment: NOT-FOUND-IN-SOURCE.'
+  - 'SENSITIVITY (the only aging-vs-anything trade-off measurement): at chunk 512, waiting weight base 100 gives mean E2E
+    106.99 s / TTFT P95 173.20 s; base 500 gives 107.73 s / 174.78 s, i.e. stronger aging is slightly worse because it drifts
+    toward pure time ordering. The semantics of base and the alpha, beta values used in the headline runs are NOT-FOUND-IN-SOURCE.
+    Two-GPU (2x RTX 5090): chunk 256 / 10 seqs Aging LOSES (mean E2E 103.84 vs 99.05 s); chunk 512 / 32 seqs modest gain 61.77
+    -> 60.55 s. Ascend 910B port (vLLM-Ascend, OpenPangu model): standalone numbers only (200 req in 14.99 s, 13.35 req/s,
+    P99 12.70 s), no FCFS comparison.'
+  - 'LPRS (latency-prediction-based chunk sizing): replaces the static token budget by a target per-iteration latency T* (105
+    ms in the evaluation) with a hard token cap kept; a 3-layer MLP (128,64,32) over 11 raw + 5 derived features (prefill/decode
+    tokens, context sums, GPU/CUDA-pool memory MB) trained with a bucket-weighted ASYMMETRIC Huber loss that penalises under-estimation;
+    discrete candidate search at granularity Delta, asymmetric score with lambda_o > lambda_u (values NOT-FOUND-IN-SOURCE).
+    Predictor: MAE 1.13 ms, MAPE 1.26%, 99% within 5 ms on 36,868 samples (RTX PRO 5000 72 GB, Qwen3-8B). End-to-end vs token
+    budget 1024: at 0.1 s arrivals P99 prefill 924.22 -> 889.45 ms (-3.8%), P99 request 986.93 -> 952.56 ms (-3.5%); at 1.0
+    s arrivals LPRS is slightly WORSE at every quantile (P50 request 138.52 vs 129.29 ms), which the paper calls similar.'
+  - 'APC (active prefill control): caps the number of concurrently active unfinished prefills, C_t = min(C_max, S_max - |decode
+    set|, floor((B_max - U_t)/L_min)), and enforces a minimum effective chunk m_i = min(r_i, L_min), with a warm-start chunk
+    when no prefill is active. Ablation (49:1 short 30-50 tok : long 200-220 tok): avg scheduled prefill seqs 5.32 -> 0.46,
+    avg prefill chunk 0.78 -> 6.29 tokens, mean request E2E 143.65 -> 111.68 ms (-22.26%), P90 -24.62%. The APC-off baseline
+    averages under one token per prefill per round, i.e. a self-inflicted degenerate configuration; the gain is against that,
+    not against a tuned static budget.'
+  - 'STATED LIMITS: benefit needs scheduling opportunities (fine chunks, enough sequence slots); evaluation is Qwen3-8B, 512-token
+    context for the aging runs, single node, single tenant; future work names larger models, longer-context workloads, multi-node
+    and multi-tenant settings. Code released at github.com/Charmstok/Chunked_Prefill_Serving (a Sarathi-Serve tree, exists,
+    pushed 2026-06-05, 1 star) and github.com/lhx-666-cool/vllm-ascend branch aging (exists, commit 834a853c); neither was
+    read in this dive.'
+  techniques:
+  - aging priority alpha*(wait) + beta*(remaining prefill tokens) over prefill candidates, max-heap on the time-invariant
+    key
+  - remaining-work key decremented per scheduled chunk (priority rises as a long prefill progresses)
+  - target-latency chunk sizing via an offline MLP batch-latency predictor with asymmetric (under-estimation-penalising) Huber
+    loss
+  - discrete chunk candidate search scored asymmetrically against a per-iteration time target
+  - active-prefill concurrency cap derived from sequence slots, residual budget and a minimum effective chunk
+  - minimum effective progress per prefill plus warm-start when no prefill is active
+  reported_results:
+  - 'Aging vs FCFS (RTX 4090, Qwen3-8B, ctx 512, ShareGPT 200 req @ 0.1 s): chunk 256 mean E2E -10.24%, mean TTFT -11.27%,
+    P95 TTFT 184.86 -> 172.73 s; chunk 512 -6.75% / -7.11%; chunk 1024 mean E2E +1.1% (worse). Queue wait 107.77 -> 95.63
+    s, execution time unchanged.'
+  - 'Aging weight sensitivity (chunk 512): base 100 mean E2E 106.99 s, TTFT P95 173.20 s; base 500 107.73 s, 174.78 s.'
+  - 'Two-GPU (2x RTX 5090): 256/10 Aging worse (103.84 vs 99.05 s mean E2E); 512/32 Aging 60.55 vs 61.77 s.'
+  - 'LPRS vs token budget 1024 (RTX PRO 5000, 1,000 req, max seq 4,096): 0.1 s arrivals P99 prefill -3.8%, P99 request -3.5%;
+    1.0 s arrivals LPRS worse at all quantiles (P50 request 138.52 vs 129.29 ms).'
+  - 'Predictor: MAE 1.13 ms, RMSE 1.53 ms, MAPE 1.26%, P99 abs error 4.93 ms.'
+  - 'APC on vs off: mean request E2E -22.26%, P90 -24.62%, avg prefill chunk 0.78 -> 6.29 tokens, 4,960 cap blocks and 1,541
+    min-chunk blocks.'
+  - 'Ascend 910B standalone: 200 req in 14.99 s, 13.35 req/s, P95 10.52 s, P99 12.70 s (no baseline).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-2215
+    - intake-2214
+  recommended_actions:
+  - 'FA-A1: refine the DI-126 monitor prose (kv-unified-stack-rollout.md:1363) with the SRF-A1 split made explicit and this
+    paper''s decomposition as the reason: an ordering policy moves only queue wait (execution time unchanged 10.85 vs 10.86
+    s, all gain from 107.77 -> 95.63 s wait), so the trigger must name which component fired. Owner workspace-ec (index owner
+    applies). Adopt, prose only.'
+  - 'FA-A2: do NOT take an aging bound from this paper. It has no bound, no SLO term and no per-class split; its one measurement
+    says only that stronger aging drifts toward FCFS and loses the short-request benefit. If DI-126''s queue-wait component
+    fires, the number to set is the SRF-style long_max_wait_ms = measured p99 queue wait of long requests under strict short-first,
+    capped at the long-request TTFT SLO (SRF-A3 doctrine). Fold into SRF-A3; knowledge-only.'
+  - 'FA-A3: record the granularity precondition on SRF-A4: reordering only helps when the per-iteration prefill budget is
+    fine (gain at 256/512-token chunks, loss at 1024 and at 10 sequence slots). On our stack that budget is KVU-16g''s --prefill-budget-decoding
+    N; a lane-aware pop_deferred_task() is pointless unless N is in the 256-512 class and np > 10 slots. Owner KVU-16g-2 note;
+    adopt as a trigger qualifier.'
+  - 'FA-A4: PB-QCOST-1 (gpu-serving-tie-in-program.md:335) may cite the asymmetric (under-estimation-penalising) loss and
+    the 105 ms per-iteration target as design references for --prefill-budget-target-ms; the MLP, GPU-memory and CUDA-pool
+    features do not transfer (HIP, single server). Knowledge-only.'
+  - 'FA-A5: APC is not applicable today: llama-server prefills slots in slot order under one budget; the fragmentation APC
+    fixes (avg 0.78 tokens per prefill per round) is a Sarathi configuration artefact. Monitor: if the KVU-16g A/B log shows
+    the decode-aware budget split across >= 4 prefilling slots with < 64 tokens each per iteration, file a min-effective-chunk
+    rule on the experimental tree. Owner KVU-16g-2.'
+  - 'FA-A6: citation boundary: never cite the 10.24% / 11.27% figures as a TTFT gain for our traffic (512-token context, backlog-saturated,
+    mean TTFT ~100 s, chunk 256, Qwen3-8B on a 4090); never cite the APC -22% (degenerate baseline) or the LPRS -3.5% without
+    its 0.1 s-arrival condition and the 1.0 s regression.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Internal: the aging policy loses at chunk 1024 (mean E2E +1.1%) and at 2-GPU 256/10 (+4.8%), so the abstract''s over
+    10% is the best chunk only. LPRS at 1.0 s arrivals is worse at every quantile although the text says similar. The APC
+    baseline averages 0.78 tokens per prefill, a degenerate configuration.'
+  - 'External: vLLM-Ascend SRF (intake-2215) ships the same idea with a hard head-of-long-lane bound and no numbers; this
+    paper has numbers but no bound, so neither supplies a measured aging-vs-SLO curve. FlowPrefill (arXiv 2602.16603, intake-2215
+    contradicting_evidence, not read) argues ordering cannot fix blocking by an in-flight long prefill. LMCache shortest-prefill-first
+    blog (vendor, PD-disaggregated, 200 requests ~10k tokens arriving at once): -18% mean TTFT vs vLLM, no starvation analysis.
+    SLOWEAVE (arXiv 2609.07883, snippet only) sizes chunks by decode deadlines instead of a learned predictor.'
+  referenced_arxiv_ids:
+  - '2403.02310'
+  - '2505.24332'
+  - '2506.12708'
+  - '2505.22375'
+  - '2609.07883'
+  - '2510.14392'
+  - '2608.23658'
+  - '2504.20828'
+  - '2601.11589'
+  notes: 'Stage-2b wave 2 (2026-10-21), dive dir /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/dive-2606.09061/. abs.html
+    sha256 6a605c5dfbe68c2cf30c09d2618eafbe73ce1c0e569ce85e1b244cac0c983277 (v1 only, submitted 8 Jun 2026, cs.DC, CC BY 4.0,
+    no venue or comments line); paper.html = https://arxiv.org/html/2606.09061v1 sha256 12e3d255318471464d5b6e6fe38fc9c5e4ecb83b2fced94a97b0bcec5cde16ea
+    (289,856 B); paper.txt (tag-stripped, math removed) sha256 80ecd5244adb05f0f3bc993174e1cd38bdbf209f7f680d0845f5a19d281d7aee;
+    equations recovered from MathML alttext. No appendix exists; Figures 1-6 are images (trends restated in text and used
+    from the text). Claim-5 anchor quote contains U+00A0 between numbers and units exactly as in the HTML; re-hash from the
+    saved file, not from a retyped copy. Adversarial pass: 3 WebSearch (title; released repos; SPF/aging evidence) found only
+    restatements of the abstract (emergentmind) and adjacent papers; no independent reproduction of any number. GitHub API:
+    Charmstok/Chunked_Prefill_Serving exists (created 2025-11-17, pushed 2026-06-05, Sarathi tree layout) and lhx-666-cool/vllm-ascend
+    branch aging exists (834a853c); neither cloned or read. Our-stack reads at worktree b4f1578a0: kv-unified-stack-rollout.md:172-187
+    (KVU-15a flock lease, 16384-token long-prefill threshold, PASSED LIVE 2026-10-04), :378 (KVU-16g decode-aware budget,
+    done-when >= 4x decode-under-prefill at <= 30% TTFT cost), :1114 (KVU-16g-2 enable with --prefill-budget-target-ms from
+    PB-QCOST-1), :1363 (DI-126 monitor); intake-2215 (uncommitted in the worktree index, line 299536) and intake-2214. Scoring:
+    peer-reviewed 0 (arXiv only); <= 12 months +1; major lab 0 (Xidian); commercial bias 0; corroboration +1 (released code
+    verified to exist; problem framing corroborated by independent SPF/aging literature; no number reproduced) = 2.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §3.1.1 Motivation and Design Goals, para 2
+    quote: 'On the other hand, a shortest-prefill-first policy improves the responsiveness of short requests, but it can indefinitely
+      delay long requests when short requests keep arriving. These two policies represent opposite extremes: FCFS preserves
+      arrival order but can amplify chunk-level head-of-line blocking, while shortest-prefill-first reduces short-request
+      latency but weakens starvation protection.'
+    quote_sha256: cf34a8a6e55e307cd712bd7447b3350731fc899cfcc43025234a2b5cb5faa305
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §3.1.2 Priority Formulation, Eq. (1) MathML alttext
+    quote: P_{i}(n)=\alpha\cdot(t-a_{i})+\beta\cdot r_{i}(n),
+    quote_sha256: 85b8ab72405998a0975ec50a0eac5b1f040460d21d4015c1f59562344f3958fa
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §3.1.2 Priority Formulation, para 2
+    quote: Therefore, the scheduler does not rely on a fixed request class or a hard starvation threshold; instead, priority
+      evolves continuously with both waiting time and prefill progress.
+    quote_sha256: 11ce031bd128b0fa278c7defba354f1919354bb1143c95901fc0949415d5bc7d
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §3.1.3 Scheduling semantics
+    quote: Aging is applied only after decode requests have been admitted. In each scheduling round, the scheduler first reserves
+      capacity for ongoing decode requests to preserve generation continuity. It then ranks prefill candidates according to
+      the aging priority and allocates the remaining prefill budget in that order.
+    quote_sha256: 0c7a9c2dda8e1b191b2f26ae838b345ff8d7657bb822ef14f52c7f643739a1bf
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §4.3.1, conclusion 2 after Table 4
+    quote: The benefit becomes smaller when the chunk size increases to 1,024 tokens. In this case, Aging and FCFS show nearly
+      identical P95 latency, while Aging slightly increases mean E2E latency.
+    quote_sha256: 957b8e0e1cf1c6c8cab0228f0ced75e75ddabd279e016c4e192744aa5d04ca53
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §4.3.1 Fairness under Mixed Workloads, text after Table 4
+    quote: 'With a 256-token chunk, our aging policy reduces mean request end-to-end latency from 118.72s to 106.56s, achieving
+      10.24% improvement over FCFS. Mean TTFT decreases from 107.82s to 95.67s, improving by 11.27%. Tail latency also improves:
+      E2E P95 decreases from 195.73s to 183.58s, and TTFT P95 decreases from 184.86s to 172.73s. With a 512-token chunk, our
+      aging policy still improves mean E2E latency by 6.75% and improves mean TTFT by 7.11%.'
+    quote_sha256: 5c55693f6d2897607fc2babc4085b10d7994bf3bb4e59b1494efedbb355b77f3
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §4.3.1, conclusion 3 after Table 4
+    quote: 'Aging does not reduce model execution time: the average model execution time is 10.85s under Aging and 10.86s
+      under FCFS. Instead, the improvement comes almost entirely from queuing reduction. The average scheduling waiting time
+      decreases from 107.77s to 95.63s.'
+    quote_sha256: 234303ed6b3d75ddfd24cd5b6a3522b8961871665a372e4265de8a56f88d8fce
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §4.3.2 Parameter Sensitivity, para 2
+    quote: When the weight base is 100, mean E2E latency is 106.99s and TTFT P95 is 173.20s. Increasing the weight base to
+      500 raises mean E2E latency to 107.73s and TTFT P95 to 174.78s.
+    quote_sha256: eccd7cd2c15b20dca43e508a2641810e57794ccb979ef0565b1fda4fe35a307d
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §4.3.3 Multi-GPU Extension, para 2
+    quote: With the chunk size of 256 and the sequence capacity of 10, Aging performs worse than FCFS because the limited
+      concurrency prevents its waiting-time compensation from translating into useful scheduling progress.
+    quote_sha256: b1bf6f6a45cff2448358598cd09b77e870cad4a6044b35435e1d323f4cdf399d
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: §4.4.2 End-to-End Performance Evaluation, item 2 (quote carries U+00A0 before s and ms as in the HTML)
+    quote: Specifically, under high concurrency (0.1 s interval), LPRS reduces the P99 prefill latency from 924.22 ms to 889.45 ms,
+      and the P99 request latency from 986.93 ms to 952.56 ms. Under regular load (1.0 s interval), however, both methods
+      deliver similar latency profiles.
+    quote_sha256: a75742e2353f0f8bd8436f74fb203f86cd71b0149d052d7cb356093ad309e86b
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: §4.5 Evaluation for the Designed APC, para 1
+    quote: When APC is enabled, the average number of scheduled prefill sequences decreases dramatically from 5.32 to 0.46,
+      whereas the average prefill chunk size surges from 0.78 to 6.29.
+    quote_sha256: 118c0123986773863517d0d8b14ee635f3108f9eacd706af9b2d40f28fc4f368
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: §4.1 Experimental Setup, para 2
+    quote: The maximum context length is set to 512, and each request has a maximum generation length of 512 tokens. The workload
+      is replayed from ShareGPT
+    quote_sha256: eb8bcd25be97549d999c341771c5ae29ae79da6ce7b95007629ac8ce18c0fa8a
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: §5 Conclusion and Future Work, para 2
+    quote: Second, the proposed mechanisms should be further evaluated in larger-scale and more complex production environments,
+      including larger models, longer-context workloads, multi-node deployments, or multi-tenant settings, in order to further
+      examine their scalability and practical applicability.
+    quote_sha256: 6e2a84eb754a065ccd4c7677f1814ebc3df14469fc689f3baf68f11abc640aa0
+    source_revision: arXiv:2606.09061v1 HTML
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The starvation/fairness problem is stated qualitatively; the paper measures no fairness metric, so fairness here
+      means aggregate mean/P95 latency, not a starvation bound.
+  - claim_index: 1
+    effect: unaffected
+    note: Formulation read from MathML alttext; the text has no aging bound or SLO term, as stated.
+  - claim_index: 2
+    effect: unaffected
+    note: Budget interaction is as the text states; the granularity dependence is the paper's own finding (Table 4, Fig. 5).
+  - claim_index: 3
+    effect: narrowed
+    note: Headline over 10% holds only at chunk 256 on the 4090/512-context backlog regime; chunk 1024 is a small loss; no
+      short-vs-long split, no P99, no throughput, no SJF arm exist for the aging experiment.
+  - claim_index: 4
+    effect: narrowed
+    note: Weight base semantics and the alpha/beta values are undefined in the text; the sensitivity is two points at one
+      chunk size and the two-GPU 256/10 loss is the paper's own.
+  - claim_index: 5
+    effect: narrowed
+    note: The text calls the 1.0 s regime similar; Table 9 shows LPRS worse at every quantile there, so the LPRS gain is conditional
+      on 0.1 s arrivals.
+  - claim_index: 6
+    effect: narrowed
+    note: APC gains are against an APC-off baseline averaging 0.78 tokens per prefill per round, a degenerate configuration;
+      not a gain over a tuned static budget.
+  - claim_index: 7
+    effect: unaffected
+    note: Limitations are the paper's own words; repo existence verified via GitHub API, contents not read.
+  reader_should_conclude: 'A textbook aging (wait-time minus remaining-work) ordering of prefill candidates inside a Sarathi-style
+    chunked-prefill engine, measured ONLY against FCFS on an 8B model with a 512-token context and a saturated 200-request
+    backlog: about -10% mean E2E / -11% mean TTFT at 256-token chunks, shrinking to nil or a small loss at 1024-token chunks
+    or 10 sequence slots, with every gain coming from queue wait and none from execution time. It does NOT supply the aging-vs-SLO
+    trade-off that vLLM-Ascend SRF (intake-2215) lacks: there is no aging bound, no SLO term, no per-class TTFT, no starvation
+    metric, only one two-point sensitivity whose lesson is that stronger aging regresses toward FCFS. Transfer: (1) score
+    any ordering policy on queue wait alone (the SRF-A1 split), (2) reordering needs a fine per-iteration prefill budget (KVU-16g
+    N in the 256-512 class) to have anything to reorder, (3) the aging bound, if ever needed, must come from our own long-request
+    queue-wait tail under strict short-first, capped at the long TTFT SLO. LPRS and APC are design references for --prefill-budget-target-ms
+    and for a fragmentation guard, not results to cite.'
+  dive_corrections: '2026-10-21 Stage-2b wave 2: v1 HTML read in full (sha256 12e3d255), equations recovered from MathML alttext;
+    the Stage-1 belief (fairness-aware chunked-prefill scheduling, SPF starves longs, aging as middle ground) is confirmed;
+    corrections are that the paper measures no fairness metric and no SPF arm, the over-10% figure is chunk-256 only with
+    a loss at chunk 1024 and at 2-GPU 256/10, the LPRS gain is 0.1 s-arrival only with a regression at 1.0 s, and the APC
+    gain is against a degenerate 0.78-token-chunk baseline; the released repos exist (GitHub API) but were not read.'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2220
+  arxiv_id: '2508.16449'
+  url: https://arxiv.org/abs/2508.16449
+  source_type: paper
+  title: 'GreenLLM: SLO-Aware Dynamic Frequency Scaling for Energy-Efficient LLM Serving'
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2216
+  verdict: adopt_patterns
+  authors:
+  - Qunyou Liu (EPFL ESL)
+  - Darong Huang (EPFL ESL)
+  - Marina Zapater (HES-SO REDS)
+  - David Atienza (EPFL ESL)
+  key_claims:
+  - 'Routing rule: at ingress requests are partitioned by PROMPT length into n prefill queues/workers using n-1 cutoffs; n
+    = 2 in the paper, with a short/medium class up to approximately 1024 tokens and a long class above it. The cutoff is given
+    as an example (e.g.), not derived: NOT-FOUND-IN-SOURCE for any percentile, sweep, or sensitivity over the cutoff. The
+    1024 figure coincides with the upper end of the prefill microbenchmark prompt range (256-1024 tokens).'
+  - 'Pools: both prefill workers are the same hardware and the same model (Dynamo prefill pool = 2 workers x 2 A100 each;
+    decode pool = 4 workers x 1 A100); the only thing that differs between the two prefill classes at runtime is the SM clock
+    the prefill optimizer chooses per class. NOT-FOUND-IN-SOURCE for any per-pool batch size, max context, KV reservation
+    or energy-mode difference between the short and long workers.'
+  - 'HOL-blocking evidence for routing alone (PrefillSplit ablation, Qwen3-14B, Alibaba chat trace): at 8 QPS the TTFT pass
+    rate rises from 89.9% to 96.4%; at the other intensities routing alone is neutral or slightly negative (Table 3: 1 QPS
+    99.3 to 98.5, 3 QPS 99.5 to 98.8, 5 QPS 96.0 to 99.0, 10 QPS 84.9 to 89.1; Azure code5 98.5 to 96.6) and changes energy
+    by only about 1-3%. The routing benefit is load-regime dependent: it appears when the single queue approaches prefill
+    saturation.'
+  - 'Objective is GPU ENERGY under latency SLOs, not latency itself: SLOs are TTFT below 400 ms (short/medium), below 2 s
+    (long), P95 TBT at or below 100 ms (Azure/DynamoLLM targets). Prefill: per-class SM clock from a queueing-aware optimisation
+    (quadratic latency fit in prompt length at a reference clock, latency scaled by f_ref/f, cubic power fit P(f), minimise
+    active plus idle energy subject to total busy time within the deadline D). Decode: a dual-loop controller (200 ms TPS
+    window selects a 3-clock band from an offline TPS-to-frequency table with 3-interval hysteresis; a 20 ms loop steps 15
+    MHz up when P95 TBT / 100 ms exceeds 1.0 and down when it is below 0.65; band table re-biased every 6 s when more than
+    80% of steps hit a bound).'
+  - 'Energy-vs-frequency is U-shaped with different knees per phase (A100-40GB, Qwen3-14B): prefill minimum in a narrow band
+    around 0.95-1.05 GHz (70-80% of the 1.41 GHz max) across TPS levels; decode knee lower (energy rises again beyond about
+    1.2 GHz; decode is memory-bound so time per token saturates while power grows superlinearly); on the Alibaba chat trace
+    at 5 QPS a fixed cap near 0.75 GHz cut total energy by about 47% versus the default governor.'
+  - 'Evaluation: one DGX-A100 (8 x A100-SXM4 40 GB, EPYC 7302), NVIDIA Dynamo v0.3.1 with TensorRT-LLM, DVFS via NVML application
+    clocks with memory clock pinned and autoboost off; models Qwen3-14B (dense, BF16) and Qwen3-30B-A3B (MoE, BF16); traces
+    Alibaba ServeGen chat at 1/3/5/8/10 QPS for at least 30 min per run and Azure 2024 code/conversation downsampled to 1/8
+    and 1/5 (Section 4.2.2 also lists 1/4; no 1/4 rows appear in the tables); baselines DefaultNV, PrefillSplit (routing only),
+    GreenLLM.'
+  - 'Headline numbers: total energy reduction up to 34% (Azure_conv5, Qwen3-14B: 34.09%); Alibaba chat falls from 27.5% at
+    1 QPS to 6.8% at 10 QPS; Qwen3-30B-MoE 19.7-31% on Azure and 10-21% on Alibaba; decode energy 0.62-0.73x default on Azure
+    (14B). The abstract claims less than 3.5% additional SLO violations and no loss of throughput, but Table 4 shows TBT pass
+    rate falling 99.7 to 93.8 (Azure_conv8, MoE: 5.9 pp) and 99.8 to 95.9 (Azure_code5, MoE: 3.9 pp), and the authors themselves
+    describe 93.8-97.0% TBT pass rates; NOT-FOUND-IN-SOURCE for any throughput (tokens/s or requests completed) table supporting
+    the no-loss claim.'
+  - 'Decode controller cost and limits: at light load (200-400 TPS) GreenLLM P90 TBT is about 60-66 ms versus 40-46 ms for
+    the default governor (still under the 100 ms SLO); decode energy savings 20-25% at low TPS falling to 8-12% at 2400-3000
+    TPS; sinusoidal trace 8.9% lower decode energy at p99 TBT 83.2 vs 84.6 ms. NOT-FOUND-IN-SOURCE: a limitations section,
+    a code or artifact URL, any CPU-side power accounting, any multi-node result, any mid-session class migration or KV-locality
+    interaction with the routing.'
+  techniques:
+  - Static two-class prompt-length routing to separate prefill workers (cutoff given as an example near 1024 tokens, not derived)
+  - Routing-only ablation (PrefillSplit) reported separately from the DVFS gain, exposing that routing helps only near queue
+    saturation
+  - Per-class prefill SM-clock selection from a quadratic latency fit plus cubic power fit under a busy-time deadline
+  - 'Dual-loop decode DVFS controller: TPS-bucket band table plus 20 ms hysteretic 15 MHz steps on P95 TBT margin'
+  - SLO-slack as the quantity traded for energy; margin-factor sweep 0.2x to 2.0x as the sensitivity method
+  - Phase-specific energy-frequency knee characterisation by microbenchmark (prefill compute-bound, decode memory-bound)
+  reported_results:
+  - 'Table 3 (Qwen3-14B, energy normalised to defaultNV): total energy saving 27.52% (chat 1 QPS), 20.53% (3), 18.13% (5),
+    11.16% (8), 6.78% (10); Azure code5 28.98%, code8 31.12%, conv5 34.09%, conv8 32.31%'
+  - 'Table 3 routing-only (PrefillSplit) TTFT pass rate vs defaultNV: 98.5 vs 99.3 (1 QPS), 98.8 vs 99.5 (3), 99.0 vs 96.0
+    (5), 96.4 vs 89.9 (8), 89.1 vs 84.9 (10); Azure code5 96.6 vs 98.5; energy delta -0.04 to +2.95%'
+  - 'Table 4 (Qwen3-30B-A3B MoE): total energy saving 20.56% (1 QPS), 12.46% (3), 10.23% (5); Azure conv5 19.67%, conv8 22.51%,
+    code5 28.76%, code8 31.05%; TBT pass rate under GreenLLM 93.8% (conv8) and 95.9% (code5) vs 99.7-99.8% default'
+  - 'Figure 3(c): fixed SM cap near 0.75 GHz on the Alibaba chat 5 QPS trace cuts total energy by about 47% vs the default
+    governor (frequency sweep, not the controller)'
+  - 'Figure 11 decode microbenchmark: energy saving 20-25% at 200-400 TPS, 8-12% at 2400-3000 TPS; P90 TBT 60-66 ms vs 40-46
+    ms (light load), converging near 85-86 ms at 3000 TPS'
+  - 'Figure 1 / Section 5.1.3 sinusoidal decode trace: SM clock tracks 450 MHz to 1.35 GHz; decode energy -8.9%; p99 TBT 83.2
+    ms vs 84.6 ms'
+  - 'Section 5.3 margin sweep (Alibaba chat 10 QPS, Qwen3-14B): P90 TTFT rises from under about 1000 ms at baseline margin
+    to about 1640 ms at 1.2x; P90 TBT about 110-120 ms at 1.2x decode margin (violates the 100 ms SLO)'
+  - All results are single-node (one DGX-A100); every energy figure is GPU energy, CPU/host energy is not accounted
+  cross_references:
+    chapters: []
+    handoffs:
+    - within-role-placement-state-machine.md
+    - heterogeneous-slot-fabric-residency.md
+    - kv-unified-stack-rollout.md
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-2216
+    - intake-2214
+  recommended_actions:
+  - 'GL-A1 refine WP-15: stratify the replay score and the holdout by load regime (fleet in-flight count and arrival-rate
+    bucket at ts_arrival from dispatch.v1), because routing alone moved TTFT pass rate only at the saturating intensity (8
+    QPS: 89.9 to 96.4) and was neutral or slightly negative elsewhere; a pooled score averages the effect away'
+  - 'GL-A2 refine HSF-4 (with TB-A4): include B = 1024 in the alpha(B) set {1K, 2K, 4K, 8K, 16K} and label the two cutoff
+    scales as different mechanisms (prompt-length prefill HOL in GreenLLM vs total-budget KV reservation in intake-2216);
+    from the recorded append p50/p90 (467/5362) alpha(1024) lies between 0.5 and 0.9 and must be read from the log, not from
+    this paper'
+  - 'GL-A3 DI-126 note (knowledge-only): the GreenLLM 8 QPS row is the magnitude class a shared-queue HOL symptom produces
+    (about 6.5 pp of TTFT pass rate at saturation); the trigger text is unchanged because the number is A100/Dynamo-specific'
+  - 'GL-A4 decline energy as a WP-15 DECISION axis now: host package energy cannot be attributed per instance (AK-X-5: shared_package_window,
+    never lane-exclusive; AK-X-5a cross-lane loaded-frequency ratios 0.74-0.83), and the lab has no energy objective in the
+    measurement constitution; re-open only if the operator adds energy/power as an objective, in which case the first step
+    is a zero-inference energy-per-dispatch column joined to dispatch.v1 from the existing RAPL energy_uj counters, not a
+    routing term'
+  - 'GL-A5 knowledge-only: the decode-is-memory-bound-so-a-lower-SM-clock-costs-little-TBT finding is the first probe to run
+    on the MI210 (rsmi energy counter, 1 ms refresh, counter x 15.3) if a power or thermal cap ever constrains the GPU champion;
+    not applicable while GPU posture is maximum performance under fixed clocks'
+  - 'GL-A6 citation hygiene: never cite the abstract headline (34%, less than 3.5% extra SLO violations, no throughput loss);
+    cite Table 3/4 rows with their intensity, and note the 5.9 pp TBT pass-rate drop in Table 4'
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Internal: abstract claims less than 3.5% additional SLO violations, but Table 4 Azure_conv8 (MoE) TBT pass rate falls
+    from 99.7% to 93.8% (5.9 pp) and Azure_code5 from 99.8% to 95.9% (3.9 pp); the authors describe these as occasional modest
+    TBT% reductions (e.g., 93.8-97.0%).'
+  - 'Internal: abstract claims no loss of throughput; no throughput table or figure exists in the paper (NOT-FOUND-IN-SOURCE).'
+  - 'Internal: Section 4.2.2 lists Azure downsampling rates 1/8, 1/5, 1/4; Section 5.2 and the tables carry only two rates
+    (labelled 5 and 8).'
+  - 'Internal: the routing component is motivated by HOL blocking, yet routing alone lowers the TTFT pass rate at 1 and 3
+    QPS and on Azure code5 (Table 3); the paper does not discuss these negative rows.'
+  - 'External: the prompt-length cutoff (about 1024) is an example with no selection method; intake-2216 (dual-pool token-budget
+    routing) places its default cutoff at 8192 total tokens and reports a forgiving 4K-16K range in simulation, so the two
+    sources do not corroborate each other on where a split sits (different signals: prompt length vs total budget; different
+    mechanisms: prefill compute HOL vs KV reservation).'
+  - 'External: no independent replication or critique of GreenLLM found (3 searches); the HOL-blocking premise is shared by
+    LAPS (2601.11589), Ascendra (2504.20828) and QUARTZ (ACL Findings 2026) but none reproduces GreenLLM numbers. A different,
+    unrelated GreenLLM (Shi et al., Dec 2024, carbon-aware heterogeneous fleets) shares the name; an EPFL lab page lists this
+    paper at DAC 2026 (web data, unverified, not counted in the score).'
+  referenced_arxiv_ids:
+  - '2505.09598'
+  - '2502.07115'
+  - '2505.09999'
+  - '2505.09388'
+  - '1706.03762'
+  notes: 'Stage-2b wave 2 (2026-10-21), dive dir /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/dive-2508.16449/. Title
+    check: the brief believed a length-routing paper with a cutoff near 1024; the title is GreenLLM: SLO-Aware Dynamic Frequency
+    Scaling for Energy-Efficient LLM Serving (v1 22 Aug 2025, cs.PF, only version); length routing is one of three components
+    and is an unmotivated example cutoff, so the search surfaced it as independent evidence for length routing on weak grounds.
+    Route: arXiv HTML v1 (LaTeXML) read in full from a text dump (abstract, Sections 1-7, Tables 1-4, Figure captions, 50
+    refs; no appendix, no limitations section); two LaTeX-mangled passages (the SLO-target line and the decrease rule TBT_margin
+    below 0.65) recovered from raw HTML alttext. sha256: abs.html 5f0aede31b53047dd383485a9764d3ba9f5c52feaef5ca7de7d9ada9b31ab7fc,
+    paper.html 06724a7df2588fc829f5ffa27462e66aa5775cfa11396212e59c578eaffe7f97, paper.txt b5176c19f17ca1ada4e1e7ba585c605736109db58d841679e0b43ef2cc791f78.
+    Credibility rubric: venue 0 (arXiv only; the DAC 2026 listing is web data, unverified), age 14 months 0, known group (EPFL
+    ESL, Atienza) +1, commercial bias 0, independent corroboration 0 = 1. Our-stack reads in the lane worktree @ b4f1578a0:
+    within-role-placement-state-machine.md:439 (WP-15 replay task) and :441 (WP-15.1 dispatch.v1 records ts_arrival, queue_wait_ms,
+    chosen instance, fleet in-flight requests/prompt_chars/n_tokens_budget at arrival and dispatch), kv-unified-stack-rollout.md:1363
+    (DI-126 monitor), heterogeneous-slot-fabric-residency.md:316-317 (HSF-4 append p50/p90/p99 467/5362/16413, 27B H2D crossover
+    about 6 tokens), autokernel-research-loop.md:5072-5090 (AK-X-5/5a: RAPL energy_uj readable, mode 0400, shared_package_window
+    never lane-exclusive, cross-lane loaded-frequency ratios 0.815/0.829/0.794/0.743/0.800), rocm-verify-profile-backend.md:1442-1452
+    (MI210 rsmi energy counter 1 ms refresh, raw counter x 15.3). intake-2216 was read from the wave-1 generator /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/gen/make2216.py
+    because the worktree index ends at intake-2214. Answer to the brief question: NO, GreenLLM gives no independent data point
+    for where a single-host short/long split sits (its cutoff is an example, its pools are identical hardware, its evidence
+    is one intensity on A100/Dynamo); what it does give is the load-regime dependence of a routing-only gain, which is a replay-design
+    input for WP-15. Energy: measurable on this host (RAPL energy_uj, rsmi counter) but not attributable per CPU instance
+    and not an objective of the lab; decline as a WP-15 decision axis.'
+  novelty_justification: Length-based queue separation and SLO-aware DVFS are both established; the packaging of a per-phase
+    (prefill optimiser plus dual-loop decode controller) GPU DVFS with a routing-only ablation is the new perspective; the
+    routing component itself adds nothing new.
+  relevance_justification: In domain (serving, placement) and bears on WP-15/HSF-4/DI-126 as a design input, but its objective
+    (GPU energy via DVFS) is not an objective of this lab and its routing evidence is a single A100/Dynamo intensity; medium,
+    not high.
+  verdict_justification: 'adopt_patterns: the load-regime-stratified replay design and the alpha(1024) curve point transfer
+    as zero-compute refinements to WP-15 and HSF-4; the energy machinery is not applicable now and is recorded as knowledge-only
+    with a named re-open trigger.'
+  source_revision: arXiv:2508.16449v1 (HTML, 22 Aug 2025; only version)
+  reader_should_conclude: 'GreenLLM is a GPU-DVFS energy paper whose length-routing stage is an undirected example (two identical-hardware
+    prefill workers split at about 1024 prompt tokens, no selection method). Its one useful routing datum is the ablation:
+    routing alone recovers TTFT pass rate only when the single prefill queue is near saturation (Alibaba 8 QPS, 89.9 to 96.4)
+    and is neutral to slightly negative at low load, so any replay of a short/long split on the EPYC frontdoor must be scored
+    per load regime, not pooled. It is not evidence for a cutoff value; our own HSF-4 append distribution is. Do not cite
+    the abstract headline (34% energy, under 3.5% extra violations, no throughput loss): the tables show a 5.9 pp TBT pass-rate
+    drop and no throughput data. Energy is measurable on the EPYC host and the MI210 but is not attributable per CPU instance
+    (shared package) and is not a lab objective; it does not enter WP-15 as a decision axis.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.1 Adaptive Prompt Routing, paragraph 2
+    quote: we configure $(n-1)$ threshold cut-off points on the prompt length to divide traffic among $n$ workers based on
+      the size of the input (n is 2 in our design).
+    quote_sha256: 20c1ace308e3ec95ad8285bea583d3853261c9feb23276d30c0aa00c2241d94e
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.1, bullet Short-Context Model
+    quote: 'Short-Context Model: Optimized for low-latency processing of SM inputs (up to approximately 1024 tokens).'
+    quote_sha256: 85fdb681d84424cc826588b2e1869eb22cf8b20c166bc2a2d1b9cc7915cc27a1
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 2.2.1 Profiling with microbenchmark
+    quote: Prompts are length-randomized within 256 $-$ 1024 tokens.
+    quote_sha256: 55bf6814c399841a03352e2d47c22f2bf0c826b2418be7f4efa02946cc31344f
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 3 overview (Figure 4 walk-through)
+    quote: A Prefill pool (two workers, each using 2 GPUs) computes the KV-cache.
+    quote_sha256: afc313a08d94ce2de89ab4304fe5d371cd88c18af9fc326e1c4a542d098d64a4
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 4.2.1 Models
+    quote: 'The system uses two execution pools: a Prefill pool (2 workers, 2 GPUs each) and a Decode pool (4 workers, 1 GPU
+      each).'
+    quote_sha256: f53df7f912b95ec9e37359d7f0c3c720e83ba0a28c9d1be9edb68f2ac8ac77cc
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 3.1, last paragraph
+    quote: In total, the percentage of the requests meeting the SLO increase sharply from 89.9% to 96.4%.
+    quote_sha256: c23e5b27b5dea022d8640aa413ac4f66229d70ee937f7c33decf5ae2bf0921d6
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 5.2, paragraph after Table 4
+    quote: The routing-only ablation PrefillSplit reduces head-of-line interference and slightly tightens TTFT tails, but
+      yields only $\lesssim$ 1–3% energy change across traces and models.
+    quote_sha256: 5c6e89b3c046776ce2c3d55974f264e92f41bb8b0744e458628ee1edeabebf0b
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 5.2, Table 3 text
+    quote: Especially for QPS 8, the TTFT% from defaultNV shows much worse result, where it is only 89.9% compared to 95.7%
+      in GreenLLM.
+    quote_sha256: 5b5efb282c28e9227f27af52c84d4611480d1c290f36d2f5c4a9f41f60f130d7
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 3.3.2 Fine-Grain TBT Tracker
+    quote: Its role is to track the target TBT (100 ms P95) and conserve energy by reducing the frequency whenever possible.
+    quote_sha256: 43586cb75314790e87eef5ec33b0553c731a26815e060e12907c93a9d99fc307
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 5.1.1 Prefill-Stage Evaluation
+    quote: for short/medium prompts (400 ms SLO), GreenDVFS intentionally save energy by exploiting the slack from SLO
+    quote_sha256: a326b06b359aae5efcf8adc50d0c910657b6830d343014ce61902b69affaf0b0
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 3.3.1 Coarse-Grain Frequency Band Selection
+    quote: For each TPS bucket, we identify the lowest frequency that satisfies two criteria, namely, maintains P95 TBT below
+      100 ms and minimizes energy per token (i.e., power/TPS).
+    quote_sha256: e07e9022474d7eaa88a41cdaa4abbda1ca2d30f922233f34e4b01139d3ba3ddd
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 2.2.2 System Profiling, Figure 3(a) text
+    quote: higher TPS shifts the curves upward but the energy-minimizing frequency remains in a narrow band around 0.95–1.05
+      GHz, about 70–80% of the 1.41 GHz max
+    quote_sha256: db735dd620a002f88b04180ec16b22ae57c57d39c68664a04eec7b163da1f72d
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 2.2.2 System Profiling, Figure 3(c) text
+    quote: capping the GPU clocks around 0.75 GHz reduced total inference energy by $\sim$ 47% compared to the default performance
+      governor (which drives frequencies near peak).
+    quote_sha256: fa2f48a6addd5eb0ffb2cce66834cf5bdbb5f0a6713278f8d14bcc7e3924e96a
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Section 4.1 Hardware and Software Setup
+    quote: all experiments run on a NVIDIA DGX-A100 node, using NVIDIA Dynamo as deployment framework.
+    quote_sha256: f55c48a02df534af4ccbd2c0b85818f3951dd0df15c457e600b7fff9ddcb99d9
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Section 4.2.2 Traces and Evaluation Methods
+    quote: 'We compare three configurations: DefaultNV (NVIDIA default), PrefillSplit (length-based routing only), and GreenLLM
+      (length-based routing + prefill/decode optimizer).'
+    quote_sha256: 532f9b170286d44a064ed9cf393d885f84c93b470f2f65d1c1637c0a8443dab9
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Section 5.2 Trace Evaluation with Intensity Scaling
+    quote: We replay the Alibaba trace at {1, 3, 5, 8, 10} QPS for at least 30 minutes per run
+    quote_sha256: 6ae8c718fcb06b44ee821a88fda49cc6d176b3ec16e5d67b0ffd47e69aad41e0
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Section 5.2, Table 3 text
+    quote: Energy savings of GreenLLM drop from 27.5% at 1 QPS to 6.8% at 10 QPS as higher decode clocks and power are needed
+      to sustain TBT. On Azure, however, GreenLLM consistently saves 28–34%, mainly from reduced decode energy (0.62–0.73
+      $\times$ defaultNV).
+    quote_sha256: 47cb860fe29a0591882f539662cd32459836dd00c67e96df0bda2ae0daee2bf5
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Abstract
+    quote: with no loss of throughput and only less than 3.5% SLO violations increase
+    quote_sha256: 2a8fd9c5269dc5775aceb61bd35339de2cb3b41fe23142d1073f19baf1eeb995
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: Section 5.2, Table 4 text
+    quote: pass rates are similarly high at feasible intensities with occasional modest TBT% reductions (e.g., 93.8–97.0%)
+      on Azure code slices.
+    quote_sha256: 0dcf3666279251f1f5d85b5ff676813c1a0b81c45bd5900de8116b79a5333fb5
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Section 5.1.2 Decode-Stage Evaluation
+    quote: at 200–400 TPS GreenLLM shows $\sim$ 60–66 ms versus $\sim$ 40–46 ms for the defaultNV, still comfortably below
+      the SLO.
+    quote_sha256: d50c8cedb1de94abebee6c96cb581e38cbd024472fe84c70e5f313bb83814ca2
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: Section 5.1.3 Dynamic-Tracing Evaluation
+    quote: GreenLLM achieves 8.9% lower decode energy while achieving similar or slightly better tail latency (p99 TBT 83.2
+      ms vs. 84.6 ms).
+    quote_sha256: da85543dd65a85c93869603a6da73c1765c79ff16e7af07a3d2d2f0b42d72399
+    source_revision: arXiv:2508.16449v1 HTML
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The 1024 cutoff is introduced with e.g. and approximately; no percentile, sweep or sensitivity exists in the paper.
+      It is not a measured split point.
+  - claim_index: 1
+    effect: unaffected
+    note: Pool composition confirmed in two places; per-pool batch/context/KV settings are absent, so the Short-Context Model
+      / Long-Context Model names denote classes, not different configurations.
+  - claim_index: 2
+    effect: narrowed
+    note: The 89.9 to 96.4 figure is one row (chat 8 QPS, Qwen3-14B); the same table shows routing-only lowering TTFT pass
+      rate at 1 and 3 QPS and on Azure code5, which the text does not discuss.
+  - claim_index: 3
+    effect: unaffected
+    note: SLO targets and both controller loops confirmed verbatim; the decrease threshold 0.65 was recovered from HTML alttext
+      after the text dump dropped it.
+  - claim_index: 4
+    effect: unaffected
+    note: Knee values are read from the prose describing Figures 3(a)-(c); the 47% figure is a fixed-cap sweep at 5 QPS, not
+      the controller.
+  - claim_index: 5
+    effect: narrowed
+    note: Azure downsampling rates disagree between Section 4.2.2 (1/8, 1/5, 1/4) and Section 5.2 / tables (two rates); single
+      node only.
+  - claim_index: 6
+    effect: narrowed
+    note: Abstract headline contradicted by Table 4 (5.9 pp TBT pass-rate drop) and unsupported on throughput (no throughput
+      data in the paper).
+  - claim_index: 7
+    effect: unaffected
+    note: Controller cost at light load and the sinusoidal result confirmed; absence items are NOT-FOUND-IN-SOURCE and cannot
+      be anchored.
+  dive_corrections: '2026-10-21 Stage-2b wave 2 (research-intake/stage2b): combined ingest+dive; FULL read of arXiv:2508.16449v1
+    HTML; the brief framed the source as independent evidence for a length-routing cutoff near 1024 tokens, corrected to:
+    a GPU-DVFS energy paper whose routing stage uses an example cutoff with no selection method and identical-hardware pools;
+    the abstract headline (under 3.5% extra SLO violations, no throughput loss) is contradicted by Table 4 and unsupported
+    on throughput; answer to the WP-15 question is that the paper supplies a load-regime dependence of routing-only gains,
+    not a cutoff location, and energy is declined as a WP-15 decision axis (shared-package attribution, no lab objective).
+    Dive-surfaced: LAPS arXiv 2601.11589 (dual-queue short/long prefill on one or several instances; closest to a single-instance
+    temporal split and worth a wave-3 dive), Ascendra arXiv 2504.20828 and QUARTZ (ACL Findings 2026) (priority/cost-aware
+    alternatives to a static cutoff; PROPOSED, operator confirms at Stage 3), throttLL eM arXiv 2408.05235 (predictive GPU
+    DVFS, same energy axis; decline unless energy becomes an objective), the unrelated Shi et al. GreenLLM (Dec 2024, carbon-aware
+    fleets; decline, name collision only).'
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-10-21'
+
+- id: intake-2221
+  arxiv_id: '2602.16603'
+  url: https://arxiv.org/abs/2602.16603
+  source_type: paper
+  title: 'FlowPrefill: Decoupling Preemption from Prefill Scheduling Granularity to Mitigate Head-of-Line Blocking in LLM
+    Serving'
+  categories:
+  - inference_serving
+  - benchmark_methodology
+  - cost_aware_routing
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2215
+  verdict: adopt_patterns
+  authors:
+  - Chia-chi Hsieh
+  - Zan Zong
+  - Xinyang Chen
+  - Jianjiang Li
+  - Jidong Zhai
+  - Lijie Wen
+  key_claims:
+  - 'Problem: the blocker is an IN-FLIGHT long prefill, not queue order. On a PD-disaggregated prefill instance a single long-context
+    prefill monopolizes the GPU for hundreds of ms; SJF-style reordering of the waiting queue (multi-level queues, length
+    prediction) cannot touch it, and chunk-level (Sarathi/Medha) or layer-level (Layered Prefill, Laser) preemption only reaches
+    fixed boundaries, trading throughput (small chunks) against blocking (large chunks).'
+  - 'Mechanism: cooperative operator-level preemption. Preemption checks are inserted between core operators (qkv_proj, attn,
+    o_proj, gate_up_proj, down_proj; MoE adds gate and experts). On a scheduler signal the runtime finishes the current operator,
+    ACKs, and suspends the task; each request runs as its own thread with a dedicated CUDA stream and vLLM runner (ThreadPoolExecutor
+    on vLLM-0.11.2), so suspended state is the live thread/stream; TP safety via a synchronized iteration counter. Memory
+    held by a suspended mid-layer task is NOT quantified (NOT-FOUND-IN-SOURCE).'
+  - 'Policy and knobs: event-driven scheduling (a scheduling round only on request arrival or completion, about 2 rounds per
+    request) with Slack-aware EDF priority = sgn(slack)/deadline where slack = deadline - now - predicted TTFT, and SLO-aware
+    batching that adds candidates to the highest-priority request only while predicted batch latency fits its remaining time
+    and a batch token budget G is not exceeded (G ablated at ~4K-8K, little difference between the two). Knobs: per-task TTFT
+    SLOs, G, preemption-boundary choice, optional chunk size.'
+  - 'Evaluation setup: vLLM-0.11.2, 8x NVIDIA A800-SXM4-80GB (200 GB/s NVLink), Llama3-8B/Qwen2.5-14B/Llama3-70B at TP 1/2/4
+    plus Qwen3-30B-A3B at TP2; QwenTrace (four task types, prompt means 532-6833 tokens, P99 up to 22390) with per-task TTFT
+    SLOs (Llama3-8B: 0.25/0.5/4.0/6.0 s) and random token contents; baselines DistServe 1P1D with FCFS, DistServe + chunked
+    prefill + EDF at chunk 2048 (CP2K) and 8192 (CP8K), both built by the authors; co-located vLLM-CP2K.'
+  - 'Headline numbers: goodput (max request rate at 90% TTFT-SLO attainment) 4.7x-5.6x over plain-FCFS DistServe, but only
+    up to 2.0x over the authors'' own DistServe-CP2K and up to 4.5x over CP8K; 1.5x-2.3x tighter SLOs than CP2K, 2.1x-3.1x
+    than CP8K; MoE Qwen3-30B-A3B up to 1.6x goodput / 2.4x tighter SLO; co-located TBT SLO attainment up to 1.6x.'
+  - 'Overheads: preemption blocking time (signal to ACK) is 3.5x-4.2x lower than layer-level checks with all observed values
+    below 4.5 ms (Llama3-8B); the checks show no measurable throughput loss on a single-SLO ShareGPT workload (inputs < 2K,
+    so little preemption actually occurs); the TTFT predictor is a polynomial in token count fitted offline, accurate because
+    PD disaggregation removes decode interference.'
+  - 'Limitations stated by the authors: for very long inputs a single operator can still take noticeable time, so FlowPrefill
+    is combined with chunked prefill at an intermediate chunk size (2K too small, 16K too coarse; the best value is only shown
+    in Figure 15); decode instances stay FCFS and are not studied; the proxy is round-robin; the system targets PD-disaggregated
+    prefill instances.'
+  - 'Corroboration of a design choice we already made: small fixed chunks collapse prefill throughput (kernel-launch overhead,
+    re-reading prior K/V under causal attention, device under-utilization), which is the same reason KVU-16g caps the prompt
+    tokens per iteration only while a slot is decoding and keeps -ub 2048 for solo prefill; the per-iteration cost model (polynomial
+    in token count) parallels PB-QCOST-1, except ours carries a q*c cache-depth term because our slots share one KV cache.'
+  techniques:
+  - operator-level cooperative preemption of prefill
+  - event-driven scheduling (arrival/completion only)
+  - slack-aware EDF (S-EDF) priority
+  - SLO-aware batching with a batch token budget
+  - offline polynomial TTFT predictor
+  - TP-safe preemption via synchronized iteration counter
+  - combination with chunked prefill at intermediate chunk size
+  reported_results:
+  - 'AUTHOR-REPORTED: goodput 4.7x-5.6x vs DistServe (FCFS), up to 2.0x vs DistServe-CP2K, up to 4.5x vs DistServe-CP8K, QwenTrace,
+    90% SLO attainment, Llama3-8B/Qwen2.5-14B/Llama3-70B on A800-80GB (section 6.2)'
+  - 'AUTHOR-REPORTED: 1.5x-2.3x tighter SLO than CP2K, 2.1x-3.1x than CP8K at fixed request rate (section 6.2)'
+  - 'AUTHOR-REPORTED: preemption blocking time 3.5x-4.2x below layer-level, all below 4.5 ms, Llama3-8B (section 6.4, Figure
+    12)'
+  - 'AUTHOR-REPORTED: Qwen3-30B-A3B TP2 up to 1.6x goodput and up to 2.4x tighter SLO vs CP2K/CP8K (section 6.5, Figure 17)'
+  - 'AUTHOR-REPORTED: co-located (vLLM-CP2K baseline, TTFT SLO relaxed 3x, TBT SLO 0.1/0.2 s) TBT SLO attainment up to 1.6x
+    (section 6.5, Figure 16)'
+  - 'AUTHOR-REPORTED: throughput comparable to DistServe-CP2K on single-SLO ShareGPT (section 6.5, Figure 14); exact chunk-size
+    and throughput values of Figures 3, 11, 14, 15 are in the figures only: NOT-FOUND-IN-SOURCE text'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - gpu-serving-tie-in-program.md
+    - autokernel-champion-aggregate.md
+    experiments: []
+    intake_entries:
+    - intake-2215
+    - intake-2216
+    - intake-2214
+  recommended_actions:
+  - 'FP-A1 (task, text refinement of DI-126 in kv-unified-stack-rollout.md:1363): replace the dormant trigger with the structural
+    fact found in this dive. In the frozen v10 tree the pending-prompt loop (tools/server/server-context.cpp:3205-3230 and
+    :3614) walks slots in fixed index order via iterate() (:2793) and returns for all remaining slots once batch.size() >=
+    n_batch; a short request whose slot index is above a prefilling long slot therefore gets zero prompt tokens until that
+    prompt is complete, while one below it waits exactly one iteration. The monitor must record id_slot of both requests;
+    the DI-126 signature is slot-index dependent, not a p95 drift.'
+  - 'FP-A2 (task, text refinement of KVU-16g-2 in kv-unified-stack-rollout.md:1114): record that --prefill-budget-decoding
+    is gated on n_generating > 0 (prefill_budget_get(), 98c0ce12a) and never caps prefill-vs-prefill; enabling it in v11 does
+    NOT address DI-126 and must not be counted as covering it.'
+  - 'FP-A3 (task, GPU window, owner gpu-serving-tie-in-program.md, proposed id PB-HOL-1): the smallest residual measurement.
+    On the champion store build, np=3, one 64K prompt pinned with id_slot, a 128-token prompt pinned to the other slot sent
+    ~midway through the prefill, 2x2 arms {short slot index below, above} x {budget off, budget on with pb512 armed by a third
+    slot decoding}, 3 repeats each, record short TTFT, id_slot, and the prefill-budget: iter log lines. PB-QCOST-1 fit (27B,
+    t = 324 + 0.987 q + 2.41e-5 q c ms) predicts below/off ~4 s (one iteration at c~32K), above/off ~75 s (the remaining 16
+    iterations), below/on ~1.2 s, above/on unchanged ~75 s. Rule: above/off >= 2x below/off confirms slot-order HoL and opens
+    FP-A4; otherwise close DI-126 as not reproducible.'
+  - 'FP-A4 (task, conditional on FP-A3, experimental branch only): shortest-remaining-prompt-first (or oldest-arrival-first)
+    ordering of the pending-prompt loop, i.e. sort the processing slots before iterate() fills the batch, plus an optional
+    prefill-budget-shared cap that applies when >= 2 slots are in SLOT_STATE_PROCESSING_PROMPT with no decoder. This is the
+    portable part of FlowPrefill''s S-EDF: preemption granularity stays one iteration (budget tokens), which the paper''s
+    own Figures 3/15 say is the efficient operating point. Gate: short TTFT in the above arm drops to ~one iteration with
+    solo 64K prefill within the KVU-16g -4% envelope and off == byte-identical.'
+  - 'FP-A5 (decline): operator-level cooperative preemption itself. llama-server executes a ubatch as one ggml_backend_sched
+    graph; the only mid-graph hooks are the eval callback and llama_set_abort_callback, and an abort discards the ubatch''s
+    work. The per-request thread + dedicated stream + runner model does not map onto one-graph-per-iteration execution; the
+    cheaper equivalent of a smaller preemption bound is a smaller prompt chunk (the budget), already built.'
+  - 'FP-A6 (decline): S-EDF with per-request TTFT SLOs and SLO-aware batching. Our server has no SLO classes; the orchestrator''s
+    SharedKVPoolAdmission only knows long (>= 16384 tokens) vs short. Revisit only if per-role TTFT SLOs are ever declared
+    (none in the worktree handoffs).'
+  - 'FP-A7 (knowledge-only): the polynomial TTFT predictor is the PD-disaggregated cousin of PB-QCOST-1; ours needs the q*c
+    term because slots share one KV cache. No action.'
+  - 'FP-A8 (knowledge-only): Figure 3 / Takeaway-1 corroborate keeping -ub 2048 for solo prefill and capping only under contention
+    (KVU-16g design). No action.'
+  - 'FP-A9 (monitor): a ggml backend-scheduler suspend/resume primitive (graph split at operator boundary with resumable state)
+    would make FP-A5 revisitable; trigger = any upstream ggml change that lets ggml_backend_sched_graph_compute return partway
+    and resume.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No independent replication or critique found (3 searches, 2026-10-21): only aggregator restatements (OpenTrain, SOTAVerified,
+    OpenAlex, paperswithcode) of the abstract; SOTAVerified marks code ''available'' but no repository is named in the paper
+    (NOT-FOUND-IN-SOURCE).'
+  - 'Not peer-reviewed: the HTML carries unfilled ACM template placeholders (DOI XXXXXXX, ''Woodstock, NY'' conference line);
+    treat all numbers as author-reported.'
+  - The 4.7x-5.6x headline is against FCFS DistServe; against the authors' own chunked-prefill+EDF DistServe variants the
+    gain is up to 2.0x (CP2K) and shrinks further where CP8K wins at loose SLOs (section 6.2).
+  - Evaluation prompts are random token sequences (no prefix cache effects) on PD-disaggregated prefill instances with a fresh
+    KV per request; our shared-KV single server has a depth-dependent chunk cost (PB-QCOST-1) the paper's setting does not
+    exercise.
+  referenced_arxiv_ids:
+  - '2302.13971'
+  - '2303.08774'
+  - '2305.05920'
+  - '2309.11998'
+  - '2401.11181'
+  - '2407.10671'
+  - '2408.05235'
+  - '2409.12186'
+  - '2409.17264'
+  - '2412.19437'
+  - '2504.08784'
+  - '2504.19516'
+  - '2504.19867'
+  - '2505.04021'
+  - '2505.09388'
+  - '2506.02634'
+  - '2507.06608'
+  - '2510.08055'
+  - '2510.14392'
+  - '2510.14686'
+  - '2601.20309'
+  notes: 'Route: curl abs page (sha256 a949aaf8b67c1625be48ed140ef23591deea8cb80a757b9e9fba27c27ffdabf2, 44326 B) -> curl
+    https://arxiv.org/html/2602.16603v1 (HTTP 200, 254413 B, sha256 225ce1dc91a4b618458a1ca1e1510d25f24e86094369ab9feec71454c26cf3f4)
+    -> text extraction paper.txt (sha256 788a7783bf9c36b9ef5359950ae7f1ea3c124aa2a1f6ecb73ece5a8aded06a9c; math nodes rendered
+    as $...$, nbsp preserved) read whole from disk: abstract, sections 1-8, both tables, all 17 figure captions, Algorithms
+    1-2, references. No appendix exists in v1. Not read: figure images (Figures 3, 9-17 carry numbers only in the plots; text-level
+    values recorded as NOT-FOUND-IN-SOURCE), the PDF (HTML sufficed). v1 only (submitted 2026-02-18; no later version on the
+    abs page). Stack reads pinned: worktree /mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021 @ b4f1578a0 (kv-unified-stack-rollout.md:378-395
+    KVU-16g, :1114-1118 KVU-16g-2, :1363 DI-126; gpu-serving-tie-in-program.md:335-336 PB-QCOST-1; autokernel-champion-aggregate.md:61-63
+    pb512 fold ledger; dive-vllm-ascend-srf/DIVE.md for intake-2215), frozen llama.cpp @ ffc1bac82 read-only (server-context.cpp:2793
+    iterate, :3205-3230 pending-prompt loop, :3614 token fill), prefill-budget commit 98c0ce12a via git show (read-only; prefill_budget_get()
+    returns 0 unless n_generating > 0; n_prompt_limit replaces n_batch in the loop). Algorithm 1 line 9 condition is garbled
+    in the HTML (''nthen''); read as n <= G from the prose. Files under /mnt/raid0/llm/tmp/intake-deepseek-prodstack-20261021/dive-2602.16603/:
+    abs.html, paper.html, paper.txt, claim_anchors.json, gen_entry.py, entry.yaml, DIVE.md.'
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §1 Introduction
+    quote: However, these approaches still cannot address HoL blocking caused by long prefill computations.
+    quote_sha256: 53499b38d81e7abaddcf23091bd8d12a4ebeab68d5ddf60afdc4bfcd1f600295
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §2.2 HoL Problem in Disaggregated Serving
+    quote: Since prefill is compute-bound, a single long-context request can monopolize a GPU for hundreds of milliseconds,
+      causing severe HoL blocking for subsequent requests.
+    quote_sha256: b489dfe3acd8cd7324045bedbb6b6a697e89d30d63fe022c91d5a0cd018dd856
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §5.1 Operator-Level Preemption
+    quote: In this work, which targets dense LLMs, we place preemption checks at the boundaries between core operators, including
+      qkv_proj, attn, o_proj, gate_up_proj, down_proj.
+    quote_sha256: 75adf0437a29b03892cccfb041511d9603a521628f5159b0fa3195e82d54a42a
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §5.1 Operator-Level Preemption
+    quote: By restricting preemption to operator boundaries, FlowPrefill avoids interrupting in-flight kernels while bounding
+      preemption latency by the execution time of a single operator.
+    quote_sha256: 12342db5af195921fe522fdc424477b5f7d6c8420cc91f7b4a870af4972154ca
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §6.1 Experimental Setup / Implementation
+    quote: The Execution Pool uses ThreadPoolExecutor to manage per-request execution tasks, each running in its own thread
+      with a dedicated CUDA stream and vLLM runner, synchronized via concurrency primitives.
+    quote_sha256: 6c397cd3010012be748db9b9ec7be7aa6b9d9054bec5c3e5a47b78f66110c60d
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §5.1 Tensor parallelism supporting
+    quote: To prevent this, FlowPrefill uses a synchronized iteration counter among tensor parallel processes and only suspends
+      them when they reach the same counter, ensuring safe preemption without disrupting communication.
+    quote_sha256: 690e230fe0f1dae512c0be2375d24c930a03f3cf1a7dc19700ce7dbc9ba93554
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5.2 Event-Driven Scheduling
+    quote: 'Instead of continuously polling for preemption opportunities, scheduling is triggered only by two types of events:
+      request arrival and completion.'
+    quote_sha256: 9aba79c6b0cb169127b178e94885f40223f405675fc9beeb7175aa14d73459c1
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5.2 Event-Driven Scheduling
+    quote: In other words, the request with the highest priority is the one with the earliest deadline and non-negative slack.
+      By incorporating slack into the priority, S-EDF can proactively deprioritize requests that cannot meet their deadlines,
+      thereby improving the stability of SLO adherence.
+    quote_sha256: 9d5af5a84fdd7eb9410303a2b18fa785d601e2de7c638b21ab3d1b3a0ceab00c
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5.2 Event-Driven Scheduling / SLO-aware batching
+    quote: The batch token budget ensures that the benefits of batching short requests are properly captured.
+    quote_sha256: 8e14c3749cbbff7c2abd88c6277a7097f9d771cd69891b76e0b3d3f2d89eda6b
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §6.1 Experimental Setup / Implementation
+    quote: We implement FlowPrefill on vLLM-0.11.2 (Kwon et al., 2023).
+    quote_sha256: 7f95e190fe8cc8644c26041467d7833aab4e46cc1b4aa677a46f22b6cf0f93e7
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §6.1 Experimental Setup / Hardware
+    quote: We conduct experiments on a server equipped with eight NVIDIA A800-SXM4-80GB GPUs interconnected via 200 GB/s NVLink,
+      two 52-core Intel Xeon Platinum 8470 CPUs, and 1 TB of host memory.
+    quote_sha256: be190845d4834c0428245777619a32d7fedf8d877102830efc1cd7b96cc737af
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §6.1 Experimental Setup / Baselines
+    quote: 'Since DistServe defaults to a First-Come-First-Served (FCFS) policy, we augment its prefill stage with Chunked
+      Prefill (CP) (Agrawal et al., 2024a) and an Earliest-Deadline-First (EDF) policy to enable SLO-aware scheduling. We
+      evaluate two variants: DistServe-CP2K (chunk size 2048) and DistServe-CP8K (chunk size 8192).'
+    quote_sha256: 41455c78ccc169a740a50158e821f16f3172e2961b325cd9f2b243e55feffd19
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §6.1 Experimental Setup / Workloads
+    quote: As the trace contains only request lengths and does not include the actual prompt contents, we generate random
+      token sequences that conform to the specified lengths for each request.
+    quote_sha256: 8187fb4a5463dfa715de95849b15b11900e71a96b0c4e69effefa17af6cf118e
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §6.1 Experimental Setup / Metrics
+    quote: We define goodput as the maximum sustainable request rate at 90% SLO attainment.
+    quote_sha256: 849ae7671cb5bd63e07960861cee837792b2c9730a9b6ec276f913f04ca2a231
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §6.2 End-to-End Speedup
+    quote: Across all models, FlowPrefill sustains 4.7 $\times$ –5.6 $\times$ higher request rates than DistServe, and outperforms
+      DistServe-CP2K and DistServe-CP8K by up to 2.0 $\times$ and 4.5 $\times$ , respectively.
+    quote_sha256: 21eacd66876a44db508cc8200acefa131c5ebc9bc785847eda162de113a8e835
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §6.2 End-to-End Speedup
+    quote: Compared to DistServe-CP2K, FlowPrefill supports 1.5 $\times$ –2.3 $\times$ tighter SLOs, and compared to DistServe-CP8K,
+      2.1 $\times$ –3.1 $\times$ tighter SLOs.
+    quote_sha256: 42154cc0b5542e80f07d8a447cb6c9cbd968be85bce43b7eb36fafbd1d0970d8
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: §6.4 Runtime Analysis / Preemption blocking time
+    quote: As illustrated in Figure 12, operator-level preemption reduces the average blocking time by 3.5 $\times$ –4.2 $\times$
+      compared to layer-level preemption, with all observed latencies remaining below $4.5$ ms.
+    quote_sha256: ece15bce912d2b53dcac2f82c5bf36748b343d68ed6b486f0d3cc6154f716e50
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: §6.5 System compatibility / Single-SLO scenario
+    quote: These results demonstrate that the preemption checks used in §5.1 do not introduce measurable efficiency loss.
+    quote_sha256: 8096070367f27fb69b87ad90ae2430d9078ceb7e43cc5d7e39488b612a8cee6b
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: §6.5 System compatibility / Chunked prefill
+    quote: For very long inputs, however, one operator can still introduce noticeable latency. In such cases, combining operator-level
+      preemption with chunked prefill reduces individual operator runtimes and further tightens the upper bound on blocking
+      time.
+    quote_sha256: 1ce492a13fb2f28f9f3a758b39c4135ea9699063e9ae245324d5ffaf6a111c69
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: §6.5 System compatibility / Chunked prefill
+    quote: As shown in Figure 15, small chunk sizes (e.g., 2K tokens) provide finer preemption granularity but incur substantial
+      overhead from frequent request splitting, degrading performance. Large chunk sizes (e.g., 16K tokens) reduce splitting
+      overhead but lack sufficient preemption granularity, also hurting performance.
+    quote_sha256: 9603e6f5465bcef293f46b6061bfb4d7f6be281e5e2f51b41e9b177271c4d500
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: §3.1 Preemption Granularity v.s. Efficiency
+    quote: 'Small chunks lead to a significant throughput collapse due to: (1) increased kernel launch overheads; (2) redundant
+      memory accesses to the KV cache (since causal attention (Radford et al., 2018) requires reloading prior keys/values);
+      and (3) under-utilization of device computation.'
+    quote_sha256: 952ba412452bd1d7d29b67f678586945d9b6acf047b1388661e0d1815e52dac2
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: §6.4 Runtime Analysis / TTFT prediction
+    quote: Our prediction model fits a polynomial to offline prefill profiles, with $x$ as token count and $y$ as predicted
+      TTFT.
+    quote_sha256: 800f4882ee0571348ede3248e3ac46b70eb04b5ee995e4d6c663de19b4ef9e03
+    source_revision: arXiv:2602.16603v1 HTML
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Problem statement verified in sections 1 and 2.2; it is the same gap the SRF dive (intake-2215) found for waiting-queue-only
+      reordering.
+  - claim_index: 1
+    effect: narrowed
+    note: Operator list and cooperative ACK protocol verified; the resident memory of a suspended mid-layer task and the resume
+      cost are not quantified anywhere in the paper.
+  - claim_index: 2
+    effect: unaffected
+    note: Priority formula, event set and Algorithm 1/2 verified; G values 4K/8K from the Figure 11 prose, exact best G NOT-FOUND-IN-SOURCE.
+  - claim_index: 3
+    effect: unaffected
+    note: Hardware, software, models, trace, SLO table and baseline construction verified verbatim; note both chunked-prefill
+      baselines were built by the authors on DistServe, not vendor configurations.
+  - claim_index: 4
+    effect: narrowed
+    note: The 5.6x abstract figure is vs FCFS DistServe; vs chunked-prefill+EDF baselines the paper's own text gives up to
+      2.0x (CP2K).
+  - claim_index: 5
+    effect: narrowed
+    note: The 'no measurable efficiency loss' result is on a workload with inputs below 2K where preemption rarely fires;
+      blocking-time numbers are Llama3-8B only.
+  - claim_index: 6
+    effect: unaffected
+    note: Limitations verified in section 6.5 and section 4 (decode FCFS, round-robin proxy).
+  - claim_index: 7
+    effect: reattributed
+    note: The chunk-size efficiency finding is the paper's motivation (Figure 3, Takeaway-1); the mapping to KVU-16g and PB-QCOST-1
+      is this dive's framing, not a claim of the paper.
+  reader_should_conclude: 'FlowPrefill answers a different question than our prefill budget. KVU-16g bounds how much of a
+    neighbour''s prefill rides in each iteration WHILE A SLOT DECODES (decode-vs-prefill); FlowPrefill gives a higher-priority
+    prefill the GPU within one operator (prefill-vs-prefill). Its mechanism (per-request threads and streams, cooperative
+    suspend inside the forward) is not portable to llama-server''s one-graph-per-iteration execution, and its preemption bound
+    (< 4.5 ms) is not needed: the paper itself shows an intermediate chunk is the efficient operating point. What IS ours
+    to take is the ordering: the frozen v10 pending-prompt loop fills the batch in fixed slot-index order and skips every
+    later slot once the batch (or the budget) is spent, so a short request landing in a higher-index slot waits for the whole
+    remaining long prefill (PB-QCOST-1 predicts ~75 s vs ~4 s mid-way through a 64K prompt), and the budget never applies
+    when no slot is generating. The smallest measurement is the 2x2 slot-index x budget probe (FP-A3); if it confirms, the
+    fix is shortest-remaining-first ordering of that loop plus a prefill-vs-prefill budget on an experimental branch (FP-A4),
+    not operator-level preemption.'
+  dive_corrections: '2026-10-21 Stage-2b wave 2: confirmed title/authors/v1 date 2026-02-18; corrected the headline from ''up
+    to 5.6x vs state-of-the-art'' to ''vs FCFS DistServe, up to 2.0x vs the authors'' chunked-prefill+EDF DistServe''; established
+    from the frozen v10 source (not from the paper) that llama-server''s residual HoL is slot-index-order dependent and that
+    the KVU-16g budget is decode-gated, which re-scopes DI-126 and KVU-16g-2; no numbers invented, figure-only values marked
+    NOT-FOUND-IN-SOURCE.'
   handoffs_updated: []
   handoffs_created: []
   ingested_date: '2026-10-21'
