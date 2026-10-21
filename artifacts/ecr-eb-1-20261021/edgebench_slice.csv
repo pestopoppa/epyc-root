@@ -1,0 +1,9 @@
+rank,task_id,language,category,metric,mean_headroom_2h_to_12h,n_models_headroom,max_score_2h,mean_score_2h,mean_score_12h,glm51_12h_mean,glm51_12h_sd,dsv4pro_12h_mean,dsv4pro_12h_sd,sd_flag,internet,cpu_only,score_direction_note
+1,tryst_text_adventure,Python,Interactive Games & Simulators,game score,20.9,5,32.1,19.38,40.28,43.3,4.4,13.8,3.3,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+2,borden_source_inversion,Python,Scientific Problems & ML,score (maximize),19.88,5,20.1,9.76,29.64,15.1,13.7,38.2,3.6,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+3,order_addition_permutation_optimization,Python,Combinatorial Optimization,score (maximize),18.1,5,22.6,9.5,27.6,33.2,9.8,30.8,11.3,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+4,anchorhead_text_adventure,Python,Interactive Games & Simulators,game score,13.06,5,15.0,9.2,22.26,20.3,0.6,14.7,8.1,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+5,juliet_vulnerability_analyzer,Python,Systems & Software Engineering,score (maximize),12.08,5,81.0,62.38,74.46,63.5,4.6,66.2,8.4,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+6,tree_block_partitioning,C++,Combinatorial Optimization,score (maximize),10.24,5,28.8,19.34,29.58,23.4,4.5,16.1,0.9,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+7,trinity_text_adventure,Python,Interactive Games & Simulators,game score,9.62,5,25.0,19.18,28.8,26.7,5.7,20.3,3.8,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
+8,k12_math_recommendation,Python,Professional Knowledge Work,score (maximize),8.06,5,38.5,27.68,35.74,32.7,8.2,26.3,2.2,ok,False,True,card scores are rescaled 0-100 (higher better); raw direction field not used
