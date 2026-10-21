@@ -746,3 +746,10 @@ Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the se
 **Dormant trigger (no checkbox, no index next action):**
 
 - XP-A9/XP-A10 (intake-2214#10, #11): monitor: a fleet-wide prefix-to-instance index (KPF-27's per-server radix index keyed by instance; router-owned, since llama-server emits no KV events) as the affinity input for frontdoor instance selection, or alternatively a shared host-RAM prefix store (the single-host analogue of a Mooncake pool, intake-472). Trigger = WP-15 arm (d) shows the re-prefill fraction on returning sessions >= 0.25 under the current sticky rule AND KVU-12 keeps the multi-instance frontdoor (a unified-KV single server makes both moot). Price both at that time, not before.
+
+## KPF-60 P0 GPU stages armed for the 2026-10-22 D4g window — overnight-gpu-arm, 2026-10-21
+- Chunk-KV P0 GPU stages (MI210 prefill rate pp512/2048/8192 per role on the 27B Q8, RAM->GPU PCIe copy, NVMe chunk-load) are armed as a self-starting launcher: `/mnt/raid0/llm/tmp/overnight-gpu-arm-20261022/launch_job.sh job1` (body `job1_p0_gpu.sh`, script `/mnt/raid0/llm/tmp/cacheclip-port-20261021/p0_timing.sh`).
+- Start: when `/mnt/raid0/llm/tmp/kvu12-redo-20261021/GPU_ALLOWED_FROM` and f8's `/mnt/raid0/llm/tmp/pb-qcost-1/PB_QCOST_1_ENDED` both exist (planned ~02:45Z). Hard stop 04:15Z. Flags and record: `$D/runs/job1/{DONE,FAILED,run_record.json}`; results `$D/runs/job1/out/`.
+- Claim: `flock` on `gpu_device.mi210_0.lock` plus `region-lock run --gpu-quiet shared --role build`, no CPU region lock (agreed by f8 via 5c); host threads 184-191, membind 3. Every rep is labelled "GPU job beside f8 s4": indicative, not decision-grade.
+- Build measured: champion `gpu-20261020-dd3d9721c` (version 10345), ggml linkage verified. The CPU-timing stages (`cpu_pp`, `memcpy`) are NOT in this run and still need the 06:30Z-onward quiet slot.
+- Dies on host reboot; nothing re-arms it.
