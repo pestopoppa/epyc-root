@@ -39,6 +39,13 @@ line shows in a diff) and survive log rotation/hygiene sweeps; records are ~1 KB
 convention (open mode "a"); commit it with the registry change that cites it. If the ref cannot be resolved the
 run is REFUSED (exit 2) unless --no-resolve.
 
+SEC-ART-7 re-pull drift check (scripts/utils/model_pin_guard.py). Before the command runs, the resolved commit and the
+tree's LFS oids are compared with the registry pins (`roles.<role>.model.{hf_repo,hf_revision,sha256}` in
+--registry, default the orchestrator master registry). A commit or oid that differs from a registered pin REFUSES
+the download (exit 2, nothing fetched) unless `--review-record FILE` carries an approving model-review-record/1 for
+that exact repo and resolved commit. A download without --hf-repo into a directory that holds a registered GGUF is
+refused the same way (it would bypass the comparison). Repos with no registry pins are unaffected.
+
 Exit code: the command's own exit code (130 on SIGINT); 2 usage/refusal; `--check`: 0 none, 3 found.
 Tests: tests/test_safe_download.py
 """
@@ -67,6 +74,8 @@ LEDGER_SCHEMA = "model-download-ledger/1"
 HF_ENDPOINT = "https://huggingface.co"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 HF_REPO_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$")
+DEFAULT_REGISTRY = os.environ.get(
+    "SAFE_DOWNLOAD_REGISTRY", "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml")
 PROJECT_ENV = {"HF_HOME": "/mnt/raid0/llm/cache/huggingface", "TMPDIR": "/mnt/raid0/llm/tmp"}
 
 
@@ -150,6 +159,44 @@ def inject_revision(cmd: list[str], sha: str) -> list[str]:
     return out + ["--revision", sha]
 
 
+def fetch_tree(repo: str, sha: str):
+    """The HF tree-API listing (recursive, LFS oids expanded) at one commit. Tests replace hf_get_json."""
+    return hf_get_json(f"{HF_ENDPOINT}/api/models/{repo}/tree/{sha}?recursive=1&expand=1")
+
+
+def _load_pin_guard():
+    """model_pin_guard.py lives next to this file; load it by path so this works however safe_download was imported."""
+    import importlib.util  # noqa: PLC0415
+    spec = importlib.util.spec_from_file_location("model_pin_guard", Path(__file__).with_name("model_pin_guard.py"))
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("model_pin_guard", mod)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def drift_gate(repo: str | None, sha: str | None, dest: str, registry: str, review_path: str | None,
+               require_registry: bool):
+    """SEC-ART-7. Returns (refused, review_used). Prints every drift; runs BEFORE the download command."""
+    guard = _load_pin_guard()
+    try:
+        pins = guard.load_pins(registry, require=require_registry)
+        review = guard.load_review(review_path)
+    except (guard.RegistryError, ValueError) as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return True, None
+    if pins is None:
+        print(f"safe_download: WARNING registry {registry} not found: SEC-ART-7 drift check skipped", file=sys.stderr)
+    verdict = guard.evaluate(repo=repo, resolved_sha=sha, dest=dest, pins=pins, fetch_tree=fetch_tree, review=review)
+    for line in verdict.drifts:
+        print(f"safe_download: {line}", file=sys.stderr)
+    for line in verdict.notes:
+        print(f"safe_download: {line}", file=sys.stderr)
+    if verdict.refuse:
+        print("REFUSED: registered artifact would change; review it and pass --review-record "
+              "(model-review-record/1, decision approve, to_revision = the resolved commit)", file=sys.stderr)
+    return verdict.refuse, verdict.review_used
+
+
 def provenance_record(repo: str, requested: str, sha: str, dest: str, rc: int, argv: list[str]) -> dict:
     """Ledger record: per-file LFS sha256 for tree files present under dest. Reads the tree API; hashes nothing."""
     tree = hf_get_json(f"{HF_ENDPOINT}/api/models/{repo}/tree/{sha}?recursive=1&expand=1")
@@ -216,6 +263,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--revision", default="main", help="branch/tag/sha for --hf-repo (resolved to a commit sha)")
     ap.add_argument("--no-resolve", action="store_true", help="with --hf-repo: proceed if the ref cannot be resolved (no ledger)")
     ap.add_argument("--provenance-ledger", default=DEFAULT_PROVENANCE_LEDGER)
+    ap.add_argument("--registry", default=DEFAULT_REGISTRY, help="registry holding the SEC-ART-1 pins (drift check)")
+    ap.add_argument("--require-registry", action="store_true",
+                    default=os.environ.get("SAFE_DOWNLOAD_REQUIRE_REGISTRY", "") == "1",
+                    help="refuse (not warn) when --registry does not exist")
+    ap.add_argument("--review-record", help="approving model-review-record/1 JSON that lifts a drift refusal")
     a = ap.parse_args(raw)
 
     if a.check:
@@ -253,6 +305,9 @@ def main(argv: list[str] | None = None) -> int:
         else:
             cmd = inject_revision(cmd, sha)
             print(f"safe_download: pinned {a.hf_repo}@{a.revision} -> {sha}", file=sys.stderr)
+    refused, review_used = drift_gate(a.hf_repo, sha, a.dest, a.registry, a.review_record, a.require_registry)
+    if refused:
+        return 2
     os.makedirs(a.dest, exist_ok=True)
     env = dict(os.environ)
     for k, v in PROJECT_ENV.items():
@@ -282,7 +337,10 @@ def main(argv: list[str] | None = None) -> int:
     cleanup(a.dest, start, rc, a.keep_partial, a.ledger, cmd)
     if sha and rc == 0:
         try:
-            ledger_write(a.provenance_ledger, provenance_record(a.hf_repo, a.revision, sha, a.dest, rc, cmd))
+            rec = provenance_record(a.hf_repo, a.revision, sha, a.dest, rc, cmd)
+            if review_used:
+                rec["drift_review"] = {k: review_used.get(k) for k in ("reviewer", "reviewed_at", "to_revision", "diff_path")}
+            ledger_write(a.provenance_ledger, rec)
         except Exception as exc:  # noqa: BLE001 - the download succeeded; say loudly the record did not
             print(f"safe_download: ERROR provenance ledger NOT written: {exc}", file=sys.stderr)
             return rc or 4
