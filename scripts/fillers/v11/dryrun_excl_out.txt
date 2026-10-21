@@ -1,0 +1,21 @@
+== A: bad combos rejected (rc 64)
+--gpu-quiet exclusive needs a gpu or cpu+gpu class
+cpu+exclusive rc=64
+bad --gpu-quiet (shared|exclusive|none)
+bad --claim-cpus
+== B: gpu exclusive: region-lock gets --cpu-list 0-95 --gpu-quiet exclusive --role bench; job sees host threads 184-191; GPU flock held
+== C: precondition fails (no build) -> rc=5 build-missing, nothing launched
+rc=5 time=2026-10-21T21:42:02Z reason=build-missing:kqroute arm build absent
+ls: cannot access '/mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun_excl/rl.args': No such file or directory
+ls: cannot access '/mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun_excl/job.env': No such file or directory
+== D: build appears -> same poller runs the job under the exclusive claim
+rl.args: run --cpu-list 0-95 --gpu-quiet exclusive --role bench --timeout-s 199 --tag filler-xg -- /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run2.sh --inner --id xg --class gpu --cmd echo "cpus=$FILLER_CPUS thr=$FILLER_THREADS needgpu=$FILLER_NEEDGPU" > /mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun_excl/job.env; (flock -n 9 && echo gpulock-was-free) 2>/dev/null; sleep 2 --min-window 20 --stop /mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun_excl/STOP --port  --workdir /workspace --gpu-threads 184-191
+job.env: cpus=184-191 thr=8 needgpu=1
+rc=0 time=2026-10-21T21:42:12Z reason=exited
+launcher dead (verified)
+== E: default gpu class unchanged (shared, role build, no cpu-list) and cpu timing mode (role bench, claim 0-95, gpu-quiet shared)
+default gpu rl.args: run --gpu-quiet shared --role build --timeout-s 199 --tag filler-dg -- /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run2.sh --inner --id dg --class gpu --cmd sleep 1 --min-window 20 --stop /mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun_excl/S2 --port  --workdir /workspace --gpu-threads 184-191
+cpu timing rl.args: run --cpu-list 0-95 --gpu-quiet shared --role bench --timeout-s 200 --tag filler-dc -- /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run2.sh --inner --id dc --class cpu --cmd sleep 1 --min-window 20 --stop /mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun_excl/S3 --port  --workdir /workspace --gpu-threads 184-191
+rc=0 time=2026-10-21T21:42:32Z reason=exited
+pid 2230004 dead (verified)
+pid 2230005 dead (verified)

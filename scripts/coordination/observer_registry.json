@@ -277,7 +277,11 @@
         "restart_on_stale": true,
         "relaunch_if_down": true,
         "_relaunch_note": "2026-10-04: host_hygiene_tick.py's keeper relaunches this row from start_argv when the census verdict is not_running (the reaper died with the 2026-09-21 and 2026-10-03 reboots and nothing brought it back). Never a kill: stale/off-canon copies only raise daemon-stale-<id>.",
-        "start_argv": ["/bin/bash", "{canonical_root}/scripts/system/opencode_event_reaper.sh", "run"],
+        "start_argv": [
+          "/bin/bash",
+          "{canonical_root}/scripts/system/opencode_event_reaper.sh",
+          "run"
+        ],
         "log": "/mnt/raid0/llm/tmp/opencode-reaper.log"
       }
     },
@@ -310,6 +314,12 @@
         "max_age_s": 172800,
         "_mode_note": "No persistent process: the periodic hygiene tick invokes `codex_retention_reaper.py report --json`, and every `report` atomically rewrites <state-dir>/last_report.json (the full JSON report), so this file's mtime is the tick's freshness. max_age_s = 48 h, a 2x margin over a daily tick; tighten it once the tick cadence is wired. Report/alarm only: restart_on_stale is not allowed in scheduled mode and there is nothing to restart."
       }
+    },
+    {
+      "id": "v11_driver_ds41_preflight",
+      "script": "scripts/fillers/v11/v11_driver.py",
+      "contract": "exempt",
+      "reason": "Not a watchdog: a read-only PRE-LAUNCH refusal check (V11-086 'one DS41-class server host-wide') that scans /proc/*/cmdline once, never signals anything, and runs only inside an armed grant. Polarity is fail-closed: a cmdline that is unreadable for any reason other than the process having exited counts as a DS41-class server (unknown means busy) and the run refuses rc=6. Reviewed 2026-10-21 (v11-drivers)."
     }
   ]
 }
