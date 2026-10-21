@@ -79,8 +79,12 @@ def test_the_correction_frame_names_only_the_touched_claims():
     frames = _frames_for_entry(e, AT)
     corr = next(f for f in frames if f["frame_type"] == FT_CORRECTION)
 
-    # `claim_ids` is what the correction IMPLICATES — the cleared sibling is not in it.
-    assert corr["assertion"]["claim_ids"] == ["clm_intake_900_03"]
+    # `claim_ids` is what still AWAITS adjudication. A legal per-claim verdict in the index IS
+    # the adjudication (it is what `correction_queue.index_blocks` writes back after a review),
+    # so neither the cleared sibling nor the overturned claim is in it -- the overturn already
+    # became an oppose edge above. Listing verdicted claims re-blocked every one of them on each
+    # fresh ledger (2026-10-21: 773 of 905 pending corrections had a verdict on file).
+    assert corr["assertion"]["claim_ids"] == []
 
     # `per_claim_effects` is what the dive EXAMINED, including what it cleared. Keeping the
     # `unaffected` verdict is the difference between "we looked and it survived" and "nobody
@@ -89,6 +93,17 @@ def test_the_correction_frame_names_only_the_touched_claims():
         "clm_intake_900_00": "unaffected",
         "clm_intake_900_03": "overturned",
     }
+
+
+def test_an_illegal_verdict_keeps_the_claim_implicated():
+    """An effect outside CORRECTION_EFFECTS is not an adjudication; the claim stays blocked."""
+    e = entry(dive_corrections="a dive changed something", claim_corrections=[
+        {"claim_index": 1, "effect": "narrowed", "note": "n"},
+        {"claim_index": 2, "effect": "typo-effect", "note": "n"},
+    ])
+    frames = _frames_for_entry(e, AT)
+    corr = next(f for f in frames if f["frame_type"] == FT_CORRECTION)
+    assert corr["assertion"]["claim_ids"] == ["clm_intake_900_02"]
 
 
 def test_prose_only_correction_still_blankets_the_entry():
