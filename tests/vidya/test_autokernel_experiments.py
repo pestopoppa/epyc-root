@@ -529,9 +529,9 @@ def test_same_ids_when_the_rows_are_reread_incrementally(store):
 
 def test_frames_are_byte_stable_across_runs(store):
     first = [f["frame_id"] for t in projected(store).values() if t is not None
-             for f in to_frames(t, as_of="2026-10-22T00:00:00Z", adapter_id=exp.ADAPTER_ID)]
+             for f in to_frames(t, as_of="2026-10-21T12:00:00Z", adapter_id=exp.ADAPTER_ID)]
     second = [f["frame_id"] for t in projected(store).values() if t is not None
-              for f in to_frames(t, as_of="2026-10-22T00:00:00Z", adapter_id=exp.ADAPTER_ID)]
+              for f in to_frames(t, as_of="2026-10-21T12:00:00Z", adapter_id=exp.ADAPTER_ID)]
     assert first and first == second and len(set(first)) == len(first)
     assert len(first) == 3 * len(EXPECTED)
 
@@ -607,19 +607,19 @@ def test_cli_writes_only_to_an_explicit_ledger(store, tmp_path, monkeypatch, cap
     monkeypatch.setenv("VIDYA_LEDGER", str(tmp_path / "env-ledger.jsonl"))
     # no --ledger: the env/default resolution is NOT an explicit write target
     assert cli.main(["ingest", "autokernel-experiments", "--store", str(store),
-                     "--as-of", "2026-10-22T00:00:00Z"]) == 0
+                     "--as-of", "2026-10-21T12:00:00Z"]) == 0
     assert not state.exists() and not (tmp_path / "env-ledger.jsonl").exists()
     # explicit scratch ledger, subcommand-side flag
     target = tmp_path / "scratch" / "ledger.jsonl"
     target.parent.mkdir()
     assert cli.main(["ingest", "autokernel-experiments", "--store", str(store),
-                     "--ledger", str(target), "--as-of", "2026-10-22T00:00:00Z"]) == 0
+                     "--ledger", str(target), "--as-of", "2026-10-21T12:00:00Z"]) == 0
     led = Ledger(target)
     first = len(led.read_all())
     assert first > 0 and led.verify() == []
     # idempotent: a second run appends nothing
     assert cli.main(["ingest", "autokernel-experiments", "--store", str(store),
-                     "--ledger", str(target), "--as-of", "2026-10-22T00:00:00Z"]) == 0
+                     "--ledger", str(target), "--as-of", "2026-10-21T12:00:00Z"]) == 0
     assert len(Ledger(target).read_all()) == first
     capsys.readouterr()
 
@@ -637,15 +637,15 @@ def test_cli_refuses_the_canonical_ledger_without_the_ownership_flag(store, tmp_
     monkeypatch.setenv("VIDYA_STATE_DIR", str(state))
     canonical = state / "ledger.jsonl"
     argv = ["ingest", "autokernel-experiments", "--store", str(store), "--ledger", str(canonical),
-            "--as-of", "2026-10-22T00:00:00Z"]
+            "--as-of", "2026-10-21T12:00:00Z"]
     assert cli.main(argv) == 2
     assert not canonical.exists() and "canonical ledger" in capsys.readouterr().err
-    assert cli.main(["--ledger", str(canonical), *argv[:4], "--as-of", "2026-10-22T00:00:00Z"]) == 2
+    assert cli.main(["--ledger", str(canonical), *argv[:4], "--as-of", "2026-10-21T12:00:00Z"]) == 2
     assert not canonical.exists()
     # a symlink to it is the same file
     link = tmp_path / "alias.jsonl"
     link.symlink_to(canonical)
-    assert cli.main([*argv[:4], "--ledger", str(link), "--as-of", "2026-10-22T00:00:00Z"]) == 2
+    assert cli.main([*argv[:4], "--ledger", str(link), "--as-of", "2026-10-21T12:00:00Z"]) == 2
     # the owning session may
     assert cli.main([*argv, "--i-own-the-canonical-ledger"]) == 0
     assert canonical.exists() and Ledger(canonical).verify() == []
@@ -661,5 +661,5 @@ def test_the_real_canonical_path_is_refused_even_when_the_env_moves_the_state_di
 def test_dry_run_flag_beats_an_explicit_ledger(store, tmp_path):
     target = tmp_path / "l.jsonl"
     assert cli.main(["ingest", "autokernel-experiments", "--store", str(store), "--ledger",
-                     str(target), "--as-of", "2026-10-22T00:00:00Z", "--dry-run"]) == 0
+                     str(target), "--as-of", "2026-10-21T12:00:00Z", "--dry-run"]) == 0
     assert not target.exists()
