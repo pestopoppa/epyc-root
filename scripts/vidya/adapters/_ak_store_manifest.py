@@ -16,6 +16,20 @@ Two rules keep it honest:
     `applicability.scope_basis = "store_manifest"`.
 
 Read-only; never walks the store; returns {} for anything it cannot read exactly.
+
+TWO STRATEGIES, ONE OWNER (belief redesign P1-C/P1-D, unified 2026-10-21). A store's scope comes,
+in this order, from
+
+  1. `load(store)`          the loop's own status file (above): campaign-pinned, preferred;
+  2. `load_from_rows(store)` the ONE native `research_scope` shared by every measured row of the
+                            store's `experiments.db` (a bounded read of a few payloads): used only
+                            when the status file pins nothing. Rows that disagree, or carry none,
+                            give no scope -- unscoped is honest, a guessed scope is not.
+
+`resolve(store)` runs them in that order and stamps which one answered (`strategy`). Both the
+experiments adapter and the serving-floor adapter take their manifest from here; neither parses a
+status file or a `research_scope` of its own. `row_scope(research_scope)` is the one place a
+`research_scope` becomes applicability keys (the experiments adapter uses it per row too).
 """
 from __future__ import annotations
 
@@ -23,8 +37,10 @@ import hashlib
 import json
 import os
 import re
+import sqlite3
 import stat
 from pathlib import Path
+from typing import Any, Mapping
 
 SCHEMA = "epyc.vidya.ak_store_manifest.v1"
 STATUS_NAME = "loop-status.json"
@@ -97,4 +113,91 @@ def load(store_dir: str | Path) -> dict:
             "recipe": recipe, "scope": scope}
 
 
-__all__ = ["SCHEMA", "STATUS_NAME", "load"]
+_SERVING_SURFACE = re.compile(r"^serving:(?P<recipe>\S+)$")
+_ROW_SCOPE_STATUSES = ("kept", "keep_candidate", "measured_null", "regression")
+_ROW_SCOPE_LIMIT = 8
+
+
+def row_scope(research_scope: Any) -> dict:
+    """applicability keys of one row's native `research_scope`; {} when it names no model.
+
+    `scope_basis` is NOT set here: the caller says `native` (this row's own) or `store_manifest`.
+    """
+    if not isinstance(research_scope, Mapping):
+        return {}
+    model = research_scope.get("model")
+    path = model.get("path") if isinstance(model, Mapping) else model
+    if not isinstance(path, str) or not path.strip():
+        return {}
+    out = {"model_file": path.strip()}
+    sha = model.get("sha256") if isinstance(model, Mapping) else None
+    if isinstance(sha, str) and _HEX64.match(sha.lower()):
+        out["model_sha256"] = sha.lower()
+    for key in ("quant", "backend"):
+        value = research_scope.get(key)
+        if isinstance(value, str) and value.strip():
+            out[key] = value.strip()
+    surface = research_scope.get("measurement_surface")
+    match = _SERVING_SURFACE.match(surface.strip()) if isinstance(surface, str) else None
+    if match:
+        out["recipe"] = match.group("recipe")
+    return out
+
+
+def load_from_rows(store_dir: str | Path) -> dict:
+    """Strategy 2: the uniform native scope of the store's measured rows, or {}.
+
+    Reads at most `_ROW_SCOPE_LIMIT` payloads (`LIKE` over `payload`: on the 4.3 GB DS41 store
+    that may walk many rows first, so callers cache the result per store).
+    """
+    path = Path(store_dir) / "experiments.db"
+    if not path.is_file():
+        return {}
+    scopes: dict[str, dict] = {}
+    try:
+        conn = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True, timeout=30)
+    except sqlite3.Error:
+        return {}
+    try:
+        conn.execute("PRAGMA query_only = ON")
+        marks = ",".join("?" for _ in _ROW_SCOPE_STATUSES)
+        cursor = conn.execute(
+            f"SELECT payload FROM experiments WHERE status IN ({marks}) "
+            "AND payload LIKE '%\"research_scope\"%' ORDER BY rowid LIMIT ?",
+            (*_ROW_SCOPE_STATUSES, _ROW_SCOPE_LIMIT))
+        for (raw,) in cursor:
+            try:
+                payload = json.loads(raw)
+            except (ValueError, RecursionError):
+                continue
+            scope = row_scope(payload.get("research_scope")) if isinstance(payload, dict) else {}
+            if scope:
+                scopes[json.dumps(scope, sort_keys=True)] = scope
+    except sqlite3.Error:
+        return {}
+    finally:
+        conn.close()
+    if len(scopes) != 1:
+        return {}
+    scope = dict(next(iter(scopes.values())))
+    scope["scope_basis"] = "store_manifest"
+    return {"schema": SCHEMA, "store": str(store_dir), "locator": str(path), "sha256": None,
+            "campaign_id": None, "recipe": scope.get("recipe"), "scope": scope}
+
+
+def resolve(store_dir: str | Path) -> dict:
+    """Strategy 1, else strategy 2, else {}; stamped with `strategy` and the RESOLVED store path.
+
+    The resolved path is what the experiments adapter digests into its measurement ids, so two
+    spellings of one store never mint two ids.
+    """
+    for strategy, loader in (("loop_status", load), ("row_scope", load_from_rows)):
+        manifest = loader(store_dir)
+        if manifest:
+            return {**manifest, "store": str(Path(store_dir).resolve()), "strategy": strategy}
+    return {"schema": SCHEMA, "store": str(Path(store_dir).resolve()), "locator": None,
+            "sha256": None, "campaign_id": None, "recipe": None, "scope": {},
+            "strategy": "none"}
+
+
+__all__ = ["SCHEMA", "STATUS_NAME", "load", "load_from_rows", "resolve", "row_scope"]
