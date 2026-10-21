@@ -93,6 +93,14 @@ BARRIER_FILE = "d0-barrier.txt"
 
 CATEGORIES = frozenset({"OPTIMUM", "BASELINE", "CANDIDATE"})
 
+# VB-LOOP-SCOPE: the reader's device label for this host's CPU (loop_beliefs.DEVICE_BY_BACKEND).
+# INF-70 records never print a CPU model string; what they DO print is the CPU placement the
+# instrument itself observed (bench_readbw's `threads per NUMA node:` split, bench_barrier's CCD
+# membership, llama-bench's `CPU` backend cell under a `taskset -c` command). Device and backend
+# are declared only when that native CPU statement is present, and only for this host, which is
+# the only machine the INF-70 producers (`/mnt/raid0/llm/tmp/inf70/*.sh`) write on.
+HOST_CPU_DEVICE = "epyc-9655"
+
 _RUN_STAMP = re.compile(r"(\d{8})T(\d{6})Z")
 # `ARM <name> start <hh:mm:ss> <key>=<value> ... env=[...]`. The key/value tail
 # is parsed generically: c5_followup.sh added a `model=` field that a positional
@@ -564,6 +572,39 @@ def _attestation(native: dict) -> dict[str, Any]:
     }
 
 
+def _applicability(native: dict) -> dict[str, Any]:
+    """VB-LOOP-SCOPE: scope from native fields only (see HOST_CPU_DEVICE).
+
+    Roofline rows (`readbw`, `barrier`) are HOST facts: they declare device + backend and no
+    model, so they apply to every CPU target on this host. A llama-bench arm row also states the
+    model it loaded (`-m`), so it declares that `model_file` too and applies only to that GGUF.
+    `run_id` is the run directory's own name: a later roofline run supersedes an earlier one in
+    the reader, which shows the newest complete run per source. A row whose record carries no
+    CPU placement statement declares nothing beyond its run.
+    """
+    run_id = Path(native["run_dir"]).name
+    scope: dict[str, Any] = {"run_id": run_id} if run_id else {}
+    kind = native.get("kind")
+    block = native.get("block") or {}
+    if kind == "readbw":
+        cpu = bool(str(block.get("per_node_threads") or "").strip())
+    elif kind == "barrier":
+        cpu = "ccd" in str(block.get("topology") or "").lower()
+    elif kind == "arm":
+        row = native.get("row") or {}
+        recipe = native.get("recipe") or {}
+        cpu = (str(row.get("backend") or "").strip().upper() == "CPU"
+               and bool(str(recipe.get("cpu_list") or "").strip()))
+        model = str(recipe.get("model") or "").strip()
+        if cpu and model:
+            scope["model_file"] = model
+    else:
+        cpu = False
+    if cpu:
+        scope.update(device=HOST_CPU_DEVICE, backend="cpu")
+    return scope
+
+
 @register(SOURCE_KIND)
 def project(native: Any) -> ClaimTuple:
     """Projection only. Never grades; `claim_tuple.grade()` decides."""
@@ -643,6 +684,7 @@ def _project_arm(native: dict, date: str) -> ClaimTuple:
             "category_declared_by_producer": native.get("category_declared", False),
             "run_dir": native["run_dir"],
         },
+        applicability=_applicability(native),
         **_attestation(native),
     )
 
@@ -695,6 +737,7 @@ def _project_readbw(native: dict, date: str) -> ClaimTuple:
             "hugepage": block.get("hugepage"),
             "run_dir": native["run_dir"],
         },
+        applicability=_applicability(native),
         **_attestation(native),
     )
 
@@ -737,6 +780,7 @@ def _project_barrier(native: dict, date: str) -> ClaimTuple:
             "detail": native.get("detail"),
             "run_dir": native["run_dir"],
         },
+        applicability=_applicability(native),
         **_attestation(native),
     )
 

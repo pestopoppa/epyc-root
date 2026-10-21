@@ -528,3 +528,46 @@ def test_a_sibling_shard_first_is_refused_not_silently_adopted(tmp_path):
     ])
     why = reader.arm_refusals(run)["c5-t1"]
     assert "names" in why and "00002-of-00003" in why
+
+
+# --- VB-LOOP-SCOPE: applicability from native fields only ---------------------------------------
+
+def test_roofline_rows_are_host_scoped_without_a_model():
+    """readbw/barrier rows print their CPU placement (per-NUMA-node split, CCD membership), so
+    they declare this host's CPU and no model: they apply to every CPU target here."""
+    for kind in ("readbw", "barrier"):
+        rows = _rows(kind)
+        assert rows
+        for row in rows:
+            scope = reader.project(row).applicability
+            assert scope == {"run_id": FIXTURE.name, "device": reader.HOST_CPU_DEVICE,
+                             "backend": "cpu"}, (kind, scope)
+
+
+def test_arm_rows_declare_the_model_the_command_loaded():
+    for row in _rows("arm"):
+        scope = reader.project(row).applicability
+        assert scope["model_file"] == row["recipe"]["model"] and scope["model_file"]
+        assert scope["backend"] == "cpu" and scope["device"] == reader.HOST_CPU_DEVICE
+        assert scope["run_id"] == FIXTURE.name
+
+
+def test_a_row_without_a_native_cpu_statement_declares_no_device(tmp_path):
+    import copy as _copy
+
+    row = _copy.deepcopy(_rows("readbw")[0])
+    row["block"]["per_node_threads"] = ""
+    assert reader.project(row).applicability == {"run_id": FIXTURE.name}
+
+
+def test_scope_does_not_move_the_grade_or_the_identity():
+    import dataclasses
+
+    for row in _rows():
+        tup = reader.project(row)
+        bare = dataclasses.replace(tup, applicability={})
+        assert ct.grade(tup) == ct.grade(bare)
+        frames = ct.to_frames(tup, as_of=AS_OF, adapter_id=reader.ADAPTER_ID)
+        assert frames[0]["assertion"]["applicability"] == tup.applicability
+        bare_frames = ct.to_frames(bare, as_of=AS_OF, adapter_id=reader.ADAPTER_ID)
+        assert [f["assertion"] for f in frames[1:]] == [f["assertion"] for f in bare_frames[1:]]
