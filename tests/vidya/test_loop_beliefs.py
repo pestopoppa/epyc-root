@@ -1065,3 +1065,23 @@ def test_p1_acceptance_script_runs_on_a_fixture_ledger(tmp_path, capsys):
     assert "PB-HOL-1 1 claim(s) on tier target, 1 shown with a value line" in checks["AC9"]["detail"]
     assert set(checks) == {"AC1", "AC2", "AC3", "AC4", "AC5", "AC9"}
     assert acc.main(["--ledger", str(lb.CANONICAL_LEDGER)]) == 2 or not lb.CANONICAL_LEDGER.exists()
+
+
+def test_claim_without_device_matches_gpu_target_and_is_never_host(tmp_path, alarm):
+    """Lanes K/L (KPF-18, PB-HOL-1) scope by model_file + quant + backend=gpu and declare NO
+    device (their argv names ROCm0, not the card). An undeclared device is unspecified, not a
+    mismatch; a claim that names a model can never be host tier."""
+    kpf = _loop("kpf18:kpf18-run-c:item7:A1", model=Q27, quant="Q8_0", backend="gpu", device="",
+                kind="kv-prefix-fork", mech=None, outcome="", value="144", unit="s",
+                recipe=None, epoch=None, build=None, symbol=None,
+                scope_keys={"knob_family": "slot_serving", "varied": ["slot_fork"]})
+    source = next(f for f in kpf if f["frame_type"].endswith("source_observed/v1"))
+    assert "device" not in source["assertion"]["applicability"]
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, kpf), ARCHITECT_T)
+    assert ev["tiers"]["target"] == 1 and ev["tiers"]["host"] == 0
+    assert ev["claims"][0]["tier"] == "target" and _cid(kpf) in ev["claim_ids"]
+    scope = source["assertion"]["applicability"]
+    for raw in (ARCHITECT_T, {**ARCHITECT_T, "backend": "cpu"}, QWEN35_T, DS41_Q4_T):
+        assert not lb.host_matches(scope, lb.Target.from_mapping(raw))
+    # same file on a cpu target: backend differs, so no tier at all (not host, not target)
+    assert lb.tier_of(scope, lb.Target.from_mapping({**ARCHITECT_T, "backend": "cpu"})) is None
