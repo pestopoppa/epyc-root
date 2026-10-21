@@ -1,0 +1,13 @@
+{
+  "task_id": "VB-NI08-CI-PII-METADATA-SOURCE",
+  "baseline": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "enrollment": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "baseline_hook_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+  "candidate_hook_sha256": "1d0e817ee8bbf19664d2c25b6593e2f6da111785c891da6436a50ac8db389853",
+  "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "criterion": "existing staged PII decision and original CI fixture conformance only",
+  "actual_case_count": null,
+  "job_baseline": "587a47edd8c1b791b2eed8a228c5f2647734a348",
+  "job_baseline_hook_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+  "static_selected_count": 99
+}
