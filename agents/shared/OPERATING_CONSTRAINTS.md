@@ -413,6 +413,9 @@ Never escalate a decision with an open-ended question ("How should I proceed?", 
 4. **Default** — what happens if the operator makes no choice (status quo, blocked, timeout behavior).
 
 Delivery: Claude Code sessions use the AskUserQuestion tool with the recommended option listed first and labeled "(Recommended)"; other harnesses render the package as a compact markdown list.
+- **The tool is mandatory, not a preference.** Context goes in the question text, and each option's tradeoffs go in its description. Prose may precede the call for longer background, but a decision asked only in prose is a defect.
+- **Ask when the decision exists**, batching up to four per call. A decision that sits as "still waiting on you" across status reports instead of being put through the tool is the failure this rule exists to stop.
+- Origin: the operator, 2026-10-21, after repeated prose-only asks: "please present decision packages along with context, options and tradeoffs using the harness decision tool (I keep having to ask this)".
 
 Exception: pure factual gaps (a missing credential, an ambiguous file reference) may be asked directly — this contract governs choices among alternatives, not fact retrieval.
 

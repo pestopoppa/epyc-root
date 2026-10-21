@@ -215,7 +215,8 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 ## Operator Decision Requests
 
 See **Act, Don't Defer** at the top of this file before escalating anything. When a choice genuinely is
-the operator's, use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
+the operator's, use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests). In Claude Code, deliver it through the **AskUserQuestion tool**: context in the question,
+tradeoffs in each option, recommended option first. Never as prose alone.
 
 <!-- gitnexus:start -->
 <!-- gitnexus:keep -->
