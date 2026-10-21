@@ -710,3 +710,32 @@ def test_frames_carry_the_observation_on_the_evidence_assertion(store):
     assert assertion["observation"]["outcome"] == "improved"
     assert assertion["observation"]["effect_rel"] == "0.0205"  # carrier encodes floats as strings
     assert assertion["metric"] == "aggregate_tok_s" and assertion["unit"] == "t/s"
+
+
+def test_resolve_runs_at_most_once_per_store_across_floor_and_experiments(store, tmp_path, monkeypatch):
+    """One memo-cached manifest per store serves the floor path and the experiments path."""
+    import scoped_ingest as si
+    from adapters import _ak_store_manifest as owner
+    from adapters import autokernel_serving_floor as floor
+
+    calls = []
+    real = owner.resolve
+    monkeypatch.setattr(owner, "resolve", lambda s: (calls.append(str(s)), real(s))[1])
+    fake = store / "serving-floor.fixture.json"
+    fake.write_text("{}")
+    monkeypatch.setattr(floor, "floor_paths", lambda s: [fake] if Path(s) == store else [])
+
+    def refuse(path):
+        raise ProjectionError("fixture floor is not a real floor")
+
+    monkeypatch.setattr(floor, "read_floor", refuse)
+    memo = tmp_path / "memo.json"
+    first = si.ingest_scoped_store(tmp_path / "l1.jsonl", store, as_of="2026-10-21T12:00:00Z",
+                                   memo_path=memo)
+    assert first["floors_listed"] == 1 and first["experiments_rows_read"] == len(FIXTURE)
+    assert calls == [str(store)] and first["experiments_manifests_built"] == 1
+    # a later planning step, same memo: the cached manifest answers both paths
+    second = si.ingest_scoped_store(tmp_path / "l2.jsonl", store, as_of="2026-10-21T12:00:00Z",
+                                    memo_path=memo)
+    assert second["floors_listed"] == 1 and calls == [str(store)]
+    assert second["experiments_manifests_built"] == 0
