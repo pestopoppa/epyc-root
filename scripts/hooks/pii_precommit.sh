@@ -393,6 +393,42 @@ is_perf_period_table_cell() {
   ' <<< "$blob_content"
 }
 
+is_native_ci_metadata_account_line() {
+  # Closed physical JSON fields in native CI records, never a JSON/path bypass.
+  # Every account-pattern match must be the one typed metadata token below.
+  # Secret scanning remains independent and always runs before this helper.
+  local path="$1" line="$2" token="" hit count=0 field value property object
+  if [[ "$path" =~ ^artifacts/ci/.+/(original-run|[0-9]+-run)[.]json$ ]]; then
+    for field in check_suite_id check_suite_url; do
+      if [[ "$field" == check_suite_id ]]; then
+        value='([1-9][0-9]*)'
+      else
+        value='"https://api[.]github[.]com/repos/[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+/check-suites/([1-9][0-9]*)"'
+      fi
+      property='^[[:space:]]*"'"$field"'"[[:space:]]*:[[:space:]]*'"$value"'[[:space:]]*,?[[:space:]]*$'
+      object='^[[:space:]]*[{][[:space:]]*"'"$field"'"[[:space:]]*:[[:space:]]*'"$value"'[[:space:]]*[}][[:space:]]*$'
+      if [[ "$line" =~ $property || "$line" =~ $object ]]; then
+        token="${BASH_REMATCH[1]}"
+        break
+      fi
+    done
+  elif [[ "$path" =~ ^artifacts/ci/full-checkpoint-[0-9]{8}/KEEP[0-9]+-recheck[.]json$ ]]; then
+    # This receipt family retains one known owned NI08 operation directory.
+    value='"/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/hg5-v2-daca-11649-ROOT18-source-and-dual-native-PREP-v2-exact-reader-literals-20261008/operations/([1-9][0-9]{18})-[0-9a-f]{8}/(commands-and-hook-events[.]jsonl|commit-operation-receipt[.]json)"'
+    property='^[[:space:]]*"path"[[:space:]]*:[[:space:]]*'"$value"'[[:space:]]*,?[[:space:]]*$'
+    object='^[[:space:]]*[{][[:space:]]*"path"[[:space:]]*:[[:space:]]*'"$value"'[[:space:]]*[}][[:space:]]*$'
+    if [[ "$line" =~ $property || "$line" =~ $object ]]; then
+      token="${BASH_REMATCH[1]}"
+    fi
+  fi
+  [[ -n "$token" ]] || return 1
+  while IFS= read -r hit; do
+    [[ "$hit" == "$token" ]] || return 1
+    count=$((count + 1))
+  done < <(printf '%s\n' "$line" | command grep -oE '\b[0-9]{12,19}\b' || true)
+  [[ "$count" -eq 1 ]]
+}
+
 scan_blob() {
   local path="$1"
   local blob_content="$2"
@@ -423,6 +459,9 @@ scan_blob() {
       [[ -z "$lineno" ]] && continue
       local fullline
       fullline="$(echo "$blob_content" | sed -n "${lineno}p")"
+      if is_native_ci_metadata_account_line "$path" "$fullline"; then
+        continue
+      fi
       if is_only_linux_vmalloc_total_counter_line "$fullline"; then
         continue
       fi

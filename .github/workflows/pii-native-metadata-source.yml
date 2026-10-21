@@ -1,0 +1,63 @@
+name: PII native metadata staged original controls
+on:
+  push:
+    branches: [codex/pii-native-metadata-source-20261021]
+permissions:
+  contents: read
+jobs:
+  staged-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: baseline
+          persist-credentials: false
+          repository: pestopoppa/epyc-root
+          ref: a4b6bac87b4c9692271e12caa7bfd9a37c4e643a
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: enrollment
+          persist-credentials: false
+          repository: pestopoppa/epyc-root
+          ref: a4b6bac87b4c9692271e12caa7bfd9a37c4e643a
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: carrier
+          persist-credentials: false
+          repository: pestopoppa/epyc-root
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13.15'
+      - name: Frozen environment and disposable candidate policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/pii-venv"
+          "$RUNNER_TEMP/pii-venv/bin/python" -m pip install --only-binary=:all: --require-hashes -r recipe/proposed/pii-native-metadata/requirements.txt
+          "$RUNNER_TEMP/pii-venv/bin/python" -B recipe/proposed/pii-native-metadata/prepare.py
+      - name: Original real staged-hook controls through existing native producer
+        shell: bash
+        env:
+          PII_NATIVE_POLICY: ${{ runner.temp }}/pii-policy
+          PII_NATIVE_BASELINE: ${{ github.workspace }}/baseline/scripts/hooks/pii_precommit.sh
+          PII_NATIVE_FIXTURES: ${{ github.workspace }}/recipe/research/fixtures/pii_native_ci_metadata_controls.jsonl
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/pii-venv/bin/python" -B recipe/proposed/pii-native-metadata/capture.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pii-native-metadata-original-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pii-native-result
+          include-hidden-files: true
+          if-no-files-found: error
