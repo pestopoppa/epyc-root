@@ -1,8 +1,8 @@
 {
   "session_id": "intake-deepseek-prodstack-20261021",
   "started_at": "2026-10-21T10:00:00Z",
-  "last_checkpoint": "2026-10-21T12:45:00Z",
-  "stage": "stage2-closeout",
+  "last_checkpoint": "2026-10-21T13:05:00Z",
+  "stage": "stage3",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021",
   "branch": "intake/deepseek-prodstack-20261021",
@@ -30127,5 +30127,23 @@
       ],
       "declines_proposed_in_plan": true
     }
+  },
+  "stage3": {
+    "status": "DRAFT written 2026-10-21; NOT applied; awaiting operator review via the main session",
+    "plan_path": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/PLAN.md",
+    "plan_sha256_draft": "3bfc4eb3ad8adb39939184bc27d45e408b4c7d19265659461477135df873a7e1",
+    "payload_path": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/payload.json",
+    "session_copy_for_validation": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/session-stage3-copy.json",
+    "generator": "/mnt/raid0/llm/tmp/intake-deepseek-prodstack-stage3/gen.py (+ spec.py)",
+    "validation": "validate_intake.sh --plan-file --session-file exit 0 (2026-10-21); negative check confirmed (the live session file is refused without a stage3 copy)",
+    "packets": [
+      "P1 WP-15 refined (within-role-placement)",
+      "P2 HSF-4 refined (heterogeneous-slot-fabric)",
+      "P3 PB-HOL-1 new + PB-QCOST-1 refined (gpu-serving-tie-in) + DI-126 rewrite + KVU-16g-2 rider (kv-unified)",
+      "K1-K5 knowledge",
+      "M1-M4 monitors"
+    ],
+    "recommendations": 71,
+    "tasks": 4
   }
 }
