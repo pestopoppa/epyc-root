@@ -1450,6 +1450,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   tg128 must never be quoted as a serving rate.
 - [ ] DS41-T6 — Throughput baseline at the canonical CPU recipe (interleave, no-mmap, t48/t64,
   r5), plain vs native MTP, prefill and decode separated. Observation-grade first.
+  - *(2026-10-21 note, wrap-up 3c4ca599-c; box stays open.)* The 1017 MXFP4 target-only baseline (A/A floor N=24 plus champion `dd3d9721c` vs candidate C `f0c96dc1f`, N=5; recipe `ds41-1017-mxfp4-cpu-t48-targetonly`) is built and ARMED, not run: launcher `/mnt/raid0/llm/tmp/ds41-1017-baseline-20261021/chained_launch.sh` (PID 1676247, started 2026-10-21 10:33:58Z, still alive at 11:39Z) sleeps to the 2026-10-22 06:30Z slot, is gated on a fresh `SMOKE_OK`, and then runs under `region-lock run --cpu-list 0-95 --role bench --gpu-quiet exclusive`. It dies on host reboot and nothing re-arms it. The belief-kernel write side is `VB-DS41-1017-BASELINE-WIRE` in `vidya-belief-substrate-program.md`. No result exists yet.
 - [ ] DS41-T7 — GPU (MI210) path. The 483 GiB model cannot be VRAM-resident, so scope what can
   (hybrid offload of attention/shared/MTP) and measure it with proven residency.
 - [ ] DS41-T8 — **Performance admission vs champion** (**acceleration-path caveat**: if the
