@@ -29,3 +29,5 @@
 - **KVU-12.4/12.5 prep + KPF-18.0b.1** (workspace-f8, zero compute): research `2629df4ca` (slot-fit refusal, equal-argv ABA guard, 3 anchors, verdict script, PLAN §10 rule ratified by owner); launcher `/mnt/raid0/llm/tmp/kvu12-redo-20261021/window.sh`, window D4 19:10Z. KPF CPU+GPU runner fix (argv-derived `dflash2`, same-source unique cells), backups `*.pre-kpf180b1-20261021`; follow-up KPF-18.0b.2 opened.
 ## SEC-ART-1 implemented, SEC-ART-4 designed (not ticked)
 Root `a9fccdc21` (safe_download revision pin + provenance ledger, new-model Step 0, SEC-ART-4 design text in model-artifact-integrity.md) and orchestrator `a9a3365a` (registry pin validator warn/strict, backfill planner). Tests: 11 + 13 + 4 passed. Pending: SEC-ART-1.1 backfill + strict flip.
+## kvu-restore-triage (worktree root-kvu-triage)
+- Re-added old KVU-21 (#29510 A/B arm) as KVU-22 in handoffs/active/kv-unified-stack-rollout.md; triaged 20 restored open items: 1 superseded (CPU-FA-VKQ-1 by Yfa fold / V11-086 EXCL), 19 open (no evidence found); no ticks. index_state --check clean.
