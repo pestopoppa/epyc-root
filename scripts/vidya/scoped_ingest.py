@@ -338,6 +338,10 @@ def _max_rowid(db: Path) -> int:
 
 
 def _store_manifest(exp: Any, store: Path, cache: dict, report: dict) -> dict:
+    """THE store manifest, built at most once per store per memo: the floor and experiments paths
+    share this one cache (keyed by store path, invalidated when the experiments adapter id
+    changes), so a planning step never runs `_ak_store_manifest.resolve` -- whose second strategy
+    is a `LIKE` over `experiments.db` payloads -- twice, or again on the next step."""
     key = str(store)
     entry = cache.get(key)
     adapter_id = str(getattr(exp, "ADAPTER_ID", ""))
@@ -345,7 +349,10 @@ def _store_manifest(exp: Any, store: Path, cache: dict, report: dict) -> dict:
             and isinstance(entry.get("manifest"), dict):
         return entry["manifest"]
     builder = getattr(exp, "build_store_manifest", None)
-    manifest = dict(builder(store)) if callable(builder) else {}
+    if not callable(builder):
+        from adapters import _ak_store_manifest as owner  # noqa: PLC0415
+        builder = owner.resolve
+    manifest = dict(builder(store))
     try:
         json.dumps(manifest, sort_keys=True)
     except (TypeError, ValueError):
@@ -400,8 +407,8 @@ def _experiment_frames(exp: Any, store: Path, *, as_of: str, watermarks: dict,
 
 
 def _floor_frames(store: Path, *, as_of: str, known: set[str], refused_memo: dict,
-                  report: dict) -> list[dict]:
-    from adapters import _ak_store_manifest as store_manifest  # noqa: PLC0415
+                  report: dict, manifest_for: Any) -> list[dict]:
+    """`manifest_for()` is the shared, memo-cached store manifest (`_store_manifest`)."""
     from adapters import autokernel_serving_floor as floor  # noqa: PLC0415
     from claim_tuple import ProjectionError, to_frames  # noqa: PLC0415
 
@@ -409,7 +416,7 @@ def _floor_frames(store: Path, *, as_of: str, known: set[str], refused_memo: dic
     report["floors_listed"] += len(paths)
     if not paths:
         return []
-    manifest = store_manifest.resolve(store)
+    manifest = manifest_for()
     out: list[dict] = []
     for path in paths:
         stat = path.stat()
@@ -498,7 +505,8 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
     for store in stores:
         incoming.extend(_floor_frames(
             store, as_of=as_of, refused_memo=refused_memo, report=report,
-            known=_ledger_source_ids(ledger_frames, f"src_{floor.MEASUREMENT_PREFIX}")))
+            known=_ledger_source_ids(ledger_frames, f"src_{floor.MEASUREMENT_PREFIX}"),
+            manifest_for=lambda store=store: _store_manifest(exp, store, manifests, report)))
         if exp is not None and (store / EXPERIMENTS_DB).is_file():
             try:
                 incoming.extend(_experiment_frames(
