@@ -11,7 +11,9 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 from claim_tuple import grade  # noqa: E402
-from scripts.vidya.adapters import odl_model_gated  # noqa: E402
+# Import by the same name `ingest_sources` loads (`adapters.`): a second module object
+# (`scripts.vidya.adapters.`) re-registers its projection and the registry refuses it.
+from adapters import odl_model_gated  # noqa: E402
 
 
 def _write(path: Path, data: bytes) -> dict:
