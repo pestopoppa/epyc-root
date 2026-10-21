@@ -1,0 +1,9 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=60.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /usr/bin/timeout 580 /usr/bin/taskset -c 72-95 /usr/bin/env WINDOW_CONFIRMED=1 /mnt/raid0/llm/tmp/nemotron-c2-prep-20261021/run_ch21_check_fixed.sh /mnt/raid0/llm/kernels/builds/cpu-20261021-f9c01ce0e-c-nemotron/bin/llama-server /mnt/raid0/llm/tmp/nemotron-c2-prep-20261021/ch21-f9c01ce0e
+disable message in libllama-server-impl.so
+Qwen3.6-35B-A3B-MTP-Q8_0 server pid=3699333
+server 3699333 verified dead
+PASS Qwen3.6-35B-A3B-MTP-Q8_0 (disable line present; generation_settings.n_cache_reuse=absent; reuse-request served; per-request ignore lines=1)
+Qwen3.8-27B-Q8_0 server pid=3700333
+server 3700333 verified dead
+PASS Qwen3.8-27B-Q8_0 (disable line present; generation_settings.n_cache_reuse=absent; reuse-request served; per-request ignore lines=1)
