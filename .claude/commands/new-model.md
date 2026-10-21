@@ -50,6 +50,37 @@ This will:
 5. Run health check to verify model launches
 6. Suggest candidate roles based on model properties
 
+### Step 1.5: Template provenance and uploader class (SEC-ART-3 / SEC-ART-5)
+
+A chat template is executable behaviour; a weight-identical GGUF can still carry a changed template. For
+EVERY GGUF that will serve (lineup or candidate), record the upstream template, the served template and a
+reviewed diff:
+
+```bash
+ORCH="${EPYC_ORCH_ROOT:-repos/epyc-orchestrator}"
+EPYC_RESEARCH_ROOT="${EPYC_RESEARCH_ROOT:-repos/epyc-inference-research}"
+python3 "$ORCH/scripts/validate/template_provenance.py" --role <role> --gguf <gguf> \
+    [--chat-template-file <override.jinja>] --upstream-repo <first-party-org>/<base-model> \
+    --diff-dir "$EPYC_RESEARCH_ROOT/data/template_reviews" --allow-network --out /mnt/raid0/llm/tmp/<role>-prov.json
+python3 "$ORCH/scripts/validate/apply_registry_integrity_pins.py" --registry "$EPYC_RESEARCH_ROOT/orchestration/model_registry.yaml" \
+    --template-plan /mnt/raid0/llm/tmp/<role>-prov.json --only-role <role> \
+    --reviewed-note "<who read data/template_reviews/<role>.diff, date>"
+```
+
+Read the diff before recording the reviewer: it is the evidence that a template with no weight change did
+not add a hidden branch. Result lands in `server_mode.<role>.chat_template.{upstream_template_sha256,
+served_template_sha256, template_diff, upstream_ref, upstream_revision, template_diff_reviewed}`;
+`scripts/validate_model_registry.py` (research) ERRORS for a deployable GGUF-serving role missing the first
+three. The launcher refuses a launch whose effective template does not hash to `served_template_sha256`.
+
+Set `roles.<role>.model.uploader_class` (`first_party` | `allowlisted_requantizer` | `community`; the
+allowlist is operator policy, never inferred). A `community` artifact reaching a role with
+`tool_permissions` additionally needs `model.artifact_review.record: <review.yaml>` covering provenance
+(for a repo that presents itself as a copy of an upstream: compare every LFS oid with the claimed upstream through the HF tree API and list every file the upstream lacks),
+a base-model diff (or `none_no_base_model`), and a label-vs-function entry for every generation-changing
+launch flag. See `epyc-orchestrator src/registry/artifact_review.py`; the stack-change `artifact_integrity`
+step and `orchestrator_stack.py start` both enforce it.
+
 ### Step 2: Review Results with User
 
 If onboarding succeeds, present the results:
@@ -100,6 +131,20 @@ registry = load_registry()
 registry.add_model_entry("ROLE_NAME", ENTRY_DICT)
 print(f"Added {ROLE_NAME} to registry")
 ```
+
+### Step 4.5: Register the GGUF fingerprint (SEC-ART-2)
+
+After the registry entry carries `sha256` (and `shard_sha256` for a split set), hash the file in full once:
+
+```bash
+python3 "$ORCH/scripts/validate/register_gguf_fingerprints.py" register --role <role>
+```
+
+This confirms the digest against the pin (mismatch = refused, nothing recorded) and stores a stat
+fingerprint in the host-local ledger; the launcher then re-hashes only if size/mtime/inode change. A GGUF
+quantized or patched locally has no upstream oid: `register --adopt-unpinned` records the digest as a
+PROPOSAL to review into `model.sha256`. Large files read the whole file: schedule it like any IO-heavy
+correctness job, never inside a timing window.
 
 ### Step 5: Verify Entry Works
 
