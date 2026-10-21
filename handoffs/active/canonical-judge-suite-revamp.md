@@ -505,6 +505,10 @@ import.
       the prompt already demands a responsiveness check it cannot perform. **The plumbing/prompt
       half is zero-compute and is a prerequisite for any citable local BEAM number; the
       agreement measurement is COMPUTE-GATED — filed, not run.**
+      **Acceptance clause (CJ-18b, 2026-10-21):** each judged comparison records the judge family and each
+      arm family and carries the judge-arm CAPA row (discrete CAPA per `scripts/typed_decisions/cj18_judge_affinity.py`);
+      a same-family judge is permitted but flagged. The recorded 27B versus 35B-A3B head-to-head used one Qwen-family
+      judge over Qwen-family arms (intake-2323#record).
 
 ## Decision gate (OPERATOR)
 
