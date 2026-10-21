@@ -37,6 +37,11 @@ mixed (belief redesign 2026-10-21, §7.1):
                target evidence.
   * host    -- device-only scopes (e.g. INF-70 roofline): at most 3 lines, labelled "host
                ceiling, not about this model", and NOT reliance-eligible.
+  * knob    -- (§12.3) a target-tier claim whose `knob_family` is one of the target's
+               `knob_families` (AutoPilot role targets); ranked above plain target lines and
+               sharing their budget. Lines print the claim's `varied` and fixed `knobs`.
+  * lineup  -- (§12.3) a lineup target `{scope: "lineup", stack_regime}` matches only claims
+               declaring the same `stack_regime`; else "No beliefs at this regime".
   The declared scope table (`SOURCE_SCOPES`) covers sources written before VB-APPLICABILITY whose
   producer contract pins the whole scope; it is tiered by the same rule.
 
@@ -104,8 +109,17 @@ SECTION_HEADER = "## Belief-kernel evidence (Vidya ledger, read-only)"
 #: 80-id tried-mechanisms index, 14 KB in all.
 DEFAULT_MAX_CLAIMS = 27
 DEFAULT_MAX_BYTES = 14000
-TIERS = ("target", "sibling", "host")
-TIER_CAPS = {"target": 16, "sibling": 8, "host": 3}
+#: Tiers in rank order. `knob` (belief redesign §12.3) is a target-model match whose
+#: `knob_family` is one the target can change; it shares the target budget and ranks above plain
+#: target lines. `lineup` matches a lineup target by `stack_regime` (AutoPilot's own trials).
+TIERS = ("knob", "target", "lineup", "sibling", "host")
+TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3}
+#: Tiers whose ids are planner evidence for the target (reliance-eligible); host is not.
+_MODEL_TIERS = ("knob", "target")
+#: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
+#: unknown family never reaches the knob tier.
+KNOB_FAMILIES = frozenset({"spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
+                           "orchestrator", "slot_serving"})
 INDEX_CAP = 80
 TRIED_JSON_CAP = 400
 CLAIM_TEXT_CAP = 440
@@ -346,12 +360,36 @@ class Target:
     model_sha256: str = ""
     recipe: str = ""
     focus_symbols: tuple[str, ...] = ()
+    role: str = ""
+    knob_families: tuple[str, ...] = ()
+    stack_regime: str = ""
+    scope: str = "model"
+
+    @property
+    def is_lineup(self) -> bool:
+        return self.scope == "lineup"
+
+    @property
+    def key(self) -> tuple[str, ...]:
+        """Identity of this target inside one answer (several roles may share one model)."""
+        if self.is_lineup:
+            return ("lineup", self.stack_regime)
+        return (self.model_file, self.backend, self.role)
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> "Target":
         """`model_file`, or `model_path` reduced to its basename. An incomplete target raises:
         it is not a wildcard. `device` defaults from the backend on this host. `recipe` is taken
         as given, else from an AutoKernel `surface` of the form `serving:<recipe>`."""
+        families = _target_families(raw)
+        role = str(raw.get("role") or "").strip()
+        regime = str(raw.get("stack_regime") or "").strip()
+        if str(raw.get("scope") or "").strip().lower() == "lineup":
+            # The lineup target (belief redesign §12.3): AutoPilot's lineup-wide knobs, matched
+            # only by stack_regime. No model, so no target/sibling/host tier can reach it.
+            return cls(model_file="", quant="", backend="", device="",
+                       label=str(raw.get("label") or ""), role=role, knob_families=families,
+                       stack_regime=regime, scope="lineup")
         model = str(raw.get("model_file") or "").strip()
         if not model and raw.get("model_path"):
             model = PurePath(str(raw["model_path"])).name
@@ -383,13 +421,45 @@ class Target:
             raise ValueError("focus_symbols must be a list of symbol names when given")
         symbols = tuple(sorted({str(s).strip() for s in focus if str(s).strip()}))
         return cls(context_tokens=depth, label=str(raw.get("label") or ""), model_sha256=sha,
-                   recipe=recipe, focus_symbols=symbols, **values)
+                   recipe=recipe, focus_symbols=symbols, role=role, knob_families=families,
+                   stack_regime=regime, **values)
 
     def as_dict(self) -> dict[str, Any]:
         return {"model_file": self.model_file, "quant": self.quant, "backend": self.backend,
                 "device": self.device, "context_tokens": self.context_tokens,
                 "label": self.label, "model_sha256": self.model_sha256, "recipe": self.recipe,
-                "focus_symbols": list(self.focus_symbols)}
+                "focus_symbols": list(self.focus_symbols), "role": self.role,
+                "knob_families": list(self.knob_families), "stack_regime": self.stack_regime,
+                "scope": self.scope}
+
+
+def _target_families(raw: Mapping[str, Any]) -> tuple[str, ...]:
+    """`knob_families` (list) or `knob_family` (one name). Only declared families are accepted:
+    a misspelt family on a target would silently match nothing."""
+    value = raw.get("knob_families")
+    if value is None:
+        value = raw.get("knob_family")
+    if value is None or value == "":
+        return ()
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, (list, tuple)):
+        raise ValueError("knob_families must be a list of family names when given")
+    names = {str(v).strip() for v in value if str(v).strip()}
+    unknown = sorted(names - KNOB_FAMILIES)
+    if unknown:
+        raise ValueError(f"unknown knob families {unknown}; declared: {sorted(KNOB_FAMILIES)}")
+    return tuple(sorted(names))
+
+
+def claim_families(scope: Mapping[str, Any]) -> tuple[str, ...]:
+    """A claim's declared `knob_family` (one name, or a list), as recorded."""
+    value = scope.get("knob_family") if isinstance(scope, Mapping) else None
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, (list, tuple)):
+        return ()
+    return tuple(sorted({str(v).strip() for v in value if str(v).strip()}))
 
 
 @dataclass(frozen=True)
@@ -500,8 +570,19 @@ def host_matches(scope: Mapping[str, Any], target: Target) -> bool:
     return bool(scope.get("device")) and _dims_match(scope, target)
 
 
+def lineup_matches(scope: Mapping[str, Any], target: Target) -> bool:
+    """LINEUP tier: a lineup target and a claim declaring the same, non-empty stack_regime."""
+    regime = str(scope.get("stack_regime") or "").strip() if isinstance(scope, Mapping) else ""
+    return target.is_lineup and bool(regime) and regime == target.stack_regime
+
+
 def tier_of(scope: Mapping[str, Any], target: Target) -> str | None:
+    if target.is_lineup:
+        return "lineup" if lineup_matches(scope, target) else None
     if applicability_matches(scope, target):
+        families = set(claim_families(scope)) & KNOB_FAMILIES
+        if families & set(target.knob_families):
+            return "knob"
         return "target"
     if sibling_matches(scope, target):
         return "sibling"
@@ -775,6 +856,10 @@ def _merge_linked(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]],
     return [row for row in rows if row["claim_id"] not in merged_ids], merged
 
 
+def _epoch_tier(row: Mapping[str, Any]) -> str:
+    return "target" if row["tier"] in ("knob", "target") else row["tier"]
+
+
 def _mark_stale_epochs(rows: list[dict[str, Any]]) -> None:
     """Per (tier, model, recipe, source kind) the newest row that declares an epoch names the
     current epoch; a row on another epoch is stale (its number is not comparable, the fact that
@@ -783,12 +868,12 @@ def _mark_stale_epochs(rows: list[dict[str, Any]]) -> None:
     for row in rows:
         if not row["epoch"]:
             continue
-        key = (row["tier"], row["model_file"], row["recipe"], row["source_kind"])
+        key = (_epoch_tier(row), row["model_file"], row["recipe"], row["source_kind"])
         cand = (row["recency"], row["revision"], row["epoch"])
         if key not in current or cand > current[key]:
             current[key] = cand
     for row in rows:
-        key = (row["tier"], row["model_file"], row["recipe"], row["source_kind"])
+        key = (_epoch_tier(row), row["model_file"], row["recipe"], row["source_kind"])
         row["stale_epoch"] = bool(row["epoch"]) and current[key][2] != row["epoch"]
 
 
@@ -887,7 +972,12 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "text": str(claim.get("display_text", "")),
                "grade_reasons": reasons.get(raw_id, ()),
                "targets": sorted({t.model_file for t in hits}),
-               "target_keys": sorted({(t.model_file, t.backend) for t in hits}),
+               "target_keys": sorted({t.key for t in hits}),
+               "knob_family": ",".join(claim_families(scope)),
+               "knobs": dict(scope["knobs"]) if isinstance(scope.get("knobs"), Mapping) else {},
+               "varied": [str(v) for v in scope["varied"]]
+               if isinstance(scope.get("varied"), (list, tuple)) else [],
+               "role": _str(scope.get("role")), "stack_regime": _str(scope.get("stack_regime")),
                "tier": tier, "status": "verified",
                "model_file": model_file, "label": model_label(model_file),
                "backend": str(scope.get("backend") or hits[0].backend).strip().lower(),
@@ -1117,10 +1207,11 @@ def tried_index(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     best: dict[tuple, dict[str, Any]] = {}
     counts: dict[tuple, int] = {}
     for row in rows:
-        if row["tier"] == "host" or not row["mechanism_id"] or row["outcome"] in (
+        if row["tier"] in ("host", "lineup") or not row["mechanism_id"] or row["outcome"] in (
                 "anchor", "floor"):
             continue
-        key = (row["tier"], row["model_file"], row["mechanism_id"])
+        tier = "target" if row["tier"] in _MODEL_TIERS else row["tier"]
+        key = (tier, row["model_file"], row["mechanism_id"])
         counts[key] = counts.get(key, 0) + 1
         if key not in best or _rank_key(row) < _rank_key(best[key]):
             best[key] = row
@@ -1130,10 +1221,11 @@ def tried_index(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     for key in order:
         row = best[key]
         out.append({"mechanism_id": row["mechanism_id"], "outcome": row["outcome"] or "recorded",
+                    "knob_family": row["knob_family"],
                     "outcome_native": row["outcome_native"], "effect_rel": row["effect_rel"],
                     "noise_floor_rel": row["noise_floor_rel"],
                     "reason": _cap(row["outcome_reason"], 80) if row["outcome_reason"] else "",
-                    "tier": row["tier"], "model_file": row["model_file"],
+                    "tier": key[0], "model_file": row["model_file"],
                     "label": row["label"], "recipe": row["recipe"], "status": row["status"],
                     "stale_epoch": row["stale_epoch"], "claim_id": row["claim_id"],
                     "date": row["revision"], "captures": counts[key]})
@@ -1162,7 +1254,11 @@ def _index_text(entry: Mapping[str, Any]) -> str:
 # ---- rendering (belief redesign §7.3)
 
 TIER_TITLES = {
+    "knob": ("### Usable, knob tier -- the target's own weights AND a knob family this target "
+             "can change (varied / fixed knobs printed)"),
     "target": "### Usable, target tier -- claims scoped to the target's own weights",
+    "lineup": ("### Usable, lineup tier -- the planner's own trials at this stack regime "
+               "(lineup-wide knobs)"),
     "sibling": ("### Usable, sibling tier -- measured on a sibling file of the same lineage "
                 "(other weights, quant or recipe); transfer unproven, never target evidence"),
     "host": ("### Host tier -- host ceiling, not about this model; not evidence for a "
@@ -1216,7 +1312,18 @@ def _where(row: Mapping[str, Any], tier: str) -> str:
         extras.append(f"epoch {row['epoch'][:8]}")
     if row["np"] is not None:
         extras.append(f"np {row['np']}")
+    if row.get("role"):
+        extras.append(f"role {row['role']}")
+    if row.get("knob_family"):
+        extras.append(f"family {row['knob_family']}")
+    if row.get("varied"):
+        extras.append(f"varied [{', '.join(row['varied'])}]")
+    if row.get("knobs"):
+        fixed = ", ".join(f"{k}={_cap(v, 40)}" for k, v in sorted(row["knobs"].items()))
+        extras.append(f"knobs {{{_cap(fixed, 160)}}}")
     tail = (" " + " ".join(extras)) if extras else ""
+    if tier == "lineup":
+        return f"lineup regime {row['stack_regime'][:12]}{tail}"
     if tier == "host":
         return "host ceiling, not about this model"
     if tier == "sibling":
@@ -1309,7 +1416,7 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
     if what:
         lines.append(head)
         lines.append(f"  {what}{_earlier_text(row)}")
-        if tier == "target" and row["statement"]:
+        if tier in _MODEL_TIERS and row["statement"]:
             falsifier = (f"; falsifier: {_cap(row['falsifier'], STATEMENT_CAP // 2)}"
                          if row["falsifier"] else "")
             lines.append(f"  mechanism: {_cap(row['statement'], STATEMENT_CAP)}{falsifier}")
@@ -1325,28 +1432,42 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
             facts.insert(0, f"context {row['context_tokens']}")
         if row["revision"]:
             facts.append(row["revision"])
-        cap = CLAIM_TEXT_CAP if tier == "target" else CONTEXT_TEXT_CAP
+        cap = CLAIM_TEXT_CAP if tier in _MODEL_TIERS + ("lineup",) else CONTEXT_TEXT_CAP
         lines.append(f"{head}: {row['locator']} ({'; '.join(facts)}): {_cap(row['text'], cap)}")
-        if tier == "target" and row["grade_reasons"]:
+        if tier in _MODEL_TIERS and row["grade_reasons"]:
             lines.append(f"  grade notes: {_cap(row['grade_reasons'][0], REASON_CAP)}")
     if row["status"] in FLAG_BUCKETS:
         lines.append(f"  gate: {_cap(row.get('gate_reason') or '', REASON_CAP // 2)}")
     return lines
 
 
+def _target_label(target: Target) -> str:
+    return f"lineup:{target.stack_regime or 'unrecorded'}" if target.is_lineup \
+        else target.model_file
+
+
 def _target_name(target: Target) -> str:
-    return f"{target.model_file} ({target.backend})"
+    role = f", role {target.role}" if target.role else ""
+    return f"{target.model_file} ({target.backend}{role})"
 
 
 def banner_text(targets: list[Target], empty: list[Target]) -> str | None:
-    """The empty-target banner (belief redesign §7.3), or None when every target has beliefs."""
+    """The empty-target banner (belief redesign §7.3, §12.3), or None when every target has
+    beliefs of its own. A lineup target with none says "No beliefs at this regime"."""
     if not empty:
         return None
-    names = ", ".join(_target_name(t) for t in empty)
+    models = [t for t in empty if not t.is_lineup]
+    lineups = [t for t in empty if t.is_lineup]
+    parts = []
+    if models:
+        parts.append(f"No beliefs are scoped to {', '.join(_target_name(t) for t in models)}.")
+    if lineups:
+        regimes = ", ".join(t.stack_regime or "regime unrecorded" for t in lineups)
+        parts.append(f"No beliefs at this regime ({regimes}).")
+    text = " ".join(parts)
     if len(empty) == len(targets):
-        return (f"No beliefs are scoped to {names}. The lines below are sibling/host context "
-                "only.")
-    return f"No beliefs are scoped to {names}."
+        text += " The lines below are sibling/host context only."
+    return text
 
 
 def render(targets: list[Target], rows: list[dict[str, Any]],
@@ -1368,26 +1489,38 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
     whole = whole_runs or set()
     selected: dict[str, list[list[dict[str, Any]]]] = {}
     remaining = max_claims
+    model_budget = TIER_CAPS["target"]          # knob + target share the target budget
     for tier in TIERS:
         pool = [row for row in list(rows) + flagged_rows if row["tier"] == tier]
         ranked, folded = _fold_mechanisms(sorted(pool, key=_rank_key))
         info["folded"].extend(folded)
-        cap = max(0, min(TIER_CAPS[tier], remaining))
-        selected[tier] = _select(_units(ranked, whole), cap, force=(tier == "target"))
-        remaining -= sum(len(unit) for unit in selected[tier])
+        cap = max(0, min(TIER_CAPS[tier], remaining,
+                         model_budget if tier in _MODEL_TIERS else TIER_CAPS[tier]))
+        selected[tier] = _select(_units(ranked, whole), cap, force=(tier in _MODEL_TIERS))
+        used = sum(len(unit) for unit in selected[tier])
+        remaining -= used
+        if tier in _MODEL_TIERS:
+            model_budget -= used
     entries = list((tried or [])[:INDEX_CAP])
     names = "; ".join(
-        f"{t.model_file} / {t.quant or 'quant unstated'} / {t.backend} / {t.device}"
+        (f"lineup / regime {t.stack_regime or 'unrecorded'}" if t.is_lineup else
+         f"{t.model_file} / {t.quant or 'quant unstated'} / {t.backend} / {t.device}")
         + (f" / context {t.context_tokens}" if t.context_tokens else "")
-        + (f" / recipe {t.recipe}" if t.recipe else "") for t in targets)
+        + (f" / recipe {t.recipe}" if t.recipe else "")
+        + (f" / role {t.role}" if t.role else "")
+        + (f" / knob families {','.join(t.knob_families)}" if t.knob_families else "")
+        for t in targets)
     head = [SECTION_HEADER] + ([banner] if banner else []) + [
         f"Target(s): {names}.",
-        "Claims are tiered by declared applicability: target (the target's own weights), "
+        "Claims are tiered by declared applicability: knob (the target's own weights and a "
+        "knob family it can change), target (the target's own weights), lineup (this stack "
+        "regime), "
         "sibling (same declared lineage, other weights or recipe; transfer unproven), host "
         "(device-only scope; a ceiling, not about this model). Grade is the folded "
         f"claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
-    tail = [f"Optional reply field {reply_field}: a list of the target- or sibling-tier claim "
-            "ids above that the proposal depends on; omit it when it depends on none. Host-tier "
+    tail = [f"Optional reply field {reply_field}: a list of the knob-, target-, lineup- or "
+            "sibling-tier claim ids above that the proposal depends on; omit it when it depends "
+            "on none. Host-tier "
             "lines and contested, withdrawn or refuted claims are not evidence for a proposal."]
 
     def compose() -> str:
@@ -1424,7 +1557,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                     _index_text(entry))
             for (tier, model_file), texts in groups.items():
                 label = model_label(model_file) or model_file
-                prefix = (f"Tried on {label}:" if tier == "target"
+                prefix = (f"Tried on {label}:" if tier in _MODEL_TIERS
                           else f"Tried on {label} (sibling; transfer unproven):")
                 line = prefix
                 for text in texts:
@@ -1437,7 +1570,9 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         flags = {b: sum(1 for t in TIERS for r in chosen[t] if r["status"] == b)
                  for b in FLAG_BUCKETS}
         total = {t: sum(1 for r in list(rows) + flagged_rows if r["tier"] == t) for t in TIERS}
-        count = (f"Shown {shown_counts['target']} of {total['target']} target, "
+        count = (f"Shown {shown_counts['knob']} of {total['knob']} knob, "
+                 f"{shown_counts['target']} of {total['target']} target, "
+                 f"{shown_counts['lineup']} of {total['lineup']} lineup, "
                  f"{shown_counts['sibling']} of {total['sibling']} sibling, "
                  f"{shown_counts['host']} of {total['host']} host claim(s) "
                  f"({flags['contested']} contested, {flags['withdrawn']} withdrawn, "
@@ -1456,14 +1591,19 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         if entries:
             entries.pop()
             return True
-        units = selected["target"]
-        for i in range(len(units) - 1, -1, -1):
-            if not _forced(units[i]):
-                units.pop(i)
-                return True
-        if units:
-            units.pop()
+        if selected["lineup"]:
+            selected["lineup"].pop()
             return True
+        for tier in ("target", "knob"):
+            units = selected[tier]
+            for i in range(len(units) - 1, -1, -1):
+                if not _forced(units[i]):
+                    units.pop(i)
+                    return True
+        for tier in ("target", "knob"):
+            if selected[tier]:
+                selected[tier].pop()
+                return True
         return False
 
     section = compose()
@@ -1499,6 +1639,9 @@ def _claim_view(row: Mapping[str, Any]) -> dict[str, Any]:
             "reps": row["reps"], "recipe": row["recipe"], "model_file": row["model_file"],
             "stale_epoch": row["stale_epoch"], "retrofit": row["retrofit"],
             "linked_claim_ids": list(row["linked_claim_ids"]),
+            "knob_family": row["knob_family"], "role": row["role"],
+            "varied": list(row["varied"]), "knobs": dict(row["knobs"]),
+            "stack_regime": row["stack_regime"],
             "not_evidence": row["tier"] == "host"}
 
 
@@ -1515,8 +1658,9 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
     rows, flagged, omitted = col["rows"], col["flagged"], col["omitted"]
     every = rows + [row for bucket in FLAG_BUCKETS for row in flagged[bucket]]
     tiers = {tier: sum(1 for row in every if row["tier"] == tier) for tier in TIERS}
-    target_keys = {key for row in every if row["tier"] == "target" for key in row["target_keys"]}
-    empty_targets = [t for t in targets if (t.model_file, t.backend) not in target_keys]
+    own = _MODEL_TIERS + ("lineup",)
+    target_keys = {key for row in every if row["tier"] in own for key in row["target_keys"]}
+    empty_targets = [t for t in targets if t.key not in target_keys]
     banner = banner_text(targets, empty_targets)
     tried = tried_index(every)
     section, shown, shown_flagged, info = render(
@@ -1567,8 +1711,8 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                                              "mechanism_id")} for row in rows_b]
                     for b, rows_b in shown_flagged.items()},
         "tiers": tiers, "tiers_shown": dict(info["tiers_shown"]),
-        "nonempty_target": tiers["target"] > 0,
-        "empty_targets": [t.model_file for t in empty_targets],
+        "nonempty_target": any(tiers[t] > 0 for t in own),
+        "empty_targets": [_target_label(t) for t in empty_targets],
         "banner": banner, "tried_index": tried_json,
         "tried_index_count": len(tried),
         "runs": run_rows, "omitted": omitted[:OMITTED_CAP], "omitted_count": len(omitted),
@@ -1587,7 +1731,7 @@ def _evidence_empty(reason: str, *, as_of: str, frontier: int | None = None,
             "refuted_claim_ids": [], "host_claim_ids": [], "not_evidence_claim_ids": [],
             "claims": [], "flagged": {b: [] for b in FLAG_BUCKETS},
             "tiers": {t: 0 for t in TIERS}, "tiers_shown": {t: 0 for t in TIERS},
-            "nonempty_target": False, "empty_targets": [t.model_file for t in targets],
+            "nonempty_target": False, "empty_targets": [_target_label(t) for t in targets],
             "banner": banner_text(targets, targets) if targets else None,
             "tried_index": [], "tried_index_count": 0, "runs": [], "omitted": [],
             "omitted_count": 0, "section": "", "section_sha256": "", "section_bytes": 0,
