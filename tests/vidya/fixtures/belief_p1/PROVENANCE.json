@@ -1,0 +1,47 @@
+[
+  {
+    "decisive": true,
+    "fixture": "serving/ds41/serving-beliefs/c2a61f83aa0ef40be93db20d193219a74c42480ffa4597880c9ea6afe6d0279e.json",
+    "label": "ds41",
+    "mechanism_id": "akm-ds41-q4q5-two-row-activation-reuse",
+    "original_receipt": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/serving-beliefs/32f4ab6c7289dcdc606e090987b739cb2295d4212fadd94434eeb010bf90c73e.json",
+    "original_source": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/serving-beliefs/sources/32f4ab6c7289dcdc606e090987b739cb2295d4212fadd94434eeb010bf90c73e.json",
+    "original_source_sha256": "7ce33cc6235a5e098466785ffb588edc63d61d84d87287cf6b637d5d3974e2e0",
+    "schema": "epyc.autokernel.serving_ab.v2",
+    "trimmed": "residency windows cut to scalar keys; seal re-derived"
+  },
+  {
+    "decisive": true,
+    "fixture": "serving/q38fn/serving-beliefs/7980922529559e766875c99b88b07e898f88135f037cf79f103d3a7e3d47ae44.json",
+    "label": "q38fn",
+    "mechanism_id": "akm-cpu-dense-preconverted-static-chunks",
+    "original_receipt": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/serving-beliefs/eefa68d996d06030cf7b9dfc2b8c05e72737312c7cbf84e3cdeaf2c74fbd5185.json",
+    "original_source": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/serving-beliefs/sources/eefa68d996d06030cf7b9dfc2b8c05e72737312c7cbf84e3cdeaf2c74fbd5185.json",
+    "original_source_sha256": "084d9ab0d2cfde6d558b4c19ff82dac4e3786f03faca6349eed5fbe654e9ccbe",
+    "schema": "epyc.autokernel.serving_ab.v2",
+    "trimmed": "residency windows cut to scalar keys; seal re-derived"
+  },
+  {
+    "decisive": null,
+    "fixture": "serving/runtime_ab/serving-beliefs/2ad98dc33a9614eb23f075cb5ae88cb712ff4cf23944e123fd1d60a1a0caab1e.json",
+    "label": "runtime_ab",
+    "mechanism_id": "akm-cpu-runtime-close-thread-binding",
+    "original_receipt": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/serving-beliefs/8105ac055afd599127e705b3d22587d605098c1fe6439e34a8cf66fe2129c000.json",
+    "original_source": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/serving-beliefs/sources/8105ac055afd599127e705b3d22587d605098c1fe6439e34a8cf66fe2129c000.json",
+    "original_source_sha256": "89622e0dc8ba0d8a5d550bf9268f456bc55943e9a138d6c464bd7364f4b0a88f",
+    "schema": "epyc.autokernel.serving_runtime_ab.v1",
+    "trimmed": "residency windows cut to scalar keys; seal re-derived"
+  },
+  {
+    "fixture": "floor/q27b/serving-floor.q27b-9a3f1392a-gpu-dflash2-np1.requests-baa3aa6d30b8bef8263480a6d84250fabadfaac2944359111fb0a5cf9bd428ed.json",
+    "original": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/store/serving-floor.q27b-9a3f1392a-gpu-dflash2-np1.requests-baa3aa6d30b8bef8263480a6d84250fabadfaac2944359111fb0a5cf9bd428ed.json",
+    "original_sha256": "8ccff75f84e0b4af45731a61213b36072a3015bca8d41a1e20c76fe3a29af646",
+    "trimmed": "launch_residency cut to its first window's scalar keys"
+  },
+  {
+    "fixture": "floor/q27b/loop-status.json",
+    "original": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/store/loop-status.json",
+    "original_sha256": "f59354063f83e2ab04cfb8abd9b39aff0dd350ebaa8871219045f8e92b654c12",
+    "trimmed": "target.selected_id/campaign_id and execution backend/model/build only"
+  }
+]
