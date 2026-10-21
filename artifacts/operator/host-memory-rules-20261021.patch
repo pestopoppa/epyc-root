@@ -1,0 +1,85 @@
+diff --git a/agents/shared/OPERATING_CONSTRAINTS.md b/agents/shared/OPERATING_CONSTRAINTS.md
+index 4b9298d8b..7844cfdae 100644
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -168,12 +168,33 @@ investigation; Appendix)
+   - An outer hold covers everything inside it. A bench helper must not request gpu-quiet `shared` while its caller
+     holds it `exclusive`, because the run then deadlocks on itself. The helper either inherits the hold or takes the
+     lock only when called unwrapped.
++  - **Never wrap a tool that takes its own region-lock claim in another `region-lock run`.** The inner claim waits on
++    the outer one its own caller holds, so the run deadlocks until the lock times out. Check whether the tool claims
++    for itself before wrapping it; if it does, run it unwrapped. (origin: `autokernel.loop.calibrate_served_shapes`,
++    2026-10-21, an hour lost; recorded in INC-20261021-earlyoom-session-kills)
+   - `region-lock run` changes directory into the epyc-orchestrator repo before it execs, so every path in the wrapped
+     command must be absolute.
+   - Neither lock is FIFO, so free-running subagent CPU benches can starve a GPU headline run that waits on the same
+     claims. Schedule subagent benches around headline runs; never leave them free-running against a lock that a
+     headline run needs.
+   - (origin: INC-20261004-subagent-unlocked-cpu-in-held-window, second recurrence)
++- **Large CPU model loads are memory-admitted, one at a time.** At most ONE DS41-class CPU server (private-RAM
++  footprint ≥200 GiB) runs on the host at once, across all sessions.
++  - Before any load expected to take more than ~100 GB of RAM, check that `MemAvailable` (`/proc/meminfo`) minus the
++    expected footprint stays ≥100 GiB; otherwise wait. Count the private part, not only the weights: a DS41-1017 CPU
++    server holds RssAnon ≈276 GiB (the MXFP4 `mxfp4_8x8_q8_0` CPU repack copies the experts into anonymous memory)
++    on top of RssFile ≈463 GiB.
++  - A brief for a multi-arm A/B states "one server at a time"; the arms run in sequence, never side by side.
++  - earlyoom kills at <20 GiB available and protects only `llama-server`, so when servers overcommit the host, the
++    agent sessions are what dies.
++  - (origin: INC-20261021-earlyoom-session-kills — the W6.1 drafter A/B ran two DS41-1017 CPU servers at once)
++- **A driver that must outlive the agent that started it runs detached and leaves a trail.** Timing drivers and
++  chained launchers start with `setsid nohup <driver> </dev/null >>"$LOG" 2>&1 &`, never as a child of a session or
++  subagent shell, because when that shell dies its children die with it.
++  - The driver writes a pidfile at start and an end flag on success AND on failure. A pidfile whose process is gone,
++    with no end flag beside it, means the driver was killed.
++  - (origin: INC-20261021-earlyoom-session-kills — the DS41-W5 ABA driver died with its subagent at 15:57Z, and its
++    log was empty)
+ - **Correctness work needs no quiet host; only timing does.** Numerical calibration, op tests, input-hash
+   verification and builds are correctness work: shard it and claim a narrow build-role cpu list
+   (`region-lock run --cpu-list <list> --role build -- <command>`), never a full-host bench claim. Only a TIMING
+diff --git a/docs/reference/agent-config/INCIDENT_LOG.md b/docs/reference/agent-config/INCIDENT_LOG.md
+index 36b519663..db512a098 100644
+--- a/docs/reference/agent-config/INCIDENT_LOG.md
++++ b/docs/reference/agent-config/INCIDENT_LOG.md
+@@ -595,3 +595,42 @@ index wrapper takes an index-writer lock but does not itself enforce a compute
+ claim. NI05-76 / SSU-CODE-INDEX-COMPUTE-CLAIM files structural prevention for
+ review and isolated validation. Main retains ownership of documentation and
+ recovery review; no blind rollback of an index with unknown baseline is justified.
++
++## INC-20261021-earlyoom-session-kills
++
++On 2026-10-21 between 15:56:59Z and 15:57:15Z the host's earlyoom daemon (systemd
++`earlyoom.service`, pid 3820) SIGTERM-killed 13 processes. Three were `claude` agent sessions
++(pids 3948550, 721113, 3944010; their transcripts stop at 15:57:09–15:57:13Z and resume only
++at 16:06Z). The others were five `codex` processes, `opencode`, `gnome-shell`, two firefox
++processes and a `python3` cite-check. Every kill is in `logs/agent_audit-earlyoom.log`, which
++earlyoom's `-N` hook writes. Its timestamps are +0200. The forensics are in
++`/mnt/raid0/llm/tmp/session-crash-20261021/REPORT.md`. No API fault, tmux restart or container
++fault was involved, and tmux kept running.
++
++The live configuration was `-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore
++^(llama-server|sd-server)$ --prefer ^llama-bench$`. So earlyoom kills once MemAvailable falls
++below 20 GiB, never touches a llama-server, and picks the largest remaining RSS first. The
++pressure came from llama-servers, which earlyoom cannot kill. The DS41-W6.1 drafter A/B ran TWO
++DS41-1017 CPU servers at once. A 16:13Z measurement found each one holding RssAnon ≈276 GiB,
++because the MXFP4 `mxfp4_8x8_q8_0` CPU repack copies the experts into anonymous memory, plus
++RssFile ≈463 GiB. Two private footprints of that size, on top of the page cache, pushed
++MemAvailable under the kill threshold. earlyoom then removed the largest unprotected processes,
++which were the agent sessions and the desktop. Killing them could not relieve the pressure,
++because the servers held it. The DS41-W5 ABA driver had been started as a child of a subagent
++shell, so it died with that shell. Its `driver_aba.log` was 0 bytes, so there was no record of
++how far it got.
++
++A second, separate defect cost an hour the same day.
++`autokernel.loop.calibrate_served_shapes` takes its own region-lock claim, and it was run inside
++an outer `region-lock run`. The inner claim waited on the outer one held by its own caller, and
++the run deadlocked until timeout.
++
++Rules fed (`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks, ratified by
++`RATIFY-HOST-MEMORY-RULES-20261021`):
++- large CPU model loads are memory-admitted and run one at a time;
++- drivers that must outlive their agent run detached and leave a pidfile and an end flag;
++- never nest `region-lock run` around a tool that takes its own claim.
++
++The same bundle prints a host-side earlyoom reconfiguration for the operator to run. It adds
++`--avoid` for the agent sessions, shells, tmux server and desktop, and widens `--prefer` to the
++batch llama tools. `--ignore` is unchanged, so llama-servers stay unkillable by earlyoom.
