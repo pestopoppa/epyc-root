@@ -515,3 +515,25 @@ assert 'canonical' not in sys.modules and 'scripts.vidya.canonical' not in sys.m
 """
     result = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
+
+
+# --- knob-grain applicability (§12.2/§12.3; P1-K/L/M) ---------------------------------------
+
+def test_knob_grain_applicability_keys_accepted_and_inert():
+    scope = {"knob_family": ["routing", "slot_serving"], "knobs": {"np": 3, "kv_unified": True,
+                                                                  "b": 512},
+             "varied": ["slot_fork"], "role_models": {"worker": "Qwen3.6-35B-A3B-MTP-Q8_0.gguf"}}
+    t = tup(applicability=scope)
+    assert ct.grade(t) == ct.grade(tup())
+    assert tup(applicability={"knob_family": "routing"}).applicability == {"knob_family": "routing"}
+
+
+@pytest.mark.parametrize("bad", [
+    {"knob_family": []}, {"knob_family": ["a", "a"]}, {"knob_family": [1]}, {"knob_family": ""},
+    {"knobs": {}}, {"knobs": {"x": 1.5}}, {"knobs": {"": 1}}, {"knobs": ["x"]},
+    {"varied": []}, {"varied": "slot_fork"}, {"varied": ["a", "a"]},
+    {"role_models": {"w": ""}}, {"role_models": {"w": 1.0}},
+])
+def test_knob_grain_applicability_refusals(bad):
+    with pytest.raises(ct.ProjectionError, match="malformed"):
+        tup(applicability=bad)

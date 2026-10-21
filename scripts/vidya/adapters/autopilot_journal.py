@@ -33,6 +33,7 @@ from typing import Iterable, Iterator
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from claim_tuple import ClaimTuple, ProjectionError  # noqa: E402
 from frames import make_frame  # noqa: E402
 from measurement_record import grade  # noqa: E402
 
@@ -53,6 +54,7 @@ FT_SUPPORT = "epyc.vidya/frame/evidence_supports_claim/v1"
 #                      refused_guard_unavailable  (safety_gate.py `_select_promotion_rule`)
 #   promotion_status   pending_commit | refused   (present only when a promotion was decided)
 #   frontier_admission representative            (absent unless the trial is a clean frontier point)
+BELIEF_SCOPE_SCHEMA = "epyc.autopilot.belief_scope.v1"
 PROMOTION_FIELDS = ("promotion_rule", "promotion_status", "frontier_admission")
 PROMOTION_PENDING = "pending_commit"
 BASELINE_PROMOTION_EVENT = "baseline_promotion"
@@ -234,6 +236,47 @@ def _w6_generalization(eval_details) -> dict | None:
     return dict(report) if isinstance(report, dict) else None
 
 
+def belief_scope_applicability(row: dict) -> tuple[dict, str]:
+    """(applicability, refusal reason) from the row's top-level ``belief_scope`` (P1-M).
+
+    The orchestrator writes ``belief_scope`` on trials from 2026-10-21 on (``trial_belief_scope``):
+    the regime (the AP-55 ``infra_fingerprint`` digest), the role -> model_file map, the action's
+    ``config_key`` and its knob families. It is carried as the source frame's applicability,
+    inert to grading, exactly as recorded.
+
+    NEVER back-filled (DESIGN 12.4): a row with no ``belief_scope`` returns ``({}, "")`` and
+    projects the byte-identical frames it always did. A scope that is present but wrong -- another
+    schema, no regime, a regime that disagrees with the row's own ``infra_fingerprint``, or one
+    ``ClaimTuple`` refuses -- scopes NOTHING and returns the reason, which is stated in the
+    evidence frame's grade reasons instead of being silently dropped.
+    """
+    raw = row.get("belief_scope")
+    if not isinstance(raw, dict) or not raw:
+        return {}, ""
+    if raw.get("schema") != BELIEF_SCOPE_SCHEMA:
+        return {}, f"belief_scope schema is not {BELIEF_SCOPE_SCHEMA}: not scoped"
+    regime = raw.get("stack_regime")
+    if not isinstance(regime, str) or not regime.strip():
+        return {}, "belief_scope names no stack_regime: not scoped"
+    recorded = str((row.get("measurement") or {}).get("infra_fingerprint") or "")
+    if recorded and recorded != regime:
+        return {}, "belief_scope.stack_regime differs from the row's infra_fingerprint: not scoped"
+    scope: dict = {"stack_regime": regime}
+    for src, dst in (("role_models", "role_models"), ("config_key", "config_key"),
+                     ("knob_families", "knob_family")):
+        value = raw.get(src)
+        if value in (None, "", [], {}):
+            continue
+        scope[dst] = value
+    try:
+        # The carrier owns the scope rules; validate by constructing, never by a second copy.
+        ClaimTuple(measurement_id="belief-scope-check", metric="belief_scope_check", value=0,
+                   date="", category="CANDIDATE", claim="belief_scope check", applicability=scope)
+    except ProjectionError as exc:
+        return {}, f"belief_scope refused by the carrier ({exc}): not scoped"
+    return scope, ""
+
+
 def as_record(shard: Path, row: dict) -> dict:
     """Shape a journal row into the record `measurement_record.grade()` consumes."""
     meas = row["measurement"]
@@ -323,6 +366,9 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
         # Stated, not graded: the delta was measured against a baseline from a different (or
         # unverified) infra regime (AP-55).
         reasons = [*reasons, f"infra comparability vs baseline: {rec['comparability']}"]
+    scope, scope_refusal = belief_scope_applicability(row)
+    if scope_refusal:
+        reasons = [*reasons, scope_refusal]
     return [
         make_frame(
             frame_type=FT_SOURCE,
@@ -330,7 +376,10 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "locator": rec["attestation"]["locator"] or rec["attestation"]["path"],
                        "source_kind": "autopilot-trial",
                        "title": f"autopilot trial {row['trial_id']}",
-                       "revision_observed": rec["date"]},
+                       "revision_observed": rec["date"],
+                       # P1-M: present only on a row that carried a valid belief_scope, so every
+                       # earlier row keeps its byte-identical source frame.
+                       **({"applicability": scope} if scope else {})},
             provenance={"method": ADAPTER_ID, "about": ident, "retrofit": False},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
         ),

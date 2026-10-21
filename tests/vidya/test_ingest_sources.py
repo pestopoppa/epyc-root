@@ -96,6 +96,12 @@ def _kv_prefix_fork(tmp: Path) -> Path:
     return tmp / "kpf" / "belief_measurements.jsonl"
 
 
+def _pb_hol(tmp: Path) -> Path:
+    import shutil
+    shutil.copytree(Path(__file__).parent / "fixtures" / "belief_p1" / "pb_hol", tmp / "pb")
+    return tmp / "pb" / "20261021T160010Z"
+
+
 def _occ1(tmp: Path) -> Path:
     h = _helpers("test_occ1_optical_compression_adapter")
     return h.write_sidecar(h.make_run(tmp))
@@ -202,6 +208,7 @@ BUILDERS = {
     "tulving": _tulving,
     "chat-template-ab": _chat_template,
     "kv-prefix-fork": _kv_prefix_fork,
+    "pb-hol": _pb_hol,
     "occ1": _occ1,
     "tale-budget": _tale_budget,
     "review-f1": _review_f1,

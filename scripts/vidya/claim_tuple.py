@@ -133,6 +133,10 @@ APPLICABILITY_KEYS = frozenset({
     # `scope_basis="store_manifest"`, the store's pinned manifest) states it.
     "model_sha256", "build_sha", "epoch", "recipe", "np", "surface", "symbol", "op", "shape",
     "scope_basis", "role", "stack_regime", "config_key",
+    # §12.2/§12.3 (knob grain): the knob family a record bears on (one name or a list), the flag
+    # set it held fixed (`knobs`), the knob(s) its arms change (`varied`), and an AutoPilot
+    # trial's role -> model_file map. All native declarations; inert to grading.
+    "knob_family", "knobs", "varied", "role_models",
 })
 # `native`: every scope key came from the record itself. `store_manifest`: the record carries no
 # scope of its own and the store's manifest pinned it (the SOURCE_SCOPES basis, §3.1).
@@ -351,6 +355,20 @@ class ClaimTuple:
                 valid = isinstance(value, str) and _GIT_SHA.fullmatch(value) is not None
             elif name == "scope_basis":
                 valid = value in SCOPE_BASES
+            elif name == "knob_family":
+                valid = (isinstance(value, str) and bool(value.strip())) or (
+                    isinstance(value, list) and bool(value) and len(value) == len(set(value))
+                    and all(isinstance(v, str) and v.strip() for v in value))
+            elif name == "varied":
+                valid = (isinstance(value, list) and bool(value) and len(value) == len(set(value))
+                         and all(isinstance(v, str) and v.strip() for v in value))
+            elif name in ("knobs", "role_models"):
+                # str -> str | int | bool. Floats are refused: canonical frames carry none, and a
+                # fixed flag value is a label, not a measurement.
+                valid = isinstance(value, dict) and bool(value) and all(
+                    isinstance(k, str) and k.strip()
+                    and (type(v) in (int, bool) or (isinstance(v, str) and v.strip()))
+                    for k, v in value.items())
             else:
                 valid = isinstance(value, str) and bool(value.strip())
             if not valid:
