@@ -2,7 +2,7 @@
   "session_id": "intake-backdoor-cvec-20261020",
   "started_at": "2026-10-20T23:20:00Z",
   "last_checkpoint": "2026-10-21T08:57:52Z",
-  "stage": "stage4-in-progress",
+  "stage": "stage4-complete",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-backdoor-cvec-20261020",
   "branch": "intake/backdoor-cvec-20261020",
@@ -29898,8 +29898,8 @@
     "plan_sha256": "adcfc738bbf24b3040f0c75ee7fb962215726ab62108e05dec57798eb6dd53ee"
   },
   "stage4": {
-    "status": "applied-pending-main-review",
-    "reconciled": false,
+    "status": "complete",
+    "reconciled": true,
     "applied_at": "2026-10-21T08:57:52Z",
     "plan_path": "/mnt/raid0/llm/tmp/intake-backdoor-cvec-stage3/PLAN.md",
     "plan_sha256": "adcfc738bbf24b3040f0c75ee7fb962215726ab62108e05dec57798eb6dd53ee",
@@ -29914,6 +29914,19 @@
     "approved_plan_sha256": "dfeb19e6a0a4d9197d5442021a2f25c192e32b53fb12a52d8a88fda09e6458fe",
     "approved_plan_copy": "/mnt/raid0/llm/tmp/intake-backdoor-cvec-stage3/PLAN.approved-dfeb19e6.md",
     "approved_payload_copy": "/mnt/raid0/llm/tmp/intake-backdoor-cvec-stage3/payload.approved-dfeb19e6.json",
-    "amendment": "2026-10-21 workspace-f8: citation-form only (4 citations -> #record), no scope change; see PLAN.md section 13"
+    "amendment": "2026-10-21 workspace-f8: citation-form only (4 citations -> #record), no scope change; see PLAN.md section 13",
+    "main_review": {
+      "by": "workspace-f8",
+      "at": "2026-10-21T09:35:00Z",
+      "checks": [
+        "plan sha256 approved dfeb19e6 -> amended adcfc738 (citation-form only, §13)",
+        "byte-equality of 24 task lines, 2 stubs, 2 index rows vs amended payload: 0 mismatches",
+        "UFH-16 and RTG-59 rows present; 24 new unticked checkboxes (8 owners + 16 stubs)",
+        "prior_sessions preserved (main's sessions verbatim; harness-cluster deduped by its owner in be85ae01b)",
+        "validate_intake.sh + plan-file validator + index_state --check exit 0; cite-check only the pre-existing intake-725",
+        "post-filing evolution: model-artifact-integrity.md gained the SEC-ART-4 design appendix (2026-10-21 ~09:30Z, operator-approved task work), so the plan-file stub byte-check now differs by design; it passed at Stage-4 apply (5049176e8/0da94257b)"
+      ],
+      "pushed": "0da94257b"
+    }
   }
 }
