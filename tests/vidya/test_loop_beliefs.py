@@ -1,5 +1,8 @@
 """The shared agent-loop belief reader: mandatory freshness, refusal + alarm, evidence buckets,
-known-good snapshots and degraded-mode seed checks.
+known-good snapshots and degraded-mode seed checks; and (belief redesign Phase 1, P1-E) the
+tiered, value-bearing read side: target / sibling / host tiers, the declared model lineage,
+ranking, caps, the empty-target banner, the refuted bucket, v1/v2 serving dedup and the
+tried-mechanisms index.
 
 Fixture ledgers go through the real write path (`ClaimTuple` -> `to_frames` -> `Ledger`), so the
 grade a test sees is what `claim_tuple.grade()` assigned and `fold()` kept. Freshness uses a fake
@@ -264,7 +267,13 @@ def test_persisted_applicability_matches_declared_dimensions_only(tmp_path, alar
     gpu = _scoped("gpu-1", device="gfx90a", backend="gpu")
     ans = _prepare(tmp_path, alarm,
                    _ledger(tmp_path, [model_scoped, host_scoped, other_model, gpu]), DS41_CPU)
-    assert set(ans["evidence"]["claim_ids"]) == {_claim_id(model_scoped), _claim_id(host_scoped)}
+    ev = ans["evidence"]
+    # Tiered (belief redesign §7.1): the model-scoped claim is target evidence; the device-only
+    # claim is host context, shown but never reliance-eligible.
+    assert ev["claim_ids"] == [_claim_id(model_scoped)]
+    assert ev["host_claim_ids"] == [_claim_id(host_scoped)]
+    assert {c["claim_id"]: c["tier"] for c in ev["claims"]} == {
+        _claim_id(model_scoped): "target", _claim_id(host_scoped): "host"}
 
 
 def test_contested_and_withdrawn_are_flagged_not_presented_as_usable(tmp_path, alarm):
@@ -453,3 +462,440 @@ def test_round_robin_packing_keeps_every_source_visible(tmp_path, alarm):
                   max_claims=6)["evidence"]
     kinds = [c["source_kind"] for c in ev["claims"]]
     assert len(kinds) == 6 and kinds.count("small-source") == 3
+
+
+# ------------------------------------------------------------------------------ tiered read side
+#
+# Synthetic loop beliefs in the belief-redesign §4.1 shape: a real ClaimTuple through `to_frames`
+# (so the grade is the ladder's), then the carrier additions the reader consumes -- extra
+# applicability keys on the source frame, `metric`/`value`/`unit`/`observation` on the evidence
+# frame, `provenance.retrofit` -- re-sealed with `make_frame`. Numeric observation fields are
+# DECIMAL STRINGS, as the canonical encoding (no floats) requires; the reader parses them through
+# one helper.
+
+MODELS = "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf"
+DS41_Q4 = "DeepSeek-V4.1-Flash-Q4.gguf"
+DS41_1017 = "DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf"
+Q38_UD = "Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf"
+Q38_UNI = "Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf"
+EXP = "autokernel-experiment"
+SERVING = "autokernel-legacy-serving"
+CAP_A = "a1" * 32
+CAP_B = "b2" * 32
+
+
+def _target(model, *, quant="", backend="cpu", **extra):
+    return {"model_path": f"{MODELS}/{model}", "quant": quant, "backend": backend, **extra}
+
+
+DS41_Q4_T = _target(DS41_Q4, quant="Q8_0")
+DS41_1017_T = _target(DS41_1017)
+Q38_T = _target(Q38_UD, quant="UD-IQ4_XS")
+QWEN35_T = {"model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf", "quant": "Q8_0",
+            "backend": "cpu"}
+
+
+def _reseal(frames, *, scope_extra, evidence_extra, retrofit):
+    out = []
+    for frame in frames:
+        assertion = copy.deepcopy(frame["assertion"])
+        provenance = copy.deepcopy(frame["provenance"])
+        if frame["frame_type"].endswith("source_observed/v1"):
+            assertion.setdefault("applicability", {}).update(scope_extra)
+            if retrofit:
+                provenance["retrofit"] = True
+        elif frame["frame_type"].endswith("evidence_supports_claim/v1"):
+            assertion.update({k: v for k, v in evidence_extra.items() if v is not None})
+        out.append(make_frame(frame_type=frame["frame_type"], assertion=assertion,
+                              provenance=provenance, actor=frame["pubinfo"]["actor"],
+                              authority_scope=frame["pubinfo"]["authority_scope"],
+                              created_at=frame["pubinfo"]["created_at"]))
+    return out
+
+
+def _loop(ident, *, model=DS41_Q4, quant="Q8_0", backend="cpu", device="epyc-9655",
+          kind=EXP, mech="akm-fixture", outcome="null", value="22.31", anchor="21.9",
+          effect="-0.0072", floor="0.03412", n_pairs=5, recipe="ds41-r1",
+          epoch="c42cd5615dfb0000", build="7ef803926107aaaa", symbol="ggml_iqk_try_mul_mat_id",
+          date="2026-10-04T04:37:38Z", reason="", native="measured_null", decisive=False,
+          metric="aggregate_tok_s", unit="t/s", serving_claim_id=None, observation=True,
+          model_sha256=None, locator=None):
+    """One loop belief's three frames, §4.1 shape. `observation=False` gives an old-style frame
+    (applicability only, no value-bearing evidence keys)."""
+    scope = {"backend": backend, "device": device}
+    if model:
+        scope["model_file"] = f"{MODELS}/{model}"
+    if quant:
+        scope["quant"] = quant
+    tup = ClaimTuple(
+        measurement_id=ident, metric=metric, value=1, date=date, category="CANDIDATE",
+        claim=f"{ident}: fixture loop belief.",
+        reps=n_pairs if isinstance(n_pairs, int) and n_pairs > 0 else None,
+        reps_basis="scored:matched process pairs", unit=unit, attestation_sha256=SHA,
+        attestation_locator=locator or f"autokernel-experiments:store/experiments.db#attempt={ident}",
+        attestation_present=True, source_kind=kind, applicability=scope)
+    extra = {k: v for k, v in {"recipe": recipe, "epoch": epoch, "build_sha": build,
+                               "symbol": symbol, "model_sha256": model_sha256,
+                               "scope_basis": "native"}.items() if v}
+    evidence: dict = {}
+    if observation:
+        obs = {"anchor_value": anchor, "effect_rel": effect, "noise_floor_rel": floor,
+               "decisive": decisive, "n_pairs": n_pairs, "outcome": outcome,
+               "outcome_native": native, "retrofit": True}
+        obs = {k: v for k, v in obs.items() if v is not None}
+        if reason:
+            obs["outcome_reason"] = reason
+        if mech:
+            obs["mechanism"] = {"id": mech, "statement": f"{mech} statement",
+                                "falsifier": f"{mech} falsifier"}
+        if serving_claim_id:
+            obs["serving_claim_id"] = serving_claim_id
+        evidence = {"metric": metric, "value": value, "unit": unit, "observation": obs}
+    return _reseal(to_frames(tup, as_of=WRITTEN, adapter_id="fixture/v1"),
+                   scope_extra=extra if observation else {}, evidence_extra=evidence,
+                   retrofit=observation)
+
+
+def _host(ident, *, value="399.6"):
+    """An INF-70-like device-only claim (no model)."""
+    return _loop(ident, model=None, quant="", kind="inf70-roofline-measurement", mech=None,
+                 outcome="", value=value, unit="GB/s", metric="bench_readbw.read-sum",
+                 recipe=None, epoch=None, build=None, symbol=None, observation=True)
+
+
+def _cid(frames):
+    return next(f["assertion"]["claim_id"] for f in frames
+                if f["frame_type"].endswith("claim_proposed/v1"))
+
+
+def _write(tmp_path, *bundles, name="ledger.jsonl"):
+    path = tmp_path / name
+    led = Ledger(path)
+    for frames in bundles:
+        for frame in frames:
+            led.append(frame)
+    return path
+
+
+def _ev(tmp_path, alarm, path, target, **kw):
+    ans = _prepare(tmp_path, alarm, path, target, **kw)
+    assert ans["status"] == "ready", ans.get("detail")
+    return ans, ans["evidence"]
+
+
+def _tier_of(ev, claim_id):
+    return {c["claim_id"]: c["tier"] for c in ev["claims"]}.get(claim_id)
+
+
+def test_device_only_claims_never_reach_the_target_tier(tmp_path, alarm):
+    hosts = [_host(f"inf70-{i}", value=f"{390 + i}.5") for i in range(5)]
+    own = _loop("ds41-own", mech="akm-own")
+    path = _write(tmp_path, own, *hosts)
+    for target in (DS41_Q4_T, QWEN35_T, DS41_1017_T):
+        _, ev = _ev(tmp_path, alarm, path, target)
+        host_ids = {_cid(h) for h in hosts}
+        assert not host_ids & set(ev["claim_ids"])            # never reliance-eligible
+        assert all(c["tier"] == "host" and c["not_evidence"]
+                   for c in ev["claims"] if c["claim_id"] in host_ids)
+        assert ev["tiers"]["host"] == 5 and ev["tiers_shown"]["host"] <= 3
+        assert "host ceiling, not about this model" in ev["section"]
+    _, own_ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    assert own_ev["tiers"]["target"] == 1 and _tier_of(own_ev, _cid(own)) == "target"
+    _, other = _ev(tmp_path, alarm, path, QWEN35_T)
+    assert other["tiers"]["target"] == 0 and other["claim_ids"] == []
+
+
+def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
+    q4 = [_loop(f"ds41-q4-{i}", mech=f"akm-sib-{i}", outcome="regressed", effect="-0.0341",
+                decisive=True, native="regression") for i in range(3)]
+    uniform = _loop("q38-uniform", model=Q38_UNI, quant="IQ4_XS", mech="akm-q38-uni")
+    stranger = _loop("stranger", model="Some-Other-Model-Q8_0.gguf", mech="akm-stranger")
+    path = _write(tmp_path, *q4, uniform, stranger)
+    _, ev = _ev(tmp_path, alarm, path, DS41_1017_T)
+    assert ev["tiers"] == {"target": 0, "sibling": 3, "host": 0}
+    sibling_lines = [line for line in ev["section"].splitlines()
+                     if line.startswith("- ") and "transfer unproven" in line]
+    assert len(sibling_lines) == 3
+    assert all(f"measured on {DS41_Q4}, recipe ds41-r1; transfer unproven" in line
+               for line in sibling_lines)
+    assert {_tier_of(ev, _cid(b)) for b in q4} == {"sibling"}
+    assert set(ev["claim_ids"]) == {_cid(b) for b in q4}       # sibling ids are reliance-eligible
+    assert _cid(stranger) not in ev["section"]
+    _, q38 = _ev(tmp_path, alarm, path, Q38_T)                 # uniform file is UD's sibling
+    assert q38["tiers"] == {"target": 0, "sibling": 1, "host": 0}
+    assert f"measured on {Q38_UNI}" in q38["section"]
+
+
+def test_section_caps(tmp_path, alarm):
+    own = [_loop(f"own-{i:02d}", mech=f"akm-own-{i:02d}", outcome="improved",
+                 effect=f"0.0{i % 9 + 1}", decisive=True, native="kept",
+                 date=f"2026-10-{i % 28 + 1:02d}T00:00:00Z") for i in range(30)]
+    sib = [_loop(f"sib-{i:02d}", model=DS41_1017, quant="", mech=f"akm-sib-{i:02d}")
+           for i in range(12)]
+    hosts = [_host(f"host-{i}") for i in range(6)]
+    path = _write(tmp_path, *own, *sib, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    assert ev["tiers"] == {"target": 30, "sibling": 12, "host": 6}
+    assert ev["tiers_shown"]["target"] <= lb.TIER_CAPS["target"] == 16
+    assert ev["tiers_shown"]["sibling"] <= lb.TIER_CAPS["sibling"] == 8
+    assert ev["tiers_shown"]["host"] <= lb.TIER_CAPS["host"] == 3
+    assert ev["section_bytes"] <= lb.DEFAULT_MAX_BYTES == 14000
+    assert lb.DEFAULT_MAX_CLAIMS == 27
+    assert "bounded" in ev["reasons"]
+    _, tight = _ev(tmp_path, alarm, path, DS41_Q4_T, max_bytes=4000)
+    assert 0 < tight["section_bytes"] <= 4000
+    assert tight["tiers_shown"]["host"] == 0                   # host context is trimmed first
+    assert tight["tiers_shown"]["target"] >= 1
+
+
+def test_empty_target_banner(tmp_path, alarm):
+    path = _write(tmp_path, _loop("q4-only", mech="akm-q4-only"), _host("inf70-x"))
+    ans, ev = _ev(tmp_path, alarm, path, DS41_1017_T)
+    assert ev["nonempty_target"] is False and ev["tiers"]["target"] == 0
+    expected = (f"No beliefs are scoped to {DS41_1017} (cpu). The lines below are sibling/host "
+                "context only.")
+    assert ev["banner"] == expected and ans["banner"] == expected
+    lines = ev["section"].splitlines()
+    assert lines[0] == lb.SECTION_HEADER and lines[1] == expected   # says so FIRST
+    ans, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    assert ev["nonempty_target"] is True and ev["banner"] is None and ans["banner"] is None
+    assert "No beliefs are scoped" not in ev["section"]
+    # nothing applies at all: still a banner in the answer, no section (pre-tier behaviour)
+    ans, ev = _ev(tmp_path, alarm, _write(tmp_path, _loop("x", model="Unrelated.gguf"),
+                                          name="other.jsonl"), QWEN35_T)
+    assert ev["section"] == "" and ev["reasons"] == ["no_applicable_claims"]
+    assert ev["banner"].startswith("No beliefs are scoped to Qwen3.6-35B-A3B-MTP-Q8_0.gguf")
+
+
+def _oppose_distinct(path, frames, at="2026-09-24T11:00:00+00:00"):
+    support = next(f for f in frames if f["frame_type"].endswith("evidence_supports_claim/v1"))
+    assertion = copy.deepcopy(support["assertion"])
+    assertion["evidence_id"] = assertion["evidence_id"] + ":opposing"
+    Ledger(path).append(make_frame(
+        frame_type="epyc.vidya/frame/evidence_opposes_claim/v1", assertion=assertion,
+        provenance=copy.deepcopy(support["provenance"]), actor="fixture/v1",
+        authority_scope="measurement", created_at=at))
+
+
+def _retract_frames(path, frames, at="2026-09-24T11:30:00+00:00"):
+    support = next(f for f in frames if f["frame_type"].endswith("evidence_supports_claim/v1"))
+    Ledger(path).append(make_frame(
+        frame_type="epyc.vidya/frame/retraction/v1",
+        assertion={"retracts": support["frame_id"], "reason": "fixture"},
+        provenance={"method": "fixture/v1"}, actor="fixture/v1",
+        authority_scope="measurement", created_at=at))
+
+
+def test_refuted_bucket_from_the_fold_verdict(tmp_path, alarm):
+    good = _loop("good", mech="akm-good")
+    refuted = _loop("refuted", mech="akm-refuted", outcome="improved", effect="0.031")
+    path = _write(tmp_path, good, refuted)
+    _oppose_distinct(path, refuted)
+    _retract_frames(path, refuted)             # support gone, opposition clears -> Opposed
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    assert ev["refuted_claim_ids"] == [_cid(refuted)]
+    assert _cid(refuted) not in ev["claim_ids"] and _cid(refuted) not in ev["withdrawn_claim_ids"]
+    assert ev["flagged"]["refuted"][0]["tier"] == "target"
+    section = ev["section"]
+    assert "### Refuted" in section and section.index("### Refuted") < section.index(
+        "### Usable, target tier")
+    assert ev["claim_ids"] == [_cid(good)]
+
+
+def test_same_ledger_same_section_bytes(tmp_path, alarm):
+    bundles = [_loop(f"d-{i}", mech=f"akm-d-{i % 4}", recipe=f"r{i % 2}",
+                     outcome=("improved", "null", "regressed", "refused_correctness")[i % 4],
+                     date=f"2026-10-0{i % 9 + 1}T00:00:00Z") for i in range(12)]
+    bundles += [_host("h-1"), _loop("sib-1", model=DS41_1017, quant="", mech="akm-sib")]
+    first = _write(tmp_path, *bundles, name="a.jsonl")
+    second = _write(tmp_path, *bundles, name="b.jsonl")
+    sections = []
+    for path in (first, first, second):
+        _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+        sections.append((ev["section"].encode(), ev["section_sha256"], ev["tried_index"]))
+    assert sections[0] == sections[1] == sections[2]
+    assert sections[0][0]
+
+
+def test_v1_arm_claims_hide_behind_the_v2_capture_claim(tmp_path, alarm):
+    receipt_a = f"autokernel:/s/serving-beliefs/receipts/{CAP_A}.json"
+    receipt_b = f"autokernel:/s/serving-beliefs/receipts/{CAP_B}.json"
+    v1_a = [_loop(f"legacy-serving:{CAP_A}:{arm}", kind=SERVING, observation=False,
+                  locator=receipt_a) for arm in ("anchor", "candidate")]
+    v1_b = [_loop(f"legacy-serving:{CAP_B}:{arm}", kind=SERVING, observation=False,
+                  locator=receipt_b) for arm in ("anchor", "candidate")]
+    v2_a = _loop(f"legacy-serving-v2:{CAP_A}", kind=SERVING, mech="akm-serv-a",
+                 outcome="regressed", effect="-0.0822", decisive=True, native="regression",
+                 locator=receipt_a)
+    path = _write(tmp_path, *v1_a, *v1_b, v2_a)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    shown = {c["claim_id"] for c in ev["claims"]}
+    assert _cid(v2_a) in shown
+    assert not {_cid(b) for b in v1_a} & shown                 # hidden behind v2
+    assert {_cid(b) for b in v1_b} <= shown                    # no v2 yet: v1 still shown
+    hidden = {o["claim_id"] for o in ev["omitted"] if o["reason"] == "superseded_by_v2"}
+    assert hidden == {_cid(b) for b in v1_a}
+    assert ev["tiers"]["target"] == 3
+
+
+def test_experiment_and_linked_serving_claim_render_as_one_line(tmp_path, alarm):
+    serving = _loop(f"legacy-serving-v2:{CAP_A}", kind=SERVING, mech="akm-linked",
+                    outcome="regressed", value="20.11", anchor="21.9", effect="-0.0822",
+                    floor="0.03412", decisive=True, native="regression")
+    experiment = _loop("ak-exp:v1:0123456789abcdef:att-1", mech="akm-linked",
+                       outcome="regressed", value=None, anchor=None, effect=None,
+                       native="regression", serving_claim_id=f"legacy-serving-v2:{CAP_A}")
+    path = _write(tmp_path, serving, experiment)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    assert [c["claim_id"] for c in ev["claims"]] == [_cid(experiment)]
+    claim = ev["claims"][0]
+    assert claim["linked_claim_ids"] == [_cid(serving)]
+    assert claim["value"] == 20.11 and claim["effect_rel"] == -0.0822
+    assert set(ev["claim_ids"]) == {_cid(experiment), _cid(serving)}
+    assert "akm-linked statement" in ev["section"] and "REGRESSED -8.22% vs anchor" in ev["section"]
+    assert ev["section"].count("akm-linked @") == 1
+
+
+def test_tried_index_contains_every_mechanism_with_its_outcome(tmp_path, alarm):
+    outcomes = ("improved", "null", "regressed", "refused_correctness", "divergence")
+    bundles, expect = [], {}
+    for i in range(40):
+        outcome = outcomes[i % 5]
+        mech = f"akm-tried-{i:02d}"
+        expect[mech] = outcome
+        bundles.append(_loop(f"t-{i:02d}", mech=mech, outcome=outcome,
+                             effect=None if outcome == "refused_correctness" else "-0.004",
+                             reason="MUL_MAT failed on ROCm0" if i % 5 == 3 else "",
+                             date=f"2026-10-{i % 28 + 1:02d}T00:00:00Z"))
+        if i % 10 == 0:   # an earlier capture of the same mechanism (folded, still indexed once)
+            bundles.append(_loop(f"t-{i:02d}-old", mech=mech, outcome="null",
+                                 date="2026-09-01T00:00:00Z"))
+    sib_mech = "akm-from-sibling"
+    bundles.append(_loop("sib", model=DS41_1017, quant="", mech=sib_mech, outcome="improved",
+                         effect="0.02"))
+    path = _write(tmp_path, *bundles)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    index = {(e["tier"], e["mechanism_id"]): e for e in ev["tried_index"]}
+    for mech, outcome in expect.items():
+        entry = index[("target", mech)]
+        assert entry["outcome"] in (outcome, "null")             # newest capture wins
+        assert entry["model_file"] == DS41_Q4
+        assert mech in ev["section"]                             # 41 ids fit the 80-id index
+    assert index[("target", "akm-tried-00")]["captures"] == 2
+    assert index[("sibling", sib_mech)]["outcome"] == "improved"
+    assert "Tried on DS41-Q4:" in ev["section"]
+    assert "Tried on DS41-1017 (sibling; transfer unproven):" in ev["section"]
+    assert ev["tried_index_count"] == 41
+    assert any("(+1 earlier captures:" in line for line in ev["section"].splitlines())
+
+
+def test_old_style_frames_without_observation_still_render(tmp_path, alarm):
+    old = _scoped("pre-carrier")                      # VB-APPLICABILITY era, no observation
+    path = _ledger(tmp_path, [old])
+    _, ev = _ev(tmp_path, alarm, path, DS41_CPU)
+    claim = ev["claims"][0]
+    assert claim["claim_id"] == _claim_id(old) and claim["tier"] == "target"
+    assert (claim["outcome"], claim["value"], claim["mechanism_id"]) == ("", None, "")
+    line = next(l for l in ev["section"].splitlines() if l.startswith(f"- {_claim_id(old)} "))
+    assert "candidate decode 20.0 tokens/s (fixture)" in line and "protocol P-CPU-1" in line
+    assert ev["tried_index"] == []
+    # malformed observation fields read as absent, never crash the reader
+    bad = _loop("bad-obs", mech="akm-bad", value="fast", effect="NaN", floor=["x"], n_pairs="0")
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, bad, name="bad.jsonl"), DS41_Q4_T)
+    claim = ev["claims"][0]
+    assert claim["value"] is None and claim["effect_rel"] is None and claim["n_pairs"] is None
+
+
+def test_value_bearing_line_and_decimal_strings(tmp_path, alarm):
+    reg = _loop("reg", mech="akm-ds41-q4q5-two-row-activation-reuse",
+                symbol="mul_mat_qX_K_q8_2_X4_T", outcome="regressed", value="20.1",
+                anchor="21.9", effect="-0.0822", floor="0.03412", n_pairs=5, decisive=True,
+                native="regression")
+    floor = _loop("floor", model="Qwen3.8-27B-Q8_0.gguf", backend="gpu", device="gfx90a",
+                  kind="autokernel-serving-floor", mech=None, outcome="floor", value="81.12",
+                  anchor=None, effect=None, floor="0.00807", n_pairs=None,
+                  recipe="q27b-9a3f1392a-gpu-dflash2-np1", symbol=None)
+    path = _write(tmp_path, reg, floor)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    text = ev["section"]
+    assert (f"- {_cid(reg)} [Judged/Located · verified · retrofit] DS41-Q4/cpu ds41-r1 "
+            "build 7ef80392 epoch c42cd561") in text
+    assert ("  akm-ds41-q4q5-two-row-activation-reuse @ mul_mat_qX_K_q8_2_X4_T: REGRESSED "
+            "-8.22% vs anchor (20.1 t/s vs anchor 21.9 t/s; floor 3.41%; 5 pairs; decisive) "
+            "-- producer verdict regression") in text
+    claim = ev["claims"][0]
+    assert (claim["value"], claim["unit"], claim["outcome"]) == (20.1, "t/s", "regressed")
+    _, gpu = _ev(tmp_path, alarm, path, GPU_27B)
+    assert "serving floor: median 81.12 t/s; floor 0.81%" in gpu["section"]
+
+
+def test_newest_floor_is_always_shown_and_ranking_order(tmp_path, alarm):
+    decisive = [_loop(f"dec-{i:02d}", mech=f"akm-dec-{i:02d}", outcome="improved",
+                      effect="0.05", decisive=True, native="kept") for i in range(20)]
+    nulls = [_loop(f"null-{i}", mech=f"akm-null-{i}") for i in range(3)]
+    floors = [_loop(f"floor-{d}", kind="autokernel-serving-floor", mech=None, outcome="floor",
+                    value=v, effect=None, anchor=None, date=f"2026-10-{d}T00:00:00Z")
+              for d, v in (("01", "20.0"), ("09", "21.5"))]
+    path = _write(tmp_path, *decisive, *nulls, *floors)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    shown = [c["claim_id"] for c in ev["claims"]]
+    assert _cid(floors[1]) in shown and _cid(floors[0]) not in shown   # newest floor per recipe
+    assert not {_cid(n) for n in nulls} & set(shown)                  # decisive outranks nulls
+    assert "(+1 earlier captures: floor" in ev["section"]
+
+
+def test_stale_epoch_rows_rank_last_and_are_labelled(tmp_path, alarm):
+    new = _loop("new", mech="akm-new", outcome="null", epoch="eeee0000",
+                date="2026-10-05T00:00:00Z")
+    old = _loop("old", mech="akm-old", outcome="improved", effect="0.03", epoch="dddd0000",
+                date="2026-09-20T00:00:00Z")
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, new, old), DS41_Q4_T)
+    assert [c["claim_id"] for c in ev["claims"]] == [_cid(new), _cid(old)]
+    assert [c["stale_epoch"] for c in ev["claims"]] == [False, True]
+    assert "Older epochs (stale epoch -- the number is not comparable" in ev["section"]
+
+
+def test_target_extras_recipe_from_surface_and_model_sha(tmp_path, alarm):
+    sha = "c" * 64
+    raw = {**DS41_Q4_T, "surface": "serving:ds41-r2", "model_sha256": sha,
+           "focus_symbols": ["sym_b", "sym_a"]}
+    target = lb.Target.from_mapping(raw)
+    assert (target.recipe, target.model_sha256, target.focus_symbols) == (
+        "ds41-r2", sha, ("sym_a", "sym_b"))
+    assert target.as_dict()["recipe"] == "ds41-r2"
+    with pytest.raises(ValueError):
+        lb.Target.from_mapping({**DS41_Q4_T, "model_sha256": "nothex"})
+    other = _loop("r1", mech="akm-r1", recipe="ds41-r1")
+    same = _loop("r2", mech="akm-r2", recipe="ds41-r2")
+    renamed = _loop("renamed", model="renamed-copy.gguf", quant="", mech="akm-renamed",
+                    model_sha256=sha)
+    wrong_sha = _loop("wrong-sha", mech="akm-wrong", model_sha256="d" * 64)
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, other, same, renamed, wrong_sha), raw)
+    ids = [c["claim_id"] for c in ev["claims"]]
+    assert ids.index(_cid(same)) < ids.index(_cid(other))     # same recipe ranks first
+    assert _cid(renamed) in ids                               # sha identifies the weights
+    assert _cid(wrong_sha) not in ids                         # a sha disagreement never matches
+    assert ans_targets_roundtrip(tmp_path, alarm, raw)
+
+
+def ans_targets_roundtrip(tmp_path, alarm, raw):
+    ans = _prepare(tmp_path, alarm, _write(tmp_path, _host("h"), name="rt.jsonl"), raw)
+    return ans["targets"][0]["recipe"] == "ds41-r2"
+
+
+def test_existing_answer_keys_are_kept(tmp_path, alarm):
+    path = _write(tmp_path, _loop("k", mech="akm-k"), _host("h"))
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    for key in ("status", "reasons", "frontier", "as_of", "claim_ids", "contested_claim_ids",
+                "withdrawn_claim_ids", "claims", "flagged", "runs", "omitted", "omitted_count",
+                "section", "section_sha256", "section_bytes"):
+        assert key in ev
+    for key in ("tiers", "tried_index", "nonempty_target", "banner", "refuted_claim_ids",
+                "host_claim_ids", "not_evidence_claim_ids"):
+        assert key in ev
+    assert set(ev["flagged"]) == {"contested", "withdrawn", "refuted"}
+    for claim in ev["claims"]:
+        assert {"claim_id", "source_kind", "run", "grade", "locator", "tier", "status",
+                "outcome", "mechanism_id", "value", "unit", "effect_rel"} <= set(claim)
+    empty = lb._evidence_empty("no_applicable_claims", as_of=AS_OF)
+    assert empty["tiers"] == {"target": 0, "sibling": 0, "host": 0} and empty["banner"] is None
