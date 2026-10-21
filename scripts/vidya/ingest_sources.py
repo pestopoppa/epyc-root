@@ -209,6 +209,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                   "*/*/belief_measurements.jsonl"),
            note="KPF-18 runner `epyc.kpf.run.v1` records (kpf18_gate.py Run.finish); pre-hook runs yield no claims",
            task="VB-KVU-PF"),
+    Source("pb-hol", "pb_hol", _run_dirs("summary.json"),
+           note="PB-HOL-1 slot-order head-of-line run dirs (`summary.json` + `pb_hol_1.jsonl`, research "
+                "`scripts/benchmark/pb_hol_1`); one claim per arm comparison with samples; retrofit",
+           task="P1-L"),
     Source("embedder-placement-gate", "embedder_placement_gate",
            _files("*.belief_measurements.jsonl"),
            default=ORCHESTRATOR / "data/embedder_placement",

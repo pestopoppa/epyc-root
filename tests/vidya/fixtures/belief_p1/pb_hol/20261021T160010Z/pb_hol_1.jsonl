@@ -1,0 +1,8 @@
+{"kind": "run", "phase": "off", "budget": false, "arm": "C", "rep": 1, "short_ttft_ms": 278.4}
+{"kind": "run", "phase": "off", "budget": false, "arm": "A-off", "rep": 1, "short_ttft_ms": 3193.1}
+{"kind": "run", "phase": "off", "budget": false, "arm": "B-off", "rep": 1, "short_ttft_ms": 70809.3}
+{"kind": "run", "phase": "off", "budget": false, "arm": "A-off", "rep": 2, "short_ttft_ms": 3217.5}
+{"kind": "run", "phase": "off", "budget": false, "arm": "B-off", "rep": 2, "short_ttft_ms": 70932.2}
+{"kind": "run", "phase": "off", "budget": false, "arm": "A-off", "rep": 3, "short_ttft_ms": 3219.9}
+{"kind": "run", "phase": "off", "budget": false, "arm": "B-off", "rep": 3, "short_ttft_ms": 71032.6}
+{"kind": "run", "phase": "off", "budget": false, "arm": "C", "rep": 2, "short_ttft_ms": 281.2}
