@@ -1,0 +1,86 @@
+{
+ "icl-gpt-5.4": {
+  "per_task": {
+   "exploitable_poker": {
+    "sl_mean": 1.1133,
+    "headroom": 8.3767,
+    "norm_gain": -0.0376,
+    "rollout_sd": 0.0588
+   },
+   "database_exploration": {
+    "sl_mean": 0.1383,
+    "headroom": 0.8617,
+    "norm_gain": 0.2422,
+    "rollout_sd": 0.1113
+   },
+   "blind_spectrum_monitoring": {
+    "sl_mean": 0.2196,
+    "headroom": 0.7804,
+    "norm_gain": 0.3764,
+    "rollout_sd": 0.0319
+   },
+   "cohort_studies": {
+    "sl_mean": -0.007,
+    "headroom": 0.169,
+    "norm_gain": -0.1238,
+    "rollout_sd": 0.1399
+   },
+   "codebase_adaptation": {
+    "sl_mean": 0.4974,
+    "headroom": 0.5026,
+    "norm_gain": 0.0723,
+    "rollout_sd": 0.4586
+   },
+   "sales_prediction": {
+    "sl_mean": 0.4664,
+    "headroom": 0.5336,
+    "norm_gain": 0.5674,
+    "rollout_sd": 0.0885
+   }
+  },
+  "norm_gain_pct": 18.28,
+  "ci95_pct_from_rollout_var": 7.37
+ },
+ "icl-claude-sonnet-4.6": {
+  "per_task": {
+   "exploitable_poker": {
+    "sl_mean": 2.6392,
+    "headroom": 6.8508,
+    "norm_gain": 0.0282,
+    "rollout_sd": 0.0531
+   },
+   "database_exploration": {
+    "sl_mean": 0.1633,
+    "headroom": 0.8367,
+    "norm_gain": 0.2534,
+    "rollout_sd": 0.0954
+   },
+   "blind_spectrum_monitoring": {
+    "sl_mean": 0.2196,
+    "headroom": 0.7804,
+    "norm_gain": 0.2395,
+    "rollout_sd": 0.0402
+   },
+   "cohort_studies": {
+    "sl_mean": -0.0672,
+    "headroom": 0.2292,
+    "norm_gain": -0.0175,
+    "rollout_sd": 0.1476
+   },
+   "codebase_adaptation": {
+    "sl_mean": 0.3711,
+    "headroom": 0.6289,
+    "norm_gain": 0.2264,
+    "rollout_sd": 0.0417
+   },
+   "sales_prediction": {
+    "sl_mean": 0.4315,
+    "headroom": 0.5685,
+    "norm_gain": 0.7095,
+    "rollout_sd": 0.0706
+   }
+  },
+  "norm_gain_pct": 23.99,
+  "ci95_pct_from_rollout_var": 3.0
+ }
+}
