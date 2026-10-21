@@ -874,7 +874,10 @@ def test_target_extras_recipe_from_surface_and_model_sha(tmp_path, alarm):
     ids = [c["claim_id"] for c in ev["claims"]]
     assert ids.index(_cid(same)) < ids.index(_cid(other))     # same recipe ranks first
     assert _cid(renamed) in ids                               # sha identifies the weights
-    assert _cid(wrong_sha) not in ids                         # a sha disagreement never matches
+    # a sha disagreement is never TARGET evidence; the same lineage file name carrying other
+    # weights is exactly a sibling (DESIGN §7.1: "different weights or recipe")
+    assert _tier_of(ev, _cid(wrong_sha)) == "sibling"
+    assert _tier_of(ev, _cid(renamed)) == "target"
     assert ans_targets_roundtrip(tmp_path, alarm, raw)
 
 
