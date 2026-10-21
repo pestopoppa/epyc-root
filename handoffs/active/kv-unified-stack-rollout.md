@@ -548,6 +548,142 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   flag to qwentts.cpp on an `experimental` branch and promote it as the next speech kernel version; then drop the
   shim and `SHIM_NPROCS` from the launch manifest.
 
+<!-- 2026-10-21 (noninf-ak): restored byte-exact from 465954bc0^ (old lines 890-1017 plus the KVU-19b-rework-c2-cal item, old lines 847-852). Lost in 465954bc0, a stale-base overwrite that deleted 892 lines while adding one task. Original tick states kept. -->
+  shape, and drop whichever loses. Done when the A/B verdict is recorded.
+- **v11 FA-path audit (2026-10-04, workspace-89; durable copy
+  [`artifacts/v11-fa-path-audit-20261004/REPORT.md`](../../artifacts/v11-fa-path-audit-20261004/REPORT.md)).** Upstream
+  #26046 deletes rocWMMA FA. On gfx90a, for our D=256 GQA-6 q8_0 shape, v11 then routes 3-32 query rows (4×1 batched
+  decode, 1-3-slot DFlash2 verify) to the generic TILE kernel (no matrix cores; the RDNA4 analog #26220 lost ~2×) and
+  >32 rows (4-slot verify, prefill) to MMA `<256,256,32,2>`, which spills 314 VGPRs under ROCm 6.2. The DF2-9 all-NaN
+  path is the ROCWMMA=OFF route. These tasks gate the v11 rebase and RTG-58's P4 `kv_rows` phase
+  ([`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-40..42), and inform KVU-21.
+  Owner of V11-FA-1..4: **workspace-ec** (filed 2026-10-04 at the coordinator's direction). Every build and run below
+  takes `region-lock` for its host side.
+- [x] **V11-FA-1 — A/B the champion with ROCWMMA=OFF (exact v11 FA routing) against ROCWMMA=ON, plus a third arm with
+  #27870 and #28576 cherry-picked.** ✅ 2026-10-04 (filed 2026-10-04, workspace-ec, from the v11 FA-path audit §5) ROCWMMA=OFF
+  reproduces upstream's D=256 routing: TILE at ≤32 rows, MMA above. The third arm approximates v11's MMA kernel
+  (`b74f590ea` divergent-barrier fix, `bfdc32183` fp32 VKQ). Build in an experimental worktree, never the frozen tree.
+  Bands: 4×1 decode, 1-3-slot DFlash2 verify (9-27 rows), 4-slot verify (36 rows), prefill (512 and mixed 512+3×9),
+  own cells {4k, 16k, 57k} × foreign {0, 3×~100k}. Instruments: the 19b `perf2` micro-bench, `test-backend-ops` perf
+  mode (TFLOPS, comparable to #28576/#28907), batched-bench `-kvu` vs `-no-kvu`, and the P3 harness L0 (v10: drafted
+  36.3, no-draft 20.4 tok/s). Gate every arm on the DF2-9 reproducer (V11-FA-2) and on TILE D=256 `ncols2=2`
+  run-to-run bit-exactness (those kernels have never been compiled into any of our builds). Done when the per-band
+  delta is recorded here and decides one of: carry WMMA (V11-FA-4), retune the TILE/MMA crossover for gfx90a, cap
+  ncols (V11-FA-3), or nothing.
+  - *(2026-10-04, workspace-ec; prep done, slot not yet run, so not ticked.)* **Arms built, slot ready.** Scratch
+    `/mnt/raid0/llm/tmp/v11-fa-ab-20261004/`; durable copy of the docs and runner:
+    [`artifacts/v11-fa-ab-20261004/`](../../artifacts/v11-fa-ab-20261004/). Runner `gpu_slot_v11fa.sh` (one MI210 slot,
+    budget 80 min, DF2-9 probes on every arm first). Arms: A `gpu-20261004-90c12df42-A` (ROCWMMA ON, champion recipe);
+    B `gpu-20261004-90c12df42-B` (ROCWMMA OFF = v11 D=256 routing); C `gpu-20261004-5026470c6-C` (B + #27870 + #28576);
+    D `gpu-20261004-fa5ebc0c8-D` (C + the CDNA D=256 MMA tuning of V11-FA-3); M upstream master `11fe02151`.
+  - **The picks are neutral on the ROCWMMA-ON route** (`PICKS_ON_ROUTE.md`). Both #27870 and #28576 touch only
+    `fattn-mma-f16.cuh`, and the ON champion launches no MMA kernel for any production shape: every cache-backed FA op
+    has `K->ne[1] % 256 == 0`, so WMMA takes all > 2-row shapes. So arm A+ (ON + picks) was not built. The picks matter
+    only on the OFF / v11 route.
+  - **In v11 the drafter's 9-row block moves to MMA.** The DFlash2 drafter (D=128, GQA 4) block of 9 rows runs WMMA on
+    the champion and D=128 MMA on v11 (≥ 5 rows), TILE at 3-4 rows. The audit did not list this shape; it belongs in
+    the V11-FA-1 bands and the DF2-9 probes.
+  - *(2026-10-04 PM, workspace-ec.)* **Ran; decision: carry WMMA (V11-FA-4).**
+    - Slots: `slot-20261004T113710Z` (arms A/B/C/D/M/D32/D9; merged summary) and `slot-20261004T150551Z` (A/B/E/C).
+      Durable copies: `artifacts/v11-fa-ab-20261004/slot-*/` (`summary.txt`, `perf_table.tsv`).
+    - FA µs/op vs A (rocWMMA ON), on the v11 route:
+      - 4×1 decode: ×0.60 (faster).
+      - 1-3-slot verify, 9-27 rows: ×1.14-1.24 (TILE slower).
+      - 36 rows: ×0.5-0.9 (B/C/M faster).
+      - prefill-512: master M ×0.84-0.90; C ×1.09-1.16; B ×1.28-1.35.
+      - drafter D=128, 9 rows: ×1.64-1.86 slower; 64 rows ×0.55-0.74.
+    - Patches D and D9 do not help: D ≡ C at 512 rows, and D9 is ×1.35-1.42 at 9-27 rows.
+    - The server DF2-9 arm errored on a busy port (18093) in both slots, so the model probe carries the DF2-9
+      verdict (V11-FA-2).
+- [x] **V11-FA-2 — root-cause DF2-9: all-NaN target features at ~2k-token prompts with ROCWMMA OFF.** ✅ 2026-10-04 (filed
+  2026-10-04, workspace-ec, from the audit §0.4 and §4b) Build a standalone reproducer first: `test-backend-ops` cannot
+  catch it, because its random [-1,1] inputs never overflow. Add a new FA case with large magnitudes and long KV
+  (|V|~30, kv ≥ 4k) checked against the CPU reference. The length discriminator fits the >32-row MMA route: a short
+  prompt's prefill goes to TILE, while ~2k prompts split into 512-row ubatches that go to MMA. Candidates in the
+  audit's order: the D=256 MFMA-MMA route (consistent with the `99f3fffd6` unpadded-KV guard); the fp16 VKQ downcast
+  (fp32 after #28576); the #27870 barrier. Record: `dflash2-block-drafter-experimental-build.md` DF2-9 and wiki CH-8.
+  Done when the reproducer is 12/12 finite on the fixed path, or the faulting kernel and cause are recorded with an
+  upstream issue.
+  - *(2026-10-04, workspace-ec; reproducers built, GPU run pending.)* **DF2-9 sits on the MMA `<256,256,8,8>` route at
+    60-340 tokens**, not `<256,256,32,2>` (see V11-FA-3's correction). Reproducers: `df29/` (op-level nan probe, the
+    27B model probe `fa_nan_probe` and the server reproducer `df29_server.sh`, `df29/RECIPE.md`) run on every arm in
+    `gpu_slot_v11fa.sh` step (a). **ggml CPU reproduces the fp16-overflow mechanism**: the CPU FA path accumulates VKQ
+    in FP16 for F16 V and goes non-finite on diffuse attention over 2048 cells (CPU-FA-VKQ below), the same mechanism
+    #28576 fixes for MFMA. Upstream issue text is drafted, never posted:
+    `artifacts/v11-fa-ab-20261004/UPSTREAM-ISSUE-DRAFT.md`.
+  - *(2026-10-04 PM, workspace-ec.)* **ROOT-CAUSED: the pre-#27870 MMA divergent-barrier race.**
+    - Model-level probe (27B, 10 runs per arm):
+      - B (ROCWMMA OFF): FAIL, 6/10 runs non-finite; first bad node `FLASH_ATTN_EXT` at layer 3.
+      - E (B + #27870 only, `gpu-20261004-e9b3b04df-E`): PASS.
+      - C (B + #27870 + #28576): PASS.
+      - A (rocWMMA ON): PASS.
+    - `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0`: B 598/640; E and C 640/640.
+    - Op-level determinism: B 84/228 identical; C, D and E 228/228.
+    - So **#27870 is a mandatory v11 carry** (V11-FA-6), and #28576 is not needed for DF2-9.
+    - The NaN is not an upstream issue, because #27870 already fixes it. The NaN framing in
+      `UPSTREAM-ISSUE-DRAFT.md` is superseded; only a perf-only issue remains (V11-FA-5).
+    - The opnan non-finites left on A/C/D/E/M are the synthetic `v=bias1024` diffuse cases (fp16-range stress), and
+      they occur on every arm.
+  - [ ] **V11-FA-2b — give `df29_server.sh` a free port.** (filed 2026-10-04, workspace-ec) The fixed port 18093 was
+    busy in both slots, so the server-level DF2-9 arm produced no verdict. Pick a free port at launch and refuse
+    loudly if none is free. Done when a slot records a server verdict for every arm.
+- [ ] **V11-FA-3 — MMA `<256,256,32,2>` spills 314 VGPRs on gfx90a under ROCm 6.2; evaluate an ncols cap for D=256
+  prefill.** (filed 2026-10-04, workspace-ec, from the audit §0.3 and §3.1) `<256,256,16,2>` has 0 spills (499
+  registers including 243 AGPR). The spill is structural: 512 threads means 2 waves per SIMD on gfx90a's unified
+  register file. Candidates: cap D=256 at `ncols1=16` on CDNA2, or give `(256,256,64)` 256 threads. Leave the choice to
+  AutoKernel. Re-check v11's own code object (these numbers predate #28576) with the register-audit scripts in
+  `artifacts/v11-fa-path-audit-20261004/register-audit/`. Done when the prefill A/B (ON vs capped) is recorded, and
+  the cap is either carried into the v11 candidate or declined with the numbers.
+  - *(2026-10-04, workspace-ec; patch built as arm D, GPU A/B pending.)* **Correction to the audit:** for the 27B (GQA 6)
+    CDNA picks `ncols2 = 8` by its generic ladder, so every >32-row shape (4-slot verify, mixed ubatch, 512 prefill)
+    runs **`<256,256,8,8>`** (64 columns, 512 threads), not `<256,256,32,2>`; the latter is what a GQA-2 model or RDNA
+    would run (`NCOLS_CAP.md`, register numbers from `fa_codeobj_audit.py`). Arm D implements the tuning: ncols2 by
+    divisibility plus a 16-column cap (GQA 6 → `<256,256,8,2>`, the only spill-free D=256 MMA config with fp32 VKQ),
+    with runtime knobs `GGML_CUDA_FA_CDNA_D256_MAX_COLS` and `GGML_CUDA_FA_CDNA_D256_MMA_MIN_ROWS` (arms D32, D9).
+  - *(2026-10-04 PM, workspace-ec; A/B recorded, not ticked.)* **The ncols cap brings no gain.**
+    - Arm D (16-column cap) ≡ C on 512-row prefill: ×1.16 / ×1.12 vs A.
+    - D9 (MMA from 9 rows) is ×1.35-1.42 at 9-27 rows.
+    - For reference, D32 measured ×0.97 / ×0.92 and master M ×0.90 / ×0.84 at 512 rows.
+    - Recommendation: decline the cap. Still missing before the tick: the register re-check on v11's own code object
+      (master `11fe02151`), which the slots' register tables do not include.
+- [ ] **V11-FA-4 — in v11, carry rocWMMA FA as an in-binary arm until TILE/MMA is at least as fast on every band.**
+  (filed 2026-10-04, workspace-ec, from the audit §4 "Can rocWMMA FA be carried in v11? Yes" and §5.3)
+  - Restore `fattn-wmma-f16.{cu,cuh}`, the dispatch branch and the CMake/`hip.h` flags.
+  - Keep the tile skip-list out, so the same binary carries TILE for the A/B.
+  - Adapt to v11's `fattn_kernel_t`/`launch_fattn` signatures.
+  - Re-apply `db18f3937` and KVU-19a's WMMA hunk.
+  - Keep the `99f3fffd6` D=256 unpadded-KV → TILE guard until v11 `test-backend-ops` on ROCm0 proves MMA D=256
+    unpadded is correct.
+  - Expose it as a runtime knob (e.g. `GGML_CUDA_FA_PREFER_WMMA`), so the ONE candidate carries its own control.
+  - Cost: ~1-2 days plus a recurring conflict tax. It pins rocWMMA 1.x; ROCm 7 brings back #16221/#19461.
+  - Drop-when: TILE/MMA ≥ WMMA on every V11-FA-1 band, and DF2-9 is clean without WMMA.
+  - Done when the v11 candidate carries the arm, or V11-FA-1 shows it is not needed.
+  - *(2026-10-04, workspace-ec.)* The bands that decide it now include the drafter's 9-row D=128 block, which v11 moves
+    from WMMA to MMA (V11-FA-1 note); arm A vs B/C/D in `gpu_slot_v11fa.sh` is the deciding run.
+  - *(2026-10-04 PM, workspace-ec.)* **Justified by V11-FA-1.** On the v11 route:
+    - TILE is ×1.14-1.24 slower for 9-27 rows.
+    - The drafter's 9-row D=128 block is ×1.7-1.9 slower.
+
+    WMMA therefore stays the arm for 9-32 rows. 4×1 decode (×0.60) and 36 rows are faster on the v11 route, so the
+    knob should send only the 9-32-row band to WMMA.
+- [ ] **V11-FA-5 — draft (never post) the upstream perf-only issue: on gfx90a, v11's TILE/MMA is slower than the removed
+  rocWMMA FA for 9-32 rows.** (filed 2026-10-04, workspace-ec; WARRANTED under the upstream-report rule.)
+  - Scope is perf only: the DF2-9 NaN is already fixed upstream by #27870.
+  - Content: the V11-FA-1 numbers (`perf_table.tsv`), the arms and builds, and the drafter's D=128 9-row shape.
+  - Done when the draft is in `artifacts/v11-fa-ab-20261004/` and handed to the operator. Posting it is the operator's
+    call.
+- [ ] **V11-FA-6 — the v11 candidate must carry #27870 (mandatory for DF2-9).** (filed 2026-10-04, workspace-ec)
+  - The v11 rebase must contain `b74f590ea` (#27870).
+  - Gate the candidate on the DF2-9 model probe (`df29/`, 10 runs, 0 non-finite).
+  - Also gate it on `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` at 640/640 on the ROCWMMA-OFF route.
+  - Done when the v11 candidate's gate record shows both.
+        - [ ] **KVU-19b-rework-c2-cal — triage the two slot-3 calibration FAILs, then hand commit 2 v2 to workspace-89.**
+          (filed 2026-10-04, workspace-ec)
+          - (a) The hs=128 bound: decide whether the bound is mis-set, or the layouts-off path still differs from KVU-19a.
+          - (b) Case 152: it fails against the CPU reference on every arm, k19a included, so fix the reference or the
+            threshold.
+          - Done when both are explained with numbers, and the fold hand-off (or the drop of commit 2) is recorded here.
+
 ## Not filed here (explicit)
 - SSU-F3 structural capacity model (RS, draft KV, compute terms): owned by RTG-19. INF-41 aux VRAM in the gate:
   owned by OP-48 / INF-41.
