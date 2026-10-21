@@ -1,8 +1,8 @@
 {
   "session_id": "intake-deepseek-prodstack-20261021",
   "started_at": "2026-10-21T10:00:00Z",
-  "last_checkpoint": "2026-10-21T11:40:00Z",
-  "stage": "stage2",
+  "last_checkpoint": "2026-10-21T12:45:00Z",
+  "stage": "stage2-closeout",
   "phase": 5,
   "lane": "/mnt/raid0/llm/worktrees/intake-deepseek-prodstack-20261021",
   "branch": "intake/deepseek-prodstack-20261021",
@@ -16,12 +16,14 @@
     "intake-2218",
     "intake-2219",
     "intake-2220",
-    "intake-2221"
+    "intake-2221",
+    "intake-2222",
+    "intake-2223"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2222,
+  "next_intake_id": 2224,
   "expansion_cap": 10,
-  "expansion_count": 7,
+  "expansion_count": 9,
   "expansion_entries": [
     "intake-2215",
     "intake-2216",
@@ -29,7 +31,9 @@
     "intake-2218",
     "intake-2219",
     "intake-2220",
-    "intake-2221"
+    "intake-2221",
+    "intake-2222",
+    "intake-2223"
   ],
   "expansion_refused": [],
   "re_encounters": {
@@ -30060,7 +30064,13 @@
           "intake-2221 (FlowPrefill 2602.16603)"
         ],
         "dispatched": "2026-10-21",
-        "second_reader": "pending (3 readers dispatched)",
+        "second_reader": {
+          "intake-2217": "9/9 refound (NBSP kept), 9/9 hash; yes 8 / partial 1 / no 0; max_queues example value note applied",
+          "intake-2218": "8/8 hash; 7/8 byte-exact, claim-7 NBSP restored and re-hashed; yes 8 / 0 / 0; two paper-internal inconsistencies recorded",
+          "intake-2219": "13/13 refound, 13/13 hash; yes 7 / partial 1 / no 0; claim-1 wording softened",
+          "intake-2220": "21/21 hash; 17/21 byte-exact, 4 thin-space quotes restored and re-hashed; yes 7 / partial 1 / no 0; Table 4 baseline column corrected (6.0 pp / 3.8 pp vs defaultNV)",
+          "intake-2221": "22/22 refound, 22/22 hash; yes 7 / partial 1 / no 0; frozen-tree slot-order loop and decode-gated budget independently re-verified; 98c0ce12a not an ancestor of ffc1bac82"
+        },
         "surfaced_selected_for_wave3": [
           "arXiv 2601.11589 (LAPS; recommended by the Medha and GreenLLM dives)",
           "arXiv 2609.07883 (SLOWEAVE; recommended by the 2606.09061 dive)"
@@ -30075,7 +30085,47 @@
           "Multi-Segment Attention 2606.02964 (title only)",
           "QwenTrace (trace, no id resolved)"
         ]
+      },
+      {
+        "wave": 3,
+        "kind": "Stage-2b dives of the two sources wave 2 recommended",
+        "entries": [
+          "intake-2222 (LAPS 2601.11589 v2; MLSys 2026 oral)",
+          "intake-2223 (SLOWeave 2609.07883)"
+        ],
+        "dispatched": "2026-10-21",
+        "second_reader": {
+          "intake-2222": "18/18 refound, 18/18 hash; yes 6 / partial 2 / no 0; MLSys oral venue confirmed",
+          "intake-2223": "8/8 refound, 8/8 hash; yes 7 / partial 1 / no 0"
+        },
+        "surfaced_selected_for_wave4": [],
+        "surfaced_declined_proposed": [
+          "Niyama 2503.22562 (uncited prior art for deadline-slack chunking; snippet-level only)",
+          "TokenScale 2512.03416, PolyServe 2507.17769, P-PAS 2608.15171 (adjacent chunk-budget work, low priority)",
+          "MLSys oral slides/proceedings (companion artefacts of 2222)",
+          "BucketServe 2507.17120, Multi-Bin Batching 2412.04504 (GPU-batch padding regime)",
+          "token-level routing for edge devices 2504.07878 (outside our lanes)"
+        ],
+        "closeout": "wave 3 recommended nothing for a wave 4; no source manufactured"
       }
-    ]
+    ],
+    "closeout": {
+      "status": "closed 2026-10-21",
+      "waves_run": 3,
+      "wave4": "nothing recommended by wave 3",
+      "entries": [
+        "intake-2214",
+        "intake-2215",
+        "intake-2216",
+        "intake-2217",
+        "intake-2218",
+        "intake-2219",
+        "intake-2220",
+        "intake-2221",
+        "intake-2222",
+        "intake-2223"
+      ],
+      "declines_proposed_in_plan": true
+    }
   }
 }
