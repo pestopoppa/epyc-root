@@ -2,7 +2,7 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Summary
@@ -177,3 +177,32 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
 - **Small-model recall (Qwen3-0.6B, native 32k; NeoX path, no repro of the bug).** 1x: N 6/6, J 6/6. 2x: J 6/6, static YaRN 5/6, X 5/6. 4x: Y 3/6, X 0/6, J not run (CPU too slow). The 4x J arm remains open.
 
 Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [JETLONG_SMALL_RESULTS](../artifacts/ec-wrapup-20261007/JETLONG_SMALL_RESULTS.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md).
+
+## Compiled Update — 2026-10-21 (sweep 5): the YaRN gate is specified, the Oolong adapter exists, and the K-shift fix is queued
+
+**Confidence: verified** for the code, the tests and the offline token counts. **No YaRN gate cell has run.** Everything below was built against an in-process fake endpoint, and the arms wait for inference windows.
+
+- **OOL-1: the Oolong adapter** (research `a1ed3633a`, `scripts/benchmark/oolong_adapter.py`). 11/11 unit tests pass.
+  - **The labelled column is refused.** `test_labelled_column_is_refused` covers it: `context_window_text_with_labels` raises `LabelledColumnError`. A regex scores near 100% on the labelled text, so `labels_given` records are excluded from any gate.
+  - **The scorer is vendored, not rewritten.** `eval_helpers.py` @ `0bb7eabe8` is vendored unmodified, and its sha256 is verified on import.
+  - **Pinned datasets.** `oolong-synth@81d2f8d9...` and `oolong-real@3ae6ab58...`.
+  - **Belief-kernel row.** VB-OOLONG-WIRE was added in the same change.
+- **YARN-AGG-1: the gate spec.**
+  - **Comparisons.** A0 vs A1 (GPU 27B) and CN vs CY2 (CPU 35B-A3B hybrid). All arms are greedy, thinking off and paired on the same item ids.
+  - **Arms.** Oolong-synth (counting, user), with a HoloBench info_amount control that attributes a long-length drop to length only if it persists inside a constant-relevant-amount band. HELMET recall/RAG (`ruler_niah_mk_2/3`, `ruler_niah_mv`, `json_kv`, `nq`, `hotpotqa`; HELMET configs stop at 128K, so the 240K config is a local copy recorded by sha). LongBioBench (standard, multi_standard, paraphrase).
+  - **Zone labels.** They come only from the measured real-token count (served `/tokenize` or `prompt_n + cache_n`). With N = 262,144 and 4,096 tokens reserved, native means real + 4,096 <= N and beyond-native means real > N. Anything between counts as neither.
+  - **Margin rule.** Net-paired McNemar (see the benchmark-methodology page).
+- **The Oolong subset was re-measured offline with the Qwen3.8-27B tokenizer, and real tokens run below nominal.**
+  - **The buckets.** 131072 → 89,419 / 110,768 / 122,120 (min / median / max, native); 262144 → 179,722 / 222,455 / 239,818 (native); 524288 → 371,962 / 447,286 / 472,304 (beyond-native).
+  - **Constructible.** 240K (9 contexts) and 400K (10).
+  - **Not constructible.** 128K and 500K. The beyond-native cells are about 400K to 470K, not 500K.
+  - **Still owed.** The served-server `/tokenize` cross-check in the first window supersedes these counts.
+- **YARN-JUDGE-1: a local judge only.**
+  - **How it is served.** On `localhost:{port}/v1`; a non-localhost endpoint is refused.
+  - **What is pinned.** The model id, prompt sha, temperature 0, seed 0 and max_tokens ride in the claim tuple.
+  - **Window separation.** The client refuses to run while `YARN_TIMING_WINDOW_ACTIVE=1`.
+  - **Unparsed replies.** They are listed as `unjudged` and never scored 0.
+  - **Validation.** A blind 50-item labelling sheet waits for operator labels. Results are relative to the pinned local judge and never comparable to published figures.
+- **V11-100, the YaRN K-shift pure-rotation fix** (`experimental/yarn-kshift-fix-20261021` @ `b67a5b9bc`), folds into the consolidation after the C2 CAS (CH-23). Its test travels with the commit. The native-window non-regression gate (YaRN must not regress inside the native window) remains a hard gate on the champion.
+
+Sources: [YaRN context extension research](../handoffs/active/yarn-context-extension-research.md), [RAO/ReDel substrate spike](../handoffs/active/rao-redel-substrate-spike.md), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md)
