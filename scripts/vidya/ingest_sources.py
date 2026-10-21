@@ -194,6 +194,16 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="AK-HR-3 prospective per-trial fields; closed stores (AK-HR-1/2) stay retrospective "
                 "and emit zero tuples",
            task="VB-AK-HISTORY"),
+    Source("injection-fixture", "injection_fixture",
+           _files("injection_fixture.beliefs.jsonl", "*/injection_fixture.beliefs.jsonl"),
+           note="CT-18 injection fixture arms; the only claim is static-attack ASR on fixture set X "
+                "(fixture hash, arm, thinking, served pin), never robustness",
+           task="VB-IBENCH-WRITE"),
+    Source("chunk-kv", "chunk_kv",
+           _files("chunk_kv.beliefs.jsonl", "*/chunk_kv.beliefs.jsonl"),
+           note="KPF-60/KPF-64 prefill rate, inject latency, drift curve, realised vs ideal prefix "
+                "hit, and RTE-LOG-1 reader reports; each row carries served pin + window claim",
+           task="VB-KVCHUNK-WRITE"),
     Source("kv-prefix-fork", "kv_prefix_fork",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="KPF-18 runner `epyc.kpf.run.v1` records (kpf18_gate.py Run.finish); pre-hook runs yield no claims",

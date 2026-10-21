@@ -291,3 +291,19 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
 - DPF-W2-ARCHON-A1 (intake-2255): Budget as hard prune: configs exceeding inference-call, input-token or output-token caps are excluded before search, making comparisons compute-matched.
 - DPF-W2-ARCHON-A2 (intake-2255): Search cost: >=230 random evaluations before the surrogate helps, 20% dev split; no token/dollar cost for the search itself.
 - DPF-W2-ARCHON-A3 (intake-2255): Held-out 80% evaluation, with full-vs-held-out delta 0.44% mean.
+
+## Hold-first prefix stagger probe spec (RTE-PFX-2, 2026-10-21; intake-2227#record)
+
+Question: when `parallel_dispatch` fans out N requests that share a long prefix, does starting them simultaneously waste the cache that a first-then-N-1 start would have used? `parallel_dispatch` uses a thread pool with no stagger, so all N are released together.
+
+**Arms** (one served role, one llama-server, `cache_prompt=true`, no `id_slot` pin, `-np >= N`, N declared):
+
+- `simultaneous`: N requests released together (today's behaviour).
+- `hold_first_tok`: request 0 first; siblings 1..N-1 released when request 0's first streamed token arrives.
+- `hold_first_end` (control): siblings released when request 0 completes.
+
+**Design.** Every trial prepends a fresh random salt to the shared prefix, so no earlier trial or arm can have warmed it. Arms interleave in a fixed seeded order across trials. Per request, from the server's own timings: `prompt_n` (uncached prompt tokens evaluated), `cache_n` (tokens served from cache), `prompt_ms`, plus client time to first token. Report per arm: uncached prompt tokens per request and in total, and time to first token per request, with the trial count and a spread. No hypothesis is stated as a result.
+
+**Slot-selection check (the point of the probe).** A sibling benefits only if the server routes it to the slot that holds the prefix, and a busy slot cannot be chosen, so under `hold_first_tok` siblings may land on EMPTY slots and re-evaluate the prefix. Per sibling the verdict is `cache_n >= 0.9 x expected_prefix_tokens`, where the expected count is the tokenised length of the shared prefix measured with `/tokenize`, never assumed. Evidence recorded: the response `id_slot` when the server reports it, and a `/slots` snapshot taken while the siblings are in flight (a snapshot after the run proves nothing). The server's prompt-cache setting (`--cache-ram` or its absence) and `--slot-prompt-similarity` are recorded in the run header because they change the answer.
+
+**Run conditions.** A timing window under `region-lock` with the host otherwise quiet; no orchestrator traffic. Script (refuses unless `WINDOW_CONFIRMED=1`): `epyc-orchestrator` `scripts/benchmark/rte_pfx2_stagger_probe.py`; unit test of the analysis and the window guard: `tests/unit/test_rte_pfx2_probe.py`. The run result follows its window.

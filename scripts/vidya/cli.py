@@ -581,6 +581,7 @@ _FILE_SOURCES = (
     "ak-actor-seat",
     "ds41-1017-validation",
     "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
+    "injection-fixture", "chunk-kv",
 )
 
 
