@@ -31,17 +31,24 @@ from fold import fold  # noqa: E402
 from frames import validate_frame  # noqa: E402
 from lattice import parse_grade  # noqa: E402
 from ledger import Ledger  # noqa: E402
+from ledger_home import checkpoint_dir_for, default_ledger_path, scratch_ledger_path  # noqa: E402
 
 FOLD_VERSION = "vidya-pilot-0.2.0"  # 0.2.0: belief state gained corrections/review_required (P2c)
 DEFAULT_ORIGIN = "epyc.local/belief-ledger"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VIDYA_DIR = REPO_ROOT / ".vidya"
-LEDGER_PATH = VIDYA_DIR / "ledger.jsonl"
+#: Default ledger: the ONE canonical, worktree-independent ledger (ledger_home.py). Worktree-local
+#: only via --scratch / VIDYA_SCRATCH=1; VIDYA_LEDGER=<path> overrides; --ledger beats all.
+LEDGER_PATH = default_ledger_path(REPO_ROOT)
 CHECKPOINT_DIR = VIDYA_DIR / "checkpoints"
 
 
 def _ledger_path(args) -> Path:
-    return Path(args.ledger) if args.ledger else LEDGER_PATH
+    if args.ledger:
+        return Path(args.ledger)
+    if getattr(args, "scratch", False):
+        return scratch_ledger_path(REPO_ROOT)
+    return default_ledger_path(REPO_ROOT)
 
 
 def _checkpoint_dir(args) -> Path:
@@ -53,7 +60,7 @@ def _checkpoint_dir(args) -> Path:
     (Caught by the CLI end-to-end test, which ran a five-frame temp ledger against the repo's
     9,449-entry checkpoint.)
     """
-    return _ledger_path(args).parent / "checkpoints"
+    return checkpoint_dir_for(_ledger_path(args), REPO_ROOT)
 
 
 def _ledger(args) -> Ledger:
@@ -664,6 +671,15 @@ def _ingest_file_source(args) -> int:
 
 
 def cmd_ingest(args) -> int:
+    # one host-wide critical section per ingest: dedup-read and append must not interleave with
+    # another session's ingest into the shared canonical ledger
+    if args.dry_run:
+        return _cmd_ingest(args)
+    with _ledger(args).write_lock():
+        return _cmd_ingest(args)
+
+
+def _cmd_ingest(args) -> int:
     if getattr(args, "only_new", False) and args.adapter not in _FILE_SOURCES:
         print("--only-new is supported only for file-shaped sources", file=sys.stderr)
         return 2
@@ -696,6 +712,31 @@ def cmd_ingest(args) -> int:
 
 
 # ------------------------------------------------------------------ consume
+
+def cmd_sync(args) -> int:
+    """Keep the canonical ledger current with origin/main's intake index (see sync.py).
+
+    --check : report ledger lag vs the index, write nothing; exit 1 if stale (wrap-up freshness CHECK).
+    default : fold the index in if it is not already folded (idempotent, append-only).
+    """
+    import sync as vsync  # noqa: PLC0415
+
+    path = _ledger_path(args)
+    index = Path(args.index) if args.index else None
+    if args.check:
+        st = vsync.status(path, index, from_worktree=args.from_worktree)
+        human = (f"ledger {'FRESH' if st['fresh'] else 'STALE'}: index max intake-{st['index_max_id']} "
+                 f"({st['index_entries']} entries), ledger synced through intake-{st['synced_max_id']}, "
+                 f"lag {st['lag_entries']}, source {st['index']}, last sync {st['last_sync']}, ledger {st['ledger']}")
+        _emit(st, args.json, human)
+        return 0 if st["fresh"] else 1
+    rep = vsync.sync(path, index, as_of=args.as_of, force=args.force,
+                     from_worktree=args.from_worktree)
+    if args.quiet:
+        return 0
+    return _emit(rep, args.json, f"sync: {rep['action']}  frames={rep.get('frames_emitted', 0)}  "
+                 f"synced through intake-{rep['synced_max_id']}")
+
 
 def cmd_cite_check(args) -> int:
     """SC12: gate intake citations in project documents (exit 3 = a blocking citation)."""
@@ -741,6 +782,8 @@ def cmd_corrections(args) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="vidya", description=__doc__.splitlines()[0])
     p.add_argument("--ledger", help=f"ledger path (default {LEDGER_PATH})")
+    p.add_argument("--scratch", action="store_true",
+                   help="use the worktree-local .vidya/ledger.jsonl (tests only; NOT the canonical ledger)")
     p.add_argument("--json", action="store_true", help="machine-readable output")
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -853,6 +896,17 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--only-new", action="store_true",
                    help="skip claims with live evidence (file-shaped sources only)")
     i.set_defaults(func=cmd_ingest)
+
+    sy = sub.add_parser("sync", help="keep the canonical ledger current with the intake index")
+    sy.add_argument("--check", action="store_true", help="report lag only; exit 1 if stale")
+    sy.add_argument("--index", help="read this local file instead of origin/main")
+    sy.add_argument("--from-worktree", action="store_true",
+                    help="read this checkout's research/intake_index.yaml, not origin/main "
+                         "(tests, Stage-1 pre-merge previews)")
+    sy.add_argument("--as-of", help="ingest timestamp (default now)")
+    sy.add_argument("--force", action="store_true")
+    sy.add_argument("--quiet", action="store_true")
+    sy.set_defaults(func=cmd_sync)
 
     cc = sub.add_parser("cite-check", help="gate intake citations in project documents")
     cc.add_argument("paths", nargs="*", help="files or dirs (default: handoffs, wiki, docs)")

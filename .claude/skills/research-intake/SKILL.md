@@ -248,6 +248,15 @@ only a reason specific to that entry (duplicate of a dived entry, source unreach
    **`handoffs_updated` and `handoffs_created` stay `[]`** — Stage 4 fills them when writes land.
    Full field list and the verification lifecycle: `references/intake-schema.md`.
 
+   **Then fold the index into the belief ledger (producer-time ingest), once the entries are on
+   origin/main (after the serialized push):** `python3 scripts/vidya/cli.py sync --quiet`. Its
+   default source is `git fetch` + `origin/main:research/intake_index.yaml` (merged truth, any cwd),
+   so an unmerged local copy is never ingested; ledger appends are irreversible. Use
+   `sync --from-worktree` only for a deliberate pre-merge preview. It is idempotent and append-only
+   (~20 s for a large delta, 0.2 s when nothing changed) and writes the one canonical ledger
+   `/mnt/raid0/llm/state/vidya/ledger.jsonl`, not a repo file. Re-run after Stage 2 dive writes and
+   Stage 4 land on main. The optional post-commit hook is only a safety net.
+
 3. **The unverified contract.** No number, quoted metric, or named mechanism from a
    `stage1-unverified` entry may be quoted in a Stage-3 plan item or a handoff task. It must first be
    promoted to `verification: dive-verified` by a Stage-2 dive. Two invented citations reached the

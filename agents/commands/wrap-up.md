@@ -507,6 +507,13 @@ tracked manifest is missing or unreadable rather than guessing.
 4. Keep compilation incremental — only process sources whose content hash differs from the
    tracked `wiki/source_manifest.json`.
 
+### 5b. Belief-ledger freshness CHECK (report only, never ingest here)
+
+Run `python3 scripts/vidya/cli.py sync --check` and put its one line in the report. Exit 1 = the
+canonical ledger (`/mnt/raid0/llm/state/vidya/ledger.jsonl`) lags the intake index; say so and name
+the lag, but do NOT ingest as a wrap-up step -- ingest is event-driven (intake persistence, the
+post-commit hook on main, `index_state.py` citation phase).
+
 ### 6. Agent Log
 
 If agent logging was active, ensure `agent_task_end` was called for all open tasks.

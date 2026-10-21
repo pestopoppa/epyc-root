@@ -252,7 +252,7 @@ def main(argv=None) -> int:
     ap.add_argument("--floor", default="Hinted/Located")
     ap.add_argument("--use", default="handoff-rationale")
     ap.add_argument("--standard", default="DV")
-    ap.add_argument("--ledger", default=str(REPO / ".vidya" / "ledger.jsonl"))
+    ap.add_argument("--ledger", default=str(__import__("ledger_home").default_ledger_path(REPO)))
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--all", action="store_true", help="list every citation, not just the flagged")
     args = ap.parse_args(argv)

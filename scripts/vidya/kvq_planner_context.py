@@ -16,7 +16,7 @@ from pathlib import Path
 from fold import fold
 from ledger import Ledger
 
-DEFAULT_LEDGER = Path(__file__).resolve().parents[2] / ".vidya/ledger.jsonl"
+DEFAULT_LEDGER = __import__("ledger_home").default_ledger_path(Path(__file__).resolve().parents[2])
 PREFIX = "kvq:"
 SOURCE_KIND = "kv-quant-27b-v10-measurement"
 METRICS = {"gpu_decode_tps", "gpu_prefill_tps"}

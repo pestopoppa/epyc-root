@@ -291,7 +291,7 @@ def main(argv=None) -> int:
 
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
-    ap.add_argument("--ledger", default=str(REPO / ".vidya" / "ledger.jsonl"))
+    ap.add_argument("--ledger", default=str(__import__("ledger_home").default_ledger_path(REPO)))
 
     p_list = sub.add_parser("list", help="ranked pending corrections")
     p_list.add_argument("--as-of", required=True)
