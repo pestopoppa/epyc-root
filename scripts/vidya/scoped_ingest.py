@@ -33,6 +33,15 @@ TWO JOBS, ONE RULE.
    no source in the ledger are opened. Optional `memo_path` remembers refused receipts by
    (name, size, mtime_ns) so a strict refusal is not re-derived on every planning step.
 
+   Loop-belief redesign Phase 1 extends the same entry point, per store (`_store_dirs`):
+     * P1-B: each receipt also yields ONE capture-level v2 claim (`legacy-serving-v2:<capture>`,
+       value-bearing) beside its two v1 arm claims; a capture with v1 but no v2 is reopened once;
+     * P1-D: `serving-floor.*.json` (one glob) -> `autokernel_serving_floor`, scoped by the
+       store manifest (`adapters/_ak_store_manifest.py`) when the recipe matches;
+     * P1-C: `experiments.db` -> lane C's `autokernel_experiments` (ImportError-guarded),
+       incrementally above a per-db rowid watermark kept in the memo, with the store manifest
+       built once per store and cached there too; `experiments_full=True` is the backfill.
+
 Stdlib + ROOT `scripts/vidya` only. The ledger write happens under the ledger's own writer lock.
 """
 
@@ -201,32 +210,51 @@ def _receipt_dirs(store_root: Path) -> list[Path]:
     return sorted(path for path in store_root.glob(f"*/{RECEIPT_DIR}") if path.is_dir())
 
 
-def _read_memo(path: Path | None) -> dict:
+def _read_memo_body(path: Path | None) -> dict:
+    """The whole memo: `refused` receipts/floors, per-db experiments `watermarks`, and cached
+    per-store experiment `manifests`. Missing keys (an older memo) read as empty."""
     if path is None:
         return {}
     try:
         body = json.loads(path.read_text())
     except (OSError, ValueError):
         return {}
-    return body.get("refused", {}) if body.get("schema") == MEMO_SCHEMA else {}
+    return body if isinstance(body, dict) and body.get("schema") == MEMO_SCHEMA else {}
 
 
-def _write_memo(path: Path | None, refused: Mapping[str, Any]) -> None:
+def _read_memo(path: Path | None) -> dict:
+    return dict(_read_memo_body(path).get("refused") or {})
+
+
+def _write_memo(path: Path | None, refused: Mapping[str, Any], *,
+                watermarks: Mapping[str, Any] | None = None,
+                manifests: Mapping[str, Any] | None = None) -> None:
     if path is None:
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
-    tmp.write_text(json.dumps({"schema": MEMO_SCHEMA, "refused": dict(refused)}, sort_keys=True))
+    body: dict[str, Any] = {"schema": MEMO_SCHEMA, "refused": dict(refused)}
+    if watermarks:
+        body["watermarks"] = dict(watermarks)
+    if manifests:
+        body["manifests"] = dict(manifests)
+    tmp.write_text(json.dumps(body, sort_keys=True))
     os.replace(tmp, path)
 
 
+V2_SOURCE_PREFIX = "src_legacy-serving-v2:"
+
+
 def _ledger_capture_ids(frames: Iterable[Mapping[str, Any]]) -> set[str]:
-    """Captures whose every arm's LAST source observation already carries a scope.
+    """Captures whose every arm's LAST source observation already carries a scope, AND whose
+    capture-level v2 claim (§5.1) is already in the ledger.
 
     A capture ingested before VB-LOOP-SCOPE (no applicability) is NOT known: it is reopened so
-    the filter can emit its one re-observation frame.
+    the filter can emit its one re-observation frame. A capture ingested before P1-B (v1 arms
+    only) is NOT known either: it is reopened once so its v2 claim is added beside the v1 arms.
     """
     scoped: dict[str, dict[str, bool]] = {}
+    has_v2: set[str] = set()
     for frame in frames:
         if frame.get("frame_type") == FT_SOURCE:
             assertion = frame.get("assertion") or {}
@@ -234,31 +262,216 @@ def _ledger_capture_ids(frames: Iterable[Mapping[str, Any]]) -> set[str]:
             if sid.startswith("src_legacy-serving:") and sid.count(":") == 2:
                 _, capture, arm = sid.split(":")
                 scoped.setdefault(capture, {})[arm] = bool(assertion.get("applicability"))
-    return {capture for capture, arms in scoped.items() if arms and all(arms.values())}
+            elif sid.startswith(V2_SOURCE_PREFIX):
+                has_v2.add(sid[len(V2_SOURCE_PREFIX):])
+    return {capture for capture, arms in scoped.items()
+            if arms and all(arms.values()) and capture in has_v2}
+
+
+def _ledger_source_ids(frames: Iterable[Mapping[str, Any]], prefix: str) -> set[str]:
+    return {str((f.get("assertion") or {}).get("source_id"))
+            for f in frames if f.get("frame_type") == FT_SOURCE
+            and str((f.get("assertion") or {}).get("source_id") or "").startswith(prefix)}
+
+
+def _store_dirs(store_root: Path) -> list[Path]:
+    """Loop stores under `store_root`: itself when it is one, else its direct children that are.
+
+    A store is a directory holding `experiments.db`, `serving-beliefs/` or a serving floor. One
+    level, never a walk -- the same discipline as `_receipt_dirs`.
+    """
+    def is_store(path: Path) -> bool:
+        return ((path / EXPERIMENTS_DB).is_file() or (path / RECEIPT_DIR).is_dir()
+                or any(path.glob("serving-floor.*.json")))
+
+    if is_store(store_root):
+        return [store_root]
+    try:
+        children = sorted(p for p in store_root.iterdir() if p.is_dir() and not p.is_symlink())
+    except OSError:
+        return []
+    return [p for p in children if is_store(p)]
+
+
+# ------------------------------------------------------------------------------ experiments
+#
+# Lane C's `adapters/autokernel_experiments.py` (P1-C) projects `<store>/experiments.db` rows.
+# Planning time reads it INCREMENTALLY: one read-only SQLite query per store for the rows above a
+# per-db rowid high-water mark kept in the memo (§5.2: the DS41 db is 4.3 GB with payloads up to
+# ~6 MB, so a full read is a backfill operation, never a planning-step one). The store manifest
+# the refusal rows are scoped by is built once per store and cached in the same memo.
+#
+# Watermark rules (per `<store>/experiments.db`):
+#   * present                         -> rows with rowid > watermark;
+#   * absent, `experiments_full=True` -> every row (the backfill);
+#   * absent, db <= _FULL_READ_BYTES  -> every row (a young store: cheap, and complete);
+#   * absent, larger db               -> nothing projected, the watermark is set to the current
+#                                        max(rowid): history is the backfill's job (P1-F), and
+#                                        from this step on every new row is ingested.
+# The watermark advances to the max(rowid) read BEFORE the adapter's query, so a row inserted
+# concurrently is re-read next time (and deduplicated by the filter), never skipped.
+
+EXPERIMENTS_DB = "experiments.db"
+_FULL_READ_BYTES = 256 << 20
+
+
+def _experiments_adapter():
+    """Lane C's adapter, or None before it lands (this branch must work without it)."""
+    try:
+        from adapters import autokernel_experiments as exp  # noqa: PLC0415
+    except ImportError:
+        return None
+    if not (callable(getattr(exp, "native_rows", None)) and callable(getattr(exp, "project", None))):
+        return None
+    return exp
+
+
+def _max_rowid(db: Path) -> int:
+    import sqlite3  # noqa: PLC0415
+
+    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=5.0)
+    try:
+        row = conn.execute("SELECT max(rowid) FROM experiments").fetchone()
+    finally:
+        conn.close()
+    return int(row[0] or 0)
+
+
+def _store_manifest(exp: Any, store: Path, cache: dict, report: dict) -> dict:
+    key = str(store)
+    entry = cache.get(key)
+    adapter_id = str(getattr(exp, "ADAPTER_ID", ""))
+    if isinstance(entry, dict) and entry.get("adapter") == adapter_id \
+            and isinstance(entry.get("manifest"), dict):
+        return entry["manifest"]
+    builder = getattr(exp, "build_store_manifest", None)
+    manifest = dict(builder(store)) if callable(builder) else {}
+    try:
+        json.dumps(manifest, sort_keys=True)
+    except (TypeError, ValueError):
+        report["experiments_notes"].append(f"{store}: manifest not JSON; not cached")
+        return manifest
+    cache[key] = {"adapter": adapter_id, "manifest": manifest}
+    report["experiments_manifests_built"] += 1
+    return manifest
+
+
+def _experiment_frames(exp: Any, store: Path, *, as_of: str, watermarks: dict,
+                       manifests: dict, full: bool, report: dict) -> list[dict]:
+    from claim_tuple import ProjectionError, to_frames  # noqa: PLC0415
+
+    db = store / EXPERIMENTS_DB
+    key = str(db)
+    since = watermarks.get(key)
+    since = since if type(since) is int and since >= 0 else None
+    high = _max_rowid(db)
+    if since is None and not full and db.stat().st_size > _FULL_READ_BYTES:
+        watermarks[key] = high
+        report["experiments_deferred"].append(
+            {"db": key, "watermark": high,
+             "reason": "no watermark and the db is too large for a planning-step full read; "
+                       "history is the backfill's job, new rows are ingested from here"})
+        return []
+    if since is not None and since >= high:
+        return []
+    manifest = _store_manifest(exp, store, manifests, report)
+    rows = exp.native_rows(store, since_rowid=since)
+    report["experiments_rows_read"] += len(rows)
+    out: list[dict] = []
+    authority = getattr(exp, "AUTHORITY", "measurement")
+    adapter_id = getattr(exp, "ADAPTER_ID", "vidya.adapters.autokernel_experiments/v1")
+    for row in rows:
+        try:
+            tup = exp.project(row, store_manifest=manifest)
+            if tup is None:
+                continue
+            out.extend(to_frames(tup, as_of=as_of, adapter_id=adapter_id,
+                                 authority=authority))
+            report["experiments_projected"] += 1
+        except (ProjectionError, ValueError, KeyError, TypeError) as exc:
+            ident = row.get("attempt_id") if isinstance(row, Mapping) else None
+            report["refusals"].append({"experiment": f"{key}#{ident}",
+                                       "reason": f"{type(exc).__name__}: {exc}"[:300]})
+    watermarks[key] = high
+    return out
+
+
+# ------------------------------------------------------------------------------ floors
+
+
+def _floor_frames(store: Path, *, as_of: str, known: set[str], refused_memo: dict,
+                  report: dict) -> list[dict]:
+    from adapters import _ak_store_manifest as store_manifest  # noqa: PLC0415
+    from adapters import autokernel_serving_floor as floor  # noqa: PLC0415
+    from claim_tuple import ProjectionError, to_frames  # noqa: PLC0415
+
+    paths = floor.floor_paths(store)
+    report["floors_listed"] += len(paths)
+    if not paths:
+        return []
+    manifest = store_manifest.load(store)
+    out: list[dict] = []
+    for path in paths:
+        stat = path.stat()
+        memo_key = str(path)
+        if refused_memo.get(memo_key, {}).get("stat") == [stat.st_size, stat.st_mtime_ns]:
+            report["floors_memo_refused"] += 1
+            continue
+        try:
+            document, digest = floor.read_floor(path)
+            natives = floor.native_rows(document, locator=f"{floor.LOCATOR_PREFIX}{path}",
+                                        sha256=digest, store_manifest=manifest)
+            for native in natives:
+                tup = floor.project(native)
+                if f"src_{tup.measurement_id}" in known:
+                    report["floors_known"] += 1
+                    continue
+                out.extend(to_frames(tup, as_of=as_of, adapter_id=floor.ADAPTER_ID,
+                                     authority=floor.AUTHORITY))
+                report["floors_projected"] += 1
+        except (ProjectionError, OSError, ValueError) as exc:
+            reason = f"{type(exc).__name__}: {exc}"[:300]
+            report["refusals"].append({"floor": str(path), "reason": reason})
+            refused_memo[memo_key] = {"stat": [stat.st_size, stat.st_mtime_ns], "reason": reason}
+    return out
 
 
 def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, as_of: str,
                         dry_run: bool = False, memo_path: str | Path | None = None,
-                        frames: list[Mapping[str, Any]] | None = None) -> dict:
-    """Ingest the AutoKernel serving A/B receipts of ONE loop store (or a campaign's stores).
+                        frames: list[Mapping[str, Any]] | None = None,
+                        experiments_full: bool = False) -> dict:
+    """Ingest the loop beliefs of ONE loop store (or a campaign's stores).
 
-    Idempotent: a capture whose source is already in the ledger is not reopened, and a re-run
-    appends nothing. `frames` (the ledger's frames the caller already read) skips one ledger
-    read on the fast path. Returns a report; raises only on an invalid ledger.
+    Per store: the serving A/B receipts (v1 arm claims AND, since P1-B, one v2 capture claim
+    each), the serving floors (P1-D), and -- when lane C's adapter is present -- the
+    `experiments.db` rows above the memo watermark (P1-C; `experiments_full=True` is the
+    backfill). Idempotent: a capture whose v1 and v2 sources are already in the ledger is not
+    reopened, a known floor is not re-emitted, and a re-run appends nothing. `frames` (the
+    ledger's frames the caller already read) skips one ledger read on the fast path. Returns a
+    report; raises only on an invalid ledger.
     """
     from adapters import autokernel_corpus as corpus  # noqa: PLC0415
     from adapters import autokernel_legacy_serving as serving  # noqa: PLC0415
+    from adapters import autokernel_serving_floor as floor  # noqa: PLC0415
     from claim_tuple import ProjectionError, to_frames  # noqa: PLC0415
 
     started = time.monotonic()
     led = ledger if isinstance(ledger, Ledger) else Ledger(Path(ledger))
     root = Path(store_root)
     memo = Path(memo_path) if memo_path else None
-    refused_memo = _read_memo(memo)
+    memo_body = _read_memo_body(memo)
+    refused_memo = dict(memo_body.get("refused") or {})
+    watermarks = dict(memo_body.get("watermarks") or {})
+    manifests = dict(memo_body.get("manifests") or {})
     report: dict[str, Any] = {"schema": REPORT_SCHEMA, "store_root": str(root), "as_of": as_of,
                               "receipt_dirs": [], "receipts_listed": 0, "receipts_known": 0,
                               "receipts_memo_refused": 0, "receipts_read": 0,
-                              "rows_projected": 0, "refusals": [], "new_claims": 0,
+                              "rows_projected": 0, "v2_projected": 0, "refusals": [],
+                              "floors_listed": 0, "floors_known": 0, "floors_memo_refused": 0,
+                              "floors_projected": 0, "experiments_adapter": False,
+                              "experiments_rows_read": 0, "experiments_projected": 0,
+                              "experiments_manifests_built": 0, "experiments_deferred": [],
+                              "experiments_notes": [], "new_claims": 0,
                               "rescoped": 0, "already_present": 0, "frames_appended": 0,
                               "dry_run": dry_run}
     dirs = _receipt_dirs(root)
@@ -270,13 +483,30 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
                           if _RECEIPT_NAME.fullmatch(e.name) and e.is_file(follow_symlinks=False))
     listed.sort()
     report["receipts_listed"] = len(listed)
-    if not listed:
+    stores = _store_dirs(root)
+    exp = _experiments_adapter()
+    report["experiments_adapter"] = exp is not None
+    has_floors = any(floor.floor_paths(store) for store in stores)
+    has_experiments = exp is not None and any((s / EXPERIMENTS_DB).is_file() for s in stores)
+    if not listed and not has_floors and not has_experiments:
         report["seconds"] = round(time.monotonic() - started, 3)
         return report
 
-    known = _ledger_capture_ids(frames if frames is not None
-                                else (r.frame for r in led.read_all()))
+    ledger_frames = list(frames if frames is not None else (r.frame for r in led.read_all()))
+    known = _ledger_capture_ids(ledger_frames)
     incoming: list[dict] = []
+    for store in stores:
+        incoming.extend(_floor_frames(
+            store, as_of=as_of, refused_memo=refused_memo, report=report,
+            known=_ledger_source_ids(ledger_frames, f"src_{floor.MEASUREMENT_PREFIX}")))
+        if exp is not None and (store / EXPERIMENTS_DB).is_file():
+            try:
+                incoming.extend(_experiment_frames(
+                    exp, store, as_of=as_of, watermarks=watermarks, manifests=manifests,
+                    full=experiments_full, report=report))
+            except Exception as exc:  # noqa: BLE001 - one store's db fault is reported, not fatal
+                report["refusals"].append({"experiments": str(store / EXPERIMENTS_DB),
+                                           "reason": f"{type(exc).__name__}: {exc}"[:300]})
     for path in listed:
         capture = path.stem
         if capture in known:
@@ -304,6 +534,22 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
             reason = f"{type(exc).__name__}: {exc}"[:300]
             report["refusals"].append({"receipt": str(path), "reason": reason})
             refused_memo[memo_key] = {"stat": [stat.st_size, stat.st_mtime_ns], "reason": reason}
+            continue
+        # P1-B: the capture-level v2 claim, emitted BESIDE the v1 arms (never instead of them;
+        # the reader dedupes by the shared receipt locator). Its own try: a v2 refusal must not
+        # cost the v1 arms. The receipt is then memo'd so it is not re-read every planning step;
+        # its v1 arms are appended by this same run, so nothing is lost by skipping it later.
+        try:
+            for native in serving.native_rows_v2(document, receipt_locator=f"autokernel:{path}",
+                                                 receipt_sha256=digest):
+                tup = corpus._carry_verification(serving.project_v2(native), native, digest)
+                incoming.extend(to_frames(tup, as_of=as_of, adapter_id=serving.ADAPTER_ID_V2,
+                                          authority=getattr(serving, "AUTHORITY", None)))
+                report["v2_projected"] += 1
+        except (ProjectionError, OSError, ValueError) as exc:
+            reason = f"v2 {type(exc).__name__}: {exc}"[:300]
+            report["refusals"].append({"receipt": str(path), "reason": reason})
+            refused_memo[memo_key] = {"stat": [stat.st_size, stat.st_mtime_ns], "reason": reason}
     if incoming:
         result = append_scoped(led, incoming, as_of=as_of, dry_run=dry_run)
         for key in ("new_claims", "rescoped", "already_present"):
@@ -311,7 +557,7 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
         report["frames_appended"] = 0 if dry_run else result["frames"]
         report["filter_refused"] = result["refused"][:20]
     if not dry_run:
-        _write_memo(memo, refused_memo)
+        _write_memo(memo, refused_memo, watermarks=watermarks, manifests=manifests)
     report["seconds"] = round(time.monotonic() - started, 3)
     return report
 

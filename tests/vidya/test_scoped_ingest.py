@@ -190,3 +190,203 @@ def test_cli_inf70_only_new_rescopes_then_is_idempotent(tmp_path):
     second = run(AS_OF)
     assert second["only_new"]["frames"] == 0 and second["only_new"]["already_present"] == len(rows)
     assert Ledger(ledger_path).verify() == []
+
+
+# --- P1-B / P1-D / P1-C wiring: v2 beside v1, floors, incremental experiments -----------------
+
+import hashlib  # noqa: E402
+import shutil  # noqa: E402
+import sqlite3  # noqa: E402
+
+import scoped_ingest as si  # noqa: E402
+
+P1 = Path(__file__).resolve().parent / "fixtures" / "belief_p1"
+
+
+def _p1_store(tmp_path: Path, label: str) -> Path:
+    """A copy of one real-derived capture laid out as a loop store."""
+    src = P1 / "serving" / label
+    assert (src / "serving-beliefs").is_dir(), "derive the P1 fixtures first"
+    dst = tmp_path / "campaign" / f"store-{label}"
+    shutil.copytree(src, dst)
+    return dst
+
+
+def test_v2_capture_claim_is_ingested_beside_the_v1_arms(tmp_path):
+    store = _p1_store(tmp_path, "q38fn")
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    first = si.ingest_scoped_store(ledger, store, as_of=AS_OF)
+    assert first["rows_projected"] == 2 and first["v2_projected"] == 1
+    assert first["new_claims"] == 3 and first["frames_appended"] == 9
+    sids = [r.frame["assertion"]["source_id"] for r in ledger.read_all()
+            if r.frame["frame_type"] == FT_SOURCE]
+    assert sum(s.startswith("src_legacy-serving-v2:") for s in sids) == 1
+    second = si.ingest_scoped_store(ledger, store, as_of=T1)
+    assert second["receipts_known"] == 1 and second["frames_appended"] == 0
+
+
+def test_a_pre_p1b_capture_is_reopened_once_for_its_v2_claim(tmp_path):
+    from adapters import autokernel_legacy_serving as serving
+
+    store = _p1_store(tmp_path, "ds41")
+    (receipt,) = sorted((store / "serving-beliefs").glob("*.json"))
+    raw = receipt.read_bytes()
+    natives = serving.native_rows(json.loads(raw), receipt_locator=f"autokernel:{receipt}",
+                                  receipt_sha256=hashlib.sha256(raw).hexdigest())
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    for native in natives:  # the ledger as VB-LOOP-SCOPE left it: scoped v1 arms only
+        for frame in to_frames(serving.project(native), as_of=T0,
+                               adapter_id=serving.ADAPTER_ID, authority=None):
+            ledger.append(frame)
+    assert si._ledger_capture_ids([r.frame for r in ledger.read_all()]) == set()
+    report = si.ingest_scoped_store(ledger, store, as_of=AS_OF)
+    assert report["receipts_read"] == 1 and report["new_claims"] == 1
+    assert report["already_present"] == 2 and report["frames_appended"] == 3
+    assert si._ledger_capture_ids([r.frame for r in ledger.read_all()]) == {receipt.stem}
+
+
+def test_floor_is_ingested_once_with_its_store_manifest_scope(tmp_path):
+    store = tmp_path / "store-q27b"
+    shutil.copytree(P1 / "floor" / "q27b", store)
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    first = si.ingest_scoped_store(ledger, store, as_of=AS_OF)
+    assert first["floors_listed"] == 1 and first["floors_projected"] == 1
+    assert first["new_claims"] == 1 and first["frames_appended"] == 3
+    source = next(r.frame for r in ledger.read_all() if r.frame["frame_type"] == FT_SOURCE)
+    assert source["assertion"]["applicability"]["model_file"].endswith("Qwen3.8-27B-Q8_0.gguf")
+    assert source["assertion"]["applicability"]["scope_basis"] == "store_manifest"
+    second = si.ingest_scoped_store(ledger, store, as_of=T1)
+    assert second["floors_known"] == 1 and second["frames_appended"] == 0
+
+
+class _FakeExperiments:
+    """Lane C's interface (native_rows / project / build_store_manifest), over a tiny db."""
+
+    ADAPTER_ID = "test.fake_experiments/v1"
+    AUTHORITY = "measurement"
+
+    def __init__(self):
+        self.manifest_builds = 0
+        self.since_calls = []
+
+    def build_store_manifest(self, store, label=None, overrides=None):
+        self.manifest_builds += 1
+        return {"store": str(store), "scope": {"model_file": "/m/x.gguf", "backend": "cpu"}}
+
+    def native_rows(self, store_dir, since_rowid=None):
+        self.since_calls.append(since_rowid)
+        conn = sqlite3.connect(f"file:{Path(store_dir) / 'experiments.db'}?mode=ro", uri=True)
+        try:
+            rows = conn.execute("SELECT rowid, attempt_id, status FROM experiments WHERE rowid > ?"
+                                " ORDER BY rowid", (since_rowid or 0,)).fetchall()
+        finally:
+            conn.close()
+        return [{"rowid": r, "attempt_id": a, "status": s} for r, a, s in rows]
+
+    def project(self, row, *, store_manifest):
+        if row["status"] == "planner_transient":
+            return None
+        return ClaimTuple(measurement_id=f"ak-exp:v1:test:{row['attempt_id']}",
+                          metric="aggregate_tok_s", value=20.0, date=T0, category="CANDIDATE",
+                          claim=f"{row['attempt_id']} {row['status']}",
+                          source_kind="autokernel-experiment",
+                          applicability=dict(store_manifest["scope"], scope_basis="store_manifest"),
+                          observation={"outcome": "null", "outcome_native": row["status"],
+                                       "retrofit": True})
+
+
+def _exp_store(tmp_path: Path, rows) -> Path:
+    store = tmp_path / "store-exp"
+    store.mkdir()
+    conn = sqlite3.connect(store / "experiments.db")
+    conn.execute("CREATE TABLE experiments (attempt_id TEXT PRIMARY KEY, status TEXT NOT NULL)")
+    conn.executemany("INSERT INTO experiments VALUES (?, ?)", rows)
+    conn.commit()
+    conn.close()
+    return store
+
+
+def _insert(store: Path, rows) -> None:
+    conn = sqlite3.connect(store / "experiments.db")
+    conn.executemany("INSERT INTO experiments VALUES (?, ?)", rows)
+    conn.commit()
+    conn.close()
+
+
+def test_experiments_are_read_incrementally_above_the_memo_watermark(tmp_path, monkeypatch):
+    fake = _FakeExperiments()
+    monkeypatch.setattr(si, "_experiments_adapter", lambda: fake)
+    store = _exp_store(tmp_path, [("a1", "measured_null"), ("a2", "planner_transient")])
+    ledger, memo = Ledger(tmp_path / "ledger.jsonl"), tmp_path / "memo.json"
+    first = si.ingest_scoped_store(ledger, store, as_of=AS_OF, memo_path=memo)
+    assert fake.since_calls == [None]  # a small db with no watermark: complete read
+    assert first["experiments_rows_read"] == 2 and first["experiments_projected"] == 1
+    assert first["new_claims"] == 1
+    body = json.loads(memo.read_text())
+    assert body["watermarks"] == {str(store / "experiments.db"): 2}
+    assert fake.manifest_builds == 1
+
+    second = si.ingest_scoped_store(ledger, store, as_of=T1, memo_path=memo)
+    assert fake.since_calls == [None]  # nothing above the watermark: the adapter is not called
+    assert second["frames_appended"] == 0
+
+    _insert(store, [("a3", "regression")])
+    third = si.ingest_scoped_store(ledger, store, as_of=T1, memo_path=memo)
+    assert fake.since_calls == [None, 2] and third["experiments_rows_read"] == 1
+    assert third["new_claims"] == 1
+    assert fake.manifest_builds == 1  # cached per store in the memo, not rebuilt per step
+    assert json.loads(memo.read_text())["watermarks"][str(store / "experiments.db")] == 3
+
+
+def test_a_large_db_without_a_watermark_defers_history_to_the_backfill(tmp_path, monkeypatch):
+    fake = _FakeExperiments()
+    monkeypatch.setattr(si, "_experiments_adapter", lambda: fake)
+    monkeypatch.setattr(si, "_FULL_READ_BYTES", 0)
+    store = _exp_store(tmp_path, [("a1", "measured_null"), ("a2", "kept")])
+    ledger, memo = Ledger(tmp_path / "ledger.jsonl"), tmp_path / "memo.json"
+    report = si.ingest_scoped_store(ledger, store, as_of=AS_OF, memo_path=memo)
+    assert fake.since_calls == [] and report["experiments_projected"] == 0
+    assert report["experiments_deferred"][0]["watermark"] == 2
+    _insert(store, [("a3", "regression")])
+    later = si.ingest_scoped_store(ledger, store, as_of=T1, memo_path=memo)
+    assert fake.since_calls == [2] and later["experiments_projected"] == 1
+
+
+def test_experiments_full_is_the_backfill(tmp_path, monkeypatch):
+    fake = _FakeExperiments()
+    monkeypatch.setattr(si, "_experiments_adapter", lambda: fake)
+    monkeypatch.setattr(si, "_FULL_READ_BYTES", 0)
+    store = _exp_store(tmp_path, [("a1", "measured_null"), ("a2", "kept")])
+    report = si.ingest_scoped_store(Ledger(tmp_path / "ledger.jsonl"), store, as_of=AS_OF,
+                                    experiments_full=True)
+    assert fake.since_calls == [None] and report["experiments_projected"] == 2
+
+
+def test_dry_run_advances_no_watermark(tmp_path, monkeypatch):
+    fake = _FakeExperiments()
+    monkeypatch.setattr(si, "_experiments_adapter", lambda: fake)
+    store = _exp_store(tmp_path, [("a1", "measured_null")])
+    memo = tmp_path / "memo.json"
+    si.ingest_scoped_store(Ledger(tmp_path / "ledger.jsonl"), store, as_of=AS_OF,
+                           memo_path=memo, dry_run=True)
+    assert not memo.exists()
+
+
+def test_without_lane_c_the_experiments_path_is_inert(tmp_path, monkeypatch):
+    import adapters
+
+    # Both doors closed: the package attribute (set if lane C's module was imported earlier in
+    # the session) and the module cache entry (None makes the import raise ImportError).
+    monkeypatch.delattr(adapters, "autokernel_experiments", raising=False)
+    monkeypatch.setitem(sys.modules, "adapters.autokernel_experiments", None)
+    assert si._experiments_adapter() is None
+    store = _exp_store(tmp_path, [("a1", "measured_null")])
+    report = si.ingest_scoped_store(Ledger(tmp_path / "ledger.jsonl"), store, as_of=AS_OF)
+    assert report["experiments_adapter"] is False and report["frames_appended"] == 0
+
+
+def test_an_older_memo_without_watermarks_still_reads(tmp_path):
+    memo = tmp_path / "memo.json"
+    memo.write_text(json.dumps({"schema": si.MEMO_SCHEMA, "refused": {"x": {"stat": [1, 2]}}}))
+    assert si._read_memo(memo) == {"x": {"stat": [1, 2]}}
+    assert si._read_memo_body(memo).get("watermarks") is None

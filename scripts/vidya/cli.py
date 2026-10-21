@@ -694,9 +694,13 @@ def _ingest_autokernel_serving(args) -> int:
               file=sys.stderr)
         return 2
     report = ingest_scoped_store(_ledger(args), Path(args.root), as_of=args.as_of,
-                                 dry_run=args.dry_run, memo_path=args.memo)
+                                 dry_run=args.dry_run, memo_path=args.memo,
+                                 experiments_full=getattr(args, "experiments_full", False))
     human = (f"receipts listed={report['receipts_listed']}  known={report['receipts_known']}  "
-             f"read={report['receipts_read']}  refused={len(report['refusals'])}  "
+             f"read={report['receipts_read']}  v2={report.get('v2_projected', 0)}  "
+             f"floors={report.get('floors_projected', 0)}  "
+             f"experiments={report.get('experiments_projected', 0)}  "
+             f"refused={len(report['refusals'])}  "
              f"new claims={report['new_claims']}  rescoped={report['rescoped']}  "
              f"frames={'(dry run) ' if args.dry_run else ''}{report['frames_appended']}  "
              f"seconds={report['seconds']}")
@@ -957,6 +961,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="skip claims with live evidence (file-shaped sources); for autokernel "
                         "and inf70, also re-scope live unscoped claims (scoped_ingest.py)")
     i.add_argument("--memo", help="autokernel-serving: refused-receipt memo file (optional)")
+    i.add_argument("--experiments-full", action="store_true",
+                   help="autokernel-serving: read every experiments.db row (the backfill), not "
+                        "only rows above the memo watermark")
     i.set_defaults(func=cmd_ingest)
 
     sy = sub.add_parser("sync", help="keep the canonical ledger current with the intake index")
