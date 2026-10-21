@@ -1645,7 +1645,29 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
     wo_a gives NMSE ~7e-4, against Q8_0 noise of 2.9e-5 to 1.25e-4 (6-25x). That exceeds the gate, so an
     emulation is recommended.
   - [ ] **DS41-W5.1a — flag-gated FP8 (e4m3, ue8m0, block 32) QDQ of the attention output before wo_a (main + DSpark, deepseek41.cpp ~1221), default off, then a real-model ppl/NMSE A/B on the 1017 build.** (derived 2026-10-21 from /mnt/raid0/llm/tmp/ds41-w51-20261021/REPORT.md)
+    - *(2026-10-21 note, workspace-58 subagent; code only, not built or run.)* Flag and op are on llama.cpp branch `experimental/ds41-qdq-flag-20261021` (from champion dd3d9721c; worktree `/mnt/raid0/llm/worktrees/llama-ds41-qdq-flag-20261021`, pushed to `fork`).
+      `ac496d6f3` adds `src/llama-qdq.{h,cpp}`: `llama_build_qdq`, built on ggml_map_custom1 and CPU only. Its
+      scale and rounding rules are copied bit for bit from kernel.py act_quant/fp4_quant (inplace). The same
+      commit adds `tests/test-dsv41-qdq.cpp`, which checks against an independent enumerated-code oracle. `c17db6af9`
+      wires `LLAMA_DSV41_QDQ=wo_a` before wo_a in the main attention (deepseek41.cpp) and the DSpark attention
+      (dflash-dspark41.cpp). With the flag off, no node is added. Known residual delta: the reference input is bf16, ours is f32.
+      Queued in FILLERS.md: `ds41-qdq-build-test` (build plus tests, not DS41-class), then `ds41-w51a-ab`
+      (DS41-class). That runs three arms on the W5 ppl recipe: off, champion vs off (KLD must be 0), and wo_a
+      (PPL plus KLD vs off). Scripts and results are in `/mnt/raid0/llm/tmp/ds41-qdq-20261021/`.
 - [ ] **DS41-T3.2 — KV fake-quant attribution for reference parity (intake-2117#record, intake-2116#record).** The official reference round-trips window KV (FP8 ue8m0/32), main compressed KV (FP4 E2M1 + E4M3 per 16) and indexer K/Q (FP4 E8M0/32) before caching (model.py L546/L552/L707/L760/L1042); the port stores at the llama.cpp KV type with no QDQ. (1) On a layer-truncated fixture run the reference with its QDQ on and off to size its own sensitivity; (2) add an opt-in QDQ graph op on the experimental port; (3) re-run the DS41-T3 logit comparison with it on and label the claim kv_fakequant_matched. Never read a T3 divergence as a port defect before (1)-(3). Correctness class.
+  - *(2026-10-21 note, workspace-58 subagent; code only, not built or run.)* Step (2) is written: `ac496d6f3` (the op, modes
+    FP8 e4m3 ue8m0/32, FP4 e2m1 ue8m0/32 and FP4 e2m1 + e4m3/16, with `test-dsv41-qdq`) and `156b3ea94` (the sites).
+    The sites are opt-in through `LLAMA_DSV41_QDQ`: kv_win (main window KV, plus the DSpark ring and block KV), kv_comp, idx_k, idx_q, and the alias kv for all four. Each sits before the Hadamard K rotation; with the flag off, no node is added. Branch: llama.cpp branch `experimental/ds41-qdq-flag-20261021` (from champion dd3d9721c; worktree `/mnt/raid0/llm/worktrees/llama-ds41-qdq-flag-20261021`, pushed to `fork`).
+    Step (1) fixture finding: **no layer-truncated reference fixture exists on this host.** Three things are missing:
+    (a) The 1017 weights. None of its safetensors are on disk: `/mnt/raid0/llm/tmp/dive-deepinfer-1017/` holds code and
+    `model.safetensors.index.json` only, and the three local Sept MTP shards (44-46) do not help. A fixture up to layer 3 (SWA,
+    engram, first KV and index source) needs 1017 shards 00002 (embed), 00003-00006 (L0-L3), 00047 (L1 engram) and
+    00043 (head and norm). The indexer-reuse layers 24-36 need most of the model. The alternative is to dequantize from the 1017
+    GGUF; the claim is then `dequantized_from_quant`.
+    (b) A tilelang-free CPU shim of inference/kernel.py. `lib/qdq_size.py` already notes it is absent;
+    `llama_qdq_ref` is a C reference of the act-quant part only.
+    (c) The DS41-T3 comparison harness itself (not written), plus a matching truncated port run.
+    Step (3), port side, is queued as `ds41-t32-kvfq` (DS41-class, after the build). Arms: off, kv, kv_win, kv_comp and idx, each as KLD vs off at ctx 2048 (at 512 the indexer's top-512 selects every row). Label: kv_fakequant_port_sensitivity, not kv_fakequant_matched. Results: `/mnt/raid0/llm/tmp/ds41-qdq-20261021/t32-kvfq/`.
 - [ ] **DS41-B3.1 — Make the Engram gate exact at dot == +0.0 (intake-2124#record).** Replace ggml_sgn(dot) in the deepseek41.cpp engram gate with a +1-at-zero sign (copysign semantics of inference/model.py and the trained kernel); pure graph change, no new op. Done when a zero-key row's gate equals the reference value and decode logits are bit-identical elsewhere on the T1 smoke.
   - *(2026-10-20.)* Implemented as `sgn = 1 - 2*step(-dot)` on `experimental/intake-fixes-20261020` @ abcd831fb, queued for tests: exact at +0.0; at -0.0 it still yields +1 where torch copysign yields -1 — decide whether that case matters before closing.
   - *(2026-10-21.)* `test-dsv41-engram-gate` pass=14 fail=0 (graph-level, small tensors: exact at +0.0, bit-identical elsewhere) on `experimental/intake-fixes-20261020` @ 6b8291de5.
@@ -1686,6 +1708,12 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - [ ] **DS41-T7.1 — Price the DSpark drafter on the MI210 from existing logs (intake-2116#record).** From existing llama-server timing logs extract draft ms per step and its share of the DS41 step at block 2; if the share is >= 5%, scope a drafter-only HIP placement (whole 128-expert drafter resident, ~7-9 GiB) with proven residency; otherwise close. Zero inference for the pricing step.
   - *(2026-10-20, workspace-f8.)* NOT JUDGEABLE at the 5% threshold: drafter graph (410 nodes) seen 382x but accumulated 0 in the CPU probes, so its own ms/step was never logged; residual upper bound only (non-verify share 6.7-9.1%, median ~8.7%, CPU drafter, n_max 2), no lower bound; box stays open; evidence /mnt/raid0/llm/tmp/zero-inference-20261020/DS41-T7.1/REPORT.md.
 - [ ] **DS41-T7.1a — one profiled DS41 decode run that accumulates the DSpark drafter graph time** (or prints t_draft_us), prerequisite of DS41-T7.1. (derived 2026-10-20 from /mnt/raid0/llm/tmp/zero-inference-20261020/DS41-T7.1/REPORT.md)
+  - *(2026-10-21 note, workspace-58 subagent; code only, not built or run.)* Why T7.1 saw 0: the CPU profiler accumulates
+    one graph shape (the NNODES filter picked the verify graph), and the server's own `t_draft_us` (`dur(b,g,a)`) is
+    printed only at TRACE. `process()` was also untimed, and that is where the DSpark encoder and the KV inject decode
+    run on every verify step. Commit `206f9ef34` on llama.cpp branch `experimental/ds41-qdq-flag-20261021` (from champion dd3d9721c; worktree `/mnt/raid0/llm/worktrees/llama-ds41-qdq-flag-20261021`, pushed to `fork`) times `process()`. It also prints at INFO, per slot release:
+    `draft timing draft-dspark: draft = X ms / N calls, process = Y ms / M calls, ...`. It is default on because it is zero-cost (two clock reads per call); numerics are unchanged.
+    Queued as `ds41-t71a-drafter-timing` (DS41-class, after the build): the W6.2 server recipe at n_max 2 with 9 greedy requests. `/mnt/raid0/llm/tmp/ds41-qdq-20261021/t71a_parse.py` turns each request's figures into drafter ms per step and a share of eval time, which T7.1 compares with its 5% threshold.
 
 **Dormant triggers (no checkbox, no index next action; materialize a task only when the trigger is observed). 'An' in a row means that intake entry's own dive-ledger row n:**
 
