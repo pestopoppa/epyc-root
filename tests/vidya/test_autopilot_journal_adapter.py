@@ -658,3 +658,68 @@ def test_decision_fields_end_to_end_against_the_real_writer(tmp_path, monkeypatc
         shard=d / "autopilot_journal.jsonl",
         trace=trace,
     )
+
+
+# --- P1-M: belief_scope -> source applicability, prospective only ---------------------------
+
+SCOPE = {"schema": "epyc.autopilot.belief_scope.v1", "stack_regime": "f" * 16,
+         "role_models": {"architect_critic": "Qwen3.8-27B-Q8_0.gguf",
+                         "frontdoor": "Qwen3.6-35B-A3B-MTP-Q8_0.gguf"},
+         "config_key": "numeric|chat.long_context_threshold_chars=20000",
+         "knob_families": ["routing", "placement"]}
+
+
+def _frames(tmp_path, r):
+    root = write_journal(tmp_path, [r])
+    return list(apj.emit(root, as_of="2026-10-21T00:00:00Z"))
+
+
+def _split(frames):
+    src, claim, sup = frames
+    return src["assertion"], claim["assertion"], sup
+
+
+def test_belief_scope_becomes_source_applicability(tmp_path):
+    r = row(belief_scope=SCOPE)
+    r["measurement"]["infra_fingerprint"] = "f" * 16
+    r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
+    src, _, sup = _split(_frames(tmp_path, r))
+    assert src["applicability"] == {
+        "stack_regime": "f" * 16, "role_models": SCOPE["role_models"],
+        "config_key": SCOPE["config_key"], "knob_family": ["routing", "placement"]}
+    assert not any("belief_scope" in x for x in sup["provenance"]["grade_reasons"])
+
+
+def test_rows_without_belief_scope_project_byte_identical_frames(tmp_path):
+    plain = _frames(tmp_path, row())
+    empty = _frames(tmp_path / "b", row(belief_scope={}))
+    assert plain[0]["assertion"].get("applicability") is None
+    assert [f["frame_id"] for f in plain] == [f["frame_id"] for f in empty]
+
+
+def test_belief_scope_never_moves_the_grade(tmp_path):
+    scoped = _frames(tmp_path, row(belief_scope=SCOPE))
+    plain = _frames(tmp_path / "b", row())
+    assert scoped[2]["assertion"]["grade"] == plain[2]["assertion"]["grade"]
+
+
+@pytest.mark.parametrize("bad, why", [
+    ({**SCOPE, "schema": "other"}, "schema"),
+    ({**SCOPE, "stack_regime": ""}, "stack_regime"),
+    ({**SCOPE, "role_models": {"w": 1.5}}, "carrier"),
+    ({**SCOPE, "knob_families": ["a", "a"]}, "carrier"),
+])
+def test_a_wrong_belief_scope_scopes_nothing_and_says_so(tmp_path, bad, why):
+    src, _, sup = _split(_frames(tmp_path, row(belief_scope=bad)))
+    assert "applicability" not in src
+    assert any("belief_scope" in x and "not scoped" in x
+               for x in sup["provenance"]["grade_reasons"])
+
+
+def test_a_regime_that_disagrees_with_the_row_fingerprint_scopes_nothing(tmp_path):
+    r = row(belief_scope=SCOPE)
+    r["measurement"]["infra_fingerprint"] = "0" * 16
+    r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
+    src, _, sup = _split(_frames(tmp_path, r))
+    assert "applicability" not in src
+    assert any("infra_fingerprint" in x for x in sup["provenance"]["grade_reasons"])
