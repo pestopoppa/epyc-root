@@ -1376,7 +1376,13 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       (+2.1%, within 1 sigma). This is a different finetune, not a pure quant delta. It is measured
       without the W5.1 FP8 round trip.
     - NMSE spot checks: **not run** (DS41-W5a).
-    - Serving speed: ABA timing per the operator ruling of 2026-10-21 (A1 16:40Z, B beside f8 G1, A2 to 19:05Z).
+    - Serving speed: **DONE** ✅ 2026-10-21 (ABA per the operator ruling; INDICATIVE). Full table and caveats in
+      `data/ds41-1017-w5-20261021/SUMMARY.md` (research `da71fa603`). Served decode, 1017 vs Sept Q4 under identical
+      conditions (segment B, beside the f8 G1 GPU job): 15.01 vs 13.89 t/s, +8.1% for 1017. llama-bench tg128
+      -5.1% and pp512 -29.9% for 1017 (the `mxfp4_8x8_q8_0` repack prefill is slower than iqk Q4_K). 1017 drifted
+      12.87 (A1) -> 15.01 -> 16.34 -> 15.99 (A2); A1 is a cold-state outlier. GPU impact B2 (on) vs A2 (off)
+      +2.2%, within drift: no measurable penalty on full-host CPU decode. Each 1017 server holds ~276 GiB private
+      RAM plus ~463 GiB mapped; two concurrent servers caused the 15:57Z earlyoom kills.
   - [ ] **DS41-W5a — NMSE spot checks for the MXFP4 expert path.** The CPU-only build has no second backend,
     so `test-backend-ops` has nothing to compare against. Use a served-shape MUL_MAT_ID MXFP4 case set (the
     `served_shape_cases.py` lane profile from the 1017 GGUF) against an f32-dequant reference, cap 5e-4.
@@ -1390,7 +1396,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - 2026-10-21 smoke gate PASS (`SMOKE_OK` 12:37Z): champion `dd3d9721c` and candidate `f0c96dc1f` both load and serve the 1017 split GGUF with the exact recipe argv/env/port; frozen request x2 deterministic with 256 tokens; the two builds are token-identical; load 95-105 s; 16.8-17.2 tok/s (single run, no claim beyond load/coherence/determinism); text coherent. First sight of 1017 target-only decode speed on these builds; not a baseline.
   - 2026-10-21 (c2-regate) **candidate switched C -> C2** (`c-plus-nemotron-bolt-20261021` @ `49550eda5`, approved by main): arm now `chained_launch_c2.sh`, patched `gate_1017.py`/`PREDECLARED.md` re-approved; evidence `/mnt/raid0/llm/tmp/c2-regate-20261021/SMOKE_C2.json` (C2 loads 1017 via mmap, 2x256 tokens deterministic, coherent, 256/256 identical to the champion in the SAME config).
   - 2026-10-21 **LESSON: DS41-1017 greedy output depends on the thread count (and load mode).** The same champion build at `-t 40` mmap vs `-t 48 --no-mmap` diverged from token 10 (244/256 tokens differ); C2 vs champion at identical `-t 40` mmap config was 256/256 identical. Gates and smokes must compare only same-config arms (same `-t`, same load mode, same cpuset); never compare tokens across configs, and never read a cross-config mismatch as a build regression without the same-config control. Source: `/mnt/raid0/llm/tmp/c2-regate-20261021/SMOKE_C2.json` + `SMOKE_CTL_champion.json`.
-- [ ] DS41-W6 — **DSpark drafter for 1017.** The 1017 MTP shards changed, so the Sept drafter
+- [x] DS41-W6 — **DSpark drafter for 1017.** ✅ 2026-10-21 The 1017 MTP shards changed, so the Sept drafter
   `models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` no longer matches the target.
   - unsloth's `dspark-DeepSeek-V4.1-Flash-1017-Q8_0.gguf` (7,976,914,240 B) does not load as is. It is
     arch `dflash`, lacks `token_embd`/`output`, `hc_head_*` and `dspark_variant`, and has an `add_bos`
@@ -1401,6 +1407,13 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
   - Our loader's BF16 acceptance for the markov tables is unverified.
   - The original safetensors converter (`tmp/ds41-dspark-convert`) is lost.
   - Gate: the DS41-B13 conversion checks plus an alpha A/B.
+  - *(2026-10-21.)* `models/deepseek-ai/DeepSeek-V4.1-Flash-1017-DSpark.gguf` (10,004,006,720 B, sha256
+    d9ddd4be…4ebd), converted by research `c11c512f2`; B13 checks pass; loads and spec-decodes on 1017; alpha
+    1017 0.582/0.476 vs Sept 0.609/0.486 (blocks 2/3, 16 prompts).
+  - [ ] **DS41-W6.2 — Confirm the 1017-vs-Sept drafter alpha gap with more pairs.** (Numbered W6.2 because
+    DS41-W6.1 already exists below.) Partial result: n=2 pairs block 2, A−B −1.9 pp, CI [−4.2, −0.0]; n=1 block 3,
+    −0.9 pp; research `37cc352cc`. Needs ≥3 more pairs, run one server at a time, plus a greedy identity pass.
+    The Sept DSpark drafter is kept until then.
 - [ ] DS41-W7 — **Cut over and retire the Sept artifacts.**
   - Update `epyc-inference-research/scripts/lib/deepseek_v41_flash_recipe.py`. The trunk is now a
     9-shard split, so `TRUNK_GGUF` becomes shard 1 plus a shard/sha256 list, following the
@@ -1410,12 +1423,20 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     pinned artifacts.
   - Then delete the Sept Q4 (approved in W2) via `guarded_rm.sh --bypass-guard` after
     `assert_not_mapped.sh` passes, and record its graveyard row.
+  - [x] Recipe cutover ✅ 2026-10-21 (research `ada2bf38a`).
+  - [x] Sept Q4 deletion ✅ 2026-10-21T19:00:05Z (518,596,067,328 B; `assert_not_mapped.sh` PASS 18:59Z; graveyard
+    row 98 -> 99, research `7f2f7fece`).
   - The Sept DSpark drafter (9.4 GiB) goes once the W6 drafter passes. That deletion is not yet
     approved; confirm it with the operator.
 - [ ] DS41-W8 — **Re-point AutoKernel at the MXFP4 expert path.** The DS41 keeps (+7.11% serving;
   keeps 3 and 4 target the Q4_K X4_T kernel) do not apply to MXFP4 experts. After W5, re-anchor the
   DS41 AK campaign on the 1017 MXFP4 artifact and seed the AVX2 `mxfp4_8x8_q8_0` repack GEMV/GEMM as
   the target surface (AK decides knobs; low-bit perf is AK's job).
+  - *(2026-10-21, note; W8 stays open.)* MXFP4 served-shape oracle (research `3cf5e5b0f`), calibrated at anchor
+    `06b169e27` with 360 + 8 routed cases; 2 IQ3_XXS cases held anchor-relative (operator).
+    `--require-serving-floor` (`577f50d44`) and `--serving-calibration-only` (`c5997024e`). New campaign
+    `ak-ds41-1017-cpu-decode-20261021`; the old campaign `ak-ds41-cpu-decode-20260923` is SUPERSEDED (operator).
+    The floor is booked for 2026-10-22 18:00–22:00Z (launcher PID 4188290).
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
@@ -1553,7 +1574,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - [ ] **DS41-B3.1 — Make the Engram gate exact at dot == +0.0 (intake-2124#record).** Replace ggml_sgn(dot) in the deepseek41.cpp engram gate with a +1-at-zero sign (copysign semantics of inference/model.py and the trained kernel); pure graph change, no new op. Done when a zero-key row's gate equals the reference value and decode logits are bit-identical elsewhere on the T1 smoke.
   - *(2026-10-20.)* Implemented as `sgn = 1 - 2*step(-dot)` on `experimental/intake-fixes-20261020` @ abcd831fb, queued for tests: exact at +0.0; at -0.0 it still yields +1 where torch copysign yields -1 — decide whether that case matters before closing.
   - *(2026-10-21.)* `test-dsv41-engram-gate` pass=14 fail=0 (graph-level, small tensors: exact at +0.0, bit-identical elsewhere) on `experimental/intake-fixes-20261020` @ 6b8291de5.
-  - [ ] **DS41-B3.1.1 — T1 smoke decode-logit bit-identity on the real model, and decide the −0.0 case** (it still yields +1 where torch copysign gives −1).
+  - [x] **DS41-B3.1.1 — T1 smoke decode-logit bit-identity on the real model, and decide the −0.0 case** (it still yields +1 where torch copysign gives −1). ✅ 2026-10-21: bit-identical logits/tokens/top-10 on 4 prompts × 65 rows, research `48ee3b970`.
     - *(2026-10-21.)* The −0.0 case was decided: it does not matter. dot = sum·rstd·dim^-0.5 has positive scales, and RN summation from a +0 accumulator never yields −0.0, so the fix's +1 matches torch copysign. Only the T1 real-model smoke remains.
 - [x] **DS41-B12.1 — Cite-and-close DS41-B12 (a)(b)(c) and anchor DS41-B11 from source (intake-2116#record).** Head collapse = last FFN sub-layer pre-mix (official model.py:1268; DeepInfer deepseek.py:229-232; ours deepseek41.cpp:1372); layer-20 compressor gate absent because the single-token softmax is 1 (model.py:461-462); ratio 1/2 non-overlapping APE-free geometry; RoPE per intake-2116#record. Tick DS41-B12 with these anchors; DS41-B11 stays open only for the top-k renorm epsilon (dormant trigger below). No compute. ✅ 2026-10-20 — B12 (a) head collapse, (b) layer-20 ungated compressor, (c) ratio 1/2 geometry all MATCH official model.py vs champion dd3d9721c deepseek41.cpp; evidence /mnt/raid0/llm/tmp/zero-inference-20261020/DS41-B12.1/REPORT.md.
 - [ ] **DS41-T3.3 — Token-id parity of the DS41 serving path against two official renderers (intake-2118#record, intake-2121#record).** Oracles: the 1017 encoding/encoding.py (it differs from the September copy: tool-result-only user turns no longer start a turn) and deepseek-recipe @ 935817c. Render the 5 goldens plus tool, thinking, effort, mid-system and reasoning-retention cases (the second reader found the recipe drops reasoning for non-prefix assistant turns where encoding.py keeps it), tokenize with the DS41 GGUF vocab and diff against llama-server /apply-template + /tokenize as served; report the first divergence per case and which oracle disagrees. Host-side only, no inference.
