@@ -1,0 +1,26 @@
+{
+  "entries": [
+    {
+      "container_bytes": 46685,
+      "container_sha256": "49d0b26b2ba1f1b5ada68ca413f90cac7467fcb8e13a0d72bbe540a4023b7254",
+      "decoded_bytes": 45850,
+      "decoded_sha256": "c66f91c49f2d41671df43bc1a6ed212f198878db29f8778dced2d0d065766977",
+      "logical_original_path": "artifacts/ci/evl49-s05-native-source-20261008/native/original-junit.xml",
+      "public_container_path": "artifacts/ci/evl49-s05-native-source-20261008/native/original-junit.xml.json",
+      "source_sha256": "c66f91c49f2d41671df43bc1a6ed212f198878db29f8778dced2d0d065766977",
+      "storage_encoding": "UTF-8 JSON object; content string encodes exactly to the logical original UTF-8 bytes"
+    },
+    {
+      "container_bytes": 15188,
+      "container_sha256": "489b0ed59512bf902533393c9939a1c943f328d7e82eb2a7c5ecef9c40ae663a",
+      "decoded_bytes": 14413,
+      "decoded_sha256": "4bfd35832b52e2141163bea39d4c1d8a7f90d87cbe4f57ff732cd83dadf94f8f",
+      "logical_original_path": "artifacts/operator/decisions/NIB77-current-custody-20261021/NIB77-frozen-worktree-registration.original",
+      "public_container_path": "artifacts/operator/decisions/NIB77-current-custody-20261021/NIB77-frozen-worktree-registration.original.json",
+      "source_sha256": "4bfd35832b52e2141163bea39d4c1d8a7f90d87cbe4f57ff732cd83dadf94f8f",
+      "storage_encoding": "UTF-8 JSON object; content string encodes exactly to the logical original UTF-8 bytes"
+    }
+  ],
+  "generated_for": "2026-10-21 source-preserving publication preparation",
+  "schema": "epyc.public-original-source-storage-map.v1"
+}

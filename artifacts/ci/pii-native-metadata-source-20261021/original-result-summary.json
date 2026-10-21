@@ -1,0 +1,452 @@
+{
+  "source_commit": "587a47edd8c1b791b2eed8a228c5f2647734a348",
+  "run_id": 39596348505,
+  "attempt": 1,
+  "cases": 52,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "junit_sha256": "a272b48265b92bb179996da94f6368b6c90bb39e127ab9e418ba18c5c515cba1",
+  "native": {
+    "commit": "587a47edd8c1b791b2eed8a228c5f2647734a348",
+    "run_id": "39596348505",
+    "attempt": 1,
+    "conclusion": "success",
+    "native_count": 1,
+    "scope": "original source custody only; no owner observations/current-pool/inference/performance or new grade",
+    "native_value": true,
+    "generated_outputs": 0,
+    "readset_count": 4608,
+    "receipt_sha256": "92eec8065ae30e89d4d8d55aceb3ceeabd9211d3ba5aa590af2edd029b4b98c8"
+  },
+  "PII_unique_original_records": [
+    {
+      "sha256": "a784c0ead15db9fe466f0eeacc45d2090c6aaca2585e901ac32eecf7f4efacfe",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_4/staged-repo/.git/epyc-private/pii-gates/1709b2536cc943b79537383ca0a39af2/receipt.json"
+      ]
+    },
+    {
+      "sha256": "df0bf90ebadbb79d232c3b779407b1e781bd4c110bec3ac0bcce3d6445afe4a2",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad28/staged-repo/.git/epyc-private/pii-gates/08ddce7687cd47a2983eb2ca69087d9d/receipt.json"
+      ]
+    },
+    {
+      "sha256": "8806c0b473d38e1dcc8b41682739c06f7beaf62413e1df16bb83effac937236a",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_1/staged-repo/.git/epyc-private/pii-gates/d95bd622ae21439194fe64c08c84cb25/receipt.json"
+      ]
+    },
+    {
+      "sha256": "622721d4a4bc899a4c9ba8da57aa761f95ed5871288ba22439e81d605d4f5ca4",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad4/staged-repo/.git/epyc-private/pii-gates/6a3ba6ed872246f2bc4ef0485770afc6/receipt.json"
+      ]
+    },
+    {
+      "sha256": "254f1ddb002240c8f7eb560c2bab8eb9db17f0cd517f2e9454958c81a1d5740a",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad6/staged-repo/.git/epyc-private/pii-gates/4dbb51f8aad940ad9d08bc993543197e/receipt.json"
+      ]
+    },
+    {
+      "sha256": "8be802933ebaea2d1af2d28ece5177ec7609936c270e5f924b79d3643e184506",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad8/staged-repo/.git/epyc-private/pii-gates/e7a6c1ff4c67423db5a122bba7bc6599/receipt.json"
+      ]
+    },
+    {
+      "sha256": "40826d9e9666b93df479e18f858abb5695d52f2f05e24e536daafe3be382911d",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_current/staged-repo/.git/epyc-private/pii-gates/69ef7104bfe145c2ad01acf58d44dbac/receipt.json",
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_7/staged-repo/.git/epyc-private/pii-gates/69ef7104bfe145c2ad01acf58d44dbac/receipt.json"
+      ]
+    },
+    {
+      "sha256": "6775dcd001038e7d9986c581ab6b7d3327c06f141b52cb67c5faf136cebe799e",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad39/staged-repo/.git/epyc-private/pii-gates/9e266ef1f4c2428094c1bd48684273e7/receipt.json"
+      ]
+    },
+    {
+      "sha256": "e1fe0d4c48cf4bce8afd8ed7073f8460b4ec883fef989d20c6fb30828d59f106",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad35/staged-repo/.git/epyc-private/pii-gates/00dbd72aedd94218b824fa2c184d1107/receipt.json"
+      ]
+    },
+    {
+      "sha256": "6a913e1678c3517a263123b429cfbac9fc1c2d63311aeab5e84b2bc83facb040",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad40/staged-repo/.git/epyc-private/pii-gates/f64ca6315cc2458c99bb0ed142647bac/receipt.json"
+      ]
+    },
+    {
+      "sha256": "b9437d18c030bb4a3144535c247ca8f046d1d432f188b74ec59994ab47d882bc",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad11/staged-repo/.git/epyc-private/pii-gates/5055d399ffd24e1aae1ff557be21f2b0/receipt.json"
+      ]
+    },
+    {
+      "sha256": "c0e40763e03c147702a2f22fb75384c16b656dd52579e21d0865cc7f1c755c0e",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad17/staged-repo/.git/epyc-private/pii-gates/fdf2a80641fc4566b268121b5af05586/receipt.json"
+      ]
+    },
+    {
+      "sha256": "56041df45866a467d4cc18323abe2ae98005a365fac5c4c4a3177b6dd966eb0c",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad20/staged-repo/.git/epyc-private/pii-gates/1f3eff526b5d47caaf5a7aa4d4aa991d/receipt.json"
+      ]
+    },
+    {
+      "sha256": "18bf5e73c3728581ceffe0de48821ad51e7153432ffe93a2f274af8ab277f75d",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad13/staged-repo/.git/epyc-private/pii-gates/be5ffb7017244c8e8593e67bb0abbc23/receipt.json"
+      ]
+    },
+    {
+      "sha256": "4adb5be009ddc6504ebba2c0cde150768c6d219657599e179478cca662c07592",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad31/staged-repo/.git/epyc-private/pii-gates/950160c723c542118635af6c62705583/receipt.json"
+      ]
+    },
+    {
+      "sha256": "db95ea30be01f6e6f8fd2e73bce75c6370fbb9882b7e5d8b69fa504e4365b7f8",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad27/staged-repo/.git/epyc-private/pii-gates/a38e1e6d28a042519ea7fed65d759dc8/receipt.json"
+      ]
+    },
+    {
+      "sha256": "fd85f5e2ce61728dc616cd7e2c6c909f7183e4a3b7206dfeaab28487fc248c8e",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad1/staged-repo/.git/epyc-private/pii-gates/c64455cd09c94c7d8a0173282e0551cd/receipt.json"
+      ]
+    },
+    {
+      "sha256": "9da724ec586c1f9447bd035cfeb126815b1a35c84231719e9dadb9164bff305e",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_3/staged-repo/.git/epyc-private/pii-gates/f2e0426c00244ee38a55a0f675323344/receipt.json"
+      ]
+    },
+    {
+      "sha256": "967ffb7e53bf286e950ce898b41c3422d45310c6636a9090027217cea711d711",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_6/staged-repo/.git/epyc-private/pii-gates/0877a12de85547d796fdf8a664b57b64/receipt.json"
+      ]
+    },
+    {
+      "sha256": "c878b21565f0f4f8dec800064580fac3d6a606b7694bf60e86ba53c18556d1e2",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad12/staged-repo/.git/epyc-private/pii-gates/926d33d501514f7183b2e3c80da41ddb/receipt.json"
+      ]
+    },
+    {
+      "sha256": "625fed29dcaa00e2cf16fdede218c72e1654d16ae1aad235497c0564ad2917ad",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad37/staged-repo/.git/epyc-private/pii-gates/f24f7fc1e53f4d2f918d4eada8658bba/receipt.json"
+      ]
+    },
+    {
+      "sha256": "6c2363e461b7d13f8a6c53489afa9737c49c8e19010940a4d298d1c8c52860e2",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad9/staged-repo/.git/epyc-private/pii-gates/45b1f9a0212a4454b055998e38a25136/receipt.json"
+      ]
+    },
+    {
+      "sha256": "bef7144251f8dd6973df3b3302322de007fe9698d5a7dca7bd810bf58193d34f",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad34/staged-repo/.git/epyc-private/pii-gates/f58a6846c0ab486ab54eef4c6fc3fd01/receipt.json"
+      ]
+    },
+    {
+      "sha256": "b64bfa7b19e27c6e60b2e4f781a41cd38597033332e26c9f959dd86b3070a46b",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad38/staged-repo/.git/epyc-private/pii-gates/64c185ec1ae54808b546774c256fc29b/receipt.json"
+      ]
+    },
+    {
+      "sha256": "4c9c798962acca04f8add6873c9204af83479eb99495549711c28b1c16c24a73",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad23/staged-repo/.git/epyc-private/pii-gates/12ed4c8f63eb42b185a46047d7acab1f/receipt.json"
+      ]
+    },
+    {
+      "sha256": "4a49923855fbe28b78e1829b58e42a65144c15ea391e142e9c8bdefa488bb7ce",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad15/staged-repo/.git/epyc-private/pii-gates/78a2643e476d4cef9ba4e00a925e9650/receipt.json"
+      ]
+    },
+    {
+      "sha256": "ac7a75482eed449748f90965c9258051fdd6699bfd38f5a33a78546d79dae36c",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad10/staged-repo/.git/epyc-private/pii-gates/455f16dc7d79418e9fc84ed7ee2827a4/receipt.json"
+      ]
+    },
+    {
+      "sha256": "a2debf4a8b7ca2064a1dc8d47cb8b1859317ab4a7289b2ca527d3b70c7351f3f",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_5/staged-repo/.git/epyc-private/pii-gates/e5e8b1720ec3484885833f617a5edfd7/receipt.json"
+      ]
+    },
+    {
+      "sha256": "9a1258d3d9a4f839a3862ef7bfd238ef63ff41fff95bd8531486749922d8df51",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad36/staged-repo/.git/epyc-private/pii-gates/f337500443ac4a2cb98384569be24ea4/receipt.json"
+      ]
+    },
+    {
+      "sha256": "1bd8991453fa697836717296b9f2a887a98fffba358e19a0149bff93b8c3dc04",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_2/staged-repo/.git/epyc-private/pii-gates/1c7496ac66b64092a74b1b777320a4af/receipt.json"
+      ]
+    },
+    {
+      "sha256": "ca9c9cf4f41b5c3e12aadf2182cd18d73dcbdc4c05e34cb9845fe0727cff80cf",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad14/staged-repo/.git/epyc-private/pii-gates/b4a71a0442f64a998fa57452fbb48aab/receipt.json"
+      ]
+    },
+    {
+      "sha256": "9a55b5c30a19f1466338132c897482bfc4ad760b71bf02cf044e31b6dc5e6f7d",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metadcurrent/staged-repo/.git/epyc-private/pii-gates/5ed73c75603549138ab7b955eae7e915/receipt.json",
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad41/staged-repo/.git/epyc-private/pii-gates/5ed73c75603549138ab7b955eae7e915/receipt.json"
+      ]
+    },
+    {
+      "sha256": "cc1fd3e67dcb634b4676578af80eccbea8b38936dc98a2a4f8017046d64f1f84",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad5/staged-repo/.git/epyc-private/pii-gates/d9d6d905c33d4b719460af6f86d79824/receipt.json"
+      ]
+    },
+    {
+      "sha256": "7c4be6925911b5af7ca6ddfd92d833bb50441317e44c58bdc3bf9e2e3910449e",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad7/staged-repo/.git/epyc-private/pii-gates/72f778eb73b64fafa8478262cafcb0ae/receipt.json"
+      ]
+    },
+    {
+      "sha256": "c2c29e1b10573f1b9de8d7b2ff682bf822c6077d72311b3b479e6a24b5ed118d",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad18/staged-repo/.git/epyc-private/pii-gates/ab22c695d6c948d4813dd746263c9e6e/receipt.json"
+      ]
+    },
+    {
+      "sha256": "40cce66f8835fb04c1e2d243bfc2df7ecd9283437d357426b1e9c4031019534d",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad21/staged-repo/.git/epyc-private/pii-gates/9c0c52cfb4a94bfba0e4468c8fbee5bb/receipt.json"
+      ]
+    },
+    {
+      "sha256": "17f1043b7518cf3f5b90a1efa8090b2836f12c8d10f039a7d0ba53d120327adf",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_staged_original_wins_over0/staged-repo/.git/epyc-private/pii-gates/31ea510656c748319e5884ddf2f65425/receipt.json"
+      ]
+    },
+    {
+      "sha256": "a9b780005acbc6dae97ede169ec3bebd0094c3d93622d06ade74808d02ac5bc5",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad3/staged-repo/.git/epyc-private/pii-gates/25462b7278c24976ab177cdb7acc2b5c/receipt.json"
+      ]
+    },
+    {
+      "sha256": "03f017e7c89bc51f096e4b67116c8685f54cbd7d6e1006ba24bdae1a6b8e376a",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad25/staged-repo/.git/epyc-private/pii-gates/f39c7807faaf47478be48300492ec83b/receipt.json"
+      ]
+    },
+    {
+      "sha256": "a7cc497832267ed25009842be45662f66129347505c70be1da5258bc23ae6675",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad0/staged-repo/.git/epyc-private/pii-gates/614125a27fd7482e8d8f3428d24851c7/receipt.json"
+      ]
+    },
+    {
+      "sha256": "f559ddfdc19c38e3b5223e3ec268ab1cfeae779450c1550d1e82084ce4bbfa6b",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad29/staged-repo/.git/epyc-private/pii-gates/72a2b6e2534b42419e7d3d33bfdcd0f0/receipt.json"
+      ]
+    },
+    {
+      "sha256": "08ea5d178d100d316c377afa758c52bba58cecc1ac4a1e49309dcc3dd01efb55",
+      "value": true,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad2/staged-repo/.git/epyc-private/pii-gates/e6eee29197b04d5da94cf4f77da56501/receipt.json"
+      ]
+    },
+    {
+      "sha256": "38a858484af7785556c586355bab1822564eece7f11d7baa4ee510ff3112a49b",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad24/staged-repo/.git/epyc-private/pii-gates/41c1b55b1ad349b5aff860e75f9dd4d2/receipt.json"
+      ]
+    },
+    {
+      "sha256": "5c5f24e01307812147adde68cf20fc41e60362061fb1aece0851a7bfad4addb4",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_staged_original_wins_over1/staged-repo/.git/epyc-private/pii-gates/5d06704a092549f2b1c69eacbc473a12/receipt.json",
+        "original-artifact.zip-extracted/staged-originals/test_staged_original_wins_overcurrent/staged-repo/.git/epyc-private/pii-gates/5d06704a092549f2b1c69eacbc473a12/receipt.json"
+      ]
+    },
+    {
+      "sha256": "dbfa308061896277964a4730065620885bed373cf70972f30a8979f0584f9b28",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad22/staged-repo/.git/epyc-private/pii-gates/587bbb63ed3540efaad20848667bfe78/receipt.json"
+      ]
+    },
+    {
+      "sha256": "7517cc0cf00c0aade8ea79236df7621231488a78939a8c11d706e80fca2f58bc",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad19/staged-repo/.git/epyc-private/pii-gates/35f1563c67d7473da173e95978639ed8/receipt.json"
+      ]
+    },
+    {
+      "sha256": "d650691f40020e0068fd2caf26ec6d428fcdcdbeec0d4b3f232692635dddfc7b",
+      "value": false,
+      "policy_sha256": "7a021ce00305836e295177a276d0c5ff1ad3e40a679cec8a11aced14905b3e6e",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_original_hook_reproduces_0/staged-repo/.git/epyc-private/pii-gates/54342eac5ef241fb83f528c19054cef2/receipt.json"
+      ]
+    },
+    {
+      "sha256": "2e30253a0fd9976faff80e5b0fa3075b1a7eddbfc2b7d6df66ebe2edf56679dd",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad30/staged-repo/.git/epyc-private/pii-gates/3dc7365615a34d698f90a4762c61032d/receipt.json"
+      ]
+    },
+    {
+      "sha256": "4d72ce00b23f7b6e11f015042aab8524775b4cdfd0f193bc3be698e4b4cde3ce",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad32/staged-repo/.git/epyc-private/pii-gates/95a77b4018444c2d93b9c6a3e2965530/receipt.json"
+      ]
+    },
+    {
+      "sha256": "a7a31170fa6ea22d9fd94eaed3b0db0cacd3536ebdf4934fa2ddb90bc2de1a9d",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad26/staged-repo/.git/epyc-private/pii-gates/39cb3abc8fa447a5bede5806c47d15eb/receipt.json"
+      ]
+    },
+    {
+      "sha256": "9e4edf8b6afef370c8e9632f50b09461ee2b9f945144c941b4b3efcaff262ec4",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad16/staged-repo/.git/epyc-private/pii-gates/1e4044fb87fd45f1beb099dffbc86f88/receipt.json"
+      ]
+    },
+    {
+      "sha256": "1eca3e1527d52c91f5b1bb16f2c4755b4f472ae10957ba01f14664929bcb7793",
+      "value": false,
+      "policy_sha256": "f250d6337427803a59d6dfb411cba6cf27a25baa7477e0fb81a6549c21feaa10",
+      "archive_paths": [
+        "original-artifact.zip-extracted/staged-originals/test_exact_staged_native_metad33/staged-repo/.git/epyc-private/pii-gates/c6c39e3a32944ed4ab89f41218f3228d/receipt.json"
+      ]
+    }
+  ],
+  "PII_raw_receipt_archive_members": 55,
+  "PII_unique_receipts": 52,
+  "duplicate_alias_note": "Three pytest tmp_path *current aliases dereferenced by original artifact upload; byte-identical duplicates retained, not additional invocations.",
+  "PII_true_controls": 12,
+  "PII_false_controls": 40,
+  "OWN_clean": true,
+  "shared_hook_unchanged": true,
+  "inventory_unchanged": true,
+  "main_promotion": false
+}

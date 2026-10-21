@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 12344247493,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM0NDI0NzQ5Mw==",
+      "name": "nib83-native-39596176243-1",
+      "size_in_bytes": 300600,
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12344247493",
+      "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12344247493/zip",
+      "expired": false,
+      "digest": "sha256:3f59803b9e22106532aedf469ede4e55c19e490e4976144518b1735870b989dc",
+      "created_at": "2026-10-21T12:00:47Z",
+      "updated_at": "2026-10-21T12:00:47Z",
+      "expires_at": "2027-01-19T12:00:18Z",
+      "workflow_run": {
+        "id": 39596176243,
+        "repository_id": 1166910746,
+        "head_repository_id": 1166910746,
+        "head_branch": "codex/ni08-nib83-native-source-20261021",
+        "head_sha": "ee7428992d3cb157bb054967ea08d6f4e5f76de5"
+      }
+    }
+  ]
+}

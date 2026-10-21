@@ -1,0 +1,48 @@
+{
+  "family": "CJ10",
+  "task_id": "VB-CJ10-PROMPT-SOURCE-CONFORMANCE",
+  "source_commit": "c2ea59e08305b85dd929b075c2a8f9845533c19e",
+  "original_run": 39597112001,
+  "attempt": 1,
+  "artifact": {
+    "id": 12343884021,
+    "node_id": "MDg6QXJ0aWZhY3QxMjM0Mzg4NDAyMQ==",
+    "name": "cj10-source-native-39597112001-1",
+    "size_in_bytes": 746101,
+    "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343884021",
+    "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343884021/zip",
+    "expired": false,
+    "digest": "sha256:31780f8f15cb6bf14c352d072e9f392f0d9dcae49f651425b12f8792a273b528",
+    "created_at": "2026-10-21T12:08:39Z",
+    "updated_at": "2026-10-21T12:08:39Z",
+    "expires_at": "2027-01-19T12:07:28Z",
+    "workflow_run": {
+      "id": 39597112001,
+      "repository_id": 1166910746,
+      "head_repository_id": 1166910746,
+      "head_branch": "codex/cj10-source-conformance-parquet-20261021",
+      "head_sha": "c2ea59e08305b85dd929b075c2a8f9845533c19e"
+    }
+  },
+  "receipt_file_sha256": "7cade244d39c40f39d884d2281a882232ebab0f88b3918236347f0bad1abd854",
+  "native_counts": {
+    "collected": 59,
+    "error": 0,
+    "executed": 59,
+    "failure": 0,
+    "passed": 59,
+    "skipped": 0
+  },
+  "native_value": true,
+  "native_readset_count": 44,
+  "shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "secondary_grade_sha256": "5df066f1911c4a841394ea08d78da3ab73d388d9ef6834e8184b497e4407098b",
+  "secondary_grade_event": 39598737546,
+  "reader_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "private_KEEP_custody": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-source-readiness-20261021/CJ10-ROOT19-parquet-successor-PREP-v1/originals-attempt1",
+  "public_scope": "Metadata subset only. Missing raw readset/log/other sidecars prevents standalone strict receipt reopening. Complete original archives and raw sidecars remain in private KEEP custody.",
+  "new_native_execution_from_secondary_grade": false
+}

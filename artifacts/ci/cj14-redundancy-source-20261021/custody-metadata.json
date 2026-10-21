@@ -1,0 +1,48 @@
+{
+  "family": "CJ14",
+  "task_id": "VB-CJ14-REDUNDANCY-SOURCE-CAPTURE",
+  "source_commit": "450315aa95003a0f67e6c6f8e6f3838b23ced81d",
+  "original_run": 39596520546,
+  "attempt": 1,
+  "artifact": {
+    "id": 12343853648,
+    "node_id": "MDg6QXJ0aWZhY3QxMjM0Mzg1MzY0OA==",
+    "name": "cj14-source-native-39596520546-1",
+    "size_in_bytes": 915738,
+    "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343853648",
+    "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343853648/zip",
+    "expired": false,
+    "digest": "sha256:4964507ca5af7770726352dd513e0b4a8999bcc00da79f0cd5e01ea1f4893a6a",
+    "created_at": "2026-10-21T12:03:51Z",
+    "updated_at": "2026-10-21T12:03:51Z",
+    "expires_at": "2027-01-19T12:02:55Z",
+    "workflow_run": {
+      "id": 39596520546,
+      "repository_id": 1166910746,
+      "head_repository_id": 1166910746,
+      "head_branch": "codex/cj14-redundancy-conformance-20261021",
+      "head_sha": "450315aa95003a0f67e6c6f8e6f3838b23ced81d"
+    }
+  },
+  "receipt_file_sha256": "fe54270bbf555c39972839b03c6fe652ae2d9c704ee5c14ee339ee662e0e16e8",
+  "native_counts": {
+    "collected": 44,
+    "error": 0,
+    "executed": 44,
+    "failure": 0,
+    "passed": 44,
+    "skipped": 0
+  },
+  "native_value": true,
+  "native_readset_count": 107,
+  "shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "secondary_grade_sha256": "6cc4ac37fffb8355386c8284818253e5008fb8e80a96336329b7cfaa14f00377",
+  "secondary_grade_event": 39598737546,
+  "reader_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "private_KEEP_custody": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-cj14-source-ready-20261021-v4-own-commit/originals-attempt1",
+  "public_scope": "Metadata subset only. Missing raw readset/log/other sidecars prevents standalone strict receipt reopening. Complete original archives and raw sidecars remain in private KEEP custody.",
+  "new_native_execution_from_secondary_grade": false
+}

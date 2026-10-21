@@ -1,0 +1,85 @@
+{
+  "zip_sha256": "06d2a49177f25ff9dc3599c2cd9b407dab35dbf82dcb9408c0612f6fd18ebe0a",
+  "API_digest": null,
+  "CRC_verified_before_extract": true,
+  "members": [
+    {
+      "name": "0_native-seven.txt",
+      "bytes": 96311,
+      "sha256": "ebb14a7a27973d90feee6e886d89260c819ce2d5c8e3fbec3f3bb152223b9891",
+      "CRC": 3753145399
+    },
+    {
+      "name": "native-seven/system.txt",
+      "bytes": 629,
+      "sha256": "a5644dac62a90edb124794cfb274c677a02e9f5b4db8132e33128ffb41639504",
+      "CRC": 3246673275
+    },
+    {
+      "name": "native-seven/1_Set up job.txt",
+      "bytes": 2281,
+      "sha256": "4503c46ad1306fd269e3834d3696ad81651520771d322bbb192c0836bf78ada6",
+      "CRC": 3732769186
+    },
+    {
+      "name": "native-seven/2_Initialize setup-failure custody.txt",
+      "bytes": 744,
+      "sha256": "583010498a237dd0c6a7304b8817bcade012c325269090dff2d36787eb0cc1e0",
+      "CRC": 3102389600
+    },
+    {
+      "name": "native-seven/3_Run actions_checkout@11bd71901bbe5b1630ceea73d27597364c9af683.txt",
+      "bytes": 73788,
+      "sha256": "59eb5b9832150edec1230f0f4c3cfd4e379a6989821ac7bc88a21d1d8f8efdf8",
+      "CRC": 2835460563
+    },
+    {
+      "name": "native-seven/4_Run actions_checkout@11bd71901bbe5b1630ceea73d27597364c9af683.txt",
+      "bytes": 10911,
+      "sha256": "5db891f21c88e5ba8daba87ca936fd75a9cb4da8d2a18d98d708e78652cead5e",
+      "CRC": 332656681
+    },
+    {
+      "name": "native-seven/5_Run actions_setup-python@a26af69be951a213d495a4c3e4e4022e16d87065.txt",
+      "bytes": 1195,
+      "sha256": "7fb8d297cd32a16fc02f18c786d5d17b30cac8209094cae4998ea96d655cc358",
+      "CRC": 638878862
+    },
+    {
+      "name": "native-seven/6_Original synthetic native capture and existing shared grade.txt",
+      "bytes": 1111,
+      "sha256": "ceff8b6279c8f9f0aa4aec905c50e2db6a310fbe7415c2f332d4363bb517d032",
+      "CRC": 4261563737
+    },
+    {
+      "name": "native-seven/7_Retain original success or failure custody.txt",
+      "bytes": 2948,
+      "sha256": "aeb15eb53fd0a283ed836bc1d3aae6a2c89dc974acc45818c212c701202c6050",
+      "CRC": 583378322
+    },
+    {
+      "name": "native-seven/12_Post Run actions_setup-python@a26af69be951a213d495a4c3e4e4022e16d87065.txt",
+      "bytes": 305,
+      "sha256": "cf3134ee763e939fb03628be8a9a5766ec55e04460185da7d581dfa3e09aa49f",
+      "CRC": 3458272060
+    },
+    {
+      "name": "native-seven/13_Post Run actions_checkout@11bd71901bbe5b1630ceea73d27597364c9af683.txt",
+      "bytes": 1272,
+      "sha256": "f1a1a654401725a77d692c9ff2cd41df8056b435491b4fcf6a330330de2db808",
+      "CRC": 3591108377
+    },
+    {
+      "name": "native-seven/14_Post Run actions_checkout@11bd71901bbe5b1630ceea73d27597364c9af683.txt",
+      "bytes": 1271,
+      "sha256": "e8aee7300b89c127b850d77819c1165e14b95cc6a8c942b76fa38a33e8098d45",
+      "CRC": 2131589763
+    },
+    {
+      "name": "native-seven/15_Complete job.txt",
+      "bytes": 515,
+      "sha256": "81e7e342a2396ebe10c489f3dd5d0e0e20e12b0d5df5d91ccbb24d11cd7f1213",
+      "CRC": 2399541496
+    }
+  ]
+}

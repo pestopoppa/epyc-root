@@ -1,0 +1,16 @@
+{
+  "control_count": 26,
+  "exact_case_multiset": true,
+  "exit_code": 0,
+  "native_counts": {
+    "collected": 26,
+    "error": 0,
+    "executed": 26,
+    "failure": 0,
+    "passed": 26,
+    "skipped": 0
+  },
+  "no_models_or_inference": true,
+  "source_readset_unchanged": true,
+  "state": "passed"
+}

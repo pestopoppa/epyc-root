@@ -1,0 +1,157 @@
+{
+  "zip_sha256": "3f59803b9e22106532aedf469ede4e55c19e490e4976144518b1735870b989dc",
+  "API_digest": "sha256:3f59803b9e22106532aedf469ede4e55c19e490e4976144518b1735870b989dc",
+  "CRC_verified_before_extract": true,
+  "members": [
+    {
+      "name": "carrier.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "CRC": 0
+    },
+    {
+      "name": "carrier.stdout",
+      "bytes": 117,
+      "sha256": "5f7d2fbac9846be72c88e60ab63a39f9a398f88f89dec7dfaf1526cdef323d54",
+      "CRC": 4271162649
+    },
+    {
+      "name": "carrier-exit.json",
+      "bytes": 16,
+      "sha256": "3e42a2ad3dbeab9d1167d20261ad6305bdea31103ffc09c30f25558345966de2",
+      "CRC": 589578118
+    },
+    {
+      "name": "execution-request.json",
+      "bytes": 4316,
+      "sha256": "4bde7943f8cbc108a74f6463b5c9b3732b7bfafbc44a1cf1a5f17dad15138e48",
+      "CRC": 1825537714
+    },
+    {
+      "name": "native/command.log",
+      "bytes": 58,
+      "sha256": "e967548605b3cbda2ebfee32648b1c83398c612093e0a4232d072796defbd0f3",
+      "CRC": 3955077396
+    },
+    {
+      "name": "native/execution-request.json",
+      "bytes": 3706,
+      "sha256": "610b8bb3054fa706bae6993398ff0b7a1079afe17d4b763197f1d02565caf5f4",
+      "CRC": 4174249228
+    },
+    {
+      "name": "native/original-junit.xml",
+      "bytes": 1009,
+      "sha256": "9dd74ed35dcd0fd5d17f860575d59947efcb91d7726fe04649cd92bf95bfb554",
+      "CRC": 2483171787
+    },
+    {
+      "name": "native/read-000.bin",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "CRC": 494579637
+    },
+    {
+      "name": "native/read-001.bin",
+      "bytes": 1728,
+      "sha256": "283bdcdc16ff048b8fe2e046691989e7e319991f16acc00e72d1fec521be1b48",
+      "CRC": 2939266345
+    },
+    {
+      "name": "native/read-002.bin",
+      "bytes": 3858,
+      "sha256": "bbb080ab6879ceb56232f47f69eea751059babf09c5578454d9c8d02eeb6891e",
+      "CRC": 316567814
+    },
+    {
+      "name": "native/read-003.bin",
+      "bytes": 968,
+      "sha256": "b1618f87835958276c0a634076d82157fb0cb1f668304bc7fd453e8724a5b959",
+      "CRC": 4174985700
+    },
+    {
+      "name": "native/read-004.bin",
+      "bytes": 4047,
+      "sha256": "cf94c699f3f9912defb622534177415ef8c628241489ea88d425add638780a79",
+      "CRC": 659264193
+    },
+    {
+      "name": "native/read-005.bin",
+      "bytes": 1631,
+      "sha256": "ef733fc73d992b28127e409379adde4b17adb29cbbf1394e119b794a91d00165",
+      "CRC": 2190494713
+    },
+    {
+      "name": "native/read-007.bin",
+      "bytes": 2631,
+      "sha256": "d2207a3a36dce522235df4dbdccc1d3f48f807f68c4f4f941953f64e87e00e08",
+      "CRC": 3882256923
+    },
+    {
+      "name": "native/read-006.bin",
+      "bytes": 3238,
+      "sha256": "8b9f579db81ca4de3180380f5ce9ad1d1210b13e8af347b90042d9cb3525b7cb",
+      "CRC": 1563028242
+    },
+    {
+      "name": "native/read-008.bin",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "CRC": 1203915333
+    },
+    {
+      "name": "native/read-009.bin",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "CRC": 2431994335
+    },
+    {
+      "name": "native/read-010.bin",
+      "bytes": 314905,
+      "sha256": "f248f74f2bd7e3c4f3ec4ac26f4137835f5cda234332075115b9d4c0215afdd8",
+      "CRC": 2161694992
+    },
+    {
+      "name": "native/read-011.bin",
+      "bytes": 442108,
+      "sha256": "f9fb9ee95cf304fd1a12dadfcf30c7fbc7e7ff730a455b70692a6a9065d70df7",
+      "CRC": 3122781853
+    },
+    {
+      "name": "original-junit.xml",
+      "bytes": 1009,
+      "sha256": "9dd74ed35dcd0fd5d17f860575d59947efcb91d7726fe04649cd92bf95bfb554",
+      "CRC": 2483171787
+    },
+    {
+      "name": "native/receipt.json",
+      "bytes": 6850,
+      "sha256": "d0eb06f2cc01db81b2effcc7a6803128c31c6d538ea890d18bdd972b433377e9",
+      "CRC": 2463382604
+    },
+    {
+      "name": "pre-grade-custody.json",
+      "bytes": 12529,
+      "sha256": "07d90352fc95e5c9b1b6ece662e3efbff9e383d6b0126f470af142801dd6bbe5",
+      "CRC": 471891252
+    },
+    {
+      "name": "setup-status.json",
+      "bytes": 70,
+      "sha256": "4d5ad6cb1b52821ca635683326f19dfe58a0c02e0457f62a6cf4dbb1185d51e2",
+      "CRC": 1767251754
+    },
+    {
+      "name": "shared-grade.json",
+      "bytes": 615,
+      "sha256": "523145ed22ef685b225c1bfb084d6a72c10c2f80f4c7617c6e63fa5dfa0ed807",
+      "CRC": 1638362253
+    },
+    {
+      "name": "status.json",
+      "bytes": 97,
+      "sha256": "e0342fb9566f784517f2ea8f9cec550a591ce9ab34312e3947556f07aead87c3",
+      "CRC": 3724668639
+    }
+  ]
+}

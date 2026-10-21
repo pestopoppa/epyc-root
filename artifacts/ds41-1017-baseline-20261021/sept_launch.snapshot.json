@@ -1,0 +1,397 @@
+{
+ "absent_environment": [],
+ "argv": [
+  "taskset",
+  "-c",
+  "0-95",
+  "numactl",
+  "--interleave=all",
+  "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf",
+  "-np",
+  "1",
+  "-c",
+  "8192",
+  "-t",
+  "48",
+  "-tb",
+  "48",
+  "-b",
+  "2048",
+  "-ub",
+  "512",
+  "-ctk",
+  "f16",
+  "-ctv",
+  "f16",
+  "--device",
+  "none",
+  "-ngl",
+  "0",
+  "-fa",
+  "on",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18641",
+  "--metrics",
+  "--slots",
+  "-md",
+  "/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf",
+  "-ngld",
+  "0",
+  "--spec-type",
+  "draft-dspark",
+  "--spec-draft-n-max",
+  "2",
+  "--no-kv-unified",
+  "--device-draft",
+  "none",
+  "--no-mmap",
+  "--no-webui",
+  "--load-threads",
+  "48"
+ ],
+ "backend": "cpu",
+ "build_dir": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004",
+ "capability": {
+  "backend": "cpu",
+  "contention": "unproven",
+  "cpu_placement": "unproven",
+  "gpu_residency": "not_applicable",
+  "reasons": [],
+  "schema": "epyc.autokernel.recipe_capability.v1",
+  "speculation": "external_draft",
+  "supported": true,
+  "witnesses": [
+   {
+    "expected": "1",
+    "field": "environ:GGML_IQK",
+    "key": "GGML_IQK",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "batched-greedy-inexact",
+    "field": "environ:LLAMA_SPEC_EXACT",
+    "key": "LLAMA_SPEC_EXACT",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "false",
+    "field": "environ:OMP_DYNAMIC",
+    "key": "OMP_DYNAMIC",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "cores",
+    "field": "environ:OMP_PLACES",
+    "key": "OMP_PLACES",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "spread",
+    "field": "environ:OMP_PROC_BIND",
+    "key": "OMP_PROC_BIND",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   },
+   {
+    "expected": "active",
+    "field": "environ:OMP_WAIT_POLICY",
+    "key": "OMP_WAIT_POLICY",
+    "kind": "process_environ",
+    "reason": null,
+    "status": "declared"
+   }
+  ]
+ },
+ "command_argv": [
+  "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf",
+  "-np",
+  "1",
+  "-c",
+  "8192",
+  "-t",
+  "48",
+  "-tb",
+  "48",
+  "-b",
+  "2048",
+  "-ub",
+  "512",
+  "-ctk",
+  "f16",
+  "-ctv",
+  "f16",
+  "--device",
+  "none",
+  "-ngl",
+  "0",
+  "-fa",
+  "on",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18641",
+  "--metrics",
+  "--slots",
+  "-md",
+  "/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf",
+  "-ngld",
+  "0",
+  "--spec-type",
+  "draft-dspark",
+  "--spec-draft-n-max",
+  "2",
+  "--no-kv-unified",
+  "--device-draft",
+  "none",
+  "--no-mmap",
+  "--no-webui",
+  "--load-threads",
+  "48"
+ ],
+ "drafter": {
+  "path": "/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf",
+  "role": "drafter",
+  "schema": "epyc.autokernel.launch_artifact.v1",
+  "sha256": "522ce00dedffc369019a6f5917bcd3dfcb343cf7cfdd36c3758e471177b0f3c5"
+ },
+ "dsos": [
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libggml-base.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "03cc8d09d83c0a5b4df8bc222e3fac88e3761eb068ca9b0085bb2676a3ccbfbb"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libggml-base.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "03cc8d09d83c0a5b4df8bc222e3fac88e3761eb068ca9b0085bb2676a3ccbfbb"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libggml-cpu.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "51f53ac4b2fb306ee75b3128f67ef01c9680d4b45139bd53c09dc1268d423c5c"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libggml-cpu.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "51f53ac4b2fb306ee75b3128f67ef01c9680d4b45139bd53c09dc1268d423c5c"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libggml.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "7dcd810247221e4c11fcb28ec559902aeae8b34bbf49f2baae5970d88b810159"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libggml.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "7dcd810247221e4c11fcb28ec559902aeae8b34bbf49f2baae5970d88b810159"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libllama-common.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "e67023f1a0bc29ea90e15fc848d3989c025dcdff0838d9146c61718b24468927"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libllama-common.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "e67023f1a0bc29ea90e15fc848d3989c025dcdff0838d9146c61718b24468927"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libllama-server-impl.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "f44c7ddfaa5bdf2312d3c941a5453a21f84fdd6dd149d5986370af2e6311ccf8"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libllama.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "05b43c4c7f2389ef7b33df695c5759eede4cccbdd7f04cdb045b649a2d1154a1"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libllama.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "05b43c4c7f2389ef7b33df695c5759eede4cccbdd7f04cdb045b649a2d1154a1"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libmtmd.so",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "c10d9c6513e59df4ccd5e041338c30cdc03accceff0ee50f1e342ec03698dd13"
+  },
+  {
+   "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/libmtmd.so.0",
+   "role": "dso",
+   "schema": "epyc.autokernel.launch_artifact.v1",
+   "sha256": "c10d9c6513e59df4ccd5e041338c30cdc03accceff0ee50f1e342ec03698dd13"
+  }
+ ],
+ "environment_policy": {
+  "allowed_inherit_keys": [],
+  "measurement_keys": [
+   "GGML_IQK",
+   "LLAMA_SPEC_EXACT",
+   "OMP_DYNAMIC",
+   "OMP_PLACES",
+   "OMP_PROC_BIND",
+   "OMP_WAIT_POLICY"
+  ],
+  "schema": "epyc.autokernel.environment_policy.v1",
+  "version": "ds41-cpu-t48-dspark-v1",
+  "witnesses": {
+   "GGML_IQK": "process_environ",
+   "LLAMA_SPEC_EXACT": "process_environ",
+   "OMP_DYNAMIC": "process_environ",
+   "OMP_PLACES": "process_environ",
+   "OMP_PROC_BIND": "process_environ",
+   "OMP_WAIT_POLICY": "process_environ"
+  }
+ },
+ "executable": {
+  "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin/llama-server",
+  "role": "executable",
+  "schema": "epyc.autokernel.launch_artifact.v1",
+  "sha256": "307e137c21a909db5d042ec41820a48befab3ce37b50cd977382e89df8aa06c5"
+ },
+ "execution_digest": "cdb0535c47ad674b82428bdf2b10825e8133b9ea4f0e47bfd40ce23ecba7d623",
+ "launch_contract": "orchestrator-production/v1",
+ "launch_env": {
+  "GGML_IQK": "1",
+  "LD_LIBRARY_PATH": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin",
+  "LLAMA_SPEC_EXACT": "batched-greedy-inexact",
+  "OMP_DYNAMIC": "false",
+  "OMP_PLACES": "cores",
+  "OMP_PROC_BIND": "spread",
+  "OMP_WAIT_POLICY": "active"
+ },
+ "model": {
+  "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf",
+  "role": "model",
+  "schema": "epyc.autokernel.launch_artifact.v1",
+  "sha256": "a5e2e2c3ada4b2e98d9f9e4b50f6d9c2a12c2c96f5da165c07e13aff9264984e"
+ },
+ "port": 18641,
+ "provenance": {
+  "build": "hand-built build-cpu at 00d118d44 (DS41 port + champion 90c12df42 fast loader), IDENTITY.json receipt",
+  "experimental_parent_snapshot": "dd415ff89e16fa39b98c71c7326ff13bc26a37f29176012c1d6a8b3fa7c6d174",
+  "export_sha256": "536c306ff32481f1c643863016bafe93b0d97a2e8450fd366d6fa08ea67bb35a",
+  "instance_mode": "full",
+  "recipe_origin": "deepseek_v41_flash_recipe greedy-batched, 48 threads",
+  "source:branch": "experimental/fastload-ds41-20260925",
+  "source:head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca"
+ },
+ "readback_expectations": [],
+ "relevant_environment": {
+  "GGML_IQK": {
+   "state": "value",
+   "value": "1"
+  },
+  "LLAMA_SPEC_EXACT": {
+   "state": "value",
+   "value": "batched-greedy-inexact"
+  },
+  "OMP_DYNAMIC": {
+   "state": "value",
+   "value": "false"
+  },
+  "OMP_PLACES": {
+   "state": "value",
+   "value": "cores"
+  },
+  "OMP_PROC_BIND": {
+   "state": "value",
+   "value": "spread"
+  },
+  "OMP_WAIT_POLICY": {
+   "state": "value",
+   "value": "active"
+  }
+ },
+ "runtime_binary_dir": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin",
+ "runtime_ld_paths": [
+  "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-004/bin"
+ ],
+ "schema": "epyc.autokernel.canonical_launch.v1",
+ "snapshot_digest": "8d754449b8b05b7bd7e759b26eb1405dd42743de55813378ea5150a267059e22",
+ "template": {
+  "batch": 2048,
+  "cpu_list": "0-95",
+  "ctk": "f16",
+  "ctv": "f16",
+  "ctx": 8192,
+  "device": "none",
+  "env": {
+   "GGML_IQK": "1",
+   "LLAMA_SPEC_EXACT": "batched-greedy-inexact",
+   "OMP_DYNAMIC": "false",
+   "OMP_PLACES": "cores",
+   "OMP_PROC_BIND": "spread",
+   "OMP_WAIT_POLICY": "active"
+  },
+  "env_readback": [],
+  "extra_flags": [
+   "--device-draft",
+   "none",
+   "--load-threads",
+   "48"
+  ],
+  "fa": "on",
+  "kv_unified": false,
+  "metric": "aggregate_tok_s",
+  "model": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-Q4.gguf",
+  "n_predict": 256,
+  "name": "ds41-00d118d44-cpu-t48-dspark-b2",
+  "ngl": 0,
+  "np": 1,
+  "schema": "epyc.autokernel.canonical_recipe.v1",
+  "spec_decode": {
+   "draft_n_max": 2,
+   "drafter": "/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf",
+   "ngld": 0,
+   "type": "draft-dspark"
+  },
+  "temperature": 0.0,
+  "threads": 48,
+  "top_k": 1,
+  "top_p": 0.95,
+  "ubatch": 512
+ },
+ "template_hash": "fe8ee8f377dbee464891bbf23a35f091dfd1402136ef4062d96a171e24b0612b",
+ "topology_prefix": [
+  "taskset",
+  "-c",
+  "0-95",
+  "numactl",
+  "--interleave=all"
+ ],
+ "workload": {
+  "metric": "aggregate_tok_s",
+  "n_predict": 256,
+  "temperature": 0.0,
+  "top_k": 1,
+  "top_p": 0.95
+ }
+}

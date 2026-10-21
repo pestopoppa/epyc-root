@@ -449,4 +449,28 @@ At orchestrator main726084a8, `ChatRequest.eval_fence` explicitly preserves abse
 TU-GR-1 remains the requested separate-UID/container grader/reference isolation plus transcript tripwire, coordinated with scoring infrastructure 2a-iv. Do not substitute fence telemetry for that boundary or reclassify absent/malformed/hook-only results as infra/scoring failures: that would change quality admission and the planned comparison population, requiring an explicit policy decision. Existing completed TU-GR-1a source preparation remains completed; no additional isolation implementation or acceptance is claimed.
 
 - [x] **TU-ADV-1-SOURCE — bounded repeated-invalid and undeclared privileged/skill-call DTAP fixtures with benign control.** MAIN accepts test-only source after original6/6 and normal APP publication; [scope](../../artifacts/ni08/tuadv-contract-source-20261006/README.md). Exact external Continual/Pokee attack and cross-run global skill-persistence acceptance remain on parent TU-ADV-1, which stays open. Attack-success unknown is retained; no evaluator or policy change.
-- [ ] **TU-LADDER-1 — Harness-capability ladder spec for local roles (design only).** Add a four-rung ladder spec (Read, plus Grep, plus Python, plus Write/Edit; same tasks, per role), reporting per-rung success with a confidence interval; the frontier ladder numbers are not expectations for local roles. This prices the A7 arm before it is run (intake-1011#record). Acceptance: the design section is filed. Estimate: 0.3 day.
+- [x] **TU-LADDER-1 — Harness-capability ladder spec for local roles (design only).** Add a four-rung ladder spec (Read, plus Grep, plus Python, plus Write/Edit; same tasks, per role), reporting per-rung success with a confidence interval; the frontier ladder numbers are not expectations for local roles. This prices the A7 arm before it is run (intake-1011#record). Acceptance: the design section is filed. Estimate: 0.3 day. ✅ 2026-10-21
+  - *(2026-10-21, dpf-specs.)* Design section "Harness-capability ladder for local roles" filed at the end of this handoff. Zero compute.
+
+## Harness-capability ladder for local roles (TU-LADDER-1 design, 2026-10-21)
+
+Design only; no run. Purpose: price the A7 arm of CF-AB-1 (externalised lossless log with programmatic search, `context-folding-progressive.md`) before it is run, by measuring how much of A7's value a given local role can actually use (`intake-1011#record`). The frontier-model ladder numbers in the source are not expectations for local roles; nothing here assumes them.
+
+**Rungs** (cumulative; same tasks, same role, same served pin, same sampling at every rung):
+
+| Rung | Tool surface | What it tests |
+|---|---|---|
+| R1 | Read (open a file or log range by path and line range) | baseline: can the role use the history at all |
+| R2 | R1 + Grep (regex search over the log, line-numbered hits) | search without writing code |
+| R3 | R2 + Python (execute a script over the log, stdout returned) | the A7 surface: programmatic search over a lossless log |
+| R4 | R3 + Write/Edit (create or modify files in a scratch workspace) | working memory it authors itself |
+
+**Tasks.** A task set whose answers require the elided history: questions mined from a long trajectory (identifier recall, count-over-history, find-the-last-X), the same set at every rung, with mechanical answer matching (no LLM judge for identifier questions, per the CF-AB-1 co-metric). The log format and the tool surface at each rung are declared in the run record, because the result is conditional on them.
+
+**Roles.** Every served local role that a CF-AB-1 arm could apply to, each at its served pin (model, quant, kernel ref) with its chat-template and thinking setting recorded. Per role, not pooled.
+
+**Reporting.** Per role x rung: solved / attempted with a Wilson 95% interval, and for adjacent rungs the paired per-task delta (task-level bootstrap interval or exact McNemar, declared in advance). Also per cell: tool-call error rate, share of runs that wrote search code that executed (R3, R4), and tokens per solved task. Never a pooled mean across roles or rungs; a rung where a role fails to run its tools is a result, reported as such.
+
+**Gate for A7.** A7 is priced as worth running at a role only if that role's R3 beats R2 on the paired delta with the interval excluding zero, and its R3 code-execution rate is reported (the existing A7 trigger already requires a local probe showing the role writes working search code; this ladder is that probe, widened to four rungs). Absence of a gain at R3 prices A7 at that role as not worth its window.
+
+**Cost.** Zero compute for this design. The run needs a window per role; harness work is the four tool surfaces over one log format, all of which exist in the REPL/tool stack or are thin wrappers. Acceptance: this section filed.

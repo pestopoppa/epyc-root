@@ -1,0 +1,5 @@
+# Copied-proposal fixture source-capture originals
+
+MAIN accepted the original source-only events for commit `9ed97e6efb044a91c4ed51ec0febaf518efe084e`: runs `37787880862` and `37787880868`, preserved separately below. The accepted original audit checked 63/26/1 JUnit identity counts with zero failures, errors, or skips, exact request/receipt/source-readset/grade records, and original archive custody. Both original source-class projections and shared grades remain copied verbatim in each run (`native/receipt.json`, `native/shared-grade.json`); the original grade is Judged/Located. No grade was authored for this summary or protocol/decision-grade inference.
+
+These events establish source and fixture-capture custody through the existing CI carrier/adapter/shared grading path. They do not establish copied-proposal correctness, security, scientific quality, or a new source ladder. Prior ordinary 63/26 M12f/AUD10 runs remain ordinary and were not resealed. Each original ZIP, request, receipt, JUnit, shared-grade and source-readset metadata remains in the per-run directory.

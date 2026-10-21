@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 12344415582,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM0NDQxNTU4Mg==",
+      "name": "s05-observer-original-39596455619-1",
+      "size_in_bytes": 20984577,
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12344415582",
+      "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12344415582/zip",
+      "expired": false,
+      "digest": "sha256:81d4036f829f0012ad84039673f5d7e21627ed57f5a15badc8e3ff6232039af5",
+      "created_at": "2026-10-21T12:03:21Z",
+      "updated_at": "2026-10-21T12:03:21Z",
+      "expires_at": "2027-01-19T12:02:24Z",
+      "workflow_run": {
+        "id": 39596455619,
+        "repository_id": 1166910746,
+        "head_repository_id": 1166910746,
+        "head_branch": "codex/evl49-s05-observer-native-20261008",
+        "head_sha": "549d1c158b00c23a1766be5759ee710cdc9a6af6"
+      }
+    }
+  ]
+}

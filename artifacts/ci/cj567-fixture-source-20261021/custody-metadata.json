@@ -1,0 +1,48 @@
+{
+  "family": "CJ567",
+  "task_id": "VB-CJ5-6-7-FIXTURE-SOURCE",
+  "source_commit": "a5324801166a3409b09e110a44edce1ef3e4c869",
+  "original_run": 39596675122,
+  "attempt": 1,
+  "artifact": {
+    "id": 12343174529,
+    "node_id": "MDg6QXJ0aWZhY3QxMjM0MzE3NDUyOQ==",
+    "name": "cj567-source-original-39596675122-1",
+    "size_in_bytes": 103495195,
+    "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343174529",
+    "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343174529/zip",
+    "expired": false,
+    "digest": "sha256:1dc407462b016b413002e93fd99883efea4f09017a0fd434e279f1b925ed2704",
+    "created_at": "2026-10-21T12:05:44Z",
+    "updated_at": "2026-10-21T12:05:44Z",
+    "expires_at": "2027-01-19T12:04:07Z",
+    "workflow_run": {
+      "id": 39596675122,
+      "repository_id": 1166910746,
+      "head_repository_id": 1166910746,
+      "head_branch": "codex/cj567-source-native-20261021",
+      "head_sha": "a5324801166a3409b09e110a44edce1ef3e4c869"
+    }
+  },
+  "receipt_file_sha256": "65b6bb44a451ae582f26eaba87dceca251f5542864588a4f24af8b239e205954",
+  "native_counts": {
+    "collected": 27,
+    "error": 0,
+    "executed": 27,
+    "failure": 0,
+    "passed": 27,
+    "skipped": 0
+  },
+  "native_value": true,
+  "native_readset_count": 7716,
+  "shared_grade": [
+    "Judged",
+    "Located"
+  ],
+  "secondary_grade_sha256": "e57528f55ac219995ebef72ba69f7c1805301315e8316373cbc8b11c627e6c1b",
+  "secondary_grade_event": 39598737546,
+  "reader_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "private_KEEP_custody": "/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/resume-cj567-source-ready-20261021-v4-own-commit/cj567-secondary-original-custody-v1",
+  "public_scope": "Metadata subset only. Missing raw readset/log/other sidecars prevents standalone strict receipt reopening. Complete original archives and raw sidecars remain in private KEEP custody.",
+  "new_native_execution_from_secondary_grade": false
+}

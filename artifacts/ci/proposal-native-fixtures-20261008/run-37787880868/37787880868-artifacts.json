@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 11554484392,
+      "node_id": "MDg6QXJ0aWZhY3QxMTU1NDQ4NDM5Mg==",
+      "name": "proposal-native-aud10-37787880868-1",
+      "size_in_bytes": 548134,
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/11554484392",
+      "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/11554484392/zip",
+      "expired": false,
+      "digest": "sha256:1927c585bc23f53254cfd8dc387492c85b915663f79230bf21cb17c4b830b9a7",
+      "created_at": "2026-10-08T13:53:37Z",
+      "updated_at": "2026-10-08T13:53:37Z",
+      "expires_at": "2027-01-06T13:52:50Z",
+      "workflow_run": {
+        "id": 37787880868,
+        "repository_id": 1166910746,
+        "head_repository_id": 1166910746,
+        "head_branch": "codex/proposal-fixture-native-20261008",
+        "head_sha": "9ed97e6efb044a91c4ed51ec0febaf518efe084e"
+      }
+    }
+  ]
+}

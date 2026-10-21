@@ -1,0 +1,73 @@
+{
+  "source": "7aa479e3fb3c6b2c9d7a105fed4402ef02762d3b",
+  "parent": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "tree": "c15ecd64f45f2aca4380fec6f6f9bb6f01ca8d3d",
+  "files": [
+    {
+      "path": ".github/workflows/pii-native-metadata-source.yml",
+      "sha256": "3c46a17de526cce193463e99beaf5ee5a191de02c284db6367a54ce65529822b",
+      "blob": "00e6817ed319c14e0bcac77757ff59c73bc303f9",
+      "bytes": 3007,
+      "mode": 33188
+    },
+    {
+      "path": "proposed/pii-native-metadata/capture.py",
+      "sha256": "0448ca7b42540b3706fc6b38633e27236b95c797a5c0e240406a61d72f2ec9e3",
+      "blob": "bb97a68585a42e79872e9f3eef3709715d6623ac",
+      "bytes": 3404,
+      "mode": 33188
+    },
+    {
+      "path": "proposed/pii-native-metadata/case-selection.json",
+      "sha256": "5f55e3c3b7adbc642ad158da89d0d0f972d6e41007c5031d4696777f98393545",
+      "blob": "1f444695ebbd3a0d43c43a479fbc8692ed017588",
+      "bytes": 7515,
+      "mode": 33188
+    },
+    {
+      "path": "proposed/pii-native-metadata/prepare.py",
+      "sha256": "3dedf4b05303638e00715350f2c85129e8e39645c741e256d7fe8f308cffd686",
+      "blob": "6ace883acd3bc45abeed388d7bc81865ee15d5fa",
+      "bytes": 1428,
+      "mode": 33188
+    },
+    {
+      "path": "proposed/pii-native-metadata/requirements.txt",
+      "sha256": "dd9a9e3abf22f585479eed68ef6384442e9f181bfee391b4aaddde591f0c63e6",
+      "blob": "3bb3e36ee811bb9e545640eb7534cad49806de22",
+      "bytes": 675,
+      "mode": 33188
+    },
+    {
+      "path": "proposed/pii-native-metadata/source-map.json",
+      "sha256": "dfb043079589e13330e670822eaf45d86fe2d3c688dd5cc5d9d4d4f75db310b6",
+      "blob": "9e66ee01f17f8df6db4254af655debf70d59dd4b",
+      "bytes": 722,
+      "mode": 33188
+    },
+    {
+      "path": "research/fixtures/pii_native_ci_metadata_controls.jsonl",
+      "sha256": "160c83d6c384ca42c71f249ff0f31ee197df5981330fece6046e61695d7beb5c",
+      "blob": "eb408451da6271b8ac509af83d40753171bac13b",
+      "bytes": 23586,
+      "mode": 33188
+    },
+    {
+      "path": "research/fixtures/pii_native_ci_metadata_tests.py",
+      "sha256": "f5b196768fb3f019a74f1ccf3f9490a26d52cb1953f22ec038c7f4ea18da0b3b",
+      "blob": "72d08627d6b6d7b78251cd513a83709847f41a84",
+      "bytes": 4128,
+      "mode": 33188
+    },
+    {
+      "path": "scripts/hooks/pii_precommit.sh",
+      "sha256": "1d0e817ee8bbf19664d2c25b6593e2f6da111785c891da6436a50ac8db389853",
+      "blob": "0e9ffc42687fd12e7c102d56086fdcb5984e4963",
+      "bytes": 30791,
+      "mode": 33261
+    }
+  ],
+  "baseline": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "job_baseline": "587a47edd8c1b791b2eed8a228c5f2647734a348",
+  "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+}

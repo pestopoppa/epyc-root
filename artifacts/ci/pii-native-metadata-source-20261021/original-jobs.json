@@ -1,0 +1,153 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 119209487428,
+      "run_id": 39596348505,
+      "workflow_name": "PII native metadata staged original controls",
+      "head_branch": "codex/pii-native-metadata-source-20261021",
+      "run_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/runs/39596348505",
+      "run_attempt": 1,
+      "node_id": "CR_kwDORY2lGs8AAAAbwXBsRA",
+      "head_sha": "587a47edd8c1b791b2eed8a228c5f2647734a348",
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/jobs/119209487428",
+      "html_url": "https://github.com/pestopoppa/epyc-root/actions/runs/39596348505/job/119209487428",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-21T12:01:34Z",
+      "started_at": "2026-10-21T12:01:37Z",
+      "completed_at": "2026-10-21T12:03:24Z",
+      "name": "staged-controls",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-21T12:01:38Z",
+          "completed_at": "2026-10-21T12:01:39Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-21T12:01:39Z",
+          "completed_at": "2026-10-21T12:01:47Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-21T12:01:47Z",
+          "completed_at": "2026-10-21T12:01:55Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-21T12:01:55Z",
+          "completed_at": "2026-10-21T12:02:03Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-21T12:02:03Z",
+          "completed_at": "2026-10-21T12:02:09Z"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-21T12:02:09Z",
+          "completed_at": "2026-10-21T12:02:16Z"
+        },
+        {
+          "name": "Frozen environment and disposable candidate policy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-21T12:02:16Z",
+          "completed_at": "2026-10-21T12:02:22Z"
+        },
+        {
+          "name": "Original real staged-hook controls through existing native producer",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-21T12:02:22Z",
+          "completed_at": "2026-10-21T12:03:13Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-21T12:03:13Z",
+          "completed_at": "2026-10-21T12:03:21Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-21T12:03:21Z",
+          "completed_at": "2026-10-21T12:03:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-21T12:03:21Z",
+          "completed_at": "2026-10-21T12:03:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-21T12:03:21Z",
+          "completed_at": "2026-10-21T12:03:22Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-21T12:03:22Z",
+          "completed_at": "2026-10-21T12:03:22Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-21T12:03:22Z",
+          "completed_at": "2026-10-21T12:03:22Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-21T12:03:22Z",
+          "completed_at": "2026-10-21T12:03:22Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/pestopoppa/epyc-root/check-runs/119209487428",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000003596,
+      "runner_name": "GitHub Actions 1000003596",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

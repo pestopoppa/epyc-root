@@ -1,0 +1,18 @@
+{
+  "commit": "ee7428992d3cb157bb054967ea08d6f4e5f76de5",
+  "parent": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "tree": "b3f2f2ed5f188e55e72f16ecd7ba9ef86291860d",
+  "blobs": {
+    ".github/workflows/nib83-native-controls.yml": "9ba79f9543f2e63de4a878b12d1960b951fd6468",
+    "scripts/ci/nib83_native/capture.py": "e179e6c55fd0c2d22ed34bec8723d62440d9b9af",
+    "scripts/ci/nib83_native/expected-cases.json": "5ab8fb5a0185e0a81629e40ee89289b6c398d52b",
+    "scripts/ci/nib83_native/postE17_histogram.py": "44243fc5aa70fe2b9c4aae86d0fd6e412df7d6a8",
+    "scripts/ci/nib83_native/run_controls.py": "c5622a9a0f5fa161c2f03c5d900664c5fd4b7511",
+    "scripts/ci/nib83_native/source-map.json": "990c8911fd97468a6db170431bb513ada7aa9630",
+    "scripts/ci/nib83_native/test_histogram_controls.py": "d45edc899b3cbcc531ebf8a5e79767e590dc31e2"
+  },
+  "main_unchanged": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "prospective_existing_carrier_only": true,
+  "metric_hook_inference_apply": false,
+  "UTC": "2026-10-21T12:00:16.933700+00:00"
+}

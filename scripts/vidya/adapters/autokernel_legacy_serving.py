@@ -12,7 +12,7 @@ import os
 import re
 import stat
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePath
 from statistics import median
 
 from claim_tuple import ClaimTuple, ProjectionError, register
@@ -206,17 +206,57 @@ def _rows(source, receipt):
     return rows
 
 
+_BACKENDS = frozenset({"cpu", "gpu"})
+
+
+def _applicability(source, row):
+    """VB-LOOP-SCOPE: the scope this arm's observation was measured on, from native fields only.
+
+    `model_file` is the recipe's `model` (the GGUF the producer launched; the reader compares its
+    basename). It is declared only when the arm's resolved launch, if the capture recorded one,
+    names the SAME path -- a capture that contradicts itself declares no scope at all rather than
+    picking a side. `backend` comes from the resolved launch's own `backend`; it is never inferred
+    from `ngl`/`device` flags. `kernel` pins the arm's build (supplied build path, and the
+    resolved execution digest when recorded). `device`, `quant` and `context_tokens` are NOT
+    stated by this record (the recipe's `ctx` is a server window, not a measured depth) and stay
+    undeclared, so the reader does not compare them. No `run_id`: each capture is a distinct
+    mechanism experiment, and a run id would let the newest capture supersede every other one.
+    """
+    inputs = source["comparison"]["belief_capture"]["inputs"]
+    arm = row["extra"]["arm"]
+    resolved = inputs["resolved_arms"].get(arm)
+    model = inputs["recipe"].get("model")
+    if not isinstance(model, str) or not model.strip() or not PurePath(model).name:
+        return {}
+    if isinstance(resolved, dict):
+        launched = resolved.get("model")
+        launched = launched.get("path") if isinstance(launched, dict) else launched
+        if launched is not None and launched != model:
+            return {}
+    scope = {"model_file": model}
+    backend = resolved.get("backend") if isinstance(resolved, dict) else None
+    if isinstance(backend, str) and backend.strip().lower() in _BACKENDS:
+        scope["backend"] = backend.strip().lower()
+    kernel = {"build_path": inputs["build_paths"][arm]}
+    digest = resolved.get("execution_digest") if isinstance(resolved, dict) else None
+    if isinstance(digest, str) and digest:
+        kernel["execution_digest"] = digest
+    scope["kernel"] = kernel
+    return scope
+
+
 def native_rows(receipt, *, receipt_locator, receipt_sha256, attestation_present=True):
     if not isinstance(receipt, dict) or receipt.get("schema") != RECEIPT_SCHEMA:
         return []
     try:
         source = _source(receipt, receipt_locator)
         rows = _rows(source, receipt)
+        scopes = [_applicability(source, row) for row in rows]
     except (OSError, ValueError, KeyError, TypeError, OverflowError, RecursionError) as exc:
         raise ProjectionError(f"legacy serving source refused: {exc}") from exc
     return [{"receipt": receipt, "receipt_locator": receipt_locator,
              "receipt_sha256": receipt_sha256, "attestation_present": attestation_present,
-             "claim": row} for row in rows]
+             "claim": row, "applicability": scope} for row, scope in zip(rows, scopes)]
 
 
 @register("autokernel-legacy-serving")
@@ -229,7 +269,8 @@ def project(native):
     return ClaimTuple(**native["claim"], source_kind="autokernel-legacy-serving",
                       attestation_locator=native["receipt_locator"],
                       attestation_sha256=native["receipt_sha256"],
-                      attestation_present=native["attestation_present"])
+                      attestation_present=native["attestation_present"],
+                      applicability=dict(native["applicability"]))
 
 
 class PlannerFeedback:

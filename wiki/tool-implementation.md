@@ -1769,3 +1769,30 @@ M12j closes through correction of the historical dependency claim. Dated metadat
 HG5 version2's original APP and ROOT source-control envelopes are NULL because JUnit suite counts include subtests beyond their named case inventories. The ROOT log also records two meaningful failures: the new adapter lacks the identifier required by the actual ingest Source constructor. These originals remain unchanged; fixes and a new source iteration are being prepared. No deployed runtime or intervention efficacy follows from source publication.
 
 Sources: [owning source-capture tasks](../handoffs/active/vidya-belief-substrate-program.md), [source registry](../scripts/vidya/adapters/README.md), [M12 handoff](../handoffs/active/episodic-memory-integrity.md), [current progress](../progress/2026-10/2026-10-08-codex-ni-main.md).
+
+## Native CI source custody and normal lineage reconciliation — 2026-10-21
+
+**Confidence: verified engineering source/custody findings; bounded source conformance only.**
+
+The original copied-proposal capture at ROOT `9ed97e6efb044a91c4ed51ec0febaf518efe084e` preserves hosted 63/26 fixture cases. The S05 capture at `8168cb17089e60c098ffa8b9a501440e1435ebaf` preserves native TRUE outer 1/1, the corrected saved-E1 33-manifest roster, two W1/W4 unchanged-harness dry plans, 48 generated outputs and 2,764 native input entries. These are source-conformance observations through the existing `ci-fixture-conformance` carrier and shared Judged/Located ladder, not quality, performance, current-pool readiness or owner-window observations.
+
+The corrected saved-E1 grid is pinned by ordered roster SHA-256 `c577e45a0d37682b1d536df5c12ce86fe43807b9f25fd08e0ae74d312a96ef2e`; source generation and W1/W4 dry planning are achieved findings. Saved planning inputs do not prove today's 1.35 GB pool, placement or an owner observation window. Public metadata excludes the complete 2,764 input members and 48 generated-output members; retained original ZIP custody is required to reopen the complete native receipt. No historical tuple is reconstructed.
+
+The four reviewed commits are reconciled in normal isolated merge `e44e5f47d4abb6cf125c64d7a9538d13eded7d50`, parents `9075c7a9302b8eeff774c8fc00b14e92035c7b48` and `5821eb145377354e12f00162e843804a7d75d5c5`, exact 14-path tree `e5f69298a5b412c3f4c36567cd1774cbd483173b`. MAIN independently accepted all 117 original command records, source bytes and four-commit ancestry. The first attempt's refusal is retained: only Git config origin presentation differed (`file:.git/config` versus `file:/workspace/.git/config`); values never changed. The successful second attempt used separately bound exact normal ROOT/OWN snapshots. The reconciliation was reviewed before publication; governance receipts record the actual subsequent run.
+
+Six focused source-capture tasks passed **200 controls** with zero skips: [NIB83](../artifacts/ci/nib83-native-source-20261021/README.md) seven, [PII metadata](../artifacts/ci/pii-native-metadata-source-20261021/README.md) 52, [CJ10](../artifacts/ci/cj10-prompt-source-20261021/README.md) 59, [S05 observer](../artifacts/ci/s05-observer-source-20261021/README.md) eleven, [CJ14](../artifacts/ci/cj14-redundancy-source-20261021/README.md) 44 and [CJ5/6/7](../artifacts/ci/cj567-fixture-source-20261021/README.md) 27. These are execution units across six tasks. The unchanged existing reader projects original native receipts and grades them Judged/Located; source conformance does not establish judge quality, model performance, a post-E17 cohort, a live owner window or a measurement warrant.
+
+Completeness requires reading the original case dispositions: CJ10's first native TRUE retained five missing-PyArrow skips; a fresh hash-pinned environment with mandatory imports executed all 59 controls without altering those old results. CJ5/6/7's first custodian timed out downloading a successful run's archive; a separately recorded acquisition recovered the same API-digest-bound bytes without rerunning or resealing native execution. PII disambiguation covers typed CI fields and the supplied owned-operation metadata context, while refusal controls remain load-bearing; it is not a privacy guarantee. Public custody bundles are explicitly nonportable metadata subsets, with complete archives and raw readsets retained in private KEEP custody.
+
+### Source References
+
+- [Proposal original source capture](../artifacts/ci/proposal-native-fixtures-20261008/README.md).
+- [S05 roster, original custody and public exclusions](../artifacts/ci/evl49-s05-native-source-20261008/README.md).
+- [MAIN original reconciliation acceptance](../artifacts/ci/native-source-reconciliation-20261021/README.md).
+- [Current source registry](../scripts/vidya/adapters/README.md).
+
+## Incremental synthesis — 2026-10-21: verify fusion engagement before interpreting parity
+
+A fused MoE up+gate path initially appeared numerically exact because its graph predicate never matched: the gate and up `MUL_MAT_ID` nodes are siblings consumed by SWIGLU, not a linear chain. The zero NMSE therefore compared the unfused path with itself. The corrected predicate checks that sibling topology, shared routing inputs and single-use constraints; per-cell engagement markers now guard the comparison. A barrier also protects the unfused fallback when the IQK kernel fails after writing scratch data. CPU reference checks passed for MUL_MAT_ID (815/815), MUL_MAT_ID_FUSION (13/13) and SWIGLU (24/24), plus 27 switch checks. This establishes tested path engagement and CPU correctness for the recorded cases, not a speedup: the T3 screen remains unrun, and the Qwen3.6 MTP model's gate/up experts are separate, so this fusion applies to the frontdoor.
+
+Sources: [CH-19 implementation and test record](../progress/2026-10/2026-10-21-ch19-fix.md); [CH-19 owner handoff and remaining speed gate](../handoffs/active/autokernel-champion-aggregate.md); [workspace-f8 progress and work boundary](../progress/2026-10/2026-10-21-workspace-f8.md).

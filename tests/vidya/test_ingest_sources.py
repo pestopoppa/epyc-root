@@ -224,6 +224,8 @@ BUILDERS = {
     "skillbank-ab": lambda tmp: _helpers("test_prospective_ab_carriers").sk_write(tmp),
     "harness-improvement": lambda tmp: _helpers("test_prospective_ab_carriers").hil_write(tmp),
     "ak-history": lambda tmp: _helpers("test_prospective_ab_carriers").ak_write(tmp),
+    "injection-fixture": lambda tmp: _helpers("test_ibench_kvchunk_carriers").inj_write(tmp),
+    "chunk-kv": lambda tmp: _helpers("test_ibench_kvchunk_carriers").kv_write(tmp),
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.

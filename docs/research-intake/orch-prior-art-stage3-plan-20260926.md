@@ -348,7 +348,7 @@ denial today can fail with no retry (see P1-A).
   - An ACP-shaped `usage_update` from the orchestrator — declined: the orchestrator is not on the ACP wire, OpenCode already computes it from the OpenAI usage block, and it has no load field. [intake-1790#1, intake-1790#4]
   - The orchestrator as an ACP proxy/conductor — declined: Draft, in no schema, north of the shell, and proxies cannot touch model parameters. [intake-1790#3]
   - A gateway or load balancer in front of `/v1` (intake-1786, intake-1800; both stage1-unverified) — declined: it is a second router, contrary to HS-4's "one router" (`:60`). Reopen only if an adopted shell cannot reach `/v1` directly.
-  - Harness-side fan-out sizing (intake-1806, unverified) — only if HS-4 P4 or a template change re-enables shell subagents (`permission.task`, `subagent_depth`); then the capacity signal is HS-OD-9's `Retry-After` plus HS-16's parent link, not a new hint key.
+  - Harness-side fan-out sizing (historical monitor filing: intake-1806#record; capacity sizing is our unverified hypothesis, not a paper result) — only if HS-4 P4 or a template change re-enables shell subagents (`permission.task`, `subagent_depth`); then the capacity signal is HS-OD-9's `Retry-After` plus HS-16's parent link, not a new hint key.
   - Architect→editor split (intake-1794, unverified) — only if P0.4 or later live runs show malformed tool calls from a reasoning role; dive the source before citing it.
   - Delegation defaults (intake-1793, unverified) — HS-4 P4 may consult it when it designs delegation defaults; dive before citing it.
   ```
@@ -522,7 +522,7 @@ knowledge-only or monitor items in P1-E.
 | intake-1800 | none | declined | "A LiteLLM front is a second router; OpenCode reaches /v1 directly." |
 | intake-1801 | none | knowledge_only | "Its capacity-contract question was answered by the c3 dive (GAIE proposal-003 is the only standard); no dive." |
 | intake-1805 | none | knowledge_only (unchanged) | "REPL state bounding owned by D-e/D-h/D-i; the pruning-role idea stays unverified." |
-| intake-1806 | + `harness-selection-and-integration.md` (dormant prose) | monitor | "Trigger: shell subagents re-enabled (permission.task / subagent_depth or HS-4 P4); the signal is then HS-OD-9 Retry-After plus the HS-16 parent link." |
+| intake-1806#record | + `harness-selection-and-integration.md` (dormant prose) | monitor | "Trigger: shell subagents re-enabled (permission.task / subagent_depth or HS-4 P4); the signal is then HS-OD-9 Retry-After plus the HS-16 parent link." |
 | intake-1807 | none | knowledge_only (unchanged) | "No MCP write tools and no parallel shell agents in one tree today." |
 
 The c2 dive-surfaced sources were declined in Stage 2 (issues 28567 and 11948, the progress/cancellation spec, the
@@ -554,7 +554,7 @@ P1-E, and nothing else is needed.
 | intake-1800 | decline (P1-E prose) |
 | intake-1801 | knowledge-only (answered by c3) |
 | intake-1805 | decline |
-| intake-1806 | monitor (P1-E prose) |
+| intake-1806#record | monitor (P1-E prose) |
 | intake-1807 | decline |
 
 ### Open questions for the operator
@@ -2319,7 +2319,7 @@ README rows at the end of the one source table (header `:193`, last row `:321`).
   triggers, declines or lineage only. P4 quotes only intake-1815..1821, which are dive-verified.
 - **Overturned entries:** P1 quotes only the corrected claims (intake-1792#1, #4; intake-1803#2, #6).
 - **Citation-form fixes.** Writing *about* an entry is a citation (CLAUDE.md), so in handoff text use `#record`:
-  - P1-E dormant-trigger prose (`P1.md:262-265`): change `intake-1786`, `intake-1800`, `intake-1806`, `intake-1794` and
+  - P1-E dormant-trigger prose (`P1.md:262-265`): change `intake-1786`, `intake-1800`, `intake-1806#record`, `intake-1794` and
     `intake-1793` to `intake-NNNN#record`.
   - P2 edit 1 MoA trigger: `intake-1799#record`, `intake-1802#record`.
   - P2 edit 3 triggers: `intake-1812#record`, `intake-1814#record`.

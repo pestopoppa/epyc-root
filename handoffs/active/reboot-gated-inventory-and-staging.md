@@ -306,6 +306,8 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
       `qwen3_next_80b`; explicit `--interleave` or a declared defect-replication control on every
       straddling cell; `drop_caches` + `pages_by_node` per cell; per-instance numactl attestation that
       fails closed on policy/cpuset disagreement; harness unchanged). Dry-run to exit 0.
+  - **Source phase accepted, 2026-10-21 (original event 2026-10-08):** the same capture closed by VB-EVL49-S05-CORRECTED-ROSTER-CAPTURE preserves original TRUE outer1/1, corrected saved-E1 33 manifests, two W1/W4 dry plans, 48 outputs and 2,764 inputs. Roster SHA-256 `c577e45a0d37682b1d536df5c12ce86fe43807b9f25fd08e0ae74d312a96ef2e`. [Original custody and exclusions](../../artifacts/ci/evl49-s05-native-source-20261008/README.md). S05 stays open for current 1.35 GB pool/placement and owner-window observations; synthetic observer capture is separately tracked by VB-EVL49-S05-OBSERVER-SOURCE-CAPTURE, not a new completed S05 source checkbox.
+
 - [ ] **S-06 — Build the ThinkPRM-1.5B Q4_K_M GGUF and land the EV-5 wiring** (HF pull →
       `convert_hf_to_gguf.py` → `llama-quantize`; `orchestrator_stack.py` sequential-load config;
       `eval_t2()` uncertain-question selection + P(yes) extraction; wire the existing
@@ -518,3 +520,9 @@ owner's decision, not a patch from this lane:
 `eval-tower-verification.md` (EV-5/7/8/10a/13b) · `CURRENT-CAMPAIGN.md` (live posture) ·
 `coordination/inference-batch/entries/` (the 25 gated entries) ·
 `measurement/protocols/bench-cpu.md` + `kernel-research.md` (the ratified ceiling).
+
+### Source-validation continuation — 2026-10-21
+
+Prepared source validations remain unrun: NIB83 E17 has seven synthetic controls; CJ10's 10 Research and 19 ROOT counts are **file inventories, not control counts**; the S05 observer has eleven synthetic controls; CJ14 typed redundancy must include the actual current `spec_policy` closure, with native case count unknown until capture. CJ5/6/7 has six fixture source files and 3 reporting / 6 IFBench / 5 edit test functions; executed case counts remain unknown. Bind exact current hashes, request/readset/receipt, full native argv/status/JUnit and FALSE/NULL originals before new events. Reuse the existing CI source class and shared grade; no product import, live observer, inference, efficacy or protocol-grade claim follows.
+
+NIB77's refreshed 2026-10-21 frozen registration inventory contains **35 retained exact lane paths, 24 with tracked and/or untracked source status entries**. These counts do not identify active, retirable or owned lanes. Native historical PID fields are absent now; current working/compacting/idle and accountable stewardship remain unknown. Default recommendation is retain current custody and all bytes; an explicitly named willing steward is an optional operator choice. No migration, cleanup, deletion, process termination or ownership transfer is authorized. [Current package](../../artifacts/operator/decisions/NIB77-current-custody-20261021/README.md).

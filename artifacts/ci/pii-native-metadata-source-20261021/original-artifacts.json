@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 12343518714,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM0MzUxODcxNA==",
+      "name": "pii-native-metadata-original-39596348505-1",
+      "size_in_bytes": 37852570,
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343518714",
+      "archive_download_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/artifacts/12343518714/zip",
+      "expired": false,
+      "digest": "sha256:6a71353483a9cb0b67102455e88b8c08468de9086b4b25a3649f014402bc7b6b",
+      "created_at": "2026-10-21T12:03:21Z",
+      "updated_at": "2026-10-21T12:03:21Z",
+      "expires_at": "2027-01-19T12:01:34Z",
+      "workflow_run": {
+        "id": 39596348505,
+        "repository_id": 1166910746,
+        "head_repository_id": 1166910746,
+        "head_branch": "codex/pii-native-metadata-source-20261021",
+        "head_sha": "587a47edd8c1b791b2eed8a228c5f2647734a348"
+      }
+    }
+  ]
+}

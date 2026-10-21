@@ -505,6 +505,10 @@ import.
       the prompt already demands a responsiveness check it cannot perform. **The plumbing/prompt
       half is zero-compute and is a prerequisite for any citable local BEAM number; the
       agreement measurement is COMPUTE-GATED — filed, not run.**
+      **Acceptance clause (CJ-18b, 2026-10-21):** each judged comparison records the judge family and each
+      arm family and carries the judge-arm CAPA row (discrete CAPA per `scripts/typed_decisions/cj18_judge_affinity.py`);
+      a same-family judge is permitted but flagged. The recorded 27B versus 35B-A3B head-to-head used one Qwen-family
+      judge over Qwen-family arms (intake-2323#record).
 
 ## Decision gate (OPERATOR)
 
@@ -576,7 +580,8 @@ First live run of the redundancy harness (24 rubric cases / 72 criteria, synthet
     disagreement-driven adjudication rate. It has no threshold-accept first stage, no fallback attribution and no
     sequential end-to-end latency, and URE-2a (`decision-aware-routing.md`) needs all three. The hosted-Jev arm is
     dropped, so the old credentials / resolved-hosted-identity trigger no longer applies.
-- [ ] **CJ-18 — Judge-family affinity on the frozen CJ-15 fixture, and the CJ-17 acceptance clause (zero inference).** (a) On the frozen CJ-15 fixture rows that carry per-judge typed verdicts, compute discrete CAPA and plain error consistency for every judge pair and every judge-versus-generating-role pair, with bootstrap intervals and invalids and abstentions in the denominator; report whether the proposed first-stage judge and the incumbent are correlated beyond their accuracies (own implementation of about 40 lines, no dependency; about 3 hours). (b) Add to CJ-17 acceptance: each judged comparison records the judge family and each arm family and carries the judge-arm CAPA row; a same-family judge is permitted but flagged. The recorded 27B versus 35B-A3B head-to-head used one Qwen-family judge over Qwen-family arms. Evidence: intake-2323#record; the weak-to-strong scaling claim of that paper is not used. Acceptance: the CAPA table exists and CJ-17 acceptance carries the clause. Estimate: 0.5 day.
+- [x] **CJ-18 — Judge-family affinity on the frozen CJ-15 fixture, and the CJ-17 acceptance clause (zero inference).** (a) On the frozen CJ-15 fixture rows that carry per-judge typed verdicts, compute discrete CAPA and plain error consistency for every judge pair and every judge-versus-generating-role pair, with bootstrap intervals and invalids and abstentions in the denominator; report whether the proposed first-stage judge and the incumbent are correlated beyond their accuracies (own implementation of about 40 lines, no dependency; about 3 hours). (b) Add to CJ-17 acceptance: each judged comparison records the judge family and each arm family and carries the judge-arm CAPA row; a same-family judge is permitted but flagged. The recorded 27B versus 35B-A3B head-to-head used one Qwen-family judge over Qwen-family arms. Evidence: intake-2323#record; the weak-to-strong scaling claim of that paper is not used. Acceptance: the CAPA table exists and CJ-17 acceptance carries the clause. Estimate: 0.5 day. ✅ 2026-10-21
+  - 2026-10-21 (dpf-gates) result (epyc-inference-research `952bf41d5`, on main). (a) `scripts/typed_decisions/cj18_judge_affinity.py` (stdlib only; discrete CAPA, plain error consistency, row-cluster bootstrap with invalids and abstentions in the denominator) and table `data/typed_decisions/cj18_judge_affinity_v1/capa_table.json`. The result is DEGENERATE and is not evidence on judge affinity: only 6 source rows carry per-judge verdicts (18 items), giving one judge pair (typed vs llm); the llm judge is invalid on 15 of 18 items and typed is 18/18 correct, so CAPA = 0.0 (interval [0,0]) and error consistency = 0.167 are mechanical. The fixture carries no generating-role outputs, so there are zero judge-versus-role pairs. (b) The clause is added to CJ-17's acceptance. Tests: `test_cj18_judge_affinity.py` (4 pass).
 
 ## MAIN-reviewed JEV refinement — 2026-10-06 (CJ-13)
 

@@ -1,0 +1,169 @@
+{
+  "jobs": [
+    {
+      "check_run_url": "https://api.github.com/repos/pestopoppa/epyc-root/check-runs/119260062626",
+      "completed_at": "2026-10-21T13:50:20Z",
+      "conclusion": "success",
+      "created_at": "2026-10-21T13:48:01Z",
+      "head_branch": "codex/pii-job-metadata-repair-source-20261021",
+      "head_sha": "7aa479e3fb3c6b2c9d7a105fed4402ef02762d3b",
+      "html_url": "https://github.com/pestopoppa/epyc-root/actions/runs/39611159181/job/119260062626",
+      "id": 119260062626,
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "name": "staged-controls",
+      "node_id": "CR_kwDORY2lGs8AAAAbxHQjog",
+      "run_attempt": 1,
+      "run_id": 39611159181,
+      "run_url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/runs/39611159181",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000003610,
+      "runner_name": "GitHub Actions 1000003610",
+      "started_at": "2026-10-21T13:48:04Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-21T13:48:06Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-10-21T13:48:05Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:15Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 2,
+          "started_at": "2026-10-21T13:48:06Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:23Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 3,
+          "started_at": "2026-10-21T13:48:15Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:31Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 4,
+          "started_at": "2026-10-21T13:48:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:38Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 5,
+          "started_at": "2026-10-21T13:48:31Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:46Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 6,
+          "started_at": "2026-10-21T13:48:38Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:53Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "number": 7,
+          "started_at": "2026-10-21T13:48:46Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:48:59Z",
+          "conclusion": "success",
+          "name": "Frozen environment and disposable candidate policy",
+          "number": 8,
+          "started_at": "2026-10-21T13:48:53Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:07Z",
+          "conclusion": "success",
+          "name": "Original real staged-hook controls through existing native producer",
+          "number": 9,
+          "started_at": "2026-10-21T13:48:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "number": 10,
+          "started_at": "2026-10-21T13:50:07Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "number": 15,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 16,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 17,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 18,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 19,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 20,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-21T13:50:17Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "started_at": "2026-10-21T13:50:16Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/pestopoppa/epyc-root/actions/jobs/119260062626",
+      "workflow_name": "PII job metadata repair staged original controls"
+    }
+  ],
+  "total_count": 1
+}

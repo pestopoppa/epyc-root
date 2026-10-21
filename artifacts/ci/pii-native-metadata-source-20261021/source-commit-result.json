@@ -1,0 +1,20 @@
+{
+  "commit": "587a47edd8c1b791b2eed8a228c5f2647734a348",
+  "parent": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "tree": "72711f18e72e2c6f166edb6587f3ed3591d6071d",
+  "blobs": {
+    ".github/workflows/pii-native-metadata-source.yml": "340610152c371d0b6efe930c4c16776d1e0ddef7",
+    "proposed/pii-native-metadata/capture.py": "3dab909f623a98d8443d0f0e21abf2405480f8ba",
+    "proposed/pii-native-metadata/case-selection.json": "2b534379e7c298899125de0ebccf1061f1255162",
+    "proposed/pii-native-metadata/prepare.py": "67e6471e48b48048a87ba4cf1be0c20d79b04e2e",
+    "proposed/pii-native-metadata/requirements.txt": "3bb3e36ee811bb9e545640eb7534cad49806de22",
+    "proposed/pii-native-metadata/source-map.json": "be40bb4678b25c05c6ac61873231aa9e3974331e",
+    "research/fixtures/pii_native_ci_metadata_controls.jsonl": "815bcf07f230814aac9802262b78df20198c57ff",
+    "research/fixtures/pii_native_ci_metadata_tests.py": "24f20ee82a69389beed551111fa4ec7644441701",
+    "scripts/hooks/pii_precommit.sh": "125e95870b4335e40bc771dcfb809cfe25c5fe4b"
+  },
+  "main_unchanged": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "prospective_existing_carrier_only": true,
+  "metric_hook_inference_apply": false,
+  "UTC": "2026-10-21T12:01:32.918015+00:00"
+}
