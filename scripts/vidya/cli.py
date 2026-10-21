@@ -598,8 +598,19 @@ def _ingest_autokernel(args) -> int:
         print(f"no such AutoKernel corpus root: {root}", file=sys.stderr)
         return 2
     led = _ledger(args)
-    report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
-                           dry_run=args.dry_run)
+    if getattr(args, "only_new", False):
+        # VB-LOOP-SCOPE: project into a collector, then append only what the ledger lacks
+        # (new claims, plus one scope re-observation per already-live unscoped claim).
+        from scoped_ingest import Collector, append_scoped  # noqa: PLC0415
+        sink = Collector()
+        report = ingest_corpus(sink, root=root, as_of=args.as_of, limit=args.limit)
+        report["only_new"] = append_scoped(led, sink.frames, as_of=args.as_of,
+                                           dry_run=args.dry_run)
+        report["frames_emitted"] = 0 if args.dry_run else report["only_new"]["frames"]
+        report["dry_run"] = args.dry_run
+    else:
+        report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
+                               dry_run=args.dry_run)
     human = [
         f"documents matched={report['documents_matched']}  "
         f"rows projected={report['rows_projected']}  "
@@ -611,6 +622,8 @@ def _ingest_autokernel(args) -> int:
     if report["refused"]:
         human.append("refusals (strict readers rejecting records that do not rederive):")
         human.extend(f"  {item['reason'][:110]}" for item in report["refusal_sample"][:5])
+    if report.get("only_new"):
+        human.append(f"only-new: {_only_new_line(report['only_new'])}")
     human.append("unwired (reported, not skipped silently):")
     human.extend(f"  {name}: {why}" for name, why in report["unwired_adapters"].items())
     return _emit(report, args.json, "\n".join(human))
@@ -631,8 +644,17 @@ def _ingest_inf70(args) -> int:
         print(f"no such INF-70 corpus root: {root}", file=sys.stderr)
         return 2
     led = _ledger(args)
-    report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
-                           dry_run=args.dry_run)
+    if getattr(args, "only_new", False):
+        from scoped_ingest import Collector, append_scoped  # noqa: PLC0415
+        sink = Collector()
+        report = ingest_corpus(sink, root=root, as_of=args.as_of, limit=args.limit)
+        report["only_new"] = append_scoped(led, sink.frames, as_of=args.as_of,
+                                           dry_run=args.dry_run)
+        report["frames_emitted"] = 0 if args.dry_run else report["only_new"]["frames"]
+        report["dry_run"] = args.dry_run
+    else:
+        report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
+                               dry_run=args.dry_run)
     human = [
         f"runs matched={report['runs_matched']}  rows projected={report['rows_projected']}  "
         f"frames={'(dry run) ' if args.dry_run else ''}{report['frames_emitted']}",
@@ -651,7 +673,33 @@ def _ingest_inf70(args) -> int:
         human.append("rows refused (native_rows and project() disagree -- a defect):")
         human.extend(f"  {r['run']} {r['kind']}: {r['reason'][:110]}"
                      for r in report["rows_refused"])
+    if report.get("only_new"):
+        human.append(f"only-new: {_only_new_line(report['only_new'])}")
     return _emit(report, args.json, "\n".join(human))
+
+
+def _only_new_line(result: dict) -> str:
+    return (f"new claims={result['new_claims']}  rescoped={result['rescoped']}  "
+            f"already present={result['already_present']}  refused={len(result['refused'])}  "
+            f"frames={'(dry run) ' if result.get('dry_run') else ''}{result['frames']}")
+
+
+def _ingest_autokernel_serving(args) -> int:
+    """VB-LOOP-SCOPE producer-time entry point: one loop store's serving A/B receipts."""
+    from scoped_ingest import ingest_scoped_store  # noqa: PLC0415
+
+    if not args.root or not Path(args.root).is_dir():
+        print(f"autokernel-serving needs --root <loop store or campaign dir> (got {args.root!r})",
+              file=sys.stderr)
+        return 2
+    report = ingest_scoped_store(_ledger(args), Path(args.root), as_of=args.as_of,
+                                 dry_run=args.dry_run, memo_path=args.memo)
+    human = (f"receipts listed={report['receipts_listed']}  known={report['receipts_known']}  "
+             f"read={report['receipts_read']}  refused={len(report['refusals'])}  "
+             f"new claims={report['new_claims']}  rescoped={report['rescoped']}  "
+             f"frames={'(dry run) ' if args.dry_run else ''}{report['frames_appended']}  "
+             f"seconds={report['seconds']}")
+    return _emit(report, args.json, human)
 
 
 def _ingest_file_source(args) -> int:
@@ -675,16 +723,26 @@ def cmd_ingest(args) -> int:
     # another session's ingest into the shared canonical ledger
     if args.dry_run:
         return _cmd_ingest(args)
+    # VB-LOOP-SCOPE: these paths project outside the lock and hold it only for their own
+    # dedup-read + append (scoped_ingest.append_scoped), so a slow corpus read never blocks
+    # every other writer of the shared ledger.
+    if args.adapter == "autokernel-serving" or (
+            getattr(args, "only_new", False) and args.adapter in ("autokernel", "inf70")):
+        return _cmd_ingest(args)
     with _ledger(args).write_lock():
         return _cmd_ingest(args)
 
 
 def _cmd_ingest(args) -> int:
-    if getattr(args, "only_new", False) and args.adapter not in _FILE_SOURCES:
-        print("--only-new is supported only for file-shaped sources", file=sys.stderr)
+    if getattr(args, "only_new", False) and args.adapter not in (
+            *_FILE_SOURCES, "autokernel", "inf70", "autokernel-serving"):
+        print("--only-new is supported only for file-shaped sources, autokernel and inf70",
+              file=sys.stderr)
         return 2
     if args.adapter in _FILE_SOURCES:
         return _ingest_file_source(args)
+    if args.adapter == "autokernel-serving":
+        return _ingest_autokernel_serving(args)
     if args.adapter == "autokernel":
         return _ingest_autokernel(args)
     if args.adapter == "inf70":
@@ -883,7 +941,8 @@ def build_parser() -> argparse.ArgumentParser:
     be.set_defaults(func=cmd_binding_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
-    i.add_argument("adapter", choices=["intake", "autokernel", "inf70", *_FILE_SOURCES])
+    i.add_argument("adapter", choices=["intake", "autokernel", "inf70", "autokernel-serving",
+                                       *_FILE_SOURCES])
     i.add_argument("--path", action="append",
                    help="file or directory for a file-shaped source (repeatable)")
     i.add_argument("--index", help="path to intake_index.yaml")
@@ -894,7 +953,9 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--as-of", required=True, help="explicit ingest timestamp")
     i.add_argument("--dry-run", action="store_true", help="report without appending")
     i.add_argument("--only-new", action="store_true",
-                   help="skip claims with live evidence (file-shaped sources only)")
+                   help="skip claims with live evidence (file-shaped sources); for autokernel "
+                        "and inf70, also re-scope live unscoped claims (scoped_ingest.py)")
+    i.add_argument("--memo", help="autokernel-serving: refused-receipt memo file (optional)")
     i.set_defaults(func=cmd_ingest)
 
     sy = sub.add_parser("sync", help="keep the canonical ledger current with the intake index")
