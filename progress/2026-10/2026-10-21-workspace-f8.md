@@ -10,3 +10,5 @@
 - **Backdoor / control-vector intake**: Stage 1-3 done, plan approved, Stage 4 applied on branch `intake/backdoor-cvec-20261020` and being pushed by another agent (worktree untouched here).
 - **Idle-CPU episodes** 04:45-06:30Z and 08:52-09:20Z. Cause: the queue blackout outlasted W2 (pending jobs parked, nothing scheduled after), then a peer's 0-95 bench claim for a GPU A/B. Scheduling fix (as applied by the session; see its queue changes): jobs that cannot conflict with a live window must stay runnable after W2 ends, and the blackout test must be date-correct across midnight.
 - **Wrap-up audit**: experimental branches pushed to `fork` (kv-prefix-fork-p1r2 `dd5bb0d3b`, intake-fixes `b51a0047d`; ct12, kpf17a, slotdraft already current). Scratch evidence copied to research `artifacts/f8-evidence-20261021/` with SHA256SUMS. The p1r2 worktree carries an UNCOMMITTED edit to `tools/server/tests/unit/test_slot_fork.py` (patch saved in the evidence dir).
+
+- Backdoor/cvec intake no-compute batch: NEW-11 coverage table, AMSB-C390-0 review record, F3-W3-P1 poison screen (orch bc61f308), RC-CVEC-HOOKS partial (preflight + text fix). Research c5661c5f9, root e988b11bd.
