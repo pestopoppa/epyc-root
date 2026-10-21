@@ -185,6 +185,18 @@ reclamation rather than a final static n-gram experiment.
   prompt-injection A/B evidence did not justify keeping the `651G` corpus for
   online prompt stuffing, and the operator declined the optional static n-gram
   experiment before reclaiming disk.
+  - **2026-10-21 follow-up (corpus-flagoff-ratify): registry flag-off PENDING
+    RATIFICATION.** The deletion left `corpus_retrieval.enabled: true` (index_path
+    `/mnt/raid0/llm/cache/corpus/v3_sharded`, absent) and `acceleration.corpus_retrieval: true`
+    on 7 master role blocks (5 in the live lean view), so every request on those roles
+    paid a failed lookup (`failure_reason=no_index`; trace-chunk-reuse REPORT, 2026-10-21).
+    Operator approved the fix 2026-10-21. Prepared, NOT yet applied: master flag-off on
+    epyc-inference-research lane `lane/corpus-flagoff-research-20261021`, derived layer regenerated
+    on epyc-orchestrator lane `lane/corpus-flagoff-orch-20261021` (the orchestrator
+    `model_registry.yaml` is a compiled copy, so the master had to change too); ratifier
+    `scripts/operator/ratify_corpus_retrieval_off_20261021.sh` (gate
+    `RATIFY-CORPUS-RETRIEVAL-OFF-20261021`). Takes effect at the NEXT stack start. Close this note
+    when the receipt `artifacts/operator/receipts/RATIFY-CORPUS-RETRIEVAL-OFF-20261021.json` exists.
 
 ## Dependency Graph
 
