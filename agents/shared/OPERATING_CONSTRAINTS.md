@@ -181,6 +181,16 @@ investigation; Appendix)
   window. Treating a served-shape calibration like a timing run serializes it behind every other
   claim on the host for no correctness benefit. (origin: 2026-10-06/07 served-shape calibration,
   DS41/Q38FN — sharded under ONE build-role region-lock claim, research `1bace97d`/`a23af0a7`)
+- **An exclusive quiet host is for BASELINE timing only (operator, 2026-10-21).** Reserve it for
+  baselines that future work is measured against, e.g. the consolidated champion speed test that
+  gives AutoKernel its baseline. Preliminary and sanity speed tests (DS41, Nemotron) run beside GPU
+  work: label every rep with the concurrent GPU job and, ideally, run ABA with the GPU job on/off,
+  because the overlap is itself a real-world measurement. Operator: *"the DS41/Nemotron tests don't
+  need a quiet host (i jsut want a sanity check ... indicative speed measurements) ... just run
+  GPU work while you perform DS41 preliminary speed tests. It'll be interesting because we will
+  get a real-world measurement of the GPU's impact on full CPU machine inference"*. Such numbers
+  are indicative, never a baseline; the P-BENCH-1 quiet-window preconditions are unchanged for
+  baselines (protocol amendment text: operator proposal file, not edited here).
 - **`region-lock` takes `LOCK_EX` per region regardless of role**, so sharded claims against the
   same region still serialize one shard at a time even though none of them is a timing run. Size
   the shard count to the claimed cpu list, not to the host's full core count — research `a23af0a7`
@@ -431,6 +441,14 @@ including the dispatches whose nudge says nothing about subagents.
   `ionice` onto "spare" cores is not isolation: CPUs 96-191 are the SMT siblings of 0-95, so 160-183 *is*
   physical cores 64-87, and `region-lock` drops sibling CPUs from a `--cpu-list`, so claim the physical cores.
   (origin: INC-20261004-subagent-unlocked-cpu-in-held-window)
+- **Every subagent brief states the close-out sequence (operator, 2026-10-21).** Report first; once
+  main approves, the subagent ticks the box, writes its agent_log, appends a progress shard,
+  updates the relevant handoffs, cleans its own scratch and removes its worktree (index rows stay
+  prepare-only, ruling (b)). Operator: *"subagents should update logs, progress report, and
+  relevant handoffs when their tasks are approved as complete. This allows us to not lose
+  important work logging in between major/thorough /wrap-up which you should trigger/dispatch at
+  major work boundaries"*. The boundary dispatch is in `agents/shared/SESSION_LIFECYCLE.md` →
+  *Wrap-up cadence*.
 - **Every subagent result is PROPOSED work.** Review its evidence and diffs, and run validation,
   before accepting it.
 - **A main observed working serially is a defect in these files, not a nudge target.** Fix it here.

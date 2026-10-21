@@ -80,6 +80,14 @@ than this section for the design rationale.
 - Codex sessions: smallest capable `gpt-5.6-terra` or `gpt-5.6-luna` at the lowest adequate effort (CLAUDE.md § Codex Delegation Policy).
 - Local stack roles route via the orchestrator's frozen registry, never hand-picked per task.
 
+**Effort is part of the cheapest-capable choice (operator, 2026-10-05; reiterated 2026-10-20 and
+2026-10-21).** Haiku at lower effort for mechanical or self-checking work; Sonnet for engineering,
+judgment and research dives. The main thread dispatches, reviews submitted work and decides; it
+does no hands-on execution (`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent
+Fan-Out*). Operator, 2026-10-21: *"when you dispatch tasks to subagents, you should use the
+cheapest model/effort capable of executing the task. Reserve the main thread for reviewing task
+work submissions so that everythign checks out."*
+
 Rule: start with the cheapest model likely to succeed; a failed cheap attempt escalates **exactly
 one tier** (Haiku -> Sonnet -> Opus), never straight to the top.
 

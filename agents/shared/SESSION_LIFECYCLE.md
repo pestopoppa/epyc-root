@@ -103,6 +103,13 @@ dashboard sees checkbox state only (axiom above).
 - **Nothing may auto-trigger the full routine.** There is no `Stop`, `SessionEnd` or `PreCompact`
   hook, no cron and no nightshift task that calls it, and there must not be one. A per-task wrap-up
   is invoked by the session doing the work.
+- **A main dispatches a wrap-up subagent at major work boundaries, unprompted (operator, 2026-10-21).**
+  Examples: the end of an intake campaign's Stage 4, a champion milestone. This is a session
+  action taken by the main, not a hook, so it does not conflict with the no-auto-trigger rule above.
+  It covers the per-task steps and a consolidation of what the per-task shards left. Index
+  PRUNING and the wiki compilation sweep still run only inside an operator-invoked `/wrap-up`
+  (report them as deferred) unless the operator's message names them for that boundary. Quote:
+  see `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* (close-out bullet).
 - **Scratch and worktree cleanup is part of the wrap-up, not a separate chore.** On 2026-10-07, 562
   worktrees (414 GiB) plus 255 GiB of `tmp/` had driven free disk to 86 GiB, below the 100 GiB
   build-retention floor, and that alone refused a lane relaunch outright — nothing upstream was

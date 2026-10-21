@@ -211,7 +211,8 @@ Mark expanded entries `discovered_via: expansion|search` and set `expanded_from`
 
 Stage 1 proposes; it never integrates. Produce:
 
-**4a — Ranked dive recommendations.** Every entry with `relevance >= medium` is ranked as a dive
+**4a — Ranked dive recommendations.** Every entry with `relevance >= medium`, and every
+`adopt_patterns` entry, is ranked as a dive
 candidate with a one-line reason. Expansion-discovered entries are **fully eligible** — that is why
 expansion runs in Stage 1, so the operator selects from the whole expanded set. Prioritise by:
 load-bearing-ness (would a wrong premise send real work in the wrong direction?), contested claims
@@ -223,7 +224,10 @@ in draft form. These are **hypotheses for the operator to react to**, explicitly
 explicitly not yet task lines. Mark each `[unverified]`.
 
 **4c — Explicit declines.** Every entry at `relevance >= medium` not recommended for a dive gets a
-one-line reason. A silent drop is a defect.
+one-line reason. A silent drop is a defect. **Not a valid reason (operator, 2026-10-20):**
+"overlaps existing handoffs", "weak evidence" or "training-heavy". An entry at `relevance >=
+medium`, or with `adopt_patterns` as its disposition, MUST be recommended for a Stage-2 dive;
+only a reason specific to that entry (duplicate of a dived entry, source unreachable) declines it.
 
 ### Phase 5 — Report & Persist
 
