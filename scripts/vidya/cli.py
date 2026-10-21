@@ -720,6 +720,20 @@ def _ingest_file_source(args) -> int:
 
 
 def cmd_ingest(args) -> int:
+    # Refuse absent corpus input before constructing the ledger or its writer lock.
+    # Handlers check again under the lock in case the input disappears meanwhile.
+    if args.adapter in ("autokernel", "inf70"):
+        if args.adapter == "autokernel":
+            default_root = AUTOKERNEL_CORPUS_ROOT
+            label = "AutoKernel"
+        else:
+            from adapters.inf70_roofline_ledger import DEFAULT_CORPUS
+            default_root = DEFAULT_CORPUS
+            label = "INF-70"
+        root = Path(args.root) if args.root else default_root
+        if not root.is_dir():
+            print(f"no such {label} corpus root: {root}", file=sys.stderr)
+            return 2
     # one host-wide critical section per ingest: dedup-read and append must not interleave with
     # another session's ingest into the shared canonical ledger
     if args.dry_run:

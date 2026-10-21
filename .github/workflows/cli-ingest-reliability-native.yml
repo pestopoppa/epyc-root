@@ -1,0 +1,183 @@
+name: CLI-INGEST-RELIABILITY synthetic source controls
+on:
+  push:
+    branches: [codex/cli-ingest-reliability-source-20261021]
+    paths:
+      - .github/workflows/cli-ingest-reliability-native.yml
+      - scripts/ci/cli_ingest_reliability_requirements.txt
+      - scripts/vidya/cli.py
+      - scripts/vidya/adapters/odl_model_gated.py
+      - tests/vidya/test_cli_ingest_reliability.py
+permissions:
+  contents: read
+jobs:
+  cli-ingest-reliability-controls:
+    if: github.ref == 'refs/heads/codex/cli-ingest-reliability-source-20261021'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ENROLLMENT_COMMIT: 881059341230c48178a18ed76cd4b65ede07ab6e
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize custody directory before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/cli-ingest-reliability/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/cli-ingest-reliability/result/status.json"
+      - name: Checkout exact source event commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout unchanged native carrier and shared grader
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install pinned hermetic fixture runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/cli-ingest-reliability/venv"
+          python --version > "$RUNNER_TEMP/cli-ingest-reliability/result/python-version.txt"
+          git --version > "$RUNNER_TEMP/cli-ingest-reliability/result/git-version.txt"
+          "$RUNNER_TEMP/cli-ingest-reliability/venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-deps --only-binary=:all: --require-hashes \
+            -r recipe/scripts/ci/cli_ingest_reliability_requirements.txt \
+            2>&1 | tee "$RUNNER_TEMP/cli-ingest-reliability/result/dependency-install.log"
+      - name: Capture the thirteen pre-enrolled selected identities through the existing carrier
+        id: capture
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/codex/cli-ingest-reliability-source-20261021"
+          test "$GITHUB_SHA" = "$(git -C recipe rev-parse HEAD)"
+          test "$ENROLLMENT_COMMIT" != "__BIND_TO_PUBLISHED_E_BEFORE_S_COMMIT__"
+          git -C recipe merge-base --is-ancestor "$ENROLLMENT_COMMIT" "$GITHUB_SHA"
+          printf '{"state":"capture_started","exit_code":null}\n' > "$RUNNER_TEMP/cli-ingest-reliability/result/status.json"
+          read_args=()
+          while IFS= read -r -d '' path; do
+            read_args+=(--read-path "$GITHUB_WORKSPACE/recipe/$path")
+          done < <(git -C recipe ls-files -z -- scripts/vidya tests/vidya tests/conftest.py pyproject.toml .github/workflows/tests.yml .github/workflows/cli-ingest-reliability-native.yml scripts/ci/cli_ingest_reliability_requirements.txt handoffs/active/non-inference-backlog.md handoffs/active/vidya-belief-substrate-program.md)
+          while IFS= read -r -d '' path; do
+            read_args+=(--read-path "$GITHUB_WORKSPACE/carrier/$path")
+          done < <(git -C carrier ls-files -z -- scripts/ci/native_conformance.py scripts/vidya tests/vidya/test_ci_conformance.py)
+          set +e
+          "$RUNNER_TEMP/cli-ingest-reliability/venv/bin/python" carrier/scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE/recipe" \
+            --junit "$RUNNER_TEMP/cli-ingest-reliability/result/original-junit.xml" \
+            --output "$RUNNER_TEMP/cli-ingest-reliability/result/native" \
+            --repo "root=$GITHUB_WORKSPACE/recipe" \
+            --repo "carrier=$GITHUB_WORKSPACE/carrier" \
+            "${read_args[@]}" \
+            --select 'tests/vidya/test_inf70_roofline_ledger_adapter.py::test_cli_ingest_rejects_a_missing_root' \
+            --select 'tests/vidya/test_ingest_sources.py::test_every_wired_adapter_projects_through_a_registered_projection' \
+            --select 'tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[write-inf70]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[write-autokernel]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[dry-run-inf70]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[dry-run-autokernel]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[only-new-inf70]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[only-new-autokernel]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_odl_import_orders_reuse_one_registered_module[direct-first]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_odl_import_orders_reuse_one_registered_module[package-first]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_existing_corpus_retains_writer_lock[inf70]' \
+            --select 'tests/vidya/test_cli_ingest_reliability.py::test_existing_corpus_retains_writer_lock[autokernel]' \
+            -- "$RUNNER_TEMP/cli-ingest-reliability/venv/bin/python" -m pytest -q \
+              'tests/vidya/test_inf70_roofline_ledger_adapter.py::test_cli_ingest_rejects_a_missing_root' \
+              'tests/vidya/test_ingest_sources.py::test_every_wired_adapter_projects_through_a_registered_projection' \
+              'tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[write-inf70]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[write-autokernel]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[dry-run-inf70]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[dry-run-autokernel]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[only-new-inf70]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_missing_corpus_never_materializes_ledger[only-new-autokernel]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_odl_import_orders_reuse_one_registered_module[direct-first]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_odl_import_orders_reuse_one_registered_module[package-first]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_existing_corpus_retains_writer_lock[inf70]' \
+              'tests/vidya/test_cli_ingest_reliability.py::test_existing_corpus_retains_writer_lock[autokernel]' \
+              --junitxml "$RUNNER_TEMP/cli-ingest-reliability/result/original-junit.xml" \
+            2>&1 | tee "$RUNNER_TEMP/cli-ingest-reliability/result/native-cli.log"
+          capture_rc=$?
+          printf '{"state":"capture_completed","exit_code":%s}\n' "$capture_rc" > "$RUNNER_TEMP/cli-ingest-reliability/result/status.json"
+          exit "$capture_rc"
+      - name: Reopen the original receipt through the existing projector and shared grader
+        id: shared_grade
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/cli-ingest-reliability/result/native/receipt.json"
+          grade="$RUNNER_TEMP/cli-ingest-reliability/result/shared-grade.json"
+          if [[ ! -f "$receipt" ]]; then
+            printf '{"state":"no_native_receipt"}\n' > "$grade"
+            exit 0
+          fi
+          PYTHONPATH="$GITHUB_WORKSPACE/carrier" "$RUNNER_TEMP/cli-ingest-reliability/venv/bin/python" - "$receipt" "$grade" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          from scripts.vidya.adapters.ci_conformance import (
+              native_rows, project_ci_conformance,
+          )
+          from scripts.vidya.claim_tuple import grade
+
+          rows = native_rows(sys.argv[1])
+          if len(rows) != 1:
+              Path(sys.argv[2]).write_text('{"state":"null_not_projected"}\n')
+              raise SystemExit(0)
+          q, t, reasons = grade(project_ci_conformance(rows[0]))
+          Path(sys.argv[2]).write_text(json.dumps(
+              {"state": "graded", "q": q, "t": t, "reasons": reasons},
+              sort_keys=True, separators=(",", ":"),
+          ) + "\n")
+          PY
+      - name: Finalize capture status envelope
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome || 'not_reached' }}
+          GRADE_OUTCOME: ${{ steps.shared_grade.outcome || 'not_reached' }}
+        run: |
+          python3 - "$RUNNER_TEMP/cli-ingest-reliability/result" "$CAPTURE_OUTCOME" "$GRADE_OUTCOME" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          capture_outcome, grade_outcome = sys.argv[2:]
+          receipt = root / "native" / "receipt.json"
+          grade_path = root / "shared-grade.json"
+          status = {"capture_step": capture_outcome, "grade_step": grade_outcome}
+          if receipt.is_file():
+              record = json.loads(receipt.read_text())
+              status.update({"state": "native_receipt_recorded",
+                             "fixture_execution_conformant": record.get("fixture_execution_conformant"),
+                             "receipt_sha256": record.get("receipt_sha256")})
+          elif capture_outcome == "skipped" or capture_outcome == "not_reached":
+              status["state"] = "setup_failed_before_capture"
+          else:
+              status["state"] = "capture_failed_without_receipt"
+          if grade_path.is_file():
+              status["shared_grade"] = json.loads(grade_path.read_text())
+          (root / "status.json").write_text(json.dumps(status, sort_keys=True) + "\n")
+          PY
+      - name: Preserve original native receipt, request, readset, log and JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-ingest-reliability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cli-ingest-reliability/result/
+          include-hidden-files: true
+          if-no-files-found: error

@@ -283,3 +283,9 @@ def project_unlimited_ocr_run(native: dict) -> ClaimTuple:
         if isinstance(exc, ProjectionError):
             raise
         raise ProjectionError(f"ODL run projection refused: {exc}") from exc
+
+
+# Direct CLI dispatch and package-qualified callers share the registered module.
+# Genuine duplicate functions remain subject to claim_tuple.register's strict refusal.
+for _module_name in ("adapters.odl_model_gated", "scripts.vidya.adapters.odl_model_gated"):
+    sys.modules.setdefault(_module_name, sys.modules[__name__])
