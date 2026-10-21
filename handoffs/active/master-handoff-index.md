@@ -37,6 +37,10 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](non-inference-backlog.md) NIB2-98 | 2026-10-21 |
+| OP-TRAILTOKEN | Provide an HF read token (env only, never written to files) for gated `PatronusAI/TRAIL` so HIL-14a can score TRAIL. | [harness-improvement-loop.md](harness-improvement-loop.md) HIL-14a | 2026-10-21 |
+| OP-YARNLABELS | Hand-label the 50-item YARN-JUDGE-1 blind sheet (judge-calibration ground truth; agent labels are circular). | [yarn-context-extension-research.md](yarn-context-extension-research.md) YARN-JUDGE-1 | 2026-10-21 |
+| OP-CS8L | Italian listen check of `/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out/wav/` (human ear; agent QA is circular). | [conversation-stack.md](conversation-stack.md) CS-8.L | 2026-10-21 |
+| OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
 | OP-PQP | Lifetime promotion error budget: recommend (a) status quo plus the SEQ-5 ledger; options in the plan DP-A. Human-amendment only. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
 | OP-ABSEQ | Sequential paired e-process for P-AB-1: recommend (a) no amendment. DP-B. | harness-improvement-loop.md HIL-9 item 11 | 2026-10-20 |
 | OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
@@ -130,7 +134,7 @@ nobody is moving.
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 43 | 522 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 52 | 654 | 18 | 2026-07-29 |
+| routing-and-optimization | 52 | 655 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 127 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
