@@ -1,0 +1,31 @@
+{
+ "blocked": true,
+ "files": 62,
+ "keys": {
+  "calls_file_write_safe": 384,
+  "calls_open": 384,
+  "extracted_code": 384,
+  "has_final": 384,
+  "prompt_chars": 162,
+  "prompt_has_last_output": 162,
+  "prompt_has_loop_halt": 162,
+  "prompt_has_rider": 162,
+  "prompt_tail": 162,
+  "raw_output": 384,
+  "repeat_count_seen": 102,
+  "role": 384,
+  "ts": 384,
+  "turn": 384
+ },
+ "longest_string_chars": {
+  "prompt_tail": 700,
+  "raw_output": 817,
+  "role": 16,
+  "ts": 26
+ },
+ "reason": "no tool-output text and no full prompt per turn (prompt_tail is a bounded suffix; prompt_has_last_output is a boolean)",
+ "tool_output_text_keys": [],
+ "turns": 384,
+ "turns_with_prompt_tail": 162,
+ "unparsable_lines": 0
+}
