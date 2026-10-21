@@ -1,0 +1,337 @@
+{
+  "status": "BOUND_MAIN_REVIEWED",
+  "research_base": "3caaf22fa853daab5c5ae055ca46b67809e2c938",
+  "carrier_commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "enrollment_commit": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a",
+  "files": [
+    {
+      "repo": "recipe",
+      "path": ".github/workflows/cj10-source-conformance.yml",
+      "bytes": 2648,
+      "sha256": "42bb7e0f676208cf2cffd54cd4b03fe1964ec1d57f38818e41a97edb7dbbab5f",
+      "Gitblob": "ab056f08b7fb5850fb769d5aeed1331e2368910a"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/bootstrap.py",
+      "bytes": 809,
+      "sha256": "74435f718f0d3c68eb7fd6aa9a29bde524cc235040ada3f1900df9d43ca84c4e",
+      "Gitblob": "ea9fb293c06afd53dcf5785c409b24be4593db3d"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/capture.py",
+      "bytes": 3901,
+      "sha256": "a998308e2c71dca38a9a9f5decedff0643ba71629b2b5d64459f8e5303d36a09",
+      "Gitblob": "f9ff972fcfbe525fce16e533c11706b78c45de97"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/beam_scoring.py",
+      "bytes": 15501,
+      "sha256": "276b9e2962f45900e5a03dd0866ad3dc596990264e88b5af7ae0a5c06d1513f2",
+      "Gitblob": "58322d014e465dcfc95b520c0623bc0f09846311"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/beam_scoring.py",
+      "bytes": 15501,
+      "sha256": "276b9e2962f45900e5a03dd0866ad3dc596990264e88b5af7ae0a5c06d1513f2",
+      "Gitblob": "58322d014e465dcfc95b520c0623bc0f09846311",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/belief_capture.py",
+      "bytes": 4975,
+      "sha256": "3e37624a5b0f427cfaaea5c21f7b1c33f8acc243bf2115766fe8c0a3e971b818",
+      "Gitblob": "eafc506ddaeeaf9bb0c3153a61f44b070829a1ab"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/belief_capture.py",
+      "bytes": 4975,
+      "sha256": "3e37624a5b0f427cfaaea5c21f7b1c33f8acc243bf2115766fe8c0a3e971b818",
+      "Gitblob": "eafc506ddaeeaf9bb0c3153a61f44b070829a1ab",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/dataset_adapters.py",
+      "bytes": 122856,
+      "sha256": "0e170b23ec71ef688bf10ca0a7169a6ac29466979602502184819aa4b0abc210",
+      "Gitblob": "6fbe13d6195cc0b67004d0af57f83de147944855"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/dataset_adapters.py",
+      "bytes": 122856,
+      "sha256": "0e170b23ec71ef688bf10ca0a7169a6ac29466979602502184819aa4b0abc210",
+      "Gitblob": "6fbe13d6195cc0b67004d0af57f83de147944855",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/fixtures/beam_judge/beam-b2da22ea.prompt.json",
+      "bytes": 3976,
+      "sha256": "1da87da5ca7e4165b9300f024d092dd81c97c97fe7b321beaeab59f3cc834ee4",
+      "Gitblob": "e6c63a8937872c5729d68f10faf9e480ca1ea69e"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/fixtures/beam_judge/beam-b2da22ea.prompt.json",
+      "bytes": 3976,
+      "sha256": "1da87da5ca7e4165b9300f024d092dd81c97c97fe7b321beaeab59f3cc834ee4",
+      "Gitblob": "e6c63a8937872c5729d68f10faf9e480ca1ea69e",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/fixtures/beam_judge/mempalace-475d3fbd24.txt",
+      "bytes": 3783,
+      "sha256": "a3007fe25ed5821d1c1282a5ae9356ee61a0d38a87aec95e4f3c85345ef5cefd",
+      "Gitblob": "c2d6dbff83dfcbcc32dd00f99c730851cbfdca9f"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/fixtures/beam_judge/mempalace-475d3fbd24.txt",
+      "bytes": 3783,
+      "sha256": "a3007fe25ed5821d1c1282a5ae9356ee61a0d38a87aec95e4f3c85345ef5cefd",
+      "Gitblob": "c2d6dbff83dfcbcc32dd00f99c730851cbfdca9f",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/fixtures/beam_judge/provenance.json",
+      "bytes": 2227,
+      "sha256": "4cb7f28879fe3516d7e6ea83686c3dbdc6eafa2272c5ecd449c03f6f8efce9a9",
+      "Gitblob": "88ac9909f4930bbbed6b939aa32ef4ee71eda222"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/fixtures/beam_judge/provenance.json",
+      "bytes": 2227,
+      "sha256": "4cb7f28879fe3516d7e6ea83686c3dbdc6eafa2272c5ecd449c03f6f8efce9a9",
+      "Gitblob": "88ac9909f4930bbbed6b939aa32ef4ee71eda222",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/fixtures/beam_judge/upstream-beam.source.json",
+      "bytes": 669920,
+      "sha256": "1b4fef010afae2daf112c5ac1c05a0ef26b68e3b3c6716f8c34fd7d56bf558f2",
+      "Gitblob": "47c1bc785765cf323699f828d23235f710b5677d"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/fixtures/beam_judge/upstream-beam.source.json",
+      "bytes": 669920,
+      "sha256": "1b4fef010afae2daf112c5ac1c05a0ef26b68e3b3c6716f8c34fd7d56bf558f2",
+      "Gitblob": "47c1bc785765cf323699f828d23235f710b5677d",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/fixtures/beam_judge/upstream-mempalace.py",
+      "bytes": 30843,
+      "sha256": "9a1b75a6696d8b4ebb44e03311411da5545f7617a73c1bb074bc223f82e6788b",
+      "Gitblob": "379569d719421e4b5e532abb0b9a8ae09a2ae1ae"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/fixtures/beam_judge/upstream-mempalace.py",
+      "bytes": 30843,
+      "sha256": "9a1b75a6696d8b4ebb44e03311411da5545f7617a73c1bb074bc223f82e6788b",
+      "Gitblob": "379569d719421e4b5e532abb0b9a8ae09a2ae1ae",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/judge_beam_run.py",
+      "bytes": 11077,
+      "sha256": "89b4b653fb262472bb4c4a6e0e175a3c811263e6049d34addd74db5ca3e7ccde",
+      "Gitblob": "0265b48c991961be2f6cc2f7936e038346a5898f"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/judge_beam_run.py",
+      "bytes": 11077,
+      "sha256": "89b4b653fb262472bb4c4a6e0e175a3c811263e6049d34addd74db5ca3e7ccde",
+      "Gitblob": "0265b48c991961be2f6cc2f7936e038346a5898f",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/long_context_adapters.py",
+      "bytes": 37802,
+      "sha256": "1ce5c844273df663231953cf940d9316669c75562348852c069b43892449fcef",
+      "Gitblob": "6c06804943d21821c6761ed045466df992631428"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/long_context_adapters.py",
+      "bytes": 37802,
+      "sha256": "1ce5c844273df663231953cf940d9316669c75562348852c069b43892449fcef",
+      "Gitblob": "6c06804943d21821c6761ed045466df992631428",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/score_beam_run.py",
+      "bytes": 9117,
+      "sha256": "4f672aaac1895d21e8524d8b65e4ffb38583c6e9d6d0f6f01c4be9edc942bbd7",
+      "Gitblob": "ea010fe1a344bca640420510f2e22d4e4ffabd16"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/score_beam_run.py",
+      "bytes": 9117,
+      "sha256": "4f672aaac1895d21e8524d8b65e4ffb38583c6e9d6d0f6f01c4be9edc942bbd7",
+      "Gitblob": "ea010fe1a344bca640420510f2e22d4e4ffabd16",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/test_beam_adapter.py",
+      "bytes": 22401,
+      "sha256": "32093194c4f31b1fb8076bfa8b9044d58ec86cc6288096584b442c9d1e8a56cd",
+      "Gitblob": "9c750fe78f3974a2da11693b4d03e1b49122d47c"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/test_beam_adapter.py",
+      "bytes": 22401,
+      "sha256": "32093194c4f31b1fb8076bfa8b9044d58ec86cc6288096584b442c9d1e8a56cd",
+      "Gitblob": "9c750fe78f3974a2da11693b4d03e1b49122d47c",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/test_beam_judge_provenance.py",
+      "bytes": 8375,
+      "sha256": "1a24cba67b5acf72552eb4540b2b0fc664b52d99b8a618ccee57aa77a00baa4d",
+      "Gitblob": "d54ad6f17bf2852535edc25e697c1f4fae8ca00f"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/test_beam_judge_provenance.py",
+      "bytes": 8375,
+      "sha256": "1a24cba67b5acf72552eb4540b2b0fc664b52d99b8a618ccee57aa77a00baa4d",
+      "Gitblob": "d54ad6f17bf2852535edc25e697c1f4fae8ca00f",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/payload/research/scripts/benchmark/test_judge_beam_run.py",
+      "bytes": 9569,
+      "sha256": "2d842e1dcaa1862862b4e5e6382244af58aa1ed65547ab44311c2fcd7d9ecf5c",
+      "Gitblob": "a45a94266435c9e48e536eb093f15b7d714248ec"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/test_judge_beam_run.py",
+      "bytes": 9569,
+      "sha256": "2d842e1dcaa1862862b4e5e6382244af58aa1ed65547ab44311c2fcd7d9ecf5c",
+      "Gitblob": "a45a94266435c9e48e536eb093f15b7d714248ec",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "recipe",
+      "path": "proposed/cj10/requirements.txt",
+      "bytes": 873,
+      "sha256": "82b20c4cf0a2a84ac18500d6cc6a00411f481e233301adaa1d77afcac168490c",
+      "Gitblob": "a963f4eda5cb59e15b8707702da9498647cc6824"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/suites.py",
+      "bytes": 14483,
+      "sha256": "306f6a9c302b806645210db9d7ea52073913ef9a6fb2b69dd4bd2ecb435a9e45",
+      "Gitblob": "256e4c21619d759238213d315d1e1e784f243491",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "research",
+      "path": "scripts/benchmark/context_generator.py",
+      "bytes": 43079,
+      "sha256": "81f06d7cda7be985c28e989f74040393ff4eb5fee98a1a566aa50159b26c8c9b",
+      "Gitblob": "1d242364eca75eb7a27d6e76abb19b436b1cce40",
+      "commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/ci/native_conformance.py",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "bytes": 19249,
+      "Gitblob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "bytes": 2260,
+      "Gitblob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/vidya/claim_tuple.py",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "bytes": 40447,
+      "Gitblob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/vidya/lattice.py",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+      "bytes": 8539,
+      "Gitblob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/vidya/frames.py",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "bytes": 10240,
+      "Gitblob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/vidya/canonical.py",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "bytes": 5909,
+      "Gitblob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "carrier",
+      "path": "scripts/vidya/adapters/beam_memory_capture.py",
+      "sha256": "5d93687a9907cd99aa9381084c4d9d4708850959dc08914c67ae72841f9a2c74",
+      "bytes": 20210,
+      "Gitblob": "1d4f818c9658efb0a5f0cfed9094d374d67ae7a5",
+      "commit": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+    },
+    {
+      "repo": "enrollment",
+      "path": "scripts/vidya/adapters/README.md",
+      "bytes": 314905,
+      "sha256": "f248f74f2bd7e3c4f3ec4ac26f4137835f5cda234332075115b9d4c0215afdd8",
+      "Gitblob": "200e4f1776586cc016b3840a16d840ed3108af05",
+      "commit": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a"
+    },
+    {
+      "repo": "enrollment",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "bytes": 442108,
+      "sha256": "f9fb9ee95cf304fd1a12dadfcf30c7fbc7e7ff730a455b70692a6a9065d70df7",
+      "Gitblob": "ee379bbba8564a8fa4031b6413c3e7ed33a8d2bf",
+      "commit": "a4b6bac87b4c9692271e12caa7bfd9a37c4e643a"
+    }
+  ],
+  "pending_readset": [],
+  "claim_scope": "prospective pure source conformance only; no metric or live efficacy",
+  "research_source_commit": "c43ce72f22501944eb76d40ce6af6e696d6c3931"
+}
