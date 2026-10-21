@@ -1,0 +1,7 @@
+{"event": "start", "request_id": "api-a:1", "parent_request_id": "api-a", "role": "architect_general", "ts_epoch": "1", "prompt": "Do these:\n1. Compute X\n2. Compute Y\n- also check Z\nReply in JSON.", "prompt_truncated": false}
+{"event": "start", "request_id": "api-a:2", "parent_request_id": "api-a", "role": "worker_general", "ts_epoch": "2", "prompt": "Tasks:\n1. Compute X\n2. Compute Y\nanswer: json", "prompt_truncated": false}
+{"event": "chunk", "request_id": "api-a:2", "ts_epoch": "3", "text": "1) X=4\n2) Y=5\n"}
+{"event": "chunk", "request_id": "api-a:2", "ts_epoch": "4", "text": "Done."}
+{"event": "start", "request_id": "api-b:1", "parent_request_id": "api-b", "role": "architect_critic", "ts_epoch": "1", "prompt": "xxxxxxxxxx", "prompt_truncated": true}
+{"event": "start", "request_id": "api-b:2", "parent_request_id": "api-b", "role": "worker_general", "ts_epoch": "2", "prompt": "y", "prompt_truncated": false}
+{"event": "start", "request_id": "api-c:2", "parent_request_id": "api-c", "role": "worker_general", "ts_epoch": "2", "prompt": "orphan", "prompt_truncated": false}

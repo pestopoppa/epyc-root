@@ -1,0 +1,40 @@
+{
+ "sha256": {
+  "README.md": "ac42b7068779da4d281780914b233b55fa39df63d792c3ef034bedaaadc1776c",
+  "tasks.jsonl": "7e7b9b4d591162dbdbea341f5464e4cf7944a496c9f8ffa629dada822170bfd6",
+  "paper.html": "037e38aae985564b009d5988acd84a00b628d8b615ed05f0baf3db11e8aa83cc"
+ },
+ "card_tasks": 51,
+ "tasks_jsonl": 51,
+ "paper_task_rows": 134,
+ "paper_vs_card_12h_cells_checked": 254,
+ "paper_vs_card_12h_mismatch": 0,
+ "stages": {
+  "join_card_tasks_paper": 51,
+  "dropped_unmatched": [],
+  "lang_python_cpp": 40,
+  "internet_false": 39,
+  "cpu_only": 39,
+  "nonsaturated_2h_lt90": 39,
+  "headroom_pos": 39,
+  "sd_gt15_excluded": [
+   "ad_placement_optimization",
+   "ann_vector_search_qps",
+   "nethack_dungeon_agent",
+   "openttd_transport_ai",
+   "vliw_kernel_optimization",
+   "wesnoth_tactical_ai"
+  ],
+  "after_sd_exclusion": 33
+ },
+ "selected": [
+  "tryst_text_adventure",
+  "borden_source_inversion",
+  "order_addition_permutation_optimization",
+  "anchorhead_text_adventure",
+  "juliet_vulnerability_analyzer",
+  "tree_block_partitioning",
+  "trinity_text_adventure",
+  "k12_math_recommendation"
+ ]
+}
