@@ -1,9 +1,9 @@
 {
   "session_id": "intake-ist-slq-20261022",
   "started_at": "2026-10-22T12:14:39Z",
-  "last_checkpoint": "2026-10-22T12:58:30Z",
+  "last_checkpoint": "2026-10-22T13:14:40Z",
   "stage": 2,
-  "phase": "stage2-wave2-complete",
+  "phase": "stage2-wave3-complete",
   "lane": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/root",
   "branch": "intake/ist-slq-20261022",
   "topic": "arXiv 2605.02404 SLQ (Statistically-Lossless Quantization) + github.com/IST-DASLab org triage + HF kaitchup/qwen38-27b-slq; on behalf of workspace-58",
@@ -42,10 +42,12 @@
     "intake-2487",
     "intake-2488",
     "intake-2489",
-    "intake-2490"
+    "intake-2490",
+    "intake-2491",
+    "intake-2492"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2491,
+  "next_intake_id": 2493,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -127,7 +129,7 @@
     {
       "ledger_id": "A-L5",
       "source": "intake-2461 dive ledger A-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
-      "action": "Record DFlash2 draft acceptance (draft_n_accepted/draft_n) beside KLD / same-top-p / EAR for each 27B quant arm in X0c, and state the relationship correctly. EAR is Sum_k min(p,q) = 1 - TV(p,q) = Leviathan acceptance probability between a DRAFT distribution q and a TARGET p. Paper usage compares the quantized model to BF16 (a 'quantized draft for the BF16 target'). For DFlash2 the draft is the trained 2.06 GB drafter and the target is the (re)quantized 27B, so EAR(quant, BF16) is NOT the acceptance rate; what it licenses is a bound: by the triangle inequality on TV, |alpha(drafter vs quantized target) - alpha(drafter vs BF16 target)| <= TV(p_BF16, p_quant) = 1 - EAR per position (derived here, not in the paper; full-vocab EAR needed, the top-10 renormalized variant is not a strict TV). It does NOT cover the other change a re-quantized target makes: the drafter reads target hidden states at layers [6,20,34,48,62] and was trained on the original model's states, so a perturbed tap is a distribution shift to the drafter that no output-side metric measures. Which overload DFlash2 uses in common/sampling.cpp (plain sampled-token match L637-L698 vs Leviathan rejection with draft distributions L708-L780 @ ffc1bac82) was not traced: at temperature 0 acceptance is top-1 agreement (same-top-p), not EAR.",
+      "action": "Record DFlash2 draft acceptance (draft_n_accepted/draft_n) beside KLD / same-top-p / EAR for each 27B quant arm in X0c, and state the relationship correctly. EAR is Sum_k min(p,q) = 1 - TV(p,q) = Leviathan acceptance probability between a DRAFT distribution q and a TARGET p. Paper usage compares the quantized model to BF16 (a 'quantized draft for the BF16 target'). For DFlash2 the draft is the trained 2.06 GB drafter and the target is the (re)quantized 27B, so EAR(quant, BF16) is NOT the acceptance rate; what it licenses is a bound: by the triangle inequality on TV, abs(alpha(drafter vs quantized target) - alpha(drafter vs BF16 target)) <= TV(p_BF16, p_quant) = 1 - EAR per position (derived here, not in the paper; full-vocab EAR needed, the top-10 renormalized variant is not a strict TV). It does NOT cover the other change a re-quantized target makes: the drafter reads target hidden states at layers [6,20,34,48,62] and was trained on the original model's states, so a perturbed tap is a distribution shift to the drafter that no output-side metric measures. Which overload DFlash2 uses in common/sampling.cpp (plain sampled-token match L637-L698 vs Leviathan rejection with draft distributions L708-L780 @ ffc1bac82) was not traced: at temperature 0 acceptance is top-1 agreement (same-top-p), not EAR.",
       "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (EXL3-X0c output table) with the drafter note cross-linked in handoffs/active/dflash2-block-drafter-experimental-build.md",
       "proposed_disposition": "propose-task",
       "reason": "Our own X0 data already shows the effect is small at KLD 0.0076 (same-top-p 96.10%): DFlash2 acceptance np1 Q8_0 0.7256 vs UD-Q4_K_M 0.7323, np4 0.5649 vs 0.5887 (x0-27b-quants/results/summary.json shape_a.*.acc, = draft_n_accepted/draft_n from /completion timings, x0_shape_a.py L164-165), i.e. not lower. Paired with the Qwopus counter-example (fine-tune target, acceptance 0.356, dflash2 handoff L40-L46) it shows target drift that the drafter has not seen is what kills acceptance, not 1-4% output-distribution noise. A column of (EAR, KLD, same-top-p, acceptance) per arm turns that into a measured relation instead of an argument.",
@@ -552,6 +554,66 @@
       "proposed_disposition": "trigger",
       "reason": "Named event: the target quant on :8083 changes. Until then the Q8_0 drafter is ~6.6% of weight bytes and the card's own table shows a smaller drafter is throughput-neutral, so there is no decision to inform. At an IQ3-class target (11.35 GB streamed, intake-2481) the Q8_0 drafter would be ~15% of bytes and the arm becomes worth ~7% at best (byte arithmetic, before MMVQ-efficiency effects).",
       "compute": "when triggered: MI210 timing class, inside the already-scheduled X0c window, +3 launches per arm (ABA), Q4_K_M drafter 1.1 GB VRAM; no extra download beyond the 1.1 GB first-party file (operator disk call per the existing download rules)",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "H-L1",
+      "source": "intake-2491 dive ledger H-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml)",
+      "action": "Build a seeded, zero-discordant-safe cross-suite aggregation adapter (pooled exact one-sided binomial, Fisher over per-suite exact p, max-drop Monte Carlo with fixed seed, any-of-three flag) as a NEW module in epyc-orchestrator scripts/autopilot consuming paired_stats QuestionOutcome (qid, suite, correct) pairs; emit it as an additive diagnostic beside mcnemar_verdict and export no new P-PAIRED verdict string. Re-implemented from the paper (intake-2484#00, #03), not from the CC BY-NC repo.",
+      "proposed_owner": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md (W2 paired replay tool lives there; add a thin-row task via the owning session)",
+      "proposed_disposition": "propose-task",
+      "reason": "Fills the one gap the repo covers and paired_stats lacks (cross-suite degradation test across e.g. GSM8K+MATH+IFEval banks). Operator decision named: none - the P-PAIRED block (human-only) is untouched; the adapter is a new file. Pairs with F-L1/F-L2 (one-sided degradation gate wording).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "H-L2",
+      "source": "intake-2491 dive ledger H-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml)",
+      "action": "Do not import, vendor or shell out to amazon-science/LLM-Accuracy-Stats; cite it (commit ec2fa1d6) and the paper only. If the operator wants the exact upstream scripts run as an external cross-check, they can be run on a scratch copy outside any repo.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "CC BY-NC 4.0 is not an OSI open-source license (sourcing policy: open-source only); zero-discordant defect (max-drop returns p=0.0) and unseeded Monte Carlo make it unsafe as a gate dependency. The three tests are re-implementable from the paper in ~40 lines (H-L1).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "H-L3",
+      "source": "intake-2491 dive ledger H-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml)",
+      "action": "In H-L1 tests include the failure cases found here: a suite with b=c=0 (must return p=1.0 for pooled/Fisher contribution, not 0.0 or an exception), single-suite input (Fisher with T=1 equals the pooled p), and an E7c regression (b=61, c=58 -> one-sided exact 0.4273, matches binomtest).",
+      "proposed_owner": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md (same task as H-L1)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Test list for H-L1; recorded so the defect is not re-derived.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "H-L4",
+      "source": "intake-2492 dive ledger H-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml)",
+      "action": "Amend the prepared intake-2474 contradicting_evidence diff (F-L7) and intake-2488 notes: arXiv:2507.17417 is now read. Replace \"(not read)\" with: \"Liu et al. 2025b (v3, LLaMA-3.2-1B, W4A4, WikiText-2 PPL, learned OSTQuant rotation vs scaling): NVFP4 +0.07 PPL (no gain), MXFP4 -0.87 PPL (~25% of the BF16 gap) - directionally consistent with WUSH's small NVFP4 gain, not a test of WUSH, not a Hadamard comparison, single model and run.\" Cite intake-2492#01 and #02, not bare.",
+      "proposed_owner": "research/intake_index.yaml intake-2474 and intake-2488 (owning session applies; a subagent prepares only)",
+      "proposed_disposition": "propose-task",
+      "reason": "Closes the one \"not read\" independent check cited by intake-2488; index edit belongs to the owning session (ruling (b)).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "H-L5",
+      "source": "intake-2492 dive ledger H-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml)",
+      "action": "No change to the weight-only rotation probe F-L5 (bounded NMSE probe on IQ2_XS / IQ3_S / Q4_K with a residual-stream rotation fold): intake-2492 measured nothing weight-only, so it neither supports nor weakens F-L5; keep F-L5's evidence basis as QuIP#/QTIP only.",
+      "proposed_owner": "handoffs/active/tq3-quantization-evaluation.md (F-L5 owner, if approved)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Absence finding: grep of v3 for W4A16/W3A16/W2A16/weight-only returns only taxonomy mentions; no GGUF/K-quant/IQ/Q8_0 content.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "H-L6",
+      "source": "intake-2492 dive ledger H-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml)",
+      "action": "Record in wiki/quantization.md at the next compile sweep: on FP4 microscaling formats the scale format (E4M3 + FP32 tensor scale vs E8M0) moved Llama-3.2-1B W4A4 PPL by ~2-3 points while rotation moved it by <=0.9 (v3 Tables XIII/XIV); single small model, W4A4, so background only.",
+      "proposed_owner": "wiki/quantization.md (compile sweep at /wrap-up)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Background for any NVFP4-style discussion; DS41 experts are native MXFP4 so no action on weights.",
+      "compute": null,
       "terminal_mapping": null
     }
   ],
@@ -62117,6 +62179,30 @@
       "recommend": "decline",
       "reason": "Already recorded as declined in intake-1256; re-raise only if the DF2 drafter-quant arm (G-L7) fires.",
       "group": "G"
+    },
+    {
+      "id_or_url": "arXiv:2411.09909 AMXFP4 \"Taming Activation Outliers with Asymmetric Microscaling Floating-Point for 4-bit LLM Inference\"",
+      "what_it_would_settle": "The mechanism Liu et al. cite for why rotation gives little on MXFP4/NVFP4 (small micro-scaled groups already absorb outliers) - i.e. whether transforms are structurally redundant at group size <=32, which bears on WUSH-class transforms for MXFP4 (DS41 expert format).",
+      "bears_on": "intake-2492",
+      "recommend": "ingest-and-dive",
+      "reason": "Not in the index (0 hits for 2411.09909). Medium relevance as mechanism evidence; W4A4 activation-side so low priority for the weight-only lanes. Flagged for review rather than declined per the intake rule.",
+      "group": "H"
+    },
+    {
+      "id_or_url": "arXiv:2501.13987 OSTQuant (learned orthogonal + scaling transform)",
+      "what_it_would_settle": "Which fake-quantizer grid (INT vs FP4) the rotation is trained against; if INT4, the small FP4 rotation gain in intake-2492 is partly a train/test grid mismatch.",
+      "bears_on": "intake-2492",
+      "recommend": "decline",
+      "reason": "Not in the index. Answering requires only the OSTQuant method section, and no lane here trains a rotation; recorded as a leak in intake-2492 notes rather than ingested. Flag for operator review if a learned-rotation path is ever proposed.",
+      "group": "H"
+    },
+    {
+      "id_or_url": "arXiv:2509.23202 (MR-GPTQ; already in the index)",
+      "what_it_would_settle": "Independent rotation-on-MXFP4/NVFP4 evidence at 8B scale with downstream accuracy: the better comparator for WUSH than intake-2492 (WUSH baseline rows already match it cell for cell per intake-2488).",
+      "bears_on": "intake-2474",
+      "recommend": "ingest-and-dive",
+      "reason": "Already indexed (6 hits for 2509.23202); a re-read against the WUSH comparison is a cross-entry check for the owning session, not a new ingest.",
+      "group": "H"
     }
   ],
   "stage2_waves": {
@@ -62169,6 +62255,15 @@
         ]
       },
       "second_reader_wave1": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml"
+    },
+    "wave3": {
+      "groups": {
+        "H": [
+          "intake-2491",
+          "intake-2492"
+        ]
+      },
+      "second_reader_wave2": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml"
     }
   },
   "stage2b_entries": {
@@ -62180,6 +62275,13 @@
       "intake-2488",
       "intake-2489",
       "intake-2490"
+    ],
+    "wave3": [
+      "intake-2491",
+      "intake-2492"
     ]
-  }
+  },
+  "process_deviations": [
+    "2026-10-22 wave 3 (group H): the dive agent imported amazon-science/LLM-Accuracy-Stats aggregation_script.py in the orchestrator venv and called its pure functions on small integers (milliseconds of CPU). This executed downloaded code, contrary to the quarantine rule; no repo or host state changed. Recorded here and in the report."
+  ]
 }

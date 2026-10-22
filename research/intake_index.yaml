@@ -356401,8 +356401,11 @@
     - intake-873
   credibility_score: 4
   contradicting_evidence:
-  - 'No independent replication found. The survey arXiv 2608.25188 (intake-2488, dived 2026-10-22) transcribes the WUSH paper''s
-    own table (+0.70 MXFP4 / +0.26 NVFP4) and states the sign reversal rests on that table alone: RESTATEMENT, not corroboration.'
+  - 'No independent replication found. The survey arXiv 2608.25188 (intake-2488) transcribes the WUSH paper''s own table (+0.70
+    MXFP4 / +0.26 NVFP4): RESTATEMENT, not corroboration.'
+  - 'Liu et al. arXiv 2507.17417 v3 (intake-2492; LLaMA-3.2-1B, W4A4, WikiText-2 PPL, learned OSTQuant rotation vs scaling):
+    NVFP4 +0.07 PPL (no gain), MXFP4 -0.87 PPL (~25% of the BF16 gap). Directionally consistent with WUSH''s small NVFP4 gain;
+    not a test of WUSH, not a Hadamard comparison, single model and run (intake-2492#01, intake-2492#02).'
   reader_should_conclude: WUSH is a W4A4 result. Cite it for the Eq 13 split (weight term vs activation term) and the MXFP4
     W4A4 numbers on dense Llama/Qwen3 only. Do NOT cite it as a weight-only technique, as applicable to natively-MXFP4 DS41
     experts (transforming then re-quantising destroys the bit-exact native grid), or as a drop-in for IQ4_XS/IQ3 (non-uniform
@@ -357850,7 +357853,8 @@
     B (variance), C.1 and Tables 4-6 header region. NOT read: Appendix C.2 synthetic experiments, Appendix D (non-binary /
     permutation tests, gpt-oss and TruthfulQA runs). Code repo amazon-science/LLM-Accuracy-Stats not cloned (recorded as a
     surfaced source). WebSearch x1 for replications: none found. v1 exists (arxiv.org/pdf/2602.10144v1); v2 read is current
-    as of 2026-10-22 (atom feed updated 2026-05-06).'
+    as of 2026-10-22 (atom feed updated 2026-05-06). | DIVE 2026-10-22: second reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml
+    second_reader): yes 16, partial 1, no 0.'
 - id: intake-2485
   arxiv_id: '2410.13461'
   url: https://arxiv.org/abs/2410.13461
@@ -358102,7 +358106,8 @@
     in the 3-4-bit regime.'
   notes: 'Read scope: arXiv abs page (v1 2024-10-17, v2 2025-02-27) and version-pinned v2 HTML in full except figures/images
     (Fig. 3, Fig. 6, Fig. 7 values not read) and the App. A.5 per-layer latency tables and A.8 example outputs. Code repository
-    only checked via GitHub API metadata. No compute run. Model weights not applicable.'
+    only checked via GitHub API metadata. No compute run. Model weights not applicable. | DIVE 2026-10-22: second reader 2026-10-22
+    (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml second_reader): yes 15, partial 0, no 0.'
 - id: intake-2486
   arxiv_id: '2601.14277'
   url: https://arxiv.org/abs/2601.14277
@@ -358237,7 +358242,7 @@
     quote_sha256: 75a1cb82f0d38d8b36727c2735806de439ca37e437dd8620ba0b505f82c50a5a
     source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
     verified_by: research-intake/stage2
-  - claim_index: 2
+  - claim_index: 1
     kind: page-and-quote
     locator: Table 2 row Q6_K
     quote: Q6_K | 58.98 | 78.17 | 72.48 | 77.63 | 63.17 | 54.71 | 69.23 | 7.35
@@ -358335,7 +358340,8 @@
     20-45 GB/s implied, thread count unreported).'
   notes: 'Read in full from disk (dive-F/q-v1.html -> q-v1.txt): abstract, Sec 1-5, Appendix A Table 5, Appendix B Table 6
     header and F16/Q8_0 rows. Hugging Face model repo uygarkurt/Llama-3.1-8B-Instruct-GGUF not fetched (weights, not needed).
-    WebSearch x1 for replications: none.'
+    WebSearch x1 for replications: none. | DIVE 2026-10-22: second reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml
+    second_reader): yes 15, partial 0, no 1. Mis-indexed anchor re-pointed.'
 - id: intake-2487
   arxiv_id: '2505.05799'
   url: https://github.com/cat538/MxMoE
@@ -358598,7 +358604,9 @@
   notes: 'Read scope: README in full; paper v1 HTML S1-S6 text, Tables 1-3, App. A headings (App. A.1/A.2 and Figures 1-6
     not read); code: bits_solver.py (L1-L420 skimmed: objective, constraints, budget, r==1 branch; get_best_tile_configs/build_workloads
     not read), quant.py layer_out_norm calibration (L519-L660), qconfig.py, perf/performance_table.json key list; mxmoe/kernels/*
-    CUDA templates NOT read. Clone: /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/src-MxMoE at a2b034d. Nothing executed.'
+    CUDA templates NOT read. Clone: /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/src-MxMoE at a2b034d. Nothing executed.
+    | DIVE 2026-10-22: second reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml second_reader):
+    yes 13, partial 4, no 0.'
 - id: intake-2488
   arxiv_id: '2608.25188'
   url: https://arxiv.org/abs/2608.25188
@@ -358819,7 +358827,9 @@
   notes: 'Read from disk (dive-F/t-v1.html -> t-v1.txt, 5,609 text lines): abstract, Sec 1, 2.8, 4.1, 5, 7.3, 9.3, 9.4, 10.4,
     10.5, 11.2, 11.3, 12.1, Table 16, the llama.cpp reference. NOT read: Sec 2.1-2.7, 3, 4.2-4.7 proofs, 6, 7.1-7.2, 8 (only
     skimmed), 9.1-9.2, 9.5, 10.1-10.3, 11.1, 11.4-11.5, 13, appendices and the 200-entry bibliography. Tree reads: /mnt/raid0/llm/llama.cpp
-    src/llama-kv-cache.cpp (HEAD ffc1bac82, read-only, no build). WebSearch x1.'
+    src/llama-kv-cache.cpp (HEAD ffc1bac82, read-only, no build). WebSearch x1. | DIVE 2026-10-22: second reader 2026-10-22
+    (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml second_reader): yes 10, partial 3, no 0. The independent
+    check this survey cites (arXiv 2507.17417) is now intake-2492 (dived 2026-10-22): weak directional consistency only.'
 - id: intake-2489
   arxiv_id: null
   url: https://github.com/IST-DASLab/GSQ/tree/gsvq-iquant-qwen3-sweep-results
@@ -358912,7 +358922,7 @@
     source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
       cloned 2026-10-22
     verified_by: research-intake/stage2
-  - claim_index: 0
+  - claim_index: 1
     kind: line-range
     locator: docs/gsvq_iquants.md:L162-L164 @ c93f2e8
     quote: The output GGUF patches all 45 IQuant tensors below 4 bits in `Qwen3-4B-UD-Q2_K_XL.gguf`. Each tensor was dequantized
@@ -359045,7 +359055,8 @@
     name map, decompose dispatch, patch dispatch) , scripts/requantize_gsvq_iquant_gguf.py L150-L240, scripts/eval_gguf_kl.py
     L20-L70 and the KL function, gsvq.py importance buffer. NOT read: packers L393-L480, per-type decompose bodies L517-L720,
     gsvq.py quantizer internals, runtime/ sweep CSVs. Clone: /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/src-GSQ-iquant
-    at c93f2e8 (depth 1). Nothing executed.'
+    at c93f2e8 (depth 1). Nothing executed. | DIVE 2026-10-22: second reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml
+    second_reader): yes 10, partial 2, no 1. Mis-indexed anchor re-pointed.'
 - id: intake-2490
   arxiv_id: null
   url: https://huggingface.co/HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF
@@ -359309,4 +359320,665 @@
   notes: 'Read scope: README in full (230 lines), HF API ?blobs=true and expand[]=gguf JSON in full (chat_template ignored),
     commits/main list (46 commits), discussions 2 and 4 (multimodal / image-min-tokens, llama.cpp PR 28715; not relevant to
     text serving). NOT read: the GGUF itself (no weights, no header range fetch per brief), add_dflash2_metadata_field.py,
-    discussions 1 and 3 (thank-you posts, by title). Per-tensor types come from the card table only.'
+    discussions 1 and 3 (thank-you posts, by title). Per-tensor types come from the card table only. | DIVE 2026-10-22: second
+    reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml second_reader): yes 12, partial
+    1, no 0.'
+- id: intake-2491
+  arxiv_id: null
+  url: https://github.com/amazon-science/LLM-Accuracy-Stats
+  source_type: repo
+  title: 'amazon-science/LLM-Accuracy-Stats: code for "When LLMs get significantly worse" (McNemar degradation tests)'
+  authors:
+  - Jonas Kübler
+  - Kailash Budhathoki
+  - Matthäus Kleindessner
+  - Xiong Zhou
+  - Junming Yin
+  - Ashish Khetan
+  - George Karypis
+  categories:
+  - benchmark_methodology
+  - quantization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2484
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Identity and license: the official code release of intake-2484 (ICLR 2026). Pinned HEAD ec2fa1d6ebc5c2690560ded97deef887f16836ec
+    (2026-02-12; depth-1 clone, so earlier history was not seen). The license is Creative Commons Attribution-NonCommercial
+    4.0 (README badge and section, LICENSE file is the CC BY-NC 4.0 legal text). CC BY-NC is NOT an open-source license in
+    the OSI sense; the code cannot be vendored or imported into our trees without an operator license decision. CONFIRMED.'
+  - 'What the binary-score path computes (aggregation_script.py, all one-sided for DEGRADATION, baseline = first run): pooled_test
+    = scipy binomtest(k=sum b, n=sum(b+c), p=0.5, alternative="greater") with b = baseline-correct/target-wrong and c = the
+    reverse; fisher_aggregation = per-task pooled_test p-values combined as -2*sum(log p) against chi2 with 2T dof; p_value_max_drop_mcnemar_style
+    = 250,000-draw Monte Carlo of c ~ Binomial(b+c, 0.5) per task with statistic max_t (q_hat - 0.5) / sqrt(0.25/(b+c)), p
+    = mean(sim >= observed). This is exactly the paper trio (pooled / Fisher / max-drop), exact (not normal-approximated)
+    for pooled and Fisher. CONFIRMED against the code.'
+  - 'Inputs. Binary path: lm-eval --log_samples output (samples_TASK_TIMESTAMP.jsonl, task_metrics.json naming the metric),
+    joined to the baseline on doc_id with hard errors on unequal length or id-set mismatch; non-0/1 scores are rounded at
+    0.5 with a printed warning. General path (README: "we generally recommend"): continuous_aggregation_script.py, one CSV
+    per task+model with columns prompt_id,score, model_paths.json mapping model -> task CSVs; it runs a one-sided sign-flip
+    permutation test on the mean paired difference (100,000 sign draws, p = (hits+1)/(draws+1), so the smallest reportable
+    p is about 1e-5 whereas the exact binomial reports 1e-15 values), plus permutation Fisher and max-drop analogues. The
+    README says repeated samples must be averaged per example first. NEITHER path seeds numpy, so every Monte-Carlo p-value
+    (max-drop, all permutation p-values) is non-reproducible between runs. CONFIRMED by reading both scripts.'
+  - 'DEFECT, verified by calling the functions on tiny synthetic integers: a task with zero discordant pairs (b = c = 0) makes
+    aggregation_script.p_value_max_drop_mcnemar_style return p = 0.0 (q_hat is NaN, every NaN comparison is False, so the
+    "p-value" collapses to 0 = maximal significance; two numpy RuntimeWarnings are the only signal) and makes fisher_aggregation
+    and pooled_test raise ZeroDivisionError (q_hat = b/(b+c) is computed unconditionally). The per-task loop in calculate_p_values
+    guards b+c > 0 for the per-task p, but the pooled/Fisher/max-drop calls are not guarded. With a normal task mix this is
+    dormant; a small suite where the two arms agree on every item (exactly the lossless-requant case we care about) triggers
+    it. Observed: max_drop([30,0],[10,0]) = 0.0; max_drop([30,5],[10,5]) = 0.0015; max_drop([3,5],[10,4]) = 0.6425; fisher_aggregation([30,0],[10,0])
+    -> ZeroDivisionError.'
+  - 'Equivalence with our own paired instrument (measurement/protocols/quality-eval.md P-PAIRED, STAGED, human-amendment-only;
+    implemented as epyc-orchestrator scripts/autopilot/paired_stats.py::mcnemar_verdict): for ONE suite the repo adds nothing.
+    P-PAIRED is the two-sided exact binomial (n_discordant <= 25) / continuity-corrected normal (above) on the same b and
+    c, so its two-sided p is 2x the repo one-sided exact p when the direction is baseline-better. Checked on the E7c anchor
+    b=61, c=58: binomtest(61, 119, 0.5, alternative="greater") = 0.4273, two-sided exact = 0.8546, protocol records normal_approx
+    p ~ 0.855. The hypotheses differ (degradation vs any difference), which is the real distinction: a keep/regress gate wants
+    the one-sided test, a prefer gate wants the two-sided one. What the repo ADDS is cross-suite aggregation (pooled / Fisher
+    / max-drop, any-of-three rule) and the non-binary permutation path; paired_stats has no cross-suite combination.'
+  - 'Could it be called directly as the paired gate on our per-item logs? Technically yes: our eval-tower outputs per-question
+    correctness vectors (paired_stats.QuestionOutcome qid, suite, correct), exportable to the continuous CSV format (prompt_id
+    = qid, score in {0,1}) or to (b, c) lists per suite for the pure functions; the scripts import only numpy, pandas, scipy.stats
+    (the orchestrator .venv already has scipy 1.17.1, pandas 3.0.2; the README installs vllm and lm-eval only for the paper
+    experiments). NOT recommended as a direct dependency because (1) CC BY-NC license, (2) the zero-discordant defect above,
+    (3) unseeded Monte Carlo conflicts with the deterministic-replay norm in MEASUREMENT_POLICY.md. Recommended tool/adapter
+    use: re-implement the three pooled / Fisher / max-drop functions (about 40 lines from the paper Algorithm 1 and Sec 3.3,
+    which is not license-encumbered) in a new orchestrator module with a seeded RNG and a b+c = 0 guard, fed from paired_stats
+    outcomes, and use it ONLY as an additive cross-suite diagnostic beside the existing mcnemar_verdict; no edit to the P-PAIRED
+    block is needed or proposed.'
+  - 'Scope limits (as in intake-2484): tests H0 "no degradation" vs "worse", not equivalence or non-inferiority; no power
+    calculator ships in the scripts (the plots_and_synthetic/ scripts only regenerate paper figures and were not run or read
+    in detail); no tests directory; nothing about GGUF, llama.cpp, KLD or PPL. The minimal_example/ directory holds two 200-row
+    synthetic CSV pairs per model (mmlu, gsm8k) with float scores. NOT RUN: no script from the repo was executed end to end;
+    only the pure functions were imported and called on integers (a few ms CPU).'
+  techniques:
+  - exact one-sided binomial (McNemar) on pooled discordant pairs
+  - Fisher combination of per-task exact p-values
+  - Monte-Carlo max-drop over tasks
+  - sign-flip permutation test for non-binary paired scores
+  reported_results:
+  - 'Function-call checks on synthetic integers, 2026-10-22 (our run, not the repo): p_value_max_drop_mcnemar_style([30,0],[10,0],
+    2000 sims) = 0.0 with RuntimeWarning invalid value / divide by zero; ([30,5],[10,5]) = 0.0015; ([3,5],[10,4]) = 0.6425;
+    fisher_aggregation([30,0],[10,0]) raised ZeroDivisionError; pooled_test([61],[58]) = 0.4273; fisher_aggregation([61,10],[58,12])
+    = 0.6794.'
+  - 'E7c anchor (b=61, c=58): scipy binomtest one-sided "greater" p = 0.42731502, two-sided exact p = 0.85463004; protocol-recorded
+    normal_approx p ~ 0.855 (quality-eval.md L147-L148 in the lane worktree).'
+  - 'Repo size: aggregation_script.py 1,059 lines, continuous_aggregation_script.py 382 lines, 4 plot scripts, 2 dataset_selection
+    scripts, 9 llm_experiments shell scripts, README 121 lines.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - evidence-plane-ledger-and-sequential-verdicts.md
+    experiments: []
+    intake_entries:
+    - intake-2484
+    - intake-2461
+    - intake-1519
+  credibility_score: null
+  contradicting_evidence:
+  - 'No independent replication or critique of the repo found (not searched beyond the paper entry: intake-2484 recorded none;
+    a code release by the paper authors is not independent evidence of the paper).'
+  - 'The README advice "we generally recommend to use our permutation-based tests ... For binary data those provide equivalent
+    results to the direct McNemar tests" is true in distribution but not in resolution or reproducibility: the permutation
+    p floor is 1/(100000+1) and the draws are unseeded, whereas the exact binomial resolves 1e-15 and is deterministic.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L106-L108 @ ec2fa1d
+    quote: This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC
+      4.0). See the [LICENSE](LICENSE) file for details.
+    quote_sha256: 056af03e383e535f03501275c8a761b01127322ac530551139563f30156750f7
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L8 @ ec2fa1d
+    quote: This repository contains the code for reproducing experiments from our ICLR 2026 paper on statistical detection
+      of LLM model degradations using McNemar's test.
+    quote_sha256: ffa50f8c00062e1ed0dc995af1a2c98a106d2ae85531cf27428807a06662e5a7
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: aggregation_script.py:L104-L106 @ ec2fa1d
+    quote: q_hat = b / (b+c) N = b+c pvalue = binomtest(k=b, n=N, p=0.5, alternative="greater").pvalue
+    quote_sha256: 8f8c5aac915888865bae1318d1b2d65e04884479c693d95dafa7fa3e97e1f923
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: aggregation_script.py:L137 @ ec2fa1d
+    quote: p_value_combined = chi2.sf(test_statistic, 2*T)
+    quote_sha256: fc7eca5e81df63e2ab71504f5274cbbe2a15145804e1005fdf6932757e733f89
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: aggregation_script.py:L176 @ ec2fa1d
+    quote: c_simulated = np.random.binomial(n=np.tile(samplesizes, (simulation_steps, 1)), p=0.5)
+    quote_sha256: 576e054bcfd780e5dd7d46ca0713b9e0c7b22cb0fe08860db51302239ab1442e
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: aggregation_script.py:L188 @ ec2fa1d
+    quote: q_stderr = np.sqrt(0.5**2 / (b_simulated + c_simulated))
+    quote_sha256: def261e0a2f9983c6c99b496263a38b430ca24d2ab0445f6f6dade5f5ba8e3ad
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: aggregation_script.py:L194 @ ec2fa1d
+    quote: test_statistics = np.max(q_hat_list / q_stderr, axis=1)
+    quote_sha256: 69a7c10acf31b616f570fe92347404fc604b0c32830ab443a30affae688783ad
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L23 @ ec2fa1d
+    quote: We generally recommend to use our permutation-based tests, see Appendix D. For binary data those provide equivalent
+      results to the direct McNemar tests, but generalize to non-binary data and multiple reruns.
+    quote_sha256: 88df7c0e1e0f3fbf76e7c419a12e209b51201c9efac2267bd15771ad6b0a7cc3
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L25 @ ec2fa1d
+    quote: If you run the same samples multiple times through the model (say with non-zero temperature), first average the
+      score for each example!
+    quote_sha256: c6425223e2698346e2cf1a015a4a0adfc6e595ff51fc50cea3e320d2629cae69
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L38 @ ec2fa1d
+    quote: '**CSV Format:** Each CSV should contain `prompt_id` and `score` columns.'
+    quote_sha256: 3fa2a3a1df76c8986e9ae32f170b4983e2f9aae669880b88f2bc974c513fd704
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: continuous_aggregation_script.py:L76 @ ec2fa1d
+    quote: p_value = (b + 1) / (n_permutations + 1)
+    quote_sha256: 0df3f70fc34c992205e399c51551f7b07e0183fe2a7aed9e2e372ea1f3595bcd
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: continuous_aggregation_script.py:L68 @ ec2fa1d
+    quote: random_signs = np.random.choice([-1, 1], size=(n_permutations, len(diffs)))
+    quote_sha256: da0327639c40037ff7612459c4a121f75739b910ac2533bbe8535df393ca41c0
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: aggregation_script.py:L429 @ ec2fa1d
+    quote: 'print(f"Please review: Score must be 0 or 1, but got {score} for subtask {subtask} in doc_id {doc_id}. If it is
+      smaller than 0.5, it will be treated as 0, otherwise as 1")'
+    quote_sha256: b7290f6145abf022c91ea044c63f1e49ce38453316468dad53a5ae1b7c581818
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: aggregation_script.py:L104 @ ec2fa1d
+    quote: q_hat = b / (b+c)
+    quote_sha256: 222955aa78f864333080ef903afda91832e5759765caa25fb8cb794b7d4404ad
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: aggregation_script.py:L184 @ ec2fa1d
+    quote: q_hat_list = b_simulated / (b_simulated + c_simulated)
+    quote_sha256: a56f94d979a1fcf64caddd54c72923623b8462e5401c98d6aba812ab754e8094
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: aggregation_script.py:L202 @ ec2fa1d
+    quote: p_value = np.mean(simulations >= true_observation)
+    quote_sha256: 29c2f0614bed0b007ac251704ca980bca8248ed92c96c7ef8eee838aed126591
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: measurement/protocols/quality-eval.md:L127-L128 (P-PAIRED verdict semantics) @ lane 19dfc1683
+    quote: ≤25 → EXACT two-sided binomial sign test ("exact_binomial", z null); >25 → continuity-corrected NORMAL approximation
+      ("normal_approx", signed z; Edwards correction
+    quote_sha256: b9082f6b20a9fd694e8c81bf6c05231154e793374a2baf35581008af5651f661
+    source_revision: epyc-root lane worktree intake/ist-slq-20261022 @ 19dfc1683 (measurement/protocols/quality-eval.md, STAGED
+      P-PAIRED block)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: measurement/protocols/quality-eval.md:L147 (E7c anchor) @ lane 19dfc1683
+    quote: 'worker_math, seed 42: b=61, c=58, n_discordant=119 → normal_approx, p ≈ 0.855'
+    quote_sha256: 3f52f6afdd8eb1c3588097a8650fb98df29c6ff66cd212b8dbb650cf15b15c27
+    source_revision: epyc-root lane worktree intake/ist-slq-20261022 @ 19dfc1683 (measurement/protocols/quality-eval.md, STAGED
+      P-PAIRED block)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: aggregation_script.py:L57-L65 @ ec2fa1d
+    quote: import numpy as np import pandas as pd import os import json import sys from glob import glob from dataclasses
+      import dataclass from typing import Dict, List, Optional, Tuple, Any, Union from scipy.stats import wilcoxon, binomtest,
+      chi2
+    quote_sha256: 2cee3d652ff2ce909079953b025e6e7af4fa9c3c3b53a14518ad1c13407d2db6
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: continuous_aggregation_script.py:L12-L19 @ ec2fa1d
+    quote: import sys import os import pandas as pd import numpy as np import json from scipy.stats import chi2 from dataclasses
+      import dataclass
+    quote_sha256: aa7f755671bd386629c177d48865c0616c9960686e980cc209c84bed9e789057
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: aggregation_script.py:L5-L6 (docstring) @ ec2fa1d
+    quote: This script processes evaluation results for language models across multiple tasks, calculates accuracy metrics,
+      and performs statistical significance testing.
+    quote_sha256: 75038f136603de7ac8adc191546bbd623c7b0a45968332781d8441f48db935cb
+    source_revision: commit ec2fa1d6ebc5c2690560ded97deef887f16836ec (amazon-science/LLM-Accuracy-Stats main, 2026-02-12,
+      depth-1 clone retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: intake-2484 recorded the repo as "not cloned"; it is now read at a pinned SHA. License is CC BY-NC 4.0 (new fact,
+      not in the paper entry).
+  - claim_index: 1
+    effect: unaffected
+    note: Code matches the paper trio; one-sided direction confirmed in code, not just prose.
+  - claim_index: 2
+    effect: narrowed
+    note: README recommends the permutation path as default; it has a p floor of ~1e-5 and is unseeded. The binary lm-eval
+      path is the exact one.
+  - claim_index: 3
+    effect: uncertain
+    note: Defect verified by calling the functions on synthetic integers; not reported upstream; version of numpy/scipy is
+      the orchestrator .venv, which may differ from the authors python 3.12 environment, but the NaN/ZeroDivision mechanics
+      are version-independent.
+  - claim_index: 4
+    effect: unaffected
+    note: Arithmetic on the E7c anchor; P-PAIRED text read from the lane worktree (STAGED block, not edited).
+  - claim_index: 5
+    effect: uncertain
+    note: Recommendation is ours (derived), not the repo's.
+  - claim_index: 6
+    effect: unaffected
+    note: Scope statement; plots_and_synthetic and dataset_selection scripts and the 9 shell scripts were listed but not read
+      line by line.
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass (intake-2484 dive recorded the repo
+    as an unread surfaced source). New facts vs the paper entry: CC BY-NC 4.0 license; README makes the permutation path the
+    default; no seeding; zero-discordant defect (max-drop returns p=0.0, Fisher/pooled raise ZeroDivisionError).'
+  reader_should_conclude: 'CITE for: which tests the authors ship (exact one-sided binomial pooled, Fisher over per-task exact
+    p, 250k-sim max-drop, permutation variants) and that they equal the intake-2484 paper trio. DO NOT: import or vendor this
+    code (CC BY-NC 4.0, no OSI license); treat its p-values as reproducible (unseeded Monte Carlo); run its max-drop or Fisher
+    on any suite that can have zero discordant pairs without a b+c=0 guard (max-drop silently returns p=0.0); treat it as
+    a replacement for P-PAIRED (it adds cross-suite aggregation and a one-sided degradation hypothesis, not a better single-suite
+    test; P-PAIRED is staged and human-only). Proposed use is an adapter re-implementation (ledger H-L1), not a call into
+    this repo.'
+  notes: 'Read scope (all from disk, dive-H/gh @ ec2fa1d, depth-1 clone): README in full (121 lines), LICENSE header, aggregation_script.py
+    lines 1-205 and 330-600 (stat functions, input processing, per-task contingency loop), continuous_aggregation_script.py
+    in full (382 lines), task_metrics.json, checkpoint_list.json (first 600 bytes), minimal_example/ tree and CSV heads. NOT
+    read: aggregation_script.py lines 600-1059 (metric tables / summary writers), the 9 llm_experiments and 2 dataset_selection
+    shell scripts, plots_and_synthetic/*.py, seed_flip_analysis.py. The two NaN/ZeroDivision checks imported aggregation_script.py
+    in the orchestrator .venv (python -I) and called the pure functions on tiny integers; no script was run end to end, no
+    installs, no data files used.'
+- id: intake-2492
+  arxiv_id: '2507.17417'
+  url: https://arxiv.org/abs/2507.17417
+  source_type: paper
+  title: A Comprehensive Evaluation on Quantization Techniques for Large Language Models
+  authors:
+  - Yutong Liu
+  - Cairong Zhao
+  - Guosheng Hu
+  categories:
+  - quantization
+  - benchmark_methodology
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2488
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Scope: a review plus unified W4A4 PTQ evaluation (weights AND activations at 4 bit; activations per-token or group-128
+    asymmetric, weights per-channel or group-128 symmetric). Pre-quantization transforms (scaling, rotation) x error mitigation
+    (GPTQ, low-rank rank 32). Models LLaMA-3.2-1B/3B, LLaMA-3.1-8B/70B, Qwen2.5-3B, Qwen1.5-MoE-A2.7B; metrics WikiText-2
+    PPL plus nine zero-shot tasks; the FP4 tables (XIII-XV) use LLaMA-3.2-1B and WikiText-2 PPL only. Calibration of GPTQ
+    / low-rank uses 128 WikiText-2 samples; the learned rotation and scaling follow the OSTQuant procedure on 1,000 WikiText-2
+    samples. Authors Tongji / Bristol; arXiv versions v1 2025-07-23, v2 2025-10-13, v3 2026-01-29, v4 2026-10-21 (v4 in a
+    Pattern Recognition template). CONFIRMED (v3 read in full).'
+  - 'The MXFP4 / NVFP4 rotation result in numbers (v3 Table XIV, LLaMA-3.2-1B, W4A4, WikiText-2 PPL, BF16 = 9.76; baseline
+    arm = "scaling", not Hadamard and not nothing): GPTQ: INT4-per-channel 134.85 -> 11.80 with optimized rotation+scaling,
+    MXFP4 (g32, E8M0) 13.24 -> 12.37 (-0.87 PPL, -6.6%; closes ~25% of the 3.48 gap to BF16), NVFP4 (g16, E4M3) 10.97 -> 11.04
+    (+0.07, slightly worse). GPTQ+low-rank: MXFP4 12.58 -> 12.29 (-0.29), NVFP4 10.81 -> 11.01 (+0.20, worse). Low-rank only:
+    MXFP4 14.91 -> 15.43, NVFP4 11.36 -> 12.57 (both worse). The abstract wording "little improvement for MXFP4 and NVFP4"
+    is right for NVFP4 (zero to negative) but understates MXFP4-GPTQ (about a quarter of the gap). The scaling arm is itself
+    a no-op on these formats: Table XIII no-transform GPTQ MXFP4 is 13.24 and NVFP4 10.98, identical to the Table XIV scaling
+    cells (13.24, 10.97), so "rotation vs scaling" here is also "rotation vs nothing". The authors explain it with AMXFP4
+    (arXiv 2411.09909, not read): small micro-scaled groups already tame outliers, so rotation "contributes little and may
+    even lead to degradation". PARTIAL as a general claim: one model (1B), one run, PPL only.'
+  - 'Bearing on WUSH (intake-2474; W4A4, Llama-3.1-8B-Instruct, downstream average accuracy, WUSH vs Hadamard: MXFP4 GPTQ
+    +0.70, NVFP4 +0.26, RTN MXFP4 +2.76): this paper is directionally CONSISTENT with "transform gains are small on NVFP4
+    and modest on MXFP4" but it is NOT a test of WUSH and NOT a Hadamard-vs-adaptive comparison. Differences: learned OSTQuant
+    rotation+scaling (not random/fixed Hadamard, not WUSH), baseline = scaling, model 1B vs 8B, metric WikiText-2 PPL vs eight-task
+    accuracy, W4A4 in both. It is the only non-self-reported evidence the survey intake-2488 cites for the transform-vs-format
+    question, and the survey describes it accurately (survey Sec 11.3 "limited gains on MXFP4 and NVFP4" matches the v3 abstract).
+    Treat as weak corroboration of the direction only; it cannot confirm or refute WUSH +0.70 / +0.26, and it adds nothing
+    to the within-run-variability caveat (no variance is reported for Table XIV).'
+  - 'Weight-only and GGUF relevance: NONE measured. There is no W4A16 / W3A16 / W2A16 experiment and no weight-only rotation
+    ablation; weight-only methods (GPTQ, AWQ, QuIP, QuIP#) appear only in the review taxonomy (Tables I-VII). No GGUF, llama.cpp,
+    K-quant, IQ-type, imatrix or Q8_0 content anywhere. The paper therefore cannot inform whether a rotation helps IQ2/IQ3/IQ4_XS
+    (the question behind intake-2488 F-L5). Adjacent W4A4 observations that do not transfer without caveat: finer groups help
+    (Table XII), and at group 16 with unquantized FP32 scales FP4 beats INT4 by 0.41 PPL (RTN 11.34 vs 11.75) and 0.60 (GPTQ
+    10.87 vs 11.47) in Table XIII - but those include activation quantization, so the weight-grid contribution is not isolated.
+    NOT-FOUND-IN-SOURCE: any weight-only number.'
+  - 'The scale format dwarfs the rotation effect in this setting (Table XIII, no transform, LLaMA-3.2-1B): RTN MXFP4 g32 E8M0
+    15.17 vs FP4 g32 E4M3 12.04 vs NVFP4 g16 E4M3 11.54; GPTQ 13.24 vs 11.36 vs 10.98. E4M3 scales plus a per-tensor FP32
+    scale beat E8M0 power-of-two scales by ~1.9-3.1 PPL, an order of magnitude more than any rotation gain on FP4 in Table
+    XIV. 4-bit scale factors on weights work with some loss, on activations they collapse (Table XV, PPL in the thousands).
+    Relevance to us: DS41 experts are native MXFP4 (E8M0), so nothing here is actionable on the weights; it is background
+    for any later NVFP4-style conversion discussion only.'
+  - 'Version drift (the finding moved between versions): v1 (2025-07) had MXFP4-only tables and concluded "scaling-based approaches
+    proved more effective than rotation-based methods for MXFP4 - a reversal"; v1 Table 9 numbers were scaling+GPTQ 13.06
+    and optimized rotation+scaling+GPTQ 12.61, i.e. the v1 numbers show the rotation arm BETTER (-0.45) in contradiction with
+    the v1 sentence. v2/v3 changed both numbers (13.24 / 12.37) and the sentence ("smaller improvements ... than for INT4").
+    v4 (2026-10-21) HTML renders only through Sec 2.2.1 (truncated conversion, 88 KB) so its Section 3 numbers were NOT read;
+    its abstract carries the same "little improvement for MXFP4 and NVFP4" sentence. Cite v3 numbers with the version.'
+  - 'Evidence hygiene: the five-seed error bars (Fig. 7) cover Table VIII (INT4) only; the FP4 tables XIII-XV are single runs
+    with no variance and no paired test, although the text says the INT4 differences are "statistically reliable". Calibration
+    data and the evaluation PPL corpus are both WikiText-2 (split not stated in the text read). Whether the OSTQuant rotation
+    was trained against an INT4 fake-quantizer and then evaluated on the FP4 grids is NOT-FOUND-IN-SOURCE; if so, the small
+    FP4 rotation gain is partly a train/test grid mismatch that would not apply to Hadamard or WUSH. Peer review: v4 is formatted
+    for Pattern Recognition; acceptance not verified.'
+  techniques:
+  - 'two-step decomposition: pre-quantization transformation (shift / scale / rotate) + quantization error mitigation (GPTQ,
+    low-rank)'
+  - OSTQuant learned orthogonal + scaling transform (RiemannAdam, 1,000 WikiText-2 samples)
+  - MXFP4 vs NVFP4 vs INT4 W4A4 comparison
+  reported_results:
+  - v3 Table XIV (LLaMA-3.2-1B, W4A4, WikiText-2 PPL; BF16 9.76 from Table VIII). Columns INT4-channel / FP4-channel / MXFP4
+    g32 E8M0 / NVFP4 g16 E4M3. Scaling+GPTQ 134.85 / 89.22 / 13.24 / 10.97; Scaling+Low-rank 165.4 / 104.55 / 14.91 / 11.36;
+    Scaling+GPTQ+Low-rank 124.56 / 114.96 / 12.58 / 10.81; Opt rotation+scaling+GPTQ 11.8 / 12.13 / 12.37 / 11.04; +Low-rank
+    14.58 / 15.15 / 15.43 / 12.57; +GPTQ+Low-rank 11.73 / 12.13 / 12.29 / 11.01.
+  - 'Derived from Table XIV (our arithmetic): rotation+scaling vs scaling, GPTQ: MXFP4 -0.87 PPL (-6.6%), NVFP4 +0.07 (+0.6%);
+    GPTQ+low-rank: MXFP4 -0.29 (-2.3%), NVFP4 +0.20 (+1.9%); low-rank: MXFP4 +0.52 (+3.5%), NVFP4 +1.21 (+10.7%); INT4-channel
+    GPTQ -123.05 (-91%). Gap to BF16 closed by rotation on GPTQ MXFP4: (13.24-12.37)/(13.24-9.76) = 25%; NVFP4: -6% (gap widens
+    1.21 -> 1.28).'
+  - 'v3 Table XIII (no transform): RTN INT4-ch 256.97, FP4-ch 135.68, INT4 g16 11.75, FP4 g16 (FP32 scale) 11.34; MXFP4 g32
+    E8M0 15.17, FP4 g32 E4M3 12.04, FP4 g16 E8M0 14.52, NVFP4 g16 E4M3 11.54. GPTQ: 161.04 / 101.36 / 11.47 / 10.87 and 13.24
+    / 11.36 / 12.77 / 10.98.'
+  - 'v3 Table VIII (INT4 W4A4, LLaMA-3.2-1B): BF16 9.76 PPL / 54.78 zero-shot avg; Rotation+Scaling+GPTQ per-channel 11.80
+    / 48.89, group-128 10.89 / 50.63; random (non-optimized) rotation+GPTQ per-channel 13.31, group-128 11.96 (Fig 6 / Table
+    7 data).'
+  - 'v1 Table 9 (MXFP4 only): scaling+GPTQ 13.06, optimized rotation+scaling+GPTQ 12.61, scaling+GPTQ+low-rank 12.64, rotation+scaling+GPTQ+low-rank
+    12.29 (INT4 channel columns identical to v3: 134.85 / 11.8 / 124.56 / 11.73).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2488
+    - intake-2474
+  credibility_score: 2
+  contradicting_evidence:
+  - Its own v1 prose ("scaling-based approaches proved more effective than rotation-based methods for MXFP4") contradicts
+    its own v1 Table 9 numbers (rotation+scaling 12.61 < scaling 13.06) and was reversed in later versions; the MXFP4 numbers
+    changed between v1 and v2/v3.
+  - The MXFP4-GPTQ rotation gain (-0.87 PPL, ~25% of the gap to BF16) is not "little" by the metric the paper itself uses
+    for INT4; only NVFP4 shows a null or negative effect. Single 1B model, single run.
+  - No replication found (not searched beyond the survey intake-2488 and arXiv listing; the MR-GPTQ paper arXiv 2509.23202
+    already in the index studies rotations for MXFP4/NVFP4 independently and is the better comparator).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec III Quantization settings
+    quote: We conduct experiments using W4A4 precision, comparing the results with the original precision (BF16 or FP16).
+    quote_sha256: f16b4f2d5993b71fd3d2f2fdac8885b9f22e181b01aea96ea1b5cc8a072cdaed
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec III Models and tasks
+    quote: We conduct experiments on LLaMA-3.2 (1B, 3B), LLaMA-3.1 (8B, 70B), and Qwen2.5-3B.
+    quote_sha256: d1b517b76cf6f0eb4351171505b9c33ed3b8f1300d1f9c471d7e58db2cb1ff58
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec III Implementation
+    quote: we use 128 samples from WikiText-2 with a sequence length of 2048.
+    quote_sha256: b470f7b908d8aa032c5f3fbeeb427733303e1f9067917591324d717cabb39c35
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec III Implementation (learnable orthogonal and scaling matrices follow the OSTQuant procedure)
+    quote: procedure, using 1,000 samples from WikiText-2 and optimized with RiemannAdam.
+    quote_sha256: 0a75f32321edc48adf6e031c8f6de03f4d0b4a20d3be279c17ef56814ae55c36
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIV row Scaling+GPTQ
+    quote: Scaling GPTQ 134.85 89.22 13.24 10.97
+    quote_sha256: c443853f3ffdd4cc180ecfe92bf390ba7d176431e3700108fbd38589ac92d558
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIV row Opt rotation+scaling+GPTQ
+    quote: Optimized rotation+scaling GPTQ 11.8 12.13 12.37 11.04
+    quote_sha256: 615849e96d54649e37706cc3f6aced3b36c7b5724850b28379faf98a30fb12fb
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIV row Scaling+GPTQ+Low-rank
+    quote: Scaling GPTQ+Low-rank 124.56 114.96 12.58 10.81
+    quote_sha256: 9c72a151f65a29f353e53bffcc1e865c1102b8f43d9cb9b281f3705dea0cdbad
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIV row Opt rotation+scaling+GPTQ+Low-rank
+    quote: Optimized rotation+scaling GPTQ+Low-rank 11.73 12.13 12.29 11.01
+    quote_sha256: 141321a966d33b828640f3e77d84272b9be2c6cae2b73409ab814029ce603217
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIV rows Low-rank
+    quote: Scaling Low-rank 165.4 104.55 14.91 11.36 Scaling GPTQ+Low-rank
+    quote_sha256: 04a58cc10d8dac1454a164340856d6adc9c06528a016cea3d28d0e7c9a3bdffd
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIV rows Low-rank (rotation)
+    quote: Optimized rotation+scaling Low-rank 14.58 15.15 15.43 12.57
+    quote_sha256: cd9fe0e61f5443d692416560cb42311a9c53ab9b4f2c516d2df748afc41b3f5d
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec III-C1 after Table XIV
+    quote: Rotation-based methods yield smaller improvements for MXFP4 and NVFP4 than for INT4 (per-channel).
+    quote_sha256: d636e200d6cb85e70a139ef9e6d0d8e8d010954a7ec3cb5992edec0fb1c52860
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec III-C1 after Table XIV
+    quote: For MXFP4 and NVFP4 formats, the group size is extremely small, so data rotation contributes little and may even
+      lead to degradation.
+    quote_sha256: 0d2ea279d47731e95dbcdca85b14c66890427d208ee8365445c0b694c0816e92
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table XIII row GPTQ (no transform)
+    quote: GPTQ 13.24 11.36 12.77 10.98
+    quote_sha256: 365ad40fbea70fedd120e183c85201ede9a698afb1a17b9d5b250165e241986e
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Abstract
+    quote: revealing that rotation-based methods demonstrate little improvement in performance for MXFP4 and NVFP4
+    quote_sha256: eefe05815dd5d6be28f7fa44d8ca1dec7ed1f52afe63bbd89ec1f2d40150006e
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table VIII row BF16
+    quote: BF16 9.76 54.78 9.76 54.78
+    quote_sha256: e958589f47de8a83a7bd8ea33bb0ec9caf295a4c304f3b8f97ef29fd3d22ea53
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec III Quantization settings
+    quote: We conduct experiments using W4A4 precision
+    quote_sha256: 8fabc5cf530412f4a33a5e80bc00e735215e0170d6c1a74f322ba6b024a0df33
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec III-C1 Table XIII
+    quote: RTN 15.17 12.04 14.52 11.54
+    quote_sha256: 0c08eabe460390e33d6fe646d69892493d95769c55ded7d7dc84b00f7307ff34
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec III-C1 after Table XIII
+    quote: NVFP4 performs better than MXFP4, showing a lower risk of noticeable accuracy drop
+    quote_sha256: 80c00464841187c7d9145dbd3aead52638084fec24ad5ea1116ad6b35472f53c
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec III-C2
+    quote: applying 4-bit scaling factors to both weights and activations leads to very poor performance.
+    quote_sha256: b1ed73161b79d11054ae1c0ee9abafed3fa8fdb87c519f1ff76a11edd4852006
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: v1 Sec 3.4 after Table 9
+    quote: Crucially, scaling-based approaches proved more effective than rotation-based methods for MXFP4 –- a reversal of
+      their relative efficacy observed in INT4 quantization scenarios.
+    quote_sha256: 1c0c19444806b331f5e655e310666de7e0a72c1f7a5d3ad6c63ac3e4d5310e0c
+    source_revision: arXiv:2507.17417v1 (23 Jul 2025) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: v1 Table 9 rows
+    quote: scaling GPTQ 134.85 13.06
+    quote_sha256: 0c47e5bca63bbd7890abb36d80b7da531971a0a92a37febb7220b004e0046dd5
+    source_revision: arXiv:2507.17417v1 (23 Jul 2025) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: v1 Table 9 rows
+    quote: optimized rotation+scaling GPTQ 11.8 12.61
+    quote_sha256: 8ab35bf6a30638d5ce85ec0b78e8e795dc3a23c89ea75510ae2d155489a8cf67
+    source_revision: arXiv:2507.17417v1 (23 Jul 2025) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Sec III-A
+    quote: To assess the statistical robustness of these results, we repeated the experiments of Table VIII across five different
+      random seeds.
+    quote_sha256: 13421829e98dd95c915dfafb1b5f1ed390e74366c8ba93ea26e3290fe30b12fa
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Fig 7 caption
+    quote: computed over five runs with different random seeds.
+    quote_sha256: fdac864a688f2cd78b8f32ebafaf7b538425bd5f2306a9f69ea8c06d0925611b
+    source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: v3 read in full from disk; v1 read for the MXFP4 tables; v2 grepped for the FP4 tables (same numbers as v3); v4
+      HTML truncated.
+  - claim_index: 1
+    effect: narrowed
+    note: 'intake-2488 described the finding as "limited gains on MXFP4 and NVFP4". Numbers: NVFP4 null/negative, MXFP4-GPTQ
+      ~25% of the BF16 gap. Single 1B model, PPL only.'
+  - claim_index: 2
+    effect: narrowed
+    note: Consistent in direction with WUSH but not a test of it; not corroboration of +0.70/+0.26.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Absence claim: no weight-only experiment in v3 (grep W4A16/W3A16/W2A16/weight-only: only taxonomy mentions).'
+  - claim_index: 4
+    effect: unaffected
+    note: Derived relevance statement is ours.
+  - claim_index: 5
+    effect: reattributed
+    note: 'Version drift: v1 sentence contradicts v1 table; later versions reversed the narrative.'
+  - claim_index: 6
+    effect: uncertain
+    note: Train/test grid mismatch for the rotation is a hypothesis; the source does not say which quantizer the OSTQuant
+      rotation was trained with.
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass. Resolves the intake-2488 "not read"
+    item: the only independent check of rotation gains on MXFP4/NVFP4 is a single-model (LLaMA-3.2-1B) PPL study whose own
+    v1 conclusion contradicted its v1 table; the result is a weak directional consistency with WUSH, not corroboration, and
+    says nothing about weight-only formats.'
+  reader_should_conclude: 'CITE (with version v3 and Table XIV) only for: on LLaMA-3.2-1B W4A4 with a learned OSTQuant rotation,
+    GPTQ NVFP4 sees no gain from rotation (+0.07 PPL) and MXFP4 a modest one (-0.87 PPL, ~25% of the BF16 gap), and E4M3+FP32
+    tensor scales beat E8M0 by 2-3 PPL. DO NOT: cite it as an independent replication of, or a test against, WUSH; cite it
+    for any weight-only, GGUF, IQ, K-quant or Q8_0 claim (nothing weight-only was measured); quote the abstract "little improvement"
+    without the numbers; use a v1 number or the v1 sentence; rely on v4 numbers (not read). The weight-only rotation question
+    for IQ2/IQ3/IQ4_XS stays open and is tested only by the bounded probe proposed as F-L5 on intake-2488.'
+  notes: 'Read scope (all from disk, dive-H/): abs page (title matched: "A Comprehensive Evaluation on Quantization Techniques
+    for Large Language Models", authors Liu/Zhao/Hu, submission history v1-v4); v3.html (353 KB) extracted to v3.txt and read:
+    abstract, Sec I, II-C, III (all tables VIII-XV and text), conclusions; v2.html and v1.html grepped for the FP4 sections,
+    v1 Table 8/9 and Sec 3.4/4 read; v4.html (88 KB, LaTeXML render) read through its end (abstract, Introduction, start of
+    Sec 2: it stops at Sec 2.2.1 "Scaling"; no results). NOT read: v3 related-work tables I-VII beyond headings, Fig 7 values,
+    reference list, v2 text outside FP4 sections, v4 PDF (no PDF text tool on host). Tables VIII-XV values are from the rendered
+    HTML tables.'
