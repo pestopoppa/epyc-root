@@ -1,4 +1,7 @@
 """Tests for scripts/coordination/validate_fillers.py -- temp tables only."""
+import contextlib
+import io
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -15,7 +18,7 @@ SEP = "|" + "---|" * 18
 
 
 def row(**kw):
-    v = dict(id="r1", owner="o", launcher="l", res="q1", minw="20 m", ram="40 GiB", stop="/s/STOP",
+    v = dict(id="r1", owner="o", launcher="`/x/launch.sh` pid=4242", res="q1", minw="20 m", ram="40 GiB", stop="/s/STOP",
              status="ARMED", cls="filler", dur="1 h", mw="20 m", ds="n", ready="y",
              prior="none found (f8, 2026-10-22)", dec="does X beat Y on the champion baseline",
              eff="+2.0% tok/s", sub="cpu", notes="")
@@ -32,8 +35,28 @@ def table(tmp_path, *rows):
     return str(p)
 
 
+class R:
+    def __init__(self, returncode, stdout):
+        self.returncode, self.stdout = returncode, stdout
+
+
 def cli(*a):
-    return subprocess.run([sys.executable, str(SCRIPT), *a], capture_output=True, text=True)
+    """In-process run (so the liveness probe can be patched); see test_script_smoke for a subprocess."""
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+        rc = vf.run(list(a))
+    return R(rc, out.getvalue())
+
+
+@pytest.fixture(autouse=True)
+def _alive(monkeypatch):
+    monkeypatch.setattr(vf, "pid_alive", lambda pid, tokens: pid != 666)
+
+
+def test_script_smoke_subprocess(tmp_path):
+    r = subprocess.run([sys.executable, str(SCRIPT), "--file", str(tmp_path / "nope.md")],
+                       capture_output=True, text=True)
+    assert r.returncode == 3
 
 
 def test_clean_row_passes_for_grant(tmp_path):
@@ -150,3 +173,88 @@ def test_renamed_ram_header_is_accepted(tmp_path):
     p = tmp_path / "x.md"
     p.write_text("\n".join([HEADER.replace("max private RAM", "peak host RAM GiB"), SEP, row()]) + "\n")
     assert cli("--file", str(p), "--row", "r1", "--for-grant").returncode == 0
+
+
+# ---- queue semantics: QUEUED implies a live launcher, everything else is BACKLOG ----
+def backlog(**kw):
+    d = dict(status="BACKLOG", ready="n", launcher="none yet", notes="blocker=missing launcher: no driver")
+    d.update(kw)
+    return row(**d)
+
+
+def msgs(tmp_path, *rows, rid="r1"):
+    return cli("--file", table(tmp_path, *rows), "--row", rid, "--for-grant")
+
+
+def test_queued_row_with_live_pid_is_clean(tmp_path):
+    assert msgs(tmp_path, row()).returncode == 0
+
+
+def test_ready_y_without_pid_refused(tmp_path):
+    r = msgs(tmp_path, row(launcher="`/x/launch.sh`"))
+    assert r.returncode == 2 and "no launcher PID" in r.stdout
+
+
+def test_ready_y_dead_pid_refused(tmp_path):
+    r = msgs(tmp_path, row(launcher="`/x/launch.sh` pid=666"))
+    assert r.returncode == 2 and "pid=666 is dead" in r.stdout
+
+
+def test_pid_in_notes_and_legacy_spelling(tmp_path):
+    assert msgs(tmp_path, row(launcher="`/x/launch.sh`", notes="armed pid=4242")).returncode == 0
+    assert msgs(tmp_path, row(launcher="`/x/launch.sh`, PID 4242")).returncode == 0
+
+
+def test_probe_receives_row_id_grant_and_launcher_path(tmp_path, monkeypatch):
+    seen = {}
+    monkeypatch.setattr(vf, "pid_alive", lambda pid, toks: seen.update(pid=pid, toks=toks) or True)
+    msgs(tmp_path, row(launcher="`/x/launch.sh` pid=77; polls grants/f8-night.grant"))
+    assert seen["pid"] == 77 and {"r1", "/x/launch.sh", "f8-night"} <= set(seen["toks"])
+
+
+def test_check_row_accepts_injected_probe(tmp_path):
+    t = vf.parse_table(Path(table(tmp_path, row())).read_text())
+    col, rows, _ = t
+    cells = rows[0][1]
+    assert vf.check_row(cells, col, set(), pid_alive=lambda p, t: True) == []
+    assert any("dead" in m for m in vf.check_row(cells, col, set(), pid_alive=lambda p, t: False))
+
+
+def test_real_proc_probe(tmp_path):
+    me = open(f"/proc/{os.getpid()}/cmdline", "rb").read().replace(b"\0", b" ").decode()
+    tok = me.split()[0]
+    assert vf.proc_pid_alive(os.getpid(), [tok])
+    assert not vf.proc_pid_alive(os.getpid(), ["zz-no-such-token-zz"])
+    assert not vf.proc_pid_alive(2 ** 22 + 12345, [tok])
+
+
+def test_registered_not_ready_is_error_naming_backlog(tmp_path):
+    r = msgs(tmp_path, backlog(status="REGISTERED"))
+    assert r.returncode == 2 and "convert it to BACKLOG" in r.stdout
+
+
+def test_other_non_ready_status_must_be_backlog(tmp_path):
+    r = msgs(tmp_path, backlog(status="NOT-ARMED"))
+    assert "must be BACKLOG" in r.stdout
+
+
+@pytest.mark.parametrize("kind", ["missing launcher", "harness fix", "build", "operator decision"])
+def test_backlog_with_blocker_and_owner_clean(tmp_path, kind):
+    r = cli("--file", table(tmp_path, backlog(notes=f"blocker={kind}: text")), "--row", "r1")
+    assert "WARN" not in r.stdout, r.stdout
+
+
+def test_backlog_needs_blocker_from_set_and_owner(tmp_path):
+    for notes in ("", "blocker=waiting for Godot", "blocked on build"):
+        r = cli("--file", table(tmp_path, backlog(notes=notes)), "--row", "r1")
+        assert "needs `blocker=" in r.stdout
+    r = cli("--file", table(tmp_path, backlog(owner="-")), "--row", "r1")
+    assert "needs an owner" in r.stdout
+
+
+def test_ready_y_must_be_armed_and_terminal_rows_exempt(tmp_path):
+    r = msgs(tmp_path, row(status="REGISTERED"))
+    assert "a queued row is ARMED" in r.stdout
+    for st in ("COMPLETE", "CANCELLED"):
+        r = cli("--file", table(tmp_path, row(status=st, launcher="none", ready="y")), "--row", "r1")
+        assert "WARN" not in r.stdout

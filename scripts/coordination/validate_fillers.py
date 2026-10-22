@@ -49,6 +49,22 @@ Rules (a cell value of "-" or empty means unfilled and violates the rule for its
                   baseline, AND `notes` or `prior` cites a floor file (a path or filename with
                   "floor" and a .json/.md/.jsonl/.txt extension, e.g. serving-floor.*.json).
 Row ids must be unique (duplicate = violation on the later row).
+
+Queue semantics (operator ruling relayed by workspace-58, 2026-10-22: "Being queued implies BEING
+ready").  Terminal rows (COMPLETE, CANCELLED) are exempt from the rules below.
+    QUEUED   = ready=y AND status ARMED AND a LIVE launcher.  The launcher PID is encoded as a
+               `pid=<N>` token in the existing `launcher + PID` cell (col 3) or, failing that, in
+               `notes`; the legacy spelling `PID <N>` in col 3 is also read.  No 19th column.
+               Live = /proc/<N> exists AND its cmdline contains the row's filler-id, a grant id
+               named in the row (`grants/<id>.grant`, `grant <id>`, `grant=<id>`) or a launcher
+               script path (.sh/.py/.bash absolute path in col 3).  Needs a stated min window
+               (col 11) and RAM (col 6, checked above).  ready=y with a dead/absent PID is an error.
+    BACKLOG  = everything else (ready=n).  status must be BACKLOG, `owner` (col 2) filled, and
+               `notes` must carry `blocker=<kind>[: free text]` with kind one of
+               {missing launcher, harness fix, build, operator decision}.
+    REGISTERED / NOT-ARMED / ... with ready=n is an error: convert the row to BACKLOG.
+The liveness probe is injectable: check_row(..., pid_alive=f) / module attribute `pid_alive`
+(signature f(pid: int, tokens: list[str]) -> bool).
 """
 from __future__ import annotations
 
@@ -62,7 +78,14 @@ COLUMNS = ["filler-id", "owner", "launcher + pid", "resources", "min useful wind
            "ds41-class y/n", "ready y/n", "prior", "decision", "min_effect", "substrate", "notes"]
 HEADER_ALIASES = {"peak host ram gib": "max private ram", "peak host ram (gib)": "max private ram"}
 RAM_RE = re.compile(r"^~?\s*\d+(?:\.\d+)?\s*(?:gib)?$", re.I)
-STATUSES = {"ARMED", "REGISTERED", "NOT-ARMED", "CANCELLED", "COMPLETE"}
+STATUSES = {"ARMED", "REGISTERED", "NOT-ARMED", "CANCELLED", "COMPLETE", "BACKLOG"}
+TERMINAL = {"COMPLETE", "CANCELLED"}
+BLOCKER_KINDS = ("missing launcher", "harness fix", "build", "operator decision")
+BLOCKER_RE = re.compile(r"blocker\s*[=:]\s*(" + "|".join(BLOCKER_KINDS) + r")\b", re.I)
+PID_RE = re.compile(r"\bpid=(\d+)\b", re.I)
+LEGACY_PID_RE = re.compile(r"\bPID\s+(\d+)\b")
+GRANT_RE = re.compile(r"grants/([\w.-]+?)\.grant|\bgrant[ =]`?([\w][\w.-]*)", re.I)
+LAUNCHER_PATH_RE = re.compile(r"(?<![\w.])/[\w.@+=/-]+\.(?:sh|py|bash)\b")
 CLASSES = {"filler", "block-correctness", "block-timing-pairable", "block-timing-quiet"}
 SUBSTRATES = {"cpu", "gpu", "either"}
 
@@ -129,8 +152,74 @@ def unfilled(v: str) -> bool:
     return v.strip() in ("", "-")
 
 
-def check_row(cells: list[str], col: dict[str, int], seen: set[str]) -> list[str]:
+def proc_pid_alive(pid: int, tokens: list[str]) -> bool:
+    """True iff /proc/<pid> exists and its cmdline contains at least one of `tokens`."""
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            cmd = f.read().replace(b"\0", b" ").decode("utf-8", "replace")
+    except OSError:
+        return False
+    return any(t and t in cmd for t in tokens)
+
+
+pid_alive = proc_pid_alive  # monkeypatchable; check_row(pid_alive=...) overrides per call
+
+
+def launcher_pid(cells: list[str], col: dict[str, int]) -> int | None:
+    for cell, rx in ((cells[col["launcher + pid"]], PID_RE), (cells[col["notes"]], PID_RE),
+                     (cells[col["launcher + pid"]], LEGACY_PID_RE)):
+        m = rx.search(cell)
+        if m:
+            return int(m.group(1))
+    return None
+
+
+def queue_semantics(cells: list[str], col: dict[str, int], probe) -> list[str]:
+    """QUEUED-implies-ready / everything-else-BACKLOG rules (a)-(d)."""
+    g = lambda name: cells[col[name]]  # noqa: E731
+    status = g("status").split()[0] if g("status").split() else ""
+    if status in TERMINAL:
+        return []
+    out: list[str] = []
+    ready = g("ready y/n")
+    if ready == "y":
+        if status != "ARMED":
+            out.append(f"ready=y but status {status!r}: a queued row is ARMED with a live launcher; "
+                       "otherwise set ready=n and status BACKLOG")
+        if unfilled(g("min window")):
+            out.append("ready=y needs a stated min window (col 11)")
+        pid = launcher_pid(cells, col)
+        if pid is None:
+            out.append("ready=y but no launcher PID: put `pid=<N>` in the launcher + PID cell "
+                       "(the launcher must be alive and polling its grant), else make it BACKLOG")
+        else:
+            lc = g("launcher + pid")
+            tokens = [g("filler-id")] + LAUNCHER_PATH_RE.findall(lc)
+            tokens += [a or b for a, b in GRANT_RE.findall(lc + " " + g("notes"))]
+            if not probe(pid, tokens):
+                out.append(f"ready=y but launcher pid={pid} is dead (no /proc/{pid}, or its cmdline "
+                           "names neither the row id, a grant id nor the launcher path): "
+                           "convert the row to BACKLOG")
+    elif ready == "n":
+        if status == "REGISTERED":
+            out.append("status REGISTERED with ready=n is an error: convert it to BACKLOG "
+                       "(blocker=<missing launcher|harness fix|build|operator decision> + owner)")
+        elif status != "BACKLOG":
+            out.append(f"non-ready row has status {status!r}: must be BACKLOG")
+    if status == "BACKLOG" or ready == "n":
+        if unfilled(g("owner")):
+            out.append("BACKLOG row needs an owner (col 2)")
+        if not BLOCKER_RE.search(g("notes")):
+            out.append("BACKLOG row needs `blocker=<missing launcher|harness fix|build|"
+                       "operator decision>[: text]` in notes")
+    if status == "BACKLOG" and ready == "y":
+        out.append("status BACKLOG with ready=y is contradictory")
+    return out
+
+
+def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=None) -> list[str]:
     """Violations of one 18-cell row (empty list = clean)."""
+    probe = pid_alive or globals()["pid_alive"]
     g = lambda name: cells[col[name]]  # noqa: E731
     out: list[str] = []
     rid = g("filler-id")
@@ -181,6 +270,7 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str]) -> list[str
         if not (FLOOR_RE.search(g("notes")) or FLOOR_RE.search(prior)):
             out.append("block-timing-quiet: notes or prior must cite a floor file "
                        "(e.g. serving-floor.*.json)")
+    out += queue_semantics(cells, col, probe)
     return out
 
 
