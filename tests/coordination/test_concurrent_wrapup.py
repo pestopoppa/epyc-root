@@ -352,3 +352,42 @@ def test_documented_wrapup_exit_trap_releases_and_cleans(fleet):
     assert not lock_path(fleet["lock_dir"], repo_key(fleet["shared"]), "wrapup").exists()
     assert not list(fleet["tmp"].glob("epyc-wrapup-token.*")), \
         "ordinary failure must run the trap and remove the spent operation token"
+
+
+def test_documented_wrapup_acquire_refusal_is_visible_without_errexit(fleet):
+    """A refused acquire must fail the helper even in an `||`/`if` context.
+
+    Measured 2026-10-22: `wrapup_lease_acquire || exit 2` ran its protected steps
+    while another session held the lease, because the helper returned the status
+    of its trailing assignment instead of the refusal.
+    """
+    other_token = fleet["tmp"] / "other.token"
+    held = subprocess.run(
+        [sys.executable, str(LEASE_CLI), "--agent", "mainD",
+         "--repo", str(fleet["lanes"]["mainD"]), "--lock-dir", str(fleet["lock_dir"]),
+         "--lock-name", "wrapup", "--token-file", str(other_token), "--acquire"],
+        capture_output=True, text=True)
+    assert held.returncode == 0, held.stdout + held.stderr
+    script = _documented_lease_bootstrap() + r'''
+if wrapup_lease_acquire; then echo ACQUIRED_WHILE_HELD; exit 9; fi
+test "$WRAPUP_LEASE_HELD" = 0
+wrapup_lease_acquire || exit 7
+echo UNREACHABLE
+'''
+    env = dict(os.environ)
+    env.update({
+        "WRAPUP_AGENT_ID": "auditor",
+        "WRAPUP_REPO": str(fleet["lanes"]["mainC"]),
+        "WRAPUP_LOCK_DIR": str(fleet["lock_dir"]),
+        "TMPDIR": str(fleet["tmp"]),
+    })
+    result = subprocess.run(["bash", "-c", script],
+                            cwd=REPO_ROOT, env=env, capture_output=True, text=True)
+    assert result.returncode == 7, result.stdout + result.stderr
+    assert "UNREACHABLE" not in result.stdout
+    released = subprocess.run(
+        [sys.executable, str(LEASE_CLI), "--agent", "mainD",
+         "--repo", str(fleet["lanes"]["mainD"]), "--lock-dir", str(fleet["lock_dir"]),
+         "--lock-name", "wrapup", "--token-file", str(other_token), "--release"],
+        capture_output=True, text=True)
+    assert released.returncode == 0, "the holder's lease must survive the refused caller"

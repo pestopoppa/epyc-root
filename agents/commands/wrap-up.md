@@ -204,7 +204,9 @@ if [ -n "${WRAPUP_LOCK_DIR:-}" ]; then LEASE+=(--lock-dir "$WRAPUP_LOCK_DIR"); f
 WRAPUP_LEASE_HELD=0
 
 wrapup_lease_acquire() {
-  "${LEASE[@]}" --acquire
+  # `|| return`: without it a refusal is lost whenever errexit is off or the call
+  # sits in an `if`/`||` context, and the protected step runs unleased.
+  "${LEASE[@]}" --acquire || return $?
   WRAPUP_LEASE_HELD=1
 }
 
