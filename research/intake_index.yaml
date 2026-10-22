@@ -354035,7 +354035,9 @@
   verdict: adopt_patterns
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/exl3-cpu-mi210-implementation.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
   authors:
   - Michael Helcig
@@ -354340,6 +354342,11 @@
     inconsistent). Stage-1 claims 0, 2 and the App E cost confirmed. || 2026-10-22 Stage-2 close-out, dive-surfaced sources:
     arXiv:2606.19558 (Nikolic et al., Displacement Is Not Direction) = intake-1510 already in index — declined: Already ingested
     and dive-verified as intake-1510; no new ingest.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: EXL3-EAR1 (EAR column) in
+    exl3-cpu-mi210-implementation.md and VB-QUANTCMP-WIRE in vidya-belief-substrate-program.md, operator-approved 2026-10-22;
+    EXL3-EAR2 declined by the operator.'
 - id: intake-2462
   arxiv_id: null
   url: https://huggingface.co/collections/kaitchup/qwen38-27b-slq
@@ -354355,7 +354362,8 @@
   verdict: worth_investigating
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/exl3-cpu-mi210-implementation.md
   handoffs_created: []
   authors:
   - The Kaitchup (Benjamin Marie)
@@ -354598,6 +354606,11 @@
     GGUF row (97.44%) exists in the card, a Q8_0 row does not. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: https://github.com/inclusionAI/humming
     @5b500b407a716e9dfcede04a5eba97a6eece0508 — declined: CUDA/NVCC-only, JIT GEMM for NVIDIA SM75+; nothing portable to gfx90a
     or llama.cpp; the portable idea (arbitrary-bit weights with dynamic zero-point) is already'
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: operator declined downloading
+    the SLQ checkpoints (A-L2) and the BF16 anchor EXL3-EAR2; decline recorded in exl3-cpu-mi210-implementation.md intake
+    notes.'
 - id: intake-2463
   arxiv_id: null
   url: https://github.com/IST-DASLab
@@ -354706,7 +354719,8 @@
   verdict: worth_investigating
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/exl3-cpu-mi210-implementation.md
   handoffs_created: []
   authors:
   - Michael Helcig
@@ -354808,6 +354822,10 @@
     no-GGUF claims confirmed; added the EAR implementation detail (renormalized over the BF16 top-10, teacher-forced FineWeb-Edu)
     that the Stage-1 claim and the paper''s Eq 3 prose omit, and that the ''fake'' export is a BF16 transformers-loadable
     checkpoint (not packed).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: EAR implementation reference
+    (evaluation.py top-10 renormalization) for EXL3-EAR1, operator-approved 2026-10-22.'
 - id: intake-2465
   arxiv_id: null
   url: https://github.com/IST-DASLab/GSQ
@@ -355198,7 +355216,8 @@
   verdict: worth_investigating
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   authors:
   - Andrei Panferov
@@ -355464,6 +355483,10 @@
     arXiv:2605.20315 (Mix-Quant: Quantized Prefilling, Precise Decoding for Agentic LLMs) — declined: Opposite direction to
     our probe and not low-bit-weight focused; revisit only if C-L1 passes.; https://discuss.huggingface.co/t/kv-cache-precision-compatibility-in-spatial-disaggregation-prefill-decode-setups-with-a
     — declined: Forum thread, no data.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: NEW-13 prefill/decode weight-set
+    handoff probe in iqk-iquant-enablement.md, operator-approved 2026-10-22; ODP-port trigger prose pending.'
 - id: intake-2468
   arxiv_id: null
   url: https://github.com/IST-DASLab/disaggregated-llama.cpp
@@ -357046,7 +357069,8 @@
   verdict: worth_investigating
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/exl3-cpu-mi210-implementation.md
   handoffs_created: []
   authors:
   - IST-DASLab (ISTA-DASLab HF org)
@@ -357296,6 +357320,10 @@
     threads, API retrieved 2026-10-22) — declined: Anecdotal and uncontrolled; the proposed A/B measures the same things under
     our predeclared rule. Declined as a dive target only; threads 6/22/23/28/29/32/43 ar; https://huggingface.co/HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF
     (cited in HF discussion 23) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: operator declined EXL3-X0D
+    ("not worth it") and EXL3-LB1E; decline recorded in exl3-cpu-mi210-implementation.md intake notes.'
 - id: intake-2482
   arxiv_id: null
   url: https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-NVFP4-prefiller
@@ -357422,7 +357450,8 @@
   verdict: worth_investigating
   ingested_date: '2026-10-22'
   verification: dive-overturned
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   authors: []
   key_claims:
@@ -357601,6 +357630,10 @@
     (TOST + churn-based item-count tables) for sizing OUR paired per-item gates. || 2026-10-22 Stage-2 close-out, dive-surfaced
     sources: Kuebler et al., "When LLMs get significantly worse: A statistical approach to detect model degradations" (ICLR
     2026; arX — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: gate sizing in NEW-14, operator-approved
+    2026-10-22.'
 - id: intake-2484
   arxiv_id: '2602.10144'
   url: https://arxiv.org/abs/2602.10144
@@ -357625,7 +357658,10 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/eval-tower-verification.md
+  - handoffs/active/tq3-quantization-evaluation.md
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   key_claims:
   - 'Test: for per-item binary-scored outcomes of a baseline M and an optimized model M~ on the SAME items, only the discordant
@@ -357886,6 +357922,10 @@
     surfaced source). WebSearch x1 for replications: none found. v1 exists (arxiv.org/pdf/2602.10144v1); v2 read is current
     as of 2026-10-22 (atom feed updated 2026-05-06). | DIVE 2026-10-22: second reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml
     second_reader): yes 16, partial 1, no 0.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: EV-DEGR1 (eval-tower-verification.md),
+    TQ3-PWR1 (tq3-quantization-evaluation.md) and NEW-14 (iqk-iquant-enablement.md), operator-approved 2026-10-22.'
 - id: intake-2485
   arxiv_id: '2410.13461'
   url: https://arxiv.org/abs/2410.13461
@@ -357910,7 +357950,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   key_claims:
   - 'Phase-aware precision allocation (higher-precision weights for the prefill, lower for decode) needs no training of the
@@ -358143,6 +358184,10 @@
     (Fig. 3, Fig. 6, Fig. 7 values not read) and the App. A.5 per-layer latency tables and A.8 example outputs. Code repository
     only checked via GitHub API metadata. No compute run. Model weights not applicable. | DIVE 2026-10-22: second reader 2026-10-22
     (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml second_reader): yes 15, partial 0, no 0.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: NEW-13 reverse-order arm and
+    nested-vs-independent caveat, operator-approved 2026-10-22.'
 - id: intake-2486
   arxiv_id: '2601.14277'
   url: https://arxiv.org/abs/2601.14277
@@ -359391,7 +359436,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/eval-tower-verification.md
   handoffs_created: []
   key_claims:
   - 'Identity and license: the official code release of intake-2484 (ICLR 2026). Pinned HEAD ec2fa1d6ebc5c2690560ded97deef887f16836ec
@@ -359699,6 +359745,10 @@
     in the orchestrator .venv (python -I) and called the pure functions on tiny integers; no script was run end to end, no
     installs, no data files used. | DIVE 2026-10-22: second reader 2026-10-22 (wave 4, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml):
     yes 12, partial 8, no 1.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-4 partial (operator ruling 2026-10-22) of plan intake-ist-slq-20261022 sha db108374: test semantics for EV-DEGR1
+    (code not imported: CC BY-NC), operator-approved 2026-10-22.'
 - id: intake-2492
   arxiv_id: '2507.17417'
   url: https://arxiv.org/abs/2507.17417

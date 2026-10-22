@@ -66,3 +66,28 @@ None was run. The calendar-owner table is in the plan:
 
 The wave-3 dive agent imported and called pure functions of the downloaded LLM-Accuracy-Stats script (milliseconds of
 CPU, no state change). This is recorded in the session `process_deviations`.
+
+## Stage 4, partial (operator ruling 2026-10-22, relayed by workspace-58)
+
+- **Applied, all marked operator-approved 2026-10-22:**
+  - `exl3-cpu-mi210-implementation.md`: EXL3-EAR1.
+  - `vidya-belief-substrate-program.md`: VB-QUANTCMP-WIRE.
+  - `eval-tower-verification.md`: EV-DEGR1.
+  - `tq3-quantization-evaluation.md`: TQ3-PWR1.
+  - `iqk-iquant-enablement.md`: NEW-13 (NEW-10 download dependency kept) and NEW-14.
+  - `scripts/vidya/adapters/README.md`: a quant-comparison-receipt source row.
+- **Text adjusted after the declines:**
+  - EXL3-EAR1 and VB-QUANTCMP-WIRE no longer hang off the declined X0D.
+  - NEW-14 names NEW-12 only "if approved".
+- **Declined by the operator, recorded in the exl3 intake notes:** EXL3-X0D ("not worth it"), EXL3-LB1E, EXL3-EAR2, and
+  the SLQ checkpoint download (A-L2).
+- **Pending the operator:** NEW-12 (the disk question), and M1-M4 trigger prose and K1-K2 knowledge rows (not filed).
+- **Entry dispositions:** 9 entries.
+  - integrated: 2461, 2464, 2467, 2483, 2484, 2485, 2491.
+  - declined: 2462, 2481.
+- **Gates:**
+  - Checklist-sync: 0 flips, 6 new `- [ ]` tasks.
+  - Derived-actionables: 4 operator declines recorded and 7 items pending.
+  - `validate_intake.sh` rc 0.
+  - `index_state.py --check` rc 0, after regenerating the master generated block. cite-check: one overturned-entry
+    citation was narrowed to `intake-2481#record`.

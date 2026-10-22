@@ -166,3 +166,14 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
 - Do not predict EPYC or MI210 gains from NVIDIA, Xeon, Threadripper, RDNA, RTX, or GB10 results.
 - Do not use the full GLM checkpoint as the first milestone or describe routed-expert CPU offload as a complete CPU-only runtime.
 - Do not adopt misleading status output, ad hoc serving stderr, or stale backup-file payloads from experimental forks.
+
+## Research intake 2026-10-22 — SLQ / IST-DASLab / kaitchup Qwen3.8-27B SLQ (intake-2461..2493)
+
+Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid0/llm/tmp/intake-ist-slq-20261022/stage3/STAGE3_PLAN.md` (sha256 db108374cd1bd164e5baaac2586b9d3abf26daaba46aec4085192e4b0c0232ad); operator ruling 2026-10-22 approved a subset. Trigger prose and knowledge notes from that plan are still pending the operator and are not filed here.
+
+- [ ] **EXL3-EAR1 — Add an EAR column to llama-perplexity --kl-divergence on llama.cpp-experimental (intake-2461, intake-2464).** (filed 2026-10-22 via research intake, operator-approved 2026-10-22) In tools/perplexity/perplexity.cpp (the KLD per-token loop, about L175-252 @ ffc1bac82) accumulate the full-vocabulary sum of min(p_base, q) and the top-10-renormalized variant SLQ's evaluation.py uses, and print both beside Mean KLD and Same top p; branch from the current production tip, v10 stays frozen. Acceptance: EAR(base, base) = 1.0; 1 - sqrt(KLD/2) <= EAR <= 1 on every run (Pinsker); one cross-check against a Python recomputation from saved logits. The build is a CPU build-role job under region-lock --cpu-list (about 20-40 min); first measurements ride the next scheduled KLD pass (NEW-10 or NEW-13 in iqk-iquant-enablement.md), since EXL3-X0D was declined.
+
+- *Declined (operator, 2026-10-22): EXL3-X0D, the A/B of the ISTA-DASLab Qwen3.8-27B GSQ-RCO IQ3_S/IQ3_XXS GGUFs (intake-2481#record) against the served Q8_0 — "not worth it".*
+- *Declined (operator, 2026-10-22): EXL3-LB1E, extending the LB1c per-type sweep to IQ3_XXS/IQ2_S/IQ2_XS/IQ2_XXS/Q2_K — it was only motivated by the X0D file.*
+- *Declined (operator, 2026-10-22): EXL3-EAR2, the BF16-anchored KLD/EAR run — its 55.6 GB BF16 download only served the 27B quant question.*
+- *Declined (operator, 2026-10-22): downloading the kaitchup Qwen3.8-27B-SLQ-EAR98/98.5/99 checkpoints (intake-2462#record, ledger A-L2; option A not taken) — vLLM/Humming CUDA-only, not loadable on MI210, EPYC or llama.cpp, and no smaller than our Q8_0 at EAR99.*

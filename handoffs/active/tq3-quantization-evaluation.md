@@ -462,3 +462,9 @@ exists to prevent.
 ## Research Intake Update — 2026-10-22
 
 - **K8 — ternary ASR encoder kernel as a reference design (intake-underdog-bark-20261021; knowledge, no task).** The thrush-ternary-v2 packed format is readable (spec and decode verified in the intake-2344 dive) and mudler/parakeet.cpp carries a group-128 int8-activation ternary kernel with a 16-row interleave, a reference for any future TQ2_0 AVX-512-VNNI path; no new low-bit model lane is opened (operator steering: low-bit work stays on the DS41 and Q38FN lanes), and the redux model itself was declined for STT on French quality (intake-2344#record, intake-2347#record).
+
+## Research intake 2026-10-22 — SLQ / IST-DASLab / kaitchup Qwen3.8-27B SLQ (intake-2461..2493)
+
+Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid0/llm/tmp/intake-ist-slq-20261022/stage3/STAGE3_PLAN.md` (sha256 db108374cd1bd164e5baaac2586b9d3abf26daaba46aec4085192e4b0c0232ad); operator ruling 2026-10-22 approved a subset. Trigger prose and knowledge notes from that plan are still pending the operator and are not filed here.
+
+- [ ] **TQ3-PWR1 — State power and add an exact one-sided degradation verdict before STEP 3 and G4 run (intake-2484).** (filed 2026-10-22 via research intake, operator-approved 2026-10-22) For each task-eval gate print n_discordant, the direction (b vs c) and the one-sided exact binomial p beside the two-sided P-PAIRED McNemar (keep two-sided for preference gates), and state power first: required N is about p_flip x (2.486/delta)^2 at one-sided alpha 0.05 and 80% power, with p_flip from a measured same-model flip floor; at p_flip 10%, G4's N >= 250 detects only about 5-point drops (about 26% power at 2 points), so record G4 as a coarse screen unless N is raised. The P-PAIRED protocol block itself is human-amendment-only and is not edited.

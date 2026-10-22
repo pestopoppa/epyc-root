@@ -1,9 +1,9 @@
 {
   "session_id": "intake-ist-slq-20261022",
   "started_at": "2026-10-22T12:14:39Z",
-  "last_checkpoint": "2026-10-22T13:27:55Z",
-  "stage": 2,
-  "phase": "stage2-closed",
+  "last_checkpoint": "2026-10-22T14:11:29Z",
+  "stage": 4,
+  "phase": "stage4-partial",
   "lane": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/root",
   "branch": "intake/ist-slq-20261022",
   "topic": "arXiv 2605.02404 SLQ (Statistically-Lossless Quantization) + github.com/IST-DASLab org triage + HF kaitchup/qwen38-27b-slq; on behalf of workspace-58",
@@ -84,6 +84,15 @@
       "disposition": null,
       "plan_ref": null,
       "reason": null
+    },
+    {
+      "seq": 4,
+      "stage": 3,
+      "ts": "2026-10-22T14:11:29Z",
+      "verbatim": "(operator ruling relayed by workspace-58 2026-10-22) APPROVED: EXL3-EAR1, VB-QUANTCMP-WIRE + adapter README row, EV-DEGR1, TQ3-PWR1, NEW-14, NEW-13 (keep NEW-10 dependency). DECLINED: EXL3-X0D \"not worth it\"; EXL3-LB1E; EXL3-EAR2; SLQ checkpoint download (A-L2). PENDING: NEW-12 (disk question); M1-M4 and K1-K2 not addressed.",
+      "disposition": "planned",
+      "plan_ref": "P2",
+      "reason": "Applied as the partial Stage-4 below."
     }
   ],
   "actionable_ledger": [
@@ -62377,5 +62386,55 @@
     "proposed_session": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/stage3/proposed-session.json",
     "status": "presented, NOT approved; Stage 4 not run",
     "builder": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/scripts/build_plan.py"
+  },
+  "stage4": {
+    "reconciled": false,
+    "status": "partial",
+    "completed_at": null,
+    "plan_sha256": "db108374cd1bd164e5baaac2586b9d3abf26daaba46aec4085192e4b0c0232ad",
+    "applied": {
+      "tasks": [
+        "EXL3-EAR1",
+        "VB-QUANTCMP-WIRE",
+        "EV-DEGR1",
+        "TQ3-PWR1",
+        "NEW-13",
+        "NEW-14"
+      ],
+      "adapter_readme_row": "scripts/vidya/adapters/README.md (quant-comparison receipts)",
+      "entry_updates": [
+        "intake-2461",
+        "intake-2462",
+        "intake-2464",
+        "intake-2467",
+        "intake-2481",
+        "intake-2483",
+        "intake-2484",
+        "intake-2485",
+        "intake-2491"
+      ]
+    },
+    "text_adjustments": [
+      "EXL3-EAR1: \"measurements ride EXL3-X0D Step 1\" -> next scheduled KLD pass (NEW-10/NEW-13), X0D declined",
+      "VB-QUANTCMP-WIRE: \"before EXL3-X0D Step 1 runs\" -> \"before the first EAR-bearing run (EXL3-EAR1)\"",
+      "NEW-14: \"NEW-10, NEW-12 and T2\" -> \"NEW-10 and T2 (and NEW-12, if approved)\"",
+      "all six: provenance \"operator-approved 2026-10-22\" added"
+    ],
+    "declined_by_operator": [
+      "EXL3-X0D",
+      "EXL3-LB1E",
+      "EXL3-EAR2",
+      "A-L2 SLQ checkpoint download"
+    ],
+    "pending_operator": [
+      "NEW-12 (P3; disk question)",
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "K1",
+      "K2"
+    ],
+    "note": "stage3_filing not persisted: the approved plan is a subset of the presented payload, so the v2 Stage-4 plan-mode check is run only once the pending items are ruled and a final payload is cut."
   }
 }
