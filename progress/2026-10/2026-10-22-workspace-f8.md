@@ -124,3 +124,21 @@ Orchestrator branch `f8/locals-a-orch-20261022` (6 commits on origin/main `1e707
 - VB-LB1: four aggregate-only source rows in `scripts/vidya/adapters/README.md`; adapter follow-up VB-LB1.1.
 - NIB2-LB1.1: `backup_coverage.py precondition` plus the rule in `cleanup-reference-check.md`; wiring it into the opencode
   event reaper (NIB2-LB1.2) waits on UTM-LB1.D (the extract fallback would be a copy job, which the ruling forbids).
+
+## Locals + beacon zero-compute AK / serving-prep tasks (agent locals-c, worktree `f8-locals-c-root`, branch `f8/locals-c-root-20261022`)
+
+Seven filed tasks done, all zero-compute (no server, no weights, no build, no GPU). Research commits on branch `f8/locals-c-research-20261022` (unmerged, unpushed): `0eea263b4` INF37-LB1, `f8df555cf` AK-PORT-LB1, `b9d43a4a2` AKX-ALL-LB2, `c38ef247b` KPF-LB2, `8b545b228` DS-LB1 ordering log, `65152c086` DS-LB1/UFH14-LB5 prefix-property tests. Campaign store (not git): `50-locals-smallbatch-ports-20261022.md` written to the 27B GPU campaign `store/inbox/` and mirrored into the np1-r12 store's inbox.
+
+| Task | Result |
+|---|---|
+| AKX-ALL-LB1 | Inbox file written (seeds 50.1-50.6, H4 loader-concat evidence, do-not-reseed list, standing rule); `read_inbox` lists it. |
+| AKX-ALL-LB2 | `loop/production_surfaces.py` (N=8/16/32 + ragged {1,8,8,8}; N=8-only keep = not-yet-transferable). Recipe JSON unchanged on purpose (strict dataclass + content hash). |
+| AK-PORT-LB1 | `loop/noise_relative_tolerance.py` + `gates.check_noise_relative_tolerance`, 17 tests. |
+| INF37-LB1 | Static ISA audit on the v10 kernel-store HIP library: Q8_0 and IQ4_XS weight loads hoisted (3/row flat, ncols 1..8); Q4_K re-issues 3 ushort scale loads per column (6 -> 27 per row at ncols 8) and unpacks per column; ncols 4 hoisted by the existing b4 path. |
+| KPF-LB2 | Harness amended before the first live arm; finding: the original sample's 7 "claude" sessions are all sub-agent transcripts; store-wide child share of requests 73.6 %. PREDECLARED.md Amendment 1. |
+| DS-LB1 | Prefix-property tests + arrival_seq / accumulated-service log in the replay. |
+| UFH14-LB5 | All as-served templates hold the prefix property at enable_thinking=false; stock Qwen3.6-35B embedded template fails (drops the empty think block from history), which the terse override fixes. |
+
+Index rows PREPARED, NOT APPLIED (owning session applies): `INF-81` next action add "AKX-ALL-LB2.1 (measure N=16/32/ragged for the first 27B keep; MI210 window)"; `RTG-58` add "KPF-LB2.1 opencode V2 real-row check; KPF-LB2.2 recalibrate E/F knobs at the first live arm"; `INF-06` add "AK-PORT-LB1.1 wire the noise-floor gate into the first multi-row candidate"; `UFH-14` add "UFH14-LB5.1 live-server confirmation of the static template result". INF-37 and RTG-11 need no change.
+
+Pre-existing reds observed, not caused here: `test_campaign_footprint` (three loop modules without a FOOTPRINT row plus totals drift); KPF-64 `test_launcher_*` need `KPF64_PORT=31111` because ports 18964/18971 have listeners on this host.

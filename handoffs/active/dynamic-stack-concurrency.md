@@ -62,7 +62,8 @@ earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.m
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
-- [ ] **DS-LB1 — Add tokenizer-only prefix-property tests with captured-client fixtures (turn k+1 extends turn k; two sessions share the system trunk) as the static guard for the prefix-stability assumption, and log per-session accumulated service time next to arrival order in the N-session replay so the admission ordering key can be compared offline (intake-2386, intake-2430).**
+- [x] **DS-LB1 — Add tokenizer-only prefix-property tests with captured-client fixtures (turn k+1 extends turn k; two sessions share the system trunk) as the static guard for the prefix-stability assumption, and log per-session accumulated service time next to arrival order in the N-session replay so the admission ordering key can be compared offline (intake-2386, intake-2430).** ✅ 2026-10-22
+  - *(2026-10-22, workspace-f8 / locals-c.)* Both halves landed on the research branch `f8/locals-c-research-20261022` (worktree `/mnt/raid0/llm/worktrees/f8-locals-c-research`, unmerged, unpushed). (a) Prefix-property tests `scripts/benchmark/prefix_property/` (`65152c086`): reply-prefix, token-prefix and shared-system-trunk over four synthetic captured-client fixtures (tool loop, its trunk-sharing partner, plain chat, REPL code lines), using the v10 `test-chat-template` jinja engine and `llama-tokenize` (`vocab_only`, ~100 MB RSS, <1 s per GGUF) from the kernel store; 22 tests, expected outcomes pinned per role. (b) The N-session replay now logs `arrival_seq` and per-session accumulated service time (`svc_before_ms`, `svc_ms`, `svc_after_ms`), and `analysis.ordering_report` computes the FCFS-vs-least-accumulated-service disagreement share offline (`8b545b228`, 2 tests). No live replay has run yet, so no disagreement number exists.
 
 ## Dependency Graph
 
