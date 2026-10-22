@@ -349688,3 +349688,872 @@
     effect: unaffected
     note: fresh claim
   depends_on: []
+- id: intake-2434
+  arxiv_id: null
+  url: https://github.com/callanjfox/agentic-coding-analysis
+  source_type: repo
+  title: 'agentic-coding-analysis: KV-cache analysis tools for Claude Code proxy captures (builds the WEKA/SemiAnalysis block-hash
+    traces)'
+  categories:
+  - kv_cache
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2417
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Callan Fox (callanjfox)
+  key_claims:
+  - 'MIT-licensed (LICENSE, Callan Fox 2025) generator behind the kv-cache-tester traces: joins claude-code-proxy request
+    captures (requests.db) with Claude Code''s local JSONL transcripts; emitted traces carry block hashes, never message text.
+    BUT the repo itself ships a content-bearing worked example (examples/jsonl: 1 parent + 4 sub-agent transcripts, 1.3 MB
+    parent; examples/requests.db 13 MB) so the raw Claude Code JSONL and proxy-DB schemas are readable first-hand.'
+  - 'Exact tokenisation/normalisation (build_minimal_traces.py MinimalTraceBuilder, kv_common.py): per request the three sections
+    tools, system, messages are each normalised (recursive drop of any dict key named cache_control or signature), serialised
+    with json.dumps(separators=('','','':'')) WITHOUT sort_keys, and encoded separately with tiktoken gpt-4 (disallowed_special=());
+    the three token lists are concatenated tools->system->messages and cut into block_size-token blocks (argparse default
+    64; class docstring still says 256), full blocks only, remainder discarded. So block identity is the GPT-4 tokenisation
+    of the Anthropic WIRE JSON, not of a rendered chat template and not of the served model''s tokenizer.'
+  - 'Block hash: sha256(f''{salt}:{prev_hash}:{seq_num}:'' + '' ''.join(token ids)) truncated to 16 hex chars, chained on
+    the previous block''s hash starting from prev=''0''; each distinct hash gets the next integer id in first-seen order.
+    Position is part of the hash, so equal ids imply equal full prefix, not merely equal block content.'
+  - 'A GLOBAL (cross-conversation) id mode exists in code and is the DEFAULT: main() builds one shared_hash_state {hash_to_id,
+    next_id, salt} for the whole batch (commit 8b291c9, 2026-03-27 ''Implement global hash_ids''), --local-hash-ids opts into
+    per-conversation maps, and the emitted hash_id_scope field records which. The docs are stale/self-contradicting at this
+    commit: README ''Future Work'' still lists ''Global hash_ids'' and docs/TRACE_FORMAT.md says IDs are ''Currently ... per-conversation'',
+    while the README trace-format section and both shipped sample traces say hash_id_scope ''global''. The Stage-1 premise
+    ''global scope is future work and no published trace uses it'' is therefore wrong for code and for at least the SemiAnalysis
+    swebench-cc-traces-anon set (see entry for that dataset).'
+  - Salt is secrets.token_hex(16) generated once per build run and never written out; in global mode the same salt and one
+    id map span every conversation AND every sub-agent builder in the run (process_subagent receives the same shared_hash_state),
+    so ids are consistent across all traces of one batch but not across batches. Parent and sub-agent therefore share one
+    namespace in the generator, contradicting TRACE_FORMAT's 'sub-agents run in isolated cache contexts' (that sentence describes
+    the replay model, not the id space).
+  techniques:
+  - position-chained block hashing
+  - salted hash anonymisation
+  - proxy-DB + JSONL transcript join
+  - global vs per-conversation id namespaces
+  reported_results:
+  - 'README: simulated within-conversation cache hit ~97.7% avg vs API-actual ~99.6% avg (gap ~1.9pp), measured on pre-cch
+    Claude Code versions (restatement; not reproduced)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2417
+    - intake-2418
+    - intake-2389
+  credibility_score: 2
+  contradicting_evidence:
+  - Docs vs code disagree on hash-id scope (README Future Work and TRACE_FORMAT 'per-conversation' vs code default global);
+    docs vs code disagree on block size (class docstring 256, argparse default 64); published anon traces carry _analysis/_start_ts
+    keys that anonymize_trace() would strip, so they were not produced by the final --anonymize path.
+  notes: 'Read: repo shallow-then-unshallow clone @15e88f72f902 (full git log, 27 commits, read); sha256-12: README.md 2dea8db02f6f,
+    TRACE_FORMAT.md 5e240e08781d, kv_common.py fdef0d641e05, build_minimal_traces.py 68397cb2f7bd, LICENSE 1438a2fa9ffb. Read
+    in full: kv_common.py; build_minimal_traces.py L1-370, L520-560, L775-810, L970-1125 (rest by grep); README; TRACE_FORMAT.
+    Sampled: examples/jsonl/02f3098e... (323 JSONL records, key census only; Claude Code v2.1.83), examples/requests.db schema.
+    NOT read: complete_cache_visualizer.py (81 KB), recover_conversations.py, validate_trace_cache.py, REPLAY_INTEGRATION/CACHE_BEHAVIOR/DATA_SOURCES
+    prose beyond greps, the 3 visualization HTMLs.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read build_minimal_traces.py (full relevant paths), kv_common.py,
+    README, TRACE_FORMAT at 15e88f72f902. OVERTURNS the carried-over premise that a global (cross-session) id mode does not
+    exist in code: it exists, is the default since commit 8b291c9 (2026-03-27), and the stale docs are what say otherwise.
+    It does not make the published WEKA set cross-session (those carry hash_id_scope local per intake-2417/2418), but the
+    anon swebench set uses global (see its entry).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: ev/aca/LICENSE:L1 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD,
+      2026-04-14)
+    quote: MIT License
+    quote_sha256: abb2896dc3c2a9402f901b88d5035cf0a83d5cf7c17e73642cdf562b0b9d3bc5
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: README.md:L167 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    quote: Traces are compact JSON files capturing cache block structure without actual message content.
+    quote_sha256: b4b2fb5355f6a1a0e5275597822020ffbdb078f0b2d3d45c9e18f2ad73b34abc
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: README.md:L47 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    quote: '- `examples/jsonl/` — JSONL conversation files from Claude Code''s local storage (1 parent + 4 sub-agent files)'
+    quote_sha256: 20788c2f10406039f2db21714f021a75d0afb13fb6b4833be81bb3bac0cb10d8
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: build_minimal_traces.py:L122 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: text = json.dumps(normalized, separators=(',', ':'))
+    quote_sha256: 0df48e5bb3e50446e98e6b0bd6f8e25f13d91321133e98b8929a148572b6fcf8
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: build_minimal_traces.py:L123 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: return self.tokenizer.encode(text, disallowed_special=())
+    quote_sha256: 0bec43de4f9efc47b4e8850d121178e5f0c356d790b323b59b67b9f3d5cfc140
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: build_minimal_traces.py:L261 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: all_tokens = tools_tokens + system_tokens + messages_tokens
+    quote_sha256: 9c94aefeae94b6eb1cbd7be4c7da3ab0d8f091ba2d7e602bc23eec9d807678ba
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: build_minimal_traces.py:L1004 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: 'parser.add_argument(''--block-size'', type=int, default=64, help=''Token block size (default: 64, only full blocks)'')'
+    quote_sha256: 49ebe5948f587535d3f6db6e7f7bbb023f8df9da7655f3d7b2dc7d8930728a82
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: build_minimal_traces.py:L96 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: content = f"{self.salt}:{prev_hash}:{seq_num}:" + " ".join(map(str, token_ids))
+    quote_sha256: 02b34e2aa3430e2e4862f921b19a3aae49b03bdf5a77fb6755d59011cf07bf31
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: build_minimal_traces.py:L97 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: return hashlib.sha256(content.encode()).hexdigest()[:16]
+    quote_sha256: 005ed473930efa7c456fdcbbffa79b4c758587fdec5e48312a4cb4331f93cafe
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: build_minimal_traces.py:L1043 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: '# Global (default): shared across all conversations — same content = same ID.'
+    quote_sha256: c38d6c5c32b92b6222299539c98f0de3fc3eaba1ad721b970710e61eed41ebf2
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: build_minimal_traces.py:L1013 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: help='Use per-conversation hash_ids instead of global (each conversation gets its own ID namespace)')
+    quote_sha256: c4a7807c14f6ae0c8537d33a4ae9d8c6ff0f42c4df1066dbbf959255ed5b976b
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: docs/TRACE_FORMAT.md:L113 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: Currently, IDs are assigned **per-conversation** — the same content in different conversations gets different numeric
+      IDs.
+    quote_sha256: e7a16f902303587420d884bd9fbca583c9344d5567692f98761938edb35d9af4
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: README.md:L258 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    quote: '- **Global hash_ids** — Share hash-to-ID mapping across conversations so traces have common IDs for shared prefixes,
+      enabling cross-conversation cache simulation'
+    quote_sha256: 3e5e985d7d9d52e8feb17676e63f3360d27e8a3b663e1edfb46af626f138dbbe
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: build_minimal_traces.py:L1050 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: 'shared_hash_state = {''hash_to_id'': {}, ''next_id'': 1, ''salt'': global_salt}'
+    quote_sha256: 9c10c135fee3d811f605362e628a063d6e136f48fe66df9d41e225d11e0857a9
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: build_minimal_traces.py:L791 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: builder = MinimalTraceBuilder(args.block_size, shared_hash_state=shared_hash_state, salt=salt)
+    quote_sha256: 5313a31b1ecf7666e0e608473b8af35ce53173631eee051f0113dd8c0ff45945
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: docs/TRACE_FORMAT.md:L202 @ callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master
+      HEAD, 2026-04-14)
+    quote: 'Sub-agents run in **isolated cache contexts**:'
+    quote_sha256: 4fade47c8af2260512ef605b57a4773d465ba5e8393d2ace6eff48f126830a3b
+    source_revision: callanjfox/agentic-coding-analysis@15e88f72f902c7852c330caf2cc11722e5dbc1aa (master HEAD, 2026-04-14)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Repo is a generator; the stage-1 note that traces carry no text is right for outputs but the repo's examples/ DO
+      carry real transcripts and a proxy DB.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Fresh claim: exact tokenisation read from code (wire JSON, GPT-4 BPE per section, 64-token full blocks).'
+  - claim_index: 2
+    effect: unaffected
+    note: Hash construction read from code; matches TRACE_FORMAT description.
+  - claim_index: 3
+    effect: overturned
+    note: intake-2417 claim 2 said global scope is documented future work with no code/trace; code default IS global since
+      2026-03-27.
+  - claim_index: 4
+    effect: narrowed
+    note: 'Salt/namespace scope: batch-wide, includes sub-agents in generator; docs'' isolated-cache sentence is about replay
+      semantics.'
+  depends_on: []
+- id: intake-2435
+  arxiv_id: null
+  url: https://huggingface.co/datasets/semianalysisai/swebench-cc-traces-raw
+  source_type: repo
+  title: semianalysisai/swebench-cc-traces-raw and -anon (Claude Code Agent-SDK SWE-bench traces; raw = full request content,
+    anon = global-scope block hashes)
+  categories:
+  - kv_cache
+  - benchmark_methodology
+  - agent_architecture
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2418
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - SemiAnalysis (semianalysisai)
+  key_claims:
+  - 'Two HF datasets created 2026-03-31, no dataset card, no licence tag, not gated: -anon (10 per-session JSON files, 138-871
+    KB each, plus data/train.jsonl 4.5 MB) and -raw (a single data/train.jsonl of 188,947,373 bytes; the brief''s ''~10 MB
+    each'' is wrong for raw). Licence is NOT-FOUND-IN-SOURCE (the sibling cc-traces-weka-* cards say Apache-2.0, these two
+    do not).'
+  - 'The -raw set DOES carry full prompt content: each request object holds the complete Anthropic request, i.e. ''system''
+    text blocks (the Claude Code system prompt), ''tools'' (full JSON schemas, ~99 KB for ~22K tokens) and ''messages'' (user
+    text incl. a SessionStart plugin-hook dump, then growing assistant/tool_result turns), plus t/type/model/in/out/stop/api_time/think_time;
+    header fields block_size -1 and hash_id_scope '''' (no hash_ids). Sessions are automated Claude Agent SDK runs (cc_entrypoint=sdk-cli,
+    cc_version 2.1.87, claude-sonnet-4-6), not interactive developer sessions. This is the only public Claude Code trace set
+    we found that supports real prefix-content analysis, but only ~10 sessions.'
+  - 'Within one raw session (6 requests in the 1 MB head, 5 parsed complete) tools and every system block except the first
+    are byte-identical across requests and ''messages'' is append-only (each request''s message list starts with all earlier
+    ones), but the FIRST system block is ''x-anthropic-billing-header: cc_version=...; cc_entrypoint=sdk-cli; cch=<5 hex>;''
+    and its cch value differs on EVERY request (6 distinct values in 6 requests). Any consumer that hashes or sends the system
+    array verbatim therefore sees a prefix that diverges at the start of the system block (~token 22,005 here) on every request.'
+  - 'The -anon files are hash-only and use hash_id_scope ''global'' with one shared counter (e92e41ef-3a9: _analysis.unique_blocks
+    482,629 while the trace has 19,616 block references and 11,704 distinct ids; ids 1-344 are the tools-prefix blocks, later
+    blocks are ~471K+). This contradicts the carried-over ''no published trace uses global scope''. In that trace, all 23
+    consecutive request pairs share exactly the first 344 blocks (the tools prefix plus the first 11 system tokens) and then
+    diverge, so its trace-derived prefix-match hit is 7,912/19,616 = 40.3% (README/cards of the older sets report ~96%), consistent
+    with the per-request cch value (not token-level reproduced).'
+  - 'Cross-session shared head is large and measurable even without content: tool_tokens is 22,005 in both a raw session (04460f06-405)
+    and an anon session (e92e41ef-3a9); system_tokens 6,149 vs 6,141 (differs by the session-specific bits). So ~28K tokens,
+    ~59% of a 47K-token first request, are identical across sessions of the same Claude Code build and configuration, which
+    a prefix cache could serve from one copy.'
+  techniques:
+  - content-bearing agent trace corpus
+  - global-scope block-hash ids
+  - cross-session shared-head measurement
+  reported_results:
+  - 'measured by us from one anon file: prefix-match hit 40.3% (7912/19616) on e92e41ef-3a9; common prefix 344 blocks for
+    23/23 consecutive pairs'
+  - 'measured by us from raw head: 5 complete requests parsed, tools+system(excl. header) identical, messages append-only,
+    6/6 distinct cch values'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2417
+    - intake-2418
+    - intake-2389
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Only 10 sessions, all automated SWE-bench-style Agent SDK runs from one lab; no interactive/dev-harness behaviour (no
+    human think time, no AskUserQuestion). The cch->divergence causal link is inferred from one anon session plus six header
+    strings in a different raw session, not reproduced at token level. Licence undeclared: reading for research is fine, copying
+    into repos is not.'
+  notes: 'Fetched 2026-10-22 10:02Z: api_swebench-cc-traces-{anon,raw}.json (sha256-12 in ev), tree listings, anon_e92e.json
+    sha256-12 d6269f07d314 (full), raw_head1MB.bin sha256-12 b42bc1157ccb (bytes 0-1048575 of data/train.jsonl, Range request
+    at commit 5e58e822). NOT read: the other 9 anon files, anon train.jsonl, the remaining ~188 MB of raw (row count unverified;
+    10 sessions inferred from the anon file list), any sub-agent content (e92e41ef-3a9 has subagent_count 0).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2418 left swebench-cc-traces-* unread (''no card'').
+    Read: HF API for both, one 138 KB anon file in full, 1 MiB head of raw. Established that raw carries full request content
+    (the only public CC trace set with content found so far), that anon uses global scope, that there is no licence declared,
+    and that a per-request cch billing-header value sits at the head of the system block. Deviation from the brief''s ''at
+    most one small file'': two samples were fetched (138 KB anon + 1 MiB raw head, 1.14 MB total, still under the 2 MB cap).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: HF API siblings (raw):L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"siblings":[{"rfilename":".gitattributes","blobId":"720a35da59f9430e2b912cd6b6fb2af99d683ba7","size":2557},{"rfilename":"data/train.jsonl"'
+    quote_sha256: 896d082be0bd5b85c6878cba88b5252e62d13e498565e319e83dc0babbc6a1c6
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: HF API tags (raw):L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"tags":["size_categories:n<1K","format:json","modality:tabular","modality:text","library:datasets","library:pandas","library:polars","library:mlcroissant","region:us"]'
+    quote_sha256: 5cf93fcb286fa07e87a606ff47d8abb113ee2984b576ea3f873073b2d6209fc9
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: HF API (raw):L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"size":188947373'
+    quote_sha256: 5d7f7b6f6319d049d428d852d0e36aa6cb65b9e2c2d12930242076cbdd8c08d9
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: raw data/train.jsonl bytes 0-1048575:L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"block_size":-1,"hash_id_scope":""'
+    quote_sha256: e4acf2a6a31d5ec7e7dba931e6711fd2b99963b63957105328608d63ad9dd0e0
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: raw data/train.jsonl bytes 0-1048575:L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: cc_entrypoint=sdk-cli
+    quote_sha256: 8a16a128343563618883a2c259389003fdde6096752f16f522d65c1d48c807af
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: raw data/train.jsonl bytes 0-1048575:L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"messages":[{"role":"user","content":[{"text":"<system-reminder>\nSessionStart:startup hook success:'
+    quote_sha256: cac87abda9d07250bbe053e14b8f697f98de0395ca6832a063243cbf871785b3
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: raw data/train.jsonl bytes 0-1048575:L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: 'x-anthropic-billing-header: cc_version=2.1.87.6d6; cc_entrypoint=sdk-cli; cch=d8d52;'
+    quote_sha256: 6d6a7dd1998ab8e21007a1e85ccc23f8334a260b658e911c40952ed7a91950db
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: raw data/train.jsonl bytes 0-1048575:L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: 'x-anthropic-billing-header: cc_version=2.1.87.6d6; cc_entrypoint=sdk-cli; cch=6c44f;'
+    quote_sha256: 7d2df83593a039793d987fb1bfd2cff0eef79e1d3d9d4730dbf8e560df874e94
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: anon e92e41ef-3a9.json:L5 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"hash_id_scope": "global",'
+    quote_sha256: cfa44ccc6e97ae0d8d5630f46e7c6af032669a9bd6f645a6a806b473616569e5
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: anon e92e41ef-3a9.json:L326 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"unique_blocks": 482629'
+    quote_sha256: 28b209f178bd64a2963926f51cc35d6550b69069ad2e6d75091c380df077d830
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: raw data/train.jsonl bytes 0-1048575:L1 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"tool_tokens":22005,"system_tokens":6149'
+    quote_sha256: f3493dc89a52f0b9762621a3f64f07f44eed5071e15f6c920907ad5ca43c471d
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: anon e92e41ef-3a9.json:L6 @ huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d}
+      retrieved 2026-10-22
+    quote: '"tool_tokens": 22005,'
+    quote_sha256: 6ca1768251174f9c058867906505097fe9bc894478048d85b1b9083475e4d80f
+    source_revision: huggingface.co/datasets/semianalysisai/swebench-cc-traces-{anon@0ca9c2a20c15,raw@5e58e822d11d} retrieved
+      2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Fresh: HF API tree/siblings read; sizes and absence of card/licence verified; raw size corrects the brief.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Fresh: raw content presence verified by reading the 1 MB head.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Fresh: 6 distinct cch values in 6 requests; remaining system/tool bytes identical across the 5 parsed requests.'
+  - claim_index: 3
+    effect: overturned
+    note: Overturns intake-2417/2418 'no published trace uses global scope' for this pair; also shows the trace-derived hit
+      rate can collapse (40.3%) when the header block is hashed.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Fresh: shared-head size from tool_tokens/system_tokens of two different sessions.'
+  depends_on: []
+- id: intake-2436
+  arxiv_id: null
+  url: https://learn.chatgpt.com/docs/config-file/config-advanced
+  source_type: blog
+  title: Codex CLI OpenTelemetry export ([otel] config, codex.* log events, spans, metrics) - docs plus codex-rs/otel source
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - knowledge_management
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2419
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - OpenAI (Codex team)
+  key_claims:
+  - 'Codex OTel is opt-in and split in three pipelines under [otel]: logs (exporter = none | otlp-http | otlp-grpc, default
+    none), traces (trace_exporter, same choices) and metrics (metrics_exporter = none | statsig | otlp-http | otlp-grpc, default
+    statsig; analytics.enabled=false also disables custom OTLP metrics exporters). Both docs URLs now redirect from developers.openai.com/codex/
+    to learn.chatgpt.com/docs/config-file/.'
+  - 'Documented log events: codex.conversation_starts, codex.api_request, codex.sse_event (token counts on response.completed),
+    codex.websocket_request/event, codex.user_prompt (length; content redacted unless otel.log_user_prompt), codex.tool_decision,
+    codex.tool_result (duration, success, output snippet); metadata: service name, CLI version, env, conversation id, model,
+    sandbox/approval. The metrics catalog adds turn.e2e_duration_ms, turn.ttft.duration_ms, turn.token_usage {total,input,cached_input,output,reasoning_output},
+    tool.call(.duration_ms), task.compact (remote|local), thread.fork, approval.requested, mcp.call, hooks.run.'
+  - 'The source exposes more than the public docs: codex.turn_ttft, codex.turn_cost (usage.estimated_usd), codex.skill_invocation,
+    and two opt-in content logs, otel.log_agent_responses (codex.agent_response: completed final answers of main and sub-agents,
+    capped at 65,536 bytes, with agent.type main|subagent, parent.conversation.id, root.turn.id, initiating.agent.path) and
+    otel.log_guardian_assessments; otel.span_attributes / otel.tracestate configure span attributes and W3C tracestate. None
+    of log_agent_responses, span_attributes or tracestate appears on the two public docs pages read (NOT-FOUND there).'
+  - 'Content gating differs from Claude Code''s four-gate model: otel.log_user_prompt gates only the user prompt text; the
+    codex.tool_result LOG event always carries the tool call ''arguments'' and an output preview capped at ToolResultLogConfig.max_bytes
+    = 2048 by default, while the TRACE copy of the same event carries only arguments_length, output_length, output_line_count,
+    tool_origin. A log-only target (codex_otel.log_only) is kept out of trace export, local state logs and the feedback buffer.'
+  - 'Codex spans already use the current GenAI names for usage: the handle_responses span records gen_ai.usage.input_tokens,
+    gen_ai.usage.cache_read.input_tokens, gen_ai.usage.cache_write.input_tokens and gen_ai.usage.output_tokens (plus codex.usage.reasoning_output_tokens
+    / total_tokens); Claude Code''s docs say it sets no gen_ai.usage.* and exports input_tokens EXCLUDING cache, and its llm_request
+    span uses model, gen_ai.system(old), gen_ai.request.model, gen_ai.response.id, gen_ai.response.finish_reasons. Whether
+    Codex input_tokens includes cached tokens (as semconv wants) was not verified in code.'
+  - 'Codex emits a client-side prefix-reuse signal: codex.websocket.continuation counts response.create send attempts with
+    mode incremental|full, phase warmup|generation and a reason (incremental, no_previous_request, restored_history, connection_closed,
+    other); the README states it measures client send attempts, not engine cache reuse.'
+  techniques:
+  - opt-in OTel export with log/trace content split
+  - per-turn token_usage histogram by type
+  - client continuation-mode counter
+  - agent lineage attributes (parent.conversation.id, root.turn.id)
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2403
+    - intake-2419
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Public docs lag source: log_agent_responses, span_attributes, tracestate and the tool_result preview limit are source-only.
+    Exact span names for the trace pipeline are NOT documented (only the handle_responses span name was seen in code); no
+    span taxonomy comparable to claude_code.interaction/llm_request/tool was found.'
+  notes: 'Docs fetched with curl 2026-10-22 10:04Z (HTTP 200 after redirect to learn.chatgpt.com): config-advanced.html sha256-12
+    70f7a22f39ec, config-reference.html 63af3bc4c8b9; tags stripped to text with a regex (ev/codex/*.txt), read the Observability/metrics
+    sections and all otel.* reference rows. Source: sparse partial clone of openai/codex @b337fe06 (codex-rs/otel only) +
+    raw fetch of codex-rs/protocol/src/config_types.rs. Read: otel README.md (all), tool_result.rs (all), targets.rs, session_telemetry.rs
+    L370-460, L586-672, L1165-1200, L1255-1300 and greps. NOT read: provider.rs, metrics/*, trace_context.rs, tests/, codex-rs/core
+    where spans are created, the Codex rollout-trace writer mentioned in a tool_result.rs comment, the TOML key that sets
+    the 2048-byte limit. Claude Code comparison uses intake-2419''s file (monitoring-usage.md sha256-12 84f37844a930, re-fetched
+    and greppped).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2419 recorded only that Codex has an [otel] log option;
+    this read establishes the full surface (three pipelines, event list, metrics catalog, source-only extras, content gating,
+    gen_ai.usage.* on spans). Note the brief called the Claude Code monitoring docs intake-2418; the index id is intake-2419
+    (2418 is the HF cc-traces-weka family).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: config-advanced:L1572 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: Enable OpenTelemetry (OTel) log export to track Codex runs (API requests, SSE/events, prompts, tool approvals/results).
+      Disabled by default; opt in via
+    quote_sha256: 4d5510f11a05253daedab3186041f1911fe58c8627237171d21584ea6e0ffa5f
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: config-reference:L2066 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: Select the OpenTelemetry metrics exporter (defaults to
+    quote_sha256: 7108c6d0e26a47c7415baafa4465f14535aff8bff12ca2b79062872a1e8a9b77
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: config-reference:L2075 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: Select the OpenTelemetry trace exporter and provide any endpoint metadata.
+    quote_sha256: 9ab5541184b4cc38c114feb7096b9578c79164292b77f2c5312a77932d5929ab
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: config-advanced:L1637 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: (duration, success, output snippet)
+    quote_sha256: cdeffd097763da166292b78102e0d45cfd678b317b8633485be9337d43941275
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: config-advanced:L1917 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: Per-turn token usage by token type (
+    quote_sha256: 5f0a66c2afaed4d274d28687957f181a6d8dd01e18bde26c25d803afbd008c64
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: codex-rs/otel/src/events/session_telemetry.rs:L444 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel
+      + codex-rs/protocol, 2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved
+      2026-10-22 (sha256-12 70f7a22f39ec, 63af3bc4c8b9)
+    quote: event.name = "codex.turn_cost",
+    quote_sha256: 756b6f6897ac0055996f8f49fed4cc31d86193d437258eddb5b69c7fd8f9ebe5
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: codex-rs/otel/README.md:L127 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: Set `otel.log_agent_responses = true` with an OTLP HTTP or gRPC log exporter to
+    quote_sha256: a67ba1abd717c1d6fad573196991f31bed466a985c2dd7838e6c6946a1e441a9
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: codex-rs/otel/README.md:L146 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: Available lineage includes `parent.conversation.id`, `parent.turn.id`,
+    quote_sha256: 3e7e3c9b4d67de865af910826c436257b3d9398f7d2f3daef3a87bce37f9c961
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: codex-rs/otel/src/tool_result.rs:L69 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel +
+      codex-rs/protocol, 2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved
+      2026-10-22 (sha256-12 70f7a22f39ec, 63af3bc4c8b9)
+    quote: arguments = %arguments,
+    quote_sha256: 3f4a7a86fd9ca23894a9a375fdce483496be9fd29bc66372ec471d2a23de76ce
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: codex-rs/protocol/src/config_types.rs:L30 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel
+      + codex-rs/protocol, 2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved
+      2026-10-22 (sha256-12 70f7a22f39ec, 63af3bc4c8b9)
+    quote: /// Maximum UTF-8 bytes before the truncation notice. Defaults to 2048.
+    quote_sha256: 2b3200aed37053f46d6a32c8a6d9d41eaa63c3b94d2a08c5cad2d31350c8f1cd
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: codex-rs/otel/src/targets.rs:L2 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: 'pub(crate) const OTEL_LOG_ONLY_TARGET: &str = "codex_otel.log_only";'
+    quote_sha256: 14784503c76f7381ed3e63ccef171a6ab89f44e646fc65411f4eccb6b9abf6f4
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: codex-rs/otel/src/events/session_telemetry.rs:L659 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel
+      + codex-rs/protocol, 2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved
+      2026-10-22 (sha256-12 70f7a22f39ec, 63af3bc4c8b9)
+    quote: '"gen_ai.usage.cache_read.input_tokens",'
+    quote_sha256: 02c8910db36c7faf08c35adbb3d498efa161fa461f12bad71822fed7b8ea5fce
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: codex-rs/otel/src/events/session_telemetry.rs:L663 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel
+      + codex-rs/protocol, 2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved
+      2026-10-22 (sha256-12 70f7a22f39ec, 63af3bc4c8b9)
+    quote: '"gen_ai.usage.cache_write.input_tokens",'
+    quote_sha256: 75741279dc3691290b628cf541908e1c4fbec42a3cd0f59b8437e10abbcf15a7
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: codex-rs/otel/README.md:L232 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: '`codex.websocket.continuation` counts `response.create` send attempts, including'
+    quote_sha256: 7494af0944eae43601a2676e81bc8d2d51a90652229984ee7c1cabb65c94f640
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: codex-rs/otel/README.md:L245 @ openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol,
+      2026-10-22); docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12
+      70f7a22f39ec, 63af3bc4c8b9)
+    quote: metric retains the first reset reason through reconnect failures and turn boundaries.
+    quote_sha256: 0d0628789dd0826363ffd8ba8e9e8314755c4ccd409ec1329cfe05c544203ba5
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (codex-rs/otel + codex-rs/protocol, 2026-10-22);
+      docs learn.chatgpt.com/docs/config-file/{config-advanced,config-reference} retrieved 2026-10-22 (sha256-12 70f7a22f39ec,
+      63af3bc4c8b9)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh; reference page confirms three exporters and defaults.
+  - claim_index: 1
+    effect: unaffected
+    note: Fresh; intake-2419 had read one sentence of this page only.
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh; source-vs-docs gap established by grep of both doc pages.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh; privacy asymmetry read from tool_result.rs.
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh; confirms intake-2403's observation that CC uses old gen_ai.system and no gen_ai.usage.*; Codex is closer
+      to current semconv.
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh.
+  depends_on: []
+- id: intake-2437
+  arxiv_id: null
+  url: https://github.com/anomalyco/opencode
+  source_type: repo
+  title: 'opencode observability: env-driven OTLP logs+traces in V2 (no GenAI semconv), AI-SDK experimental_telemetry flag
+    in V1'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2403
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - anomalyco / opencode contributors
+  key_claims:
+  - Canonical repo is github.com/anomalyco/opencode (github.com/sst/opencode redirects to it, HTTP 200 at the anomalyco URL;
+    MIT). HEAD c93aaae3 is the V2 rewrite (@opencode/cli 2.1.2).
+  - 'OpenTelemetry support EXISTS in V2 but is undocumented in the docs tree and driven only by environment: packages/cli/src/index.ts
+    passes OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_EXPORTER_OTLP_HEADERS to Observability.layer; with an endpoint set it ships
+    Effect logs to <endpoint>/v1/logs (OtlpLogger) and Effect spans to <endpoint>/v1/traces (OTLPTraceExporter + BatchSpanProcessor,
+    OTLP/HTTP only); resource attributes service.name=opencode, opencode.client, opencode.run, service.instance.id, deployment.environment.name
+    plus OTEL_RESOURCE_ATTRIBUTES. No config-file key.'
+  - 'The V2 spans are Effect-internal spans (SessionRunner.drain / runStep / publishLLMEvent ...), not GenAI-semconv spans:
+    git grep for gen_ai and experimental_telemetry over packages/ (excluding tests and recordings) returns nothing, and token
+    usage is written to the session store (SessionUsage.tokens), not to span attributes.'
+  - 'V1 (v1.14.25) had a config flag experimental.openTelemetry that turned on the Vercel AI SDK''s experimental_telemetry
+    (functionId ''session.llm'', metadata userId and sessionId) wrapped around an Effect tracer; V2 drops it: migrate-v1.mdx
+    lists ''openTelemetry'' among V1 experimental fields with no V2 behaviour and normalize.ts warns on it. So OTel behaviour
+    is version-dependent.'
+  - 'Storage schema also changed with V2 and matters more for the projector than telemetry: HEAD defines session_message(id,
+    session_id, type, seq, data json) for session history, while the KPF-64 adapter reads V1 tables message and part. The
+    host ~/.local/share/opencode/opencode.db (10.98 GB, mtime 2026-10-20) currently holds BOTH: message and part populated,
+    session_message present with 0 rows.'
+  techniques:
+  - Effect-TS OTLP layer
+  - env-var-only exporter config
+  - AI SDK experimental_telemetry
+  - event-sourced session store
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2403
+    - intake-2419
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Absence claims are bounded to the trees searched: HEAD c93aaae3 (git grep over packages/, services/www/src/docs, specs/,
+    README.md) and the single V1 file fetched at v1.14.25; the V1 tree was not searched for other telemetry uses.'
+  notes: 'Shallow partial clone (blob:limit=2m) of anomalyco/opencode @c93aaae37157 (234 MB, now deleted; evidence copied
+    to ev/oc). Searched: git grep -i -E ''opentelemetry|otel|otlp|experimental_telemetry|gen_ai'' over the whole tree; Tracer/Telemetry/withSpan
+    over packages/ (non-test); docs under services/www/src/docs and specs/. Read in full: packages/util/src/observability.ts,
+    observability/otlp.ts; excerpts: cli/src/index.ts, core/src/config/normalize.ts, core/src/session/sql.ts, migrate-v1.mdx.
+    NOT read: session/runner/*.ts bodies, specs/v2/session.md, packages/core/src/session/projector.ts, event schema. Host
+    DB: file:...opencode.db?mode=ro&immutable=1, table list + count(*) over LIMIT 100000 subqueries only.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2419 said ''opencode OTel NOT verified''. Established:
+    exists in V2 as env-driven OTLP logs+traces with Effect spans, no GenAI semconv; V1 had an AI-SDK telemetry flag now dropped.
+    NEW operational finding: V2 stores session history in session_message, which the KPF-64 adapter (reads message/part) does
+    not read.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: packages/cli/package.json:L3 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21;
+      CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: '"name": "@opencode/cli",'
+    quote_sha256: fb2e769f4184abf7f37654e01df4e1f229a709051e315aa1496b9c0090ff3d05
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: packages/cli/src/index.ts:L130 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21;
+      CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: 'endpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,'
+    quote_sha256: 8fa3fcc86d1f0e5e0d7421d33df77b2bf0a0b18f8c3fe7cff6313e8110b0055b
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: packages/util/src/observability/otlp.ts:L67 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD
+      2026-10-21; CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: 'url: `${options.endpoint}/v1/logs`,'
+    quote_sha256: 88e8fa70752d5e22db9a5c4020c1cdd7addc647a9f74d4a0deca22d568dcd03b
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: packages/util/src/observability/otlp.ts:L97 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD
+      2026-10-21; CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: 'url: `${options.endpoint}/v1/traces`,'
+    quote_sha256: 15909d5e507d03145b5eabd8a14d26254a67418e35d6a1f8dcaf5ea1835bab03
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: packages/core/src/session/sql.ts:L81 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21;
+      CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: '"session_message",'
+    quote_sha256: 3d178d887f89b655cf948eaf99fda81b2bb371b00f8d68fc6cd16c08773a7421
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: v1.14.25 packages/opencode/src/session/llm.ts:L403 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468
+      (HEAD 2026-10-21; CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: 'isEnabled: cfg.experimental?.openTelemetry,'
+    quote_sha256: 0dd68b3427b58db12a275012c1804026008db4853c457021876ae2d40c553035
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: services/www/src/docs/content/migrate-v1.mdx:L454 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468
+      (HEAD 2026-10-21; CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: '- V1 experimental fields `batch_tool`, `openTelemetry`, `primary_tools`, and `continue_loop_on_deny`.'
+    quote_sha256: 9b3382ee2f0eac1f44e124114118f067aa2016d6bd67a10f191d142593f1a97d
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: packages/core/src/session/sql.ts:L94 @ anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21;
+      CLI package 2.1.2) and tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    quote: uniqueIndex("session_message_session_seq_idx").on(table.session_id, table.seq),
+    quote_sha256: 0452863a383874f093af67abfa13e4df7c0b0e02a0432a23b543f2e7b2627a40
+    source_revision: anomalyco/opencode@c93aaae37157d785f76a8e9a9243a6560e286468 (HEAD 2026-10-21; CLI package 2.1.2) and
+      tag v1.14.25 (packages/opencode/src/session/llm.ts sha256-12 06cf2f5a5ad2)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Canonical-repo question settled by redirect test.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Fresh: existence established with file/line anchors; env-only config.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Fresh: absence of gen_ai.* and experimental_telemetry in V2 packages (trees searched named).'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Fresh: V1 flag read from the tag file.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Fresh: schema difference read from sql.ts; host DB inspected read-only (immutable=1), counts via LIMITed subquery.'
+  depends_on: []
