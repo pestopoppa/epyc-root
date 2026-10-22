@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-22T21:55:37Z",
+  "last_compile": "2026-10-22T21:57:27Z",
   "mode": "touch",
-  "scan_time": "2026-10-22T21:55:37Z",
+  "scan_time": "2026-10-22T21:57:27Z",
   "schema_version": 1,
-  "source_set_hash": "ba4ade53f088f9c75f28f0497c5d19cd463df4428e02fba9748d6e93f299ecef",
+  "source_set_hash": "2e603ee5b6b116375117db2fcbac20a079bf155fbefb45a4c1b2dc57397d5eb8",
   "sources": [
     {
       "content_hash": "9e8a567daaa33164cf276a6ffe9235a21c338954bb455ab14e204478698a8289",
@@ -1287,10 +1287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "674782cecf4bccb9542a1223c6436b052b3ac60590e82cccb9ab23eb31c2d769",
-      "modified": "2026-10-22T21:51:20Z",
+      "content_hash": "27b6ff4f90a4525f18d510a6ee61d715a73ad794ed29ab27ec54d6102c307f74",
+      "modified": "2026-10-22T21:56:10Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 96159,
+      "size": 100622,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
