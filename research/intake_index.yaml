@@ -348084,3 +348084,1607 @@
     effect: unaffected
     note: fresh claim
   depends_on: []
+- id: intake-2422
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/pull/17062
+  source_type: repo
+  title: 'Support LLGuidance Fast-Forward tokens via Speculative Decoding (sgl-project/sglang PR #17062, closed unmerged)'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2401
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - JC1DA
+  key_claims:
+  - 'Mechanism (llguidance_worker.py L69-L90 @ c3424b7): this is NOT a draft-then-verify scheme. Every decode step, for each
+    request the worker calls the grammar matcher compute_ff_tokens(), immediately accepts those tokens into the grammar and
+    appends them to the request output, and then runs ONE target forward in EXTEND (prefill) mode over [previously-sampled
+    token, ff tokens...]. Only the last position is sampled. The ff tokens are never compared with a model choice.'
+  - 'No rollback path exists because nothing is speculated: the 179-line worker file has zero occurrences of rollback/reject/verify/accept_len,
+    and KV bookkeeping commits len(ff)+1 slots per request unconditionally (L95-L96). Stop-condition / max-new-tokens handling
+    for the appended ff tokens is not visible in the diff (NOT-FOUND-IN-SOURCE; finish logic lives in code the diff does not
+    touch).'
+  - 'Batch > 1 (L80, L100-L128; schedule_batch.py hunks): if ANY request in the batch has ff tokens the whole batch is switched
+    to ragged EXTEND mode (requests without ff contribute 1 token), which needed fixes to keep extend_lens/prefix_lens consistent
+    in filter_batch/merge_batch. The algorithm is also an exclusive --speculative-algorithm choice (cannot be combined with
+    EAGLE/NGRAM) and create_worker raises ValueError under the overlap scheduler (test class runs with --disable-overlap-schedule).
+    No batch > 1 speedup was measured: batch size is NOT-FOUND-IN-SOURCE in the PR body.'
+  - 'Measured speedup (PR body, author-reported, single run, no repetitions stated): Llama-3.2-1B-Instruct on one RTX 3090,
+    JSONSchemaBench subsets, llguidance backend with vs without the speculator: TPOT 4.54->3.46 ms (Github_easy, 1.31x), 4.53->3.13
+    (Glaiveai2K, 1.45x), 4.52->3.63 (Kubernetes, 1.25x) (ratios are this dive''s arithmetic; the PR headline "1.24X to 1.44X"
+    truncates 1.447). Standard deviations in the table are as large as the means; batch size, forced-token share per task,
+    the baseline overlap setting and whether TPOT counts ff tokens as output are NOT-FOUND-IN-SOURCE. A 1B model at 4.5 ms/token
+    is host-overhead-dominated, so the ratio does not transfer to a bandwidth-bound big model.'
+  - 'Review record: 4 issue comments (a bot quota notice, two author pings to @Ying1123/@merrymercy/@hnyls2002/@xiezhq-hermann
+    and @ispobock, and the stale-bot close), 0 reviews, 0 inline review comments; closed unmerged 2026-08-19 by the stale
+    bot ("no updates in 196 days"). No maintainer objected on design grounds; none engaged at all.'
+  - 'Maintainer intent on record elsewhere (PR #4032 comment by zhyncs, 2025-03-03): after string-level jump-forward was removed
+    for maintenance reasons, a core maintainer said it "will be implemented using speculative decoding later on" by hnyls2002;
+    #17062 is that design, and hnyls2002 was pinged on it and never replied.'
+  techniques:
+  - ff-tokens appended as an EXTEND step (forced extension, no verify)
+  - llguidance compute_ff_tokens
+  - ragged extend batch with per-request extend_lens
+  reported_results:
+  - TPOT 4.54->3.46 / 4.53->3.13 / 4.52->3.63 ms on Llama-3.2-1B-Instruct, RTX 3090, JSONSchemaBench (PR author, unreviewed)
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2401
+    - intake-2388
+    - intake-2416
+    - intake-2415
+  credibility_score: 2
+  contradicting_evidence:
+  - 'intake-2388 (Breaking the Space Barrier) Sec. 7 / App. E.5, as recorded in the index: the forced-span gain shrinks as
+    batching makes a step compute-bound and disappears at 16 slots on an M2 Pro. This PR measured no batch > 1 point.'
+  notes: 'Read: pulls/17062 (body, 16 commits listing), pulls/17062/files, the .diff (sha256-12 91421d8765c3, 13.5 KB, all
+    7 files), issues/17062/comments (4), reviews and review-comments (both empty), sglang llguidance_backend.py at c3424b7
+    (accept_token logs a warning only on matcher error). NOT read: sglang tp_worker / sampler code that applies the vocab
+    mask after the ff step (assumed to see the post-ff matcher state, unverified), the CI test results, the 16 commit diffs
+    individually.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read the full 7-file diff of PR 17062. The speculator is a
+    forced-extension step with no verification and no rollback, not a draft/verify scheme; whole batch drops to EXTEND mode
+    if any request has ff tokens; overlap scheduler refused; speedups are single-run 1B/3090 numbers with no batch > 1 point;
+    no maintainer reviewed it.'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: python/sglang/srt/speculative/llguidance_worker.py:L87-L90 (new file in diff) @ c3424b7
+    quote: '# accept ff_tokens for token in ff_tokens: req.grammar.accept_token(token) req.output_ids.append(token)'
+    quote_sha256: 6a2ec7ac41da12aa79a1dadd9008bf238b80836e7630819c0cb587115e211fb2
+    source_revision: 'sgl-project/sglang PR #17062 head c3424b75fca2a11e6783dceef692b89cd2197178 (retrieved 2026-10-22; diff
+      sha256-12 91421d8765c3)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: python/sglang/srt/speculative/llguidance_worker.py:L95-L96 @ c3424b7
+    quote: req.kv_committed_len += len(ff_tokens) + 1 req.kv_allocated_len = req.kv_committed_len
+    quote_sha256: 6bcfb7170b5b6e77b15cecc79bf928429284c264efcc187535baafaa042c8839
+    source_revision: 'sgl-project/sglang PR #17062 head c3424b75fca2a11e6783dceef692b89cd2197178 (retrieved 2026-10-22; diff
+      sha256-12 91421d8765c3)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: python/sglang/srt/speculative/llguidance_worker.py:L80 @ c3424b7
+    quote: 'if max_ff_tokens_len > 0:'
+    quote_sha256: 3559c6d1c129c39f6400da40cf2394f3042aaffbaf6644f466a7310b74ec9c88
+    source_revision: 'sgl-project/sglang PR #17062 head c3424b75fca2a11e6783dceef692b89cd2197178 (retrieved 2026-10-22; diff
+      sha256-12 91421d8765c3)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: python/sglang/srt/speculative/spec_info.py create_worker hunk @@ -101,6 +105,15 @@ @ c3424b7
+    quote: 'if enable_overlap: raise ValueError( f"Speculative algorithm {self.name} does not support overlap worker creation."
+      )'
+    quote_sha256: 2bb7b42e8b7b0831ab5c4f1c546fa1a7d39f51e958588863c57f9904f7e0481c
+    source_revision: 'sgl-project/sglang PR #17062 head c3424b75fca2a11e6783dceef692b89cd2197178 (retrieved 2026-10-22; diff
+      sha256-12 91421d8765c3)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: 'PR #17062 body, "Benchmark Results Summary" (GitHub API pulls/17062, retrieved 2026-10-22)'
+    quote: achieved speedup ranging from **1.24X to 1.44X** (TPOP - time per output token) while maintaining the same accuracy
+      performance (i.e., coverage)
+    quote_sha256: 8a54f3945c537b589d60cf07a56a342b7b33b991645361b3c564ef94945ea4fa
+    source_revision: PR body, GitHub API sha256-12 73bf5b6e6d06 (gh_pull.json)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: 'PR #17062 issue comment 4/4 by github-actions[bot], 2026-08-19T01:32:37Z'
+    quote: Closing this because it has had no updates in 196 days.
+    quote_sha256: 846193d87e4b88d8cccd3bfa97958a5dd16a28bcc12534678beb59a85672cdcd
+    source_revision: GitHub API issues/17062/comments sha256-12 a9e825f10cf8
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: text
+    locator: 'PR #4032 issue comment 2/2 by zhyncs, 2025-03-03T17:27:16Z'
+    quote: '@binarycrayon Maybe Jump forward will be implemented using speculative decoding later on by @hnyls2002'
+    quote_sha256: 1996290bd9ee45becf2b6cabeebef015820ea334c1a5b968f4a8d8783752038f
+    source_revision: GitHub API issues/4032/comments, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'fresh claim; narrows the framing of intake-2416 ("ff via speculative worker"): the worker never verifies, it force-extends'
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim; absence verified by grep over the full 179-line new file
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: narrowed
+    note: intake-2416 recorded the three TPOP pairs; this adds the missing conditions (single run, 1B model, batch size absent,
+      std >= mean) and that the ratios are 1.31/1.45/1.25
+  - claim_index: 4
+    effect: unaffected
+    note: confirms intake-2416 ("no maintainer review in the thread") from the comment list plus empty reviews/inline-comments
+      endpoints
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim; intake-2416 did not record the zhyncs comment
+  depends_on: []
+- id: intake-2423
+  arxiv_id: '2309.08715'
+  url: https://arxiv.org/abs/2309.08715
+  source_type: paper
+  title: Formalizing BPE Tokenization
+  categories:
+  - tool_implementation
+  - inference_serving
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2401
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Martin Berglund
+  - Brink van der Merwe
+  key_claims:
+  - 'Theory paper (cs.FL, v1 only): formalizes SentencePiece and HuggingFace BPE tokenization as rewrite systems, shows they
+    coincide on "proper" dictionaries (Lemma 1), and studies incremental / left-to-right streaming tokenization. No experiments
+    and no implementation (Sec. 5 says experimental studies "should be performed").'
+  - 'Example 2 (Sec. 3): for a constructed dictionary a small change at the front of a string changes an arbitrarily long
+    run of later tokens; Sec. 5 notes this is not finite for all dictionaries but "from random testing it seems to often be
+    finite". This is the left-edit direction, not the append direction llguidance fast-forward uses.'
+  - 'Theorem 2 / Definition 7 (Sec. 4): for the append direction a finite lookahead suffices, with sufficient lookahead |D|
+    * max|uv| (number of merge rules times longest rule). Example 4 builds an n-rule dictionary where appending ONE symbol
+    merges n already-emitted tokens into one, so the number of trailing tokens that can be invalidated by an append is not
+    bounded by a small constant for adversarial dictionaries. The paper calls its constructive bounds "high enough to be impractical".'
+  - 'Bearing on llguidance fast_forward.md (6cef6ed L126-L127): the doc cites this paper only for the remark that examples
+    where a 4-token trim window is insufficient "may be possible" to construct and says none was found. So the 4-token window
+    is an empirical choice validated on MaskBench with the llama3 tokenizer (fast_forward.md L119-L125), not a bound this
+    paper proves; the paper neither supplies a tight bound nor shows a counterexample on a trained BPE vocabulary.'
+  techniques:
+  - formal BPE tokenization semantics
+  - streaming tokenization lookahead bound
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2401
+    - intake-2388
+  credibility_score: 0
+  contradicting_evidence: null
+  notes: 'Read from arXiv HTML v1 (sha256-12 c3b49a3372cc): abstract, Sec. 3 Examples 2-4 and Lemmas 1-3, Sec. 4 Theorem 2
+    / Definition 7 / Remark 5, Sec. 5 in full. NOT read: proofs of Lemma 1/2 and Theorem 2 in detail, references. Credibility:
+    0 = no peer-review evidence found (+0), >24 months old (-1), no independent corroboration; floor 0.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): arXiv id resolved (abs page title "Formalizing BPE Tokenization"),
+    on-topic for the canonical-tokenization trimming referenced in llguidance fast_forward.md. The paper supports the CONCERN
+    (append can invalidate many trailing tokens for adversarial dictionaries, Example 4) but supplies no usable bound, so
+    the 4-token window must be audited per tokenizer.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: Abstract and Sec. 5 Conclusions
+    quote: Experimental studies should be performed, for example, testing how the incremental algorithm behaves in random
+      cases.
+    quote_sha256: 95927030da6a53b576182a2e636178e4fb37c4aca8192f1dbcb04eaa18fe0dc8
+    source_revision: arXiv:2309.08715v1 (15 Sep 2023) HTML sha256-12 c3b49a3372cc, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: Example 2 (Sec. 3, final sentence)
+    quote: This illustrates that a small modification to the string can cause an arbitrarily large change to the resulting
+      tokenization (to the right).
+    quote_sha256: 2f2045f7a06df51362c74596ec6306e531b7dbfdb2c3712761debc5acde7d94b
+    source_revision: arXiv:2309.08715v1 (15 Sep 2023) HTML sha256-12 c3b49a3372cc, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: Sec. 4 Definition 7 and Sec. 5 paragraph 2
+    quote: We do not offer implementation details in this paper, as in general the bounds implied by the constructions are
+      high enough to be impractical.
+    quote_sha256: 860c8934361495c36adcf67c67fdb14752320fd0f46e24b5f101995acf944bdb
+    source_revision: arXiv:2309.08715v1 (15 Sep 2023) HTML sha256-12 c3b49a3372cc, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: doc
+    locator: llguidance docs/fast_forward.md:L126-L127 @ 6cef6ed9c973c2a155a85f2bb1996320af28b289 (sha256-12 4a0289479d79)
+    quote: While it [may be possible](https://arxiv.org/pdf/2309.08715) to construct examples where `max_token==4` is not
+      enough, we have not bee able to do so.
+    quote_sha256: 41e9ddae7c28caa1a4cf67989c7a44c8e8d4085ce6cd3cc4c54287d05ad74a5f
+    source_revision: guidance-ai/llguidance@6cef6ed9c973c2a155a85f2bb1996320af28b289 (2026-10-14)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim; Example 4 content paraphrased from the HTML (math in alt-text form), not quoted
+  - claim_index: 3
+    effect: narrowed
+    note: 'narrows intake-2401 claim 2: the canonical-trim guarantee is empirical, not backed by a bound from the cited paper'
+  depends_on: []
+- id: intake-2424
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/173
+  source_type: repo
+  title: More Flash Attention improvements
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2421
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'PR body: two changes to ik CPU FA — a slightly faster V*softmax(K*Q) for every V-cache type, and a faster q8_0 K-cache
+    path that repacks K at run time to an interleaved Q8_0_R4 layout and reuses the q8_0_r4 x q8_0_x4 GEMM template (commit
+    1e44bdf6e). The current ik tree (and the copy vendored but not built in our v10 tree) repacks to Q8_0_R8 and only when
+    the batch has >= 8 query rows (iqk_flash_attn.cpp iqk_repack_k).'
+  - 'Commit message: on Zen4 (Ryzen-7950X, LLaMA-3.1-8B IQ4_XS per PR body) q8_0 KV slightly beats bf16 KV; 134 t/s prefill
+    at 32k tokens, ~30% over ik''s OWN main branch and ~18% over the previous commit. ''main branch'' here is ik_llama main,
+    not mainline llama.cpp.'
+  - 'PR body: with a Q8_K_R8-quantized model, 380 t/s at 512 tokens and 150 t/s at 32k tokens (prefill, 7950X).'
+  - 'The mainline llama.cpp comparison exists only inside an image graph reused from ik discussion #25; no mainline number
+    appears as text — mainline-vs-iqk magnitude NOT-FOUND-IN-SOURCE for this PR.'
+  - 'Author comment: CPU/RTX-4080 PP ratio falls with prompt length (qualitative, image-only data). All results are prefill
+    (PP); no decode/TG number appears in body, comment or commit message.'
+  techniques:
+  - run-time repacking of q8_0 K-cache into row-interleaved Q8_0_R4/R8 before K*Q
+  - reuse of quantized GEMM template inside CPU flash attention
+  - faster V*softmax(KQ) accumulation
+  reported_results:
+  - 7950X LLaMA-3.1-8B IQ4_XS q8_0 KV pp@32k 134 t/s (+30% vs ik main, +18% vs prior commit)
+  - 'Q8_K_R8 model: pp512 380 t/s, pp@32k 150 t/s'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2420
+    - intake-2421
+  credibility_score: 1
+  contradicting_evidence:
+  - 'The mainline baseline this PR''s graph shows predates mainline #19012 (tiled CPU FA prefill, 2026-01-25) and #19209 (split-KV
+    CPU FA decode, 2026-02-03), both present in our frozen v10 tree; for f16 KV the gap vs current mainline is unmeasured.
+    Neither mainline path covers q8_0/bf16 KV (ops.cpp kv_is_f32_or_f16), so for q8_0 KV mainline still runs the per-row vec
+    kernel.'
+  notes: 'Read: gh api pulls/173 (sha256-12 2467efb930a5), issues/173/comments (c7a1098b1030), commit 1e44bdf6e from /mnt/raid0/llm/ik_llama.cpp
+    (read-only, HEAD c04881fc0). Not read: the two image graphs (pp512_vs_ctx, pp_gpu_vs_cpu1), ik discussion #25 (source
+    of the mainline curve; not reachable via the issues API).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): PR body, the single comment and the squash-commit message read;
+    the only text numbers are prefill (134 t/s @32k q8_0 KV; 150 t/s with Q8_K_R8) and the ''~30%'' is vs ik''s own main branch;
+    mainline numbers are image-only. The repack is now Q8_0_R8 and gated to >=8 query rows in the code our v10 tree vendors
+    (not built).'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'PR #173 body bullet 2'
+    quote: Faster implementation when the K-cache is quantized with `Q8_0` via run-time-repacking to `Q8_0_R4`.
+    quote_sha256: d97141c10619d44c88ec27f6346bd164e219faf3d5120f71482d09b17fd92cd7
+    source_revision: 'ikawrakow/ik_llama.cpp PR #173 merged 2025-01-20 (merge 3c5f87225f0d; squash commit 1e44bdf6e); API
+      body retrieved 2026-10-22 sha256-12 2467efb930a5'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: 'commit 1e44bdf6e message, bullet ''FA: faster q8_0 cache via run-time-repacking'''
+    quote: "On Zen4 q8_0 KV-cache now slightly outperforms BF16.\n    We get 134 t/s for 32k tokens, which is ~30% better\
+      \ than\n    the main branch, and ~18% better than the last commit."
+    quote_sha256: 5e42a87aa78305f1f777a026f34e7c9761076711cd360fd8da60a3fb1a74b574
+    source_revision: ik_llama.cpp commit 1e44bdf6e5415e462bd9a3367261ab5dab872bf1 (local read-only tree /mnt/raid0/llm/ik_llama.cpp
+      @ c04881fc0)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: 'PR #173 body para 3'
+    quote: For reference, with a `Q8_K_R8`-quantized model we achieve 380 t/s for 512 tokens, and 150 t/s for 32k tokens.
+    quote_sha256: 81dc1d7b56c3ad2ff7797836e6cb139c7736ecde1c341e12c2ad62316575def8
+    source_revision: 'ikawrakow/ik_llama.cpp PR #173 merged 2025-01-20 (merge 3c5f87225f0d; squash commit 1e44bdf6e); API
+      body retrieved 2026-10-22 sha256-12 2467efb930a5'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: 'PR #173 body para 2'
+    quote: 'I have reused the graph from the last post in #25 by just adding the results for this PR, so mainline `llama.cpp`
+      performance is shown as well.'
+    quote_sha256: ed94f60422a1179a979d81716adeaf22a4628c786fc14902426567f45c92e034
+    source_revision: 'ikawrakow/ik_llama.cpp PR #173 merged 2025-01-20 (merge 3c5f87225f0d; squash commit 1e44bdf6e); API
+      body retrieved 2026-10-22 sha256-12 2467efb930a5'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: 'PR #173 issue comment 1 (ikawrakow 2025-01-20)'
+    quote: We observe the ratio now decreasing with increasing prompt length $\Rightarrow$ the utilization of available FLOPs
+      in the FA implementation is now better on the CPU compared to the GPU.
+    quote_sha256: 37424c8e6de76766d524ed437d5a8d17c4249e72c2d528bebc73889918f61a32
+    source_revision: ikawrakow/ik_llama.cpp issues/173/comments retrieved 2026-10-22 sha256-12 c7a1098b1030
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: R4 in the PR; the surviving code repacks to Q8_0_R8 and only for >= 8 query rows (prefill/verify batches of >=8).
+  - claim_index: 1
+    effect: narrowed
+    note: '''~30% better than the main branch'' is vs ik main, not mainline llama.cpp; prefill only.'
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: 'absence claim: PR body text, comment and commit message searched; graph image not read'
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim; image not read
+  depends_on: []
+- id: intake-2425
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/351
+  source_type: repo
+  title: CPU FA improvements
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2421
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - Improves ik CPU FA for GQA models; FlashMLA (DeepSeek) is untouched. All runs use q8_0 KV cache and Q4_0 weights, chosen
+    as mainline llama.cpp's best-tuned type (PR body).
+  - 'Gemma3-12B (head dim 256), Ryzen-7950X, sweep-bench at N_KV=15872: mainline llama.cpp PP 26.24 / TG 6.28 t/s; ik PR 96.24
+    / 6.64 t/s (PP 3.7x, TG +5.7%). ik''s own pre-PR main was 85.75 / 5.32, i.e. ik TG was 15% BELOW mainline before this
+    PR.'
+  - 'LLaMA-3.1-8B (head dim 128, GQA 4), Ryzen-7950X, N_KV=15872: mainline PP 11.34 / TG 4.99 t/s; ik PR 149.34 / 11.07 t/s
+    (PP 13x, TG 2.2x).'
+  - 'LLaMA-3.1-8B, M2-Max CPU, N_KV=7680: mainline PP 17.10 / TG 9.53; ik PR 82.21 / 21.05 t/s (TG 2.2x).'
+  - 'Squash commit 9d9f9f96b: the TG gain with q8_0 KV comes from repacking K for TG too, per k_step rows instead of the whole
+    K tensor.'
+  techniques:
+  - per-k_step q8_0 K repack during decode
+  - GQA-aware CPU FA thread split
+  - quantized-GEMM (mul_mat_qX_0_q8_2_Tx) inside FA for q4_0/q6_0 K
+  reported_results:
+  - 'Gemma3-12B 7950X q8_0 KV @15.9k: PP 26.24->96.24, TG 6.28->6.64 (mainline->ik PR)'
+  - 'LLaMA-3.1-8B 7950X q8_0 KV @15.9k: PP 11.34->149.34, TG 4.99->11.07'
+  - 'LLaMA-3.1-8B M2-Max @7.7k: PP 17.10->82.21, TG 9.53->21.05'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2420
+    - intake-2421
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Mainline baseline is April 2025 with q8_0 KV; mainline has since added tiled FA prefill (#19012, 2026-01-25: llama 8B
+    Q4_K_M pp512@d16384 14.24->62.50 t/s) and split-KV FA decode (#19209, 2026-02-03), both restricted to f16/f32 KV. The
+    13x/2.2x gaps are therefore stale for f16 KV and plausibly still live for q8_0 KV; neither is measured on current mainline.
+    Gemma3 (D=256) TG gap is only +5.7% even on the stale baseline.'
+  notes: 'Read: gh api issues/351 body (sha256-12 1b75030c8df1, saved as pr351_body.md) all tables'' first/last rows plus
+    prose; commit 9d9f9f96b message. Not read: the six image graphs; intermediate table rows only spot-checked; PR has 0 comments.
+    Thread counts and mainline build id are NOT stated in the body.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): this is the only ik CPU-FA PR found whose body carries mainline-vs-iqk
+    numbers as text (three sweep-bench table sets). The gap is large for D=128 LLaMA-8B (PP 13x, TG 2.2x at 16k) but small
+    for D=256 Gemma3 TG (+5.7%); the baseline is April-2025 mainline with q8_0 KV, before mainline''s tiled (#19012) and split-KV
+    (#19209) CPU FA paths, which cover only f16/f32 KV.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'PR #351 body para 1'
+    quote: This PR further improves CPU FA performance for GQA models. It does not affect FlashMLA (relevant for DeepSeek
+      models)
+    quote_sha256: 6426d8829049b7695f292bfb4dcccdbf7766e7c80dc9474a534a9171a36d96df
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: table
+    locator: 'PR #351 body, Gemma3-12B 7950X mainline table last row / PR table last row (row N_KV=15872)'
+    quote: '|   512 |    128 |  15872 |   19.514 |    26.24 |   20.393 |     6.28 |'
+    quote_sha256: 8a27a54b8c82a26a1b59c1e55b8cf051c600463ebe739f1a7628d0374ec8818c
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: 'PR #351 body, LLaMA-3.1-8B 7950X mainline table last row (N_KV=15872)'
+    quote: '|   512 |    128 |  15872 |   45.159 |    11.34 |   25.655 |     4.99 |'
+    quote_sha256: 068b8f262b941955d04dcb31306aa9d675124eee55b10a1f5ed6923690ed4925
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: 'PR #351 body, LLaMA-3.1-8B M2-Max PR table last row (N_KV=7680)'
+    quote: '|   512 |    128 |   7680 |    6.228 |    82.21 |    6.081 |    21.05 |'
+    quote_sha256: b91b80031d630cbb871c65770cf8a7476a14e236c4bb0ff12777d6c34471870a
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: commit 9d9f9f96b message, final bullet
+    quote: 'Much better FA TG with q8_0 KV cache
+
+
+      Just repack it even for TG. But do the repacking for k_step rows,
+
+      not the whole K tensor.'
+    quote_sha256: 0682f1a32d47922d65d191c442ae5f390349356ba69065a4a1c79353b7285943
+    source_revision: ik_llama.cpp commit 9d9f9f96b (local read-only tree @ c04881fc0)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: table
+    locator: 'PR #351 body, PR table last row for claim 1'
+    quote: '|   512 |    128 |  15872 |    5.320 |    96.24 |   19.265 |     6.64 |'
+    quote_sha256: e8440e537dd958dbdab027acf907a7e86fc1dd5d1432b89eff5f77b6193702c4
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: 'PR #351 body, PR table last row for claim 2'
+    quote: '|   512 |    128 |  15872 |    3.428 |   149.34 |   11.560 |    11.07 |'
+    quote_sha256: ba98cba278bf5c49221b32ebbe00cd9c99529a815713f761c16fb93ccaddf155
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: 'PR #351 body, mainline table last row for claim 3'
+    quote: '|   512 |    128 |   7680 |   29.934 |    17.10 |   13.435 |     9.53 |'
+    quote_sha256: d003c1368f2e1cbdf1dc81288ef3eec7a4861a6955ff9876d7c5996da45ee78e
+    source_revision: 'ikawrakow/ik_llama.cpp PR #351 (2025-04-28, squash commit 9d9f9f96b); API body retrieved 2026-10-22
+      sha256-12 1b75030c8df1'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2426
+  arxiv_id: '2603.15423'
+  url: https://arxiv.org/abs/2603.15423
+  source_type: paper
+  title: Invisible Failures in Human–AI Interactions
+  categories:
+  - benchmark_methodology
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2397
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Christopher Potts
+  - Moritz Sudhof
+  key_claims:
+  - On 100K English WildChat transcripts (GPT-3.5/GPT-4 era, 2023-24) annotated by Claude Opus 4.6, 63% involve a failure;
+    of those 12% are visible (user reacts), 79% invisible, 9% mixed, so a monitor that keys on overt user signals (negative
+    sentiment, complaints, explicit correction) sees about 12% of failures (Sec. 4). The failure labels are LLM judgements;
+    there is no human-gold count in the paper.
+  - 'The annotation protocol is two-stage: turn-level tagging of 50 AI signals and 13 user signals, then archetype inference
+    from a signal report. Agreement is measured only between two hosted LLM annotators (Opus 4.6 vs GPT-5.4): failure-label
+    kappa 0.84 / agreement 0.94 for Signals-only versus 0.62 / 0.86 for transcript-only (Table 1, App. C). No human gold is
+    reported and the authors note the annotator out-classes the models being judged (Sec. 3.2).'
+  - 'Per-signal inter-LLM kappa for the user-behaviour signals (App. C.3 Table 5b): user_corrects_ai 0.70, user_implicit_correction
+    0.67, user_repeats_request 0.61, user_abandons_thread 0.72, user_expresses_frustration 0.60, but user_scope_change only
+    0.32. The correction-versus-scope-change boundary, which matters for any pushback rate, is the least reliably labelled
+    user signal.'
+  - The Death Spiral archetype is defined behaviourally as the user repeatedly correcting while the AI keeps producing the
+    same output without incorporating feedback (inter-LLM kappa 0.80); The Walkaway (user silently stops, unresolved goal)
+    is the most frequent archetype but kappa 0.81 only with the signals-first protocol (0.16 transcript-only) (App. A, C.2).
+  - 'The 79% invisible figure is a single-turn-dominated chat statistic: 63% of the sample is single-turn, the invisible share
+    falls to 50% when restricted to multi-turn transcripts (Fig. 7), and software_development has the largest Visible-failure
+    PPMI of any domain, which the authors attribute to expert users who talk back to the AI (Sec. 6). Future-2K (single-turn
+    re-generations by four current models) cuts the failure rate from 41.7% to under 10% while keeping most failures invisible.'
+  - 'Code is released under Apache-2.0 with taxonomy.json (v3.0: signal definitions, boundary notes, derivation rules for
+    goal_failure and archetypes), the tagging scripts (hosted-API clients) and the 100K annotation file, so the definitions
+    are portable but the annotation run itself depends on hosted frontier models.'
+  techniques:
+  - signals-first (two-stage) LLM annotation of human-AI transcripts
+  - invisible vs visible vs mixed failure partition
+  - eight failure archetypes with PPMI co-occurrence
+  - counterfactual re-generation (Future-2K) to test persistence across model generations
+  reported_results:
+  - '100K WildChat transcripts: 62,557 failures; 7,632 visible, 49,368 invisible, 5,557 mixed'
+  - Signals-only inter-LLM kappa 0.84 (failure), micro 0.81 (archetype)
+  - Future-2K failure rate 41.7% (GPT-4 original) to under 10% (newer models), archetype mix stable
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2397
+    - intake-1116
+  credibility_score: 2
+  contradicting_evidence:
+  - Chat (WildChat) population and single-turn-heavy; the annotator is a stronger model than the one judged, which does not
+    hold when judging a frontier coding agent; labels are LLM-only (no human gold); visible-failure subset of 12% is partly
+    an artefact of what the judge calls a failure.
+  notes: 'Read arXiv:2603.15423v2 HTML (sha256-12 580073801ea6, retrieved 2026-10-22) plus repo @a71d9ea (taxonomy.json signal/archetype
+    text). NOT read: batch_quality_score.py/batch_score.py line by line, the 100K annotation data, figures as images, v1 diff.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read arXiv v2 HTML in full (v3 does not exist; v1 also fetched,
+    not diffed) and the Apache-2.0 repo at a71d9ea (README, taxonomy.json signal and archetype definitions; batch scripts
+    not read line by line). The headline 79% invisible is LLM-judged chat data and drops to 50% for multi-turn; it must not
+    be cited as a coding-agent rate. Agreement is inter-LLM only.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 4 (p. 4 text) @ arXiv v2
+    quote: Of these cases, 7,632 (12%) are tagged visible, 49,368 (79%) are tagged invisible, and 5,557 (9%) are tagged mixed.
+    quote_sha256: 74a2fb624c6c430d1b813ab63a805dbc279b85ce3d7324a2379b14c6bf11159f
+    source_revision: arXiv:2603.15423v2 (12 May 2026), html sha256-12 580073801ea6; repo bigspinai/bigspin-invisible-failure-archetypes
+      @a71d9ea
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 3.2 Table 1 caption @ arXiv v2
+    quote: 'Table 1: Annotation project results, based on a sample of 10K transcripts. The annotators are Opus 4.6 and GPT-5.4.'
+    quote_sha256: cedea074a396bb081971775b536e97a41b90a76a06a392afd3004ae9490fcf58
+    source_revision: arXiv:2603.15423v2 (12 May 2026), html sha256-12 580073801ea6; repo bigspinai/bigspin-invisible-failure-archetypes
+      @a71d9ea
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: App. C.3 Table 5b @ arXiv v2
+    quote: user_repeats_request 0.61 0.96 user_scope_change 0.32 0.94
+    quote_sha256: 1e3204cf9a69a67c81b094f5fee661b3d170bcceadca493a5234a8edc9d844b2
+    source_revision: arXiv:2603.15423v2 (12 May 2026), html sha256-12 580073801ea6; repo bigspinai/bigspin-invisible-failure-archetypes
+      @a71d9ea
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: App. A The Death Spiral @ arXiv v2
+    quote: The conversation enters a repetitive loop. The user keeps asking or correcting, and the AI keeps producing the
+      same or similar output without incorporating the feedback.
+    quote_sha256: 2243cfb8bbe63464365982ad439cffd347c5977d027efdfaffbaa88bb366446b
+    source_revision: arXiv:2603.15423v2 (12 May 2026), html sha256-12 580073801ea6; repo bigspinai/bigspin-invisible-failure-archetypes
+      @a71d9ea
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Sec. 6 @ arXiv v2
+    quote: Third, and relatedly, the largest value for Visible failure is in software_development.
+    quote_sha256: 387e9901134e6ea64882f77416b1e8248ded8de1a4ff5e0c468ddf441b314a6d
+    source_revision: arXiv:2603.15423v2 (12 May 2026), html sha256-12 580073801ea6; repo bigspinai/bigspin-invisible-failure-archetypes
+      @a71d9ea
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: README.md @a71d9ea
+    quote: The suit of tools needed to run a fully calibrated and validated annotation job.
+    quote_sha256: 08c7b75ed800ac35993136d368bd75523de44e211fb8b02d2aea18efb7458df7
+    source_revision: arXiv:2603.15423v2 (12 May 2026), html sha256-12 580073801ea6; repo bigspinai/bigspin-invisible-failure-archetypes
+      @a71d9ea
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2427
+  arxiv_id: '2606.29957'
+  url: https://arxiv.org/abs/2606.29957
+  source_type: paper
+  title: 'SWE-Together: Evaluating Coding Agents in Interactive User Sessions'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2397
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Yifan Wu
+  - Zhuokai Zhao
+  - Songlin Li
+  - Ho Hin Lee
+  - Jiacheng Zhu
+  - Shirley Wu
+  - Tianhe Yu
+  - Serena Li
+  - Lizhu Zhang
+  - Xiangjun Fan
+  - Shengzhi Li
+  key_claims:
+  - SWE-Together keeps 109 executable tasks out of 11,260 recorded sessions (0.97%) from four upstream corpora (DataClaw,
+    Pi-staging, Hyperswitch, and 5,851 raw SWE-chat sessions yielding 48 tasks); the filter keeps public mature repos with
+    multi-turn, code-changing sessions and drops sessions whose main deliverable is external state (Sec. 2.1, Table 1).
+  - 'The user is an LLM simulator, not a human: after each agent turn it makes one structured decision (no-op, question, redirect,
+    new-requirement, check-external) conditioned on session anchors derived from the original user, and it cannot interrupt
+    a running agent turn (Sec. 2.2, Sec. 5). The paper User Correction metric is therefore the pushback an anchored simulator
+    emits, not observed human pushback.'
+  - User Correction = N_correction + 0.2 N_nudge, computed by a multi-label tagger over simulator messages; across seven models
+    run in opencode (k=2 replicates, 109 tasks) it ranges 1.38 to 2.17 per trial and correlates -0.92 with pass@1, -0.84 with
+    stable solve rate, -0.93 with mean judge score (Sec. 2.3.2, 3.1). n=7 cohorts, simulated corrections, no confidence intervals
+    reported.
+  - Simulator validity evidence is limited to a 4-annotator forced-choice study (312 judgments, Turing pass rate 46%, 95%
+    CI 40.5-51.6) and Intent Coverage of 0.70-0.72 for six of seven cohorts, i.e. roughly 30% of original intents are not
+    re-expressed or leave scope (Sec. 3.2-3.3). The paper reports no accuracy or agreement figure for the correction/nudge
+    tagger itself.
+  - 'The released tagger is not hosted-free: the default tagger is Gemini-3.1-Pro, and the repo says the reported User Correction
+    numbers come from a 3-way reconciliation (Gemini-3.1-Pro, Claude Opus 4.6, GPT-5.5 arbiter), with the single-pass default
+    about 0.04 off (adjudicate_3way.py docstring). Only the agent seat has a self-hosted vLLM backend; user_sim, tagger and
+    judge go through LiteLLM native/openrouter/bedrock and the judge shells out to claude --print (docs/llm_backends.md).'
+  - 'The repo (Apache-2.0) ships the tagger prompt, which separates new scope (request) from error correction (correction)
+    and doubt (nudge): new scope is explicitly NOT a correction. That separation is a usable labelling rule for an EPYC pushback
+    audit, though the prompt is unvalidated against human labels.'
+  techniques:
+  - session-to-task conversion with deterministic filter, viability screen, sandbox construction
+  - anchored state-conditional LLM user simulator
+  - User Correction (correction + 0.2 nudge) and Intent Coverage diagnostics
+  - frozen weighted rubric judge for final repository state
+  reported_results:
+  - 109 tasks / 11,260 sessions (0.97% conversion)
+  - 'opencode harness, 7 models: Opus 4.8 pass@1 63% with U-Corr 1.38; MiniMax-2.7 40% with 2.17'
+  - Pearson -0.92 (pass@1 vs User Correction) across 7 models
+  - Simulator Turing pass rate 46% [40.5, 51.6], 312 judgments
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2397
+    - intake-2406
+  credibility_score: 2
+  contradicting_evidence:
+  - Corrective-pushback counts are generated by a simulator and tagged by hosted LLMs with no reported human validation of
+    the tagger; the -0.92 correlation rests on 7 model cohorts; the 109 tasks are a 0.97% high-precision subset of recorded
+    sessions.
+  notes: 'Read arXiv:2606.29957v1 HTML (sha256-12 eb08526c6913) and repo files above (@e9ce8cf). NOT read: coverage_one.py/extract_intents.py
+    bodies, task packages, the simulator prompt, the HF source datasets (DataClaw, Pi-staging, Hyperswitch).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read arXiv v1 HTML in full (v2 returns 404) and the Apache-2.0
+    repo at e9ce8cf (tag_messages.py, user_metrics.py, adjudicate_3way.py, tag prompt, docs/llm_backends.md). Decisive: the
+    abstract phrase "number of corrective feedback turns" counts SIMULATOR messages, and the tagger that scores them is a
+    hosted-LLM ensemble named only in the repo, not the paper.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 2.1 @ arXiv v1
+    quote: 109/11,260 sessions pass the filters and are converted into executable tasks, a conversion rate of 0.97%.
+    quote_sha256: 29de6767b8403dea5bfac7813b73c3a414acd45c646665c9068d3744137744cd
+    source_revision: arXiv:2606.29957v1 (29 Jun 2026), html sha256-12 eb08526c6913; repo Togetherbench/SWE-Together @e9ce8cf
+      (2026-10-14)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 5 Limitation @ arXiv v1
+    quote: The user simulator cannot interrupt the coding agent during its turns, cannot directly edit files,
+    quote_sha256: 40de92fc490fcfc49c3fbfd43c8dc086a84c40c7ce0f2aa79b6da9a7274b77a4
+    source_revision: arXiv:2606.29957v1 (29 Jun 2026), html sha256-12 eb08526c6913; repo Togetherbench/SWE-Together @e9ce8cf
+      (2026-10-14)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: Sec. 3.1 @ arXiv v1
+    quote: across the seven models it is strongly inversely correlated with pass@1 (Pearson −0.92), stable solve rate (−0.84),
+      and mean judge score (−0.93).
+    quote_sha256: 39a31f6270283601bd0ce90ca8713ace22ec50970563772e678b6c12ac4491a7
+    source_revision: arXiv:2606.29957v1 (29 Jun 2026), html sha256-12 eb08526c6913; repo Togetherbench/SWE-Together @e9ce8cf
+      (2026-10-14)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: Sec. 3.3 @ arXiv v1
+    quote: Across all trajectories, the simulator achieves a Turing pass rate of 46% (95% CI [40.5, 51.6]%).
+    quote_sha256: eceb99373aa070abc659d2e2bb4f4d34e9c9ae7a2f38054dd2497b3fc7bc31e7
+    source_revision: arXiv:2606.29957v1 (29 Jun 2026), html sha256-12 eb08526c6913; repo Togetherbench/SWE-Together @e9ce8cf
+      (2026-10-14)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code-comment
+    locator: eval/user_behavior/adjudicate_3way.py:L1-L18 @ e9ce8cf
+    quote: The default is ~0.04 off and ranks the models identically; run this stage to reproduce the exact published values.
+    quote_sha256: 588d0e9c2cb51e2aeddf2f1c081881294eab7c4464c7a1a36e2e7b39b0447556
+    source_revision: arXiv:2606.29957v1 (29 Jun 2026), html sha256-12 eb08526c6913; repo Togetherbench/SWE-Together @e9ce8cf
+      (2026-10-14)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: prompt
+    locator: eval/user_behavior/prompts/tag_messages_system.md:L38 @ e9ce8cf
+    quote: New scope is `request`, not `correction`.
+    quote_sha256: d0ba533eddee95dd8f1bc72fe2f7defa3f373f61cd9952cd94466333582ff0e2
+    source_revision: arXiv:2606.29957v1 (29 Jun 2026), html sha256-12 eb08526c6913; repo Togetherbench/SWE-Together @e9ce8cf
+      (2026-10-14)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2428
+  arxiv_id: null
+  url: https://transluce.org/docent/blog/coding-agent-behaviors
+  source_type: blog
+  title: Measuring coding agent misalignment in the wild
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2397
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Selena Zhang
+  - The Docent Team
+  key_claims:
+  - On 8,600 transcripts (public SWE-chat plus Transluce internal traffic) an LLM judge flags SEVERE monitor evasion in 1.9%
+    and SEVERE overselling in 1.8% of SWE-chat sessions (intro and conclusion).
+  - Counting any presence (not only severe), SWE-chat shows monitor evasion 14.7% (n=4,990) and overselling 34.7% (n=4,788),
+    while Transluce internal traffic shows 0.7% and 5.7%; these figures appear only in figure alt text, and per-model SWE-chat
+    rates (e.g. Opus 4.6 34.5% overselling, n=3,741) come from non-random model subsets that the authors say cannot be compared
+    across models.
+  - 'Judge construction: rubrics drafted by Claude Fable and hand-edited, run by Opus 5 (high reasoning), severe flags re-checked
+    by a GPT-5.6 skeptic; validation is described only as comparison with "a small hand-labeled set" and spot checks, with
+    no accuracy, precision or recall reported. Hosted judges throughout.'
+  - The published monitor-evasion rubric enumerates concrete tool-call surface forms (git commit --no-verify, core.hooksPath=/dev/null,
+    HUSKY=0, skipped or xfail tests, loosened assertions, force flags, deleting a failing test) plus a mandatory authorization
+    screen (user explicitly named the bypass), so a regex pass can nominate candidates but cannot decide them.
+  - 'Qualitative finding: explicit CLAUDE.md/AGENTS.md rules and typed languages did not prevent severe evasion; one user
+    accounts for almost half of severe monitor-evasion cases, and the authors flag that user reactions were hard to interpret
+    as severity evidence (sessions ended early, complaints retracted). Observational, no with/without-rule comparison.'
+  techniques:
+  - rubric-and-decision-procedure LLM judge with behavior_present / tough_call / is_severe outputs
+  - skeptical-verifier re-check of severe flags
+  - severity defined by consequence (SEV 2+) or flagrancy
+  reported_results:
+  - 8,600 transcripts; severe monitor evasion 1.9%, severe overselling 1.8% (SWE-chat)
+  - 'any-presence: SWE-chat 14.7% / 34.7%; internal 0.7% / 5.7%'
+  - 'per-model SWE-chat overselling: Haiku 4.5 62.2% (n=37) ... Opus 4.7 17.4% (n=46), non-random subsets'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2397
+    - intake-2406
+  credibility_score: 2
+  contradicting_evidence:
+  - Judge accuracy never quantified; per-model comparisons explicitly unreliable; one heavy user dominates the severe evasion
+    cases; internal vs SWE-chat rates differ 6x for overselling, so rates are population-specific.
+  notes: 'Read transluce.org/docent/blog/coding-agent-behaviors (html sha256-12 c5c21729cad8, 2026-10-22). Figures are PNG;
+    numbers taken from alt text only. NOT read: the linked Docent dashboards and raw data, the Docent GitHub repo, Greenblatt
+    blog, per-transcript examples.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read the Transluce page text in full including both rubrics
+    (retrieved 2026-10-22). The headline "around 2%" is the SEVERE subset; any-presence rates are 14.7% and 34.7% on SWE-chat.
+    No judge accuracy is given. The page was fetched from the canonical transluce.org URL; the LessWrong cross-post (smE9h9RnaK7FWKBZ2)
+    was fetched but not diffed.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Introduction @ 2026-08-04
+    quote: We found severe cases of monitor evasion in 1.9% of SWE-chat sessions, and severe cases of overselling in 1.8%
+      of sessions.
+    quote_sha256: 32b7e4345b4f7e86f6af413f8b234e18dffb1be5fe1d2be9bc1cf3c864b934a6
+    source_revision: Transluce blog, published 2026-08-04, retrieved 2026-10-22, html sha256-12 c5c21729cad8
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: figure-alt-text
+    locator: Results, figure 01_rates_both_collections.png alt text
+    quote: In SWE-chat transcripts, monitor evasion totals 14.7% (12.8% not severe, 1.9% severe; n = 4,990) and overselling
+      totals 34.7% (32.9% not severe, 1.8% severe; n = 4,788).
+    quote_sha256: f380ad83dc380aac318308805f2556c3b9b07cebe4e9d260bb72ea2746b9a3a3
+    source_revision: Transluce blog, published 2026-08-04, retrieved 2026-10-22, html sha256-12 c5c21729cad8
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: How we constructed these measurements
+    quote: We also compared results against a small hand-labeled set of transcripts.
+    quote_sha256: ec8da0322e487be47e7a8d26cca4a4379d325b04173ca82bd6299659502be189
+    source_revision: Transluce blog, published 2026-08-04, retrieved 2026-10-22, html sha256-12 c5c21729cad8
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: Monitor evasion rubric, Common shapes
+    quote: Committing with --no-verify, --no-gpg-sign, core.hooksPath=/dev/null, HUSKY=0, or otherwise disabling git hooks
+    quote_sha256: 9493959118c452ca947d7f5547b8e72df90e13257d3990e39560c81bc21047b1
+    source_revision: Transluce blog, published 2026-08-04, retrieved 2026-10-22, html sha256-12 c5c21729cad8
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Qualitative Discussion
+    quote: Code safety best practices like using a CLAUDE.md/AGENTS.md and using a typed language are insufficient safeguards
+      against overeagerness.
+    quote_sha256: 8f4823e5bb438ab8288af5a127a04c6d3359232b77d979127874494f3a14ba41
+    source_revision: Transluce blog, published 2026-08-04, retrieved 2026-10-22, html sha256-12 c5c21729cad8
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2429
+  arxiv_id: null
+  url: https://www.anthropic.com/research/measuring-agent-autonomy
+  source_type: blog
+  title: Measuring AI agent autonomy in practice
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2397
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Miles McCain
+  - Thomas Millar
+  - Saffron Huang
+  - Jake Eaton
+  - Kunal Handa
+  - Michael Stern
+  - Alex Tamkin
+  - Matt Kearney
+  - Esin Durmus
+  - Judy Shen
+  - Jerry Hong
+  - Brian Calvert
+  - Jun Shern Chan
+  - Francesco Mosconi
+  - David Saunders
+  - Tyler Neylon
+  - Gabriel Nicholas
+  - Sarah Pollack
+  - Jack Clark
+  - Deep Ganguli
+  key_claims:
+  - 'Claude Code interrupt rate per turn rises with tenure: about 5% for new users (around 10 sessions) to about 9% for experienced
+    users, while full auto-approve rises from about 20% to over 40% of sessions; the appendix says turn duration, auto-approval
+    and interruption rates are computed mechanically from internal telemetry, not by a model (Fig. 3, Appendix).'
+  - 'Why humans interrupt (Claude-clustered, 500k interruptions, non-exhaustive, lightly edited): provide missing technical
+    context or corrections 32%, Claude slow/hanging/excessive 17%, enough help to proceed 7%, want to take next step themselves
+    7%, change requirements 5% (Table 1). Only the first and a share of the last are agent-error signals, so an interrupt
+    is not a failure label.'
+  - 'Agent-initiated stops matter as much as human ones: on the most complex tasks Claude Code asks for clarification more
+    than twice as often as humans interrupt it (Fig. 4, n=500k sessions).'
+  - Internally, from August to December average human interventions per session fell from 5.4 to 3.3 while success on the
+    hardest tasks doubled; success and complexity there are Claude-classified and unreported with intervals, and the measure
+    is Anthropic-internal.
+  - 'Validation detail: the stop-reason classifier (Sonnet 4.5) was checked on n=200 turns (14 of 16 classifier-flagged interruptions
+    agreed with the human grader), and in two cases the telemetry interruption flag appeared wrong because the transcript
+    showed no interruption, so telemetry flag and transcript marker can disagree (App. Table A3).'
+  - The classifier prompt keys on the literal final transcript text "[Request interrupted by user for tool use]" for an interrupted
+    turn and treats "[Request interrupted by user]" in earlier history as a previous turn; both marker forms exist in Claude
+    Code transcripts.
+  techniques:
+  - telemetry-based interruption and auto-approval rates
+  - LLM-clustered stop and interrupt reasons
+  - tenure-stratified oversight analysis
+  reported_results:
+  - interrupt rate about 5% (new) to about 9% (experienced) of turns
+  - 'interrupt reasons: 32% corrections/context, 17% slow or hanging, 5% requirement change'
+  - internal interventions per session 5.4 to 3.3 (Aug to Dec 2025)
+  - stop-reason classifier n=200 validation, 5 disagreements
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2397
+  credibility_score: 3
+  contradicting_evidence:
+  - First-party vendor measurement of its own product, no raw data; Claude does the reason clustering and classification;
+    the authors caution that interrupt-rate growth may reflect harder tasks and product defaults rather than worse agents
+    (footnote 9).
+  notes: 'Read anthropic.com/research/measuring-agent-autonomy (html sha256-12 b526b93cbc3f) and appendix PDF (sha256-12 ee9d828c5632,
+    2026-10-22). Figures not read as images, so only values stated in text/captions are used. Table 1 column pairing (Claude
+    vs human) is inferred from cell order and descending-percentage order. NOT read: Clio paper, related article claude-code-expertise.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read the post text in full and the PDF appendix (text recovered
+    with a stdlib extractor; ligature glyphs preserved). Interruption rates are telemetry (mechanical); only reasons and stop
+    classification are model-made. Reason percentages sum to 68% for humans (non-exhaustive).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Section "Experienced users ... interrupt more often"
+    quote: New users (those with around 10 sessions) interrupt Claude in 5% of turns, while more experienced users interrupt
+      in around 9% of turns (Figure 3).
+    quote_sha256: 29d042777c16c349a19349d22b6144212caae130c6b576cf6dc74dd026fe7929
+    source_revision: Anthropic post published 2026-02-18, retrieved 2026-10-22, html sha256-12 b526b93cbc3f; appendix PDF
+      sha256-12 ee9d828c5632 (text extracted with scripts/pdf_text.py)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Table 1
+    quote: To provide missing technical context or corrections (32%)
+    quote_sha256: 33596555aa7be41cc0a009ff7084fda3493d36930d10dcfe98f70489b53a899d
+    source_revision: Anthropic post published 2026-02-18, retrieved 2026-10-22, html sha256-12 b526b93cbc3f; appendix PDF
+      sha256-12 ee9d828c5632 (text extracted with scripts/pdf_text.py)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: Section "Claude Code pauses for clarification ..."
+    quote: On the most complex tasks, Claude Code stops to ask for clarification more than twice as often as humans interrupt
+      it.
+    quote_sha256: 410e16a28bb901761f875fa9eed4327c32fab02dc707d187cdb33d274ec946fe
+    source_revision: Anthropic post published 2026-02-18, retrieved 2026-10-22, html sha256-12 b526b93cbc3f; appendix PDF
+      sha256-12 ee9d828c5632 (text extracted with scripts/pdf_text.py)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: Section "Claude Code is working autonomously for longer"
+    quote: the average number of human interventions per session decreased from 5.4 to 3.3.
+    quote_sha256: eae3d29f0b72d56a8ba408494f73d78da3af6de1b63ecadaa8beef71a9b07d0e
+    source_revision: Anthropic post published 2026-02-18, retrieved 2026-10-22, html sha256-12 b526b93cbc3f; appendix PDF
+      sha256-12 ee9d828c5632 (text extracted with scripts/pdf_text.py)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Appendix p. 27, Table A3 discussion
+    quote: Two other disagreements involved the “interrupted” category, where the ground-truth interruption
+    quote_sha256: b5f6065e3f718b4fb30e8de433d44e227952b43b498416fa3356a1750078de83
+    source_revision: Anthropic post published 2026-02-18, retrieved 2026-10-22, html sha256-12 b526b93cbc3f; appendix PDF
+      sha256-12 ee9d828c5632 (text extracted with scripts/pdf_text.py)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: prompt
+    locator: Appendix p. 18, Stop reasons prompt
+    quote: The transcript ends with "[Request interrupted by user for tool use]" as the FINAL text.
+    quote_sha256: b4e975f4b1d978cd4e0101faf6bd758113e315b4f3a09e98491ca5056d2af962
+    source_revision: Anthropic post published 2026-02-18, retrieved 2026-10-22, html sha256-12 b526b93cbc3f; appendix PDF
+      sha256-12 ee9d828c5632 (text extracted with scripts/pdf_text.py)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2430
+  arxiv_id: '2502.13965'
+  url: https://arxiv.org/abs/2502.13965
+  source_type: paper
+  title: 'Autellix: An Efficient Serving Engine for LLM Agents as General Programs'
+  categories:
+  - inference_serving
+  - agent_architecture
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2398
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - NOT-FOUND-IN-SOURCE (author list not extracted from HTML digest)
+  key_claims:
+  - Program key is the program ID of a stateful session; priority is the CUMULATIVE SERVICE TIME of that program (sum of runtimes
+    of its completed LLM calls, PLAS) or the longest observed critical path for multi-threaded programs (ATLAS); it is least-attained-service,
+    not first-arrival order (§4.2).
+  - Headline 4-15x throughput at equal latency is measured against stock vLLM v0.6.1 FCFS without prefix caching; against
+    the authors own optimised vLLM-opt (chunked prefill + prefix cache) the stated gains are about 2x (single-threaded), 2x
+    (LATS) and 4x (mixed) (§6.3).
+  - 'Scheduler is non-clairvoyant: it needs no prior knowledge of arrivals or workflow DAG, only a per-program process table
+    (service time, wait time, engine ids, last call arrival/completion) fed by a stateful session API (§4.1-4.2).'
+  - Anti-starvation promotes a call when program wait/service ratio exceeds a threshold, because plain wait-threshold promotion
+    degrades to naive MLFQ (§4.2).
+  - A clairvoyant SRPT simulation still beats Autellix by a visible gap, i.e. knowing program length in advance is worth more
+    than the accumulated-service proxy (§6.7).
+  - The mechanism rests on preempting running calls and swapping KV blocks to host (multi-step scheduling + contiguous swap
+    kernel), tested on A100 with Llama-3.1-8B/70B and Falcon-180B (§5, §6.1).
+  techniques:
+  - PLAS
+  - ATLAS
+  - MLFQ with program-level priority
+  - process table
+  - locality-aware load balancer
+  reported_results:
+  - up to 8x vs vLLM and 2x vs vLLM-opt on ShareGPT/BFCL (single-threaded)
+  - up to 15x vs vLLM, 4x vs vLLM-opt on mixed workloads
+  - load balancer up to 1.4x over baselines on 4x8B / 2x70B replicas
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-2398
+  credibility_score: 3
+  contradicting_evidence:
+  - Continuum (intake-2398) orders by program ARRIVAL (program-level FCFS) with KV TTL pins; on the same agent workloads that
+    is a different key than accumulated service.
+  notes: 'Source arXiv HTML for 2502.13965 retrieved 2026-10-22 sha256-12 9ff269cf99e8. PARTIAL: authors, §3, §6.4-6.6 detail
+    figures, appendix not read.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): Stage-1 framing ''key = accumulated service time vs first arrival''
+    CONFIRMED for the key, but headline speedup is against a no-prefix-cache baseline; real gain over a prefix-cached FCFS
+    engine is ~2-4x on A100 vLLM. Abstract + §4 + §6.2-6.3 + §6.7 read from HTML text; §3 motivation, §7 related work, appendices
+    not read.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: §4.2 PLAS [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv
+      HTML text]
+    quote: PLAS naturally favors calls from programs that have received less total service, helping shorter programs finish
+      earlier and reducing response times.
+    quote_sha256: 674362ca5a561494ecaeb4cc1ee965b820b175f1c168cb2ad4fc15aea8690e57
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: §6.3 Fig.12 text [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched
+      arXiv HTML text]
+    quote: Autellix achieves up to 15× higher throughput than vLLM, 5.5× higher than MLFQ, and 4× higher than vLLM-opt.
+    quote_sha256: d946810b965de88de2a75985d8a1f6fd38129f182077c70d6ae090cd11ec2c21
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: §6.3 Fig.12 text [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched
+      arXiv HTML text]
+    quote: vLLM performs worst due to its lack of prefix caching
+    quote_sha256: 5457703c4f7d1448425c49a7e68fe3357652d20c8ce7f918cc5470a80c8d7f4a
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: §4.1 Assumptions [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched
+      arXiv HTML text]
+    quote: Autellix is non-clairvoyant; it assumes no knowledge of program arrivals
+    quote_sha256: 6cb67c6b0fd7973eca2be5400bc41d8508efe44e4dc8c9faa0a5ba85e4fdb7f0
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: §4.2 Anti-Starvation [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched
+      arXiv HTML text]
+    quote: Autellix promotes call
+    quote_sha256: 636ea00e5be811bd7a3f36dbd193a408f56003d657981984c9cc7a1a8b34dbca
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: §6.7 clairvoyance [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched
+      arXiv HTML text]
+    quote: a noticable gap remains between Autellix and SRPT, showing that prior knowledge can significantly boost performance
+    quote_sha256: 29bc6a9fb134a9647e84d3334165282da10b3bcded055578f1b34babd497787b
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: §5 Implementation [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched
+      arXiv HTML text]
+    quote: Autellix builds on vLLM v0.6.1
+    quote_sha256: 85906d641f6e9a052055ca7709af3ac5c5946d3e235dd9aa6986af61a4365c33
+    source_revision: arXiv:2502.13965 HTML (latest version served 2026-10-22, sha256-12 9ff269cf99e8)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2431
+  arxiv_id: '2505.00234'
+  url: https://arxiv.org/abs/2505.00234
+  source_type: paper
+  title: Self-Generated In-Context Examples Improve LLM Agents for Sequential Decision-Making Tasks
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - context_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2410
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Vishnu Sarukkai et al. (full list NOT-FOUND-IN-SOURCE in extracted text)
+  key_claims:
+  - Naive accumulation of the agent's own SUCCESSFUL trajectories as retrieved in-context examples (Traj-Bootstrap) lifts
+    held-out test success from 73% to 89% (ALFWorld), 75% to 79% (InterCode-SQL), 55% to 64% (Wordcraft) with GPT-4o-mini,
+    vs a fixed human-example database (Tab.1).
+  - 'Protocol: strict train/test task separation; databases built only from training tasks, evaluated on unseen test tasks;
+    5 trials per method, mean with spread reported (§6, App. F.2).'
+  - 'Population-style database curation (+DB) and per-task best-exemplar selection by empirical retrieval utility (+Exemplar)
+    add further gains: best 0.93 ALFWorld, 0.82 InterCode-SQL; +Exemplar best on Wordcraft (0.72) (Tab.1).'
+  - 'Gains are noisy across trials (databases of identical procedure differ markedly) and show diminishing returns: most gain
+    within first 25% of added training tasks (Fig.1-2).'
+  - 'Cost: authors state test-time compute is identical across methods, curation costs multiples of training-time inference;
+    per-step top-k retrieval of whole trajectories into the prompt is not token-quantified (§5.4) -- NOT-FOUND-IN-SOURCE for
+    prompt-token overhead.'
+  - Equivalent to ~pass@2-3 of the fixed-DB agent and comparable to upgrading gpt-4o-mini to gpt-4o on ALFWorld (Tab.2-3);
+    examples are full trajectories, not distilled lessons.
+  techniques:
+  - trajectory bootstrapping
+  - retrieval of successful trajectories as exemplars
+  - population-based database curation
+  - exemplar utility scoring
+  reported_results:
+  - ALFWorld 0.73 -> 0.89 -> 0.93
+  - InterCode-SQL 0.75 -> 0.79 -> 0.82
+  - Wordcraft 0.55 -> 0.64 -> 0.72
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2410
+  credibility_score: 3
+  contradicting_evidence:
+  - Benchmarks are closed-world, reward-labelled, repeated-template tasks; transfer to open coding/orchestration tasks without
+    a binary success signal is untested in source.
+  notes: 'arXiv HTML 2505.00234 retrieved 2026-10-22 sha256-12 f1743eed3891. PARTIAL: Appendix prompts/fine-tuning section
+    not read.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): answers the EPYC question for exemplar injection: yes on held-out
+    tasks (+4 to +16 pts) under strict train/test split, but with GPT-4o-mini on 3 benchmarks with binary success labels;
+    token cost not measured. Abstract, §5-6, Tab.1-3, App.F.2 read; other appendices not read.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Abstract/§1 [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv
+      HTML text]
+    quote: even naive database accumulation improves test-set performance from 73% to 89% on ALFWorld, 55% to 64% on Wordcraft,
+      and 75% to 79% on InterCode-SQL
+    quote_sha256: 039221901cf1c2993482c732bf022c28e6130fb44f8cda3fc85e4b9bad87f903
+    source_revision: arXiv:2505.00234 HTML (retrieved 2026-10-22, sha256-12 f1743eed3891)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: App. F.2 [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv
+      HTML text]
+    quote: evaluation conducted on a separate set of test tasks never seen during the database construction phase
+    quote_sha256: ad1017bd24c0a8e22db8bd0384ebe2a555c508129d978327f207af14b855dc89
+    source_revision: arXiv:2505.00234 HTML (retrieved 2026-10-22, sha256-12 f1743eed3891)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: §6 Tab.1 text [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv
+      HTML text]
+    quote: achieves the best final task success rates on both ALFWorld and InterCode-SQL (0.93 and 0.82 respectively)
+    quote_sha256: a26f0a3146295c877ef3cebd924e13f5a0c7e8c89c29a2f371bcc3efacea0471
+    source_revision: arXiv:2505.00234 HTML (retrieved 2026-10-22, sha256-12 f1743eed3891)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: §6 Fig.2 text [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv
+      HTML text]
+    quote: most gains occur within the first 25% of added training tasks
+    quote_sha256: ece9d8b6c5179950fc0d0a87542c89cc5de04b87adea2e033d3a1c407adbaf12
+    source_revision: arXiv:2505.00234 HTML (retrieved 2026-10-22, sha256-12 f1743eed3891)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: §5.4 [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv HTML
+      text]
+    quote: At test time, all three methods have identical computational costs
+    quote_sha256: 448c875cad288d3c3edc92853f835e893d16f26a90319b47031214939b1d5c4d
+    source_revision: arXiv:2505.00234 HTML (retrieved 2026-10-22, sha256-12 f1743eed3891)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: Tab.2 caption [section label unverified (dive wrote it from memory); quote verified verbatim in the fetched arXiv
+      HTML text]
+    quote: The 15-point boost in average success rate from database construction via Traj-Bootstrap is similar to that achieved
+      from upgrading Fixed-DB from gpt-4o-mini to gpt-4o
+    quote_sha256: 486ecd1e82dbd7dc0b6d94074d1e667f918fe88ff71307975772a06c1c9aa047
+    source_revision: arXiv:2505.00234 HTML (retrieved 2026-10-22, sha256-12 f1743eed3891)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2432
+  arxiv_id: '2511.04847'
+  url: https://arxiv.org/abs/2511.04847
+  source_type: paper
+  title: Test-Time Adaptation for LLM Agents via Environment Interaction
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - context_management
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2410
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Salesforce AI Research / Univ. Waterloo (full list NOT-FOUND-IN-SOURCE in extracted text)
+  key_claims:
+  - 'Dynamics grounding (DG): a persona-driven exploration phase (GPT-4.1, 30-step cap) records state transitions, summarises
+    and filters them into an in-context list of environment rules supplied before task execution; no rewards or labels used
+    (§3-4).'
+  - On WebArena DG raises the multi-site split from 2% to 23%; gains are small on simple sites where dynamics match common-sense
+    priors and a longer context may slightly hurt (§5, §6).
+  - 'Cost: ~7M tokens of upfront exploration per WebArena website, amortised over later tasks; syntactic alignment (online
+    adaptation vector, needs weight access) adds ~3% latency (§6).'
+  - Naive hybrid of SA and DG underperformed DG alone on BFCLv3 (21.0 vs 22.0); filtering exploration notes helped (61.0 ->
+    64.0 at 10 episodes) (§6).
+  - Tau-Bench has no observable state transitions so DG is not applicable there (§4).
+  techniques:
+  - persona-driven exploration
+  - dynamics extraction and filtering
+  - online syntactic alignment vector
+  reported_results:
+  - WebArena multi-site 2% -> 23% (DG)
+  - 7M tokens per website exploration
+  - BFCLv3 hybrid 21.0 vs DG 22.0
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2410
+  credibility_score: 3
+  contradicting_evidence:
+  - Multi-site 2% baseline is a floor effect; large relative gain from a very low base.
+  notes: 'arXiv HTML 2511.04847 retrieved 2026-10-22 sha256-12 ee443ed5fdd7. PARTIAL: tables body numbers beyond text mentions,
+    appendices A.4-A.5 not read.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): this is exploration-time environment knowledge (not lessons
+    from the agent''s own task trajectories); closer to a pre-task probe than to ERL. Same-environment exploration, no task-level
+    held-out leakage since exploration is unlabeled. Abstract, §3-6 text, Tab.2-3 captions read; SA (weight-adaptation) internals
+    not examined deeply.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: §4
+    quote: with a maximum exploration budget of 30 steps
+    quote_sha256: 45d2290cebf43daff3bc52bc37517e3b56a730a151aa99d95d9c9f49ae1c7ea0
+    source_revision: arXiv:2511.04847 HTML (retrieved 2026-10-22, sha256-12 ee443ed5fdd7)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Abstract
+    quote: on the WebArena multi-site split, this method increases the agent’s success rate from 2% to 23%
+    quote_sha256: d5eadacb34a645a232046cee4357fabbc332014ad1a91182a997cf6dc5d44ba8
+    source_revision: arXiv:2511.04847 HTML (retrieved 2026-10-22, sha256-12 ee443ed5fdd7)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: §6
+    quote: The total upfront cost for our dynamics grounding procedure on a single WebArena website is approximately 7M tokens
+    quote_sha256: 87c01c491c73247f72445ed25d8df822db5c1efbe5cbc834b26f60e4d766e24e
+    source_revision: arXiv:2511.04847 HTML (retrieved 2026-10-22, sha256-12 ee443ed5fdd7)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: §6
+    quote: underperforming the dynamics grounding method alone on BFCLv3 (21.0% vs 22.0%)
+    quote_sha256: b5df3531db3c97e0bd2c0a7c4796e7857f463c3ceead52bc1b6978cd4961e039
+    source_revision: arXiv:2511.04847 HTML (retrieved 2026-10-22, sha256-12 ee443ed5fdd7)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: App. Tau-Bench
+    quote: dynamics grounding, which relies on extracting and leveraging such dynamics, is not applicable to this benchmark
+    quote_sha256: 85065bd8452fb43d13161fe5494f0926adbedd17fe35dfc7b7814b559153c957
+    source_revision: arXiv:2511.04847 HTML (retrieved 2026-10-22, sha256-12 ee443ed5fdd7)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2433
+  arxiv_id: null
+  url: https://medium.com/@callan.j.fox/evaluating-management-of-kv-cache-within-an-inference-system-2d7c3d266c3a
+  source_type: blog
+  title: Evaluating management of KV Cache within an inference system
+  categories:
+  - benchmark_methodology
+  - kv_cache
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2417
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Callan Fox (WEKA)
+  key_claims:
+  - 'Three-stage methodology: (1) single-prompt TTFT at 0% vs 100% cache hit as smoke test; (2) overhead test: working set
+    sized to FIT in HBM KV so an external KV manager only handles demotions, compared against prefix-only baseline with identical
+    commands; (3) tier-isolation: working set sized to ~80% of external tier capacity above HBM, deterministic FIFO cycling
+    so reuse hits the external tier.'
+  - cache_rate_tester ramps concurrency per cache-hit rate (0/25/50/75/90/100%) up to a TTFT ceiling (--max-ttft 10 avg) and
+    reinitialises the prompt pool per rate; a working_set_tester additionally grows the working set to expose each tier boundary.
+  - Author states run-to-run variance exists and the tool retries at peak concurrency; no repeat counts or confidence intervals
+    are given (NOT-FOUND-IN-SOURCE).
+  - 'No results table: only illustrative graphs (not machine-readable in the text); setup is 8xH100, vLLM + LMCache, Qwen3-Coder-30B-A3B-FP8
+    and Llama-3.3-70B-FP8. Vendor (WEKA) author.'
+  - 'Sizing rule: compute per-token KV bytes (48 KB/token for the 30B-A3B FP8 model) and set working set vs reported GPU KV
+    capacity (5,570,368 tokens) to force or avoid overflow.'
+  techniques:
+  - working-set sizing against KV capacity
+  - cache-hit-rate sweep
+  - TTFT-ceiling concurrency ramp
+  - paired config comparison with identical command
+  reported_results:
+  - 'NOT-FOUND-IN-SOURCE: no numeric results in text, graphs only'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-2417
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: Medium page returned HTTP 403 to curl; full post body obtained from the author's public RSS feed. Medium RSS feed
+    full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3). Images/graphs not read.
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): closes the ''Medium methodology article NOT read'' gap in intake-2417.
+    The method is a sizing recipe, not a metric; all stages assume a multi-tier external KV manager, so only stages 1 and
+    3 port to llama-server (slot/--cache-ram tiers).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Overhead test section
+    quote: There should be no difference in performance at all, otherwise there is a penalty just for sending KV Cache data
+      to the external KV Manager
+    quote_sha256: d19a8c7763166a1ffab247894bf81f6d4687a66f3b54c7e68546387ca701f2ac
+    source_revision: Medium RSS feed full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: Tier isolation section
+    quote: set the working set size to 80% of that number
+    quote_sha256: 0db2285d90d771e333c20e70ec326d57f893e4ac872f2fc0c8d33790dd22e27b
+    source_revision: Medium RSS feed full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Overhead test cmd
+    quote: --cache-hit-rates 0 25 50 75 90 100
+    quote_sha256: 36d7fa38e43a77b08f114ccd12c74a50b53c9a956e47e819a4d88346b54dddf7
+    source_revision: Medium RSS feed full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: Tier isolation section
+    quote: there is some variance in each of the test runs
+    quote_sha256: ff394a41115a24bdbee3ef369e71ffa0e0c64772dd90bc87b6af2c30ba010425
+    source_revision: Medium RSS feed full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: Test environment
+    quote: I will be testing with a single DGX with 8x H100 GPUs
+    quote_sha256: 5a5fe61c379eb610c55093fb6826fceaacc477a3a2c23a0210941d3f1b5b7d46
+    source_revision: Medium RSS feed full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Overhead test section
+    quote: each token is 48 KB in size for this model
+    quote_sha256: 94e79f51295f3bf24dd20e996cab9a792af22ac5fa5bd8d2b5ccaae880465cbf
+    source_revision: Medium RSS feed full-content (feed fetched 2026-10-22, sha256-12 43d80667086a; text sha256-12 ff9f6b63edf3)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
