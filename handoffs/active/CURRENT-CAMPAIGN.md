@@ -96,6 +96,7 @@
 >   `architect_general` on `:8074`; the 27B serves `architect_critic` on `:8083` with `coder_escalation` and
 >   `ingest_long_context`. B1 API reload done. Still open: the P1-P3 serving proofs (ARCHSWAP-3b) and the B2 relaunches
 >   (ARCHSWAP-4: `:8083` on workspace-76's go, `:8074` at a long idle gap).
+> - **Parked until the post-second-GPU stack redefinition (operator 2026-10-22): the HIL-6 pilot** — must run then; see harness-improvement-loop.md HIL-6j (reopen trigger + first step).
 > - **New direction until the second GPU is in:** infrastructure and design work with the operator, front-loading work
 >   that must be done eventually. Focus: how best to use Jev techniques in the stack, wiring them properly, and properly
 >   documenting future gated work. EXL3 inference research belongs to another session.

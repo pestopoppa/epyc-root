@@ -37,7 +37,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](non-inference-backlog.md) NIB2-98 | 2026-10-21 |
-| OP-CS8L | Italian listen check of `/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out/wav/` (human ear; agent QA is circular). | [conversation-stack.md](conversation-stack.md) CS-8.L | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
 | OP-DSPARK-RM | Delete `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10.0 GB, unmapped, no live refs; the agent's rm was blocked by the classifier), then the graveyard row. | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) DS41-W7.2 | 2026-10-22 |
 | OP-RAMADMIT-D9 | D9 ack to land `/mnt/raid0/llm/tmp/ram_admit.durable-copy-pending-D9.sh` as `scripts/coordination/ram_admit.sh` (the live copy is the tmp path). | [compute-fillers.md](../../docs/guides/agent-workflows/compute-fillers.md) / DS41-W8d | 2026-10-22 |
