@@ -354110,8 +354110,11 @@
     - intake-2206
   credibility_score: 3
   contradicting_evidence:
-  - 'Search-seen only: arXiv 2608.15046 (Certifying Compressed Language Models) reportedly critiques losslessness claims without
-    equivalence tests; ingested as intake-2483 for the dive.'
+  - 'arXiv 2608.15046 (intake-2483, dived 2026-10-22): SLQ is NOT among its 17 audited claims; only its related work / App
+    A.2 note that SLQ has no equivalence test at a declared margin and no power or required-n computation.'
+  - 'Kuebler et al. arXiv 2602.10144 (intake-2484, dived 2026-10-22): failing to reject is not equivalence and fixed-threshold
+    rules are not robust; SLQ''s ''statistically lossless'' is a mean-recovery threshold with no per-item paired test (consistent
+    with intake-2483). This does not show SLQ models are degraded (ledger F-L8).'
   reader_should_conclude: 'Cite SLQ for (a) the allocation recipe (GPTQ asym g128 x bitwidth 2..8, Shapley, ILP, binary search
     to a fidelity target) and (b) EAR as a top-10-renormalized overlap metric defined in evaluation.py. Do NOT carry: ''3.3
     / 5.19 bits'' as whole-model bpw (subset-only); the 1.7-3.7x speedup (per-GPU, L40S, GPU-count confounded, nothing for
@@ -354334,7 +354337,9 @@
     not measured, L40S only; (4) paper has no EAR/KL for Qwen and no GGUF/Q8_0 row; nearest 8-bit datum is uniform INT8 g128
     on Llama-3.1-8B (EAR 0.992 asym / 0.997 sym); (5) ''within sampling variance on every benchmark'' has no reported variance
     and some SLQ-DL deltas are 1.5-2.3 pts; (6) gamma^2 empirical support is mixed (sym > asym at 8 bit; Tables 17 vs 19/21
-    inconsistent). Stage-1 claims 0, 2 and the App E cost confirmed.'
+    inconsistent). Stage-1 claims 0, 2 and the App E cost confirmed. || 2026-10-22 Stage-2 close-out, dive-surfaced sources:
+    arXiv:2606.19558 (Nikolic et al., Displacement Is Not Direction) = intake-1510 already in index — declined: Already ingested
+    and dive-verified as intake-1510; no new ingest.'
 - id: intake-2462
   arxiv_id: null
   url: https://huggingface.co/collections/kaitchup/qwen38-27b-slq
@@ -354590,7 +354595,9 @@
     (2) FP8 comparison should be the weights-only 98.10%, the 97.71% is W8A8-native; (3) EAR99 (30.5 GB) is Q8_0-sized once
     the BF16 vision/MTP/embed residue is accounted; (4) exact per-projection bit maps extracted; (5) Humming is CUDA-only
     (no ROCm/CPU), no GGUF of any SLQ checkpoint exists, so the checkpoints cannot be loaded by our stack; (6) a UD-Q4_K_XL
-    GGUF row (97.44%) exists in the card, a Q8_0 row does not.'
+    GGUF row (97.44%) exists in the card, a Q8_0 row does not. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: https://github.com/inclusionAI/humming
+    @5b500b407a716e9dfcede04a5eba97a6eece0508 — declined: CUDA/NVCC-only, JIT GEMM for NVIDIA SM75+; nothing portable to gfx90a
+    or llama.cpp; the portable idea (arbitrary-bit weights with dynamic zero-point) is already'
 - id: intake-2463
   arxiv_id: null
   url: https://github.com/IST-DASLab
@@ -354960,7 +354967,9 @@
     Qwen3-8B GGUF chart unreproducible) and narrowed it: a side branch holds IQuant GGUF repack code with a negative KL result;
     trigger status for iqk-iquant-enablement NEW-10/NEW-11 evaluated: NOT fired; GitHub API shows main untouched since 2026-07-05
     and the maintainers saying (2026-06-29) the GGUF codebase is ''very soon''; the 27B release pipeline is unpublished (issue
-    #9).'
+    #9). || 2026-10-22 Stage-2 close-out, dive-surfaced sources: https://github.com/IST-DASLab/GSQ/tree/gsvq-iquant-qwen3-sweep-results
+    (c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources);
+    intake-2466 IST-DASLab/gptq-gguf-toolkit (in this batch) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
 - id: intake-2466
   arxiv_id: null
   url: https://github.com/IST-DASLab/gptq-gguf-toolkit
@@ -355170,7 +355179,9 @@
     claim 1 narrowed (search runs in HF/PyTorch on CUDA with dequantized layers, scalar-bpw keyed); claim 0 narrowed (layout
     matches ggml by structural reading; no in-repo byte-compare or llama.cpp evidence); claims 3-4 added (README rows incl.
     the 2.71 loss and a duplicated PPL triple; type-agnostic stitcher with dense-only, broken-type-map splitter). Verdict
-    worth_investigating -> adopt_patterns, relevance high -> medium.'
+    worth_investigating -> adopt_patterns, relevance high -> medium. || 2026-10-22 Stage-2 close-out, dive-surfaced sources:
+    arXiv:2601.14277 (title unverified; surfaced by web search as a Jan-2026 study of llama.cpp quantization formats on Llam
+    — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
 - id: intake-2467
   arxiv_id: '2609.26333'
   url: https://github.com/IST-DASLab/disaggregated-quantization
@@ -355448,7 +355459,11 @@
     added NOT-FOUND-IN-SOURCE: no GGUF-native higher-bit prefill test; (4) 1.78x TTFT is GB10/Blackwell and its kernel provenance
     is contradicted by the HF card (~1.3x released); (5) relevance high -> medium: the lanes in scope (DS41/Q38FN MoE CPU,
     MI210 27B Q8_0) are outside the regime where the paper shows a gain (<=2-bit dense on FP4-native hardware). Searched for
-    replications: none found (2 searches).'
+    replications: none found (2 searches). || 2026-10-22 Stage-2 close-out, dive-surfaced sources: arXiv:2410.13461 (Progressive
+    Mixed-Precision Decoding, Chen et al. 2025a) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources);
+    arXiv:2605.20315 (Mix-Quant: Quantized Prefilling, Precise Decoding for Agentic LLMs) — declined: Opposite direction to
+    our probe and not low-bit-weight focused; revisit only if C-L1 passes.; https://discuss.huggingface.co/t/kv-cache-precision-compatibility-in-spatial-disaggregation-prefill-decode-setups-with-a
+    — declined: Forum thread, no data.'
 - id: intake-2468
   arxiv_id: null
   url: https://github.com/IST-DASLab/disaggregated-llama.cpp
@@ -355972,7 +355987,9 @@
     seed noise at 2.25 bit; baselines are authors'' reproductions; GGUF mention is about equal expert counts for pruned-MoE
     GGUF export, located in §1/§2/App. E.1, not in the Table 1 caption). Added non-integer cost support (--bitwidth-map),
     single-budget CLI, no ggml/GGUF in code, and the compute footprint. relevance high -> medium, verdict new_opportunity
-    -> adopt_patterns.'
+    -> adopt_patterns. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: MxMoE (github.com/cat538/MxMoE; Duanmu et al.
+    2025) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources); IST-DASLab GSQ code release (referenced
+    by intake-2207) — declined: Already tracked as the NEW-10 trigger; nothing new to ingest until a release exists.'
 - id: intake-2471
   arxiv_id: '2602.03537'
   url: https://github.com/IST-DASLab/MatGPTQ
@@ -356247,7 +356264,10 @@
   dive_corrections: '2026-10-22 Stage-2 dive: filed claims confirmed; added per-row Table 1 numbers (abstract headline mixes
     the 4.35 pp Qwen3-30B margin with the 96.09% Kimi-K2.5 recovery whose reference is native INT4), 2.75 bpw verified against
     ggml block sizes, Table 3 shows no accuracy-per-bit edge over REAP/GSQ, kernels B200-only; credibility 2 -> 3 (code +
-    checkpoints released, tables internally consistent, no independent replication).'
+    checkpoints released, tables internally consistent, no independent replication). || 2026-10-22 Stage-2 close-out, dive-surfaced
+    sources: arXiv:2606.26587 SharQ: Bridging Activation Sparsity and FP4 Quantization (surfaced by WebSearch, not read) —
+    declined: Activation-sparsity method on Blackwell; no bearing on CPU/MI210 lanes; flagged for operator veto per the never-dismiss
+    rule.'
 - id: intake-2473
   arxiv_id: null
   url: https://github.com/IST-DASLab/MoE-Quant
@@ -356515,7 +356535,10 @@
     bytes (6% at N=2048, 12% at N=1024) on a bandwidth-bound decode. FP-Quant Table 2 (weight-only) shows Hadamard does not
     help MXFP RTN there (95.58 -> 93.51), so WUSH''s demonstrated W4A4 gain cannot be assumed to transfer. || 2026-10-22 Stage-2b
     (intake-2488 dive, ledger F-L7): the "later survey ranks WUSH best" line was a restatement of the WUSH paper''s own Table
-    2, not independent evidence; contradicting_evidence rewritten.'
+    2, not independent evidence; contradicting_evidence rewritten. || 2026-10-22 Stage-2 close-out, dive-surfaced sources:
+    arXiv:2608.25188 "Transforms for LLM Quantization: The Great Inversion and Format Co-Design" (surfaced by WebSearch 2026
+    — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources); arXiv:2509.23202 (MR-GPTQ; already in
+    the index) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
 - id: intake-2475
   arxiv_id: '2507.18553'
   url: https://github.com/IST-DASLab/GPTQ-Babai
@@ -357268,7 +357291,11 @@
     all native enums, no Q2_0; (2) card numbers re-derived and arithmetic confirmed, but granularity shows IQ3_S vs BF16/UD
     differences are 0-1 items on AIME/GPQA and 3 items on LCB; protocol not stated; (3) tokenizer tables identical to served
     Unsloth Q8_0, chat template differs (Unsloth patch); (4) -mtp head confirmed (15 tensors Q6_K/F32, +348 MB) with an independent
-    0%-acceptance report for IQ3_S-mtp; (5) added roofline-derived streamed bytes and a proposed MI210 A/B (ledger).'
+    0%-acceptance report for IQ3_S-mtp; (5) added roofline-derived streamed bytes and a proposed MI210 A/B (ledger). || 2026-10-22
+    Stage-2 close-out, dive-surfaced sources: https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF/discussions (58
+    threads, API retrieved 2026-10-22) — declined: Anecdotal and uncontrolled; the proposed A/B measures the same things under
+    our predeclared rule. Declined as a dive target only; threads 6/22/23/28/29/32/43 ar; https://huggingface.co/HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF
+    (cited in HF discussion 23) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
 - id: intake-2482
   arxiv_id: null
   url: https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-NVFP4-prefiller
@@ -357571,7 +357598,9 @@
     (an audit of compressed-LM losslessness claims that contradicts SLQ) is overturned. The audited 17 do not include SLQ
     or any kaitchup card; SLQ is cited once in Related Work and App A.2 as a complementary definition+method paper that ''contains
     no equivalence test at a declared margin, no power or required-n computation''. The paper does supply a usable instrument
-    (TOST + churn-based item-count tables) for sizing OUR paired per-item gates.'
+    (TOST + churn-based item-count tables) for sizing OUR paired per-item gates. || 2026-10-22 Stage-2 close-out, dive-surfaced
+    sources: Kuebler et al., "When LLMs get significantly worse: A statistical approach to detect model degradations" (ICLR
+    2026; arX — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
 - id: intake-2484
   arxiv_id: '2602.10144'
   url: https://arxiv.org/abs/2602.10144
@@ -357830,7 +357859,9 @@
       checked by grep over the whole text (only McNemar 1947 "equivalence of proportions" mention).
   depends_on: []
   dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass; v2 (06 May 2026, ICLR 2026) HTML read
-    from disk.'
+    from disk. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: https://github.com/amazon-science/LLM-Accuracy-Stats
+    — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources); Dutta et al. 2024 "Accuracy is Not All
+    You Need" (intake-1519) re-read against intake-2484 — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
   reader_should_conclude: 'CITE for: the exact one-sided McNemar/binomial test on discordant pairs (Alg 1), the power relation
     SNR = sqrt(N/p_flip)*delta (Eq 11), the pooled/Fisher/max-drop aggregation, the measured flip floor of 1.3-2.8% for theoretically
     lossless serving changes (vLLM, 8B, 25k items), and the finding that fixed flip-rate (>=5%) and aggregate-delta (<=2%)
@@ -358097,7 +358128,11 @@
     22.2 vs 2/2 18.3) and needs no training of the weights; (2) every pair in the paper is NESTED Any-Precision quantization
     of one model, so the paper never tests KV written by one independent quantization and read by another; (3) evidence is
     2-4-bit dense <=13B with overlap metrics and a 1-bit gap, so it predicts nothing at an IQ4->IQ3 gap and nothing for MoE/hybrid-recurrent
-    targets.'
+    targets. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: github.com/SamsungLabs/PMPD (pushed 2025-07-15) — declined:
+    Only relevant after C-L1 reports; the probe is a llama.cpp harness, not a PyTorch port.; Any-Precision LLM (Park et al.,
+    2024; cited in PMPD S2.1/S5) — declined: Background to C-L1''s nested-vs-independent caveat; not on a decision path.;
+    Tandem Transformers for Inference Efficient LLMs (Aishwarya et al., ICML 2024; cited by PMPD S3.1 as the motivation for  —
+    declined: Architectural, requires training; outside the training-free probe.'
   reader_should_conclude: 'Cite for: prefill precision matters more than decode precision (Table 4) and a higher-precision
     prefill needs no training and costs ~1% prefill latency on GPU. Do NOT carry: the 1.4-12.2x speedups (per-layer GPU kernel
     / simulated NPU), ''lossless'' as a KLD statement, or any implication that independently quantized GGUF pairs share a
@@ -358814,7 +358849,12 @@
     note: Sec 12.1 read.
   depends_on: []
   dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass; v1 HTML (only version) read from disk
-    (abstract, Sec 1, 2.8, 4.1, 5, 7.3, 8 transform-format text, 9.3, 10.4-10.5, 11.2-11.3, 12.1-12.2 / Table 16).'
+    (abstract, Sec 1, 2.8, 4.1, 5, 7.3, 8 transform-format text, 9.3, 10.4-10.5, 11.2-11.3, 12.1-12.2 / Table 16). || 2026-10-22
+    Stage-2 close-out, dive-surfaced sources: arXiv:2507.17417 (Liu, Zhao, Hu 2025b) "A comprehensive evaluation on quantization
+    techniques for large language models" — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources);
+    Tseng et al. 2024a QuIP# (arXiv 2402.04396) Table 2 ablation without E8 codebook + fine-tuning — declined: Already represented
+    through intake-873 (QTIP) lineage; F-L5 measures the question on our formats directly. Re-open if F-L5 is approved and
+    needs the original ab'
   reader_should_conclude: 'Cite only for: (1) the theory framing (flattening vs concentration; no optimum transfers) as background,
     (2) the explicit statement that its WUSH evidence is a transcription of the WUSH paper''s own Table 2, (3) the guide row
     ''rotation helps little at 4-bit weight-only, valuable at 2-3 bits'' (derived from QuIP#, a different method with codebook
@@ -359311,7 +359351,11 @@
   dive_corrections: '2026-10-22 Stage-2b combined pass: new entry. Key point for the index: this is the SAME artifact that
     intake-1256 cited as refuting its ''Q2_K floor'' claim, but the repo was rebuilt on 2026-08-25 and the evidence intake-1256
     quoted (dummy imatrix, 571,123,360 B file, sha d2457287...) describes a superseded upload. The refutation of the floor
-    claim stays valid on mechanism, not on the ''fabricated'' wording.'
+    claim stays valid on mechanism, not on the ''fabricated'' wording. || 2026-10-22 Stage-2 close-out, dive-surfaced sources:
+    llama.cpp PR 28715 (DFlash2 + image draft speed fix) and PR 27342 (DFlash2 support) — declined: Text-only serving; surfaced
+    from HF discussions 2/4 only.; bleysg/DeepSeek-V4-Flash-DSpark-drafter-GGUF (Q2_K routed experts, Q8_0 attention; surfaced
+    by WebSearch) — declined: Already recorded as declined in intake-1256; re-raise only if the DF2 drafter-quant arm (G-L7)
+    fires.'
   reader_should_conclude: 'Cite for: a 2.33 bpw DFlash2 drafter loses 2-5% mean draft length and is throughput-neutral on
     a 24 GB NVIDIA GPU (author-reported, one prompt, target quant unstated). Do NOT cite it as evidence about how a re-quantized
     TARGET affects drafter acceptance - it varies the drafter only. Do NOT download it for the MI210 stack: Q8_0 drafter is
@@ -359653,7 +359697,8 @@
     read: aggregation_script.py lines 600-1059 (metric tables / summary writers), the 9 llm_experiments and 2 dataset_selection
     shell scripts, plots_and_synthetic/*.py, seed_flip_analysis.py. The two NaN/ZeroDivision checks imported aggregation_script.py
     in the orchestrator .venv (python -I) and called the pure functions on tiny integers; no script was run end to end, no
-    installs, no data files used.'
+    installs, no data files used. | DIVE 2026-10-22: second reader 2026-10-22 (wave 4, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml):
+    yes 12, partial 8, no 1.'
 - id: intake-2492
   arxiv_id: '2507.17417'
   url: https://arxiv.org/abs/2507.17417
@@ -359692,8 +359737,10 @@
     is right for NVFP4 (zero to negative) but understates MXFP4-GPTQ (about a quarter of the gap). The scaling arm is itself
     a no-op on these formats: Table XIII no-transform GPTQ MXFP4 is 13.24 and NVFP4 10.98, identical to the Table XIV scaling
     cells (13.24, 10.97), so "rotation vs scaling" here is also "rotation vs nothing". The authors explain it with AMXFP4
-    (arXiv 2411.09909, not read): small micro-scaled groups already tame outliers, so rotation "contributes little and may
-    even lead to degradation". PARTIAL as a general claim: one model (1B), one run, PPL only.'
+    (arXiv 2411.09909 = intake-2493, read 2026-10-22: rotation raises PPL at g32 in its own W4A4 setting, while FP-Quant intake-2479
+    shows Hadamard helping E8M0 MXFP4 RTN, so the explanation does not transfer unreconciled): small micro-scaled groups already
+    tame outliers, so rotation "contributes little and may even lead to degradation". PARTIAL as a general claim: one model
+    (1B), one run, PPL only.'
   - 'Bearing on WUSH (intake-2474; W4A4, Llama-3.1-8B-Instruct, downstream average accuracy, WUSH vs Hadamard: MXFP4 GPTQ
     +0.70, NVFP4 +0.26, RTN MXFP4 +2.76): this paper is directionally CONSISTENT with "transform gains are small on NVFP4
     and modest on MXFP4" but it is NOT a test of WUSH and NOT a Hadamard-vs-adaptive comparison. Differences: learned OSTQuant
@@ -359867,7 +359914,7 @@
     quote_sha256: eefe05815dd5d6be28f7fa44d8ca1dec7ed1f52afe63bbd89ec1f2d40150006e
     source_revision: arXiv:2507.17417v3 (29 Jan 2026) retrieved 2026-10-22
     verified_by: research-intake/stage2
-  - claim_index: 2
+  - claim_index: 1
     kind: page-and-quote
     locator: Table VIII row BF16
     quote: BF16 9.76 54.78 9.76 54.78
@@ -359968,7 +360015,11 @@
   dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass. Resolves the intake-2488 "not read"
     item: the only independent check of rotation gains on MXFP4/NVFP4 is a single-model (LLaMA-3.2-1B) PPL study whose own
     v1 conclusion contradicted its v1 table; the result is a weak directional consistency with WUSH, not corroboration, and
-    says nothing about weight-only formats.'
+    says nothing about weight-only formats. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: arXiv:2411.09909 AMXFP4
+    "Taming Activation Outliers with Asymmetric Microscaling Floating-Point for 4-bit LLM Inference" — ingested-and-dived
+    in Stage 2b or folded (see session dive_surfaced_sources); arXiv:2501.13987 OSTQuant (learned orthogonal + scaling transform)
+    — declined: Not in the index. Answering requires only the OSTQuant method section, and no lane here trains a rotation;
+    recorded as a leak in intake-2492 notes rather than i'
   reader_should_conclude: 'CITE (with version v3 and Table XIV) only for: on LLaMA-3.2-1B W4A4 with a learned OSTQuant rotation,
     GPTQ NVFP4 sees no gain from rotation (+0.07 PPL) and MXFP4 a modest one (-0.87 PPL, ~25% of the BF16 gap), and E4M3+FP32
     tensor scales beat E8M0 by 2-3 PPL. DO NOT: cite it as an independent replication of, or a test against, WUSH; cite it
@@ -359981,4 +360032,397 @@
     v1 Table 8/9 and Sec 3.4/4 read; v4.html (88 KB, LaTeXML render) read through its end (abstract, Introduction, start of
     Sec 2: it stops at Sec 2.2.1 "Scaling"; no results). NOT read: v3 related-work tables I-VII beyond headings, Fig 7 values,
     reference list, v2 text outside FP4 sections, v4 PDF (no PDF text tool on host). Tables VIII-XV values are from the rendered
-    HTML tables.'
+    HTML tables. | DIVE 2026-10-22: second reader 2026-10-22 (wave 4, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml):
+    yes 17, partial 6, no 1. Mis-indexed anchor 14 re-pointed to claim 1; AMXFP4 pointer updated (ledger I-L3).'
+- id: intake-2493
+  arxiv_id: '2411.09909'
+  url: https://arxiv.org/abs/2411.09909
+  source_type: paper
+  title: 'AMXFP4: Taming Activation Outliers with Asymmetric Microscaling Floating-Point for 4-bit LLM Inference'
+  authors:
+  - Janghwan Lee
+  - Jiwoong Park
+  - Jinseok Kim
+  - Yongjik Kim
+  - Jungju Oh
+  - Jinwook Oh
+  - Jungwook Choi
+  categories:
+  - quantization
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2492
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Format (v2 Sec 4.2-4.3, Eq 1, Fig 5, App B.2): AMXFP4 = FP4 E2M1 elements in microscaling groups (main experiments g=32;
+    g=16/64/128 swept in Table 18) with TWO shared FP8 scales per group, one applied to the positive elements and one to the
+    negative elements; at multiply time the scale is selected from the operands'' signs. The asymmetry is in the SCALE, not
+    a zero-point/min offset (the zero-point form is the AsymINT baseline, which loses to AsymFP4 in Sec 4.1 and Table 1).
+    The shared-scale encoding the paper adopts is FP8 E5M2 (an E4M3 scale fails on dynamic range, Table 18), i.e. a non-power-of-two
+    scale with 2 mantissa bits; the OCP E8M0 power-of-two scale is only the ''PoT'' arm. Bit budget (OUR arithmetic, not stated
+    in the paper): 4 + 2x8/32 = 4.5 bpw vs 4.25 for OCP MXFP4. How the two scales are fitted to a group is NOT specified in
+    the paper text (it lives in the released emulation code, github.com/aiha-lab/MX-QLLM, not cloned). The per-sign-scale
+    idea is lifted from AFPQ (Zhang et al., ACL Findings 2024, weight-only; cited, not read). CONFIRMED (v2 read in full from
+    disk).'
+  - 'Premise (Sec 3.1-3.3, Fig 2): microscaling to g=32 removes activation kurtosis (outliers) but makes the per-group MEAN
+    scatter (asymmetry), so a symmetric grid is suboptimal; measured on FFN1/FFN2 input activations of OPT/LLaMA-like models
+    and LLaVA activations. No weight-group asymmetry measurement is made anywhere. Sec 4.1 MSE test (one layer: LLaMA2-7B
+    layer-5 QKV-Proj input activations) picks AsymFP4 over AsymINT4/NF4/SF4/INT4 as closest to a Lloyd-Max reference. CONFIRMED
+    as stated; evidence is activation-side and single-layer for the format choice.'
+  - 'Where the headline gain comes from (v2 Table 18 and Table 12, Wikitext-2 PPL, W4A4 direct-cast, LLaMA2-7B, FP16 = 5.47,
+    g=32): symmetric MXFP4 with an OCP-style power-of-two FLOOR exponent 11.150; same with a rounded exponent 7.834; with
+    FP8 E5M2 scale 6.490; with FP16 scale 6.206. AMXFP4 (asymmetric): floor-PoT 11.362, round-PoT 7.456, E5M2 6.223, FP16
+    5.999. So for symmetric MXFP4 the scale change floor-E8M0 -> E5M2 is worth 4.66 PPL, while adding asymmetry on top is
+    worth 0.27 (E5M2) or 0.21 (FP16 scale) (our arithmetic). The paper''s ''MXFP4'' baseline in Tables 1, 3, 4, 12 is the
+    E5M2-scaled variant (''all experiments use the proposed FP8 shared scale across all formats''), NOT the OCP E8M0 format;
+    even its ''MXFP4-PoT'' arm uses the paper''s own rounded exponent (Table 12 LLaMA2-7B 7.83 vs floor 11.150 in Table 18).
+    CONFIRMED (numbers read from the on-disk table text; Table 18 column order OPT-6.7B, OPT-13B, LLaMA2-7B, LLaMA2-13B, LLaMA3-8B,
+    Mistral-7B, Qwen-7B).'
+  - 'The asymmetry gain is NOT monotone in group size and does not help E8M0-floor scales (Table 18, LLaMA2-7B): floor-PoT
+    MXFP4 vs AMXFP4 g128 12.056 vs 11.555 (better), g64 11.228 vs 10.956 (better), g32 11.150 vs 11.362 (WORSE), g16 11.212
+    vs 12.255 (WORSE); with the rounded exponent AMXFP4 wins at every g (g32 7.834 -> 7.456). With FP16 scales the absolute
+    gain SHRINKS with smaller groups (g128 7.065 -> 6.564 = 0.50; g64 0.30; g32 0.21; g16 0.175), contradicting the Sec 5.3
+    sentence that asymmetry ''becomes more beneficial at smaller group sizes'' (that sentence is supported only by the ANVFP4
+    MMLU numbers in Table 4). A native OCP MXFP4 tensor (one E8M0 scale per 32, floor or otherwise fixed in the checkpoint)
+    is exactly the setting in which the paper''s own table shows no reliable benefit from per-sign scales. OVERTURNED for
+    the ''smaller group -> larger benefit'' generalization; CONFIRMED for the table values.'
+  - 'Rotation vs microscaling (Sec 3.2, 5.1, 5.4; Tables 1, 5): with a randomized Hadamard transform at g=32 PPL gets WORSE
+    for both formats: MXFP4 6.49/5.69/8.35 -> 10.09/6.89/9.48 and AMXFP4 6.22/5.47/7.72 -> 8.36/6.35/9.20 (LLaMA2-7B/2-13B/3-8B;
+    FP8-scale arms); at whole-row groups rotation is the big win for MXFP4 (475.62 -> 11.88 on 2-7B) and AMXFP4 is slightly
+    worse than rotated MXFP4 on 2-7B and 2-13B (12.05 vs 11.88; 11.54 vs 10.81) and better on 3-8B (12.13 vs 13.27). Table
+    5: g32 MXFP4 none 5.93, random Hadamard 9.23, learned SpinQuant 6.10 (also not better than no rotation). INTERNAL INCONSISTENCY:
+    Table 5''s g32 no-rotation MXFP4 5.93 matches neither Table 1/12/18''s 6.49 (E5M2 scale) nor 6.206 (FP16 scale); the Table
+    5 setup is not stated. This verifies the sentence intake-2492 attributes to the AMXFP4 line (rotation ''contributes little
+    and may even lead to degradation'' at small groups) for the AMXFP4 paper''s own W4A4 PPL setting only. CONFIRMED as reported;
+    transfer to E8M0 and to downstream accuracy is contradicted (see contradicting_evidence).'
+  - 'Weight-only / GGUF: NOT-FOUND-IN-SOURCE. Every experiment quantizes weights AND activations together (''We quantize all
+    weights and activations in Transformer decoder layers'', App C; the QAT run quantizes all linear-layer weights and activations
+    to 4 bits); there is no W4A16 or weight-only number, and Sec 3 measures asymmetry on activation groups only. The weight-only
+    precedent for per-sign scales is AFPQ (cited, not read). Mapping to our stack (our reading, with the code checked at ffc1bac82):
+    (a) DS41 experts are native OCP MXFP4, block_mxfp4 = 1-byte E8M0 + 16 bytes of nibbles (4.25 bpw, ggml-common.h L215-218),
+    served bit-exact on CPU (CPU_REPACK mxfp4_8x8_q8_0, Q8_0 activations); the checkpoint stores ONE scale per 32, so there
+    is no second (negative) scale to apply and nothing to do to those tensors; (b) AMXFP4 as a storage format would be a new
+    ggml block type (two E5M2 scales, 18 bytes per 32 if byte-aligned), not GGUF-MXFP4 compatible, and its benefit is demonstrated
+    on activations, which our CPU path keeps at Q8_0 (decode is weight-bandwidth bound, so 4-bit activations buy no decode
+    speed); (c) gfx90a has no FP4 matmul; (d) K-quants/Q4_1 already store a per-block min (block_q4_K dmin), so asymmetric
+    weight blocks already exist in GGUF. Net: knowledge-only for the formats; one narrow pattern bears on a hypothetical BF16->MXFP4
+    requant (next claim).'
+  - 'Hardware and scope (Sec 5.5, Table 9, Limitations): evidence is PyTorch/CUDA emulation (modified MX Emulation library)
+    plus a 4nm Synopsys DC synthesis of a custom MAC; the sign-aware mantissa scaling adds about 10% area/memory over the
+    MX-compatible MAC (Table 9 AMXFP4 8.32x vs MXFP4 9.23x area-memory vs FP16; the column headers are mis-parsed in the HTML,
+    so cite the ~10% from the text). No silicon, no throughput, no energy at system level (stated as future work); greedy
+    decoding only. Commodity FP4 tensor cores implement OCP MXFP4/NVFP4 and do not have the sign-selected dual-scale MAC,
+    so the paper''s hardware story is not deployable on shipping parts. CONFIRMED.'
+  - 'NVFP4 extension (Sec 5.3, Table 4): ANVFP4 (asymmetric scale added to NVFP4) beats NVFP4 on MMLU at g=16: 2-7B 34.0 ->
+    37.3, 2-13B 45.9 -> 47.7, 3-8B 54.6 -> 57.1 (+3.3/+1.8/+2.5); CSQA is mixed (2-7B 62.6 -> 62.2, 2-13B 65.3 -> 66.2, 3-8B
+    63.4 -> 64.9); at g=32 NVFP4 vs ANVFP4 MMLU 32.9/44.5/51.9 vs 34.8/45.8/54.0. Single run per cell, no variance, W4A4 emulation,
+    LLaMA-2/3 only. PARTIAL: the abstract-level ''about 3%'' is the MMLU best case (2-7B), not the average.'
+  techniques:
+  - 'asymmetric microscaling: separate positive and negative shared FP8 (E5M2) scales per group of 32 FP4 (E2M1) elements;
+    sign-selected scale in the MAC'
+  - power-of-two shared-scale exponent ROUNDING instead of OCP FLOOR (reduces max-clamping error)
+  - FP8 E5M2 vs E4M3 shared-scale ablation
+  - 'ANVFP4: asymmetric scale added to NVFP4'
+  reported_results:
+  - 'Table 12 (Wikitext-2 PPL, W4A4 emulated, groups 32): LLaMA2-7B 16-bit 5.47 / MXFP4-PoT 7.83 / MXFP4(E5M2) 6.49 / AMXFP4
+    6.22; LLaMA2-13B 4.88 / 6.98 / 5.69 / 5.47; LLaMA3-8B 6.14 / 11.17 / 8.31 / 7.72; OPT-6.7B 10.86 / 25.51 / 13.71 / 13.06;
+    Mistral-7B 5.25 / 6.34 / 5.88 / 5.71.'
+  - 'Table 18 LLaMA2-7B g32 decomposition (see claim 2): MXFP4 floor 11.150, round 7.834, E5M2 6.490, FP16 6.206; AMXFP4 floor
+    11.362, round 7.456, E5M2 6.223, FP16 5.999; E4M3 scale 13.334 / 13.080.'
+  - 'Table 1 (rotation, LLaMA2-7B/2-13B/3-8B): see claim 4. Table 5 (SpinQuant, LLaMA2-7B): g32 MXFP4 none 5.93 / random 9.23
+    / SpinQuant 6.10; AMXFP4 5.85 / 8.02 / 6.04.'
+  - 'Table 14 LLaMA3-70B (FP16 2.86): MXINT4 7.73, MXFP4 5.82, AMXINT4 5.36, AMXFP4 4.35. Table 7 W3A3 LLaMA2-7B/13B: QuaRot-RTN
+    1032.30/1105.95, QuaRot-GPTQ (INT) 38.47/37.42, AMXFP3 8.40/6.53 (16-bit 5.47/4.88).'
+  - 'Table 6 QAT LLaMA3-8B: direct-cast MXFP4 +1.6 PPL vs 16-bit, AMXFP4 +0.8; QAT needs ~150 GB GPU memory and ~5 h (two
+    A100-80GB).'
+  - 'Table 9 hardware (4nm synthesis, relative to FP16): MXFP4 9.23x / 5.65x / 21.41x, AMXFP4 8.32x / 4.58x / 16.50x (column
+    headers mis-parsed in HTML; text states ~10% overhead).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2492
+    - intake-2479
+    - intake-2474
+    - intake-2488
+    - intake-2124
+  credibility_score: 1
+  contradicting_evidence:
+  - 'FP-Quant / MR-GPTQ (intake-2479, arXiv 2509.23202v3 Table 1, Llama-3.1-8B, W4A4, downstream recovery): for E8M0 MXFP4
+    g32 a Hadamard transform with RTN IMPROVES recovery 87.83 -> 89.26, the opposite sign of this paper''s Table 1 (PPL 6.49
+    -> 10.09 at g32 with random Hadamard). Unreconciled differences: E8M0 vs E5M2 scales, block-wise vs full-row Hadamard,
+    PPL vs downstream accuracy, LLaMA-2/3 vs Llama-3.1. (The same FP-Quant weight-only table has RTN+Had HURTING MXFP, 95.58
+    -> 93.51, which agrees in sign with this paper.)'
+  - 'Internal: Table 18 PPL gain from asymmetry shrinks with smaller groups (LLaMA2-7B FP16 scale 0.50/0.30/0.21/0.175 for
+    g128/64/32/16) and reverses for floor-PoT at g32/g16, against the Sec 5.3 statement; and Table 5''s g32 baseline (5.93)
+    does not match Tables 1/12/18 (6.49, 6.206).'
+  - 'Independent replication: WebSearch x2 (2026-10-22) found no third-party reproduction or critique of AMXFP4; only the
+    authors'' own code/paper and the unrelated FP-Quant and AFPQ pages. The only external use is intake-2492''s one-sentence
+    citation.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 4.3
+    quote: we propose AMXFP4 (asymmetric microscaling 4-bit floating-point), which utilizes asymmetric FP8 shared scales.
+      During multiplication, the shared scale is selected based on the signs of the two numbers.
+    quote_sha256: ceeda1b3ec0477416b7a985a59522b67b0e090fa9d791290963fa49c8cbb9a7b
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: App B.2
+    quote: our proposed AMXFP4 applies different shared scales to positive and negative numbers, enabling more refined value
+      representation compared to MXFP4.
+    quote_sha256: 157b6889b2e537398af1674e4f32093ee6d78b2a77913b70216abad5b8e6d2e2
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 4.1
+    quote: 'Asymmetric FP (AsymFP): FP quantization introduces asymmetry by applying separate scales to positive and negative
+      values due to FP’s inherently zero-centered representation Zhang et al. (2024b)'
+    quote_sha256: 6af2a283b23d3471c640bd204295f5bee9a68a93f452ff800cb9a553252a2a43
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: App D.1 (Shared-Scale Bit-Encoding)
+    quote: Conversely, our findings demonstrate that using a 5-bit exponent FP8 shared scale can achieve performance close
+      to FP16.
+    quote_sha256: 80091a9de098e4f42f2f6272ced5002075d30557e28d22f7f1b08c9d2d0628e2
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 3.1
+    quote: Fig. 2 (c) and (d) show the mean values for FFN1 and FFN2 input activations as group size decreases from an entire
+      row to 32.
+    quote_sha256: c45f9309913e5d3784ec6f854b1e9ef523f9635ae9ae0436350a916ecc37f4ca
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 3.1
+    quote: In other words, microscaling addresses activation outliers at the cost of data symmetry .
+    quote_sha256: 26f75332d4d5e4582d61d66fc6bed38bb5b5f7e0733da293d1e69f5d0f07aa1a
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 5 intro
+    quote: Unless otherwise specified, all experiments use the proposed FP8 shared scale across all formats (including INT4,
+      MXFP4, and AMXFP4) for a fair comparison
+    quote_sha256: 7c9ceaf994a679c0164c845cb5df0233316bbf93c235069b10f53d639fcbf214
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: App D.1 Table 12
+    quote: Data Format OPT LLaMA Mistral 6.7B 13B 2-7B 2-13B 3-8B 7B 16-bit Baseline 10.86 10.13 5.47 4.88 6.14 5.25 MXFP4-PoT
+      25.51 12.88 7.83 6.98 11.17 6.34 MXFP4 13.71 12.09 6.49 5.69 8.31 5.88 AMXFP4 13.06 11.90 6.22 5.47 7.72 5.71 Table
+      12
+    quote_sha256: 13f7ef8f5beda880f3d1c729d78c324362854b5784910247932d4cd6a4894047
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: App D.1 Table 18 (MXFP4 block; cols OPT-6.7B, OPT-13B, LLaMA2-7B, LLaMA2-13B, LLaMA3-8B, Mistral-7B, Qwen-7B)
+    quote: 16-bit Baseline 10.860 10.128 5.472 4.884 6.137 5.252 7.605 MXFP4 FP16 128 12.566 12.415 7.065 6.208 9.826 6.137
+      8.669 64 11.843 11.958 6.470 5.667 8.368 5.854 8.364 32 11.475 11.084 6.206 5.444 7.851 5.722 8.214 16 11.233 10.841
+      6.015 5.284 7.334 5.607 8.084 PoT (Floor) 128 24.126 16.151 12.056 11.243 17.848 8.454 10.407 64 22.605 14.820 11.228
+      10.453 16.636 8.846 10.023 32 22.525 14.473 11.150 10.270 16.636 9.454 9.762 16 23.463 14.638 11.212 10.065 18.582 10.392
+      9.651 PoT (Round) 128 40.288 14.460 9.383 8.472 15.741 7.000 9.635 64 27.696 13.238 8.393 7.669 12.450 6.585 9.185 32
+      25.512 12.879 7.834 6.982 11.171 6.337 8.940 16 25.155 12.683 7.495 6.649 10.381 6.206 8.764
+    quote_sha256: ad5de26df84acb4b573935b082053c80644484d11041035912d18c77e61fcd8e
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: App D.1 Table 18 (MXFP4, FP8 1-5-2 block)
+    quote: FP8 (1-5-2) 128 15.857 14.530 7.390 6.450 10.408 6.234 8.806 64 14.075 12.777 6.788 5.923 8.952 5.957 8.542 32
+      13.712 12.091 6.490 5.691 8.307 5.883 8.366 16 13.534 11.808 6.265 5.520 7.824 5.725 8.247
+    quote_sha256: cbe099750a9c5354d67378df0523d82655eb6975006427394e4bf0563f6563c2
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: App D.1 Table 18 (AMXFP4 block)
+    quote: AMXFP4 FP16 128 12.107 11.718 6.564 5.712 8.364 5.898 8.408 64 11.489 11.187 6.173 5.400 7.660 5.702 8.272 32 11.242
+      10.900 5.999 5.261 7.296 5.588 8.066 16 11.118 10.581 5.840 5.149 6.978 5.507 7.953 PoT (Floor) 128 23.161 15.074 11.555
+      10.839 18.404 8.594 10.123 64 24.002 14.635 10.956 10.380 18.910 9.217 9.840 32 25.233 14.569 11.362 10.433 18.748 10.710
+      9.584 16 27.992 14.910 12.255 11.118 22.084 14.090 9.595 PoT (Round) 128 28.781 13.485 8.454 7.466 12.307 6.517 9.235
+      64 26.021 12.939 7.803 7.002 10.683 6.311 8.987 32 24.995 12.651 7.456 6.596 10.048 6.189 8.780 16 24.240 12.585 7.172
+      6.362 9.688 6.120 8.673
+    quote_sha256: 708e37b2279a0dfe0bb96233c4d4310c38cf5cc280c39f6b27c504492f174d7a
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: App D.1 Table 18 (AMXFP4, FP8 1-5-2 block)
+    quote: FP8 (1-5-2) 128 14.580 12.652 6.847 5.901 8.777 6.003 8.568 64 13.480 12.132 6.451 5.618 8.092 5.817 8.400 32 13.058
+      11.902 6.223 5.469 7.725 5.707 8.215 16 12.941 11.625 6.064 5.374 7.421 5.632 8.114
+    quote_sha256: 758c4581a905f5e945262e740cab5bc362d430ef34fae26298366f763a5789fb
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 5.3
+    quote: which aligns with our observation that asymmetry becomes more beneficial at smaller group sizes.
+    quote_sha256: 729677092d75c5c9f4971f9902279ce7d6ca953dd8294505af62c38f4ec45aee
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 5.1 Table 1
+    quote: MXINT4 7.01 6.11 9.01 AMXINT4 6.33 5.55 9.62 MXFP4 6.49 5.69 8.35 - AMXFP4 6.22 5.47 7.72 MXINT4 7.90 6.18 9.96
+      AMXINT4 6.75 5.75 8.25 MXFP4 10.09 6.89 9.48 MX (32) ✓ AMXFP4 8.36 6.35 9.20 Table 1
+    quote_sha256: 62e6f6158c68d22aee5ec9714a21cefbbf169ba9dfd474b42bac9bad1dbbd288
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 5.1 Table 1 (row-level groups)
+    quote: MXFP4 475.62 99.33 85.07 - AMXFP4 44.75 33.79 40.33 MXINT4 47.55 35.32 100.95 AMXINT4 16.60 13.94 35.90 MXFP4 11.88
+      10.81 13.27 Row ✓ AMXFP4 12.05 11.54 12.13
+    quote_sha256: bddcc8f8ce4284ce72cf39717fbf7b155222dcce581e06de2b8dcd750655f9b3
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 5.4 Table 5 (SpinQuant extension)
+    quote: Group Size Row 32 Rotation MXFP4 AMXFP4 MXFP4 AMXFP4 - 97.60 28.99 5.93 5.85 Random 10.78 11.76 9.23 8.02 SpinQuant
+      6.37 6.33 6.10 6.04 Table 5
+    quote_sha256: a4d6b11c53655a42ade207583fe772ebcf5ad69ede19739a2c62a54199fddf58
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 5.4
+    quote: As shown in Table 5 , SpinQuant achieves lower perplexity at row-level granularity but fails to outperform the
+      no-rotation baseline at group size 32, consistent with our earlier observations.
+    quote_sha256: 940cc1f277c04cf9cc1a56351b7d635e853a1ef533260f9b50f9263f4d8b8b16
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: App C Quantization Settings
+    quote: We quantize all weights and activations in Transformer decoder layers, including Query , Key , Self-attention map
+      , and Value as a default.
+    quote_sha256: 9db4ab5dfee2d81df6ff3d05bc1ca7e37d28ea27fb2136acd284c7dc0db68428
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 4.2
+    quote: With AsymFP4 selected as the preferred element-wise data representation, its original design for weight-only quantization
+      Zhang et al. (2024b) requires high-precision dequantization before multiplication with activations.
+    quote_sha256: c6ff2611e29c6531e7090405a6b3c74ae11f280d4505a9a3c55c3ce9794e2627
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: App C Quantization Settings
+    quote: Our experiments is conducted by modifying the PyTorch and CUDA code within the MX Emulation library Rouhani et
+      al. (2023b) .
+    quote_sha256: 923b4c7c4a7d465f88a8aa62adb2a09c1930e3f2786075cd495bc0fd175b6c7a
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Sec 5.5
+    quote: AMXFP4 introduces sign-aware mantissa scaling for asymmetric group scales, yet adds only 10% overhead due to the
+      narrow mantissa width and scale reuse within groups.
+    quote_sha256: 28689021d197b273009c3e7f9502f413f03c9bdafc984cf262529cfeb78f8ca6
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Limitations
+    quote: our current hardware analysis remains focused on a MAC-level evaluation.
+    quote_sha256: 11f65bd20f93608a21a866dd9546da5bd0c9ee4461e4a070c756fd4c341b3d0f
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Sec 5.3
+    quote: As shown in Table 4 , when GS=32, AMXFP4 and ANVFP4 surpass NVFP4 in accuracy, indicating that the asymmetric data
+      representation offers a greater improvement than double scaling strategy.
+    quote_sha256: 511dd3f2ebe37a4940645c81a152229657a31cd7ad8b157deeb45048b4bc691e
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Sec 5.3 Table 4 (MMLU 2-7B/2-13B/3-8B then CSQA; NVFP4 vs ANVFP4 at GS=16)
+    quote: ANVFP4 3 4.8 45.8 54.0 62.2 64.7 62.9 NVFP4 3 4.0 4 5.9 5 4.6 62.6 6 5.3 6 3.4 16 ANVFP4 37.3 47.7 57.1 6 2.2 66.2
+      64.9 Table 4
+    quote_sha256: 2d3aa343f8f071c354043b81413930441eeaedc1f88334b8a1d4df02dcc47b6d
+    source_revision: arXiv:2411.09909v2 (30 May 2025) HTML /html/2411.09909v2, retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Format re-derived from Sec 4.1-4.3 and App B.2: per-sign shared FP8 scales, not a zero point. Stage-1 premise "asymmetric
+      scales/zero" resolved to scales only.'
+  - claim_index: 1
+    effect: narrowed
+    note: Asymmetry premise is measured on activation groups only; no weight-group asymmetry measurement exists in the paper.
+  - claim_index: 2
+    effect: narrowed
+    note: The headline gain over "MXFP4" is against an E5M2-scaled MXFP4; vs OCP-like floor E8M0 the gap is mostly scale format.
+      Asymmetry increment 0.21-0.27 PPL (LLaMA2-7B g32).
+  - claim_index: 3
+    effect: overturned
+    note: Text claims asymmetry is more beneficial at smaller groups; Table 18 PPL deltas shrink with group size, and with
+      floor-PoT scales AMXFP4 is worse at g32/g16 on LLaMA2-7B.
+  - claim_index: 4
+    effect: uncertain
+    note: Rotation hurts at g32 in the paper own PPL runs, but FP-Quant (intake-2479) W4A4 downstream recovery shows Hadamard
+      helping MXFP4 RTN; unreconciled. Table 5 baseline 5.93 does not match Table 1/18.
+  - claim_index: 5
+    effect: unaffected
+    note: No weight-only experiment; weights quantized only jointly with activations.
+  - claim_index: 6
+    effect: unaffected
+    note: Emulation (PyTorch/CUDA MX library) plus 4nm MAC synthesis; no silicon, no GPU kernel, no throughput.
+  - claim_index: 7
+    effect: narrowed
+    note: 'ANVFP4 over NVFP4 at g16: MMLU +3.3/+1.8/+2.5 on 2-7B/2-13B/3-8B; CSQA +/-: -0.4 on 2-7B, +0.9 on 2-13B, +1.5 on
+      3-8B. "About 3%" is the MMLU best case.'
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b: minted and dived in one pass from the v2 HTML on disk (read in full incl. appendices).
+    Corrects the Stage-1 framing: the asymmetry is TWO per-sign FP8 E5M2 scales per group (no zero-point), and the headline
+    ''beats MXFP4'' is against an E5M2-scaled MXFP4, not OCP E8M0. Most of the gain over an OCP-like floor-E8M0 baseline is
+    the scale format. Also resolves intake-2492''s ''not read'' note: AMXFP4''s own tables support the ''rotation does little
+    at small groups'' sentence for its setting. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: arXiv:2311.01792 (AFPQ:
+    Asymmetric Floating Point Quantization for LLMs, Zhang et al., ACL Findings 2024; id and title c — ingested-and-dived
+    in Stage 2b or folded (see session dive_surfaced_sources); https://github.com/aiha-lab/MX-QLLM — ingested-and-dived in
+    Stage 2b or folded (see session dive_surfaced_sources); arXiv 2311.01792 AFPQ — not dived: the operator pre-approval covered
+    4 Stage-2 waves; recorded for the operator; github.com/aiha-lab/MX-QLLM — not dived (wave cap; low priority)'
+  reader_should_conclude: 'KNOWLEDGE-ONLY for our stack; do not mark not_applicable. Cite for: (a) the asymmetric-microscaling
+    FORMAT definition (two per-sign E5M2 scales, FP4 E2M1, g32; Sec 4.2-4.3); (b) Table 18: with OCP-style floor E8M0 scales
+    the symmetric MXFP4 W4A4 PPL is 11.150 on LLaMA2-7B g32 vs 7.834 with a rounded exponent vs 6.490 with E5M2 and 6.206
+    with FP16 scale, i.e. the scale encoding and the floor-vs-round exponent rule matter far more than asymmetry (0.21-0.27
+    PPL). Do NOT carry: ''AMXFP4 beats MXFP4'' as a statement about OCP MXFP4 (the baseline is E5M2-scaled); ''asymmetry helps
+    more at smaller groups'' (its own Table 18 contradicts it); any weight-only or GGUF/CPU/gfx90a speed or quality claim
+    (none measured; DS41 native MXFP4 experts carry one fixed E8M0 scale per 32, run bit-exact, and gfx90a has no FP4 matmul);
+    the ~10% hardware overhead as a deployable cost (4nm synthesis only). The one actionable pattern is for a hypothetical
+    BF16->MXFP4 llama-quantize step (llama.cpp quantize_row_mxfp4_ref uses the floor exponent and ignores the imatrix at ffc1bac82):
+    compare NMSE of floor vs round vs MSE-searched exponents first; that is already the dormant trigger DI-042 in deepseek-v41-flash-evaluation.md.'
+  notes: 'DIVE 2026-10-22 (Stage-2b combined pass): Read FULL: arXiv 2411.09909v2 (30 May 2025; v1 15 Nov 2024; v2 comment
+    ''Updated formatting'') version-pinned HTML from /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/v2.html: abstract,
+    Sec 1-6, Limitations, App A-D incl. Tables 1-20 text. Not read: figures (images), the PDF, the released code github.com/aiha-lab/MX-QLLM
+    (emulation library; no code was executed or imported), AFPQ (arXiv 2311.01792, the per-sign-scale precursor; WebSearch
+    confirms title/venue only). Local code check (read-only): /mnt/raid0/llm/llama.cpp @ ffc1bac82 ggml/src/ggml-quants.c
+    quantize_row_mxfp4_ref L350-382 (exponent = floorf(log2f(amax)) - 2 + 127; best_index nearest-grid search) and quantize_mxfp4
+    L2302 (quant_weights GGML_UNUSED), ggml-common.h L214-218 (block_mxfp4, E8M0). Dedup: no prior index hit for 2411.09909
+    (only prose mention inside intake-2492). WebSearch x2: no independent AMXFP4 replication/critique; AFPQ identity confirmed
+    (ACL Findings 2024, arXiv 2311.01792).'

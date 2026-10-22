@@ -1,9 +1,9 @@
 {
   "session_id": "intake-ist-slq-20261022",
   "started_at": "2026-10-22T12:14:39Z",
-  "last_checkpoint": "2026-10-22T13:14:40Z",
+  "last_checkpoint": "2026-10-22T13:27:55Z",
   "stage": 2,
-  "phase": "stage2-wave3-complete",
+  "phase": "stage2-closed",
   "lane": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/root",
   "branch": "intake/ist-slq-20261022",
   "topic": "arXiv 2605.02404 SLQ (Statistically-Lossless Quantization) + github.com/IST-DASLab org triage + HF kaitchup/qwen38-27b-slq; on behalf of workspace-58",
@@ -44,10 +44,11 @@
     "intake-2489",
     "intake-2490",
     "intake-2491",
-    "intake-2492"
+    "intake-2492",
+    "intake-2493"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2493,
+  "next_intake_id": 2494,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -613,6 +614,46 @@
       "proposed_owner": "wiki/quantization.md (compile sweep at /wrap-up)",
       "proposed_disposition": "knowledge-only",
       "reason": "Background for any NVFP4-style discussion; DS41 experts are native MXFP4 so no action on weights.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "I-L1",
+      "source": "intake-2493 dive ledger I-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml)",
+      "action": "When any BF16/FP16 -> MXFP4 llama-quantize step is planned (DS41 or Q38FN lanes), first run an NMSE comparison of the three exponent rules on one real tensor: current floor (ggml-quants.c L368), rounded exponent, and an MSE-searched exponent (FP-Quant MXFP4-dagger direction, intake-2479). Paper evidence: LLaMA2-7B g32 W4A4 PPL 11.150 (floor) vs 7.834 (round).",
+      "proposed_owner": "handoffs/active/deepseek-v41-flash-evaluation.md DI-042 (dormant trigger, L1738); add intake-2493 as a second evidence pointer",
+      "proposed_disposition": "trigger",
+      "reason": "External event = an operator-approved BF16->MXFP4 requant. None is planned: DS41-1017 experts are native bit-exact, W3/W4 requant not pursued, no new models in the low-bit lanes. The test is minutes of CPU on one tensor once a consumer exists.",
+      "compute": "null now. When triggered: correctness-class NMSE on one BF16 tensor (<2 GB RAM, minutes, CPU, no quiet host needed).",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "I-L2",
+      "source": "intake-2493 dive ledger I-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml)",
+      "action": "Record that AMXFP4/ANVFP4 (per-sign dual shared scale, activation-side benefit) has no deployment path here: gfx90a has no FP4 matmul; CPU path uses Q8_0 activations and is weight-bandwidth bound; DS41 native experts carry one fixed E8M0 scale per 32; a storage version would be a new ggml block type incompatible with GGUF MXFP4.",
+      "proposed_owner": "decline (knowledge-only; kept as reference in the intake entry)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "No task is blocked or waiting; the format cannot act on the native MXFP4 experts and no activation-4-bit kernel exists or is planned. Not marked not_applicable: revisit only if a real FP4-matmul device or an A4 serving path enters the stack.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "I-L3",
+      "source": "intake-2493 dive ledger I-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml)",
+      "action": "Update intake-2492 key_claims[1] / notes: replace \"(arXiv 2411.09909, not read)\" with a pointer to intake-2493 (read 2026-10-22): the AMXFP4 paper does show rotation raising PPL at g32 in its own W4A4 setting (Table 1/5), but FP-Quant (intake-2479) shows Hadamard helping E8M0 MXFP4 RTN downstream, so the explanation does not transfer to E8M0 unreconciled.",
+      "proposed_owner": "research/intake_index.yaml intake-2492 notes (owning session applies)",
+      "proposed_disposition": "propose-task",
+      "reason": "Cross-entry correction that the owning session can apply directly; a subagent only prepares it.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "I-L4",
+      "source": "intake-2493 dive ledger I-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml)",
+      "action": "Read AFPQ (arXiv 2311.01792, weight-only per-sign FP scales) to see whether per-sign scales help 4-bit WEIGHT blocks vs a per-block min (K-quants dmin / Q4_1) at equal bits; only then judge any seed for the low-bit lanes.",
+      "proposed_owner": "surfaced source (see surfaced_sources); lane DS41/Q38FN low-bit if positive",
+      "proposed_disposition": "propose-task",
+      "reason": "The only evidence relevant to weights is AMXFP4's precursor; AMXFP4 itself never isolates weights. Cheap read-only dive; no compute.",
       "compute": null,
       "terminal_mapping": null
     }
@@ -62203,6 +62244,22 @@
       "recommend": "ingest-and-dive",
       "reason": "Already indexed (6 hits for 2509.23202); a re-read against the WUSH comparison is a cross-entry check for the owning session, not a new ingest.",
       "group": "H"
+    },
+    {
+      "id_or_url": "arXiv:2311.01792 (AFPQ: Asymmetric Floating Point Quantization for LLMs, Zhang et al., ACL Findings 2024; id and title confirmed by WebSearch only, not fetched)",
+      "what_it_would_settle": "Whether per-sign (positive/negative) FP scales improve WEIGHT-only 4-bit blocks and at what storage cost relative to a per-block min; the weight-side question AMXFP4 leaves open.",
+      "bears_on": "intake-2493",
+      "recommend": "ingest-and-dive",
+      "reason": "Only weight-only precedent for the mechanism; not in the index (dedup grep on 2311.01792 not run against the full index in this pass; check before minting).",
+      "group": "I"
+    },
+    {
+      "id_or_url": "https://github.com/aiha-lab/MX-QLLM",
+      "what_it_would_settle": "How the positive/negative FP8 scales are fitted per group (not specified in the paper text) and the exact exponent-rounding rule.",
+      "bears_on": "intake-2493",
+      "recommend": "ingest-and-dive",
+      "reason": "Low priority, read-only; only worth it if the AFPQ dive says per-sign scales help weights. Never execute or import.",
+      "group": "I"
     }
   ],
   "stage2_waves": {
@@ -62264,6 +62321,14 @@
         ]
       },
       "second_reader_wave2": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml"
+    },
+    "wave4": {
+      "groups": {
+        "I": [
+          "intake-2493"
+        ]
+      },
+      "second_reader_wave3": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-I/patch.yaml"
     }
   },
   "stage2b_entries": {
@@ -62279,9 +62344,38 @@
     "wave3": [
       "intake-2491",
       "intake-2492"
+    ],
+    "wave4": [
+      "intake-2493"
     ]
   },
   "process_deviations": [
     "2026-10-22 wave 3 (group H): the dive agent imported amazon-science/LLM-Accuracy-Stats aggregation_script.py in the orchestrator venv and called its pure functions on small integers (milliseconds of CPU). This executed downloaded code, contrary to the quarantine rule; no repo or host state changed. Recorded here and in the report."
-  ]
+  ],
+  "stage2_closeout": {
+    "wave_cap": "4 waves (operator pre-approval) exhausted after wave 4",
+    "declined_by_wave_cap": [
+      {
+        "source": "arXiv 2311.01792 AFPQ (id/title from WebSearch only, not resolved)",
+        "bears_on": "intake-2493",
+        "recommend_was": "ingest-and-dive",
+        "status": "not dived: operator pre-approval covered 4 waves; offered to the operator for a later intake"
+      },
+      {
+        "source": "github.com/aiha-lab/MX-QLLM",
+        "bears_on": "intake-2493",
+        "recommend_was": "low priority",
+        "status": "not dived (wave cap)"
+      }
+    ],
+    "declined_by_dives": "every other dive-surfaced source carries recommend=decline with a reason in dive_surfaced_sources",
+    "gate": "closed: all recommended sources dived within 4 waves except the two listed, which are recorded for the operator"
+  },
+  "stage3_plan_draft": {
+    "path": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/stage3/STAGE3_PLAN.md",
+    "sha256": "db108374cd1bd164e5baaac2586b9d3abf26daaba46aec4085192e4b0c0232ad",
+    "proposed_session": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/stage3/proposed-session.json",
+    "status": "presented, NOT approved; Stage 4 not run",
+    "builder": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/scripts/build_plan.py"
+  }
 }
