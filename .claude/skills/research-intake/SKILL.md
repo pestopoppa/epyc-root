@@ -468,6 +468,7 @@ third-party corroboration. One row each: identifier/URL, one line on **what it w
    neither budget is drawn from the other. *(A 5-entry Stage-2b cap was removed 2026-08-09 on operator
    instruction. Do not reintroduce it, and do not present a cap to the operator as a constraint on
    what they may select.)*
+5. **Wave cap (operator ruling, 2026-10-22).** Stage-2b WAVES are capped at four per intake unless the operator raises the cap; after the fourth wave, decline remaining surfaced sources (recorded in dive_corrections) and proceed to Stage 3. The uncapped rule applies to sources within an approved wave.
 
 On 2026-07-29 four dive-surfaced sources — including an author's own follow-up ablation that partly
 deflated the dived entry's central claim — had no home at Stage 2, were carried into Stage 3 as an
