@@ -123,7 +123,7 @@ Row counts: 42 in champion / in production base, 25 pending fold, 2 candidate on
 
 ## Not features, but v11 promotion-checklist items (kept here so they are not dropped)
 
-CH-17 (re-select each role's spec-decode recipe at every freeze), V6R-4a (prove `25132e042` / `90c12df42` ancestry, `test-repack-parallel`, load A/B and the full-pair decode A/B on the candidate), V6R-4b (OP-58 forward-port rule, still unratified), KPF-19.1 rebase check, KVU-12.2 gate (b) re-run, GPU serving validation of the HIP image `gpu-20261020-dd3d9721c` (compile and linkage only so far), `:8083` prefill-budget switch (KVU-16g-2 in `kv-unified-stack-rollout.md`), checkpoint size on Qwen3.6 MTP slots, explicit `--spec-draft-p-min` / `--spec-draft-n-max` in launch recipes.
+CH-17 (re-select each role's spec-decode recipe at every freeze), V6R-4a (prove `25132e042` / `90c12df42` ancestry, `test-repack-parallel`, load A/B and the full-pair decode A/B on the candidate), V6R-4b (OP-58 forward-port rule, still unratified), KPF-19.1 rebase check, KVU-12.2 gate (b) re-run, GPU serving validation of the HIP image `gpu-20261020-dd3d9721c` (compile and linkage only so far), `:8083` prefill-budget switch (KVU-16g-2 in `kv-unified-stack-rollout.md`), checkpoint size on Qwen3.6 MTP slots, explicit `--spec-draft-p-min` / `--spec-draft-n-max` in launch recipes, CH-24 (the qwen4exp fused-path debug prints and per-token `/tmp/qwen4exp-builds` writes from `78922ed81` / `a56a79cc0` are unconditional in v10 and inert only under `GGML_FUSED_DECODE_OFF=1`: gate them via `14c57cbe9` or strip them).
 
 ## At risk of being dropped
 
