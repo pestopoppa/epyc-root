@@ -32,6 +32,20 @@ Operator directive, relayed by the calendar owner. Every session that owns a fil
 4. **Before idling for the night,** list every armed job with its end flag and confirm a watcher covers each one.
 5. **Wrap-up** at each task boundary.
 
+## RAM admission (2026-10-22)
+
+Operator ask: structure the inference calendar with RAM in mind. Host RAM is a booked resource, like regions.
+
+- Checker: `/mnt/raid0/llm/tmp/compute-flags/ram_admit.sh <need_gib> [ds41]` (live copy; the durable root copy `scripts/coordination/ram_admit.sh` is pending an operator D9 ack, since that path is loop plane). Read-only; exit 0 = admit, 1 = refuse with a reason.
+- Rule: admit only if `MemAvailable - need >= 64 GiB` (earlyoom fires at 40 GiB available). With `ds41` it also refuses while any process maps or names a DS41-1017 shard (one DS41-class server host-wide).
+- Unit: FILLERS.md column 6 is **peak host RAM in GiB = private/anon + file-mapped weights**. The DS41-1017 server is 739 GiB (276 private + 463 mapped).
+- Callers: grant writers (evening chains v4 to v7, the GPU chain), the W6.2 `memgate.sh` (`ram_admit 739 ds41`), f8's job 67 launcher, and every subagent brief that loads a model. The calendar carries a 24 h RAM ledger beside the region table.
+- Not yet wired: AutoKernel `run.py` server launches (tracked in `handoffs/active/deepseek-v41-flash-evaluation.md`, DS41-W8d).
+
+## Owner duty: watch, why, fix, re-queue
+
+Canonical list: *Owner duties* above. The incident behind it (2026-10-22 overnight): CT-18 HTTP 400 context overflow, chunk-KV P0 and speech D1 rc=64 from a bad region-lock argv, and D4 k5_s4 rc=125 all sat unnoticed, and the 05:19Z CPU gap went unused because the calendar owner's FREED watcher died on a zsh no-match glob. The replacement watcher keys on mtime over `FAILED`, `.ended`, `_ENDED` and `_FREED` flags under `/mnt/raid0/llm/tmp` (`compute-flags/event-watch-ws58.sh`); quote or `setopt nonomatch`-guard every glob in a watcher. Owner flow on any event: why (read the log), fix, re-queue, wrap up. Worked example: D4 root cause in `/mnt/raid0/llm/tmp/d4-why-20261022/REPORT.md` (the estimator was wrong, not contention).
+
 ## Reference implementation
 
 CT-18 Skill-Inject: `/mnt/raid0/llm/tmp/ct18-run-20261021/filler_worker.sh` (`ct18-worker`, CPU) and `filler_arch.sh` (`ct18-arch`, mi210_0 + host threads 184-191). They are generated from one template; `.ended` rc 124 = hard end, 4 = refused, 2 = unusable grant, 143 = launcher signalled.
