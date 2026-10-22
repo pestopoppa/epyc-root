@@ -179,7 +179,7 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
     `/mnt/raid0/llm/private/dev-harness-traces` (0700, refuses any git work tree, the vault/claude-backups and the
     harness stores); `validate_aggregate` (counts + rule text only, per-session keys refused); `publish_aggregate`
     writes only after orchestrator `raw_trace_publish_preflight` exits 0. `.gitignore` adds `dev-harness-traces/`.
-  - [ ] **F3-LB1.2 — land the PII-guard transcript scan (needs a D9 ack).** Prepared, uncommitted, in worktree
+  - [x] **F3-LB1.2 — land the PII-guard transcript scan (needs a D9 ack).** Landed 0ee545eb1 with operator D9 ack 2026-10-22 ✅ 2026-10-22. Prepared, uncommitted, in worktree
     `/mnt/raid0/llm/worktrees/f8-locals-b1-root`: `scripts/hooks/pii_precommit.sh` `[transcript]` scan (Claude/Codex/
     opencode line shapes + per-session `dev-harness-*.v1` schemas, also the first 256 KB of >1 MB blobs; zero hits
     over the tracked tree) and `tests/dev_harness/test_pii_transcript_shapes.py` (10 real-hook cases pass; 92 existing

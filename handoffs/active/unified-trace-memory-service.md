@@ -161,7 +161,7 @@ existing writers (unchanged):
     Job anomalies: only 6 of 14 ai-sessions tarballs on disk (Oct 4–17 missing although ROTATE logs "kept 14"); no
     BACKUP/STATUS lines 2026-08-03..10-03 (62 d; rsync code-23 errors on immutable host/claude dirs); host:claude count
     flat at 1714–1715 since 10-04; `/mnt/micron` not mounted in the container (only the log attests 31 snapshots).
-  - [ ] **UTM-LB1.D — operator decision on the uncovered stores** (decision package below; blocks only NIB2-LB1.2).
+  - [x] **UTM-LB1.D — operator decision on the uncovered stores** — operator 2026-10-22: "Ignore this. I'm handling it through my root filesystem agent." Backup coverage is owned outside this repo; no backup work here. NIB2-LB1.2 waits on the operator's root-agent outcome. ✅ 2026-10-22
     Options: (A) extend the EXISTING root cron job's include list to history.jsonl, the Codex state sqlite (online
     `.backup`, not a raw copy of a live WAL db), `/workspace/logs/agent_audit*.log`, orchestrator `logs/` incl.
     serving_calls + planner_archive, and make the 2026-10-22 opencode `.db.zst` step nightly + logged — one job, no
