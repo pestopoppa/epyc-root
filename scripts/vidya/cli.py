@@ -584,7 +584,7 @@ _FILE_SOURCES = (
     "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
     "injection-fixture", "chunk-kv",
     "conversation-stack-measurement", "speech-ggml-optest",
-    "speech-cpu-measurement",
+    "speech-cpu-measurement", "speech-listen-rating",
     "hil15a-auc", "repl-preview",
     "rus2-probe", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg",
     "hil17-attribution-ladder", "hil-lb1-loop-score",

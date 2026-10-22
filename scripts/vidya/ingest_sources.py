@@ -177,6 +177,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "with SPEECH_CPU_CAPTURE_DIR); 2026-09-24 raw/ rows are never backfilled; capped/aborted "
                 "requests are counted, never projected; no default",
            task="VB-SPEECH-CPU-1 / VB-SPEECH-CPU-1a"),
+    Source("speech-listen-rating", "speech_listen_rating", _files("*-listen-*.json"),
+           natives="native_rows", default=Path(__file__).resolve().parents[2] / "artifacts/stt-cs8",
+           note="human speech listen/rating aggregates (schema epyc.<item>_listen.v<N>); observation, "
+                "empty protocol_id, single labelled rater; records that do not re-derive are refused",
+           task="VB-SPEECH-LISTEN-1"),
     Source("ds41-1017-validation", "ds41_1017_validation",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="INF-77 DS41-W5/W6 1017 MXFP4-experts validation rows; each binds the 9 shard sha256s "
