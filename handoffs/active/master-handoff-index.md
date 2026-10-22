@@ -42,8 +42,9 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-CS8L | Italian listen check of `/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out/wav/` (human ear; agent QA is circular). | [conversation-stack.md](conversation-stack.md) CS-8.L | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
 | OP-KPF64-ARM | Permission decision: the auto-mode classifier refused arming filler `s5-kpf64-replay` ("Safety Bypass Flag": its job exports WINDOW_CONFIRMED=1 inside a granted window). Allow the arm, or say how it must be armed. Arm command is in the FILLERS.md row. | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) KPF-64 | 2026-10-22 |
-| OP-ESB-SPLIT | One authenticated HF metadata call settles whether AA Earnings22-Cleaned overlaps the ESB train split (dive-aa-earnings22-cleaned A7). | [conversation-stack.md](conversation-stack.md) INTAKE-BARK-INTEGRATE | 2026-10-22 |
-| OP-PUBLICREPOS | epyc-root and epyc-inference-research are PUBLIC on GitHub: decide whether private confirmation strata / held-out sets move to hash-only on-disk storage (or the repos go private). | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-22 |
+| OP-ESB-SPLIT | One authenticated HF metadata call settles whether AA Earnings22-Cleaned overlaps the ESB train split (dive-aa-earnings22-cleaned A7). | [conversation-stack.md](conversation-stack.md) M21 | 2026-10-22 |
+| OP-PUBLICREPOS | epyc-root and epyc-inference-research are PUBLIC on GitHub: decide where private confirmation strata live. Options and recommendation: bark Stage-3 plan DP-A (recommend a private corpus repo; default on-disk hash-only custody). | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-22 |
+| OP-CS4REF | CS-4 confirmation references and language-gate check: how many independent human correctors/raters per clip (DP-C). Recommend two for en/it; default single-rater, labelled. | [conversation-stack.md](conversation-stack.md) CS-4.STT1 | 2026-10-22 |
 | OP-PQP | Lifetime promotion error budget: recommend (a) status quo plus the SEQ-5 ledger; options in the plan DP-A. Human-amendment only. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
 | OP-ABSEQ | Sequential paired e-process for P-AB-1: recommend (a) no amendment. DP-B. | harness-improvement-loop.md HIL-9 item 11 | 2026-10-20 |
 | OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
@@ -132,9 +133,9 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1163 | 38 | 2026-07-29 |
+| inference-research | 61 | 1165 | 63 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
-| research-evaluation | 44 | 543 | 18 | 2026-07-29 |
+| research-evaluation | 44 | 548 | 18 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 52 | 664 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 144 | 18 | 2026-07-29 |
