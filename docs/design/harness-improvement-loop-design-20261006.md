@@ -130,6 +130,8 @@ The HIL-4 decision package is complete as a deliverable; the operator choice amo
 - A harness comparison holds the model fixed and a model comparison holds the harness fixed (`intake-1354#record`).
 - No HIL-4 option is selected by these rows; OP-HIL4 stays open.
 
+**HIL-6 decision: B (operator 2026-10-22).** The operator selected option **B, sibling loop on shared substrate**, through the decision tool on 2026-10-22, for coordinator session 3c4ca599. OP-HIL4 is resolved. The package text, the "not selected or approved" wording and the evidence notes above are kept unchanged as the record of the undecided package. The decision authorizes the build only. The 2026-09-16 deferment on running a loop stays, and P0.4 acceptance and freeze, the applicable protocols and later operational authorization remain prerequisites to any tuning or run. Implementation plan: [`hil6-sibling-loop-implementation.md`](hil6-sibling-loop-implementation.md). The first seams landed on orchestrator main on 2026-10-22: `7e9dcfad` (seam S1, the MHS-1/2/4/15 guards moved byte-for-byte to `src/autopilot_core/mutation_guards.py`) and `55465c20` (the `src/harness_loop/` skeleton, which has no entrypoint).
+
 ### HIL-6 pilot requirements
 
 Design text only; the 2026-09-16 deferment on running a loop stays.
