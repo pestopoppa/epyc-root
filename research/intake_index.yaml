@@ -342272,7 +342272,11 @@
     Stage-2 dive (kernels): claims 0-2 verified against source; claim 1''s bf16 attribution narrowed (preset fragh->mlx fallback
     artifact); claim 2 confirmed against MLX v0.32.0 dispatch source; appended kernel claims 5-10 (frag swap-AB register-fragment
     kernel, one-kernel GDN step, exact projection fusion, whole-step pipelined tuning, row padding, residual gap to the weight-read
-    floor). Claims 3-4 left to their own dives. | 2026-10-22 Stage-2b group-d: see claim_corrections.'
+    floor). Claims 3-4 left to their own dives. | 2026-10-22 Stage-2b group-d: see claim_corrections. | 2026-10-22 Stage-2
+    close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with reasons: MLX v0.32.0
+    quantized.cpp and libmlxforge PRs 37-39 were read as corroboration inside the kernel dive (no separate entry); mlx-lm
+    LRUPromptCache declined (not on the EPYC serving path); Qwen3.5 HF chat template declined as an intake (checked locally
+    by the planned template render test).'
 - id: intake-2387
   arxiv_id: null
   url: https://github.com/Asymptote-Labs/agent-beacon
@@ -342529,7 +342533,9 @@
     Independent evidence that coding-agent memory layers help is weak: intake-1968 (VibeMemBench) reports memory-on at or
     below memory-off in 11 of 12 pairings. | 2026-10-22 Stage-2b group-d: claim 1 narrowed (schema is Beacon-native, OTel
     is an input dialect). Also relevant: event.fidelity observed/inferred and harness.collection_method are a provenance pattern
-    missing from EPYC''s event table.'
+    missing from EPYC''s event table. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced
+    sources NOT dived, with reasons: dailydoseofds Jev post, themenonlab blog, smithery skill listing and HF discuss 179762
+    declined (restatement, vendor-partnered or no results).'
 - id: intake-2388
   arxiv_id: '2610.09139'
   url: https://arxiv.org/abs/2610.09139
@@ -342747,7 +342753,10 @@
   dive_corrections: '2026-10-22 Stage-2 dive: read Sec. 1-8 and App. A, C headings, D, E.1/E.3/E.5/E.6, G, H, I, J of v1 HTML.
     Narrowed the headline: the memory comparison is vs token tables, not llguidance; the 2.5x agent result includes the engine''s
     kernels and reverses at 8 agents; the forced-span gain disappears at 16 slots. Appended five claims (run decomposition,
-    batching limit, 20-30% forced tool-call tokens, budget validity, parallel-field and speculative negatives).'
+    batching limit, 20-30% forced tool-call tokens, budget validity, parallel-field and speculative negatives). | 2026-10-22
+    Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with reasons: arXiv
+    2407.08103 and the Apers-Edenhofer reference declined (novelty/theory only); JSONSchemaBench was later ingested as intake-2415;
+    Gram2Token OpenReview re-dive is trigger-gated (full text unreachable).'
 - id: intake-2389
   arxiv_id: '2606.30560'
   url: https://arxiv.org/abs/2606.30560
@@ -343020,7 +343029,9 @@
     three abstract claims with exact numbers; narrowed claim 2 (proposals, not evaluated) and claim 0 (Claude Code + Codex
     only, no opencode reader); added Baris Kasikci to authors; found an intro-vs-§7.3 inconsistency (3.8x vs 5.3x prefill
     amplification); recorded that the public corpus carries no content hashes or subagent links (NVIDIA AIPerf docs) and that
-    a larger later release exists. EPYC mapping in /mnt/raid0/llm/tmp/dive-2349-traces/report.md §3.'
+    a larger later release exists. EPYC mapping in /mnt/raid0/llm/tmp/dive-2349-traces/report.md §3. | 2026-10-22 Stage-2
+    close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with reasons: codex.danielvaughan
+    TraceLab post declined (restatement of the paper).'
 - id: intake-2390
   arxiv_id: null
   url: https://icml.cc/virtual/2026/poster/62392
@@ -343422,7 +343433,9 @@
   dive_corrections: '2026-10-22 Stage-2 dive: read arXiv 2605.25430v2 in full (method, Table 1, Table 2, Appendices A-E) and
     diffed v1 Table 1 and abstract. Headline narrowed: +11.03/+5.10 (v2) vs +9.69/+4.01 (v1) with only CODESKILL rows changed
     between versions; single run; transductive test-time skill bank; small splits. Skill prompts and rubrics are given verbatim;
-    no code release found.'
+    no code release found. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources
+    NOT dived, with reasons: arXiv 2602.21611 declined (our own lesson-efficacy measurement settles the question for EPYC);
+    codex.danielvaughan CODESKILL post declined (quotes v1 numbers).'
 - id: intake-2393
   arxiv_id: null
   url: https://github.com/ml-explore/mlx/issues/3661
@@ -343634,7 +343647,9 @@
       grammar is +0.12..+0.22 acceptance length.
   dive_corrections: '2026-10-22 Stage-2 dive: body read in full. Added the target-side rollback rule, the draft-side masking
     with the EAGLE3 d2t map, the CPU-callback capture design, and Table 1 acceptance lengths (draft-side grammar +0.12..+0.22
-    accepted tokens per iteration at draft length 3).'
+    accepted tokens per iteration at draft length 3). | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended
+    sources): dive-surfaced sources NOT dived, with reasons: vLLM PR 14702 and SGLang PR 6499 declined (draft-masking designs
+    already covered by the blog body).'
 - id: intake-2395
   arxiv_id: '2608.31057'
   url: https://arxiv.org/abs/2608.31057
@@ -344042,7 +344057,9 @@
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read v2 HTML (abstract, Sec. 1-2, Sec. 4.4, App. A, App. F
     annotation validation and the pushback classifier prompt in full; Sec. 3, 4.1-4.3 and App. B-E by search only). The source
     measures in-session human pushback, not cross-session recurrence or instruction-file effects; pushback rate includes scope
-    changes and is LLM-labelled.'
+    changes and is LLM-labelled. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced
+    sources NOT dived, with reasons: SWE-INTERACT 2606.30573, SecureForge 2605.08382 and SLEIGHT-bench 2605.16626 declined
+    (not lesson-relevant).'
   claim_anchors:
   - claim_index: 0
     kind: section-and-quote
@@ -344483,7 +344500,8 @@
     at github.com/WukLab/InferCept exists (Apache-2.0, last push 2024-06-22), not cloned.
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): entry created; previously only a referenced id inside intake-1196.
     Read full text. Found the elapsed-time estimator (no tool-latency predictor needed) and that human-pause timing is modelled,
-    not measured.'
+    not measured. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT
+    dived, with reasons: WukLab/InferCept repo declined (paper sufficient; repo dormant since 2024-06).'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -344639,7 +344657,9 @@
     pinned by llama.cpp, plus the full llama.cpp v10 integration. Established that llama.cpp uses none of ff_tokens/rollback/validate_tokens,
     computes a full mask on every grammar-checked step, keeps flexible JSON whitespace by default, silently routes all json_schema
     requests to llguidance when ON (with GBNF-incompatible semantics: additionalProperties default true), is fail-open on
-    matcher error, and that the OFF production build aborts the process on a "%llguidance" grammar.'
+    matcher error, and that the OFF production build aborts the process on a "%llguidance" grammar. | 2026-10-22 Stage-2 close-out
+    (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with reasons: dottxt coalescence post
+    and guidance commit 5ad05eb8 declined (restatements of fast_forward.md); arXiv 2309.08715 was ingested as intake-2423.'
   claim_anchors:
   - claim_index: 0
     kind: doc
@@ -345933,7 +345953,9 @@
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the paper is a cost characterization of QA-recall memories;
     it contains no evidence on whether memory content changes agent behaviour, so it does not fill the wave-1 gap. Its transferable
     content is cost discipline (price write-side construction, floor the construction model, budget maintenance) and the BM25
-    baseline result.'
+    baseline result. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources
+    NOT dived, with reasons: Tambe-Lab agent-memory-profiling repo declined (EPYC already has write-side cost lines; revisit
+    only if an LLM memory-construction pipeline is built).'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -346830,7 +346852,8 @@
     router that does not bear on residency (intake-1816 close-out); the full read keeps that for residency but shows two portable
     cost terms (M_i popularity-weighted eviction cost, cached-share priority groups) that bear on the orchestrator prefix
     index and the heterogeneous-fabric placement cost, which is why this is adopt_patterns at medium relevance rather than
-    declined.'
+    declined. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived,
+    with reasons: SkyWalker 2505.24095 declined now (only if the cross-instance placement trigger fires).'
   claim_anchors:
   - claim_index: 0
     kind: text
@@ -347293,7 +347316,9 @@
     d0a75654. Did NOT read the lmsys blog (already intake-2402), issue #8954, or PR 17062 diff.'
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): reason for removal is maintenance simplification only; jump-forward
     was already inert under the default overlap scheduler. It was not abandoned because forced spans do not pay; the string-level
-    design (retokenize + requeue-as-prefill) was the cost, and token-level ff via spec-decoding (PR 17062) is the live proposal.'
+    design (retokenize + requeue-as-prefill) was the cost, and token-level ff via spec-decoding (PR 17062) is the live proposal.
+    | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with
+    reasons: sglang issue 8954 and PR 8975 declined (confirm dead code only).'
   claim_anchors:
   - claim_index: 0
     kind: text
@@ -347633,7 +347658,9 @@
     different filters/versions; for EPYC the only variants that matter are v7 062126 (largest sub-agent share, 42.5% of requests)
     and its 256k-capped sibling (569 MB, closest to our long-context ceilings). Wave-1 conclusion confirmed: ids are local,
     no content, no cross-session sharing recoverable. NEW vs TraceLab: public per-request ttft (streaming rows) and a measured
-    fan-out topology (1,697 groups, peak <=10 concurrent) that TraceLab''s release lacks.'
+    fan-out topology (1,697 groups, peak <=10 concurrent) that TraceLab''s release lacks. | 2026-10-22 Stage-2 close-out (operator
+    pre-approved all recommended sources): dive-surfaced sources NOT dived, with reasons: cc-traces-0 declined (no card; content
+    status unknown and swebench traces already answered the content question).'
   claim_anchors:
   - claim_index: 1
     kind: quote
@@ -347808,7 +347835,9 @@
     -- our private trace store must map cache_read_tokens/cache_creation_tokens itself; (2) the highest-value content (hook
     spans, system prompt, new_context) needs ENABLE_BETA_TRACING_DETAILED and an org allowlist in interactive mode, so for
     the interactive CLI the stable surface is metrics + log events + base spans only; (3) local binary is 2.1.308, newer than
-    every ''requires vX'' note on the page (max v2.1.283).'
+    every ''requires vX'' note on the page (max v2.1.283). | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended
+    sources): dive-surfaced sources NOT dived, with reasons: OpenTelemetry-for-the-Claude-API docs declined (not on the EPYC
+    serving path).'
   claim_anchors:
   - claim_index: 0
     kind: doc-quote
@@ -348040,7 +348069,9 @@
   notes: 'GitHub API pulls/172 retrieved 2026-10-22 sha256-12 365893834280; commit c606c1910 read from /mnt/raid0/llm/ik_llama.cpp
     git log. Image graphs in #38/#173 not read.'
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): PR body table read; shows bf16 KV only competes with quantized
-    KV, never measured against f16 KV; no TG. Gains are Zen4 ZMM bf16 FMA on a different FA kernel family than production.'
+    KV, never measured against f16 KV; no TG. Gains are Zen4 ZMM bf16 FMA on a different FA kernel family than production.
+    | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with
+    reasons: ik_llama.cpp PR 32 declined (background); PRs 1521 and 1562 declined unless the iqk FA wiring proceeds past correctness.'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -348526,7 +348557,9 @@
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): this is the only ik CPU-FA PR found whose body carries mainline-vs-iqk
     numbers as text (three sweep-bench table sets). The gap is large for D=128 LLaMA-8B (PP 13x, TG 2.2x at 16k) but small
     for D=256 Gemma3 TG (+5.7%); the baseline is April-2025 mainline with q8_0 KV, before mainline''s tiled (#19012) and split-KV
-    (#19209) CPU FA paths, which cover only f16/f32 KV.'
+    (#19209) CPU FA paths, which cover only f16/f32 KV. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended
+    sources): dive-surfaced sources NOT dived, with reasons: ik_llama.cpp PR 429 (restatement), PRs 1328/929 (CUDA only) and
+    discussion 25 (image-only, stale baseline) declined.'
   claim_anchors:
   - claim_index: 0
     kind: text
@@ -348686,7 +348719,9 @@
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read arXiv v2 HTML in full (v3 does not exist; v1 also fetched,
     not diffed) and the Apache-2.0 repo at a71d9ea (README, taxonomy.json signal and archetype definitions; batch scripts
     not read line by line). The headline 79% invisible is LLM-judged chat data and drops to 50% for multi-turn; it must not
-    be cited as a coding-agent rate. Agreement is inter-LLM only.'
+    be cited as a coding-agent rate. Agreement is inter-LLM only. | 2026-10-22 Stage-2 close-out (operator pre-approved all
+    recommended sources): dive-surfaced sources NOT dived, with reasons: ShareChat 2512.17843 declined (chat corpus, no coding-agent
+    content).'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -348839,7 +348874,9 @@
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read arXiv v1 HTML in full (v2 returns 404) and the Apache-2.0
     repo at e9ce8cf (tag_messages.py, user_metrics.py, adjudicate_3way.py, tag prompt, docs/llm_backends.md). Decisive: the
     abstract phrase "number of corrective feedback turns" counts SIMULATOR messages, and the tagger that scores them is a
-    hosted-LLM ensemble named only in the repo, not the paper.'
+    hosted-LLM ensemble named only in the repo, not the paper. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended
+    sources): dive-surfaced sources NOT dived, with reasons: Suh et al. 2605.09808 declined now; re-opens with the anchored-replay
+    trigger.'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -348974,7 +349011,8 @@
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read the Transluce page text in full including both rubrics
     (retrieved 2026-10-22). The headline "around 2%" is the SEVERE subset; any-presence rates are 14.7% and 34.7% on SWE-chat.
     No judge accuracy is given. The page was fetched from the canonical transluce.org URL; the LessWrong cross-post (smE9h9RnaK7FWKBZ2)
-    was fetched but not diffed.'
+    was fetched but not diffed. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced
+    sources NOT dived, with reasons: Greenblatt coding-agent misbehaviour post declined until its URL is found.'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -350000,7 +350038,10 @@
     Read: HF API for both, one 138 KB anon file in full, 1 MiB head of raw. Established that raw carries full request content
     (the only public CC trace set with content found so far), that anon uses global scope, that there is no licence declared,
     and that a per-request cch billing-header value sits at the head of the system block. Deviation from the brief''s ''at
-    most one small file'': two samples were fetched (138 KB anon + 1 MiB raw head, 1.14 MB total, still under the 2 MB cap).'
+    most one small file'': two samples were fetched (138 KB anon + 1 MiB raw head, 1.14 MB total, still under the 2 MB cap).
+    | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with
+    reasons: seifghazi/claude-code-proxy declined now: capturing our own Claude Code request bodies needs an env change on
+    the dev harness (operator decision, plan Q6).'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -350651,7 +350692,8 @@
     revision intake-2436 used for codex-rs/otel). Settled: input_tokens INCLUDES cached (and cache-write) tokens; reasoning
     is a subset of output; token_count.total_token_usage is cumulative so summing token_count lines over-counts; per-response
     truth is token_usage_record; no rollout schema-version field exists (version axes are cli_version, history_mode and sqlite
-    filename suffix).'
+    filename suffix). | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources
+    NOT dived, with reasons: ryoppippi/ccusage declined (local sample already proves message-id dedupe).'
   claim_anchors:
   - claim_index: 0
     kind: code
@@ -350844,7 +350886,9 @@
     the 7adc22d38 use_ref commit, CI workflow follow-up.'
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): body, all 21 issue comments (no inline review comments exist),
     figure and the v10 dispatch code read. Established: split-KV engages only at N==1 with f16/f32 KV and padded n_kv>=512;
-    GGML_FA_SPLIT_KV is a LOCAL INF-70 knob (c51e4dabf), not upstream; MTP verify (N=5) and q8_0 KV never take it.'
+    GGML_FA_SPLIT_KV is a LOCAL INF-70 knob (c51e4dabf), not upstream; MTP verify (N=5) and q8_0 KV never take it. | 2026-10-22
+    Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced sources NOT dived, with reasons: pytorch
+    flash-decoding blog declined (mechanism covered by the PR 19209 code read).'
   claim_anchors:
   - claim_index: 0
     kind: pr_body
@@ -351661,7 +351705,9 @@
     are measured. Appendix PDF (a9472814...) read; the "Read in PDF" copy of the main report was extracted (29.8k chars, 0
     hits for interrupt/tenure) and then deleted as a duplicate of the HTML page; the internal within-engineer replication
     on appendix p.22 reads 3 to 5 percentage points of judged success per expertise level with author fixed effects (an en
-    dash that a terminal display collapses to 35; checked byte-level).'
+    dash that a terminal display collapses to 35; checked byte-level). | 2026-10-22 Stage-2 close-out (operator pre-approved
+    all recommended sources): dive-surfaced sources NOT dived, with reasons: arXiv 2601.18341 and 2606.07448 (agent-adoption
+    base rates) held for operator confirmation before decline (plan Q7); not dived.'
   claim_anchors:
   - claim_index: 0
     kind: quote
@@ -351985,7 +352031,9 @@
     tables.'
   dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2444 notes had read only the first-page abstract; full
     text read (summary section ~5 pages; appendix and figures not read in depth). Author attribution to Sarkar taken from
-    the task brief, not verified from the extracted text.'
+    the task brief, not verified from the extracted text. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended
+    sources): dive-surfaced sources NOT dived, with reasons: Daniotti et al. 2026 and Weidmann et al. 2025 declined (corroboration-adjacent
+    only).'
   claim_anchors:
   - claim_index: 0
     kind: source-quote
