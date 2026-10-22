@@ -84,7 +84,11 @@ def run(a: argparse.Namespace) -> dict:
     t_pass = time.time() - t_pass
 
     t_cl = time.time()
-    cl_agg, cl_rows = m2_cluster.run(docs, k=a.k)
+    embedder = None
+    if a.embed_gguf:
+        import m2_embed_gguf
+        embedder = m2_embed_gguf.make_embedder(a.embed_gguf)
+    cl_agg, cl_rows = m2_cluster.run(docs, k=a.k, embedder=embedder)
     t_cl = time.time() - t_cl
 
     items = m2_label_sheet.sample(cands, n=a.sheet_n)
@@ -147,6 +151,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--registry", help="lesson registry JSON (default scripts/dev_harness/lesson_registry.json)")
     p.add_argument("--limit-units", type=int, default=None)
     p.add_argument("--sheet-n", type=int, default=100)
+    p.add_argument("--embed-gguf", help="small embedding GGUF run through llama-embedding (CPU, -t 1) instead of the "
+                   "hashed TF-IDF; e.g. /mnt/raid0/llm/models/granite-embedding-97m-multilingual-r2-Q8_0.gguf")
     p.add_argument("--k", type=int, default=None, help="k-means k (default sqrt(n/2), clamp [7, 80])")
     return p
 

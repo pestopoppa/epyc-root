@@ -902,6 +902,13 @@ is olympiad-style reasoning.
     restores the legacy accumulator for A/B. Harness: fix 84/84 finite and within reference (nmse ≤ 1e-12) vs base
     71/84 (10 non-finite, 3 mismatch); determinism 84/84 on every arm; FA-op cost at parity (e.g. 4×1 at 128k cells
     23.2 vs 22.4-23.6 ms). The fusion matters: a two-pass convert costs ~3× FA op time on Zen 5.
+  - [ ] **CPU-FA-VKQ-3 (optional) — MTP acceptance at > 64k on the architect, fix vs legacy.** (filed 2026-10-04,
+    workspace-ec) The dense F16 MTP head is the one consumer whose visible window is not bounded by the indexer. Replay
+    a > 64k architect conversation with MTP on a scratch port in a CPU window, `GGML_FA_VKQ_F16=1` vs default, and
+    compare acceptance and the first-divergence token. Done when the acceptance delta is recorded, or the probe shows
+    `acc_peak` stays far below FP16 range at that length.
+    - *(2026-10-21 triage)* open (no evidence found).
+    - *(2026-10-22, KVU-LB1.c, intake-2455)* moved to the top of this open list: production v10 has no fix and the architect declares 262144 context.
   - [ ] **CPU-FA-VKQ-1 — fold `2ad8bff36` into the champion (and so into v11).** (filed 2026-10-04, workspace-ec)
     Cherry-pick onto the current champion tip (`1bceceb05`, or the tip after KVU-16h-fold), CPU store build on the
     champion recipe, G0 plus `test-backend-ops -o FLASH_ATTN_EXT -b CPU` and the CPU FA harnesses v1/v2 (expect the
@@ -913,12 +920,6 @@ is olympiad-style reasoning.
       - Yfa's gates passed: bit-identical on the KVU-19 FA harness, 86 + 141 cases.
       - The advance to Yfa is workspace-89's next fold.
     - *(2026-10-21 triage)* superseded by autokernel-champion-aggregate.md fold ledger "Yfa" (057270556 + a99e5330a folded without 2ad8bff36) and manifest V11-086 EXCL (opt-in arm excluded by design; CPU-FA-VKQ-2 decides define-or-drop).
-  - [ ] **CPU-FA-VKQ-3 (optional) — MTP acceptance at > 64k on the architect, fix vs legacy.** (filed 2026-10-04,
-    workspace-ec) The dense F16 MTP head is the one consumer whose visible window is not bounded by the indexer. Replay
-    a > 64k architect conversation with MTP on a scratch port in a CPU window, `GGML_FA_VKQ_F16=1` vs default, and
-    compare acceptance and the first-divergence token. Done when the acceptance delta is recorded, or the probe shows
-    `acc_peak` stays far below FP16 range at that length.
-    - *(2026-10-21 triage)* open (no evidence found).
   - [ ] **CPU-FA-VKQ-4 — report the CPU FP16-VKQ overflow upstream with the fix.** (filed 2026-10-04, workspace-ec)
     Upstream fixed the MFMA analog (#28576) but not ggml-cpu. Reduce the harness to a `test-backend-ops` case with
     large same-sign V over ≥ 2048 cells (random [-1,1] inputs never overflow), and open an issue or PR from the fork
@@ -1442,4 +1443,4 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - [ ] **KVU-LB1 — CPU FP16 V-accumulator follow-through from the upstream reading: attach our reduced repro, accumulator-peak probe data and hybrid-fix results to the existing upstream issue and PR instead of a new report (posting is the operator's call; record the link); use upstream's fused-F32 cost data in the decode A/B and run it on the architect's real decode path at N=1 and N=5; move the dense-MTP-head acceptance check above 64k up, since production v10 has no fix and the architect declares a 262144 context (intake-2455).**
   - [x] KVU-LB1.a upstream evidence posted on PR #29810 (operator-reviewed and approved 2026-10-22): https://github.com/ggml-org/llama.cpp/pull/29810#issuecomment-6340235109 — model-free repro (non-finite only for n_q<64 once n_kv*bias > 65504), F16-accumulator sub-overflow error 0.297 vs 4.1e-5 F32, fused-F32 op-time parity on Zen 5 (24 thr, 131072 cells), real-model peak 237.6 with a 2048-cell window; we back always-F32. The unsourced "two-pass ~3x" figure was dropped (raw log not retained). ✅ 2026-10-22
   - [ ] KVU-LB1.b decode A/B of fused-F32 on the architect's real decode path at N=1 and N=5 (compute; FILLERS row locals-kvu-lb1-arch-decode-ab, launcher armed 2026-10-22; rule in /mnt/raid0/llm/tmp/f8-launchers-20261022/locals-kvu-lb1-arch-decode-ab/PREDECLARATION.md)
-  - [ ] KVU-LB1.c move the dense-MTP-head acceptance check above 64k up in its owning queue (production v10 has no fix; architect declares 262144 ctx)
+  - [x] KVU-LB1.c move the dense-MTP-head acceptance check above 64k up in its owning queue (production v10 has no fix; architect declares 262144 ctx) ✅ 2026-10-22: the task is `CPU-FA-VKQ-3` in the CPU-FA-VKQ group of this file (was 4th of the open items); moved to the top of that open list.

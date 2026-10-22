@@ -145,14 +145,15 @@ def kmeans(X, k: int, iters: int = 40, seed: int = 0):
     return labels
 
 
-def run(docs: list[dict], k: int | None = None, seed: int = 0) -> tuple[dict, list[dict]]:
-    """Returns (aggregate counts tree, per-doc membership rows)."""
+def run(docs: list[dict], k: int | None = None, seed: int = 0, embedder=None) -> tuple[dict, list[dict]]:
+    """Returns (aggregate counts tree, per-doc membership rows). `embedder(docs) -> L2-normalised matrix`
+    replaces the hashed TF-IDF (see m2_embed_gguf.make_embedder)."""
     plant = planted_docs()
     alldocs = docs + plant
     if len(alldocs) < 4:
         return {"status_too_few_docs": 1, "n_docs": len(docs)}, []
     k = k or max(len(PLANTED) + 2, min(80, round(math.sqrt(len(alldocs) / 2))))
-    X = embed(alldocs)
+    X = (embedder or embed)(alldocs)
     labels = kmeans(X, k, seed=seed)
     members = defaultdict(list)
     for d, lab in zip(alldocs, labels):

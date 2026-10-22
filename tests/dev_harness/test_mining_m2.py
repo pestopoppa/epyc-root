@@ -250,3 +250,34 @@ def test_committed_registry_covers_pilot():
     for cls, lids in reg["pilot"].items():
         assert any(i in ids and ids[i]["date"] and cls in ids[i]["detector"] for i in lids), cls
     assert reg["detector_map_ids_not_found"] == []
+
+
+def test_gguf_embedder_contract_and_cluster_hook(monkeypatch):
+    """The neural embedder is a drop-in: normalised matrix, same shape contract, wired through run(embedder=)."""
+    import numpy as np
+    import m2_embed_gguf
+
+    calls = []
+
+    def fake_runner(cmd, **kw):
+        path = cmd[cmd.index("-f") + 1]
+        n = len(open(path).read().split(m2_embed_gguf.SEP))
+        calls.append(n)
+
+        class R:
+            returncode, stderr = 0, ""
+            stdout = __import__("json").dumps({"data": [{"index": i, "embedding": [float(i % 3), 1.0, 0.5]}
+                                                         for i in reversed(range(n))]})
+        return R()
+    monkeypatch.setattr(m2_embed_gguf, "BATCH", 4)
+    out = m2_embed_gguf.embed_texts(["a doc"] * 10, runner=fake_runner)
+    assert len(out) == 10 and calls == [4, 4, 2]
+    assert out[1][0] == 1.0                       # re-sorted by index despite reversed reply
+    monkeypatch.setattr(m2_embed_gguf, "embed_texts", lambda texts, gguf=None: [[3.0, 4.0]] * len(texts))
+    X = m2_embed_gguf.make_embedder("x")([{"text": "t"}] * 3)
+    assert np.allclose(np.linalg.norm(X, axis=1), 1.0)
+    docs = [{"id": f"r{i}", "session": f"s{i}", "harness": "h", "source": "epyc", "day": f"2026-09-0{1 + i % 3}",
+             "tools": m2_cluster.Counter({"exec": 1}), "etypes": m2_cluster.Counter({"tool_error": 1}),
+             "text": "exec boom"} for i in range(8)]
+    agg, _ = m2_cluster.run(docs, k=7, embedder=lambda ds: np.tile(np.array([[1.0, 0.0]]), (len(ds), 1)))
+    assert agg["n_docs"] == 8 and agg["clusters_total"] >= 1
