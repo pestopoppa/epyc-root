@@ -33,7 +33,7 @@ SIDECAR_NAME = "auc_table.beliefs.jsonl"
 ADAPTER_ID = "vidya.adapters.hil15a_auc/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "hil15a-dependency-auc-measurement"
-NO_PROTOCOL = "observation:none"
+NO_PROTOCOL = ""  # empty id: grade() reads any non-empty id as a protocol
 EDGE_GRADE = "observed"
 SET_METRIC, DELTA_METRIC = "hil15a_auc_out_of_fold", "hil15a_delta_auc"
 #: the feature set that carries the claim; every other set is a comparison arm
@@ -49,7 +49,7 @@ def _ci_problem(ci: Any) -> str | None:
 
 
 def validate_row(row: Any) -> list[str]:
-    p = ns.common_problems(row, schema=CAPTURE_SCHEMA)
+    p = ns.common_problems(row, schema=CAPTURE_SCHEMA, optional_text=("protocol_id",))
     if not isinstance(row, dict) or not isinstance(row.get("extra"), dict):
         return p
     e = row["extra"]
@@ -187,7 +187,8 @@ def project(native: Any):
     x = row["extra"]
     locator = f"hil15a:{row['run_id']}:{x['kind']}:{x['name']}:{row['results_path']}"
     return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
-                             sidecar_path=native.get("sidecar_path", ""))
+                             sidecar_path=native.get("sidecar_path", ""),
+                             no_protocol_ids=("observation:none",), legacy_schema_protocol=True)
 
 
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:

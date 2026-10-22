@@ -199,8 +199,12 @@ def check_identity(row: Mapping[str, Any], parts: Mapping[str, Any], prefix: str
     return []
 
 
+LEGACY_NO_PROTOCOL = "observation:none"
+
+
 def to_claim_tuple(row: Mapping[str, Any], *, source_kind: str, locator: str,
-                   sidecar_path: str = ""):
+                   sidecar_path: str = "", no_protocol_ids: tuple[str, ...] = (),
+                   legacy_schema_protocol: bool = False):
     """Projection only: authored fields -> ClaimTuple. ``claim_tuple.grade()`` decides."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -208,10 +212,18 @@ def to_claim_tuple(row: Mapping[str, Any], *, source_kind: str, locator: str,
 
     present = results_present(row)
     extra = row["extra"]
+    # An OBSERVATION carries an EMPTY protocol_id: grade() reads any non-empty id as a protocol
+    # and would grade the row Witnessed/Attested. Rows written before the fix carry the literal
+    # "observation:none" or their own capture schema string as a pseudo-protocol; both mean "none".
+    # Opt-in per adapter (``no_protocol_ids`` / ``legacy_schema_protocol``): other carriers may carry
+    # a real protocol id of their own.
+    protocol_id = row["protocol_id"]
+    if protocol_id in no_protocol_ids or (legacy_schema_protocol and protocol_id == row.get("schema")):
+        protocol_id = ""
     return ClaimTuple(
         measurement_id=row["measurement_id"], metric=row["metric"], value=row["value"],
         date=row["date"], category=row["category"], claim=row["claim"],
-        metric_direction=row["metric_direction"], protocol_id=row["protocol_id"],
+        metric_direction=row["metric_direction"], protocol_id=protocol_id,
         reps=row["reps"], reps_basis=row["reps_basis"], unit=row["unit"],
         attestation_sha256=row["results_sha256"], attestation_locator=locator,
         attestation_present=present,

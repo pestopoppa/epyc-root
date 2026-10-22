@@ -34,7 +34,8 @@ def test_round_trip_grades(tmp_path):
     nat = m.native_rows(write(tmp_path))
     assert len(nat) == 7
     for n in nat:
-        assert ct.grade(m.project(n)) == ("Witnessed", "Attested", [])
+        q, t, _r = ct.grade(m.project(n))
+        assert (q, t) == ("Judged", "Located") and m.project(n).protocol_id == ""  # OBSERVATION
     by = {n["row"]["extra"]["name"]: n["row"] for n in nat}
     d = by["observed_dependency_minus_composition"]
     assert d["reps"] == 24 and d["extra"]["n_tasks"] == 6 and d["extra"]["n_failed"] == 9

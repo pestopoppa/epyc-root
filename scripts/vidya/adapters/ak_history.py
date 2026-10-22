@@ -83,7 +83,7 @@ def _total(fields: Mapping[str, Any]) -> float:
 
 
 def validate_row(row: Any) -> list[str]:
-    p = ns.common_problems(row, schema=CAPTURE_SCHEMA)
+    p = ns.common_problems(row, schema=CAPTURE_SCHEMA, optional_text=("protocol_id",))
     if not isinstance(row, dict) or not isinstance(row.get("extra"), dict):
         return p
     e = row["extra"]
@@ -144,7 +144,7 @@ def write_belief_measurements(
             "metric": METRIC, "value": total, "unit": UNIT, "metric_direction": "lower_better",
             "category": "CANDIDATE",
             "claim": f"AK trial {fields['trial_id']} recorded {total:.3f}s of timed stages",
-            "protocol_id": CAPTURE_SCHEMA, "reps": 1, "reps_basis": "scored:trial",
+            "protocol_id": "", "reps": 1, "reps_basis": "scored:trial",
             "results_path": str(receipt), "results_sha256": digest,
             "extra": {"campaign_id": campaign_id, "store_id": store_id, "epoch": epoch,
                       "fields": fields},
@@ -184,7 +184,8 @@ def project(native: Any):
     locator = (f"ak-history:{x['campaign_id']}:{x['store_id']}:{x['epoch']}:"
                f"{x['fields']['trial_id']}:{row['results_path']}")
     return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
-                             sidecar_path=native.get("sidecar_path", ""))
+                             sidecar_path=native.get("sidecar_path", ""),
+                             no_protocol_ids=("observation:none",), legacy_schema_protocol=True)
 
 
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:

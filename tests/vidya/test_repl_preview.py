@@ -43,7 +43,8 @@ def test_round_trip_grades(tmp_path):
     nat = m.native_rows(write(tmp_path))
     assert len(nat) == 3
     for n in nat:
-        assert ct.grade(m.project(n)) == ("Witnessed", "Attested", [])
+        q, t, _r = ct.grade(m.project(n))
+        assert (q, t) == ("Judged", "Located") and m.project(n).protocol_id == ""  # OBSERVATION
     by = {n["row"]["extra"]["rendering"]: n["row"] for n in nat}
     assert by["bounded_k3"]["value"] == pytest.approx(28 / 30) and by["bounded_k3"]["reps"] == 30
     assert by["current"]["category"] == "BASELINE" and by["current"]["extra"]["counts"]["retyping_loss"] == 20

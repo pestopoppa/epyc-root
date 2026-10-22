@@ -13,7 +13,7 @@ One self-hashed row per run x arm x feature x objective metric, written at the e
 finalize boundary. The strict reader reopens the raw-result digest and the prompt/parameter digest,
 projects authored facts to the existing measurement ``ClaimTuple`` and ``claim_tuple.grade()``
 decides. No ladder, no retroactive rows, no policy or promotion authority. A protocol id is carried
-only when one already applies; otherwise ``protocol_id`` is the literal ``observation:none``.
+only when one already applies; otherwise ``protocol_id`` is the EMPTY string (an OBSERVATION).
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ SIDECAR_NAME = "harness_improvement.beliefs.jsonl"
 ADAPTER_ID = "vidya.adapters.harness_improvement/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "harness-improvement-measurement"
-NO_PROTOCOL = "observation:none"
+NO_PROTOCOL = ""  # an OBSERVATION: empty id (never "observation:none", which grade() reads as a protocol)
 ARM_ROLES = frozenset({"BASELINE", "CANDIDATE"})
 
 #: HIL-2 item 14 pins. Closed field set; every one required.
@@ -65,7 +65,7 @@ def arm_pin_problems(pins: Any, *, where: str = "extra.arm_pins") -> list[str]:
 
 
 def validate_row(row: Any) -> list[str]:
-    p = ns.common_problems(row, schema=CAPTURE_SCHEMA)
+    p = ns.common_problems(row, schema=CAPTURE_SCHEMA, optional_text=("protocol_id",))
     if not isinstance(row, dict) or not isinstance(row.get("extra"), dict):
         return p
     e = row["extra"]
@@ -178,7 +178,8 @@ def project(native: Any):
     locator = (f"hil:{row['run_id']}:{x['feature_id']}:{x['arm']}:{x['objective']}:"
                f"{row['results_path']}")
     return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
-                             sidecar_path=native.get("sidecar_path", ""))
+                             sidecar_path=native.get("sidecar_path", ""),
+                             no_protocol_ids=("observation:none",), legacy_schema_protocol=True)
 
 
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:

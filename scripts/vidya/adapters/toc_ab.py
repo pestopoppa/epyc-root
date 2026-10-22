@@ -67,7 +67,7 @@ def _task_problems(tasks: Any) -> list[str]:
 
 
 def validate_row(row: Any) -> list[str]:
-    p = ns.common_problems(row, schema=CAPTURE_SCHEMA)
+    p = ns.common_problems(row, schema=CAPTURE_SCHEMA, optional_text=("protocol_id",))
     if not isinstance(row, dict) or not isinstance(row.get("extra"), dict):
         return p
     e = row["extra"]
@@ -119,7 +119,7 @@ def validate_row(row: Any) -> list[str]:
 
 def write_belief_measurements(
     out_dir: str | Path, *, run_id: str, producer: str, trajectory_path: str | Path,
-    arms: Mapping[str, Mapping[str, Any]], protocol_id: str = CAPTURE_SCHEMA,
+    arms: Mapping[str, Mapping[str, Any]], protocol_id: str = "",
     emitted_at: str | None = None,
 ) -> Path:
     """Emit ``toc_ab.beliefs.jsonl`` at the trajectory writer's finalize boundary.
@@ -194,7 +194,8 @@ def project(native: Any):
         raise ProjectionError("TOC A/B row is not a producer-authored capture: " + "; ".join(problems))
     locator = f"toc-ab:{row['run_id']}:{row['extra']['arm_label']}:{row['results_path']}"
     return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
-                             sidecar_path=native.get("sidecar_path", ""))
+                             sidecar_path=native.get("sidecar_path", ""),
+                             no_protocol_ids=("observation:none",), legacy_schema_protocol=True)
 
 
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:

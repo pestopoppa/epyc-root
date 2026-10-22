@@ -116,7 +116,9 @@ def test_round_trip_is_graded_by_the_shared_ladder(carrier, tmp_path):
     for nat in natives:
         tup = mod.project(nat)
         q, t, reasons = ct.grade(tup)
-        assert (q, t, reasons) == ("Witnessed", "Attested", [])
+        # OBSERVATION (empty protocol_id): never Witnessed/Attested without a ratified protocol.
+        assert tup.protocol_id == ""
+        assert (q, t) == ("Judged", "Located") and reasons
         assert tup.attestation_present is True and tup.attestation_verified is True
     ids = {mod.project(x).measurement_id for x in natives}
     assert len(ids) == n
@@ -251,7 +253,8 @@ def test_hil_item14_pins_are_required_and_carried(tmp_path):
     pins = nat[0]["row"]["extra"]["arm_pins"]
     assert set(pins) == set(harness_improvement.ARM_PIN_FIELDS)
     tup = harness_improvement.project(nat[1])
-    assert tup.protocol_id == harness_improvement.NO_PROTOCOL
+    assert tup.protocol_id == ""  # OBSERVATION: a non-empty id would be read as a protocol
+    assert harness_improvement.NO_PROTOCOL == ""
     assert tup.reps == 18 and "attempted 20" in tup.reps_basis
 
 
@@ -298,3 +301,14 @@ def test_ak_refuses_untimed_trial_unknown_field_and_missing_budget_axis(tmp_path
 def test_ak_duplicate_trial_id_refused(tmp_path):
     with pytest.raises(ns.CaptureError, match="duplicate"):
         ak_write(tmp_path, [ak_trial(1), ak_trial(1)])
+
+
+@pytest.mark.parametrize("legacy", ["observation:none", "epyc.vidya.same_as_schema"])
+def test_legacy_pseudo_protocol_rows_still_project_as_observation(tmp_path, legacy):
+    """Rows already on disk with a pseudo-protocol id (literal or the capture schema) re-project empty."""
+    natives = harness_improvement.native_rows(hil_write(tmp_path))
+    nat = dict(natives[0]); row = dict(nat["row"])
+    row["protocol_id"] = legacy if legacy == "observation:none" else row["schema"]
+    row.pop("row_sha256", None); ns.seal(row)
+    nat["row"] = row
+    assert harness_improvement.project(nat).protocol_id == ""
