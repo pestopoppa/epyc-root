@@ -352291,3 +352291,1109 @@
     effect: unaffected
     note: fresh claim
   depends_on: []
+- id: intake-2451
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/207
+  source_type: repo
+  title: Faster CPU TG for GQA models
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'Mechanism (PR body + diff): for single-token generation with GQA, view Q as [head_dim x (L/Lkv) x Lkv] so each KV head
+    multiplies a small GEMM of L/Lkv rows instead of L/Lkv separate GEMVs; implemented as new iqk_mul_mat_4d, gated on ne13==1,
+    Ny==1, r2>1. This is the NON-flash-attention path (the K*Q and V*softmax(K*Q) mul_mats of the unfused graph); the PR does
+    not touch the FA kernels.'
+  - 'Thread split inside iqk_mul_mat_4d: gcd(n_kv_heads, nthreads) KV-head groups, each handled by nth/gcd threads (diff,
+    iqk_mul_mat.cpp). The same PR also parallelises the src1 quantisation (from_float) over threads in cache-line-aligned
+    block ranges.'
+  - 'Gain only appears at long context (body): LLaMA-3.1-8B IQ4_XS (GQA 4), 8 threads, TG at pp8192: Zen4 (Ryzen-7950X) 8.60
+    -> 10.26 t/s (x1.193); M2-Max 14.07 -> 19.66 (x1.397); at pp128 gain is 1.002 / 1.044. Derived (calc_ratios.py): TG time
+    attributable to attention at 8k falls 1.73x (Zen4) and 2.23x (M2-Max).'
+  - 'The author attributes the larger M2-Max gain to its higher memory bandwidth and lower compute (body): the GEMM form pays
+    off most where decode is bandwidth-rich and compute-poor.'
+  - No numerical-equality or perplexity statement and no thread-count sweep appear in the PR body or diff; baseline is ik
+    main of 2025-02, not a mainline llama.cpp build.
+  techniques:
+  - GQA head grouping into a small GEMM for TG (unfused path)
+  - gcd-based KV-head/thread split
+  - threaded src1 quantisation
+  reported_results:
+  - 'LLaMA-3.1-8B IQ4_XS, 8 thr, tg64@pp8192: Zen4 8.60->10.26 t/s; M2-Max 14.07->19.66'
+  - 'tg64@pp128: Zen4 13.85->13.88 (x1.002)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+    - intake-2421
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Prior-dive attribution of the FA GQA-grouping mechanism (M1) to this PR is wrong in path: this PR changes the mul_mat
+    path used when flash attention is off; ik FA GQA grouping for nek2>1 is PR #332 (an MLA-only FA grouping, nek2==1, existed
+    before it).'
+  notes: 'Read: gh api pulls/207 (sha256-12 ede6d56d1003), diff (39dc9ff65b30), 0 issue comments. Full diff read. Not read:
+    ggml.c context outside hunks; iqk_mul_mat() kernel bodies for r2 rows. Nothing measured by us.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): REATTRIBUTED. #207 is the no-FA mul_mat path (iqk_mul_mat_4d),
+    not a flash-attention change; its GQA-grouping idea is the same principle as the later FA work (#332) but it does not
+    bear on v10''s flash_attn_ext. Gain numbers are body text and confirmed; body gives attention-time ratios only after derivation.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: PR body L2-L4 @ 0551e76
+    quote: If we rearrange `Q` as `N x L/Lkv x Lkv`, we now have GEMM instead of GEMV, and this is significantly faster.
+    quote_sha256: 6ef9fe1f721584edc2082e74817033866d3af424001c5cb50131d31fbc596300
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/iqk/iqk_mul_mat.cpp iqk_mul_mat_4d @ 0551e76
+    quote: if (ne13 == 1 && Ny == 1 && r2 > 1) {
+    quote_sha256: e57f51f0291cccb3128eef38b42b605d8efc00390930d4b812671aa70a0541a2
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_mul_mat.cpp iqk_mul_mat_4d @ 0551e76
+    quote: int gcd = simple_gcd(ne02, nth);
+    quote_sha256: 8a87ec9db1a1f3e4e00c934597f5c03d12676946bf4bc31faaa13ac70c520b6e
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/ggml.c ggml_compute_forward_mul_mat (src1 quantisation hunk) @ 0551e76
+    quote: int64_t block_per_thread = ((num_blocks_gcd + nth - 1)/nth)*gcd;
+    quote_sha256: 5de99fc84b821621d65f77bfd180bd82b7ab7b094448201555580e8863477cbe
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: PR body table row M2-Max tg64@pp8192 @ 0551e76
+    quote: '| llama 8B IQ4_XS  | M2-Max     |       8 |   tg64@pp8192 |     14.07 ± 0.00 |     19.66 ± 0.02 |  1.397    |'
+    quote_sha256: 4e79938ee817965f8225e7703b14972cbba9d47625323f7c6ee8a28fa3fd23af
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: PR body table row Zen4 tg64@pp8192 @ 0551e76
+    quote: '| llama 8B IQ4_XS  | Zen4       |       8 |   tg64@pp8192 |      8.60 ± 0.00 |     10.26 ± 0.01 |  1.193   |'
+    quote_sha256: ca8d1288abe5ed3207945af69bb760401470cde632a674a096d7c6ccd88130d4
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: PR body last paragraph @ 0551e76
+    quote: On the M2-Max, which has a higher memory bandwidth (so better TG performance) but lower computing power than the
+      Ryzen-7950X, the speedup is significantly higher.
+    quote_sha256: 7142505a5819521c04def42435b16aa0333d7bf37e6729ceff544be37c4e41f2
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: PR body L10-L11 @ 0551e76
+    quote: This better approach only gives noticeable TG speedup for long context (large KV cache), as without that the fraction
+      of time spent on the `K*Q` and `V*softmax(K*Q)` is small.
+    quote_sha256: 2af5451b080f20ce0aabc119cd82df17c54d527bf1e8c12e537fcc6432df95da
+    source_revision: merge 0551e7630b2e @ 2025-02-15 (head bdc882bf)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: 'Prior dive credited FA head grouping to #207; it is the non-FA mul_mat path.'
+  - claim_index: 1
+    effect: unaffected
+    note: New claim from diff.
+  - claim_index: 2
+    effect: unaffected
+    note: Numbers from body table; attention-time ratio derived in calc_ratios.py (dive dir).
+  - claim_index: 3
+    effect: unaffected
+    note: Author attribution, not measured by us.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Absence statement; trees searched: PR body, diff, comments (0).'
+  depends_on: []
+- id: intake-2452
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/332
+  source_type: repo
+  title: Better TG performance for GQA models (CPU)
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'Mechanism (diff, iqk_flash_attn.cpp): a new TG-only FA branch (neq1==1, neq3==1, rk2>1) makes work units of (KV head
+    x KV-chunk) with chunk nk = 32*floor(nek2*nek1/(32*nth)) positions, strides the units over threads, and per unit calls
+    the FA kernel with rk2 Q rows (all query heads of that KV head) in ONE K/V pass; per-unit (R, M, S) partials go to a work
+    buffer, a barrier follows, and each thread then merges the nkk partials of its heads with the online-softmax rescale.
+    The helper also gains q_step 4 and 2 tiles, so small GQA ratios use a 2- or 4-row tile (rk2=2 -> 2 rows, rk2=4 -> 4 rows).'
+  - 'The path is gated on neq1==1: batches of 2 or more query rows (speculative verify) do not take it and fall to the per-head
+    loop that processes each Q head separately against its KV head (iqk_flash_attn.cpp fall-through; same file at 5b38d43).'
+  - 'Reported effect (body + figure, read off plot, approximate): LLaMA-3.1-8B (D=128, GQA 4) Q4_0 weights, q8_0 K and V,
+    Ryzen-5975WX (AVX2, 32 threads), -c 10240: TG with FA at N_KV~9.7k about 9.8 -> 13.8 t/s; no-FA about 11.6 -> 11.95; mainline
+    llama.cpp b5139 FA about 8.5. Zero-context TG unchanged (~16.5). FA overtakes no-FA for TG only after this PR. Attention-attributable
+    time falls roughly 3.5x (derived from plot).'
+  - 'Counter-datum for D=256 (comment text table, Gemma3-12B: 16 heads / 8 KV heads, GQA 2, D=256, q8_0 KV, same CPU): at
+    15872 tokens ik TG 7.00 vs mainline 7.14 t/s (mainline slightly better); author attributes the small gain to only 2 Q
+    rows per GEMM and does not exclude something in mainline for head size 256. LLaMA-3.1-8B same run: ik 11.70 vs mainline
+    6.49 (x1.80).'
+  - 'The same PR changes the no-FA path (iqk_mul_mat_4d: 64/32-row Nx chunks across threads with a per-r2 kernel for r2<=8)
+    and reports its gain as fairly minor (no-FA ~+3% at 9.7k read off plot).'
+  techniques:
+  - (KV head x KV chunk) work units with all GQA query heads as rows of one K/V pass
+  - online-softmax partial merge across chunks after barrier
+  - q_step 2/4 FA tiles for small GQA ratios
+  reported_results:
+  - LLaMA-3.1-8B Q4_0/q8_0 KV 5975WX 32thr N_KV~9.7k TG FA ~9.8->~13.8 t/s (plot)
+  - Gemma3-12B (D=256, GQA 2) 16k TG ik 7.00 vs mainline 7.14 t/s
+  - LLaMA-3.1-8B 16k TG ik 11.70 vs mainline 6.49 t/s
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+    - intake-2421
+    - intake-2420
+  credibility_score: 1
+  contradicting_evidence:
+  - 'D=256 GQA 2 shows no gain over mainline at 16k (7.00 vs 7.14), so the mechanism is not shown to help at head dim 256;
+    GQA 12 evidence is PR #899 (D=128 model).'
+  - Mainline baseline (b5139, April 2025) predates mainline split-KV decode (#19209) and tiled prefill (#19012), both restricted
+    to f16/f32 KV (see intake-2425).
+  notes: 'Read: gh api pulls/332 (sha256-12 4ca6788e2ffe), full diff (bca88355cb12), 3 issue comments (ed2ade6c916f) including
+    three table sets; plot l3_sweep read as image (img332_l3.png). Not read: Gemma3 PR plot, the follow-on plots in comments.
+    Plot values are approximate eyeball reads.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): this is the PR that introduces FA GQA grouping + KV-chunk thread
+    split for nek2>1 (earlier KV-split with grouped rows existed only for MLA, nek2==1). Confirmed it is TG-only (neq1==1):
+    the N>1 path is untouched, so M1/M3 do not cover MTP verify widths. Gain figures are plot-read, not text; the only text
+    numbers are the Gemma3/LLaMA tables in the comments, which show NO gain over mainline at D=256 GQA 2. | 2026-10-22 Stage-2
+    close-out after wave 6 (the operator-authorized six-wave limit for this session): surfaced sources NOT dived: ik commits
+    2bf2fa8ba (CPU FA thread strategy) and d5498c446 (no q8_0 repack below batch 8), ik issue 1205 (repack correctness hazard),
+    ik PRs 277/243 (FlashMLA grouped KV split; matches the DS41 one-KV-head shape) and ik issue 164 (restatement) declined
+    for this session by the wave cap; the first four are flagged to the operator as a follow-up kernel intake.'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp iqk_flash_attn_noalibi new branch @ 3bb64d9
+    quote: if (neq3 == 1 && rk2 > 1 && rk2 == rv2 && neq1 == 1 && nth >= 1 && nek2*nek1 >= 32*nth) {
+    quote_sha256: 27cadf2465de919b2c400a8d91f4779102e07053d31001a1d990fc1ae7e9428e
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: same branch, per-unit call with rk2 rows @ 3bb64d9
+    quote: Dk, Dv, rk2, this_nk, nbq2, stride_k, stride_v, 0, Dv,
+    quote_sha256: 303cf9e963840ba6df5a5afdcbe7e71c5a08d01d8b962952d801560536670cec
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: same branch, partial merge @ 3bb64d9
+    quote: // We have nkk results for each head
+    quote_sha256: 0fdb0e44cf9e735cb181aca6b603c452ec36e5c9c9aa5e909042f00a1bfea990
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: iqk_flash_attn.cpp gate (neq1 == 1) @ 3bb64d9
+    quote: neq1 == 1 && nth >= 1 && nek2*nek1 >= 32*nth
+    quote_sha256: 3ba1e8cef63c12738d92e0a0588e9f22f9d66be59fad29b8e9586b459f326b8e
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: PR body L1-L2 @ 3bb64d9
+    quote: The performance gains with FA enabled are very significant, and FA now outperforms no-FA also for TG.
+    quote_sha256: a19749a3ee75fecb5edb352936ced25f66e201683727516a0fa82245926915cb
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: PR body setup @ 3bb64d9
+    quote: Model is quantized with `Q4_0`, KV cache is `Q8_0` (V-cache is `f16` when FA is not enabled). Results are for a
+      R$yzen-5975WX CPU (vanilla `AVX2`).
+    quote_sha256: 5433c91f858c68ad18543659b3bd8075a62184af2bb28a2ec4788ca205b5e02c
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: comment 2810048340 explanation @ 3bb64d9
+    quote: Gemma3 has 16 attention heads in total and 8 KV heads. This results in the `K*Q` and `V*softmax(K*Q)` GEMM's for
+      TG to be done with matrices with just 2 rows (compared to 4 rows for LLaMA-3), so the gain from using GEMM instead of
+      GEMV is less.
+    quote_sha256: 99e47c7815bdf31e802f3d6430e2ef5c030454c83c7ab3a50e999c1d169e3ba4
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: comment 2811841634 Gemma3 ik row N_KV=15872
+    quote: '|   512 |    128 |  15872 |   5.891 |    86.91 |   19.640 |     7.00 |'
+    quote_sha256: 2a74f57c8a5572e12ced1469dc01a7bb431572ef1b38af2a358bb3df5e187094
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: comment 2811841634 Gemma3 mainline row N_KV=15872
+    quote: '|   512 |    128 |  15872 |  13.874 |    36.90 |   17.937 |     7.14 |'
+    quote_sha256: 7017753cb7fbb9847b23fde14759c0435c0b95ce85b07bf69a7e12b7534a9dca
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: comment 2811841634 LLaMA ik row N_KV=15872
+    quote: '|   512 |    128 |  15872 |   3.305 |   154.91 |   10.942 |    11.70 |'
+    quote_sha256: 4a0b2b39c7cc40c9479fdc7004175a60e5c08706398a965f743e8a3e8a998f4a
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: comment 2811841634 LLaMA mainline row N_KV=15872
+    quote: '|   512 |    128 |  15872 |  46.129 |    11.10 |   19.730 |     6.49 |'
+    quote_sha256: daed29ccbf8a9439f8488e304fa90948c1427060b4e4de85040a45c352be3216
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/iqk/iqk_mul_mat.cpp iqk_mul_mat_4d no-FA hunk @ 3bb64d9
+    quote: mm.funcs[r2-1](ne00, (const void *)((const char *)A + ix*strideA + i02*nb02), strideA, info, 64);
+    quote_sha256: dfba02386875c2f91886d7eb4b2e11cd393960f0a041a8f236cbfc0cedf95009
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: PR body L1-L2 @ 3bb64d9
+    quote: The gains without FA are fairly minor and come from a different way of distributing the work between the threads
+    quote_sha256: b92667e2b0711490eabf713c80b3cbd81415a1a42a59238cbdf5dc997af3dba0
+    source_revision: merge 3bb64d9330d5 @ 2025-04-17 (head 3e41c56a)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: 'Prior dive: M1 credited to #207 (no-FA) and M3 to #332. Both M1 and M3 (as FA mechanisms) are in #332; #207 is
+      the unfused path.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'NEW: gate neq1==1 -> does not apply to N>1 batches as written.'
+  - claim_index: 2
+    effect: uncertain
+    note: Plot-read numbers, approximate; PR body gives no table.
+  - claim_index: 3
+    effect: narrowed
+    note: D=256 GQA 2 shows no gain over mainline at 16k.
+  - claim_index: 4
+    effect: unaffected
+    note: No-FA change, minor.
+  depends_on: []
+- id: intake-2453
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/899
+  source_type: repo
+  title: Much better CPU TG performance at long context for GLM-4.5
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'Mechanism (diff, 11 added lines, iqk_fa_templates.h): add a special case nq1==12 to iqk_flash_helper that instantiates
+    FlashAttn with q_step=12 (one K/V pass for all 12 query heads of a KV head in TG), and comment out the static_assert that
+    q_step be < 8 or a multiple of 8, which the author calls a leftover of the era of inline bespoke kernels.'
+  - 'Before this PR nq1==12 hit the q_step=8 branch for 8 rows and the remaining 4 rows fell through to the q_step=1 path
+    (reading of the merged helper, lines 2081-2099 @ 5b38d43; not stated in the PR body): 12 GQA rows cost 1 tiled pass +
+    4 single-row passes over K/V instead of 1 pass. This is a reading of the code, not a measured attribution.'
+  - 'Measured (body tables, text): GLM-4.5-Air IQ2_XXS (Unsloth), Ryzen-7950X, 16 threads, -c 16384 -ub 1024 -ctk q8_0, GQA
+    12: S_TG at N_KV=15360 main 3.74 -> PR 6.05 t/s (x1.62), llama.cpp 2.69 (PR x2.25); at 8192 5.74 -> 7.14 (x1.24); at 0
+    8.98 -> 9.01. Derived: attention-attributable TG time per token at 15360 falls 0.156 s -> 0.054 s (2.87x).'
+  - 'Scope stated by the author: TG on CPU with flash attention and a QUANTISED K cache; the f16-K path, other GQA ratios,
+    other head dims and N>1 batches are not reported. Model head dim is NOT-FOUND-IN-SOURCE in the PR (GLM-4.5 family; D=128
+    is from external model knowledge, unverified here).'
+  - PP is unchanged by this PR (S_PP 47.85 vs 47.47 at 15360); no accuracy check is reported.
+  techniques:
+  - q_step=12 FA tile for GQA ratio 12 (one K/V pass for all grouped heads)
+  - removing a multiple-of-8 tile-height restriction
+  reported_results:
+  - 'GLM-4.5-Air IQ2_XXS 7950X 16thr q8_0 K, N_KV=15360: TG 3.74->6.05 t/s (x1.62); vs llama.cpp 2.69 (x2.25)'
+  - 'N_KV=8192: 5.74->7.14 (x1.24)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+    - intake-2421
+  credibility_score: 2
+  contradicting_evidence:
+  - Only the 7950X (16 threads, 1 CCD-pair desktop part) is measured; thread-count scaling and EPYC are untouched.
+  - Baseline ik main shows a visible non-monotonic cliff at N_KV=8192 (6.43 -> 5.74) whose cause is not explained in the PR;
+    part of the "x1.62" may be that baseline artefact.
+  notes: 'Read: gh api pulls/899 (sha256-12 f6133db6691a) incl. all three table sets, diff (e1f91564789d), 0 comments, merged
+    iqk_fa_templates.h @ 5b38d431 (f47dd68e0745) lines 2020-2110 and 1285-1330, iqk_flash_attn.cpp @ 5b38d431 L60-L360, common.h
+    (flash_attn default true, L245). Plot image img899.png read. Not read: iqk_gemm_q8kv_fa kernels for nq=12 (why q_step=12
+    is supported for each K type is NOT-FOUND-IN-SOURCE).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the prior dive''s M2 ''multi-row Q tiles incl. q_step=12''
+    is accurate only for #899, and #899 is a tiny change (q_step=12 specialisation + assert removal), not a new multi-row
+    framework; q_step 8/4/2/1 helpers predate it (#332 added 4 and 2). The merged helper shows the pre-PR cost of 12 rows
+    was 8 tiled + 4 row-at-a-time. Numbers confirmed from body tables; the 1.62x is a TG-at-16k figure, the attention-time
+    reduction is 2.87x (derived).'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h iqk_flash_helper @ 5b38d43
+    quote: "// Special case: TG for GLM-4.5/4.6\n        FlashAttn<Dk, Dv, 12, k_step> fa(scale, softcap, sinkf);"
+    quote_sha256: 632f47b81a55c9ccbb0d5b1457096f006dd0e9c77d9bb1f6596f9b069904f5fa
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: iqk_fa_templates.h mul_mask_kq @ 5b38d43
+    quote: // As far as I can tell, this static assert is a remnant of the times where the matrix multiplications were done
+      inline
+    quote_sha256: e28ea5b664e0146ff6e6a5aeca8e5a5c6045db61f77523d7871790e4f640630e
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: iqk_fa_templates.h L2081-L2086 @ 5b38d43
+    quote: "if (nq1 >= 8) {\n        int n_step = nq1/8;\n        FlashAttn<Dk, Dv, 8, k_step> fa(scale, softcap, sinkf);\n\
+      \        fa.compute(kh, vh, 8*n_step, nk1, stride_q, stride_m, stride_qkv, q, (const char *)mask, qkv, M, S);\n    \
+      \    if (update(8*n_step)) return;"
+    quote_sha256: bd4cbe52f2d0178f97eac807239de2366e2e608386fc2e2cc3c9b592c3458a5e
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: iqk_fa_templates.h L2099 (q_step=1 fall-through) @ 5b38d43
+    quote: "FlashAttn<Dk, Dv, 1, k_step> fa(scale, softcap, sinkf);\n    fa.compute(kh, vh, nq1, nk1, stride_q, stride_m,\
+      \ stride_qkv, q, (const char *)mask, qkv, M, S);"
+    quote_sha256: d271ed21a27d224757402ce88aeaf70cfdf78475475e0524f1250cd43d1a9478
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: PR body @ 5b38d43
+    quote: At a context of 16k tokens, TG performance with this PR is 1.62X better than the main branch, and 2.25X better
+      than `llama.cpp`.
+    quote_sha256: 62e51f478b06fe5ff459f0bad1b659bd1a75fb46c1d6dfdcb778d3333feb3675
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: PR body main-branch table N_KV=15360 @ 5b38d43
+    quote: '|  1024 |    256 |  15360 |   21.573 |    47.47 |   68.538 |     3.74 |'
+    quote_sha256: cf4cc06f3212f7cba0a807e4b48c364ff34249b23329e9ddc9a6533e455030fa
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: PR body this-PR table N_KV=15360 @ 5b38d43
+    quote: '|  1024 |    256 |  15360 |   21.400 |    47.85 |   42.321 |     6.05 |'
+    quote_sha256: b5ed920a914cfb7d43415075ebea8d6b4b140aa9438265e72dfa0a89c345cd28
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: PR body @ 5b38d43
+    quote: This PR solves the problem for TG on the CPU when using flash attention with quantized K-cache.
+    quote_sha256: 0012851c94753c2492c542fe5970dac909d970af90a5109268cf40b6b53473f5
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: PR body command line @ 5b38d43
+    quote: ./bin/llama-sweep-bench -m GLM-4.5-Air-UD-IQ2_XXS.gguf -t 16 -c 16384 -ub 1024 -ctk q8_0
+    quote_sha256: 87cd53e4f7ad4f5d2c90d121ffb7614656598e2194c68ce913d3714617fb65e0
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: table
+    locator: PR body main-branch table N_KV=15360 (S_PP 47.47) @ 5b38d43
+    quote: '|  1024 |    256 |  15360 |   21.573 |    47.47 |   68.538 |     3.74 |'
+    quote_sha256: cf4cc06f3212f7cba0a807e4b48c364ff34249b23329e9ddc9a6533e455030fa
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: table
+    locator: PR body this-PR table N_KV=15360 (S_PP 47.85) @ 5b38d43
+    quote: '|  1024 |    256 |  15360 |   21.400 |    47.85 |   42.321 |     6.05 |'
+    quote_sha256: b5ed920a914cfb7d43415075ebea8d6b4b140aa9438265e72dfa0a89c345cd28
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: PR body @ 5b38d43
+    quote: It has a somewhat unusual GQA ratio of 12.
+    quote_sha256: 92da1841118e56dacf8b121b45f42a826e9160a4effccbf9a8c77d839ca0c5ea
+    source_revision: merge 5b38d431ace0 @ 2025-11-05 (head 202924d9)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Prior dive M2 called this a multi-row tile framework; it is a q_step=12 specialisation of an existing framework.
+  - claim_index: 1
+    effect: unaffected
+    note: NEW from merged-file reading; code reading, not measured.
+  - claim_index: 2
+    effect: unaffected
+    note: Numbers verified against body tables; 2.87x attention-time ratio derived (calc_ratios.py).
+  - claim_index: 3
+    effect: narrowed
+    note: Quantised-K path only; f16-K and N>1 not covered.
+  - claim_index: 4
+    effect: unaffected
+    note: PP unchanged; no accuracy check in source.
+  depends_on: []
+- id: intake-2454
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/171
+  source_type: repo
+  title: Fix lower FA performance for even batch sizes
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'Purpose (body): removes a zig-zag in FA batched-decode throughput where even batch sizes were slower than odd ones, reported
+    in issue #164; measured with llama-batched-bench, LLaMA-3.1-8B IQ4_XS, Ryzen-7950X, 16 threads, npl 1..16, npp 256, ntg
+    128, -c 4096, -rtr -fa. Evidence is a plot only (no text table).'
+  - 'Mechanism (diff, ggml.c): the number of threads cooperating on one (head) slice, ntg (they split that slice''s query
+    rows), is now considered only when neq1 >= 8*nth; below that every (iq2,iq3) slice is handled by a single thread with
+    all its rows, so the multi-row FA tile amortises each K/V pass over all rows. The old code split rows over 2/4/8 threads
+    whenever neq1 was divisible and the slice was big enough.'
+  - 'The same diff deletes the precondition (neq2*neq3)%(nth/ntg)==0 and its fall-back to the generic ggml path: the iqk FA
+    path now always runs, round-robin over heads (diff).'
+  - 'Reported size (body + plot, plot read approximate): ik FA at batch 16 about 151 -> 167 t/s (+10%), at 12 about 131 ->
+    141; odd sizes unchanged; mainline llama.cpp (build 4465) is 2.7x slower at batch 16 (body text). The 2.7x is against
+    mainline, not against ik-before.'
+  techniques:
+  - do not split query rows of a head across threads unless neq1 >= 8*nth
+  - always take the multi-row iqk FA path with round-robin head assignment
+  reported_results:
+  - 'batched-bench npl=16, 7950X 16thr, 8B IQ4_XS: ik FA ~151->~167 t/s (plot); x2.7 vs llama.cpp b4465 (text)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2421
+    - intake-2425
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: 'Read: gh api pulls/171 (sha256-12 d7287ba757f9), full diff (637406969112), 0 comments; batch-size plot read as image
+    (img171.png). Not read: issue #164 body; iqk_flash_attn_noalibi kernel tile code at that commit. The cause of the zig-zag
+    is inferred from the diff, the PR body does not state it.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): REATTRIBUTED. The prior dive credited #171 with ''multi-row
+    Q tiles''; the diff is a thread-distribution fix (when to split rows of one head across threads), not a tile change. Its
+    transferable content is a negative rule about row-splitting at small neq1, which matters for v10 because v10 assigns every
+    Q row to its own thread.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: PR body L1 @ 49b2706
+    quote: 'This PR fixes the lower performance for even batch sizes reported in #164.'
+    quote_sha256: 9694f724f7797310b535fe346faedb769b8fd2717bb4b5aad4429845496e5a2e
+    source_revision: merge 49b27069fd26 @ 2025-01-12 (head 983e8680)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: PR body command @ 49b2706
+    quote: ./bin/llama-batched-bench -m some_model.gguf -pps -t 16 -npp 256 -ntg 128 -npl 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+      -c 4096 -rtr -fa
+    quote_sha256: 4e1fd681d15e215ce5e6d43184b7cae311d27e209da38cbf1afddf4ef10cf701
+    source_revision: merge 49b27069fd26 @ 2025-01-12 (head 983e8680)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/ggml.c ggml_compute_forward_flash_attn_ext_f16 @ 49b2706
+    quote: if (neq1 >= 8*nth) {
+    quote_sha256: 7b544499fa66b6ad17a81d920d5c9a2ce2ec6a986d4854307c9632864fc9d2de
+    source_revision: merge 49b27069fd26 @ 2025-01-12 (head 983e8680)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: same hunk, new comment @ 49b2706
+    quote: // When neq1 is large, it is better to have more than one thread process one (iq2,iq3) matrix
+    quote_sha256: 62d4a17e0a10e0e9ea4393ba43290d9f99b7f63432b9ff53c5cfc94b906503be
+    source_revision: merge 49b27069fd26 @ 2025-01-12 (head 983e8680)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: same hunk, removed precondition @ 49b2706
+    quote: if ((neq2*neq3)%(nth/ntg) == 0) {
+    quote_sha256: f651cebdb0ee2ba2345f57e9a44302a1b3a11096676df370cd1b37bddae32df9
+    source_revision: merge 49b27069fd26 @ 2025-01-12 (head 983e8680)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: PR body @ 49b2706
+    quote: The performance difference for a batch size of 16 is a factor of 2.7X.
+    quote_sha256: 01b2f4b5487a97e5f937f826dd8a5822e357068bd83cad8574e89a7a8cb84216
+    source_revision: merge 49b27069fd26 @ 2025-01-12 (head 983e8680)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Plot-only evidence.
+  - claim_index: 1
+    effect: reattributed
+    note: Prior dive M2 (multi-row Q tiles) is not what this diff does; it is a thread-split policy.
+  - claim_index: 2
+    effect: unaffected
+    note: NEW from diff.
+  - claim_index: 3
+    effect: uncertain
+    note: Plot-read magnitudes; the text number is vs mainline.
+  depends_on: []
+- id: intake-2455
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/29810
+  source_type: repo
+  title: 'cpu: accumulate flash attention V in F32 in the one-chunk kernel'
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2439
+  verdict: already_integrated
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ServeurpersoCom
+  - 'rafacarrascosa (issue #29774 reporter)'
+  key_claims:
+  - 'Issue #29774 (open): ggml-cpu one-chunk FA accumulates the un-normalised V sum in F16 (VKQ16), which overflows to -inf
+    then NaN; repro on Nemotron-3-Nano-4B Q8_0, -fa on vs off (issue body).'
+  - 'Mechanism: the tiled kernel (>= GGML_FA_TILE_Q=64 query rows) accumulates in F32; the one-chunk kernel (decode, verify/spec
+    batches, prompt tails < 64 rows) kept an F16 running sum normalised only at the end, so it overflows past 65504 on long
+    contexts (PR body).'
+  - 'Trigger in the repro: an 8196-token prompt whose LAST ubatch has 4 rows runs one-chunk over the whole ~8.2k KV of a repetitive
+    prompt (diffuse attention); the first non-finite node is FLASH_ATTN_EXT with D=128 (issue body + log).'
+  - 'Fix (PR head 6c133191c, OPEN, unmerged at retrieval; upstream master 7170cad4 2026-10-22 still has VKQ16): every V type
+    accumulates in F32; F16 rows use a new fused convert+FMA ggml_vec_mad_f16_f32 (AVX-512F/F16C, NEON, RVV) (pr29810.diff).'
+  - 'Cost evidence: a naive F32 fix that converts V rows via the scalar ggml_fp16_to_fp32_row cost -38% single-thread tg64@d4096
+    on a 9950X3D; the fused version restores 6.85 -> 6.77 t/s (PR comments).'
+  - 'Final PR numbers: x86 single-thread tg64 7.55 -> 7.74, tg64@d4096 6.85 -> 6.77; Apple M5 tg64@d4096 10.29 -> 9.86 (-4%,
+    master used native F16 FMA there); FA matches CUDA on 3986/3986 test-backend-ops (PR body). Four alternative fixes were
+    tried (naive F32, F16 folded every 256 positions, CUDA/Vulkan-style FATTN_KQ_MAX_OFFSET, fused F32).'
+  - 'EPYC applicability (code read): production v10 ffc1bac82 carries the defect verbatim (ops.cpp L8907-8912, L8959-8973,
+    L9000-9004) on the paths reached from L9464 (split-KV, N=1) and L9543 (neq1 < 64); only F16 V reaches it, q8_0 V takes
+    the F32 VKQ32 branch.'
+  techniques:
+  - F32 accumulation of the online-softmax V sum
+  - fused F16->F32 convert+FMA (vcvtph2ps + vfmadd)
+  - FATTN_KQ_MAX_OFFSET softmax headroom (alternative)
+  - periodic F16->F32 fold (alternative)
+  reported_results:
+  - repro -fa on first non-finite FLASH_ATTN_EXT at 8448 KV; -fa off clean
+  - 'naive F32: tg64@d4096 6.85 -> 4.24 t/s (-38%, 1 thread, 9950X3D)'
+  - 'fused F32: tg64@d4096 6.85 -> 6.77 t/s (x86), 10.29 -> 9.86 (M5)'
+  - 3986/3986 FA test-backend-ops vs CUDA
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2439
+    - intake-2442
+  credibility_score: 4
+  contradicting_evidence:
+  - Maintainer am17an preferred plain F32 accumulation over the offset trick (reference-kernel correctness first); jeffbolznv
+    proposed FATTN_KQ_MAX_OFFSET. Not contradicting the defect, only the fix choice.
+  - 'EPYC''s own fix (champion 9a3f1392a, manifest V11-015) chose a hybrid: F16 accumulate + end-of-row non-finite check +
+    F32 recompute, which removes overflow but keeps sub-overflow F16 rounding; upstream''s PR removes both.'
+  notes: 'Read: issue #29774 (sha12 1f5d69f221fb) + 5 comments; PR #29810 head 6c133191c base 436f6f89e (json sha12 d1ef960894f3,
+    diff 6a866d779716) + 11 comments; upstream master ops.cpp @7170cad4 (VKQ16 present). Retrieved 2026-10-22T10:33Z via gh
+    api. Not read: the four alternative fix commits beyond the inlined v3 diff; CI results. Related local probe artifact (not
+    an experiments/ record): artifacts/cpu-fa-fp32-vkq-20261004/ in epyc-root.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read issue + PR + diff + all comments; PR is OPEN (not merged),
+    upstream master still affected; v10 ffc1bac82 carries the defect; EPYC already reproduced and fixed it independently (CPU-FA-VKQ-0,
+    champion 9a3f1392a / V11-015), so the new information is the upstream issue/PR to redirect CPU-FA-VKQ-4 and upstream''s
+    fused-F32 cost data for CPU-FA-VKQ-2. | 2026-10-22 Stage-2 close-out after wave 6 (the operator-authorized six-wave limit
+    for this session): surfaced sources NOT dived: ggml-org PR 28576 (MFMA FA F16 overflow fix, GPU analogue) declined for
+    this session by the wave cap and flagged to the operator; PRs 22378 and 22022 declined (THP shim and no-mmap already cover
+    them).'
+  claim_anchors:
+  - claim_index: 0
+    kind: issue_text
+    locator: 'issue #29774 body (Problem description)'
+    quote: I believe this happens because it uses a F16 accumulator instead of a F32 at ggml/src/ggml-cpu/ops.cpp:ggml_compute_forward_flash_attn_ext_f16_one_chunk
+    quote_sha256: f15eef03b691285e83876a1507e413bb5020255a5239c2a095f1bb63efca2460
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: pr_text
+    locator: 'PR #29810 body, Overview'
+    quote: 'small ones (decode, or the tail of a prompt) use a one-chunk kernel that accumulated an F16 V cache in an F16
+      running sum, normalized only at the end. On long contexts that sum overflows past 65504: inf, then NaN on every following
+      token.'
+    quote_sha256: 79abe3a377b0a7f6bd4e3ec3072f233a20f98a296e16efe10b1942023d5c0265
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: issue_text
+    locator: 'issue #29774 body, repro script comment'
+    quote: '8195 words + BOS = 8196 tokens: the prompt''s last batch has 4 tokens, and small batches take the F16 kernel'
+    quote_sha256: fdaa71d3cb365e6a6a5427bc8fb0fc594ddf9ca064e2b8df2d842c9e2f1e4725
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: pr29810.diff ggml/src/ggml-cpu/ops.cpp hunk @@ -8989 @ head 6c133191c
+    quote: ggml_vec_mad_f16_f32(DV, VKQ32, (const ggml_fp16_t *) v_data, vs);
+    quote_sha256: a90c8f0ba4add7dc7ecbc3a791a754d752522cf468c8c2666241f24452410d9a
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: pr_comment
+    locator: 'PR #29810 comment ServeurpersoCom 2026-10-02T18:44:56Z'
+    quote: 'tg64 @ d4096: 6.85 -> 4.24 t/s (-38%)'
+    quote_sha256: 805826eebd3faa3ea8d87d57664babbd24be5c4253acc40ec75c087bb781de01
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: pr_text
+    locator: 'PR #29810 body, Overview'
+    quote: 'x86 (Ryzen 9950X3D): tg64 7.55 -> 7.74 t/s, tg64 @ d4096 6.85 -> 6.77 t/s'
+    quote_sha256: 132fc08fcf03f72f6f94b62318a1f831834bea6c97bdbeced7416dfba6e89862
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: code
+    locator: ggml/src/ggml-cpu/ops.cpp:L8907 @ ffc1bac82 (production v10)
+    quote: ggml_fp16_t * VKQ16 = (ggml_fp16_t *) (VKQ32 + 1*DV); // (temporary) FP16 VKQ accumulator
+    quote_sha256: 996f1aed780139a99220f59dc5a7c41c8cb3745b0b6616846bcde01772a7a753
+    source_revision: 'PR head 6c133191c / issue #29774, retrieved 2026-10-22T10:33Z'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Issue confirmed by the PR author on the same model; CUDA clean.
+  - claim_index: 1
+    effect: narrowed
+    note: Stage-brief phrasing 'small batches take the F16 kernel' is exact only for F16 V; quantized V (q8_0) in the same
+      kernel accumulates in F32 (v10 L8975-8994).
+  - claim_index: 2
+    effect: unaffected
+    note: Read from the issue repro and log; D=128 in the log.
+  - claim_index: 3
+    effect: narrowed
+    note: 'Not merged: PR and issue both OPEN at retrieval; upstream master 7170cad4 still contains VKQ16 (master_ops.cpp
+      L9031).'
+  - claim_index: 4
+    effect: unaffected
+    note: Matches EPYC's independent finding that a two-pass convert costs ~3x FA op time on Zen 5 (kv-unified-stack-rollout.md
+      CPU-FA-VKQ-0).
+  - claim_index: 5
+    effect: unaffected
+    note: Single-thread, one model (Gemma 4 E4B UD-Q8_K_XL); no multi-thread or D=256 numbers.
+  - claim_index: 6
+    effect: narrowed
+    note: Defect present in v10, but on :8074 the main model's 12 QSA layers see at most 2051 cells; EPYC probe measured acc_peak
+      <= 237.6 to 18,940 tokens (run_base.log). The dense MTP draft head is unbounded.
+  depends_on: []
+- id: intake-2456
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/27478
+  source_type: repo
+  title: 'ggml : speed up batch-1 CPU decode, align large allocations'
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2442
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - matevz-kovacic
+  key_claims:
+  - 'One-chunk (vec) FA restructured into KV blocks of GGML_FA_KQ_BLK=32: scores for a block are computed first, the running
+    max/accumulator are rescaled at most once per block, and exp is done by ggml_vec_soft_max_f32 over the block (PR body
+    + ops.cpp diff).'
+  - For F16 K with F32 Q, Q stays F32 (no F16 round trip) and four K rows are dotted per Q load (ggml_vec_dot_f16_f32_x4out);
+    grouping is disabled for quantized K and when masked cells break a group of 4 (diff L 'const int grp').
+  - 'V accumulates in F32 via a fused ggml_vec_mad_f16_f32 whenever AVX-512F or AVX2+F16C+FMA is present, so on x86 the PR
+    also removes the F16 VKQ16 overflow of #29774 as a side effect (diff use_f16_acc).'
+  - 'Qwen3-30B-A3B Q4_K_M tg@8k: Ryzen 7 9700X +15.29% total, attention change alone +10.67%; Neoverse-N1 +9.22% / +7.43%;
+    the rest is a 2 MiB-aligned + MADV_HUGEPAGE allocator change (PR body).'
+  - 'Caveats (PR body): only DV=128 measured end-to-end; DV=256 loses ~3.5% on x86 ONLY in a build with GGML_NO_INTERDOT_X4
+    (four-output helper off); attention-only change regresses pp512 by 2.194% (attributed to code layout via a dead-code control);
+    2..63-row fallback not evaluated.'
+  techniques:
+  - blocked online softmax (rescale once per 32 KV)
+  - 4 K rows per Q load (output-parallel dot)
+  - F32 Q kept for F16 K
+  - fused F16->F32 V multiply-add
+  - 2 MiB-aligned large allocations + MADV_HUGEPAGE
+  reported_results:
+  - 9700X tg@8k +15.29% (+10.67% attention-only)
+  - Neoverse-N1 +9.22% (+7.43%)
+  - DV=256 -3.5% in NO_INTERDOT_X4 build
+  - pp512 -2.194% attention-only
+  - 5141/5141 FA test-backend-ops on 8 build variants
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2442
+    - intake-2439
+  credibility_score: 2
+  contradicting_evidence:
+  - Open since 2026-08-21 with no maintainer review in comments; bot flagged AI-written description. Measurements are the
+    author's own (single source).
+  notes: 'PR #27478 head 0577cbcb4 (json sha12 06f452f0debf, diff 7d7eab2862ee), OPEN, retrieved 2026-10-22. Not read: ggml.c
+    allocator hunk in detail; external ''active-model'' result archive.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read PR body, full diff and comments; narrowed the D=256 regression
+    to the NO_INTERDOT_X4 build and the x4 grouping to F16 K; found the PR also replaces the F16 V accumulator with F32 on
+    x86. | 2026-10-22 Stage-2 close-out after wave 6 (the operator-authorized six-wave limit for this session): surfaced sources
+    NOT dived: github.com/matevz-kovacic/active-model (pre-registered factorial experiment harness) declined for this session
+    by the wave cap; flagged as a dev-harness measurement-discipline lead.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_text
+    locator: 'PR #27478 body, Overview'
+    quote: vlocks the KV loop, rescaling once every 32 elements
+    quote_sha256: 4f1763ece53dbeadf0c0f2d11273d07086b8555c04d7fe3219b69bb2b773a637
+    source_revision: PR head 0577cbcb4 (base 5b6ddc967), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: pr_text
+    locator: 'PR #27478 body, Overview'
+    quote: Computes four K.Q dot products per Q load and accumulates V in F32 where a mixed multiply-add is used.
+    quote_sha256: 8c46ad87d59ef0cc84e2750e7059b43fffa77668af5abce92a08cca39e8bfd35
+    source_revision: PR head 0577cbcb4 (base 5b6ddc967), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: pr_text
+    locator: 'PR #27478 body, Additional information'
+    quote: attention change alone +10.67%
+    quote_sha256: 1fd9cad5e2c17e4837dd737451347fad8d3e5853a5b6027843900c72481f45d3
+    source_revision: PR head 0577cbcb4 (base 5b6ddc967), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: pr_text
+    locator: 'PR #27478 body, Scope limits'
+    quote: DV=256 loses ~3.5% on x86 built with GGML_NO_INTERDOT_X4 (F32-Q dot on, four-output helper off)
+    quote_sha256: 0ca1a18f503c45fddbebf7e603874bac74a6b3b0071005cf12073e17df143aee
+    source_revision: PR head 0577cbcb4 (base 5b6ddc967), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: pr_text
+    locator: 'PR #27478 body, Scope limits'
+    quote: 'one head geometry measured end-to-end: DV=128'
+    quote_sha256: 8a513539e9d3ff4b892f990c7321463e9ec05c7db9580dfdcfedfd64b9f43770
+    source_revision: PR head 0577cbcb4 (base 5b6ddc967), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: pr27478.diff ops.cpp one_chunk hunk @ head 0577cbcb4
+    quote: const int grp = (GGML_HAS_INTERDOT_X4 && q_stays_f32 && t + 3 < nb &&
+    quote_sha256: 759df2d71005ed472a1edef7b2c918063ffdad13198fdd1f1151f8778301588c
+    source_revision: PR head 0577cbcb4 (base 5b6ddc967), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read from diff (GGML_FA_KQ_BLK 32 in common.h).
+  - claim_index: 1
+    effect: narrowed
+    note: Stage brief said '4 K.Q per Q load' generally; it only engages for F16 K + F32 Q (Q38FN f16 KV qualifies; q8_0-K
+      roles do not).
+  - claim_index: 2
+    effect: unaffected
+    note: 'New finding vs brief: it doubles as an overflow fix on x86.'
+  - claim_index: 3
+    effect: unaffected
+    note: Matches brief's +10.67% attention-only.
+  - claim_index: 4
+    effect: narrowed
+    note: Brief's '-3.5% at D=256 in one build' is the GGML_NO_INTERDOT_X4 opt-out build; D=256 with the default x4 helper
+      is NOT measured (NOT-FOUND-IN-SOURCE).
+  depends_on: []
+- id: intake-2457
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/29423
+  source_type: repo
+  title: 'ggml-cpu: enable tiled flash attention for non-vector-multiple head dims on x86'
+  categories:
+  - hardware_optimization
+  - multimodal
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2441
+  verdict: not_applicable
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - SongXiaoXi
+  key_claims:
+  - Before the PR, head dims not a multiple of the SIMD width (e.g. 40, 72) are excluded from the tiled kernel and fall to
+    the per-query one-chunk kernel, which is ~10x slower and accumulates P*V in F16 (PR body).
+  - The PR removes the DV % f32_epr gate on x86-64 and handles the GEMM's leftover columns with masked AVX-512 (or AVX2 maskload)
+    loads/stores/FMA instead of scalar per-column loops (simd-gemm.h diff).
+  - 'FA operator, F16 K/V, 9950X 16 threads: 12-28x faster at D=40/72; Qwen3-VL BF16 mmproj on CPU 2.86-8.28x faster (PR tables).'
+  - 'Review found and the PR fixed a latent tiled-kernel bug: padded KV entries are set to -inf BEFORE logit soft-capping,
+    which maps them to a finite -softcap so they receive weight when there is no mask (reviewer comment + diff reordering).'
+  - 'EPYC applicability: every production LLM head dim (128, 256, 512) is a multiple of 16, so v10''s gate (ops.cpp L9532)
+    already admits them to the tiled path; merged 2026-09-28, not in v10.'
+  techniques:
+  - AVX-512 masked GEMM tail
+  - AVX2 maskload tail
+  - softcap-before-padding ordering fix
+  reported_results:
+  - 'D=72 Q=KV=3136: 399.84 -> 24.85 ms (16.1x)'
+  - 'mmproj 1120x1120: 28878 -> 3487 ms (8.28x)'
+  - 225/225 CPU FA tests
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2441
+  credibility_score: 3
+  contradicting_evidence: null
+  notes: 'PR #29423 merged 2026-09-28 as 6f767fe96 (json sha12 db6fd4ab35bb, diff 518097fa7c41, comments 2d0308810cb3), retrieved
+    2026-10-22. Fully read.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): confirmed no effect on LLM head dims 128/256/512; surfaced
+    the softcap-after-padding latent bug that v10''s tiled kernel also carries.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_text
+    locator: 'PR #29423 body, Overview'
+    quote: Head sizes like 72 fall back to the per-query kernel, which is an order of magnitude slower and also accumulates
+      P*V in F16.
+    quote_sha256: 6b59a27cb1f11cd96f46f7fe1f46e6f3e731448e72ce6343a20034ab6b220de4
+    source_revision: merge commit 6f767fe96 (head e63e53400), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: pr_text
+    locator: 'PR #29423 body, Overview'
+    quote: handles the leftover columns of the P*V tile GEMM with masked AVX-512 loads/stores/FMA instead of scalar per-column
+      dot products
+    quote_sha256: 932c2898b687e97986c6a834fcb129818b6dcf5eb43a1a909412780621f054b8
+    source_revision: merge commit 6f767fe96 (head e63e53400), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: pr_text
+    locator: 'PR #29423 body, FA operator table (Ryzen 9 9950X, 16 threads)'
+    quote: '| 72 | 3136 | 399.84 | 24.85 | 16.1x |'
+    quote_sha256: ea79d1a8c52acc70156dd7285619bba8be5da4622a44babeb8133b6445d479a4
+    source_revision: merge commit 6f767fe96 (head e63e53400), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: pr_comment
+    locator: 'PR #29423 comment am17an 2026-09-28T10:13:29Z'
+    quote: Soft-capping gives padded KV entries nonzero attention weight
+    quote_sha256: d08d62204922c0cfab71fe0feefc8a9635826f407990229cf7c89ad2b2d7da5d
+    source_revision: merge commit 6f767fe96 (head e63e53400), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/ggml-cpu/ops.cpp:L9532 @ ffc1bac82 (production v10 tiled gate)
+    quote: use_tiled &= (DV % f32_epr == 0);
+    quote_sha256: fd34bd30072493eb134ac8bb4f3c97610cf9d10886964da2bce2537f8afe2864
+    source_revision: merge commit 6f767fe96 (head e63e53400), retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Ties to #29810: non-multiple dims also hit the F16 accumulator.'
+  - claim_index: 1
+    effect: unaffected
+    note: Brief summary correct.
+  - claim_index: 2
+    effect: unaffected
+    note: Author's numbers, x86 only.
+  - claim_index: 3
+    effect: unaffected
+    note: v10 carries the same ordering (ops.cpp L9235-9246, padding then softcap); harmless for masked decoder roles.
+  - claim_index: 4
+    effect: narrowed
+    note: 'Brief asked whether it matters for D=256: it does not; the only EPYC-relevant shapes would be CPU vision encoders,
+      which run on MI210 today.'
+  depends_on: []
+- id: intake-2458
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/2372
+  source_type: repo
+  title: 'CUDA: handle GQA = 12 for head size = 256 via new MMA'
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2442
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - The change targets Qwen3.8-Flash-Next (D=256, GQA 12), not a generic shape (PR body).
+  - 'Measured ~3% better TG at context > 8k on 2x RTX 3090 with -ncmoe 20 (hybrid: attention on GPU, 20 layers'' experts on
+    CPU); author''s single setup (PR body).'
+  - 'The diff only widens dispatch: single-token decode (Q->ne[1]==1) with D=256 and GQA 6 or 12 goes to the existing new-MMA
+    instance <256,256,ncols1=1,ncols2=8> (fattn.cu, fattn-new-mma.cu).'
+  - 'Mechanism: Q heads sharing a KV head are packed into the MMA column dimension (ncols2=8); GQA 12 runs iter_z=ceil(12/8)=2
+    column tiles with out-of-range heads masked (fattn-new-mma.cu L1110, L1438, L1543), i.e. 75% column utilisation, same
+    as GQA 6.'
+  - FA cost is modest on this model because QSA's indexer limits attention to a top-k budget (PR body; consistent with qwen4exp.cpp
+    L421-423, 2051-cell width).
+  techniques:
+  - GQA head packing into MMA columns for decode
+  - dispatch widening to reuse an existing kernel instance
+  reported_results:
+  - ~3% TG at ctx > 8k (2x3090, -ncmoe 20)
+  cross_references:
+    chapters: []
+    handoffs:
+    - mi210-big-model-and-acceleration-roadmap.md
+    - kv-unified-stack-rollout.md
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2442
+  credibility_score: 3
+  contradicting_evidence: null
+  notes: 'ik_llama.cpp PR #2372 merged 2026-08-28 as 555330fbb (json sha12 0cd6aec0b39b, diff 65ec7ff300bd); fattn-new-mma.cu
+    at merge commit (sha12 455d058ac536) read at the dispatch and the gqa/ncols2 sites only (PARTIAL for that file; PR itself
+    FULL).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the GQA-12 shape is Q38FN, not the MI210 27B (GQA 6); the PR
+    is a dispatch widening onto an existing GQA-packed MMA instance; the kernel uses CUDA mma.sync and does not build for
+    gfx90a, but mainline''s HIP MMA path already has the same ncols2 GQA packing.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_text
+    locator: 'ik_llama.cpp PR #2372 body'
+    quote: This is for the Qwen-3.8-Flash-Next situation.
+    quote_sha256: 881c24480ef51e567be735f289d089b842de1a288431501e25b0f6a487abfd0d
+    source_revision: merge commit 555330fbb, retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: pr_text
+    locator: 'ik_llama.cpp PR #2372 body'
+    quote: I get ~3% better TG performance for context > 8k tokens in my setup (2x3090, hybrid with `-ncmoe 20`)
+    quote_sha256: d261af785e380a2665c4c03e1d24f481ff93877ba76a282ae8df8b9cea4c9bd3
+    source_revision: merge commit 555330fbb, retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn.cu dispatch @ 555330fbb
+    quote: (gqa_ratio == 6 || gqa_ratio == 12)
+    quote_sha256: 20e2b59ca182ef8933e6a03530e65eff0372ec56b1af0ebd04b7b9bb5e092044
+    source_revision: merge commit 555330fbb, retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-new-mma.cu:L1543 @ 555330fbb
+    quote: const int iter_z = (gqa_ratio + (ncols2 - 1)) / ncols2;
+    quote_sha256: 47543a183e2ffe4fc3911f95701c8b37cf68a6a0441924ce569ca673187321ee
+    source_revision: merge commit 555330fbb, retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: pr_text
+    locator: 'ik_llama.cpp PR #2372 body'
+    quote: FA is not very expensive due to the indexer use.
+    quote_sha256: 5b49cb9e1d62b6958ed6dfdb3d7d405e98fb5c5e2756da4ece48719636746bb0
+    source_revision: merge commit 555330fbb, retrieved 2026-10-22T10:33Z
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Brief asked about the 27B on :8083: that model is D=256 with 4 KV heads, GQA 6 (docs/design/fa-masked-block-skip-20261003-fold.md
+      L70), already the pre-PR supported case. GQA 12 / D=256 is Q38FN (autokernel-all-devices-all-dimensions.md L218), which
+      EPYC serves on CPU (:8074).'
+  - claim_index: 1
+    effect: unaffected
+    note: Single setup, no variance reported.
+  - claim_index: 2
+    effect: unaffected
+    note: 5-line diff fully read.
+  - claim_index: 3
+    effect: unaffected
+    note: Read from the kernel file at the merge commit.
+  - claim_index: 4
+    effect: unaffected
+    note: Agrees with EPYC's probe (vis_max=2051).
+  depends_on: []
