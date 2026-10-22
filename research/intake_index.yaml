@@ -360512,20 +360512,24 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
   - The CPU FA token-generation fast path for a single KV head (nek2 == 1, one query row, rk2 > 1 query heads; the MLA case)
     splits KV into gcd(nek1/32, nth) chunks and the query heads across nth/gcd groups; before this PR it ran only when rk2
     was divisible by that group count (diff, iqk_flash_attn.cpp).
-  - The PR drops the divisibility condition by giving the first threads ceil(rk2/nth_k) heads and the rest one fewer (an ith_mid
-    split), and sizes the graph-plan work buffer from the per-thread head count (diff, ggml.c ggml_graph_plan and iqk_flash_attn.cpp).
-  - After a barrier each output row merges its per-thread partials (row result, running max M, running sum S) in thread order
-    with the online-softmax rescale, skipping partials whose max is -inf (diff).
-  - The author reports some TG speedup at 24 and 48 threads on a 32-core AVX2 machine (no numbers given); a tester reports
-    a dual-socket sweep that is slightly better and much less irregular, and the author attributes the remaining dips to work
-    that does not divide evenly across threads (PR body and comments).
+  - The PR drops the divisibility condition by giving the first ith_mid head GROUPS ceil(rk2/nth_k) heads and the rest one
+    fewer, now also requiring ceil(rk2/nth_k) > 1, and sizes the graph-plan work buffer from that per-group head count (diff,
+    ggml.c ggml_graph_plan and iqk_flash_attn.cpp).
+  - After a barrier each output row merges its gcd_k per-thread partials (row result, running max M, running sum S) in ascending
+    thread order with the online-softmax rescale, skipping partials whose max is -inf (diff).
+  - The author reports some TG speedup at 24 and 48 threads on a 32-core AVX2 machine (no numbers given); a tester (host and
+    thread count not stated in the thread) reports a sweep that is slightly better and much less irregular, and the author
+    attributes the remaining dips to work that does not divide evenly across threads (PR body and comments).
+  - 'The PR also rewrites the merge indexing so each row reads the gcd_k partials of its own head group (jth_first*gcd_k ...
+    +gcd_k), replacing #243''s indexing that was correct only for rk2 == nth; the PR body does not mention this (diff).'
   techniques:
   - KV-split TG attention for one KV head with grouped query heads per thread
   - uneven query-head distribution across thread groups
@@ -360557,12 +360561,14 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: dive the merge order and thread split to see whether a grouped-heads KV-split
     decode schedule for the DS41 shape (1 KV head, 64 query heads) can be bit-exact against the ggml anchor at 96 threads.'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - 'Stage-1 only (2026-10-22). Bearing tasks: AKX-ALL-9/10/12 and AKX-ALL-LB3/LB4 in handoffs/active/autokernel-all-devices-all-dimensions.md;
-    CH-18.c in handoffs/active/autokernel-champion-aggregate.md names this intake.'
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing tasks: AKX-ALL-LB3, AKX-ALL-LB4 and AKX-ALL-10 in handoffs/active/autokernel-all-devices-all-dimensions.md.'
+  reader_should_conclude: 'Cite #277 for the uneven head-group split, the nq_per_thread > 1 requirement and the gcd_k-partial
+    merge. Do NOT cite it as the DS41 schedule above n_kv 12288 at 96 threads (#1212''s path runs there), and do not cite
+    the tester table as a 96-thread or dual-socket result (host not stated). No speed number from the author exists.'
   notes: 'PR merged 2025-03-23, head 0964a4999008e62d5ab3117e79521b310930e58e, base d8584a1bbe56, merge 5a4855e61c05 (merge
     object absent from the local reference clone /mnt/raid0/llm/ik_llama.cpp at c04881fc0f31). Retrieved 2026-10-22T16:48Z
     via gh api + curl: metadata sha256-12 6aee462dd762, diff e373c1ae8aa2 (7,109 B, read in full), 3 comments 8493c213855c
@@ -360570,7 +360576,133 @@
     L303-L364, read 2026-10-22). Our arithmetic from the diff conditions with the AKX-ALL-10 DS41 shape (64 query heads, 1
     KV head) at 96 threads and kv 32768: gcd(1024, 96) = 32, nth_k = 3, 64 % 3 = 1, so the pre-PR path would be skipped and
     this path takes it (22 heads per thread). The port hook declines any op with sinks (ops.cpp L10030 @ 629b545e0), and AKX-ALL-10
-    lists DS41 with sinks, so none of these paths runs for DS41 today.'
+    lists DS41 with sinks, so none of these paths runs for DS41 today. | Stage 2 (2026-10-22): read body, all 3 comments (tables
+    as text), the full diff, and iqk_flash_attn.cpp at the #277 head 0964a4999 and #243 head 862b84bb2 (depth-1 fetches).
+    NOT read: the two plot images in comment 2745952185. Stage-1 note correction: the "kv 32768 takes this path (22 heads
+    per thread)" arithmetic applies to #277-era code only; current code routes n_kv >= 12288 at 96 threads to #1212''s path,
+    and the #277 split is 22/21/21 heads per group.'
+  dive_corrections: '2026-10-22 Stage-2 dive (session intake-kernel-followup-20261022, lineage read #243 -> #277 -> #1212
+    -> #1216): claims confirmed with narrowing (head groups not threads; new nq_per_thread > 1 requirement; tester host not
+    stated). NEW: #277 silently corrected #243''s merge indexing. OVERTURNED the Stage-1 note that DS41 at 96 threads and
+    kv 32768 takes this path: in the current code (ik since #1212 and the AKX-ALL-LB4 port @ 9a338d4f1, L257) the nstep_k
+    >= 4*nth path is checked first, so at 96 threads this path runs only for n_kv < 12288. The 64 % 3 != 0 arithmetic holds
+    there (n_kv 8192: gcd 32, nth_k 3, head groups 22/21/21, 256 KV rows per thread, 32 partials per row). "Dips" at 96 threads
+    (our arithmetic, port logic, n_kv padded to 256): the grid gcd(n_kv/32, 96) swings with n_kv (8192: 32x3, 8448: 24x4,
+    8704: 16x6, 9216: 96x1, 12032: 8x12) with per-thread work up to 12.5% over the mean (12032) and GEMM width 5..64 heads;
+    script dives/lineage/partition/ds41_partition.py.'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: 'ggml/src/iqk/iqk_flash_attn.cpp (pre-#277 condition at #243 head):L67 @ 862b84bb2'
+    quote: if (rk2%nth_k == 0) {
+    quote_sha256: 1d79be6a2e2ef10c564575e3ec610951f3a9ba2f2af14b1341aa1e6d58a20c16
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L64 @ 0964a4999
+    quote: int gcd_k   = simple_gcd(nstep_k, nth);
+    quote_sha256: 9afd23d2cd0f7bd2d8ccd1bd04686836207d295d33fd622c9d93ad4aa72885e8
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L70 @ 0964a4999
+    quote: if (nq_per_thread > 1) {
+    quote_sha256: 77e7448405aaf7025d76c5b66d727d805e4d98cf3e86cced7a20dbdf4d484123
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L74 @ 0964a4999
+    quote: ith_mid = rk2 - nth_k*(nq_per_thread - 1);
+    quote_sha256: 5e5a3a25ae349777d315cc366abe1cbe702e5f6fb218f16fc9c7e983643e06e6
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: diff
+    locator: ggml/src/ggml.c ggml_graph_plan hunk (diff), ikawrakow_pr277.diff line 18
+    quote: +                            size_t size = (Dv + 16)*nq_per_thread*sizeof(float)*n_tasks;
+    quote_sha256: beffb4d1739d413ed965406f730c11ce0d5f6c58b9fcad553183f4117f86a93f
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp merge loop:L120 @ 0964a4999
+    quote: for (int jth = jth_first; jth < jth_first + gcd_k; ++jth) {
+    quote_sha256: 3c22b801fa118d19138e94b6af34ab4b83207fc4e8dcf3741148cd0e2965a9dd
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp merge loop:L125 @ 0964a4999
+    quote: if (Mj[jj] == -INFINITY) continue;
+    quote_sha256: 080dcaec16e88e199645804e137381fb4c345f09b6cfe6b7f0696e07617199d8
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: PR body (pr277_body.txt line 3, retrieved 2026-10-22)
+    quote: On a 32-core `AVX2` system I observe some speedup with 24 and 48 threads compared to main
+    quote_sha256: d029dbd000e8ab9ff299a37d25162a7a5afd0db8a222879a8ea3e0756d13ef00
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: comment 2745952185 (saood06, 2025-03-23) (pr277_comments.txt line 12, retrieved 2026-10-22)
+    quote: It seems a bit better (not counting the dips), but also far less dippy.
+    quote_sha256: f610824df7a4f5b3590f9c6b33b2bfb2ed75f42d2abf8bce7b5cab9eb434e88b
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: comment 2746048035 (ikawrakow, 2025-03-23) (pr277_comments.txt line 54, retrieved 2026-10-22)
+    quote: When the work to be done is not evenly dividable between the threads, there will always be a slightly lower performance.
+    quote_sha256: 414b86edc948c624e90012c32a43f8478229923158b9b727583776d854d62c27
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: comment 2745952185 sweep-bench row N_KV 12288 (pr277_comments.txt line 42, retrieved 2026-10-22)
+    quote: '|   512 |    128 |  12288 |  144.628 |     3.54 |   96.818 |     1.32 |'
+    quote_sha256: acd90cb9ad03ebb8dddd2e16d45ef48c77cd7fe7f768cd364dd235d9cf13e562
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp merge loop:L119 @ 0964a4999
+    quote: jth_first *= gcd_k;
+    quote_sha256: b3a3833992a6508c080f912d63816781aab441c2dc83d7805f64890e9bd2be65
+    source_revision: 'ik_llama.cpp PR #277 head 0964a4999008 (merge 5a4855e61c05), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp (pre-#277 merge indexing):L98 @ 862b84bb2
+    quote: auto R = (const float *)(result_buffer + (jth_q*(rk2/nth_k) + j1)*size_thread);
+    quote_sha256: b03864cb835977724cc045776fa945416c16996ea52047b6b43ace2170911949
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Pre-PR gate rk2%nth_k == 0 confirmed at 862b84bb2 L67.
+  - claim_index: 1
+    effect: narrowed
+    note: Split is over head groups, not threads; the path newly requires ceil(rk2/nth_k) > 1 (rk2 == nth_k no longer qualifies).
+  - claim_index: 2
+    effect: narrowed
+    note: Merge length is gcd_k partials per row.
+  - claim_index: 3
+    effect: narrowed
+    note: '"Dual-socket" was the author''s request, not the tester''s stated host; the tester gives no host or thread count.'
+  - claim_index: 4
+    effect: unaffected
+    note: NEW claim from the diff.
+  depends_on:
+  - entry: intake-2495
+    claim_index: 4
+    why: 'Claim 4 characterises #277''s rewrite as a correction of #243''s merge indexing (intake-2495 claim 5); if that reading
+      were retracted, claim 4 would shrink to a refactor.'
 - id: intake-2495
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/pull/243
@@ -360587,18 +360719,29 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
   - For TG the attention was parallelised over heads, so each thread computed K*Q as a memory-bound GEMV; the PR parallelises
     over KV-cache entries instead, so each thread computes K*Q for several query heads as a GEMM, at the cost of one extra
     thread barrier before combining (PR body).
-  - The new path is enabled only for MLA (one KV head); the author expects it to help GQA too but says something is not right
-    there yet (PR body).
-  - The author attributes a slight slowdown at short contexts to the extra barrier (PR body).
-  - The PR introduces ggml/src/iqk/iqk_flash_attn.cpp with iqk_flash_attn_noalibi taking a work buffer and a barrier callback,
-    and a graph-plan work-buffer term for the per-thread partial results (diff).
+  - 'The new path is enabled only for MLA (gate nek2 == 1); the author expects it to help GQA too but says something is not
+    right there yet (PR body; code comment). GQA grouping arrived later in ik #332 (intake-2452).'
+  - The author guesses that the extra barrier causes the slight slowdown at short contexts (PR body).
+  - The PR introduces ggml/src/iqk/iqk_flash_attn.cpp (iqk_flash_attn_noalibi taking a work buffer and a barrier callback)
+    and a graph-plan work-buffer term for the per-thread partials, added only when gcd(nek1/32, nth) > 1 and rk2 % nth_k ==
+    0 (diff).
+  - 'The iqk_mul_mat.cpp hunks thread an optional (M, S) partial export through every FA template path (f16, quantized, Q8_0/Q8_KV
+    R8, BF16, DeepSeek helper): with M,S non-null rows are stored unnormalised with their running max and sum; FlashMS::update_M_S
+    skips update_S while M == -inf (a KV chunk that starts fully masked); and the head-size gate typo Dv != 256 -> Dk != 256
+    is fixed (diff).'
+  - 'As merged, the partial-merge loop reads partial (jth_q*(rk2/nth_k) + j1) for j1 < rk2/nth_k while thread ith = ith_q*gcd_k
+    + ith_k wrote partial ith; the two agree only when rk2/nth_k == gcd_k (rk2 == nth), so at other thread counts that take
+    the path the merge reads wrong or unwritten partials; ik #277 rewrote the indexing (code reading at 862b84bb2, not run).'
+  - 'Reported results (DeepSeek-Lite 16B IQ4_NL, Ryzen-7950X, thread count not stated): body table is Q8_KV cache (per the
+    author comment), tg64@pp16384 20.40 -> 22.31 t/s; fp16-KV comment table tg64@pp16384 11.78 -> 23.13 t/s.'
   techniques:
   - KV-entry parallel TG attention (GEMM per thread instead of GEMV per head)
   - per-thread partial (M, S, row) merge after a barrier
@@ -360630,16 +360773,163 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: read with intake-2494/2496 as one lineage dive; the mechanism is what the AKX-ALL-9
     cpu_fa_schedule route already permits (one KV pass serving the query heads of a KV head).'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 only (2026-10-22); bearing task AKX-ALL-9 (cpu_fa_schedule) and AKX-ALL-LB3(a) in handoffs/active/autokernel-all-devices-all-dimensions.md.
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing tasks: AKX-ALL-9 and AKX-ALL-LB3(a) in handoffs/active/autokernel-all-devices-all-dimensions.md.'
+  reader_should_conclude: 'Cite #243 for the mechanism (KV-entry split, per-thread (M,S) partials, one barrier, merge) and
+    its MLA-only scope. Do NOT carry #243''s merge code: its partial indexing is correct only when rk2 == nth (fixed in #277).
+    Do not cite its tables as evidence for any thread count other than the unstated one used, nor for GQA.'
   notes: 'PR merged 2025-03-07, head 862b84bb28c5ee2d6a93621e66ac4736851d5da6, base 7bdbf99bbdbf, merge 3d85a1d66302 (absent
     from the local reference clone). 3 commits: 050d5c5eec, ba9466138c, 862b84bb28. Retrieved 2026-10-22T16:48Z: metadata
     sha256-12 cf34f7d441a1, diff 2abb9dba7a1d (69,164 B; read: the new iqk_flash_attn.cpp and the hunk list; NOT read: the
     FlashMS/FlashQKV and FlashAttnBF16 hunks in iqk_mul_mat.cpp), 1 comment 165aca1dfc34 (read). Model/host are as stated
-    by the author.'
+    by the author. | Stage 2 (2026-10-22): read the full diff from disk incl. iqk_mul_mat.cpp hunks, the #243 head iqk_flash_attn.cpp
+    (depth-1 fetch of 862b84bb2), body and the one comment. Dive scratch: /mnt/raid0/llm/tmp/intake-kernel-followup-20261022/dives/lineage/
+    (anchors/build_anchors.py, text/).'
+  dive_corrections: '2026-10-22 Stage-2 dive (session intake-kernel-followup-20261022, lineage read #243 -> #277 -> #1212
+    -> #1216): confirmed the body claims and read the iqk_mul_mat.cpp hunks Stage 1 skipped (M,S partial export through every
+    FA template path, an update_S guard while M == -inf, a Dv/Dk gate typo fix). NEW: the merged merge loop indexes partials
+    as jth_q*(rk2/nth_k)+j1, which is correct only when rk2 == nth; #277 rewrote it (see intake-2494). The GQA caveat is the
+    author''s, and GQA arrived in #332 (intake-2452). The "unread hunks" change no path except adding the export and the -inf
+    guard.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: PR body para 3 (pr243_body.txt line 17, retrieved 2026-10-22)
+    quote: In this PR parallelization is done along the K-cache entries, with the `K*Q` portions computed by each thread being
+      GEMM, which is faster.
+    quote_sha256: 24f67cedc60d6a30b402c1115821eb811ae1acdb8ff42f93fb7cbf6aecdda093
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: PR body para 3 (pr243_body.txt line 17, retrieved 2026-10-22)
+    quote: For TG the `V*softmax(K*Q)` is parallelized along the heads, so given enough threads, the `K*Q` operation computed
+      by each thread becomes a GEMV, which is notoriously memory bound.
+    quote_sha256: 187c04d252cc26345b5534a9d01361c8838dd5f888e2891ffb8bebeb72cc158e
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: PR body para 3 (pr243_body.txt line 17, retrieved 2026-10-22)
+    quote: But this requires one additional thread synchronization before combining the results of the threads.
+    quote_sha256: 34d69e62ef8f37bcab7dce52ea80c5f46d0382f3dcc25856cae643311b9b471e
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: PR body para 1 (pr243_body.txt line 2, retrieved 2026-10-22)
+    quote: The same strategy should also improve FA performance of GQA models, but something is not quite right there, so
+      I have enabled only for MLA for now.
+    quote_sha256: 9f8c6b638712131a8bf7dfe56aa1de25c63b4b166a32d068d6f327fc771ad3a9
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L62 @ 862b84bb2
+    quote: if (neq3 == 1 && rk2 > 1 && neq1 == 1 && nth >= 1 && nek1/32 > 1 && nek2 == 1) {
+    quote_sha256: aa10239d3f19e85856d102d9fb0e74551a90a3c5548873553123b7f3c7583d29
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: PR body para 3 (pr243_body.txt line 17, retrieved 2026-10-22)
+    quote: My guess is that this extra barrier leads to the observed slightly lower performance for short contexts
+    quote_sha256: ea3dfeb657d245c926901d372c546ceb3544c6afa0f591df74542731bc9e214b
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: diff
+    locator: ggml/src/ggml.c ggml_graph_plan hunk (diff), ikawrakow_pr243.diff line 125
+    quote: +                    if (q->ne[1] == 1 && q->ne[3] == 1 && q->ne[2]/k->ne[2] > 1 && n_tasks > 1 && k->ne[1]/32
+      > 1) {
+    quote_sha256: d73db4a35f34fb2f3057a204e0c78e6ab41d3bd4693664cc70e293a32c421cc2
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: diff
+    locator: ggml/src/iqk/iqk_mul_mat.cpp FlashMS::update_M_S hunk (diff), ikawrakow_pr243.diff line 528
+    quote: +        if (M[j] > -INFINITY) update_S(j, vk);
+    quote_sha256: 329084f5d7b299c893a38bb945c8b26eb82b8f87efd6f71e14bfa0e36139ef27
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: diff
+    locator: ggml/src/iqk/iqk_mul_mat.cpp FlashQKV hunk (diff), ikawrakow_pr243.diff line 570
+    quote: +    inline void normalize_and_store(const FlashMS<q_step, k_step>& fms, int nq1, int stride_qkv, float * qkv,
+      float * M, float * S) const {
+    quote_sha256: f2e0c13be6db1febf2cbacc088d6ed8afc572a4c4bb2e02ed33158a42978ec32
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: diff
+    locator: ggml/src/iqk/iqk_mul_mat.cpp head-size gate hunk (diff), ikawrakow_pr243.diff line 1054
+    quote: +    if (Dk != 64 && Dk != 96 && Dk != 128 && Dk != 192 && Dk != 256) return false;
+    quote_sha256: fdf31c8f1cbce374191c5a396cd0621ba6db90d107ff2e426139bf55b25ed292
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L82 @ 862b84bb2
+    quote: auto work_this_thread = (float *)(result_buffer + ith*size_thread);
+    quote_sha256: 491a5d384fbf8256f6085c7adc1fab2a0f2b1bc118130de034e63c973033bc1b
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L98 @ 862b84bb2
+    quote: auto R = (const float *)(result_buffer + (jth_q*(rk2/nth_k) + j1)*size_thread);
+    quote_sha256: b03864cb835977724cc045776fa945416c16996ea52047b6b43ace2170911949
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: table
+    locator: comment 2705756185 (2025-03-07) (pr243_comments.txt line 2, retrieved 2026-10-22)
+    quote: The above table is for `Q8_KV` KV cache.
+    quote_sha256: f7395c6860c5b6fd12878770a7f1e702ba8b25403bcc0a30b4a60ffd7d100140
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: table
+    locator: comment 2705756185 fp16-KV table (pr243_comments.txt line 13, retrieved 2026-10-22)
+    quote: '| deepseek2 16B IQ4_NL |  tg64@pp16384 |     11.78 ± 0.03 |     23.13 ± 0.64 |  1.963   |'
+    quote_sha256: f0c30870ffc4e3c18f9d308a1495e47018ee29ee5940526f6d358f9aaa34d3ee
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: table
+    locator: PR body table (Q8_KV per comment) (pr243_body.txt line 15, retrieved 2026-10-22)
+    quote: '| deepseek2 16B IQ4_NL |  tg64@pp16384 |     20.40 ± 0.10 |     22.31 ± 0.03 |  1.094   |'
+    quote_sha256: 8e256df44373b3bd59126e3f60102215f470f017b4af4a7af8b50610fa21f778
+    source_revision: 'ik_llama.cpp PR #243 head 862b84bb28c5 (merge 3d85a1d66302), retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Body text confirmed verbatim.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Confirmed; added the code gate and that GQA grouping came later in #332 (intake-2452).'
+  - claim_index: 2
+    effect: narrowed
+    note: The barrier attribution is the author's guess ("My guess is ..."), not a measurement.
+  - claim_index: 3
+    effect: narrowed
+    note: The work-size term is conditional (gcd_k > 1 and rk2 % nth_k == 0).
+  - claim_index: 4
+    effect: unaffected
+    note: NEW claim from the iqk_mul_mat.cpp hunks Stage 1 did not read; plumbing plus the M == -inf guard and a gate typo
+      fix, no other numeric change.
+  - claim_index: 5
+    effect: unaffected
+    note: NEW claim (code reading). The PR table does not state the thread count; a 16-thread run of the 16-head model would
+      be the rk2 == nth case (inference).
+  - claim_index: 6
+    effect: unaffected
+    note: Stage-1 reported_results confirmed verbatim; moved into a claim so it can be anchored.
+  depends_on: []
 - id: intake-2496
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/pull/1212
@@ -360657,20 +360947,30 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
-  - The PR changes how CPU FA work is divided between threads, motivated by poor scaling on a 64-core machine, without changing
-    the FA kernel itself (PR body).
-  - For single-row TG with one KV head (nek2 == 1, rk2 > 1), when nek1/32 >= 4*nth each thread takes one contiguous KV range
-    (ceil/floor split by an ith_mid index) for all rk2 query heads, then after a barrier rows are merged in thread order;
-    the sinks argument is passed as null on this path (diff, iqk_flash_attn.cpp).
-  - It moves FA work-buffer sizing into a new iqk_fa_work_buffer_size(dst, nth) called from ggml_graph_plan (diff); intake-2501
-    records that this sizing was wrong and fixed two PRs later.
+  - The PR changes how CPU FA work is divided between threads, motivated by poor scaling on a 64-core machine; the author
+    says it does not touch the heart of the FA implementation, but the same diff re-enables the Q8_0 R8 in-tile path and changes
+    the 576/512 helper (PR body; diff).
+  - 'For single-row TG with one KV head (nek2 == 1, rk2 > 1), when nek1/32 >= 4*nth each thread takes one contiguous KV range
+    (ceil/floor split by an ith_mid index) for all rk2 query heads, then after a barrier each row merges the nth partials
+    in thread order; sinks are passed as null on this path and on the older #277 path (diff, iqk_flash_attn.cpp).'
+  - 'It moves FA work-buffer sizing into a new iqk_fa_work_buffer_size(dst, nth) called from ggml_graph_plan (diff); that
+    version dropped the GQA step count (nek2*nkk), which #1216 (intake-2501) restored.'
   - It re-enables the Q8_0 K-cache path that intake-2500 had disabled, now only for q_step >= 4, and replaces the early exit
     on the first masked block with a backward scan that trims trailing fully masked KV blocks (diff, iqk_fa_templates.h);
     the 576/512 (DeepSeek MLA) helper handles 3 rows explicitly and empty per-thread row slices are skipped (diff).
+  - The GQA chunk-loop merge in the same file folds attention sinks once per row after combining the partials (if s > M rescale
+    the row by exp(M - s) and set S = S*m + 1, else S += exp(s - M)); the nek2 == 1 merges omit this block (code at a527b5af2).
+  - 'The PR baseline (base 33308908) still had #1206''s disable of the Q8_0 R8 path, so the Q8_0 headline gains (+36% at 64
+    threads, +14% at 16 threads, 32k, GLM-4.7-Flash IQ4_XS) include re-enabling that path, not only the thread strategy (base
+    iqk_fa_templates.h; PR body).'
+  - GLM-4.7-Flash loads as LLM_ARCH_DEEPSEEK2 (MLA) in ik, so under ik MLA+FA its TG KV has one head and at 32k both headline
+    runs (64 and 16 threads, nstep_k = 1024) fall in the new nek1/32 >= 4*nth path; the PR states no -mla/-fa flags, so this
+    is inference (ik llama-hparams.cpp @ c12b5ac33).
   techniques:
   - per-thread contiguous KV range for long-context TG
   - trailing masked-block trim scan
@@ -360706,19 +361006,198 @@
   - '[unverified] Operator-review candidate: dive the nek2 == 1 long-context path as the template for a DS41 decode FA schedule
     (D=512, 1 KV head, 64 query heads) and check how sinks could be folded into the merge, since the path passes null sinks
     and our port declines sinks.'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 only (2026-10-22). The code is vendored in the AKX-ALL-LB4 port (experimental, unbuilt for DS41 because the hook
-    declines sinks); bearing tasks AKX-ALL-LB3, AKX-ALL-LB4, AKX-ALL-12.
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing tasks: AKX-ALL-LB3, AKX-ALL-LB4 (sinks fold, LB4.2 row-exactness) and AKX-ALL-12.'
+  reader_should_conclude: 'Cite #1212 for the nek1/32 >= 4*nth contiguous-KV schedule (96 threads: n_kv >= 12288) and as the
+    template for a DS41 decode schedule. Fold sinks once per row after the merge (the GQA merge shows how). Do NOT cite the
+    +36%/+14% Q8_0 gains as thread-strategy gains, do not claim the merge is row-exact across N, threads or the anchor, and
+    do not claim any of these paths runs for DS41 today (the port declines sinks).'
   notes: 'Operator scope named commit 2bf2fa8ba437e6559f204d91a51c77f79061d3c5 (2026-01-31, "Better CPU FA thread strategy");
     gh api commits/2bf2fa8ba/pulls maps it to this PR. PR commits: 2bf2fa8ba4, 685df0e69d ("Work buffer size"); merged 2026-02-02T08:58Z,
     merge a527b5af2547. Retrieved 2026-10-22T16:48Z: metadata sha256-12 543a7aaad8ab, diff f6cd79d54ebb (12,699 B, read in
     full), commit json 78b33b116421; 0 comments. Ancestry (local reference clone): merge a527b5af2 is an ancestor of c04881fc0,
     the ik commit the AKX-ALL-LB4 port vendors; the nstep_k >= 4*nth path is present in the port at 629b545e0 (ggml/src/ggml-cpu/iqk/iqk_flash_attn.cpp
     L257-L296) and in the champion dd3d9721c tree (same file L264). Our arithmetic: at 96 threads this path needs nek1 >=
-    12,288.'
+    12,288. | Stage 2 (2026-10-22): read body, full diff, iqk_flash_attn.cpp at merge a527b5af2 (local ik clone), iqk_fa_templates.h
+    at base 33308908, ik master c12b5ac33 llama-hparams.cpp L1402-L1460, port 9a338d4f1 iqk_flash_attn.cpp, ops.cpp hook and
+    split-KV code. NOT read: the two plot images (numbers taken from body text).'
+  dive_corrections: '2026-10-22 Stage-2 dive (session intake-kernel-followup-20261022, lineage read #243 -> #277 -> #1212
+    -> #1216): Answers to the Stage-1 questions. (1) DS41 decode at 96 threads under this code (port 9a338d4f1 = ik #1212/#1216
+    logic): n_kv >= 12288 -> this path (contiguous KV per thread, all 64 heads, 96 partials per row; per-thread work over
+    the mean 1.125 at 16k, 1.031 at 32k/64k, 1.008 at 128k); n_kv < 12288 -> #277 gcd grid (intake-2494); a trim to n_kv/32
+    coprime with 96 -> the GQA chunk loop. Today none runs for DS41: the port hook declines sinks (ops.cpp L10052). (2) Sinks
+    fold: yes, once per row after the partial loop, exactly as the GQA merge does (L356-L365 @ a527b5af2; port L431-L440);
+    never per partial. Mainline applies the sink inside chunk 0 before a two-sided-rescale reduction (port ops.cpp L9554,
+    L9944), so the fold is mathematically, not bitwise, equivalent. (3) Merge order: deterministic for fixed (nth, effective
+    n_kv), ascending thread order; NOT invariant to thread count, to the mask-driven runtime trim, or to N (only neq1 == 1
+    splits), and it does not reproduce the mainline anchor (chunk = ceil(nek1/nth), port ops.cpp L10171), so iqk N=1 vs N=5
+    rows are not expected to be bit-identical. (4) Headline: f16 numbers very probably exercise this path (claim 6, inferred);
+    Q8_0 numbers conflate it with re-enabling #1206''s disabled path (claim 5).'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: PR body para 2 (pr1212_body.txt line 4, retrieved 2026-10-22)
+    quote: Tis PR changes the work division strategy without touching the heart of the FA implementation.
+    quote_sha256: 5e7ea1a7dd35966a7b7c66f96a33b78299a15444a5850751a48edb703fc32552
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L182 @ a527b5af2
+    quote: if (nstep_k >= 4*nth) {
+    quote_sha256: 93a757ce3d54174ea7f80ce42d3f5e44697b1ca2c34b3b44cc8b8e217ed9ead2
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp (null sinks, nek2==1 paths):L207 @ a527b5af2
+    quote: (const float *)qth, (const void *)kth, (const void *)vth, (const void *)mth, nullptr, 0,
+    quote_sha256: 1d55c72a923da7007b83e961cae5bd1649f4501640678015f6ab740c8a4dc61b
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp merge over nth partials:L216 @ a527b5af2
+    quote: for (int jth = 0; jth < nth; ++jth) {
+    quote_sha256: 65a602a1259bc598ae3f024aab45a75edb21f519d921c390c8e16e9e28ba7911
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: ggml/src/ggml.c ggml_graph_plan (diff), ikawrakow_pr1212.diff line 58
+    quote: +                    size_t size = iqk_fa_work_buffer_size(node, n_tasks);
+    quote_sha256: 351cfda4aabcde822dab9685aea1acee50083e2ad2ac0652bf64db3051ae8409
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: 'PR #1216 body (pr1216_body.txt line 2, retrieved 2026-10-22)'
+    quote: 'I broke it in #1212, and the bug did not show up in all the benchmarks I ran for that PR.'
+    quote_sha256: 39890d104ddfb40edff84317992a1ea0d1b2aaa4fa5228fe494b6acbebe0a578
+    source_revision: 'ik_llama.cpp PR #1216 head c8d7522b3f33, merge 589d80f6778c, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: diff
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h compute_helper_q (diff), ikawrakow_pr1212.diff line 100
+    quote: +    if constexpr (q_step >= 4 && std::is_same_v<KHelper, HelperQ80>) {
+    quote_sha256: 54aa7a803e81a9857ef805495ef42676a7d4097c1815d8a034ceb0d044a6d045
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: diff
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h compute_helper_q (diff), ikawrakow_pr1212.diff line 113
+    quote: +            for (; ik >=0 && Mc[ik] != 0; ik -= k_step);
+    quote_sha256: bb03aecc5d4374c8e81059e6fea9a03d07755655dfb8a32b87d7f174ac5fb8b1
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: diff
+    locator: ggml/src/iqk/iqk_flash_attn.cpp per-head fallback (diff), ikawrakow_pr1212.diff line 228
+    quote: +                if (this_neq1 > 0) {
+    quote_sha256: 625614867b19d4d7416ec00e6e569690ad96cb8593eb266a99193bfd46db5371
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: ggml/src/ggml.c graph-plan GQA sizing removed (diff), ikawrakow_pr1212.diff line 35
+    quote: '-                            int nstep_k = k->ne[2]*k->ne[1]/nk;'
+    quote_sha256: 7b42a8c6c9ac189faf053ea6cc6708c20544154afd993fdc1a469f686a9d7034
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: ggml/src/iqk/iqk_flash_attn.cpp new iqk_fa_work_buffer_size (diff), ikawrakow_pr1212.diff line 144
+    quote: +    int nstep_k = K->ne[1]/32;
+    quote_sha256: c2558520a5f052a482a7597d9b526e926fe4b6d6ff9f19b2db49e3f932eb48ed
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: diff
+    locator: ggml/src/iqk/fa/iqk_fa_576_512.cpp (diff), ikawrakow_pr1212.diff line 73
+    quote: +    if (nq1 == 3) {
+    quote_sha256: 722da52fa845a0c4f4d4a31a227c3f2d98e6bc8b53c9390ee640d52e8af58bb8
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp GQA chunk-loop merge sinks block:L358 @ a527b5af2
+    quote: if (s > M) {
+    quote_sha256: 6a345a3728018ba87f0b77dbe52fdfeb8c6a532c70c8ac21d16dfec961389535
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp GQA chunk-loop merge sinks block:L361 @ a527b5af2
+    quote: S = S*m + 1;
+    quote_sha256: 422bfa72f73af563289e099877e2b5b095101cdeae78d0dfaf425dd4502f9ffd
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: ggml/src/ggml-cpu/ops.cpp FLASH_ATTN_EXT hook:L10052 @ 9a338d4f1
+    quote: '// the iqk split-KV paths drop the sinks (ik_llama: "we do not implement sinks"): ggml kernel'
+    quote_sha256: b232ea7e3ac6d6e11845c44b728964b10a640b98449397743d356562f441d02d
+    source_revision: EPYC port experimental/locals-kernel-fixes-20261022 @ 9a338d4f1 (read-only)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: 'ggml/src/iqk/fa/iqk_fa_templates.h at #1212 base 33308908db8e:L1417 @ 33308908d'
+    quote: if constexpr (false && q_step > 1 && std::is_same_v<KHelper, HelperQ80>) {
+    quote_sha256: 88df4b810d8aaa171bb6143831d8c06012dfe960ff0f4e6b10dce6fec3e53555
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: text
+    locator: PR body, 3995WX section (pr1212_body.txt line 10, retrieved 2026-10-22)
+    quote: At a context of 32k tokens we observe 70% (`f16` KV cache) or 36% (`Q8_0` KV cache) better performance.
+    quote_sha256: 063e2f2f2cff8f9efdffae8eae2482cb18f92bd2eea33497a6862d84d3e38f12
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: text
+    locator: PR body, 7950X section (pr1212_body.txt line 16, retrieved 2026-10-22)
+    quote: For a context of 32k tokens we get 32% (`f16` KV cache) or 14% (`Q8_0` KV cache) better TG performance.
+    quote_sha256: 3f7b49a691315b0f3160c2474b84aca989468fd4d837579a119e1147da27ce52
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5, merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: code
+    locator: src/llama-hparams.cpp (inside case LLM_ARCH_DEEPSEEK2, L1402):L1456 @ c12b5ac33
+    quote: 'case 47: model.type = e_model::MODEL_30B_A3B; break; // GLM-4.7-Flash'
+    quote_sha256: f8da00ab0a45abe2c37a8b669b8a5a2236172fc6e08bb21142ead0b2128830f8
+    source_revision: ik_llama.cpp master @ c12b5ac33be7 (git clone --depth 1, 2026-10-22T18:32Z)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: '"Without touching the heart" is the author''s framing; the diff also changes compute_helper_q (Q8_0 R8 + trim)
+      and the 576/512 helper.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Confirmed; added that the #277 path also passes null sinks and that the merge spans nth partials.'
+  - claim_index: 2
+    effect: reattributed
+    note: 'The #1212 sizing bug is specifically the dropped GQA step count (K->ne[1]/32 without K->ne[2]); #1216 restored
+      it.'
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed against the diff.
+  - claim_index: 4
+    effect: unaffected
+    note: 'NEW: answers the Stage-1 sinks question; the fold mechanism already exists in the GQA merge.'
+  - claim_index: 5
+    effect: unaffected
+    note: 'NEW: headline Q8_0 attribution caveat.'
+  - claim_index: 6
+    effect: uncertain
+    note: 'NEW: model-architecture fact is anchored; that the runs used the path is inference (flags not stated).'
+  depends_on:
+  - entry: intake-2501
+    claim_index: 2
+    why: 'The statement that #1216 restored the GQA step count rests on intake-2501 claim 1.'
 - id: intake-2497
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/pull/1215
@@ -360735,7 +361214,8 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
@@ -360765,15 +361245,90 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: in the AKX-ALL-LB3 q8_0-KV cells, include N=8 (the repack boundary) next to N=1..5
     and record which side of the threshold each cell ran.'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 only (2026-10-22); the post-PR condition is in the AKX-ALL-LB4 port (iqk_flash_attn.cpp L230 @ 629b545e0); bearing
-    task AKX-ALL-LB3 (b)/(e).
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing task: AKX-ALL-LB3 (d) q8_0-KV cells.'
+  reader_should_conclude: 'Cite #1215 as: global Q8_0->Q8_0_R8 K repack now requires neq1>=8 (total query columns); removed
+    the GQA>=8 multi-KV-head term. Do NOT cite it as evidence that batch 8 is optimal on Zen5, nor as affecting DS41 (nek2=1).
+    Do NOT carry any speed number from it (none exists). Our port 9a338d4f1 already has the post-#1215/#1216 conditions and
+    consistent sizing.'
   notes: 'Commit d5498c446736093067dc24e5285823ee24cedab6 (2026-02-02, single file, +1/-1) is the PR head; merged 2026-02-02T10:12Z,
     merge 49ba462f22e1 (ancestor of c04881fc0 in the local reference clone). Retrieved 2026-10-22T16:48Z: metadata sha256-12
-    30e3125c7f2b, diff 2584752c9916 (660 B, read in full), commit json 692496b0ff8c; 0 comments.'
+    30e3125c7f2b, diff 2584752c9916 (660 B, read in full), commit json 692496b0ff8c; 0 comments. | Dive: repack is cooperative
+    across threads (npt=8*ceil(nrows/8/nth) rows per thread + one barrier), not repeated per thread; it rewrites the whole
+    K (nek1*nek2*nek3 rows) once per FA call per layer, so at neq1<8 it is a full extra read+write pass over K that the non-repacked
+    path does not pay. R8 consumer has an AVX512-VNNI (dpbusd) path gated on HAVE_FANCY_SIMD and nrc_x%16==0, else AVX2. Boundary
+    8 vs Zen5/96 threads: source gives no number; settle with AKX-ALL-LB3 (d) cells at N=1..5 and 8 with q8_0 K recording
+    repack side. Unrelated finding: compute_helper_q has an in-tile R8 repack branch (nq1==q_step, HelperQ80) independent
+    of this global repack.'
+  dive_corrections: '2026-10-22 Stage-2 dive: claim 0 narrowed (neq1 = total query columns of the op; DS41 (nek2=1) unaffected
+    by the removed term; GQA-12 2-KV-head nb=1/5 q8_0 cases moved from R8-repacked to un-repacked; #1215 left work-size oversized
+    for one commit until #1216, never undersized; our port at 9a338d4f1 matches kernel and sizing). Claim 1 confirmed; source
+    gives no numbers.'
+  claim_anchors:
+  - claim_index: 0
+    kind: diff
+    locator: ikawrakow_pr1215.diff:L9-L10 @ d5498c4
+    quote: '-    if (neq1 >= 8 || (rk2 >= 8 && nek2 > 1)) {'
+    quote_sha256: 32fddd59a3cec41799180cf63d503ccd0a605762a26e73b1bb95dfd26169024f
+    source_revision: d5498c446
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: diff
+    locator: ikawrakow_pr1215.diff:L10 @ d5498c4
+    quote: +    if (neq1 >= 8) {
+    quote_sha256: f0a2ef148ed8bf8ee3883896ba1b775afccba1a9fe06a3d4384bdc08be62b210
+    source_revision: d5498c446
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L339 @ c12b5ac
+    quote: '    if (neq1 >= 8) {'
+    quote_sha256: 75f2c7937eb0cb3142a5fc2c8b7789502a187f30102dc79183d6e0908913f8bb
+    source_revision: c12b5ac33
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L67 @ c12b5ac (work size, post-#1216)
+    quote: '    if (Q->ne[1] >= 8 && K->type == GGML_TYPE_Q8_0) {'
+    quote_sha256: 5b848e51f96e7f0c14587cb8a25e7cea06fdf809a2971a963369c161a48c5886
+    source_revision: c12b5ac33
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/ggml-cpu/iqk/iqk_flash_attn.cpp:L230 @ 9a338d4
+    quote: '    if (neq1 >= 8) {'
+    quote_sha256: 75f2c7937eb0cb3142a5fc2c8b7789502a187f30102dc79183d6e0908913f8bb
+    source_revision: 9a338d4f1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: PR body para 1 @ retrieved 2026-10-22
+    quote: After checking several models, now it seems better to not repack for batch sizes less than 8.
+    quote_sha256: 7d0851e56496f53335b95e82ea763de0751f9505e78958836aa876b85f9fc6fd
+    source_revision: d5498c446
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: PR body para 1 @ retrieved 2026-10-22
+    quote: I guess, my strategy to repack `Q8_0` K-cache to `Q8_0_R8` must have been based on an older version of the CPU
+      FA kernels.
+    quote_sha256: a127bef51f9e3ccd8803bafd646d4a11bd688ae1290a9daee36ac827dc8c5450
+    source_revision: d5498c446
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Condition text confirmed. Narrow: neq1 is the TOTAL query columns of the op (not per-thread); the removed term
+      only fires when nek2>1 and Q8_0 K, so DS41 (1 KV head) was never affected; it changes GQA>=8 multi-KV-head decode/verify
+      (GQA-12, 2 KV heads, nb 1 and 5) from repacked to not repacked. Work-size condition lagged one commit (fixed by #1216),
+      only oversized, never undersized.'
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed verbatim; the PR gives no numbers, model list or CPU. Boundary on Zen5 at 96 threads is unmeasured.
+  depends_on: []
 - id: intake-2498
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/issues/1205
@@ -360791,7 +361346,8 @@
   discovered_via: input
   verdict: adopt_patterns
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
@@ -360799,8 +361355,10 @@
     generating, while F16 cache and the same command on mainline work (issue body).'
   - 'Maintainer: the failure depends on thread count (fine with 16 or more CPU threads, broken with 8 or fewer on AVX2 and
     Zen4) (comment 2026-01-30).'
-  - 'The interim fix disabled the optimized Q8_0 K-cache path (PR #1206, intake-2500); the reporter proposed a sliding-window
-    attention fix (fork commit dec7f92) that fixed Q8_0 when the path was re-enabled (comments).'
+  - 'The interim fix disabled the optimized Q8_0 K-cache path (PR #1206, intake-2500); the reporter proposed fork commit dec7f92,
+    which he framed as a sliding-window attention fix but which replaces the forward first-cell break with the backward trailing-trim
+    scan the non-repack path already used, and it fixed Q8_0 when the path was re-enabled (comments). ik landed that scan
+    in PR #1212 (commit 2bf2fa8ba, with a q_step >= 4 guard), not in ''PR #1214'' as the maintainer wrote (code ancestry).'
   - The Q4 case was a build-option issue (4- and 5-bit KV caches need -DGGML_IQK_FA_ALL_QUANTS=ON), not this bug (comments).
   techniques:
   - thread-count-dependent FA correctness failure
@@ -360823,18 +361381,210 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: add sliding-window (leading -inf) masks and a thread-count sweep (for example
     1, 4, 8, 16, 96) to the AKX-ALL-LB4.2 reference comparison, since this bug was invisible at 16+ threads.'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 only (2026-10-22); bearing task AKX-ALL-LB4.2 (test-fa-rowexact must compare against a reference with non-binary
-    masks).
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing task: AKX-ALL-LB4.2 (reference comparison with non-binary and leading-masked masks).'
+  reader_should_conclude: 'Cite: the forward first-cell break in the Q8_0 repack branch of compute_helper_q (pre-#1206) drops
+    every KV chunk that starts in a sliding-window-masked prefix; it is reached in TG GQA split-KV calls; the thread dependence
+    comes from gcd(nek2, nth) chunking; ~1024 = Gemma 3 n_swa from the reporter''s log. The fix that shipped is the backward
+    trailing-trim scan in #1212 (2bf2fa8ba), and ik master has since disabled the trim (#1935). Do NOT carry: ''PR #1214 carried
+    the fix''; ''fine at 16+ threads'' as evidence of correct output; dec7f92 as an SWA-specific algorithm; any performance
+    claim (the reporter''s ''marginal'' gain has no number). For our port: fa_kv_extent (629b545e0) handles leading masks;
+    the gap is test coverage (no leading-masked mask kind, single thread count).'
   notes: 'Issue opened 2026-01-30T03:07Z, closed 2026-01-30T09:37Z (state_reason completed), 10 comments. Timeline: cross-referenced
     by PR #1206. Retrieved 2026-10-22T16:48Z: issue json sha256-12 118d2800b9d0 (body 31,064 chars; read the first 3,500 chars,
     the rest is a user log), comments 96db3e5e81e6 (all 10 read), timeline eda23108d1a0. The reporter''s fork commit dec7f9266af346d5d5b7d3436a483dc4813f0b18
     resolves on github (title only read) but is not in the local reference clone. EPYC context: the AKX-ALL-LB4 port found
     the iqk kernel assumed a binary causal mask (port bug 3, fixed in 629b545e0 with fa_kv_extent), a related mask-assumption
-    class.'
+    class. | Stage-2 2026-10-22: issue body read in full (31,064 chars); the 8 repeated prompt-prose blocks were confirmed
+    to be the reproduction prompt and not re-read word by word. All 10 comments, timeline, #1206/#1212/#1214/#1215 diffs,
+    fork dec7f92 diff read. Code read at 686fd1e (pre-#1206), 811f8c3, a527b5a, 4fbd0c4, a38d292, ik master c12b5ac, and port
+    629b545e0/4730c0549/9a338d4f1. Thread-split arithmetic (nk 1280 at nth 8, 640 at nth 16) assumes n_kv > 1280 so the n_swa
+    front trim keeps 1280 cells; not run. Not on disk: #1935 PR body (why ik disabled the trim), #1880 discussion, #809.'
+  dive_corrections: '2026-10-22 Stage-2 dive: root cause verified from code. In compute_helper_q (iqk_fa_templates.h L1415-L1437
+    @ 686fd1e) the Q8_0 per-block-repack branch (q_step > 1, KHelper HelperQ80, nq1 == q_step) broke out of the whole KV loop
+    at the first block whose FIRST cell in the tile''s LAST row was != +0.0; the non-repack path already used a backward trailing-trim
+    scan (L1454-L1457). The branch is reached in TG GQA split-KV calls (iqk_flash_attn.cpp L219-L257: nq1 = rk2 = 2 for Gemma
+    3 12B, stride_m 0, KV chunk [ik01, ik01+nk)); PP is immune because neq1 >= 8 repacks K to Q8_0_R8 up front (L121). With
+    SWA (mask -inf where pos - cell.pos >= n_swa, llama.cpp L2416; n_swa 1024 in the reporter''s log) every chunk that starts
+    in the masked prefix is dropped whole, which explains the ~1024 threshold. Thread dependence: nk and chunk starts follow
+    gcd(nek2, nth); with n_head_kv 8 and nth <= 8 there is one chunk per KV head starting at cell 0, all partials return M=-inf,
+    and the combine (Racc memset commented out, norm 1) leaves stale dst = garbage; at nth = 16 only the first of two chunks
+    is lost (inference: coherent but truncated). No NaN path: update_M returns early on an all -inf block and update_S is
+    guarded by M > -inf. Fix lineage: #1206 disabled the branch; dec7f92 = backward scan; #1212 (2bf2fa8ba) re-enabled it
+    with q_step >= 4 (so Gemma 3''s q_step 2 TG never re-enters it); #1880 union-of-rows; #1935 disables the trim (master
+    c12b5ac). ''PR #1214'' is a typo for #1212. Our port (9a338d4) is not affected: fa_kv_extent trims only trailing blocks
+    that are -inf in every cell of every row.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'issue #1205 body, section ''The Behavior'' @ retrieved 2026-10-22 (ikawrakow_issues_1205.json sha256-12 118d2800b9d0)'
+    quote: '-ctk q8_0 -ctv q8_0: Works fine for short prompts. However, the moment the context size crosses around 1024 tokens,
+      the output immediately turns into complete garbage/gibberish.'
+    quote_sha256: 4cea603e8d20997a6d1dd8c0fea9504f2af89e4ef2ba0a95950690b72152dd0e
+    source_revision: 'issue #1205 body as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: 'issue #1205 body, reporter log (llm_load_print_meta) @ retrieved 2026-10-22'
+    quote: 'llm_load_print_meta: n_swa            = 1024'
+    quote_sha256: 1918e2f2deb0547e72a18c44809f9017130dce5bf48c57459e435ebc3ea7f338
+    source_revision: 'issue #1205 body as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: 'issue #1205 body, reporter command line @ retrieved 2026-10-22'
+    quote: -c 35536 -ngl 5 -t 8 -b 2048 -ub 2048 -ctk q8_0 -ctv q8_0 --no-mmap
+    quote_sha256: 172eeb3db1ccaacebf337d83d79f4cdd4501904ba282780e7a64ebf83bd3a529
+    source_revision: 'issue #1205 body as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: src/llama.cpp:L2416 @ 686fd1e (SWA mask rule of the reporter's build)
+    quote: if (pos - lctx.kv_self.cells[i].pos >= (int32_t)hparams.n_swa) {
+    quote_sha256: b30121f3240f50d6305a9b1d33d9d92d91bad4bf706ef6d84493ecaf2282a3a9
+    source_revision: 686fd1ebec8a64f7e8221d5efa6363a699aa19a1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: comment 3822012158 (ikawrakow, 2026-01-30T05:57:27Z) @ retrieved 2026-10-22
+    quote: Scratch the above. Works fine with 16 or more CPU threads. Broken with 8 or fewer CPU threads on AVX2 and Zen4.
+    quote_sha256: 5325fe3199ce7afb28d3604b476b557571d2960bd0b887be7b0c40673523aa29
+    source_revision: 'issue #1205 comments as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h:L1426-L1427 @ 686fd1e (pre-#1206, compute_helper_q Q8_0 repack branch)
+    quote: if (Mc[0] != 0) break;
+    quote_sha256: 4999be84211e98cdaec764ae98aaab8ac1842fa48932f9810330cd699f218453
+    source_revision: 686fd1ebec8a64f7e8221d5efa6363a699aa19a1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: 'ggml/src/iqk/iqk_flash_attn.cpp:L221 @ 686fd1e (GQA TG split-KV: KV chunking depends on gcd(nek2, nth))'
+    quote: int gcd = simple_gcd(nek2, nth);
+    quote_sha256: 85aefa1c59661b81cde74470408da170a12ba59d57278f49fd966d82e8473f3d
+    source_revision: 686fd1ebec8a64f7e8221d5efa6363a699aa19a1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp:L266 @ 686fd1e (split-KV combine never zeroes Racc)
+    quote: //std::memset(Racc, 0, Dv*sizeof(float));
+    quote_sha256: cd4ccfeba0f5dae24f039fa4cae8132a9e5a933fdcf94731231efe3bb3c0c7a7
+    source_revision: 686fd1ebec8a64f7e8221d5efa6363a699aa19a1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: comment 3823423230 (ZenSirzechs, 2026-01-30T12:15:27Z) @ retrieved 2026-10-22
+    quote: Yes this fixes the Q8 issue.
+    quote_sha256: 5f503fcef06676359eb69da09d4e6a5d0ec013e1af2a3556bbc86e4dd3a130d4
+    source_revision: 'issue #1205 comments as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: fork commit ZenSirzechs/ik_llama.cpp@dec7f9266af3, iqk_fa_templates.h hunk @@ -1422 (dives/src/fork_dec7f92.diff,
+      curl 2026-10-22T18:33Z)
+    quote: for (; ik >= 0 && Mc[ik] != 0; ik -= k_step);
+    quote_sha256: af44c032b8b98d8bfb169013d642d778e05c0b685a87873412641b52d4f1c96e
+    source_revision: dec7f9266af346d5d5b7d3436a483dc4813f0b18
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h:L1417 @ a527b5a (#1212 merge; commit 2bf2fa8ba)
+    quote: if constexpr (q_step >= 4 && std::is_same_v<KHelper, HelperQ80>) {
+    quote_sha256: ebf37e5b2a7620d823de93bc6b7de30ca6519a7abd9045fa85078d52235fd282
+    source_revision: a527b5af25474fb15fc527bf55a5ef78b5601de1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: comment 3833887267 (ikawrakow, 2026-02-02T09:11:08Z) @ retrieved 2026-10-22
+    quote: 'Thanks for the fix! I put it in PR #1214'
+    quote_sha256: 3c4119ae44d82679a3f4d1d34b0a0c7dc0f0785471e1632dfea2700f2aae5c28
+    source_revision: 'issue #1205 comments as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: comment 3823522626 (ZenSirzechs, 2026-01-30T12:29:42Z) @ retrieved 2026-10-22
+    quote: Q4 issue can be fixed by passing -DGGML_IQK_FA_ALL_QUANTS=ON flag
+    quote_sha256: a1411e76f5eb31c57236ef4fe43a31dbd0e0d9d7a9b9df0fcc15811445a22dd4
+    source_revision: 'issue #1205 comments as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: comment 3823567780 (ikawrakow, 2026-01-30T12:40:58Z) @ retrieved 2026-10-22
+    quote: It is kind of an insider knowledge that one needs this flag if one wants 4- and 5-bit KV cache.
+    quote_sha256: 56ada0636eed3f2a239247eb8957df3014be9d1ca8c704dff2b68a630602b7fc
+    source_revision: 'issue #1205 comments as retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: ggml/CMakeLists.txt:L142 @ 686fd1e
+    quote: 'option(GGML_IQK_FA_ALL_QUANTS               "ggml: compile all quants for IQK FlashAttention" OFF)'
+    quote_sha256: 0b2cdd5d563caf98f930da8ac676082b7a3f0a140de296216d6e6d428eab490d
+    source_revision: 686fd1ebec8a64f7e8221d5efa6363a699aa19a1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: 'issue #1205 body (ikawrakow_issues_1205.json sha256-12 118d2800b9d0) @ retrieved 2026-10-22'
+    quote: 'Standard F16 Cache: Works perfectly.'
+    quote_sha256: 6d511327a46972141fba19ac6b4518c88ba45ef6a0cfebdc8b30afbbb25dde36
+    source_revision: 'ik issue #1205 body, retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: 'issue #1205 body @ retrieved 2026-10-22'
+    quote: '-ctk q4_0 -ctv q4_0: Even worse—it just stops generating entirely.'
+    quote_sha256: fbff8a3db39adc52ab4ba8a4ae860912998983cd2139a4e45c4e6a6816cf983b
+    source_revision: 'ik issue #1205 body, retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: text
+    locator: 'issue #1205 body @ retrieved 2026-10-22'
+    quote: I've run into a specific issue with Gemma 3 (possibly Gemma 2) on this fork that doesn't exist in mainline llama.cpp.
+    quote_sha256: 663e578963fe35ca71bad13781be14eb7cf28484158d537a19a5bd9e37290e2c
+    source_revision: 'ik issue #1205 body, retrieved 2026-10-22T16:48Z'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h compute_helper_q (diff), ikawrakow_pr1212.diff line 100
+    quote: +    if constexpr (q_step >= 4 && std::is_same_v<KHelper, HelperQ80>) {
+    quote_sha256: 54aa7a803e81a9857ef805495ef42676a7d4097c1815d8a034ceb0d044a6d045
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5 (commit 2bf2fa8ba), merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h compute_helper_q (diff), ikawrakow_pr1212.diff line 113
+    quote: +            for (; ik >=0 && Mc[ik] != 0; ik -= k_step);
+    quote_sha256: bb03aecc5d4374c8e81059e6fea9a03d07755655dfb8a32b87d7f174ac5fb8b1
+    source_revision: 'ik_llama.cpp PR #1212 head 685df0e69da5 (commit 2bf2fa8ba), merge a527b5af2547, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Body read: reproduction, command line (-t 8, -ngl 5 hybrid, -ub 2048, q8_0 K/V, Windows MSVC AVX2), loader metadata
+      (sliding_window 1024, n_swa 1024, n_head 16, n_head_kv 8, head 256), output. Gemma 2 is only ''possibly'' in the body;
+      the 27B is named but no 27B log is given.'
+  - claim_index: 1
+    effect: narrowed
+    note: Quote verbatim (first sentence of the comment is struck through). Code reading (iqk_flash_attn.cpp L219-L257 @ 686fd1e)
+      predicts that with n_head_kv 8, nth<=8 gives one KV chunk per head starting at the SWA-masked cell 0, so the whole head
+      is skipped and the combine leaves stale dst (garbage); at nth=16 the head splits into two 640-cell chunks and only the
+      first is dropped, so output is coherent but attends to a truncated window. 'Fine at 16+' is a coherence observation,
+      not exactness (inference from code, not observed).
+  - claim_index: 2
+    effect: reattributed
+    note: 'dec7f92 is generic (no SWA-specific code). Maintainer''s ''PR #1214'' is wrong: #1214 is an unrelated op-offload
+      PR (no iqk file in its diff); the backward scan entered the repack branch in 2bf2fa8ba (2026-01-31), a commit of #1212
+      (merged a527b5a 2026-02-02T08:58Z, 13 min before the comment). Later lineage: #1880 (4fbd0c4, union of all rows) then
+      #1935 (a38d292, 2026-06-09) ''return nk1;'' disables the trim; ik master c12b5ac still carries the disabled trim.'
+  - claim_index: 3
+    effect: unaffected
+    note: Comments verbatim; code confirms Q4_0/Q4_1/IQ4_NL/Q8_KV K helpers compile only under GGML_IQK_FA_ALL_QUANTS (iqk_fa_templates.h
+      type switch @ 686fd1e), option OFF by default (CMakeLists L142). Why q4_0 halted instead of falling back is not explained
+      in source.
+  depends_on: []
 - id: intake-2499
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/28576
@@ -360850,16 +361600,22 @@
   discovered_via: input
   verdict: already_integrated
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
-  - MFMA has no fp16 accumulation; the MMA FA kernel accumulated VKQ through a post-MFMA downcast to half2, and the PR keeps
-    the VKQ accumulator in fp32 on MFMA devices (T_C_VKQ tile<16,8,half2> -> tile<16,16,float>) (PR body and diff, fattn-mma-f16.cuh).
-  - The author frames the change as a performance gain plus minor accuracy, noting values are still downconverted for shared
-    memory later (PR body).
-  - The extra VGPR pressure required retuning the 64/64/64 config (a config field 4 -> 3) (PR body and diff).
-  - test-backend-ops -o FLASH_ATTN_EXT passes (author comment).
+  - MFMA has no fp16 accumulation. Before the PR, the MMA FA kernel downcast VKQ to half2 after every MFMA instruction (16
+    KV cells, mid-loop; mma.cuh half2-D overload). On MFMA devices the PR keeps the VKQ accumulator in fp32 within a tile
+    (T_C_VKQ tile<16,8,half2> -> tile<16,16,float>, fattn-mma-f16.cuh).
+  - The author frames the change as a performance gain plus minor accuracy, noting that values are still downconverted for
+    shared memory later (PR body). In the code, that downconvert stores the raw unnormalized per-warp VKQ partial as half
+    to shared memory. It happens at the end of the tile, before the combine scaling and the row-sum division, in every MFMA
+    config. So fp16 overflow of |VKQ| > 65504 is not removed.
+  - 'The extra VGPR pressure required retuning the CDNA-only (DKQ=DV=64, ncols=64) config: its occupancy field went from 4
+    to 3 (PR body and diff). No D=128 or D=256 config row changed.'
+  - test-backend-ops -o FLASH_ATTN_EXT passes (author comment; no output posted). Its random inputs cannot exercise the fp16
+    overflow.
   techniques:
   - fp32 VKQ accumulation in the MFMA FA path
   - VGPR-pressure config retune
@@ -360888,20 +361644,159 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: feed the PR''s own framing into the open V11-FA-7 decision (fold, exclude or
     defer) and re-check the CPU-FA-VKQ-4 wording that it fixed the MFMA overflow analog.'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - 'Already tracked: manifest row V11-050 (docs/reference/kernel-manifests/llama-v11-manifest.md, PEND), V11-FA-7 and the
-    V11-FA-1 arm C pick bfdc32183 in handoffs/active/kv-unified-stack-rollout.md, CH-18.c in handoffs/active/autokernel-champion-aggregate.md.
-    Stage-1 only; the overflow premise awaits a dive.'
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing tasks: V11-FA-7 and CPU-FA-VKQ-4 in handoffs/active/kv-unified-stack-rollout.md, manifest row V11-050, CH-18
+    in handoffs/active/autokernel-champion-aggregate.md.'
+  reader_should_conclude: 'Cite #28576 as: fp32 VKQ accumulation within a tile on MFMA. It is a perf gain (up to 1.2x on D=128/256
+    and 1.5x on D=64, test-backend-ops nb>=512 on gfx908) only on MMA-routed shapes, and it does not touch the ROCWMMA-ON
+    champion route. Do NOT carry: (a) "upstream fixed the MFMA analog of the CPU FP16-VKQ overflow" (false: the raw partial
+    is still staged as half before normalization, and opnan non-finite sets are identical with and without it); (b) "CDNA
+    config occupancy 4 to 3 at the 27B shapes" (that retune is D=64/ncols=64 only); (c) the nb=1 row or the deepseek2 1.00
+    rows as evidence of anything (both are off path on MFMA); (d) the model-table tg deltas (they cannot exercise MMA FA,
+    and the builds differ outside the PR).'
   notes: 'Merged 2026-09-14T18:26Z, head ca29eaf66d76b24896a44b0546db909956685e91, base e71b80510c84, merge bfdc32183d57.
     Approved by JohannesGaessler (2026-09-11) and am17an (2026-09-14). Retrieved 2026-10-22T16:48Z: metadata sha256-12 0c89ed0936b0
     (body 40,682 chars; read the overview, the first perf table rows and the tail), diff 7b2a5f346515 (2,050 B, read in full),
     comments 90433ee9d88b, reviews 9aecc70f50b5. Ancestry in /mnt/raid0/llm/llama.cpp-experimental (read-only): bfdc32183
     is NOT an ancestor of v10 ffc1bac82 or the champion dd3d9721c (v10 upstream merge base a8dc0e326, 2026-07-16); the champion
     fattn-mma-f16.cuh still declares the MFMA T_C_VKQ as tile<16, 8, half2> (L1103 @ dd3d9721c). Per kv-unified-stack-rollout.md
-    V11-FA-1, the ROCWMMA-ON champion launches no MMA FA kernel for production shapes.'
+    V11-FA-1, the ROCWMMA-ON champion launches no MMA FA kernel for production shapes. | Stage-2 2026-10-22: read in full
+    the PR body (40,682 chars; all 134 test-backend-ops rows and 10 model rows parsed), the diff, the 4 comments and the 2
+    reviews (40-row reviewer table). Code context: I read the VKQ data flow in fattn-mma-f16.cuh at head and base: tile types
+    L1068-1155, rescale L895-955 and L1397-1475, VKQ mma L1009-1052, and combine/write-back L1476-1750. I did not read every
+    line of the ~1960-line file. Also read: mma.cuh MFMA overloads (L995-1062, L1197-1256) and the fattn.cu dispatch L491-653
+    (identical at base). Champion dd3d9721c: fattn.cu L520-612 and fattn-wmma-f16.cu L74-90 and L405-432. Ancestry: bfdc32183
+    is an ancestor of master 11fe02151. Recommended V11-FA-7 disposition: carried by the pull (perf-only, overflow-neutral);
+    manifest V11-050 changes from PEND to carried-by-pull. Empirical corroboration is from our own run files: lane artifacts/v11-fa-ab-20261004/slot-20261004T113710Z/summary.txt
+    L27-31 and L46-52, slot-20261004T150551Z/summary.txt L20, and nan/{A,C,E,M}.txt.'
+  dive_corrections: '2026-10-22 Stage-2 dive: #28576 does NOT remove the MFMA FP16 VKQ overflow. It moves the fp16 downcast
+    from every MFMA step (mma.cuh L1035-1058) to one end-of-tile shared-memory store of the raw unnormalized per-warp partial
+    (fattn-mma-f16.cuh L1670-1678 @ ca29eaf, before the row-sum division at L1734). Master 11fe02151 still has that store
+    at L1718. Our op-level stress (v11-fa-ab-20261004 opnan, D=256 GQA6, v=bias1024 diffuse) fails the same 6/228 cases with
+    identical inf counts for arm E (without #28576) and arm C (with it), and for master M. The ROCWMMA-ON champion fails 4/228
+    because the WMMA kernel keeps a running fp16 VKQ (fattn-wmma-f16.cu L81/L87/L429 @ dd3d9721c). The fix is real for accuracy
+    (per-step fp16 rounding) and for intermediate-only overflow, and it is a perf gain only on MMA-routed MFMA shapes (D<=256
+    with >8/16/64 effective rows, fattn.cu L634-645). Stage-1 reported_results: the gfx908 nb=1 row (0.53->0.54) and the reviewer
+    deepseek2 rows (1.00) are off path (nb=1 never reaches MMA on MFMA, and MLA 576/512 always routes to TILE). The on-path
+    rows are nb>=512: D=128 1.15-1.24, D=256 1.06-1.22, D=64 1.07-1.53 (D=64 mixes in the occupancy retune). Reviewer llama
+    8B Q4_0 is 1.03-1.11 at ub>=8. The model-table tg rows cannot reach MMA FA, and the model tables compare builds that differ
+    outside the PR. The 4->3 retune is CDNA-only and D=64/ncols=64 only, so it is not on the 27B shapes.'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/ggml-cuda/mma.cuh:L1035 @ ca29eaf
+    quote: '// MFMA: FP16 input, FP32 accumulate, convert back to half2.'
+    quote_sha256: cf58679ac4ad4044c7f44f2eae8351f5e8ec746e2fab123bd0c67def85eaec90
+    source_revision: ca29eaf66d76 (mma.cuh identical at base e71b80510c84)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/ggml-cuda/mma.cuh:L1058 @ ca29eaf
+    quote: result_h[i] = (_Float16)acc_f32[i];
+    quote_sha256: dbd0c894c070e8273f6ec80334f06f4e7d4be39be782a6ac4ca5993fbdbc7d81
+    source_revision: ca29eaf66d76
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L1144 @ e71b805 (MFMA mma_tile_sizes, base)
+    quote: using T_C_VKQ = tile<16,  8, half2>; // column-major
+    quote_sha256: f126a40e1d3045992eb4712abe305da2fc8ef16d062c2e9d9a83c88733d39a4d
+    source_revision: e71b80510c84
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L1144 @ ca29eaf
+    quote: using T_C_VKQ = tile<16, 16, float>; // column-major
+    quote_sha256: 4073650ac69470034c1b3b461317b931fe654d3d1ecd017703f9a31da78f34a8
+    source_revision: ca29eaf66d76
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: PR body para 1 (ggml-org_pulls_28576.json sha256-12 0c89ed0936b0) @ retrieved 2026-10-22
+    quote: MFMA dose not support fp16 accumulation, mma.h implements a post V_MFMA downcast path, wich is used for VKQ, but
+      we can gain some performance and also some minor accuracy (still downconverted for smem later) by skipping that.
+    quote_sha256: b849e4609da24f34c6dde90e50a0fc8e5e52ab1f77f187d46f76b2fe7daeb3de
+    source_revision: 'PR #28576 body, retrieved 2026-10-22T16:49Z'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L1678 @ ca29eaf
+    quote: tile_Q_h[j*(2*tile_stride) + k] = VKQ_C[(k00 + k1)/(T_C_VKQ::J/2)].x[l];
+    quote_sha256: 220e644132664eac9bd6cd454118979e24500e41fea1862afcadb81c0789c852
+    source_revision: ca29eaf66d76 (same line at master 11fe02151 L1718)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L1727 @ ca29eaf
+    quote: const float2 dstk_val_add = __half22float2(tile_Q[(jc_tile_K + ip*cols_per_warp) * tile_stride + k]);
+    quote_sha256: 14ba23c4cf243c0f7c302b8c82d178f71d7d5a539eec150003e4f584a2ae3a45
+    source_revision: ca29eaf66d76
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L1734 @ ca29eaf
+    quote: dstk_val.x /= KQ_rowsum_j;
+    quote_sha256: 5f83683c55290c363b059a9a7df762254c996606894c7fc3b23830823bc14e08
+    source_revision: ca29eaf66d76
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: PR body para 2 (ggml-org_pulls_28576.json sha256-12 0c89ed0936b0) @ retrieved 2026-10-22
+    quote: This increased VGPR pressure and i had to retune the 64,64,64 case, as it saw a big perf drop.
+    quote_sha256: 4baf4cd6c9cf2ac3796f6817319e4f3083b39c8c2b1575fc8594c0e8c0ac41ae
+    source_revision: 'PR #28576 body, retrieved 2026-10-22T16:49Z'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L180 @ ca29eaf (enclosing function of the changed row)
+    quote: static constexpr __host__ __device__ fattn_mma_config ggml_cuda_fattn_mma_get_config_cdna(const int DKQ, const
+      int DV, const int ncols) {
+    quote_sha256: 111f26de584b1007f2ac9cdbc9a7f6bdaaf62119d32f52fdbeca37b0df6be3de
+    source_revision: ca29eaf66d76
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: diff
+    locator: ggml-org_pr28576.diff:L9 (sha256-12 7b2a5f346515) @ retrieved 2026-10-22
+    quote: '-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 64,  64, 64, 256, 4,  64,  32,  32,  32, 1, true);'
+    quote_sha256: 0b8d218fe1dcbb80b40f913e0c1f1725fa404346fe4a33d04c1d559a855bead4
+    source_revision: 'PR #28576 diff head ca29eaf66d76'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/ggml-cuda/fattn-mma-f16.cuh:L184 @ ca29eaf
+    quote: GGML_CUDA_FATTN_MMA_CONFIG_CASE( 64,  64, 64, 256, 3,  64,  32,  32,  32, 1, true);
+    quote_sha256: a8e4a02bf4208d1e888e22aed625db159ced43fdee7016fe22a928f78605af8f
+    source_revision: ca29eaf66d76
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: comment 5574166843 (IMbackK, 2026-09-07) @ retrieved 2026-10-22
+    quote: '`./bin/test-backend-ops -o FLASH_ATTN_EXT` passes but github aperantly has a 65536 char limit for comments.'
+    quote_sha256: f314114ecd2cf7a6bb4cb1c639fa68b2ca2ae2cf7ba20e6a9b2e6e493c0e18d1
+    source_revision: ggml-org_28576_comments.json sha256-12 90433ee9d88b
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed. Refined: the pre-PR downcast ran per MFMA instruction (16 KV cells), so the unnormalized running VKQ
+      could overflow mid-loop.'
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed and pinned in code. The remaining downconvert (L1670/L1678) stores the raw per-warp partial as half before
+      KQ_crs scaling and the row-sum division (L1727-L1734), in every MFMA config (np=1 or >1, fixup or not). So the |VKQ|>65504
+      overflow is not removed.
+  - claim_index: 2
+    effect: narrowed
+    note: The changed field is occupancy (5th macro arg), in the CDNA-only table, for DKQ=DV=64 ncols=64 only. The D=128 and
+      D=256 config rows are unchanged; only their register footprint grows (VKQ_C goes from DV/8 half2 to DV/4 float per thread).
+  - claim_index: 3
+    effect: narrowed
+    note: This is a pass on random inputs, which cannot reach the fp16 range; no output was posted. It is not evidence about
+      overflow.
+  depends_on: []
 - id: intake-2500
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/pull/1206
@@ -360918,13 +361813,16 @@
   expanded_from: intake-2498
   verdict: superseded
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
   - 'The bug in issue #1205 is triggered by a Q8_0 K-cache through an optimized path that fails under some conditions; the
     author could not find the cause and disabled the path (PR body; diff sets the constexpr guard to false).'
-  - The same diff lets the first KV block run before the masked-block early exit (k1 > 0 && Mc[0] != 0) (diff, iqk_fa_templates.h).
+  - The same diff lets the first KV block run before the masked-block early exit (k1 > 0 && Mc[0] != 0) (diff, iqk_fa_templates.h);
+    the edit sits inside the branch the same diff disables, so it has no runtime effect, and enabled it would still exit after
+    one fully masked block whenever a call's KV range starts with a masked prefix longer than one k_step block.
   techniques:
   - interim disabling of a failing fast path (the PR author's stopgap) pending root cause
   reported_results: []
@@ -360938,12 +361836,58 @@
     - intake-2496
   credibility_score: null
   contradicting_evidence: null
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  reader_should_conclude: 'Cite only as the dated stopgap that disabled the Q8_0 repack branch (2026-01-30). Do NOT cite the
+    k1 > 0 change as a fix (dead code, and insufficient for SWA prefixes); the code that shipped is #1212''s backward scan
+    (intake-2496), later disabled by #1935.'
   notes: 'Superseded by intake-2496 (ik #1212), which re-enabled the path for q_step >= 4 with a trailing-trim scan. Merged
     2026-01-30T09:37Z, head efd331f3ebb4, merge 811f8c339373 (ancestor of c04881fc0 in the local reference clone). Retrieved
     2026-10-22T16:48Z: metadata sha256-12 1c3063bdaef2, diff 39bcb1e8460c (1,442 B, read in full). Reached by reference chasing
-    from issue #1205 (timeline cross-reference).'
+    from issue #1205 (timeline cross-reference). | Stage-2 2026-10-22: PR body, diff, merge commit 811f8c3 (squash, parent
+    686fd1e) and the resulting file read in full.'
+  dive_corrections: '2026-10-22 Stage-2 dive: claims confirmed; claim 1 narrowed: the k1 > 0 edit is dead code inside the
+    branch the same diff disables, and would not fix a leading SWA prefix longer than one block. Superseded by #1212 (2bf2fa8ba
+    / a527b5a), which re-enabled the branch for q_step >= 4 with the reporter''s backward scan; ik later disabled the trim
+    altogether (#1935, a38d292).'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'PR #1206 body para 2 @ retrieved 2026-10-22 (ikawrakow_pulls_1206.json sha256-12 1c3063bdaef2)'
+    quote: As I was not able to figure out why it fails (it does work most of the time), disabling this code path for now.
+    quote_sha256: 441c9c30b09cc0efbbcf2e7db032bd670ebaa9387aefe5d53697674c37370dbd
+    source_revision: 'PR #1206 head efd331f3ebb4'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: diff
+    locator: ikawrakow_pr1206.diff hunk @@ -1412 (iqk_fa_templates.h)
+    quote: if constexpr (false && q_step > 1 && std::is_same_v<KHelper, HelperQ80>) {
+    quote_sha256: 88df4b810d8aaa171bb6143831d8c06012dfe960ff0f4e6b10dce6fec3e53555
+    source_revision: 'PR #1206 head efd331f3ebb4'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: diff
+    locator: ikawrakow_pr1206.diff hunk @@ -1424 (iqk_fa_templates.h)
+    quote: if (k1 > 0 && Mc[0] != 0) break;
+    quote_sha256: b674390fdf5cc76581c901a0eea653877e81ce670c76ec6f48b684c934483787
+    source_revision: 'PR #1206 head efd331f3ebb4'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: 'ggml/src/iqk/fa/iqk_fa_templates.h:L1417 @ 811f8c3 (#1206 merge: the k1 > 0 edit at L1429 sits inside this disabled
+      branch)'
+    quote: if constexpr (false && q_step > 1 && std::is_same_v<KHelper, HelperQ80>) {
+    quote_sha256: 88df4b810d8aaa171bb6143831d8c06012dfe960ff0f4e6b10dce6fec3e53555
+    source_revision: 811f8c339373b0d5f9c30d7021fe3d66629b2750
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: PR body and diff verbatim; merged 2026-01-30T09:37Z as squash 811f8c3 (single parent 686fd1e).
+  - claim_index: 1
+    effect: narrowed
+    note: The k1 > 0 edit is dead code under 'if constexpr (false && ...)'; enabled, it processes block 0 then breaks at block
+      1 if that block's first cell is masked for the last row, so it fixes the SWA case only when the masked prefix is shorter
+      than k_step (32-128 cells for D=256).
+  depends_on: []
 - id: intake-2501
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/pull/1216
@@ -360960,13 +361904,19 @@
   expanded_from: intake-2496
   verdict: already_integrated
   ingested_date: '2026-10-22'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
   key_claims:
   - 'The author broke the CPU FA work-buffer size in #1212 and the bug did not show up in the benchmarks he ran (PR body).'
-  - The fix restores the GQA (nek2 > 1) TG partial-result sizing, computing the per-KV-head chunk count with the same divisibility
-    logic as the kernel, and limits the Q8_0 repack buffer to batch >= 8 (diff).
+  - The fix restores the decode-only guard and the GQA (nek2 > 1) TG partial-result sizing, computing the per-KV-head chunk
+    count with the same logic as the kernel, and limits the Q8_0 repack buffer to batch >= 8 (diff).
+  - The restored formula sizes from the untrimmed K->ne[1], while the kernel re-partitions on a narrowed nek1 (runtime -inf
+    range trim); ik master later replaced it to cover any narrowed nek1 and the MLA fall-through to the chunk loop (port iqk_flash_attn.cpp,
+    which vendors this formula; ik master @ c12b5ac33).
+  - In the AKX-ALL-LB4 port the graph plan allocates MAX(mainline tiled-prefill scratch term, decode term, iqk_fa_work_buffer_size)
+    for FLASH_ATTN_EXT, so the iqk formula is not the only bound on the work buffer (port ggml-cpu.c @ 9a338d4f1).
   techniques:
   - work-buffer sizing that mirrors the kernel thread split
   reported_results: []
@@ -360984,15 +361934,118 @@
   - '[unverified] Operator-review candidate: run the AKX-ALL-LB4 FLASH_ATTN_EXT CPU cases at 96 threads under a sanitizer
     or guard-page work buffer for GQA TG shapes whose chunk count does not divide evenly, because this class of bug passed
     upstream benchmarks.'
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Fixed sizing is present in the AKX-ALL-LB4 port (iqk_flash_attn.cpp L50-L60 @ 629b545e0, read 2026-10-22); the port also
-    takes max(ggml, iqk) work size. Stage-1 only.
-  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
-    line until a Stage-2 dive promotes it.'
+  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
+    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
+  - 'Bearing task: AKX-ALL-LB4 (work-size formula vs the runtime trim).'
+  reader_should_conclude: 'Cite #1216 for the restored GQA sizing. Do NOT cite the port''s iqk_fa_work_buffer_size as sufficient
+    on its own: it does not cover the runtime trim; the port is safe today only because the mainline prefill tile term is
+    larger. Never quote the model''s shortfall ratios as measured overflows (nothing was run).'
   notes: 'Merged 2026-02-02T10:39Z, head c8d7522b3f33, merge 589d80f6778c (on c04881fc0 history in the local reference clone).
     Retrieved 2026-10-22T16:52Z: metadata sha256-12 3d659f32e59b, diff e01c7bbf952f (3,188 B, read in full); 0 comments. Found
-    by reference chasing: local ik history of iqk_flash_attn.cpp after #1212.'
+    by reference chasing: local ik history of iqk_flash_attn.cpp after #1212. | Stage 2 (2026-10-22): read body and full diff;
+    compared with ik master c12b5ac33 iqk_fa_work_buffer_size and the port 9a338d4f1 kernel/graph plan. gh api commit list
+    for iqk_flash_attn.cpp since 2026-02-02 saved at dives/lineage/ik_master_iqk_flash_attn_commits.json (sha256-12 8086cacbd2ba).'
+  dive_corrections: '2026-10-22 Stage-2 dive (session intake-kernel-followup-20261022, lineage read #243 -> #277 -> #1212
+    -> #1216): Port question (AKX-ALL-LB4 port @ 9a338d4f1; arithmetic model dives/lineage/worksize/, n_kv 512..32768 step
+    256 plus every trim length, 96 and 48 threads): the port vendors the #1216 formula verbatim (L50-L108). It mirrors the
+    kernel for untrimmed, 256-padded n_kv in the DS41 (64 x 1) and GQA12 (12 x 2, D256) shapes, but ALONE it under-sizes the
+    kernel''s partial writes when the runtime trim (L199-L226) narrows n_kv (GQA12 up to 4.0x; DS41 up to 31x when a trim
+    flips the #277 grid to the 32-row chunk loop) and, untrimmed, for one-KV-head shapes with small rk2 (rk2 = 2 D128 up to
+    1.75x at n_kv 12032). In the port none of these overflows: the graph plan takes MAX(mainline prefill tile term, decode
+    term, iqk) (ggml-cpu.c L3557-L3567) and the prefill tile term (56.6 MB DS41, 28.3 MB GQA12 at 96 threads) exceeds every
+    modelled need (0 shortfalls). Covered by accident, not by the formula. ik master replaced the formula (L72, L79 @ c12b5ac33;
+    ik #2442 2026-09-15 and #2710 2026-10-20 from the gh commit list, PR bodies not read). The Stage-1 sanitizer action is
+    superseded by ledger LIN-2.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: PR body (pr1216_body.txt line 2, retrieved 2026-10-22)
+    quote: 'I broke it in #1212, and the bug did not show up in all the benchmarks I ran for that PR.'
+    quote_sha256: 39890d104ddfb40edff84317992a1ea0d1b2aaa4fa5228fe494b6acbebe0a578
+    source_revision: 'ik_llama.cpp PR #1216 head c8d7522b3f33, merge 589d80f6778c, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: diff
+    locator: ggml/src/iqk/iqk_flash_attn.cpp iqk_fa_work_buffer_size decode guard (diff), ikawrakow_pr1216.diff line 25
+    quote: +    if (Q->ne[1] == 1 && Q->ne[3] == 1 && Q->ne[2]/K->ne[2] > 1 && nth >= 1 && K->ne[1]/32 > 1) {
+    quote_sha256: 3634f79abb94e26a7afc639443c908c8b7d593f46b64a2333f08ac38a77351c3
+    source_revision: 'ik_llama.cpp PR #1216 head c8d7522b3f33, merge 589d80f6778c, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: diff
+    locator: ggml/src/iqk/iqk_flash_attn.cpp iqk_fa_work_buffer_size (diff), ikawrakow_pr1216.diff line 45
+    quote: +            int nstep_k = K->ne[2]*nkk;
+    quote_sha256: 8a4a9c23ac4d1cd74350f766d866930325b6780d9af802f9aa8da68736a12dde
+    source_revision: 'ik_llama.cpp PR #1216 head c8d7522b3f33, merge 589d80f6778c, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: diff
+    locator: ggml/src/iqk/iqk_flash_attn.cpp iqk_fa_work_buffer_size (diff), ikawrakow_pr1216.diff line 10
+    quote: +    if (Q->ne[1] >= 8 && K->type == GGML_TYPE_Q8_0) {
+    quote_sha256: 75ddc329f762140ec92cb82b785a993ffd1162b442d3104e0baf30856b6502ac
+    source_revision: 'ik_llama.cpp PR #1216 head c8d7522b3f33, merge 589d80f6778c, retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/ggml-cpu/iqk/iqk_flash_attn.cpp (runtime nek1 trim):L219 @ 9a338d4f1
+    quote: if (last_k - first_k <= 3*nek1/4 && (last_k - first_k)%32 == 0) {
+    quote_sha256: a2530890f3ca80e3efa3b587cfb6fe438ad2489fd28e978dfa48b154131f629e
+    source_revision: EPYC port experimental/locals-kernel-fixes-20261022 @ 9a338d4f1 (read-only)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/ggml-cpu/iqk/iqk_flash_attn.cpp iqk_fa_work_buffer_size (untrimmed K->ne[1]):L78 @ 9a338d4f1
+    quote: int nkk = (K->ne[1] + nk - 1)/nk;
+    quote_sha256: 73855ba543b8ad678a8fe63ea30e8c58e7be5e1f88ccd51e321d7e1d69badc41
+    source_revision: EPYC port experimental/locals-kernel-fixes-20261022 @ 9a338d4f1 (read-only)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp iqk_fa_work_buffer_size:L72 @ c12b5ac33
+    quote: // Cover any nek1 that iqk_flash_attn_noalibi narrows to at run time.
+    quote_sha256: 469ef6b6bfdd93688cff522089f900c7ba29a49fa6acfa3c5f7521ed13cb6625
+    source_revision: ik_llama.cpp master @ c12b5ac33be7 (git clone --depth 1, 2026-10-22T18:32Z)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/iqk/iqk_flash_attn.cpp iqk_fa_work_buffer_size:L79 @ c12b5ac33
+    quote: // With nth >= rk2 the consumer can fall through to the chunked loop, which uses up to 4*nth slots.
+    quote_sha256: 1c179ceb862f5d099021ee25e088ec207c7223082e8ce635d6bef6b5b6b8584b
+    source_revision: ik_llama.cpp master @ c12b5ac33be7 (git clone --depth 1, 2026-10-22T18:32Z)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: ggml/src/ggml-cpu/ggml-cpu.c ggml_graph_plan FLASH_ATTN_EXT:L3557 @ 9a338d4f1
+    quote: size_t prefill  = sizeof(float)*(GGML_FA_TILE_Q*DK + 2*GGML_FA_TILE_Q*GGML_FA_TILE_KV + GGML_FA_TILE_Q*DV + GGML_FA_TILE_KV*DV
+      + GGML_FA_TILE_KV*DK)*n_tasks;
+    quote_sha256: efb2c236c5cccb59401a618c8adc56fe2e4e629fe66ee7ace485446299eccbde
+    source_revision: EPYC port experimental/locals-kernel-fixes-20261022 @ 9a338d4f1 (read-only)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: ggml/src/ggml-cpu/ggml-cpu.c ggml_graph_plan FLASH_ATTN_EXT:L3567 @ 9a338d4f1
+    quote: fa_work = MAX(fa_work, iqk_fa_work_buffer_size(node, n_tasks));
+    quote_sha256: bfa5b245d8f36b1e9c242b97142fbf4418f3294fba7d6f92aada50da721eb0ca
+    source_revision: EPYC port experimental/locals-kernel-fixes-20261022 @ 9a338d4f1 (read-only)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 1
+    effect: narrowed
+    note: 'Also restores the Q->ne[1] == 1 decode guard; repack buffer condition matches #1215.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'NEW: the formula does not cover the kernel''s runtime trim; upstream fixed it later (ik #2442, #2710 per the commit
+      list).'
+  - claim_index: 3
+    effect: unaffected
+    note: 'NEW (port reading): the mainline prefill tile term is what covers the gap today; second reader flagged the prefill
+      anchor as not supporting claim 2, so it now anchors this claim.'
+  depends_on: []
 - id: intake-2502
   arxiv_id: null
   url: https://github.com/ikawrakow/ik_llama.cpp/pull/273
