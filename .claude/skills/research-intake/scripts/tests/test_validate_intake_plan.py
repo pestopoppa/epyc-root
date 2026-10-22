@@ -531,6 +531,19 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
                 self.assert_invalid("(?i)source|action|immutable|match|retained")
                 self.rows[0][field] = saved
 
+    def test_escaped_pipe_in_table_cell_matches_retained_action(self):
+        action = "Dump per-channel max|V| peaks"
+        self.rows[0]["action"] = action
+        self.session["actionable_ledger"][0]["action"] = action
+        self.render()
+        text = self.plan.read_text(encoding="utf-8")
+        escaped = text.replace("| " + action + " |", "| Dump per-channel max\\|V\\| peaks |")
+        self.assertNotEqual(escaped, text)
+        self.plan.write_text(escaped, encoding="utf-8")
+        self.assertEqual(self.errors(), [])
+        self.plan.write_text(text, encoding="utf-8")
+        self.assertRegex("\n".join(self.errors()), "(?i)four|cells|recommendation")
+
     def test_stage4_addition_record_must_match_reconciled_retained_row(self):
         _, line = self.add_delta()
         owner = self.root / "handoffs/active/owner.md"

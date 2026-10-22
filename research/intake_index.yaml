@@ -360514,7 +360514,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - The CPU FA token-generation fast path for a single KV head (nek2 == 1, one query row, rk2 > 1 query heads; the MLA case)
@@ -360563,9 +360564,7 @@
     decode schedule for the DS41 shape (1 KV head, 64 query heads) can be bit-exact against the ggml anchor at 96 threads.'
   integration_disposition: monitor
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing tasks: AKX-ALL-LB3, AKX-ALL-LB4 and AKX-ALL-10 in handoffs/active/autokernel-all-devices-all-dimensions.md.'
+  - 'Stage 3 2026-10-22 (intake-kernel-followup-20261022): LIN-4 is trigger prose M1 in autokernel-all-devices-all-dimensions.md (opens when AKX-ALL-LB4.9 passes); LIN-7 declined (bit-exactness vs the ggml anchor unreachable with iqk).'
   reader_should_conclude: 'Cite #277 for the uneven head-group split, the nq_per_thread > 1 requirement and the gcd_k-partial
     merge. Do NOT cite it as the DS41 schedule above n_kv 12288 at 96 threads (#1212''s path runs there), and do not cite
     the tester table as a 96-thread or dual-socket result (host not stated). No speed number from the author exists.'
@@ -360721,7 +360720,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - For TG the attention was parallelised over heads, so each thread computed K*Q as a memory-bound GEMV; the PR parallelises
@@ -360773,11 +360773,9 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: read with intake-2494/2496 as one lineage dive; the mechanism is what the AKX-ALL-9
     cpu_fa_schedule route already permits (one KV pass serving the query heads of a KV head).'
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing tasks: AKX-ALL-9 and AKX-ALL-LB3(a) in handoffs/active/autokernel-all-devices-all-dimensions.md.'
+  - 'Stage 3 2026-10-22: LIN-6 declined (the port already vendors the post-#277 merge indexing, iqk_flash_attn.cpp L358 @ 9a338d4f1); mechanism retained as K1 prose in autokernel-all-devices-all-dimensions.md.'
   reader_should_conclude: 'Cite #243 for the mechanism (KV-entry split, per-thread (M,S) partials, one barrier, merge) and
     its MLA-only scope. Do NOT carry #243''s merge code: its partial indexing is correct only when rk2 == nth (fixed in #277).
     Do not cite its tables as evidence for any thread count other than the unstated one used, nor for GQA.'
@@ -360950,7 +360948,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - The PR changes how CPU FA work is divided between threads, motivated by poor scaling on a 64-core machine; the author
@@ -361007,11 +361006,9 @@
   - '[unverified] Operator-review candidate: dive the nek2 == 1 long-context path as the template for a DS41 decode FA schedule
     (D=512, 1 KV head, 64 query heads) and check how sinks could be folded into the merge, since the path passes null sinks
     and our port declines sinks.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing tasks: AKX-ALL-LB3, AKX-ALL-LB4 (sinks fold, LB4.2 row-exactness) and AKX-ALL-12.'
+  - 'Stage 3 2026-10-22: LIN-1 -> AKX-ALL-LB4.9 (sinks fold, correctness only), LIN-3 -> AKX-ALL-LB4.8 (expected NOT_ROW_EXACT, tolerance route), LIN-5 -> K1 citation guard.'
   reader_should_conclude: 'Cite #1212 for the nek1/32 >= 4*nth contiguous-KV schedule (96 threads: n_kv >= 12288) and as the
     template for a DS41 decode schedule. Fold sinks once per row after the merge (the GQA merge shows how). Do NOT cite the
     +36%/+14% Q8_0 gains as thread-strategy gains, do not claim the merge is row-exact across N, threads or the anchor, and
@@ -361221,7 +361218,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - The CPU FA entry repacked a Q8_0 K-cache to Q8_0_R8 when the query batch was >= 8 rows or when the GQA ratio was >= 8
@@ -361250,11 +361248,9 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: in the AKX-ALL-LB3 q8_0-KV cells, include N=8 (the repack boundary) next to N=1..5
     and record which side of the threshold each cell ran.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing task: AKX-ALL-LB3 (d) q8_0-KV cells.'
+  - 'Stage 3 2026-10-22: D2497-1/2 -> AKX-ALL-LB3.1 (N=8 repack-side cells and a forced-repack arm on the ON-build LB3 timing); D2497-3 -> K1.'
   reader_should_conclude: 'Cite #1215 as: global Q8_0->Q8_0_R8 K repack now requires neq1>=8 (total query columns); removed
     the GQA>=8 multi-KV-head term. Do NOT cite it as evidence that batch 8 is optimal on Zen5, nor as affecting DS41 (nek2=1).
     Do NOT carry any speed number from it (none exists). Our port 9a338d4f1 already has the post-#1215/#1216 conditions and
@@ -361355,7 +361351,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - 'Reporter: Gemma 3 12B/27B with -ctk q8_0 -ctv q8_0 produces garbage once context passes about 1024 tokens and q4_0 stops
@@ -361388,11 +361385,9 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: add sliding-window (leading -inf) masks and a thread-count sweep (for example
     1, 4, 8, 16, 96) to the AKX-ALL-LB4.2 reference comparison, since this bug was invisible at 16+ threads.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing task: AKX-ALL-LB4.2 (reference comparison with non-binary and leading-masked masks).'
+  - 'Stage 3 2026-10-22: D2498-1 -> AKX-ALL-LB4.8 (swa mask kind), D2498-2 -> AKX-LB4-FU2 (thread sweep in job akx-lb4-followups-2), D2498-3 -> AKX-ALL-LB4.7 (zeros in split combines, deadrow case); D2498-4 declined; D2498-5 resolved by intake-2508 (K1).'
   reader_should_conclude: 'Cite: the forward first-cell break in the Q8_0 repack branch of compute_helper_q (pre-#1206) drops
     every KV chunk that starts in a sliding-window-masked prefix; it is reached in TG GQA split-KV calls; the thread dependence
     comes from gcd(nek2, nth) chunking; ~1024 = Gemma 3 n_swa from the reporter''s log. The fix that shipped is the backward
@@ -361617,7 +361612,9 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/kv-unified-stack-rollout.md
+  - handoffs/active/autokernel-champion-aggregate.md
   handoffs_created: []
   key_claims:
   - MFMA has no fp16 accumulation. Before the PR, the MMA FA kernel downcast VKQ to half2 after every MFMA instruction (16
@@ -361659,12 +361656,9 @@
   recommended_actions:
   - '[unverified] Operator-review candidate: feed the PR''s own framing into the open V11-FA-7 decision (fold, exclude or
     defer) and re-check the CPU-FA-VKQ-4 wording that it fixed the MFMA overflow analog.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing tasks: V11-FA-7 and CPU-FA-VKQ-4 in handoffs/active/kv-unified-stack-rollout.md, manifest row V11-050, CH-18
-    in handoffs/active/autokernel-champion-aggregate.md.'
+  - 'Stage 3 2026-10-22: CPU-FA-VKQ-4 premise corrected and closed on KVU-LB1.a; V11-FA-7 decided ''carried by the pull'' and manifest V11-050 updated; CH-18 parenthetical fixed; V11-FA-8 filed (real-model GPU half-staging probe); D2499-6 declined; D2499-5/7 K1.'
   reader_should_conclude: 'Cite #28576 as: fp32 VKQ accumulation within a tile on MFMA. It is a perf gain (up to 1.2x on D=128/256
     and 1.5x on D=64, test-backend-ops nb>=512 on gfx908) only on MMA-routed shapes, and it does not touch the ROCWMMA-ON
     champion route. Do NOT carry: (a) "upstream fixed the MFMA analog of the CPU FP16-VKQ overflow" (false: the raw partial
@@ -361833,7 +361827,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - 'The bug in issue #1205 is triggered by a Q8_0 K-cache through an optimized path that fails under some conditions; the
@@ -361854,6 +361849,9 @@
     - intake-2496
   credibility_score: null
   contradicting_evidence: null
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage 3 2026-10-22: D2500-1 citation guard (the #1206 k1 > 0 edit is dead code) kept as K1 prose; no task.'
   reader_should_conclude: 'Cite only as the dated stopgap that disabled the Q8_0 repack branch (2026-01-30). Do NOT cite the
     k1 > 0 change as a fix (dead code, and insufficient for SWA prefixes); the code that shipped is #1212''s backward scan
     (intake-2496), later disabled by #1935.'
@@ -361926,7 +361924,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - 'The author broke the CPU FA work-buffer size in #1212 and the bug did not show up in the benchmarks he ran (PR body).'
@@ -361954,11 +361953,9 @@
   - '[unverified] Operator-review candidate: run the AKX-ALL-LB4 FLASH_ATTN_EXT CPU cases at 96 threads under a sanitizer
     or guard-page work buffer for GQA TG shapes whose chunk count does not divide evenly, because this class of bug passed
     upstream benchmarks.'
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2 dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are recorded in the session
-    record and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing task: AKX-ALL-LB4 (work-size formula vs the runtime trim).'
+  - 'Stage 3 2026-10-22: LIN-2 -> AKX-ALL-LB4.6 (adopt #2442 + #2710 in the port sizer, enumeration gate, no sanitizer run).'
   reader_should_conclude: 'Cite #1216 for the restored GQA sizing. Do NOT cite the port''s iqk_fa_work_buffer_size as sufficient
     on its own: it does not cover the runtime trim; the port is safe today only because the mainline prefill tile term is
     larger. Never quote the model''s shortfall ratios as measured overflows (nothing was run).'
@@ -362109,6 +362106,9 @@
     - intake-2495
   credibility_score: 1
   contradicting_evidence: null
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Stage 1 low relevance, not dived: the mla= graph option has no mainline counterpart (lineage only); nothing from this stage1-unverified entry is cited or filed.'
   reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry in a plan or task
     line until a Stage-2 dive promotes it.'
   notes: 'Merged 2025-03-21, head 4632cb94d83b, merge ddc8eee10ee9. Retrieved 2026-10-22T16:54Z: metadata sha256-12 b6e254ffb611
@@ -362179,7 +362179,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - Before this PR the GQA (K->ne[2] > 1) decode branch of iqk_fa_work_buffer_size sized from the untrimmed K->ne[1], while
@@ -362217,11 +362218,9 @@
     - intake-2496
   credibility_score: null
   contradicting_evidence: null
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are in the session record
-    and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing ledger row: LIN-2 (amended by this dive): adopt #2442 + #2710 in the port sizer (AKX-ALL-LB4).'
+  - 'Stage 3 2026-10-22: the GQA half of AKX-ALL-LB4.6 (LIN-2 as amended); D2504-1 citation guard -> K1.'
   reader_should_conclude: 'Cite #2442 for the corrected GQA (nek2 > 1) work-size formula and its proof; it is the form LIN-2
     adopts for that branch. Do NOT cite it as covering nek2 == 1 (that is #2710). Do NOT carry the author''s Xeon/P100 thread
     counts, crash cells or perf-neutral result as EPYC evidence. Do NOT expect an ASan or guard-page run of the EPYC port
@@ -362407,7 +362406,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - 'The MLA (K->ne[2] == 1) branch that #2442 left out overflowed for two reasons: the mask scan narrows nek1 after sizing,
@@ -362441,11 +362441,9 @@
     - intake-2496
   credibility_score: null
   contradicting_evidence: null
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are in the session record
-    and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing ledger row: LIN-2 (amended by this dive): the nek2 == 1 half of the port sizer fix (AKX-ALL-LB4).'
+  - 'Stage 3 2026-10-22: the nek2 == 1 half of AKX-ALL-LB4.6 (LIN-2 as amended).'
   reader_should_conclude: 'Cite #2710 for the nek2 == 1 (MLA, DS41-shape) work-size formula; with #2442 it is the complete
     fix LIN-2 adopts. Do NOT cite the author''s MiB table or DeepSeek-V2-Lite crashes as EPYC measurements: our evidence is
     arithmetic only (dives/stage2b/worksize). Do NOT expect the port to crash today: the prefill tile term covers the gap.'
@@ -362558,7 +362556,9 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
+  - handoffs/active/deepseek-v41-flash-evaluation.md
   handoffs_created: []
   key_claims:
   - '#2165 adds a single-token (neq1 == 1) branch to the iqk indexed FA path: it splits the query HEADS over threads (npt
@@ -362626,11 +362626,9 @@
     are implemented in the per-head loop, the GQA merge and the indexed branches, but not in the nek2 == 1 merges.'
   - No thread sweep, no per-op split on CPU and no FA-only timing are published; the comparison baseline (fairydreaming branch)
     table is not shown in the PR.
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are in the session record
-    and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing ledger rows: LIN-1 amends A-D; D2506-1..6 (DS41-C123.1 gathered-decode template, AKX-ALL-LB4).'
+  - 'Stage 3 2026-10-22: D2506-1/3/4 -> DS41-C123.1a (template, hazards, row x head split), D2506-2 -> DS41-C123.1 gate wording, LIN-1 amendments -> AKX-ALL-LB4.9; D2506-5/6 K1.'
   reader_should_conclude: 'Cite #2165 as the CPU reference for gathered (index-driven) single-token FA with sinks on the DS4
     family: head split, one shared gather, sink per head via sink_stride, plus #2511''s offset fix and #2287''s K==V reuse.
     Cite it (at the #2165 merge) as proof that ik does NOT fold sinks at the nek2 == 1 merges and instead disables iqk FA
@@ -362666,7 +362664,7 @@
     L9405/L9492), so LIN-1 on the compressed layers would do about nek1 instead of about 640 KQ rows per head (our arithmetic,
     unmeasured). (5) Determinism: head split = no KV partition and no merge; bit identity across thread counts observed by
     #2511''s author only for -t 16 vs -t 1; N > 1 uses a per-row branch with one thread per row; no source claims N=1 vs N>1
-    identity. (6) The perf tables are the author''s 3995WX numbers without a thread sweep or CPU per-op split.'
+    identity. (6) The perf tables are the author''s 3995WX numbers without a thread sweep or CPU per-op split. 2026-10-22 Stage 4 (operator-approved Stage-3 plan, Q6; plan sha256 3583551b54a5): newly surfaced Stage-2b source DECLINED, not dived: ik_llama.cpp PR #2110 and #2147 (DS4 predecessors named in the #2165 body): the code fact (non-indexed DS4 FA is IQK_DISABLED) is settled at the merge; its rationale changes no action; the fairydreaming/llama.cpp dsv4 branch: a branch, not a PR; comparator only, not EPYC evidence; #2165 comment 5029984969 (dsa_attn.cu 768 softmax specialisation out-of-bounds): CUDA-only, no GPU DSA work planned; knowledge for a future HIP DSA port; the ik src/llama-dsv4.cpp planner sentinel rows (review comment 3631548107): first-party model.py remains the oracle for compressor-overlap semantics; ik master build_deepseek4.cpp L1957-L1962 @ c12b5ac (DFlash-drafter FA adds sinks without IQK_DISABLED): on disk already; no DS41 consumer.'
   claim_anchors:
   - claim_index: 0
     kind: code
@@ -362949,7 +362947,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - 'In the T=1 indexed branch added by #2165 each thread offsets q and the output by its first head but passed the sinks
@@ -362984,11 +362983,9 @@
     - intake-2496
   credibility_score: 2
   contradicting_evidence: null
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are in the session record
-    and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing ledger rows: D2507-1 (per-head-distinct sinks at nth 1/16/32/64/96, AKX-ALL-10), LIN-1 amend C.'
+  - 'Stage 3 2026-10-22: D2507-1 -> AKX-ALL-10.1 (distinct per-head sinks at nth 1/16/32/64/96); D2507-2 citation guard K1.'
   reader_should_conclude: 'Cite #2511 as a required companion of any port of #2165''s T=1 indexed branch and as the reason
     sink tests must use per-head-distinct sinks at several thread counts (1, 16, 32, 64, 96). Do NOT cite it as proof of thread-count
     invariance beyond -t 16 vs -t 1, or of N=1 vs N>1 row-exactness.'
@@ -363145,7 +363142,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - '#1935 (closes ik issue #1910) disables the iqk_fa_templates.h per-tile early termination by making mask_effective_nk1
@@ -363176,9 +363174,7 @@
   contradicting_evidence: null
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2b 2026-10-22 answers ledger row D2498-5 (why upstream disabled in-kernel trimming): the hazard is a sampled-cell
-    scan; the port''s all-cell fa_kv_extent (AKX-ALL-LB4, 629b545e0) is not exposed, so the LB4.5 fold needs no change for
-    it. Coverage of the SWA case stays with D2498-1 at Stage 3.'
+  - 'Stage 3 2026-10-22: answers D2498-5 (K1 prose in autokernel-all-devices-all-dimensions.md); the port''s all-cell fa_kv_extent is not exposed, so no task.'
   reader_should_conclude: 'Cite #1935 for WHY ik disabled the template trailing early termination (a one-cell-per-block scan
     misses sparse SWA entries). Do NOT cite it as evidence that in-kernel trimming is unsafe in general: the EPYC port scans
     every cell, and ik master still runs its iqk_flash_attn.cpp TG range trim. Do NOT carry anything from issue #1910 (not
@@ -363191,7 +363187,7 @@
     D2498-5. The disable is scoped to mask_effective_nk1 (the #1880 helper); Stage-2 wording elsewhere ("ik disabled the trim
     altogether") is narrowed accordingly in intake-2498 and intake-2500. Port fa_kv_extent (templates L1338-L1349 @ 9a338d4f1)
     checks all k_step cells of all q_step rows, so it is immune by construction; it remains a trailing-only trim (leading
-    blocks always processed).'
+    blocks always processed). 2026-10-22 Stage 4 (operator-approved Stage-3 plan, Q6; plan sha256 3583551b54a5): newly surfaced Stage-2b source DECLINED, not dived: ik_llama.cpp issue #1910 (closed by #1935): the #1935 body states the mechanism, and the port''s all-cell fa_kv_extent is not exposed by construction.'
   claim_anchors:
   - claim_index: 0
     kind: text
@@ -363292,7 +363288,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - 'The contributor attributes ik issue #809 (GGML_ASSERT(S > 0) in normalize_and_store_1row with --parallel > 1 and FA)
@@ -363328,8 +363325,7 @@
   contradicting_evidence: null
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2b 2026-10-22: the port (AKX-ALL-LB4, 629b545e0) already scans all rows and all cells, so no port change follows;
-    multi-row correctness stays gated by AKX-ALL-LB4.2 test-fa-rowexact.'
+  - 'Stage 3 2026-10-22: D2509-1 K1 prose; the port already unions all rows and cells, no task.'
   reader_should_conclude: 'Cite #1880 for the per-row mask-union defect class (last-row-only scan breaks multi-sequence batches).
     Do NOT cite its sweep-bench numbers (self-caveated) or its "7 sites" count. Do NOT carry it as a live upstream optimization:
     #1935 disabled the helper. Do NOT claim #809 was confirmed fixed: it was closed as stale before #1880.'
@@ -363343,7 +363339,7 @@
     (#1880/#809): the port has no per-row mask-union bug: fa_kv_extent (templates L1338-L1349 @ 9a338d4f1) loops j < q_step
     and l < k_step, at the same four sites #1880 patched (L1370, L1432, L1460, L1979), and the n_left loop (L1398) is untrimmed.
     Corrected: the body''s "7 sites" vs four merged calls. #809 closed stale 2026-03-19, so "Fixes #809" is the contributor''s
-    attribution, not a maintainer confirmation.'
+    attribution, not a maintainer confirmation. 2026-10-22 Stage 4 (operator-approved Stage-3 plan, Q6; plan sha256 3583551b54a5): newly surfaced Stage-2b source DECLINED, not dived: ik_llama.cpp issue #805 (named by the maintainer as the same issue as #809): #809 was closed stale and the port has no per-row mask-union bug.'
   claim_anchors:
   - claim_index: 0
     kind: text
@@ -363505,7 +363501,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   key_claims:
   - '#1923 (no PR description) makes the iqk_flash_attn_noalibi TG range trim print a diagnostic and abort when the mask row
@@ -363530,11 +363527,9 @@
     - intake-2496
   credibility_score: null
   contradicting_evidence: null
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b dived 2026-10-22 (session intake-kernel-followup-20261022); derived-actionable rows are in the session record
-    and await the Stage-3 plan. No handoff or index write before plan approval. Trigger: Stage-3 plan approval.'
-  - 'Bearing ledger rows: D2498-3 (amended: add an empty-mask TG case at n_kv > 256) via D2510-1.'
+  - 'Stage 3 2026-10-22: D2510-1 -> AKX-ALL-LB4.7 (all -inf TG row at n_kv 512 and 8192, expected zeros).'
   reader_should_conclude: 'Cite #1923 only for the fact that ik master aborts on an empty TG mask row. Do NOT infer the EPYC
     port aborts or misbehaves: by code reading it narrows to nek1 = 0 and writes zeros (mainline behaviour), but this is untested
     until D2510-1 lands. Do NOT infer #1923 motivated #1935.'

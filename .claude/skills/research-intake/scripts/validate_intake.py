@@ -683,7 +683,8 @@ def _plan_cells(line: str) -> list[str]:
     line = line.strip()
     if not line.startswith("|") or not line.endswith("|"):
         raise ValueError("unsupported Markdown row: expected enclosing pipes")
-    return [cell.strip() for cell in re.split(r"(?<!\\)\|", line[1:-1])]
+    # A literal pipe inside a cell must be written escaped (`\|`); compare the unescaped text.
+    return [cell.strip().replace("\\|", "|") for cell in re.split(r"(?<!\\)\|", line[1:-1])]
 
 
 def _unique_json_object(pairs: list[tuple]) -> dict:

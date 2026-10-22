@@ -6933,9 +6933,9 @@
     {
       "session_id": "intake-kernel-followup-20261022",
       "started_at": "2026-10-22T16:40:00Z",
-      "last_checkpoint": "2026-10-22T19:29:58Z",
-      "stage": 2,
-      "phase": "stage2b-complete; close-out gate CLOSED (operator selection 2026-10-22 dived, declines recorded); Stage 3 plan next",
+      "last_checkpoint": "2026-10-22T21:00:00Z",
+      "stage": 4,
+      "phase": "stage4: approved plan applied on intake/kernel-followup-s4-20261022 (edits 1-15; edit 16 INF-65 prepared for the owning session); validated; not landed",
       "lane": "/mnt/raid0/llm/worktrees/f8-intake-kernel-followup",
       "branch": "intake/kernel-followup-20261022",
       "owner": "workspace-f8 (subagent prepared; main session applies/lands)",
@@ -7037,6 +7037,15 @@
           "disposition": "context-only",
           "plan_ref": null,
           "reason": "Closes the Stage-2 dive-surfaced gate (selection executed as Stage-2b intake-2504..2510; declines recorded in bearing entries' dive_corrections); authorizes no handoff, stub or index-row write."
+        },
+        {
+          "seq": 4,
+          "stage": 3,
+          "ts": "2026-10-22T20:45:00Z",
+          "verbatim": "Operator approved the Stage-3 plan for intake-kernel-followup-20261022 in full via plan-mode ExitPlanMode on 2026-10-22, accepting all six proposed answers (Q1 ride a later re-run as akx-lb4-followups-2; Q2 close CPU-FA-VKQ-4 on KVU-LB1.a; Q3 close V11-FA-7 as carried by the pull; Q4 file AKX-ALL-LB4.9 now as correctness-only; Q5 queue V11-FA-8 for an MI210 window, correctness class; Q6 decline the seven newly surfaced Stage-2b sources) (relayed by workspace-f8 in the Stage-4 dispatch).",
+          "disposition": "context-only",
+          "plan_ref": null,
+          "reason": "Approval of the plan as written (sha256 3583551b54a5); every accepted answer is the plan's own recommendation and already carried by its packets and edits, so the approval adds no scope. Authorizes the Stage-4 writes the plan names (edits 1-15; edit 16 is the owning session's) and nothing else."
         }
       ],
       "actionable_ledger": [
@@ -7046,7 +7055,8 @@
           "action": "Fold sinks into the nek2==1 iqk merges (#1212 and #277 paths) with the GQA merge block (once per row after the partial loop, before the norm), pass sinks->data from the ops.cpp hook, and lift the hook sinks decline only after FLASH_ATTN_EXT cases match the ggml reference. AMENDED by Stage-2b: (A) scope = CORRECTNESS enabler (DS41 SWA layers 0-1, stock-mask DS41-shape cases), not expected to be a decode lever on DS41 compressed layers: iqk computes KQ for whole blocks and the port trims only trailing blocks, while the mainline anchor skips -inf cells, so on the dense top-k mask iqk would do ~the full compressed length per head vs ~the selected rows (code-reading inference; iqk GEMM-batched row cost and KV-split gain unmeasured); any LIN-1 timing uses the real top-k mask and predeclares that a stock-mask win does not transfer. (B) add the gathered shape (n_kv 640/768, 64 heads, 1 KV head, sinks), which lands on the #277 gcd grid at 96 threads. (C) gate with per-head-DISTINCT sinks at nth {1,16,32,64,96} (= D2507-1). (D) no upstream template exists: ik never folds sinks at the nek2==1 merges (nullptr at 7945404 L411/L463, c12b5ac L391/L443) and routes non-indexed DS4 sinks calls to generic ggml FA (IQK_DISABLED); the only in-tree fold pattern is the GQA merge.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528), new sub-box",
           "proposed_disposition": "propose-task",
-          "amended_by": "intake-2506/intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)"
+          "amended_by": "intake-2506/intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "terminal_mapping": "P2 / AKX-ALL-LB4.9"
         },
         {
           "ledger_id": "LIN-2",
@@ -7054,14 +7064,16 @@
           "action": "Adopt ik #2442 + #2710 verbatim in the port iqk_fa_work_buffer_size (both diffs apply at offset -11; result = ik master c12b5ac L50-L90 minus the ik-only indexer pre-block; 0 shortfalls over nth 1..128, n_kv to 131072, all trims in dives/stage2b/worksize/scan_2442_2710.json). Gate it with a deterministic consumer-vs-sizer enumeration test (the port's split paths P1/P2/P3 slot counts <= sizer, as the #2442/#2710 authors did), NOT an ASan/guard-page run: while the mainline prefill tile term dominates the graph-plan MAX a sanitizer cannot fire (vacuous pass). Keep the -inf prefix/suffix trim cases as correctness cases.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528), new sub-box before LB4.5 (L538)",
           "proposed_disposition": "propose-task",
-          "amended_by": "intake-2504/intake-2505 Stage-2b dive (dives/stage2b, 2026-10-22)"
+          "amended_by": "intake-2504/intake-2505 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "terminal_mapping": "P1 / AKX-ALL-LB4.6"
         },
         {
           "ledger_id": "LIN-3",
           "source": "intake-2496 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Record in AKX-ALL-LB4.2 expected verdicts that iqk split paths are not row-exact across N (split only at neq1==1), thread count or mask-driven trims: NOT_ROW_EXACT at N=1 vs N=5 is the expected iqk result and the gate is the tolerance route against the reference.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4.2 (L532)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P1 / AKX-ALL-LB4.8"
         },
         {
           "ledger_id": "LIN-4",
@@ -7070,14 +7082,16 @@
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB3 (L526)",
           "proposed_disposition": "trigger-gated (LIN-1); durable prose, no checkbox now",
           "amended_by": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
-          "note": "Stage-2b: LIN-1 is re-scoped as a correctness enabler; if this timing ever runs it must use the real DS41 top-k mask, not the stock mask (AKX-ALL-10), and is not expected to be a decode win on compressed layers."
+          "note": "Stage-2b: LIN-1 is re-scoped as a correctness enabler; if this timing ever runs it must use the real DS41 top-k mask, not the stock mask (AKX-ALL-10), and is not expected to be a decode win on compressed layers.",
+          "terminal_mapping": "M1"
         },
         {
           "ledger_id": "LIN-5",
           "source": "intake-2496 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Never cite #1212 Q8_0 gains as thread-strategy gains, nor #243 tables as multi-thread-count evidence.",
           "proposed_owner": "intake entries (reader_should_conclude)",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "LIN-6",
@@ -7085,7 +7099,8 @@
           "action": "Port the #277 merge-index correction.",
           "proposed_owner": null,
           "proposed_disposition": "decline",
-          "reason": "Port vendors post-#277 code (iqk_flash_attn.cpp L358 jth_first *= gcd_k @ 9a338d4f1)."
+          "reason": "Port vendors post-#277 code (iqk_flash_attn.cpp L358 jth_first *= gcd_k @ 9a338d4f1).",
+          "terminal_mapping": "decline: the port already vendors the post-#277 merge indexing (iqk_flash_attn.cpp L358 jth_first *= gcd_k @ 9a338d4f1), so there is nothing to port."
         },
         {
           "ledger_id": "LIN-7",
@@ -7093,21 +7108,24 @@
           "action": "Stage-1 action: bit-exact grouped-heads schedule vs the ggml anchor at 96 threads.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB3 (a)",
           "proposed_disposition": "decline as stated",
-          "reason": "Unreachable with the iqk inner kernel (different chunk boundaries, sink placement, reduce formula and inner arithmetic); LB3(a) keeps its own anchor-boundary candidate."
+          "reason": "Unreachable with the iqk inner kernel (different chunk boundaries, sink placement, reduce formula and inner arithmetic); LB3(a) keeps its own anchor-boundary candidate.",
+          "terminal_mapping": "decline: a bit-exact grouped-heads schedule vs the ggml anchor is unreachable with the iqk inner kernel (different chunk boundaries, sink placement, reduce formula and inner arithmetic); the bit-exact N=1 anchor candidate in the existing LB3 item (a) is unaffected."
         },
         {
           "ledger_id": "D2497-1",
           "source": "intake-2497 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Include N=8 next to N=1..5 in the AKX-ALL-LB3 (d) q8_0-KV cells and record which side of the neq1>=8 repack threshold each cell ran.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB3 (d) (L526)",
-          "proposed_disposition": "propose-task (extension of existing (d), no new compute row)"
+          "proposed_disposition": "propose-task (extension of existing (d), no new compute row)",
+          "terminal_mapping": "P5 / AKX-ALL-LB3.1"
         },
         {
           "ledger_id": "D2497-2",
           "source": "intake-2497 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Forced repack on/off A/B at N=1 and 5 for GQA-12 q8_0, bundled into D2497-1.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB3 (d)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P5 / AKX-ALL-LB3.1"
         },
         {
           "ledger_id": "D2497-3",
@@ -7115,21 +7133,24 @@
           "action": "Work-size >= need assertion for the repack buffer.",
           "proposed_owner": null,
           "proposed_disposition": "knowledge-only",
-          "reason": "Port repack sizing already matches the kernel (L56 vs L230 @ 9a338d4f1); subsumed by LIN-2 assertion."
+          "reason": "Port repack sizing already matches the kernel (L56 vs L230 @ 9a338d4f1); subsumed by LIN-2 assertion.",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2498-1",
           "source": "intake-2498 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Add an swa mask kind to test-fa-rowexact at two windows (W <= 3/4 n_kv exercises the trim; W > 3/4 n_kv, e.g. n_kv 8192 W 7000, sends leading-masked chunks through the split path and the q_step>=4 repack branch), gated against the use_ref reference and the oracle.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4.2 (L532)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P1 / AKX-ALL-LB4.8"
         },
         {
           "ledger_id": "D2498-2",
           "source": "intake-2498 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Run test-fa-rowexact at FA_ROWEXACT_THREADS 1, 4, 8, 16, 96 (192 on q2) as new steps (never edit a running script).",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-LB4-FU (L540, under LB4.5 L538)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P1 / AKX-LB4-FU2"
         },
         {
           "ledger_id": "D2498-3",
@@ -7137,7 +7158,8 @@
           "action": "Write zeros in the three split-KV combines when M == -inf (mirrors dd756036a), add a deadrow case at n_kv 256 with <=16 threads, and NaN-prefill the candidate output so stale results cannot pass. AMENDED (D2510-1): also add an all -inf TG row at n_kv > 256 (e.g. 512 and 8192, rk2 > 1, neq1 = 1): the n_kv 256 case never enters the runtime range trim, and at n_kv > 256 the port narrows nek1 to 0 (code reading: zeros expected = mainline); ik master aborts there (#1923).",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528)",
           "proposed_disposition": "propose-task (low)",
-          "amended_by": "intake-2510 Stage-2b dive (dives/stage2b, 2026-10-22)"
+          "amended_by": "intake-2510 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "terminal_mapping": "P1 / AKX-ALL-LB4.7"
         },
         {
           "ledger_id": "D2498-4",
@@ -7145,7 +7167,8 @@
           "action": "Change fa_kv_extent for SWA.",
           "proposed_owner": null,
           "proposed_disposition": "decline",
-          "reason": "fa_kv_extent trims only trailing blocks -inf in every cell of every row; leading blocks always processed (templates L1337-L1349 @ 9a338d4f1)."
+          "reason": "fa_kv_extent trims only trailing blocks -inf in every cell of every row; leading blocks always processed (templates L1337-L1349 @ 9a338d4f1).",
+          "terminal_mapping": "decline: fa_kv_extent trims only trailing blocks that are -inf in every cell of every row and always processes leading blocks (iqk_fa_templates.h lines 1337 to 1349 @ 9a338d4f1); SWA needs test coverage, not a change."
         },
         {
           "ledger_id": "D2498-5",
@@ -7153,49 +7176,56 @@
           "action": "Before any fold (LB4.5), learn why ik #1935 disabled in-kernel KV trimming upstream.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4.5 (L538)",
           "proposed_disposition": "knowledge-only (RESOLVED by intake-2508 Stage-2b)",
-          "resolution": "#1935 disabled only the template per-tile early termination (mask_effective_nk1), because a one-cell-per-block scan can skip the block holding a sparse SWA row's visible entries (S > 0 assert). The port's fa_kv_extent tests every cell of every row, so it is not exposed; the LB4.5 fold needs no change for it. The iqk_flash_attn.cpp TG range trim is still live upstream."
+          "resolution": "#1935 disabled only the template per-tile early termination (mask_effective_nk1), because a one-cell-per-block scan can skip the block holding a sparse SWA row's visible entries (S > 0 assert). The port's fa_kv_extent tests every cell of every row, so it is not exposed; the LB4.5 fold needs no change for it. The iqk_flash_attn.cpp TG range trim is still live upstream.",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2500-1",
           "source": "intake-2500 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Never cite the #1206 k1 > 0 edit as a fix (dead code inside the disabled branch).",
           "proposed_owner": "intake entries",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2499-1",
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Replace the CPU-FA-VKQ-4 premise: upstream has NOT fixed the GPU analog; #28576 removes only the per-MFMA fp16 round trip, the unnormalized VKQ partial is still staged as half before the row-sum division (fattn-mma-f16.cuh L1670-L1678, divide L1734 @ ca29eaf); opnan arms E and C fail the same 6/228 cases; reconcile the CPU side with intake-2455 before filing.",
           "proposed_owner": "handoffs/active/kv-unified-stack-rollout.md CPU-FA-VKQ-4 (L923-L927)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P4 / CPU-FA-VKQ-4"
         },
         {
           "ledger_id": "D2499-2",
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Decide V11-FA-7 as carried by the pull (bfdc32183 is an ancestor of master 11fe02151; candidate C carries it): perf-only on MMA-routed MFMA shapes, overflow-neutral; 4->3 is the occupancy of the CDNA-only (64,64,64) config; register cost covered by V11-FA-3; manifest V11-050 PEND -> carried-by-pull (confirm v11 pull base >= 2026-09-14).",
           "proposed_owner": "handoffs/active/kv-unified-stack-rollout.md V11-FA-7 (L1096-L1103) + docs/reference/kernel-manifests/llama-v11-manifest.md V11-050 (L70)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P4 / V11-FA-7"
         },
         {
           "ledger_id": "D2499-3",
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Fix the CH-18 parenthetical: perf-only fp32 VKQ on MFMA; occupancy 4->3 retune is D=64/ncols=64 only; not an overflow fix.",
           "proposed_owner": "handoffs/active/autokernel-champion-aggregate.md CH-18 (L323)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P4 / CH-18"
         },
         {
           "ledger_id": "D2499-4",
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "GPU sibling of CPU-FA-VKQ: dump per-channel max|V| and per-row unnormalized row sums over a warp KV share from 27B FA layers (~8k repetitive prompt and 57k context), evaluate on arm A and candidate C; file the upstream MMA shared-memory half-staging report only if non-finite.",
           "proposed_owner": "handoffs/active/kv-unified-stack-rollout.md C2 next to CPU-FA-VKQ-4 (new id)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P4 / V11-FA-8"
         },
         {
           "ledger_id": "D2499-5",
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Candidate FA gates compare the non-finite case set against the incumbent rather than demanding 0/228 on the bias1024 diffuse stress.",
           "proposed_owner": "handoffs/active/kv-unified-stack-rollout.md V11-FA-6 / V11-FA-2",
-          "proposed_disposition": "knowledge-only (fold into D2499-2)"
+          "proposed_disposition": "knowledge-only (fold into D2499-2)",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2499-6",
@@ -7203,98 +7233,118 @@
           "action": "Retune other CDNA MMA configs as the PR suggests.",
           "proposed_owner": null,
           "proposed_disposition": "decline",
-          "reason": "D=64 is not an EPYC production shape; D=256 tuning is owned by V11-FA-3 (AK owns runtime knobs)."
+          "reason": "D=64 is not an EPYC production shape; D=256 tuning is owned by V11-FA-3 (AK owns runtime knobs).",
+          "terminal_mapping": "decline: D=64 is not an EPYC production shape, and D=256 MMA tuning already has an owner in the v11 FA-path register-pressure task (AutoKernel owns runtime knobs)."
         },
         {
           "ledger_id": "D2499-7",
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Cite only the on-path #28576 perf rows (nb>=512 MMA-routed); never the nb=1, deepseek2/MLA or model-table tg rows.",
           "proposed_owner": "intake entry (reader_should_conclude)",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2504-1",
           "source": "intake-2504/intake-2505 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Never quote the #2442/#2710 authors' Xeon/P100/DeepSeek-V2-Lite crash cells, thread counts or MiB tables as EPYC evidence; EPYC evidence is the arithmetic scan only.",
           "proposed_owner": "intake entries (reader_should_conclude)",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2508-1",
           "source": "intake-2508 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Narrow Stage-2 wording \"ik disabled the trim (#1935)\" to the template trailing trim; applied as dated dive_corrections on intake-2498 and intake-2500.",
           "proposed_owner": "intake entries (applied in Stage 2b)",
-          "proposed_disposition": "knowledge-only (done)"
+          "proposed_disposition": "knowledge-only (done)",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2509-1",
           "source": "intake-2509 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Port fa_kv_extent already unions all rows and cells (no #809 class bug); never cite #1880 sweep-bench numbers or its \"7 sites\".",
           "proposed_owner": "intake entries",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2510-1",
           "source": "intake-2510 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Add an all -inf TG mask row at n_kv > 256 (512, 8192; rk2 > 1, neq1 = 1) to test-fa-rowexact, expecting zeros equal to the mainline reference (folded into D2498-3).",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (with D2498-3)",
-          "proposed_disposition": "propose-task (fold into D2498-3)"
+          "proposed_disposition": "propose-task (fold into D2498-3)",
+          "terminal_mapping": "P1 / AKX-ALL-LB4.7"
         },
         {
           "ledger_id": "D2506-1",
           "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "DS41-C123.1 amend: CPU kernel template for gathered decode attention = ik #2165 T=1 indexed branch (iqk_flash_attn.cpp L193-L240 @ 7945404) WITH #2511 sinks+first and #2287 K==V reuse (master c12b5ac L165-L216); port the sink_stride change with it (iqk_flash_impl.h, iqk_fa_templates.h normalize_and_store_1row, all iqk_fa_*.cpp) since the port reads one sink per call (port iqk_fa_templates.h L1129 @ 9a338d4f1).",
           "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P3 / DS41-C123.1a"
         },
         {
           "ledger_id": "D2506-2",
           "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "DS41-C123.1 gate amend: bit-identity of gather vs mask path holds only with the same kernel and row order; pin gather(ggml FA) vs mask(ggml FA) = bitwise, gather(iqk) vs gather(ggml) = tolerance-class.",
           "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P3 / DS41-C123.1"
         },
         {
           "ledger_id": "D2506-3",
           "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Port hazards for C123.1/DSA-IDX.1: (a) bound mask->index writes in release builds (ik relies on assert, ggml.c L23899 @ 7945404); (b) reuse K as V only when row_size_k == row_size_v (#2287 compares pointers only); (c) index-from-mask assumes a binary mask (selected = mask == 0).",
           "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259); llama-cpp-dsa-contribution.md DSA-IDX.1 (L272)",
-          "proposed_disposition": "propose-task (fold into D2506-1 text)"
+          "proposed_disposition": "propose-task (fold into D2506-1 text)",
+          "terminal_mapping": "P3 / DS41-C123.1a"
         },
         {
           "ledger_id": "D2506-4",
           "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "C123.1 verify widths 2-3: ik per-row N>1 branch keeps only N threads busy (iqk_flash_attn.cpp L242-L253 @ 7945404); use a (row x head) split.",
           "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P3 / DS41-C123.1a"
         },
         {
           "ledger_id": "D2506-5",
           "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "ik disables iqk FA on every non-indexed DS4 sinks node ('numerical correctness', build_deepseek4.cpp L617-L621 @ 7945404) - same policy as our hook's sinks decline (port ops.cpp L10052-L10055); keep the decline until LIN-1's gate passes.",
           "proposed_owner": "autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528)",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2506-6",
           "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Author hybrid profile (CONCAT ~10%, GET_ROWS ~6%) agrees in direction with DS41-C123 concat thesis; CUDA-hybrid, not CPU/EPYC evidence.",
           "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123 (L1193)",
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
         },
         {
           "ledger_id": "D2507-1",
           "source": "intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Any FA path holding several heads per call with sinks (gathered T=1, LIN-1 merges, AKX-ALL-10 DS41 cases) is tested with per-head-DISTINCT sinks at nth in {1,16,32,64,96}: bitwise vs nth=1 within a path, tolerance vs the ggml reference. Uniform sinks or nth=1 alone cannot catch the #2511 class.",
           "proposed_owner": "autokernel-all-devices-all-dimensions.md AKX-ALL-10 (L219, DS41 cases L222)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "terminal_mapping": "P2 / AKX-ALL-10.1"
         },
         {
           "ledger_id": "D2507-2",
           "source": "intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)",
           "action": "Do not cite #2511 as nth-invariance beyond -t 16 vs -t 1 (1-row q tiles at nth >= 64 unclaimed).",
           "proposed_owner": null,
-          "proposed_disposition": "knowledge-only"
+          "proposed_disposition": "knowledge-only",
+          "terminal_mapping": "K1"
+        },
+        {
+          "ledger_id": "KF-S3-1",
+          "source": "Stage-3 review of CH-18.c (handoffs/active/autokernel-champion-aggregate.md) and index row INF-65 (inference-research-index.md)",
+          "action": "Close CH-18.c at Stage 4 with a pointer to this intake's outcomes, and drop its clause from the INF-65 Next action so the row does not advertise a finished task.",
+          "terminal_mapping": "P4 / CH-18.c"
         }
       ],
       "stage1_report": {
@@ -7621,6 +7671,1020 @@
           }
         ],
         "generators": "stage2b/{anchors/build_anchors.py, worksize/scan_2442_2710.py, worksize/applycheck, ds4/tools/*, apply/*.py}"
+      },
+      "stage3_filing": {
+        "format_version": 2,
+        "entry_updates": [
+          {
+            "id": "intake-2494",
+            "integration_disposition": "monitor",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22 (intake-kernel-followup-20261022): LIN-4 is trigger prose M1 in autokernel-all-devices-all-dimensions.md (opens when AKX-ALL-LB4.9 passes); LIN-7 declined (bit-exactness vs the ggml anchor unreachable with iqk)."
+            ]
+          },
+          {
+            "id": "intake-2495",
+            "integration_disposition": "knowledge_only",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: LIN-6 declined (the port already vendors the post-#277 merge indexing, iqk_flash_attn.cpp L358 @ 9a338d4f1); mechanism retained as K1 prose in autokernel-all-devices-all-dimensions.md."
+            ]
+          },
+          {
+            "id": "intake-2496",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: LIN-1 -> AKX-ALL-LB4.9 (sinks fold, correctness only), LIN-3 -> AKX-ALL-LB4.8 (expected NOT_ROW_EXACT, tolerance route), LIN-5 -> K1 citation guard."
+            ]
+          },
+          {
+            "id": "intake-2497",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2497-1/2 -> AKX-ALL-LB3.1 (N=8 repack-side cells and a forced-repack arm on the ON-build LB3 timing); D2497-3 -> K1."
+            ]
+          },
+          {
+            "id": "intake-2498",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2498-1 -> AKX-ALL-LB4.8 (swa mask kind), D2498-2 -> AKX-LB4-FU2 (thread sweep in job akx-lb4-followups-2), D2498-3 -> AKX-ALL-LB4.7 (zeros in split combines, deadrow case); D2498-4 declined; D2498-5 resolved by intake-2508 (K1)."
+            ]
+          },
+          {
+            "id": "intake-2499",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/kv-unified-stack-rollout.md",
+              "handoffs/active/autokernel-champion-aggregate.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: CPU-FA-VKQ-4 premise corrected and closed on KVU-LB1.a; V11-FA-7 decided 'carried by the pull' and manifest V11-050 updated; CH-18 parenthetical fixed; V11-FA-8 filed (real-model GPU half-staging probe); D2499-6 declined; D2499-5/7 K1."
+            ]
+          },
+          {
+            "id": "intake-2500",
+            "integration_disposition": "knowledge_only",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2500-1 citation guard (the #1206 k1 > 0 edit is dead code) kept as K1 prose; no task."
+            ]
+          },
+          {
+            "id": "intake-2501",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: LIN-2 -> AKX-ALL-LB4.6 (adopt #2442 + #2710 in the port sizer, enumeration gate, no sanitizer run)."
+            ]
+          },
+          {
+            "id": "intake-2502",
+            "integration_disposition": "declined",
+            "handoffs_updated": [],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 1 low relevance, not dived: the mla= graph option has no mainline counterpart (lineage only); nothing from this stage1-unverified entry is cited or filed."
+            ]
+          },
+          {
+            "id": "intake-2504",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: the GQA half of AKX-ALL-LB4.6 (LIN-2 as amended); D2504-1 citation guard -> K1."
+            ]
+          },
+          {
+            "id": "intake-2505",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: the nek2 == 1 half of AKX-ALL-LB4.6 (LIN-2 as amended)."
+            ]
+          },
+          {
+            "id": "intake-2506",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md",
+              "handoffs/active/deepseek-v41-flash-evaluation.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2506-1/3/4 -> DS41-C123.1a (template, hazards, row x head split), D2506-2 -> DS41-C123.1 gate wording, LIN-1 amendments -> AKX-ALL-LB4.9; D2506-5/6 K1."
+            ]
+          },
+          {
+            "id": "intake-2507",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2507-1 -> AKX-ALL-10.1 (distinct per-head sinks at nth 1/16/32/64/96); D2507-2 citation guard K1."
+            ]
+          },
+          {
+            "id": "intake-2508",
+            "integration_disposition": "knowledge_only",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: answers D2498-5 (K1 prose in autokernel-all-devices-all-dimensions.md); the port's all-cell fa_kv_extent is not exposed, so no task."
+            ]
+          },
+          {
+            "id": "intake-2509",
+            "integration_disposition": "knowledge_only",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2509-1 K1 prose; the port already unions all rows and cells, no task."
+            ]
+          },
+          {
+            "id": "intake-2510",
+            "integration_disposition": "integrated",
+            "handoffs_updated": [
+              "handoffs/active/autokernel-all-devices-all-dimensions.md"
+            ],
+            "handoffs_created": [],
+            "disposition_evidence": [
+              "Stage 3 2026-10-22: D2510-1 -> AKX-ALL-LB4.7 (all -inf TG row at n_kv 512 and 8192, expected zeros)."
+            ]
+          }
+        ],
+        "opportunity_reviews": {
+          "P1": {
+            "project_objective": "Fold the iqk CPU FA port (V11-102) into the champion without a latent work-buffer overrun or stale-output path, gated at the final head.",
+            "implementation_ref": "experimental/locals-kernel-fixes-20261022 @ 9a338d4f1: iqk_flash_attn.cpp L50 iqk_fa_work_buffer_size (pre-#2442/#2710), ggml-cpu.c L3567 MAX(...), split combines without an M == -inf guard; job akx-lb4-followups job.sh L23-24 (MASKS fixed, 30 RESULT lines)",
+            "gap": "The sizer under-reserves for narrowed nek1 and small-rk2 MQA (masked today only by the prefill tile term); fully masked split partials and the empty TG row are untested; no swa mask kind; one thread count per run.",
+            "operational_change": "Adopt the #2442/#2710 sizer with an enumeration gate, write zeros in split combines, add swa/deadrow/empty-row cases and a thread sweep, then rerun LB4.5's gates at the final head in a follow-on job.",
+            "benefit_direction": "Memory safety and correctness of the port at fold time; no speed claim. Must keep 5182/5182 FLASH_ATTN_EXT and the 30 predeclared rowexact PASS lines.",
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "execution_conditions": "Implementation on the experimental branch only (production frozen). Isolated probe = job akx-lb4-followups-2 under a build-role CPU grant (correctness class, no quiet host). Activation = the normal champion fold route and v11 manifest row V11-102; tonight's akx-lb4-followups runs unchanged (operator question Q1).",
+            "closure_basis": "Immediate outcome retained; the fold itself stays with LB4.5 and the champion fold route."
+          },
+          "P2": {
+            "project_objective": "Let iqk FA serve DS41 sinks calls correctly, and stop the ik #2511 sink-offset bug class from passing our tests.",
+            "implementation_ref": "port ops.cpp L10052-L10055 (hook declines sinks) and the nek2 == 1 merges passing null sinks @ 9a338d4f1; ik 7945404 L411/L463 and c12b5ac L391/L443 (nullptr sinks)",
+            "gap": "No nek2 == 1 merge folds sinks, so DS41 never reaches iqk FA; no test varies thread count with distinct per-head sinks.",
+            "operational_change": "Fold sinks into the two merges behind a reference gate; add the distinct-sinks multi-thread rule to the AKX-ALL-10 case set.",
+            "benefit_direction": "Correctness enabler for DS41 SWA layers and the gathered shape; no decode gain expected on compressed layers (code reading, unmeasured).",
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "execution_conditions": "Experimental branch, after LB4.5 (does not block the fold); correctness runs ride a later follow-on job; no timing until M1's trigger.",
+            "closure_basis": "Immediate correctness outcome retained; timing is trigger-gated (M1)."
+          },
+          "P3": {
+            "project_objective": "DS41 long-context decode: replace concat + dense -inf mask with gather-form attention (DS41-C123.1).",
+            "implementation_ref": "deepseek41.cpp:1091-1097 @ dd3d9721c (concat + top-k mask); port iqk_fa_templates.h L1129 @ 9a338d4f1 (one sink per call); DSA-IDX.1 oracle 6b8291de5",
+            "gap": "C123.1 names no CPU kernel template, its gate demands cross-kernel bit identity, and three port hazards are unrecorded.",
+            "operational_change": "Amend the C123.1 gate and add C123.1a with the #2165+#2511+#2287 template, the sink_stride port, the hazards and the (row x head) split.",
+            "benefit_direction": "Fewer wrong turns when C123.1 is implemented; correctness first, the speed claim stays with C123.1's timed A/B.",
+            "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+            "execution_conditions": "Implementation and correctness tests allowed now; the timed A/B waits with other DS41 tests until AutoKernel kernel work lands (operator, 2026-10-22); production untouched.",
+            "closure_basis": "Immediate outcome retained; activation stays with C123.1's timed A/B and the fold route."
+          },
+          "P4": {
+            "project_objective": "Correct the GPU FA premises the v11 freeze depends on and close the #28576 decision (V11-050).",
+            "implementation_ref": "kv-unified-stack-rollout.md L923-L927 (CPU-FA-VKQ-4), L1096-L1103 (V11-FA-7); autokernel-champion-aggregate.md L323 (CH-18), L329 (CH-18.c); llama-v11-manifest.md L70 (V11-050); upstream fattn-mma-f16.cuh L1670-L1678 / L1734 @ ca29eaf",
+            "gap": "Three handoff lines state that #28576 fixed the MFMA overflow analog or changes 27B occupancy; V11-050 is still PEND; no real-model data on the MMA half-staged partial.",
+            "operational_change": "Rewrite CPU-FA-VKQ-4 (close on KVU-LB1.a), close V11-FA-7 as carried by the pull, fix CH-18, close CH-18.c, update V11-050 and INF-65, and add the V11-FA-8 real-model probe.",
+            "benefit_direction": "The v11 manifest and FA gates rest on correct premises; V11-FA-8 tells us whether dropping WMMA later carries an overflow risk. No speed claim.",
+            "owner": "handoffs/active/kv-unified-stack-rollout.md",
+            "execution_conditions": "Text edits at Stage 4. V11-FA-8 is a correctness-class GPU run: launcher + predeclaration, then main arms a queue row for a granted MI210 window with residency proven; no production change.",
+            "closure_basis": "Immediate outcome retained."
+          },
+          "P5": {
+            "project_objective": "Decide whether the port's q8_0 repack threshold (neq1 >= 8, ik #1215) is right for GQA-12 q8_0 on Zen 5.",
+            "implementation_ref": "port iqk_flash_attn.cpp L230 `if (neq1 >= 8)` @ 9a338d4f1; AKX-ALL-LB3 (d)",
+            "gap": "ik dropped the GQA >= 8 multi-KV-head repack term with no numbers; nothing has timed it on Zen 5.",
+            "operational_change": "Add N=8 cells with the repack side recorded and a forced-repack arm to the iqk ON-build LB3 timing.",
+            "benefit_direction": "Possible q8_0-KV verify speedup at N < 8 if repack wins; no change if it does not. Correctness unaffected (repack is layout-only).",
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "execution_conditions": "Rides LB3's ON-build timing after LB4.5 in a granted CPU window; no new compute row; diagnostic define only in the measurement build.",
+            "closure_basis": "Immediate outcome retained under LB3's timing."
+          },
+          "K1": {
+            "project_objective": "Keep citation guards and resolved questions from this intake where kernel work will read them.",
+            "implementation_ref": "intake-2494..2510 reader_should_conclude; AKX handoff intake section (new prose, no checkbox)",
+            "gap": "Without prose at the owner, the guards live only in index entries.",
+            "operational_change": "Write the K1 prose block under the AKX intake section; no checkbox.",
+            "benefit_direction": "Fewer mis-citations (author numbers quoted as EPYC evidence); nothing to execute.",
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "execution_conditions": "Stage-4 text only.",
+            "closure_basis": "Knowledge-only: each item is a citation guard or a settled question; the considered immediate steps are already filed in P1-P5 or declined with reasons."
+          },
+          "M1": {
+            "project_objective": "Time iqk's DS41 schedule only when it can run on DS41.",
+            "implementation_ref": "AKX-ALL-LB3 (d); port hook sinks decline ops.cpp L10052-L10055 @ 9a338d4f1",
+            "gap": "LIN-4's timing has no runnable subject until LB4.9 lands.",
+            "operational_change": "Durable trigger prose under the AKX intake section; no checkbox.",
+            "benefit_direction": "Avoids a stock-mask timing that would not transfer to the top-k mask.",
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "execution_conditions": "Trigger: AKX-ALL-LB4.9 passes its gate. Then time n_kv 8192/12032/12288/16384 on the real DS41 top-k mask in LB3's window.",
+            "closure_basis": "Monitor: no useful immediate step until the sinks fold exists (the iqk path cannot run on DS41 today)."
+          }
+        },
+        "actionable_additions": [
+          {
+            "ledger_id": "KF-S3-1",
+            "source": "Stage-3 review of CH-18.c (handoffs/active/autokernel-champion-aggregate.md) and index row INF-65 (inference-research-index.md)",
+            "action": "Close CH-18.c at Stage 4 with a pointer to this intake's outcomes, and drop its clause from the INF-65 Next action so the row does not advertise a finished task.",
+            "terminal_mapping": "P4 / CH-18.c"
+          }
+        ],
+        "steering_reconciliation": [
+          {
+            "seq": 1,
+            "stage": 1,
+            "ts": "2026-10-22T13:00:00Z",
+            "verbatim": "Follow-up kernel intake approved: ik FlashMLA PRs 277/243, the ik q8_0 repack commits plus issue 1205, and ggml PR 28576. It is run separately.",
+            "disposition": "context-only",
+            "plan_ref": null,
+            "reason": "Carried verbatim from intake-locals-beacon-20261022 steering seq 10 (stage 3 there). It sets the source set of this Stage 1 and authorizes no handoff, stub or index-row write."
+          },
+          {
+            "seq": 2,
+            "stage": 2,
+            "ts": "2026-10-22T18:30:00Z",
+            "verbatim": "every entry at relevance medium or above gets a Stage-2 dive (operator standing rule, relayed by workspace-f8 in the Stage-2 dispatch)",
+            "disposition": "context-only",
+            "plan_ref": null,
+            "reason": "Sets the Stage-2 selection (executed as this round); authorizes no handoff, stub or index-row write."
+          },
+          {
+            "seq": 3,
+            "stage": 2,
+            "ts": "2026-10-22T19:00:00Z",
+            "verbatim": "The operator selected (2026-10-22) these 6 to ingest and dive: ik_llama.cpp #2442 and #2710: the work-size fixes. They bear on intake-2501 and actionable LIN-2. ik #2165 \"DS4\" together with ik #2511 (sinks in the indexed T=1 FA branch): the closest upstream template for DS41 decode with indexer-gathered KV and sinks. They bear on intake-2496 and LIN-1. Fold #2287 into this dive. ik #1935: why upstream disabled in-kernel trimming. It gates D2498-5 before any fold. ik #1880: the mask union over all rows, which fixes ik issue #809. Fold #809 into it. ik #1923: the empty-mask check. Declined by the operator: ik #2287 and #809: folded in above. ik #1214: unrelated. ik #391: only if the D2497 A/B shows a regression. ik #240: lineage only. ggml #26046: already analysed in V11-FA-1. ggml #28907: does not bear on the overflow. (relayed by workspace-f8 in the Stage-2b dispatch)",
+            "disposition": "context-only",
+            "plan_ref": null,
+            "reason": "Closes the Stage-2 dive-surfaced gate (selection executed as Stage-2b intake-2504..2510; declines recorded in bearing entries' dive_corrections); authorizes no handoff, stub or index-row write."
+          },
+          {
+            "seq": 4,
+            "stage": 3,
+            "ts": "2026-10-22T20:45:00Z",
+            "verbatim": "Operator approved the Stage-3 plan for intake-kernel-followup-20261022 in full via plan-mode ExitPlanMode on 2026-10-22, accepting all six proposed answers (Q1 ride a later re-run as akx-lb4-followups-2; Q2 close CPU-FA-VKQ-4 on KVU-LB1.a; Q3 close V11-FA-7 as carried by the pull; Q4 file AKX-ALL-LB4.9 now as correctness-only; Q5 queue V11-FA-8 for an MI210 window, correctness class; Q6 decline the seven newly surfaced Stage-2b sources) (relayed by workspace-f8 in the Stage-4 dispatch).",
+            "disposition": "context-only",
+            "plan_ref": null,
+            "reason": "Approval of the plan as written (sha256 3583551b54a5); every accepted answer is the plan's own recommendation and already carried by its packets and edits, so the approval adds no scope. Authorizes the Stage-4 writes the plan names (edits 1-15; edit 16 is the owning session's) and nothing else."
+          }
+        ],
+        "opportunity_scan": [
+          {
+            "scan_id": "S1",
+            "source_ref": "intake-2504 c0-c2, intake-2505 c0-c1 (ik master c12b5ac L50-L90)",
+            "implementation_ref": "port iqk_flash_attn.cpp L50 @ 9a338d4f1; ggml-cpu.c L3567",
+            "mechanism": "corrected FA work-buffer sizer for narrowed nek1 and nth >= rk2",
+            "consumer": "port graph plan",
+            "application": "adopt the sizer and gate it by enumeration",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "LIN-2"
+            ],
+            "basis": "Port carries the pre-fix block; the prefill term masks it today."
+          },
+          {
+            "scan_id": "S2",
+            "source_ref": "intake-2510 c0-c2; intake-2498 dive (latent stale-output defect in split combines)",
+            "implementation_ref": "port split-KV combines and TG range trim @ 9a338d4f1",
+            "mechanism": "fully masked rows and empty TG mask rows",
+            "consumer": "test-fa-rowexact / port combines",
+            "application": "zeros in combines plus deadrow and empty-row cases",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2498-3",
+              "D2510-1"
+            ],
+            "basis": "Untested code path; ik aborts there."
+          },
+          {
+            "scan_id": "S3",
+            "source_ref": "intake-2498 c0-c2 (forward first-cell break, gcd(nek2, nth) chunking)",
+            "implementation_ref": "test-fa-rowexact masks causal,additive,ragged,finite,deadrow; job.sh MASKS/N_ROWEXACT_RESULTS",
+            "mechanism": "SWA leading-masked chunks and thread-count-dependent failure",
+            "consumer": "test-fa-rowexact + follow-on job",
+            "application": "swa mask kind and a thread sweep at the final head",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2498-1",
+              "D2498-2"
+            ],
+            "basis": "No leading-masked mask kind; one thread count per run."
+          },
+          {
+            "scan_id": "S4",
+            "source_ref": "intake-2496 c1 (split only at neq1 == 1, per-thread partial merge)",
+            "implementation_ref": "AKX-ALL-LB4 'Remaining plan' (tolerance route or pinned order)",
+            "mechanism": "iqk merge is not row-exact across N, threads or trims",
+            "consumer": "LB4 fold decision",
+            "application": "record expected verdict and tolerance-route gate",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "LIN-3"
+            ],
+            "basis": "Settles the open choice in LB4's remaining plan."
+          },
+          {
+            "scan_id": "S5",
+            "source_ref": "intake-2496 c4; intake-2506 c2, c6",
+            "implementation_ref": "port ops.cpp L10052-L10055 sinks decline @ 9a338d4f1",
+            "mechanism": "sinks folded once per row after the merge (GQA merge pattern)",
+            "consumer": "iqk hook / DS41",
+            "application": "fold sinks into nek2 == 1 merges behind a reference gate",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "LIN-1",
+              "D2506-5"
+            ],
+            "basis": "Correctness enabler; ik keeps the same decline."
+          },
+          {
+            "scan_id": "S6",
+            "source_ref": "intake-2507 c0-c3",
+            "implementation_ref": "AKX-ALL-10 DS41 case set (research cpu_fa_longctx_v1)",
+            "mechanism": "per-head sink pointer offset bug at nth > 1",
+            "consumer": "FA sinks tests",
+            "application": "distinct per-head sinks at five thread counts",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2507-1",
+              "D2507-2"
+            ],
+            "basis": "Uniform sinks or nth=1 miss the class."
+          },
+          {
+            "scan_id": "S7",
+            "source_ref": "intake-2506 c0, c1, c3, c4",
+            "implementation_ref": "deepseek41.cpp:1091-1097 @ dd3d9721c; DS41-C123.1; DSA-IDX.1 oracle",
+            "mechanism": "T=1 indexed gathered FA with sink_stride, K==V reuse",
+            "consumer": "DS41-C123.1 gather-form attention",
+            "application": "template, sink_stride port, hazards, gate wording, (row x head) split",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2506-1",
+              "D2506-2",
+              "D2506-3",
+              "D2506-4"
+            ],
+            "basis": "C123.1 has no CPU template or hazard list; DSA-IDX.1's int32 contract already covers index bounds."
+          },
+          {
+            "scan_id": "S8",
+            "source_ref": "intake-2494 c0-c1; intake-2496 c1 (4*nth switch, #277 grid)",
+            "implementation_ref": "AKX-ALL-LB3 (d) premeasure is champion-only, f16 KV",
+            "mechanism": "DS41-shape schedule switch at 96 threads",
+            "consumer": "LB3 timing",
+            "application": "time both sides of the switch on the real mask",
+            "disposition": "covered",
+            "ledger_ids": [
+              "LIN-4"
+            ],
+            "basis": "Trigger-gated (M1) until LB4.9 lands."
+          },
+          {
+            "scan_id": "S9",
+            "source_ref": "intake-2497 c0-c1",
+            "implementation_ref": "port iqk_flash_attn.cpp L230 neq1 >= 8 @ 9a338d4f1",
+            "mechanism": "Q8_0_R8 repack only at neq1 >= 8",
+            "consumer": "q8_0-KV CPU roles",
+            "application": "repack-side recording and forced-repack arm",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2497-1",
+              "D2497-2",
+              "D2497-3"
+            ],
+            "basis": "No Zen 5 measurement exists."
+          },
+          {
+            "scan_id": "S10",
+            "source_ref": "intake-2499 c0-c1 (fattn-mma-f16.cuh L1670-L1678, L1734 @ ca29eaf)",
+            "implementation_ref": "kv-unified CPU-FA-VKQ-4 L923-L927; V11-FA-1 harness",
+            "mechanism": "fp32 VKQ inside a tile; raw partial still half-staged",
+            "consumer": "CPU-FA-VKQ group, v11 FA gates",
+            "application": "correct the premise and measure real-model peaks",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2499-1",
+              "D2499-4"
+            ],
+            "basis": "Handoff premise is false; no real-model GPU data."
+          },
+          {
+            "scan_id": "S11",
+            "source_ref": "intake-2499 c2-c3",
+            "implementation_ref": "kv-unified V11-FA-7 L1096; manifest V11-050 L70; aggregate CH-18 L323, CH-18.c L329; inference-research-index INF-65",
+            "mechanism": "#28576 is perf-only, occupancy change D=64 only, ancestor of master 11fe02151",
+            "consumer": "v11 pull list and manifest",
+            "application": "close V11-FA-7 as carried by the pull, fix CH-18, close CH-18.c",
+            "disposition": "actionable",
+            "ledger_ids": [
+              "D2499-2",
+              "D2499-3",
+              "D2499-5",
+              "D2499-7",
+              "KF-S3-1"
+            ],
+            "basis": "Decision was open only for lack of this reading; CH-18.c and INF-65 go stale when this intake lands (found reading CH-18.c and INF-65, not from either ID inventory)."
+          },
+          {
+            "scan_id": "S12",
+            "source_ref": "intake-2499 c2 (other CDNA configs)",
+            "implementation_ref": "V11-FA-3 owns D=256 MMA tuning",
+            "mechanism": "retune other CDNA MMA configs",
+            "consumer": "v11 GPU FA",
+            "application": "none",
+            "disposition": "declined",
+            "ledger_ids": [
+              "D2499-6"
+            ],
+            "basis": "D=64 not a production shape."
+          },
+          {
+            "scan_id": "S13",
+            "source_ref": "intake-2508 c0-c3",
+            "implementation_ref": "port fa_kv_extent all-cell scan @ 629b545e0",
+            "mechanism": "template early termination disabled upstream (one-cell scan hazard)",
+            "consumer": "LB4.5 fold",
+            "application": "none: port not exposed",
+            "disposition": "context-only",
+            "ledger_ids": [
+              "D2498-5",
+              "D2508-1"
+            ],
+            "basis": "Port scans every cell of every row."
+          },
+          {
+            "scan_id": "S14",
+            "source_ref": "intake-2509 c0-c5",
+            "implementation_ref": "port fa_kv_extent union over rows",
+            "mechanism": "per-row mask union",
+            "consumer": "port",
+            "application": "none: already integrated",
+            "disposition": "context-only",
+            "ledger_ids": [
+              "D2509-1"
+            ],
+            "basis": "Port has no #809-class bug."
+          },
+          {
+            "scan_id": "S15",
+            "source_ref": "intake-2494 c4, intake-2495 c5 (#243 merge indexing)",
+            "implementation_ref": "port iqk_flash_attn.cpp L358 @ 9a338d4f1",
+            "mechanism": "#277 merge-index correction; bit-exact grouped schedule",
+            "consumer": "port, LB3 (a)",
+            "application": "none",
+            "disposition": "declined",
+            "ledger_ids": [
+              "LIN-6",
+              "LIN-7"
+            ],
+            "basis": "Already vendored; bit-exactness unreachable with iqk."
+          },
+          {
+            "scan_id": "S16",
+            "source_ref": "intake-2498 c4 template backward scan",
+            "implementation_ref": "port fa_kv_extent L1337-L1349 @ 9a338d4f1",
+            "mechanism": "change fa_kv_extent for SWA",
+            "consumer": "port",
+            "application": "none",
+            "disposition": "declined",
+            "ledger_ids": [
+              "D2498-4"
+            ],
+            "basis": "Leading blocks are always processed."
+          },
+          {
+            "scan_id": "S17",
+            "source_ref": "intake-2496 c5, intake-2500 c1, intake-2504 c4, intake-2505 c2-c3, intake-2506 c5",
+            "implementation_ref": "intake entries reader_should_conclude",
+            "mechanism": "author-host numbers and dead-code edits",
+            "consumer": "citations",
+            "application": "citation guards only",
+            "disposition": "context-only",
+            "ledger_ids": [
+              "LIN-5",
+              "D2500-1",
+              "D2504-1",
+              "D2506-6"
+            ],
+            "basis": "No consumer behaviour depends on these numbers."
+          }
+        ],
+        "outcome_reviews": {
+          "LIN-1": {
+            "required_outcome": "iqk FA can serve DS41 sinks calls correctly (merge folds sinks, hook decline lifted only after the reference match).",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB4.9",
+                "task_text": "  - [ ] **AKX-ALL-LB4.9 — Fold attention sinks into the nek2 == 1 iqk merges (correctness enabler).** In the #1212 and #277 merge paths add the GQA merge's sink block (once per row after the partial loop, before the normalisation), pass sinks->data from the ops.cpp hook, and lift the hook's sinks decline only after the FLASH_ATTN_EXT cases match the ggml reference: DS41 SWA layers 0-1, the stock-mask DS41 shape, and the gathered shape (n_kv 640 and 768, 64 heads, 1 KV head, sinks; it lands on the #277 gcd grid at 96 threads), all with per-head-distinct sinks at nth 1, 16, 32, 64 and 96 (the AKX-ALL-10.1 rule). No upstream template exists: ik never folds sinks at these merges and sends non-indexed DS4 sinks calls to the generic ggml FA. Correctness only, no timing: on DS41's dense top-k mask iqk computes KQ for whole visited blocks while the mainline kernel skips -inf cells, so no decode gain is expected on compressed layers (code reading, unmeasured). Ranks after AKX-ALL-LB4.5 and does not block the fold (intake-2496, intake-2506, intake-2507).",
+                "acceptance": "Sinks fold in both nek2 == 1 merges; the hook decline is lifted only after the listed cases match the reference with distinct sinks at five thread counts."
+              }
+            ]
+          },
+          "LIN-2": {
+            "required_outcome": "The port's work-buffer reservation covers every consumer for narrowed nek1 and small-rk2 MQA, proved by enumeration.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB4.6",
+                "task_text": "  - [ ] **AKX-ALL-LB4.6 — Adopt ik #2442 + #2710 in the port's `iqk_fa_work_buffer_size` and gate it by enumeration, not a sanitizer.** Both diffs apply to the port at offset -11; the result is ik master c12b5ac L50-L90 without the ik-only indexer pre-block (at the DS41 shape, 64 heads, Dv 512, 96 threads, n_kv 131072, the reservation goes from 12.38 to 49.5 MiB). Gate: a deterministic consumer-vs-sizer test that, for the port's split paths, checks the slots each consumer writes are <= the sizer's reservation over nth 1..128, n_kv 96..131072 and every -inf prefix/suffix trim, for the DS41 (1 KV head, 64 Q heads), MQA-2 and GQA-12x2 shapes, with a deliberately undersized sizer as the mutation case that must FAIL. No ASan or guard-page run: the mainline prefill tile term dominates the graph-plan MAX, so a sanitizer passes vacuously. Keep the trim cases in test-fa-rowexact as correctness cases. Lands before AKX-ALL-LB4.5's final-head rerun (intake-2501, intake-2504, intake-2505).",
+                "acceptance": "Owner-bound sizer change plus a deterministic enumeration test with a mutation case; it changes the port's reservation (the operational outcome), not only its test coverage."
+              }
+            ]
+          },
+          "LIN-3": {
+            "required_outcome": "The fold decision uses the tolerance route; NOT_ROW_EXACT across N is an expected, recorded iqk verdict.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB4.8",
+                "task_text": "  - [ ] **AKX-ALL-LB4.8 — Extend test-fa-rowexact to sliding-window masks and record the expected iqk verdicts.** Add a swa mask kind at two windows: W <= 3/4 n_kv (exercises the trailing trim) and W > 3/4 n_kv, e.g. n_kv 8192 W 7000 (sends leading-masked chunks through the split path and the q_step >= 4 Q8_0 repack branch: the ik issue #1205 failure class). Gate both against the use_ref reference and the double-precision oracle. Record in the test header and here that iqk split paths are not row-exact across N (they split only at neq1 == 1), thread count or mask-driven trims: NOT_ROW_EXACT at N=1 vs N=5 is the expected iqk result, and the fold gate is the tolerance route against the reference, never byte identity (intake-2496, intake-2498).",
+                "acceptance": "Adds the swa mask kind at both windows and writes the expected NOT_ROW_EXACT verdict and the tolerance-route gate into the test header and the handoff."
+              }
+            ]
+          },
+          "LIN-4": {
+            "required_outcome": "DS41-shape timing across the 4*nth switch runs only once iqk serves DS41 sinks calls.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Monitor M1: timing the DS41 shape across the 4*nth switch only means something once LIN-1 makes iqk run on DS41 sinks calls; the Stage-2b dive expects no decode gain on compressed layers (code reading). Considered immediate step: a stock-mask timing now; rejected because a stock-mask result does not transfer to the top-k mask and LIN-1 is not landed. Trigger prose with an owner in AKX.",
+            "task_refs": []
+          },
+          "LIN-5": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: a citation guard (Q8_0 gains include re-enabling the #1206-disabled path; #243 tables have one unstated thread count). No consumer behaviour to change; retained in reader_should_conclude and K1 prose.",
+            "task_refs": []
+          },
+          "LIN-6": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Declined: the port already carries the post-#277 merge indexing at 9a338d4f1 (iqk_flash_attn.cpp L358).",
+            "task_refs": []
+          },
+          "LIN-7": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Declined: bit-exactness vs the ggml anchor is unreachable with iqk's inner kernel; the existing bit-exact anchor candidate in LB3 (a) remains the right vehicle.",
+            "task_refs": []
+          },
+          "D2497-1": {
+            "required_outcome": "Every q8_0-KV timing cell states which side of the repack threshold it ran, including N=8.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB3.1",
+                "task_text": "  - [ ] **AKX-ALL-LB3.1 — q8_0 repack-threshold cells in the iqk ON-build timing.** When LB3 timing runs on the iqk ON build (after AKX-ALL-LB4.5), include N=8 next to N=1..5 in the q8_0-KV cells and record per cell which side of the port's `neq1 >= 8` Q8_0_R8 repack threshold it ran; add a forced-repack on/off arm at N=1 and N=5 for the GQA-12, 2-KV-head q8_0 shape (a compile-time define in the measurement build only, never a runtime env), arms alternating, n >= 5 per arm, the A/A floor measured in the same window. Predeclared rule: forced repack faster than that floor at N=5 opens a task to restore a GQA term in the threshold; otherwise record \"threshold kept\". No new compute row: it rides LB3's ON-build timing (intake-2497).",
+                "acceptance": "N=8 cells with the repack side recorded and a forced-repack arm under a predeclared rule, on the ON-build LB3 timing."
+              }
+            ]
+          },
+          "D2497-2": {
+            "required_outcome": "A measured answer to whether GQA-12 q8_0 below N=8 should be repacked.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB3.1",
+                "task_text": "  - [ ] **AKX-ALL-LB3.1 — q8_0 repack-threshold cells in the iqk ON-build timing.** When LB3 timing runs on the iqk ON build (after AKX-ALL-LB4.5), include N=8 next to N=1..5 in the q8_0-KV cells and record per cell which side of the port's `neq1 >= 8` Q8_0_R8 repack threshold it ran; add a forced-repack on/off arm at N=1 and N=5 for the GQA-12, 2-KV-head q8_0 shape (a compile-time define in the measurement build only, never a runtime env), arms alternating, n >= 5 per arm, the A/A floor measured in the same window. Predeclared rule: forced repack faster than that floor at N=5 opens a task to restore a GQA term in the threshold; otherwise record \"threshold kept\". No new compute row: it rides LB3's ON-build timing (intake-2497).",
+                "acceptance": "N=8 cells with the repack side recorded and a forced-repack arm under a predeclared rule, on the ON-build LB3 timing."
+              }
+            ]
+          },
+          "D2497-3": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: the port's repack sizing already matches the kernel (L56 vs L230 @ 9a338d4f1) and LB4.6's enumeration test covers sizing generally; no separate assertion.",
+            "task_refs": []
+          },
+          "D2498-1": {
+            "required_outcome": "SWA leading-masked chunks through the split path and the repack branch are covered by the reference gate.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB4.8",
+                "task_text": "  - [ ] **AKX-ALL-LB4.8 — Extend test-fa-rowexact to sliding-window masks and record the expected iqk verdicts.** Add a swa mask kind at two windows: W <= 3/4 n_kv (exercises the trailing trim) and W > 3/4 n_kv, e.g. n_kv 8192 W 7000 (sends leading-masked chunks through the split path and the q_step >= 4 Q8_0 repack branch: the ik issue #1205 failure class). Gate both against the use_ref reference and the double-precision oracle. Record in the test header and here that iqk split paths are not row-exact across N (they split only at neq1 == 1), thread count or mask-driven trims: NOT_ROW_EXACT at N=1 vs N=5 is the expected iqk result, and the fold gate is the tolerance route against the reference, never byte identity (intake-2496, intake-2498).",
+                "acceptance": "Adds the swa mask kind at both windows and writes the expected NOT_ROW_EXACT verdict and the tolerance-route gate into the test header and the handoff."
+              }
+            ]
+          },
+          "D2498-2": {
+            "required_outcome": "Thread-count-dependent FA bugs (the ik #1205 class) are tested at 1, 4, 8, 16 and 96 threads.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-LB4-FU2",
+                "task_text": "    - [ ] **AKX-LB4-FU2 — Run job `akx-lb4-followups-2` at the branch head that carries AKX-ALL-LB4.6 to LB4.8** (build role, one CPU quarter; launcher and PREDECLARATION.md written before the first grant; main arms the FILLERS row): ON and OFF builds, FLASH_ATTN_EXT backend-ops, the LB4.6 enumeration test, test-fa-rowexact with the LB4.7 and LB4.8 masks at FA_ROWEXACT_THREADS 1, 4, 8, 16 and 96 (192 when the grant spans it) as separate steps, plus the env-ignored and bench-switch checks. It is AKX-ALL-LB4.5's final-head rerun: tick LB4.5, LB4.6, LB4.7 and LB4.8 from its results (intake-2498).",
+                "acceptance": "Separate thread-count steps 1/4/8/16/96 at the final head; the job's PREDECLARATION fixes the counts before compute."
+              }
+            ]
+          },
+          "D2498-3": {
+            "required_outcome": "Fully masked split partials cannot leave stale output; the deadrow case proves it.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB4.7",
+                "task_text": "  - [ ] **AKX-ALL-LB4.7 — Fully masked split-KV partials write zeros, and the empty TG mask row is tested.** In the three split-KV combines, write zeros when the merged M == -inf (as dd756036a does for the unsplit path). Add to test-fa-rowexact a deadrow case at n_kv 256 with <= 16 threads and an all -inf TG row at n_kv 512 and 8192 (rk2 > 1, neq1 = 1: it enters the runtime range trim, which narrows nek1 to 0), expecting zeros equal to the mainline reference, and NaN-prefill the candidate output so a stale result cannot pass. ik master aborts on that empty row (#1923); the port is expected to write zeros, but that is code reading until this test runs (intake-2498, intake-2510).",
+                "acceptance": "Kernel change (zeros in split combines) plus deadrow and empty-TG-row cases with NaN prefill; ticks only on a PASS of those cases at the final head."
+              }
+            ]
+          },
+          "D2498-4": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Declined: fa_kv_extent processes leading blocks and trims only fully -inf trailing blocks; the SWA risk is coverage, handled by LB4.8.",
+            "task_refs": []
+          },
+          "D2498-5": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: resolved by the intake-2508 dive (the #1935 hazard is a one-cell-per-block scan; the port scans every cell), so the LB4.5 fold needs no change for it.",
+            "task_refs": []
+          },
+          "D2500-1": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: citation guard (the #1206 k1 > 0 edit is dead code in a disabled branch).",
+            "task_refs": []
+          },
+          "D2499-1": {
+            "required_outcome": "CPU-FA-VKQ-4 no longer asserts that upstream fixed the MFMA analog.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/kv-unified-stack-rollout.md",
+                "task_id": "CPU-FA-VKQ-4",
+                "task_text": "  - [x] **CPU-FA-VKQ-4 — report the CPU FP16-VKQ overflow upstream with the fix.** (filed 2026-10-04, workspace-ec; premise corrected and closed 2026-10-22 by the kernel follow-up intake, intake-2499, intake-2455) ✅ 2026-10-22",
+                "acceptance": "The false 'upstream fixed the MFMA analog' premise is replaced and the task closes on the KVU-LB1.a upstream link (operator question Q2)."
+              }
+            ]
+          },
+          "D2499-2": {
+            "required_outcome": "V11-FA-7 and manifest V11-050 carry a decision (carried by the pull) instead of an open PEND.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/kv-unified-stack-rollout.md",
+                "task_id": "V11-FA-7",
+                "task_text": "- [x] **V11-FA-7 — decide upstream #28576 (fp32 VKQ accumulation on MFMA; manifest V11-050): fold into the v11 candidate, exclude with reason, or defer explicitly.** Decided 2026-10-22: carried by the pull. ✅ 2026-10-22",
+                "acceptance": "Decision recorded as carried by the pull with a G-ANC presence gate; manifest V11-050 edited in the same Stage-4 commit."
+              }
+            ]
+          },
+          "D2499-3": {
+            "required_outcome": "CH-18 describes #28576 as perf-only with the occupancy change scoped to D=64.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-champion-aggregate.md",
+                "task_id": "CH-18",
+                "task_text": "- [ ] **CH-18 — v11 pull-fresh upstream list (kernel workflow step 1; never a cherry-pick onto v10; champion folds only through the fold-ledger route).** Record in this handoff the upstream fixes that enter llama.cpp-experimental through the next fresh-production pull, in order: #30514 (plain KV honours PARTIAL_ONLY), #26004 (checkpoints in the slot file), #30574 (draft state in the slot file; ported ahead of the pull on `experimental/slotdraft-30574-20261020` per the operator on 2026-10-20 and folded into the champion if KVU-12.2's gate passes, so the pull reconciles with that fold rather than re-applying it), #30580 (SWA reuse-threshold off-by-two; v10 still carries it at server-context.cpp:3398). **Added 2026-10-20 (kernel-manifests sweep):** #27870 (MMA divergent-barrier race, `fattn-mma-f16.cuh`; the DF2 ROCWMMA-OFF pin in `dflash2-block-drafter-experimental-build.md` waits for it as V11-FA-6; 27B probe fails 6/10 with OFF, passes with OFF + #27870 alone) and #28576 (fp32 VKQ accumulation on MFMA: perf-only on MMA-routed MFMA shapes, not an overflow fix; its occupancy 4 to 3 retune is the CDNA D=64/ncols=64 config only; decided 2026-10-22 as carried by the pull, V11-FA-7). Both are picked on `experimental/v11-fa-ab-20261004` (`e9b3b04df`, `5026470c6`); the pull step must carry or consciously drop them. The V11-FA-1..6 and `KVU-19b-rework-c2-cal` task texts are referenced by `routing-and-optimization-index.md` (RTG-57) but are missing from `kv-unified-stack-rollout.md`; restore them there. Watch list, not pulled while open or unmerged: #30141 (MTP get/set_state), #29480 (iSWA seq_pos_max assertion), the upstream follow-up for the SWA pos_min TODO (not located; search before the candidate). Promotion-checklist notes: #26640 changes the slot-file format for all slots, so a file written by a build carrying it is not restorable on a v10 rollback (decide at promotion whether to carry it). The candidate's full-build validation includes KPF-19.1's rebase check on the pulled tree, KVU-12.2's gate (b) re-run, a Gemma-class restore that reprocesses the same token count as a never-saved slot, checkpoint size measured on our Qwen3.6 MTP slots, and a check whether the launch recipes pass --spec-draft-p-min and --spec-draft-n-max explicitly (the study's frontdoor argv omits p-min and so rides the upstream default that #23269 changed). Done when the list is the pull step's input and every check has a recorded result.",
+                "acceptance": "The CH-18 parenthetical no longer calls #28576 an open decision with a 27B occupancy effect."
+              }
+            ]
+          },
+          "D2499-4": {
+            "required_outcome": "Real 27B data says whether the MMA half-staged partial can overflow, before WMMA is ever dropped.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/kv-unified-stack-rollout.md",
+                "task_id": "V11-FA-8",
+                "task_text": "- [ ] **V11-FA-8 — GPU sibling of the CPU-FA-VKQ probe: does the MMA kernel's half-staged VKQ partial overflow on the 27B?** (filed 2026-10-22, intake-2499) Dump per-channel max abs(V) and the per-row unnormalized row sums over one warp's KV share from the 27B FA layers on an ~8k repetitive prompt and a 57k context, and evaluate them for arm A and candidate C of the V11-FA-1 harness. File the upstream report on the MMA shared-memory half staging only if a value is non-finite or exceeds FP16 range. Correctness class (no quiet host); launcher and PREDECLARATION.md written before compute, main arms the queue row. Done when the per-layer peaks are recorded here with the verdict (safe / at risk / overflow).",
+                "acceptance": "Real-model peak data for the GPU half-staging path, with a verdict and an upstream report only if non-finite."
+              }
+            ]
+          },
+          "D2499-5": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1, written into the V11-FA-7 decision note (candidate gates compare non-finite sets against the incumbent); no separate task.",
+            "task_refs": []
+          },
+          "D2499-6": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Declined: D=64 is not a production shape; D=256 tuning already has an owner and AutoKernel owns runtime knobs.",
+            "task_refs": []
+          },
+          "D2499-7": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: citation guard written into the V11-FA-7 note and the entry; nothing to execute.",
+            "task_refs": []
+          },
+          "D2504-1": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: citation guard (authors' Xeon/P100/V2-Lite cells are not EPYC evidence; EPYC evidence is the arithmetic scan).",
+            "task_refs": []
+          },
+          "D2508-1": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: wording correction already applied as dated dive_corrections in Stage 2b.",
+            "task_refs": []
+          },
+          "D2509-1": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: the port already unions all rows and cells; citation guard on #1880's numbers and '7 sites'.",
+            "task_refs": []
+          },
+          "D2510-1": {
+            "required_outcome": "The empty TG mask row at n_kv > 256 is tested and yields zeros equal to mainline.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-LB4.7",
+                "task_text": "  - [ ] **AKX-ALL-LB4.7 — Fully masked split-KV partials write zeros, and the empty TG mask row is tested.** In the three split-KV combines, write zeros when the merged M == -inf (as dd756036a does for the unsplit path). Add to test-fa-rowexact a deadrow case at n_kv 256 with <= 16 threads and an all -inf TG row at n_kv 512 and 8192 (rk2 > 1, neq1 = 1: it enters the runtime range trim, which narrows nek1 to 0), expecting zeros equal to the mainline reference, and NaN-prefill the candidate output so a stale result cannot pass. ik master aborts on that empty row (#1923); the port is expected to write zeros, but that is code reading until this test runs (intake-2498, intake-2510).",
+                "acceptance": "Kernel change (zeros in split combines) plus deadrow and empty-TG-row cases with NaN prefill; ticks only on a PASS of those cases at the final head."
+              }
+            ]
+          },
+          "D2506-1": {
+            "required_outcome": "The gathered decode attention ports a sinks-correct template including #2511 and the sink_stride change.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+                "task_id": "DS41-C123.1a",
+                "task_text": "  - [ ] **DS41-C123.1a — CPU kernel template and port hazards for the gathered decode attention (intake-2506, intake-2507).** Template: ik #2165's T=1 indexed branch (heads split over threads, one shared gather, one sink per head at normalisation; `iqk_flash_attn.cpp` L193-L240 @ 7945404) WITH #2511's sinks + first offset and #2287's K==V reuse (ik master c12b5ac L165-L216). Port #2165's sink_stride change with it (`iqk_flash_impl.h`, `iqk_fa_templates.h` normalize_and_store_1row, every `iqk_fa_*.cpp`), because the port reads one sink per call (port `iqk_fa_templates.h` L1129 @ 9a338d4f1). Close three port hazards: (a) bound the mask-to-index writes in release builds (ik relies on an assert); (b) reuse K as V only when row_size_k == row_size_v (#2287 compares pointers only); (c) index-from-mask assumes a binary mask (selected = mask == 0), so take the indices from the top-k set through the DSA-IDX.1 int32-index contract, not from an additive mask. Verify widths 2-3: ik's per-row N > 1 branch keeps only N threads busy (`iqk_flash_attn.cpp` L242-L253 @ 7945404); use a (row x head) split. Sinks tests follow the AKX-ALL-10.1 rule. Implementation and correctness now; the timed A/B waits with the other DS41 tests until AutoKernel kernel work lands (operator, 2026-10-22).",
+                "acceptance": "Template, sink_stride port, three hazards and the verify-width split are owner-bound under the gathered-attention task."
+              }
+            ]
+          },
+          "D2506-2": {
+            "required_outcome": "C123.1's gate does not demand cross-kernel bit identity.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+                "task_id": "DS41-C123.1",
+                "task_text": "- [ ] **DS41-C123.1 — Gather-form final attention for decode (intake-2116#record, intake-2122#record).** Replace the concat(raw window, whole compressed plane) + top-k -inf mask (deepseek41.cpp:1091-1097 @ dd3d9721c) on decode and verify widths 1-3 by get_rows(top-512 compressed rows) ++ window rows and flash attention over ~640 rows, using the indexed-op interface fixed in DSA-IDX.1; prefill keeps the mask path. Gate: with identical top-k sets, gather (ggml FA) vs mask (ggml FA) is bitwise identical under the DS41-T2 cap probe, and gather (iqk) vs gather (ggml) is tolerance-class (bit-identity holds only with the same kernel and row order; intake-2506); then a timed A/B at 32K/64K/128K in a CPU window (frozen manifest, champion baseline, 5 interleaved pairs, predeclared keep at >= the window noise floor). Kernel work is authored model-agnostically and folded into the champion.",
+                "acceptance": "The parent gate distinguishes same-kernel bit-identity from cross-kernel tolerance."
+              }
+            ]
+          },
+          "D2506-3": {
+            "required_outcome": "The three port hazards (unbounded index writes, K-as-V reuse, binary-mask assumption) are closed in the port.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+                "task_id": "DS41-C123.1a",
+                "task_text": "  - [ ] **DS41-C123.1a — CPU kernel template and port hazards for the gathered decode attention (intake-2506, intake-2507).** Template: ik #2165's T=1 indexed branch (heads split over threads, one shared gather, one sink per head at normalisation; `iqk_flash_attn.cpp` L193-L240 @ 7945404) WITH #2511's sinks + first offset and #2287's K==V reuse (ik master c12b5ac L165-L216). Port #2165's sink_stride change with it (`iqk_flash_impl.h`, `iqk_fa_templates.h` normalize_and_store_1row, every `iqk_fa_*.cpp`), because the port reads one sink per call (port `iqk_fa_templates.h` L1129 @ 9a338d4f1). Close three port hazards: (a) bound the mask-to-index writes in release builds (ik relies on an assert); (b) reuse K as V only when row_size_k == row_size_v (#2287 compares pointers only); (c) index-from-mask assumes a binary mask (selected = mask == 0), so take the indices from the top-k set through the DSA-IDX.1 int32-index contract, not from an additive mask. Verify widths 2-3: ik's per-row N > 1 branch keeps only N threads busy (`iqk_flash_attn.cpp` L242-L253 @ 7945404); use a (row x head) split. Sinks tests follow the AKX-ALL-10.1 rule. Implementation and correctness now; the timed A/B waits with the other DS41 tests until AutoKernel kernel work lands (operator, 2026-10-22).",
+                "acceptance": "Template, sink_stride port, three hazards and the verify-width split are owner-bound under the gathered-attention task."
+              }
+            ]
+          },
+          "D2506-4": {
+            "required_outcome": "Verify widths 2-3 keep all threads busy via a (row x head) split.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+                "task_id": "DS41-C123.1a",
+                "task_text": "  - [ ] **DS41-C123.1a — CPU kernel template and port hazards for the gathered decode attention (intake-2506, intake-2507).** Template: ik #2165's T=1 indexed branch (heads split over threads, one shared gather, one sink per head at normalisation; `iqk_flash_attn.cpp` L193-L240 @ 7945404) WITH #2511's sinks + first offset and #2287's K==V reuse (ik master c12b5ac L165-L216). Port #2165's sink_stride change with it (`iqk_flash_impl.h`, `iqk_fa_templates.h` normalize_and_store_1row, every `iqk_fa_*.cpp`), because the port reads one sink per call (port `iqk_fa_templates.h` L1129 @ 9a338d4f1). Close three port hazards: (a) bound the mask-to-index writes in release builds (ik relies on an assert); (b) reuse K as V only when row_size_k == row_size_v (#2287 compares pointers only); (c) index-from-mask assumes a binary mask (selected = mask == 0), so take the indices from the top-k set through the DSA-IDX.1 int32-index contract, not from an additive mask. Verify widths 2-3: ik's per-row N > 1 branch keeps only N threads busy (`iqk_flash_attn.cpp` L242-L253 @ 7945404); use a (row x head) split. Sinks tests follow the AKX-ALL-10.1 rule. Implementation and correctness now; the timed A/B waits with the other DS41 tests until AutoKernel kernel work lands (operator, 2026-10-22).",
+                "acceptance": "Template, sink_stride port, three hazards and the verify-width split are owner-bound under the gathered-attention task."
+              }
+            ]
+          },
+          "D2506-5": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: ik's own policy matches our hook's sinks decline; the decline stays until LB4.9's gate passes, which LB4.9's text already requires.",
+            "task_refs": []
+          },
+          "D2506-6": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: author's CUDA-hybrid profile agrees in direction with the DS41-C123 concat thesis; not CPU/EPYC evidence, so no task.",
+            "task_refs": []
+          },
+          "D2507-1": {
+            "required_outcome": "Sinks tests use distinct per-head sinks at several thread counts.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+                "task_id": "AKX-ALL-10.1",
+                "task_text": "  - [ ] **AKX-ALL-10.1 — Sinks cases use per-head-distinct sinks at several thread counts.** Every FA path that holds several heads per call with sinks (the DS41 cases of this set, the AKX-ALL-LB4.9 merges, a gathered T=1 branch) is tested with per-head-distinct sink values at nth 1, 16, 32, 64 and 96: bitwise against nth = 1 within one path, tolerance against the ggml reference. Uniform sinks or nth = 1 alone cannot catch the ik #2511 class (a thread's heads reading the sinks of the first heads) (intake-2507).",
+                "acceptance": "Distinct per-head sinks at nth 1/16/32/64/96, bitwise within a path and tolerance vs reference; consumed by LB4.9 and C123.1a."
+              }
+            ]
+          },
+          "D2507-2": {
+            "required_outcome": "No consumer behaviour change is required beyond the retained knowledge or the recorded decline/trigger.",
+            "review_status": "closed-with-basis",
+            "review_basis": "Knowledge K1: citation guard (#2511 shows -t 16 == -t 1 only).",
+            "task_refs": []
+          },
+          "KF-S3-1": {
+            "required_outcome": "CH-18.c is closed and INF-65 no longer advertises the finished intake.",
+            "review_status": "preserved",
+            "review_basis": "Main-independent review in this plan: the bound task's text carries the operational change itself (not only enabling wiring), names its gate, and sits under the live owner that runs the work; see the packet's opportunity review.",
+            "task_refs": [
+              {
+                "owner": "handoffs/active/autokernel-champion-aggregate.md",
+                "task_id": "CH-18.c",
+                "task_text": "  - [x] **CH-18.c — run the operator-approved follow-up kernel intake** (approved 2026-10-22 in the Locals+agent-beacon intake, not yet run; `.research-session.json` operator steering seq 10): ik_llama.cpp FlashMLA PRs 277 and 243, the ik q8_0 repack commits plus ik issue 1205, and ggml PR 28576 (= V11-050 / V11-FA-7, so check it against that row first). Full research-intake flow; bind any keep to this v11 list or the fold-ledger route. (filed 2026-10-22, f8) Ran 2026-10-22 as `intake-kernel-followup-20261022` (intake-2494..2510); #28576 decided as carried by the pull (V11-FA-7); outcomes filed under AKX-ALL-LB4.6 to LB4.9, AKX-ALL-10.1, AKX-ALL-LB3.1, V11-FA-8 and DS41-C123.1a. ✅ 2026-10-22",
+                "acceptance": "Ticked only after Stage-4 validation, pointing at the filed outcomes."
+              }
+            ]
+          }
+        },
+        "proposed_tasks": [
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "  - [ ] **AKX-ALL-LB4.6 — Adopt ik #2442 + #2710 in the port's `iqk_fa_work_buffer_size` and gate it by enumeration, not a sanitizer.** Both diffs apply to the port at offset -11; the result is ik master c12b5ac L50-L90 without the ik-only indexer pre-block (at the DS41 shape, 64 heads, Dv 512, 96 threads, n_kv 131072, the reservation goes from 12.38 to 49.5 MiB). Gate: a deterministic consumer-vs-sizer test that, for the port's split paths, checks the slots each consumer writes are <= the sizer's reservation over nth 1..128, n_kv 96..131072 and every -inf prefix/suffix trim, for the DS41 (1 KV head, 64 Q heads), MQA-2 and GQA-12x2 shapes, with a deliberately undersized sizer as the mutation case that must FAIL. No ASan or guard-page run: the mainline prefill tile term dominates the graph-plan MAX, so a sanitizer passes vacuously. Keep the trim cases in test-fa-rowexact as correctness cases. Lands before AKX-ALL-LB4.5's final-head rerun (intake-2501, intake-2504, intake-2505)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "  - [ ] **AKX-ALL-LB4.7 — Fully masked split-KV partials write zeros, and the empty TG mask row is tested.** In the three split-KV combines, write zeros when the merged M == -inf (as dd756036a does for the unsplit path). Add to test-fa-rowexact a deadrow case at n_kv 256 with <= 16 threads and an all -inf TG row at n_kv 512 and 8192 (rk2 > 1, neq1 = 1: it enters the runtime range trim, which narrows nek1 to 0), expecting zeros equal to the mainline reference, and NaN-prefill the candidate output so a stale result cannot pass. ik master aborts on that empty row (#1923); the port is expected to write zeros, but that is code reading until this test runs (intake-2498, intake-2510)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "  - [ ] **AKX-ALL-LB4.8 — Extend test-fa-rowexact to sliding-window masks and record the expected iqk verdicts.** Add a swa mask kind at two windows: W <= 3/4 n_kv (exercises the trailing trim) and W > 3/4 n_kv, e.g. n_kv 8192 W 7000 (sends leading-masked chunks through the split path and the q_step >= 4 Q8_0 repack branch: the ik issue #1205 failure class). Gate both against the use_ref reference and the double-precision oracle. Record in the test header and here that iqk split paths are not row-exact across N (they split only at neq1 == 1), thread count or mask-driven trims: NOT_ROW_EXACT at N=1 vs N=5 is the expected iqk result, and the fold gate is the tolerance route against the reference, never byte identity (intake-2496, intake-2498)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "    - [ ] **AKX-LB4-FU2 — Run job `akx-lb4-followups-2` at the branch head that carries AKX-ALL-LB4.6 to LB4.8** (build role, one CPU quarter; launcher and PREDECLARATION.md written before the first grant; main arms the FILLERS row): ON and OFF builds, FLASH_ATTN_EXT backend-ops, the LB4.6 enumeration test, test-fa-rowexact with the LB4.7 and LB4.8 masks at FA_ROWEXACT_THREADS 1, 4, 8, 16 and 96 (192 when the grant spans it) as separate steps, plus the env-ignored and bench-switch checks. It is AKX-ALL-LB4.5's final-head rerun: tick LB4.5, LB4.6, LB4.7 and LB4.8 from its results (intake-2498)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "  - [ ] **AKX-ALL-LB4.9 — Fold attention sinks into the nek2 == 1 iqk merges (correctness enabler).** In the #1212 and #277 merge paths add the GQA merge's sink block (once per row after the partial loop, before the normalisation), pass sinks->data from the ops.cpp hook, and lift the hook's sinks decline only after the FLASH_ATTN_EXT cases match the ggml reference: DS41 SWA layers 0-1, the stock-mask DS41 shape, and the gathered shape (n_kv 640 and 768, 64 heads, 1 KV head, sinks; it lands on the #277 gcd grid at 96 threads), all with per-head-distinct sinks at nth 1, 16, 32, 64 and 96 (the AKX-ALL-10.1 rule). No upstream template exists: ik never folds sinks at these merges and sends non-indexed DS4 sinks calls to the generic ggml FA. Correctness only, no timing: on DS41's dense top-k mask iqk computes KQ for whole visited blocks while the mainline kernel skips -inf cells, so no decode gain is expected on compressed layers (code reading, unmeasured). Ranks after AKX-ALL-LB4.5 and does not block the fold (intake-2496, intake-2506, intake-2507)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "  - [ ] **AKX-ALL-10.1 — Sinks cases use per-head-distinct sinks at several thread counts.** Every FA path that holds several heads per call with sinks (the DS41 cases of this set, the AKX-ALL-LB4.9 merges, a gathered T=1 branch) is tested with per-head-distinct sink values at nth 1, 16, 32, 64 and 96: bitwise against nth = 1 within one path, tolerance against the ggml reference. Uniform sinks or nth = 1 alone cannot catch the ik #2511 class (a thread's heads reading the sinks of the first heads) (intake-2507)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+            "task_text": "  - [ ] **AKX-ALL-LB3.1 — q8_0 repack-threshold cells in the iqk ON-build timing.** When LB3 timing runs on the iqk ON build (after AKX-ALL-LB4.5), include N=8 next to N=1..5 in the q8_0-KV cells and record per cell which side of the port's `neq1 >= 8` Q8_0_R8 repack threshold it ran; add a forced-repack on/off arm at N=1 and N=5 for the GQA-12, 2-KV-head q8_0 shape (a compile-time define in the measurement build only, never a runtime env), arms alternating, n >= 5 per arm, the A/A floor measured in the same window. Predeclared rule: forced repack faster than that floor at N=5 opens a task to restore a GQA term in the threshold; otherwise record \"threshold kept\". No new compute row: it rides LB3's ON-build timing (intake-2497)."
+          },
+          {
+            "owner": "handoffs/active/kv-unified-stack-rollout.md",
+            "task_text": "  - [x] **CPU-FA-VKQ-4 — report the CPU FP16-VKQ overflow upstream with the fix.** (filed 2026-10-04, workspace-ec; premise corrected and closed 2026-10-22 by the kernel follow-up intake, intake-2499, intake-2455) ✅ 2026-10-22",
+            "previous_task_text": "  - [ ] **CPU-FA-VKQ-4 — report the CPU FP16-VKQ overflow upstream with the fix.** (filed 2026-10-04, workspace-ec)"
+          },
+          {
+            "owner": "handoffs/active/kv-unified-stack-rollout.md",
+            "task_text": "- [x] **V11-FA-7 — decide upstream #28576 (fp32 VKQ accumulation on MFMA; manifest V11-050): fold into the v11 candidate, exclude with reason, or defer explicitly.** Decided 2026-10-22: carried by the pull. ✅ 2026-10-22",
+            "previous_task_text": "- [ ] **V11-FA-7 — decide upstream #28576 (fp32 VKQ accumulation on MFMA; manifest V11-050): fold into the v11 candidate,"
+          },
+          {
+            "owner": "handoffs/active/kv-unified-stack-rollout.md",
+            "task_text": "- [ ] **V11-FA-8 — GPU sibling of the CPU-FA-VKQ probe: does the MMA kernel's half-staged VKQ partial overflow on the 27B?** (filed 2026-10-22, intake-2499) Dump per-channel max abs(V) and the per-row unnormalized row sums over one warp's KV share from the 27B FA layers on an ~8k repetitive prompt and a 57k context, and evaluate them for arm A and candidate C of the V11-FA-1 harness. File the upstream report on the MMA shared-memory half staging only if a value is non-finite or exceeds FP16 range. Correctness class (no quiet host); launcher and PREDECLARATION.md written before compute, main arms the queue row. Done when the per-layer peaks are recorded here with the verdict (safe / at risk / overflow)."
+          },
+          {
+            "owner": "handoffs/active/autokernel-champion-aggregate.md",
+            "task_text": "- [ ] **CH-18 — v11 pull-fresh upstream list (kernel workflow step 1; never a cherry-pick onto v10; champion folds only through the fold-ledger route).** Record in this handoff the upstream fixes that enter llama.cpp-experimental through the next fresh-production pull, in order: #30514 (plain KV honours PARTIAL_ONLY), #26004 (checkpoints in the slot file), #30574 (draft state in the slot file; ported ahead of the pull on `experimental/slotdraft-30574-20261020` per the operator on 2026-10-20 and folded into the champion if KVU-12.2's gate passes, so the pull reconciles with that fold rather than re-applying it), #30580 (SWA reuse-threshold off-by-two; v10 still carries it at server-context.cpp:3398). **Added 2026-10-20 (kernel-manifests sweep):** #27870 (MMA divergent-barrier race, `fattn-mma-f16.cuh`; the DF2 ROCWMMA-OFF pin in `dflash2-block-drafter-experimental-build.md` waits for it as V11-FA-6; 27B probe fails 6/10 with OFF, passes with OFF + #27870 alone) and #28576 (fp32 VKQ accumulation on MFMA: perf-only on MMA-routed MFMA shapes, not an overflow fix; its occupancy 4 to 3 retune is the CDNA D=64/ncols=64 config only; decided 2026-10-22 as carried by the pull, V11-FA-7). Both are picked on `experimental/v11-fa-ab-20261004` (`e9b3b04df`, `5026470c6`); the pull step must carry or consciously drop them. The V11-FA-1..6 and `KVU-19b-rework-c2-cal` task texts are referenced by `routing-and-optimization-index.md` (RTG-57) but are missing from `kv-unified-stack-rollout.md`; restore them there. Watch list, not pulled while open or unmerged: #30141 (MTP get/set_state), #29480 (iSWA seq_pos_max assertion), the upstream follow-up for the SWA pos_min TODO (not located; search before the candidate). Promotion-checklist notes: #26640 changes the slot-file format for all slots, so a file written by a build carrying it is not restorable on a v10 rollback (decide at promotion whether to carry it). The candidate's full-build validation includes KPF-19.1's rebase check on the pulled tree, KVU-12.2's gate (b) re-run, a Gemma-class restore that reprocesses the same token count as a never-saved slot, checkpoint size measured on our Qwen3.6 MTP slots, and a check whether the launch recipes pass --spec-draft-p-min and --spec-draft-n-max explicitly (the study's frontdoor argv omits p-min and so rides the upstream default that #23269 changed). Done when the list is the pull step's input and every check has a recorded result.",
+            "previous_task_text": "- [ ] **CH-18 — v11 pull-fresh upstream list (kernel workflow step 1; never a cherry-pick onto v10; champion folds only through the fold-ledger route).** Record in this handoff the upstream fixes that enter llama.cpp-experimental through the next fresh-production pull, in order: #30514 (plain KV honours PARTIAL_ONLY), #26004 (checkpoints in the slot file), #30574 (draft state in the slot file; ported ahead of the pull on `experimental/slotdraft-30574-20261020` per the operator on 2026-10-20 and folded into the champion if KVU-12.2's gate passes, so the pull reconciles with that fold rather than re-applying it), #30580 (SWA reuse-threshold off-by-two; v10 still carries it at server-context.cpp:3398). **Added 2026-10-20 (kernel-manifests sweep):** #27870 (MMA divergent-barrier race, `fattn-mma-f16.cuh`; the DF2 ROCWMMA-OFF pin in `dflash2-block-drafter-experimental-build.md` waits for it as V11-FA-6; 27B probe fails 6/10 with OFF, passes with OFF + #27870 alone) and #28576 (fp32 VKQ accumulation on MFMA; decision open, CDNA config occupancy 4 to 3). Both are picked on `experimental/v11-fa-ab-20261004` (`e9b3b04df`, `5026470c6`); the pull step must carry or consciously drop them. The V11-FA-1..6 and `KVU-19b-rework-c2-cal` task texts are referenced by `routing-and-optimization-index.md` (RTG-57) but are missing from `kv-unified-stack-rollout.md`; restore them there. Watch list, not pulled while open or unmerged: #30141 (MTP get/set_state), #29480 (iSWA seq_pos_max assertion), the upstream follow-up for the SWA pos_min TODO (not located; search before the candidate). Promotion-checklist notes: #26640 changes the slot-file format for all slots, so a file written by a build carrying it is not restorable on a v10 rollback (decide at promotion whether to carry it). The candidate's full-build validation includes KPF-19.1's rebase check on the pulled tree, KVU-12.2's gate (b) re-run, a Gemma-class restore that reprocesses the same token count as a never-saved slot, checkpoint size measured on our Qwen3.6 MTP slots, and a check whether the launch recipes pass --spec-draft-p-min and --spec-draft-n-max explicitly (the study's frontdoor argv omits p-min and so rides the upstream default that #23269 changed). Done when the list is the pull step's input and every check has a recorded result."
+          },
+          {
+            "owner": "handoffs/active/autokernel-champion-aggregate.md",
+            "task_text": "  - [x] **CH-18.c — run the operator-approved follow-up kernel intake** (approved 2026-10-22 in the Locals+agent-beacon intake, not yet run; `.research-session.json` operator steering seq 10): ik_llama.cpp FlashMLA PRs 277 and 243, the ik q8_0 repack commits plus ik issue 1205, and ggml PR 28576 (= V11-050 / V11-FA-7, so check it against that row first). Full research-intake flow; bind any keep to this v11 list or the fold-ledger route. (filed 2026-10-22, f8) Ran 2026-10-22 as `intake-kernel-followup-20261022` (intake-2494..2510); #28576 decided as carried by the pull (V11-FA-7); outcomes filed under AKX-ALL-LB4.6 to LB4.9, AKX-ALL-10.1, AKX-ALL-LB3.1, V11-FA-8 and DS41-C123.1a. ✅ 2026-10-22",
+            "previous_task_text": "  - [ ] **CH-18.c — run the operator-approved follow-up kernel intake** (approved 2026-10-22 in the Locals+agent-beacon intake, not yet run; `.research-session.json` operator steering seq 10): ik_llama.cpp FlashMLA PRs 277 and 243, the ik q8_0 repack commits plus ik issue 1205, and ggml PR 28576 (= V11-050 / V11-FA-7, so check it against that row first). Full research-intake flow; bind any keep to this v11 list or the fold-ledger route. (filed 2026-10-22, f8)"
+          },
+          {
+            "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+            "task_text": "- [ ] **DS41-C123.1 — Gather-form final attention for decode (intake-2116#record, intake-2122#record).** Replace the concat(raw window, whole compressed plane) + top-k -inf mask (deepseek41.cpp:1091-1097 @ dd3d9721c) on decode and verify widths 1-3 by get_rows(top-512 compressed rows) ++ window rows and flash attention over ~640 rows, using the indexed-op interface fixed in DSA-IDX.1; prefill keeps the mask path. Gate: with identical top-k sets, gather (ggml FA) vs mask (ggml FA) is bitwise identical under the DS41-T2 cap probe, and gather (iqk) vs gather (ggml) is tolerance-class (bit-identity holds only with the same kernel and row order; intake-2506); then a timed A/B at 32K/64K/128K in a CPU window (frozen manifest, champion baseline, 5 interleaved pairs, predeclared keep at >= the window noise floor). Kernel work is authored model-agnostically and folded into the champion.",
+            "previous_task_text": "- [ ] **DS41-C123.1 — Gather-form final attention for decode (intake-2116#record, intake-2122#record).** Replace the concat(raw window, whole compressed plane) + top-k -inf mask (deepseek41.cpp:1091-1097 @ dd3d9721c) on decode and verify widths 1-3 by get_rows(top-512 compressed rows) ++ window rows and flash attention over ~640 rows, using the indexed-op interface fixed in DSA-IDX.1; prefill keeps the mask path. Gate: identical top-k sets give bit-identical outputs vs the mask path under the DS41-T2 cap probe; then a timed A/B at 32K/64K/128K in a CPU window (frozen manifest, champion baseline, 5 interleaved pairs, predeclared keep at >= the window noise floor). Kernel work is authored model-agnostically and folded into the champion."
+          },
+          {
+            "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+            "task_text": "  - [ ] **DS41-C123.1a — CPU kernel template and port hazards for the gathered decode attention (intake-2506, intake-2507).** Template: ik #2165's T=1 indexed branch (heads split over threads, one shared gather, one sink per head at normalisation; `iqk_flash_attn.cpp` L193-L240 @ 7945404) WITH #2511's sinks + first offset and #2287's K==V reuse (ik master c12b5ac L165-L216). Port #2165's sink_stride change with it (`iqk_flash_impl.h`, `iqk_fa_templates.h` normalize_and_store_1row, every `iqk_fa_*.cpp`), because the port reads one sink per call (port `iqk_fa_templates.h` L1129 @ 9a338d4f1). Close three port hazards: (a) bound the mask-to-index writes in release builds (ik relies on an assert); (b) reuse K as V only when row_size_k == row_size_v (#2287 compares pointers only); (c) index-from-mask assumes a binary mask (selected = mask == 0), so take the indices from the top-k set through the DSA-IDX.1 int32-index contract, not from an additive mask. Verify widths 2-3: ik's per-row N > 1 branch keeps only N threads busy (`iqk_flash_attn.cpp` L242-L253 @ 7945404); use a (row x head) split. Sinks tests follow the AKX-ALL-10.1 rule. Implementation and correctness now; the timed A/B waits with the other DS41 tests until AutoKernel kernel work lands (operator, 2026-10-22)."
+          }
+        ],
+        "plan_sha256": "3583551b54a5000ba253cd83aa49328eb00c0f5fda02608fbb3a77f29dc8b721"
+      },
+      "stage4": {
+        "status": "applied-pending-main-review",
+        "reconciled": true,
+        "date": "2026-10-22",
+        "lane": "/mnt/raid0/llm/worktrees/f8-intake-kf-s4",
+        "branch": "intake/kernel-followup-s4-20261022",
+        "plan_sha256": "3583551b54a5000ba253cd83aa49328eb00c0f5fda02608fbb3a77f29dc8b721",
+        "handoff_edits_applied": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "edit_12_applied_last": true,
+        "index_row_prepared_not_applied": "INF-65 (handoffs/active/inference-research-index.md) Next action: 'HEAD-3 np=24/32 needs operator go; CH-18.c follow-up kernel intake (ik FlashMLA/q8_0 repack, #28576); V6R-4a/4c, CH-17 ride v11 gate' -> 'HEAD-3 np=24/32 needs operator go; V6R-4a/4c, CH-17 ride v11 gate' (plan edit 16, owning session applies)",
+        "checkbox_tasks_added": 9,
+        "tasks_refined": 5,
+        "checkboxes_ticked": 3,
+        "entry_updates": [
+          "intake-2494",
+          "intake-2495",
+          "intake-2496",
+          "intake-2497",
+          "intake-2498",
+          "intake-2499",
+          "intake-2500",
+          "intake-2501",
+          "intake-2502",
+          "intake-2504",
+          "intake-2505",
+          "intake-2506",
+          "intake-2507",
+          "intake-2508",
+          "intake-2509",
+          "intake-2510"
+        ],
+        "q6_declines_recorded_in": [
+          "intake-2506",
+          "intake-2508",
+          "intake-2509"
+        ],
+        "validator_fix": "_plan_cells unescapes \\| (Stage-4 step 1, operator-approved)",
+        "compute_proposals_for_main": [
+          "akx-lb4-followups-2 (AKX-LB4-FU2)",
+          "v11-fa-8-vkq-probe (V11-FA-8)"
+        ]
       }
     }
   ],

@@ -920,10 +920,13 @@ is olympiad-style reasoning.
       - Yfa's gates passed: bit-identical on the KVU-19 FA harness, 86 + 141 cases.
       - The advance to Yfa is workspace-89's next fold.
     - *(2026-10-21 triage)* superseded by autokernel-champion-aggregate.md fold ledger "Yfa" (057270556 + a99e5330a folded without 2ad8bff36) and manifest V11-086 EXCL (opt-in arm excluded by design; CPU-FA-VKQ-2 decides define-or-drop).
-  - [ ] **CPU-FA-VKQ-4 — report the CPU FP16-VKQ overflow upstream with the fix.** (filed 2026-10-04, workspace-ec)
-    Upstream fixed the MFMA analog (#28576) but not ggml-cpu. Reduce the harness to a `test-backend-ops` case with
-    large same-sign V over ≥ 2048 cells (random [-1,1] inputs never overflow), and open an issue or PR from the fork
-    branch. Done when the upstream link is recorded here.
+  - [x] **CPU-FA-VKQ-4 — report the CPU FP16-VKQ overflow upstream with the fix.** (filed 2026-10-04, workspace-ec; premise corrected and closed 2026-10-22 by the kernel follow-up intake, intake-2499, intake-2455) ✅ 2026-10-22
+    Premise corrected (intake-2499): upstream has NOT fixed the GPU (MFMA) analog. #28576 removes only the per-MFMA fp16 round
+    trip; the unnormalized VKQ partial is still staged as half before the row-sum division (`fattn-mma-f16.cuh` L1670-L1678,
+    divide L1734 @ `ca29eaf`), and the opnan arms with and without it fail the same 6/228 cases. The GPU check is V11-FA-8.
+    CPU side (intake-2455): the defect is upstream issue 29774 / PR 29810; KVU-LB1.a posted our reduced repro, accumulator
+    peaks and fix data on PR #29810 (link in the KVU-LB1 section of this file, operator-approved 2026-10-22). That meets this
+    task's done-when, so no separate report is opened.
     - *(2026-10-21 triage)* open (no evidence found).
 - [ ] **KVU-22 — at the v11 rebase, carry upstream #29510 (`flash_attn_ext_rows`) as an A/B arm against KVU-19b.**
   (filed 2026-10-04, workspace-ec, survey Rec 4; trigger: the v11 rebase starts) #29510 is NVIDIA-MMA-only. It cannot
@@ -1093,14 +1096,22 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     ROCWMMA-OFF route probe (10/10 on an OFF build) and `test-backend-ops` 640/640 on that route are still owed
     (CH-20 item 3 in `autokernel-champion-aggregate.md`). CH-18 also lists #27870: reconcile at the v11 pull so it is
     not applied twice.
-- [ ] **V11-FA-7 — decide upstream #28576 (fp32 VKQ accumulation on MFMA; manifest V11-050): fold into the v11 candidate,
-  exclude with reason, or defer explicitly.** (filed 2026-10-20 from the derived-actionables gate; the 2026-10-04
+- [x] **V11-FA-7 — decide upstream #28576 (fp32 VKQ accumulation on MFMA; manifest V11-050): fold into the v11 candidate, exclude with reason, or defer explicitly.** Decided 2026-10-22: carried by the pull. ✅ 2026-10-22
+  (filed 2026-10-20 from the derived-actionables gate; the 2026-10-04
   shard declined a separate #28576 carry task because DF2-9 does not need it and a master-based v11 contains it, but
   manifest row V11-050 is still PEND/'decision open' and README rule 4 requires fold/exclude/defer before the freeze.)
   Branch `experimental/v11-fa-ab-20261004` @ `5026470c6` (pick `bfdc32183`). Bench cell: GPU FA exactness (`test-backend-ops
   -o FLASH_ATTN_EXT -b ROCm0`) plus occupancy (CDNA config 4 to 3) at the 27B shapes, using the V11-FA-1 harness
   (`artifacts/v11-fa-ab-20261004/`). If the v11 pull is taken from master and master already contains #28576, the
   outcome is 'carried by the pull' and the row is closed with that sentence.
+  - *(2026-10-22, research intake intake-2499.)* Outcome: **carried by the pull.** `bfdc32183` (#28576) is an ancestor of upstream
+    master `11fe02151`, so a v11 pull from master at or after 2026-09-14 carries it (candidate C does not); presence gate on the pulled
+    base: G-ANC on `bfdc32183`. It is perf-only on MMA-routed MFMA shapes and overflow-neutral: the raw VKQ partial is still staged as
+    half before normalisation, and the opnan arms with and without it fail the same 6/228 cases. It does not touch the ROCWMMA-ON
+    champion route. The occupancy 4 to 3 change is the CDNA-only (64,64,64) config, not a 27B shape; register cost at D=256 stays
+    with V11-FA-3. Candidate FA gates compare the non-finite case set against the incumbent instead of demanding 0/228 on the
+    bias1024 diffuse stress. Cite only the PR's on-path perf rows (nb >= 512, MMA-routed).
+- [ ] **V11-FA-8 — GPU sibling of the CPU-FA-VKQ probe: does the MMA kernel's half-staged VKQ partial overflow on the 27B?** (filed 2026-10-22, intake-2499) Dump per-channel max abs(V) and the per-row unnormalized row sums over one warp's KV share from the 27B FA layers on an ~8k repetitive prompt and a 57k context, and evaluate them for arm A and candidate C of the V11-FA-1 harness. File the upstream report on the MMA shared-memory half staging only if a value is non-finite or exceeds FP16 range. Correctness class (no quiet host); launcher and PREDECLARATION.md written before compute, main arms the queue row. Done when the per-layer peaks are recorded here with the verdict (safe / at risk / overflow).
 - **Other restored tasks cited by RTG-57 / the v11 manifest (parent task bodies remain in git history).**
   - [ ] **KVU-16g-1 — run the row-5c prefill-budget A/B (`gpu_slot.sh`) and score it against the done-when above.**
     (filed 2026-10-04, workspace-ec) Then fold `65d48a7a0` into the champion through the KVU-19 fold route if it
