@@ -32,7 +32,8 @@ Every session: (1) keep zero-token watchers on its own end/FAILED flags; (2) on 
 
 ### Other state
 
-- Job 67 launcher is v5 (RAM-gated at 739 GiB + DS41 single-server check), pid 507665, window 10:45-14:15Z.
+- Job 67 launcher went to v5 (RAM-gated at 739 GiB + DS41 single-server check), then job 67 was CANCELLED 08:45Z by operator directive (all DS41-1017 tests except the noise floor disregarded until AutoKernel kernel work); its q0-q2 10:45-14:15Z slot goes to f8 test lanes and fillers.
+- Operator decision 2026-10-22: serving noise floors live in the MASTER model registry (not the separate floor-registry store); the floor-registry library is being re-targeted to read/write a per-model `serving_floors` section.
 - Shared research clone `/mnt/raid0/llm/epyc-inference-research`: 221 commits behind origin/main, 5 uncommitted tracked files no session claims. Plan agreed by all three sessions: rescue branch, then fast-forward after `7B_AK_ENDED`, with a `/proc` cwd check first. Filed as NIB2-101 in `non-inference-backlog.md`.
 - Tools built, tests NOT yet run in a granted window (no box ticked): `prior_check.py` + `validate_fillers.py` (root `f8/prior-check`; 49 tests passed inside the disclosed quiet window), floor registry + AKX-AUTO-6 `champion_reanchor` + `serial_run --new-anchor-epoch` pass-through (research + root `f8/floor-registry`). FILLERS.md column 6 redefined as peak host RAM GiB.
 
