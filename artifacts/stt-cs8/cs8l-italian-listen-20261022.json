@@ -1,0 +1,517 @@
+{
+ "schema": "epyc.cs8l_italian_listen.v1",
+ "item": "CS-8.L",
+ "date": "2026-10-22",
+ "rater": "operator (single labelled rater, DP-C)",
+ "subject": "cascade qwentts speech-out (G1, SPQ-03), Italian, 60 FLEURS it_it test sentences; frozen qwentts production-speech-v1 CPU; 16 kHz clips as scored by whisper",
+ "protocol_id": "",
+ "claim_class": "observation (human listen check; single rater; not a protocol-admitted measurement)",
+ "rating_docs_sha256": "db10caef87e62ff45e0b820c247b482a13e0e9d21ad4a6bfe0d4a6b70bc1c905",
+ "rating_docs_sha256_method": "sha256 of the text lines \"<sha256>  <basename>\\n\" for the 60 per-clip JSON docs sorted by filename",
+ "rating_docs_count": 60,
+ "kit_manifest_sha256": "deda0a7852dda2ffd60a4aade1c28e15584041c7c2a1fc31d742533bebbedcf1",
+ "kit_manifest_path_note": "/mnt/raid0/llm/tmp/cs8l-italian-listen-kit/manifest.json (host-local, not committed; contains prompt texts and audio hashes)",
+ "n": 60,
+ "naturalness_scale": "1-5 (5 best)",
+ "naturalness_distribution": {
+  "1": 0,
+  "2": 2,
+  "3": 6,
+  "4": 5,
+  "5": 47
+ },
+ "naturalness_mean": 4.62,
+ "naturalness_median": 5.0,
+ "intelligible_yes": 60,
+ "intelligibility_rate": 1.0,
+ "clips_with_notes": 11,
+ "error_categories": {
+  "numbers_and_units": {
+   "count": 3,
+   "clips": [
+    "it_09_1721",
+    "it_20_1776",
+    "it_26_1811"
+   ]
+  },
+  "abbreviation_pH_read_hache_not_acca": {
+   "count": 2,
+   "clips": [
+    "it_23_1792",
+    "it_55_1962"
+   ]
+  },
+  "lexical_stress": {
+   "count": 3,
+   "clips": [
+    "it_06_1698",
+    "it_54_1957",
+    "it_57_1974"
+   ]
+  },
+  "proper_nouns": {
+   "count": 2,
+   "clips": [
+    "it_31_1838",
+    "it_38_1876"
+   ]
+  },
+  "foreign_accent": {
+   "count": 1,
+   "clips": [
+    "it_37_1871"
+   ]
+  }
+ },
+ "error_category_note": "Category assignment from the operator notes by the recording session; text-normalisation classes = numbers_and_units + abbreviation; model-limitation classes = lexical_stress + proper_nouns + foreign_accent.",
+ "asr_cross_check": {
+  "asr": "whisper.cpp large-v3-turbo CPU (first ASR pass from the kit manifest; existing data, no new inference)",
+  "metric": "forced_wer (forced Italian); auto_wer carried per clip",
+  "low_naturalness_le3": {
+   "n": 8,
+   "mean_forced_wer": 0.0387,
+   "median_forced_wer": 0.0
+  },
+  "high_naturalness_ge4": {
+   "n": 52,
+   "mean_forced_wer": 0.0236,
+   "median_forced_wer": 0.0
+  },
+  "spearman_naturalness_vs_forced_wer": -0.142,
+  "permutation_p_one_sided_low_has_higher_wer": 0.2076,
+  "verdict": "Direction agrees weakly, not significantly: low-naturalness clips (<=3, n=8) mean WER 0.039 vs 0.024 for >=4 (n=52); Spearman rho -0.14; one-sided permutation p=0.21. 5 of the 8 low-naturalness clips have WER 0.0: ASR is blind to stress, pH reading and mild number prosody, so WER cannot substitute for the human ear on this failure class. Only the two clips with wrong numbers/units (it_20, it_26) show non-zero WER."
+ },
+ "clips": [
+  {
+   "clip": "it_01_1660",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0526,
+   "auto_wer": 0.0526
+  },
+  {
+   "clip": "it_02_1664",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_03_1674",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_04_1684",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.087,
+   "auto_wer": 0.087
+  },
+  {
+   "clip": "it_05_1694",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_06_1698",
+   "naturalness": 3,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "The word 'atomi' should stress the 'a', not the 'o'"
+  },
+  {
+   "clip": "it_07_1702",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0417,
+   "auto_wer": 0.0417
+  },
+  {
+   "clip": "it_08_1705",
+   "naturalness": 4,
+   "intelligible": "yes",
+   "forced_wer": 0.15,
+   "auto_wer": 0.15
+  },
+  {
+   "clip": "it_09_1721",
+   "naturalness": 3,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "The pronunciation of the year 1963 is intelligible but sounds off"
+  },
+  {
+   "clip": "it_10_1728",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_11_1736",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_12_1739",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_13_1742",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_14_1746",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_15_1750",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_16_1755",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_17_1762",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_18_1767",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_19_1770",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_20_1776",
+   "naturalness": 3,
+   "intelligible": "yes",
+   "forced_wer": 0.1429,
+   "auto_wer": 0.1429,
+   "notes": "The number 150 sounds a bit off"
+  },
+  {
+   "clip": "it_21_1779",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0526,
+   "auto_wer": 0.0526
+  },
+  {
+   "clip": "it_22_1786",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.08,
+   "auto_wer": 0.08
+  },
+  {
+   "clip": "it_23_1792",
+   "naturalness": 3,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "The term pH is pronounced unnaturally. The 'h' is pronounced softly 'hache' instead of the hard 'acca' as it should"
+  },
+  {
+   "clip": "it_24_1798",
+   "naturalness": 4,
+   "intelligible": "yes",
+   "forced_wer": 0.05,
+   "auto_wer": 0.05
+  },
+  {
+   "clip": "it_25_1802",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_26_1811",
+   "naturalness": 2,
+   "intelligible": "yes",
+   "forced_wer": 0.1667,
+   "auto_wer": 0.1667,
+   "notes": "The numbers and 'Hz' are pronounced very wrongly"
+  },
+  {
+   "clip": "it_27_1818",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_28_1825",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_29_1828",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.1429,
+   "auto_wer": 0.1429
+  },
+  {
+   "clip": "it_30_1833",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_31_1838",
+   "naturalness": 4,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "'Giza' is pronounced incorrectly, the 'G' should be hard, not soft"
+  },
+  {
+   "clip": "it_32_1844",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_33_1848",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0476,
+   "auto_wer": 0.0476
+  },
+  {
+   "clip": "it_34_1853",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_35_1860",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.2143,
+   "auto_wer": 0.2143
+  },
+  {
+   "clip": "it_36_1867",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_37_1871",
+   "naturalness": 4,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "Interestingly, the voice on this audio segment sounds like it has a slight foreign accent."
+  },
+  {
+   "clip": "it_38_1876",
+   "naturalness": 4,
+   "intelligible": "yes",
+   "forced_wer": 0.0625,
+   "auto_wer": 0.0625,
+   "notes": "'Isole marianE' not 'isole MariaN'"
+  },
+  {
+   "clip": "it_39_1881",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_40_1886",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_41_1890",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_42_1895",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_43_1901",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_44_1905",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.05,
+   "auto_wer": 0.05
+  },
+  {
+   "clip": "it_45_1908",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_46_1912",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_47_1917",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_48_1921",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_49_1927",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_50_1930",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_51_1938",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_52_1945",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_53_1951",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.1,
+   "auto_wer": 0.1
+  },
+  {
+   "clip": "it_54_1957",
+   "naturalness": 3,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "The word 'idiozie' is badly pronouned by stressing the 'o' instead of the second 'i' as it should be"
+  },
+  {
+   "clip": "it_55_1962",
+   "naturalness": 2,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "The term pH is pronounced unnaturally. The 'h' is pronounced softly 'hache' instead of the hard 'acca' as it should"
+  },
+  {
+   "clip": "it_56_1965",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0455,
+   "auto_wer": 0.0455
+  },
+  {
+   "clip": "it_57_1974",
+   "naturalness": 3,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0,
+   "notes": "'analoga' is mispronounced by stressing the 'o' instead of the second syllable's 'a' as it should"
+  },
+  {
+   "clip": "it_58_1979",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_59_1982",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0,
+   "auto_wer": 0.0
+  },
+  {
+   "clip": "it_60_1988",
+   "naturalness": 5,
+   "intelligible": "yes",
+   "forced_wer": 0.0526,
+   "auto_wer": 0.0526
+  }
+ ]
+}

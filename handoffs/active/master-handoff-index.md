@@ -133,9 +133,9 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1157 | 59 | 2026-07-29 |
+| inference-research | 61 | 1157 | 60 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
-| research-evaluation | 44 | 534 | 18 | 2026-07-29 |
+| research-evaluation | 44 | 535 | 18 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 52 | 672 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 143 | 18 | 2026-07-29 |
