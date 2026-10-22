@@ -342475,7 +342475,7 @@
     quote_sha256: 52b3199b240f2c22bceb45f4e8be0f5059d8171896a2f4f0a516ca111b6a5614
     source_revision: 808a32199c16c68d0c18597ccf54d05d0c9078ab
     verified_by: research-intake/stage2
-  - claim_index: 1
+  - claim_index: 0
     kind: doc-quote
     locator: docs/telemetry-schema/event-schema.mdx 'How it extends OpenTelemetry' @ 808a3219
     quote: Beacon accepts OpenTelemetry attributes, including the GenAI semantic conventions, and projects them into fields
@@ -342516,7 +342516,7 @@
   - claim_index: 7
     effect: unaffected
     note: New absence claim; searched learning.go, candidate.go, store.go DDL at 808a3219.
-  - claim_index: 1
+  - claim_index: 0
     effect: narrowed
     note: 'Beacon''s schema is its own (vendor ''beacon'', schema_version 1.0, event.action vocabulary such as tool.invoked);
       it ACCEPTS OTel/GenAI attributes and projects them into Beacon fields, preserving OTel context under gen_ai. ''One OpenTelemetry-based
@@ -342962,7 +342962,7 @@
     source_revision: docs.nvidia.com/aiperf/tutorials/datasets-inputs/replay-trace-lab-agentic-coding-traces.md retrieved
       2026-10-22 sha256 e352b565c6fb1258
     verified_by: research-intake/stage2
-  - claim_index: 9
+  - claim_index: 0
     kind: quote
     locator: AIPerf TraceLab replay guide, intro
     quote: It records 665,453 LLM rounds across 8,058 sessions and 743,819 tool calls, licensed CC BY 4.0.
@@ -345412,4 +345412,2675 @@
   - claim_index: 4
     effect: unaffected
     note: fresh claim from the pass; read from source on disk
+  depends_on: []
+- id: intake-2406
+  arxiv_id: null
+  url: https://github.com/SALT-NLP/SWE-chat
+  source_type: repo
+  title: 'SALT-NLP/SWE-chat: helper code, analysis notebook and gated dataset release for SWE-chat (COLM 2026)'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2387
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Joachim Baumann
+  - Vishakh Padmakumar
+  - Xiang Li
+  - John Yang
+  - Diyi Yang
+  - Sanmi Koyejo
+  key_claims:
+  - 'Release (README @8465db2): SWE-chat v2 is 17,819 sessions across 707 public GitHub repos, 229,909 user prompts and 2,028,951
+    agent tool calls with human-vs-agent line authorship; the code repo is MIT, the data is a separate HuggingFace dataset
+    under ODC-By that is gated with automatic approval (login plus access request), so it can be had without a human gatekeeper
+    but not anonymously.'
+  - 'Released tables (HF file list): checkpoints, commits, context_events, conversations, conversations_subagents, repositories,
+    session_logs, sessions, skill_definitions, skill_invocations, subagent_tasks parquet files plus one transcripts/<uuid>.jsonl
+    per session. skill_definitions + skill_invocations + context_events make instruction/skill-effect questions answerable
+    in principle, but neither the paper nor the notebook asks them (notebook has zero hits for pushback or skill-effect analysis).'
+  - 'Label provenance (paper App. F.1, Tables 6 and 8): the per-prompt pushback label (correction / rejection / failure_report
+    / non_pushback) over the full corpus comes from Qwen3.5-9B reading the preceding transcript; against N=100 human gold
+    it scores accuracy 0.67 (4-class) and 0.79 (binary), while two human annotators agree at kappa 0.832 (4-class) and 0.888
+    (binary) on N=90. The best judge (gpt-5.4) reaches 0.74 / 0.83. Gold-label prevalence, precision and recall are NOT-FOUND-IN-SOURCE.'
+  - The pushback classifier prompt, taxonomy and disambiguation rules are printed in full in paper App. F.2.4 (CC BY 4.0 paper),
+    so an equivalent detector can be re-run locally on our own transcripts without any dependence on the gated data; the prompt
+    explicitly counts "changing requirements/direction/scope mid-task" as correction, so the rate is an upper bound on agent-error
+    correction.
+  - 'What the repo does NOT ship: only swechat.py (loaders, tool-category mapping, figure helpers) and a notebook for intent/persona/success/coding-mode/tool
+    figures; there is no annotation pipeline, no pushback classifier code and no Figure-8 reproduction (grep pushback over
+    swechat.py and the notebook: 0 hits). Whether the 100 human-gold pushback labels are in the HF release is NOT-FOUND-IN-SOURCE
+    (card gated, 401).'
+  - The authors themselves decline to draw conclusive statements from the LLM-generated labels and recommend further validation
+    before downstream use (App. A); the corpus is an opt-in early-adopter, public-repo population, about 16% of sessions come
+    from Entire.io's own repo, and abandoned sessions are never committed and therefore never captured.
+  techniques:
+  - LLM-judge annotation of user pushback with preceding-transcript context
+  - human-gold validation of judges (N=100) with kappa agreement (N=90)
+  - commit-linked session release with skill and subagent tables
+  reported_results:
+  - 17,819 sessions / 707 repos / 229,909 prompts / 2,028,951 tool calls (v2, data through 2026-09-04)
+  - pushback judge accuracy 0.67 (4-class) / 0.79 (binary) vs N=100 human gold; human kappa 0.832 / 0.888 (N=90)
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+    - intake-2397
+  credibility_score: 4
+  contradicting_evidence:
+  - Judge accuracy 0.79 (binary) means roughly one prompt in five is mislabelled against gold; no per-class precision/recall
+    is reported, so a pushback RATE from these labels is not a calibrated quantity.
+  - Early-adopter public-repo population (Entire.io users) is not the EPYC operator-in-the-loop, multi-agent, remote-app regime.
+  notes: 'Read from disk: repo @8465db2 (README, swechat.py in full, notebook cells + column names), HF API listing (sha 202b071f),
+    paper v2 HTML text (Sec. 2.1-2.3, 3.1-3.2, 4.4, 5, App. A, B, F.1, F.2.4-F.2.5 read; App. C-E and D read only by search).
+    NOT read: the dataset itself (gated, never downloaded), HF dataset card (401), swe-chat.com beyond the landing page.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the repo is a thin loader plus notebook, not an annotation
+    toolkit; the label-bearing assets are the gated ODC-By parquet tables (skill_invocations, context_events and subagent
+    tables included) and the judge prompt that is only in the paper appendix. The pushback judge is a 9B model at 0.79 binary
+    accuracy, so SWE-chat labels can seed a detector prompt and a cross-population base rate, not calibrate ours: our calibration
+    needs our own N~100 gold.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: README.md L12-L13 @8465db2
+    quote: The v2 snapshot (data through September, 2026) contains **17,819 sessions** across **707 public GitHub repositories**,
+      comprising **229,909 user prompts** and **2,028,951 agent tool calls**, with human vs. agent code authorship attribution.
+    quote_sha256: 7c018b8d86a1c9cdd79ef7b13478af8218d5e2083338623ad1c3ff74ea86c244
+    source_revision: github.com/SALT-NLP/SWE-chat @8465db2a234dffd02be2e118bf3437771963b095 (2026-10-01)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: README.md L22 @8465db2
+    quote: First, request access on the [dataset page](https://huggingface.co/datasets/SALT-NLP/SWE-chat) and log in with
+      a Hugging Face token from an account with access.
+    quote_sha256: 09cde6d9a0f5c5257aa7e74c4ef77a92515e569ba26661dc83eec0f53743345b
+    source_revision: github.com/SALT-NLP/SWE-chat @8465db2a234dffd02be2e118bf3437771963b095 (2026-10-01)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: HF API cardData
+    quote: '"cardData":{"license":"odc-by"'
+    quote_sha256: b998fdb1a9298ec40a72026afc4af4a9b0b65de49729164e4fab0d91ca31310e
+    source_revision: huggingface.co/api/datasets/SALT-NLP/SWE-chat sha 202b071f18e03c79df5a7287565ce2ebc5ee7756 (lastModified
+      2026-10-03; retrieved 2026-10-22; file sha256-12 911aa81357d2)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: HF API gated flag
+    quote: '"gated":"auto"'
+    quote_sha256: 998645f770db749a13c87552bd447c6e10711942bf0978a306bba9b639b8e8f1
+    source_revision: huggingface.co/api/datasets/SALT-NLP/SWE-chat sha 202b071f18e03c79df5a7287565ce2ebc5ee7756 (lastModified
+      2026-10-03; retrieved 2026-10-22; file sha256-12 911aa81357d2)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: HF API siblings
+    quote: '{"rfilename":"skill_invocations.parquet"}'
+    quote_sha256: 6ed91d8a21edcda65ba295b4eb2492544d202f136c218a4ac89b8085074a92fd
+    source_revision: huggingface.co/api/datasets/SALT-NLP/SWE-chat sha 202b071f18e03c79df5a7287565ce2ebc5ee7756 (lastModified
+      2026-10-03; retrieved 2026-10-22; file sha256-12 911aa81357d2)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: HF API siblings
+    quote: '{"rfilename":"context_events.parquet"}'
+    quote_sha256: af8ade4b59088bea8e0167baf1adb7d40decc6aa9efa13d038e51402961af81c
+    source_revision: huggingface.co/api/datasets/SALT-NLP/SWE-chat sha 202b071f18e03c79df5a7287565ce2ebc5ee7756 (lastModified
+      2026-10-03; retrieved 2026-10-22; file sha256-12 911aa81357d2)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: paper Sec. 3.1
+    quote: in 48% of Claude Code sessions, the agent delegates at least one task to a subagent, and in 28% it invokes a skill.
+    quote_sha256: 88cf9f41f3798178bd0c8252aef06b6d710dd049211a8798df38c861e547f1bb
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: paper App. F.1 Table 6
+    quote: Prompt pushback 90 4 2 80/90 (88.9%) 0.832
+    quote_sha256: a241b05f8640a59d4b7558540e8bc3160f72f9e0952941c5437fe8de04079e3c
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: paper App. F.1 Table 6
+    quote: Prompt pushback (binary) 90 2 2 85/90 (94.4%) 0.888
+    quote_sha256: c662f068754eb551596f6aa613c65646eb8bc858a166e42e90b5df6b57864936
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: paper App. F.1 Table 8
+    quote: qwen-3.5-9b 0.72 0.67 0.79 0.60 0.55 0.76 0.47
+    quote_sha256: 8b5f60d4c402da41aea38fe8630e066290692ad715f2399615b6dc1458d4e0bb
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: paper App. F.1
+    quote: The only exception is the prompt pushback task, where we defer to the second-best-performing model, since qwen-3.5-9b
+      offers a much better cost-performance trade-off than gpt-5.4-2026-03-05.
+    quote_sha256: 83aa0db602a0e278973d0ead10019f10248a07811807414dd321f98accccc235
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: paper App. F.2.4
+    quote: Pushback is any prompt where the user resists, corrects, redirects, or takes over from the agent - rather than
+      simply continuing the workflow.
+    quote_sha256: dfd540cfba3a4cae11c13b371de0fc6266519054f7fb30bd96344590fdd0a79a
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: paper App. F.2.4
+    quote: correction - The user redirects the agent by providing missing context, correcting a misunderstanding, pointing
+      out factual errors, or changing requirements/direction/scope mid-task.
+    quote_sha256: 1ee1d9637ff1560767e0b843979067901b809d8596ad5f61c5a3529393479de5
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: swechat.py L1-L2 @8465db2
+    quote: Helpers for loading SWE-chat and reproducing the paper's figures.
+    quote_sha256: 0e1ee30ca17cfa9623ff4082498ecb22fddc94fbebbee6822a2f2d1df798d86e
+    source_revision: github.com/SALT-NLP/SWE-chat @8465db2a234dffd02be2e118bf3437771963b095 (2026-10-01)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: paper App. A
+    quote: For results based on LLM-generated labels, we do not draw conclusive statements, given the inherent unreliability
+      of such annotations and the risk of LLM hacking [4].
+    quote_sha256: 22550277ff3d13991b109c36e560cbc5a1d445971f43e6a14573c82c04dd4185
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: paper App. A
+    quote: If the user abandons the agent’s output entirely, session logs are not committed and thus not captured by our data.
+    quote_sha256: 9fb1dda4c5b896262ac4d833a2da9bbc4b9fb43cfd0cb762011014627de753ff
+    source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh claim about the code+data release; paper entry intake-2397 covers the paper itself.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Fresh. File list read from the HF API listing (the dataset card and parquet columns are gated: column names beyond
+      the notebook''s are NOT-FOUND-IN-SOURCE).'
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh; numbers re-read from Tables 6 and 8 and agree with intake-2397 claim 2.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh; reuse is licence-permitted for the paper text (CC BY 4.0 shown on the HTML), prompt reuse on our own transcripts
+      needs no dataset access.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Fresh absence claim; trees searched: SALT-NLP/SWE-chat @8465db2 (5 files: LICENSE, README.md, analyses_and_figures.ipynb,
+      requirements.txt, swechat.py).'
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh; consistent with intake-2397.
+  depends_on: []
+- id: intake-2407
+  arxiv_id: null
+  url: https://github.com/entireio/cli
+  source_type: repo
+  title: 'Entire CLI (entireio/cli): git-native, commit-linked capture of AI agent sessions as per-checkpoint refs'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - context_management
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2387
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Entire Inc
+  key_claims:
+  - 'Capture and linking (README Key Concepts, docs/architecture): agent hooks (Claude Code .claude/settings.json, Codex .codex/hooks.json,
+    OpenCode .opencode/plugins/entire.ts TypeScript plugin, Cursor, Pi, others) feed session state; a checkpoint is created
+    only when a git commit happens and the commit message carries an Entire-Checkpoint: <26-char ULID> trailer; the checkpoint
+    is its own git ref refs/entire/checkpoints/<shard>/<id> whose tree holds metadata.json, per-session transcript files and
+    subagent task records.'
+  - 'Retention model: there is no TTL, expiry or retention knob for transcripts (grep for retention/ttl/expire over README.md
+    and docs/ finds only a catalog-index cache, auth-token expiry, an Antigravity 14-day snapshot cache and git gc pruneExpire
+    for deleted shadow branches). Committed checkpoints live as long as the git object store does and are pushed with the
+    code by default (strategy_options.push_sessions default true), or to a separate private repo via strategy_options.checkpoint_remote.'
+  - 'Coverage gap for sessions that never commit: between commits nothing is written to git; pending work sits in .git/entire-sessions/<id>.json
+    and a sanitized local .entire/metadata/<session>/full.jsonl. Persistent checkpoints without a commit exist only via eager
+    condensation at session end, doctor/sweeper salvage and hidden snapshots for sessions that change no files, so research/planning/review
+    sessions depend on those paths. The paper entry intake-2397 independently notes that fully abandoned sessions are never
+    captured.'
+  - 'Backfill is narrow: the experimental, hidden entire import <agent> reads pre-existing transcripts as read-only checkpoints
+    but with a fixed LookbackDays = 30 (by transcript file mtime, no flag), per repository (Codex sessions matched by session_meta
+    cwd), and the registered importers are claude-code, cursor, pi, factory, codex, copilot only: no OpenCode importer and
+    no ~/.claude/history.jsonl, so it cannot recover anything that has already rolled past the agent''s own cleanup.'
+  - 'Redaction is irreversible and text-only: secrets are replaced by REDACTED before any git object is written (entropy,
+    Betterleaks patterns, credentialed URIs, DB DSNs and more), but the local full.jsonl copy is unredacted (mode 0600), pasted
+    images are stored unredacted for Claude Code, and the docs state the whole scheme is best-effort; anyone with repo access,
+    or the internet if the repo is public, can read committed transcripts.'
+  - 'Optional LLM summaries at commit time (strategy_options.summarize, default provider Claude Code, selectable codex/opencode/pi/cursor/copilot-cli)
+    write intent, outcome, learnings {repo, code, workflow} and friction points per checkpoint; nothing in the CLI records
+    whether a learning was later retrieved, followed or reduced friction (grep outcome/efficacy/measure over runner_*.go and
+    the summary code: no such field), and the runner-tuning code reads CLAUDE.md/AGENTS.md only as capped input context (6000
+    chars), not as an object it evaluates.'
+  techniques:
+  - commit-trailer linking of agent sessions to commits
+  - one-git-ref-per-checkpoint storage with on-demand fetch
+  - hook-based multi-agent capture with external-agent plugin protocol
+  - secret redaction before git write
+  - read-only backfill import of past transcripts
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+    - intake-2397
+  credibility_score: 1
+  contradicting_evidence:
+  - Vendor (Entire Inc) documentation; no independent evaluation of capture completeness. The only independent use is SWE-chat
+    (intake-2397), which reports opt-in early-adopter coverage and loss of abandoned sessions.
+  notes: 'Read from disk: clone @eb51bb1d (2026-10-22): README.md (Key Concepts, Configuration, Agent Hook Configuration,
+    Checkpoint Remote, Auto-Summarization, Security & Privacy), docs/security-and-privacy.md (transcript storage, redaction,
+    local copies, images), docs/architecture/sessions-and-checkpoints.md, ref-checkpoint-backend.md (head), docs/KNOWN_LIMITATIONS.md
+    (head), agentimport.go, discover.go, import_cmd.go, claude.go/codex.go headers, strategy/hooks.go hook names, runner_gather.go
+    head, api/checkpoint LearningsSummary. NOT read: Go bodies of condensation, hooks install logic, e2e, entire.io hosted
+    service (login/cluster/org features), external-agent plugin protocol beyond its head. No binary was installed or run.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): Entire is a capture-and-link layer, not a retention-past-cleanup
+    rescue: forward capture is durable (git objects, no TTL) but backfill is capped at 30 days, per repo, and excludes OpenCode
+    and history.jsonl, and sessions that never commit are only partly covered. It carries no lesson-efficacy measurement;
+    its learnings/friction summaries are the same kind of unmeasured distilled lesson as Beacon''s.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: README.md Checkpoints
+    quote: 'Checkpoints are created when you or the agent make a git commit, and the commit carries an `Entire-Checkpoint:
+      <id>` trailer linking the two.'
+    quote_sha256: d98a7defe915e631b07d07c67d6aaff45f503d7ef2b87d4b834e05e08dfe1a23
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: README.md Checkpoint Storage
+    quote: The ref points at a commit whose tree *is* that checkpoint — `metadata.json`, the per-session transcript files,
+      and any subagent task records.
+    quote_sha256: 0d613aceac1717ae9888e6440fef209c67553e1bbb172145b6f50382d2de8e91
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: table-row
+    locator: README.md Agent Hook Configuration
+    quote: '| OpenCode | `.opencode/plugins/entire.ts` | TypeScript plugin |'
+    quote_sha256: 7b3f93470b0bb82cce36abb31b89a766363f55c684bc55e1eda63e10829a7f33
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: table-row
+    locator: README.md Configuration Options
+    quote: '| `strategy_options.push_sessions` | `true`, `false` | Auto-push checkpoint data on git push (default `true`)
+      |'
+    quote_sha256: 1b368ce8a74dbdd57a701b2ed1fddbf80026ea79ccf19de8c14b55d5fb71fca7
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: README.md Security & Privacy
+    quote: '**Your session transcripts are stored in your git repository**, in the [per-checkpoint refs](#checkpoint-storage)
+      described above.'
+    quote_sha256: afa73336ae098760795ace8c0dccbb104bbd1864bc8b84be01a6f6d255df697d
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: docs/security-and-privacy.md L20
+    quote: Between commits, Entire writes nothing to git.
+    quote_sha256: d3aa4ba3354ddfa967f9dc10776da14251bba333e0375d33533c301ef5df60f1
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: docs/architecture/sessions-and-checkpoints.md
+    quote: 'Most persistent checkpoints are written when a commit condenses a session, but some have no commit: eager condensation
+      at session end, `entire doctor` and the session sweeper, and snapshots from the hidden `entire checkpoint create`.'
+    quote_sha256: de7f8219851d3ecfd01a887ef428f662a4b2c30b034da76a3dd4683e8dfe1d6b
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: cmd/entire/cli/agentimport/agentimport.go L30-L31
+    quote: // LookbackDays bounds how far back import reaches. Fixed this pass (no flag). const LookbackDays = 30
+    quote_sha256: 652ae15a8ba1949bb0f0e9b7b429f3d834b4f078d150ed03497ea6aaacf512ef
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: cmd/entire/cli/agentimport/agentimport.go L92-L99
+    quote: var importers = []Importer{ claudeImporter{}, cursorImporter{}, piImporter{}, factoryImporter{}, codexImporter{},
+      copilotImporter{},
+    quote_sha256: 1047e16f10807cca09c8e89158425c273d8d1f8b062d9e1415f1e9803c9210b7
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: cmd/entire/cli/import_cmd.go
+    quote: Import pre-existing %s transcripts for this repo (the past month) as read-only checkpoints.
+    quote_sha256: 64d1d7507409d145eae3f4956ddbd857bf01ea5bdae728ca1ff56df319fc6b19
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: docs/security-and-privacy.md Local copies
+    quote: '`.entire/metadata/<session>/full.jsonl` is Entire''s own local working copy of the transcript, written mode `0600`.
+      It is *sanitized* (agent state that cannot be replayed out of a checkpoint is stripped) but **not redacted**'
+    quote_sha256: 8473bd143cd0c9fd45dbaf73afb23c4dc38525b74696c67903582503b01b0f41
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: docs/security-and-privacy.md images
+    quote: '| Claude Code | **Stored unredacted**, inline in the transcript as base64.'
+    quote_sha256: a48ec5cc7132f5e2a75fbad8f852f082113532455cb52fc973d8780afa918bbb
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: README.md Auto-Summarization
+    quote: Summaries capture intent, outcome, learnings, friction points, and open items from the session.
+    quote_sha256: 8380f06a511c880e828ec1348135b29acbbd69d3f56587eddf779f5be47beb81
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: api/checkpoint/metadata.go L654-L659
+    quote: type LearningsSummary struct { Repo []string `json:"repo"` // Codebase-specific patterns/conventions Code []CodeLearning
+      `json:"code"` // File/module specific findings Workflow []string `json:"workflow"` // General dev practices }
+    quote_sha256: 882d693e80972137247df93168641295e2870c3c6e25612c484e390439eca2ed
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: cmd/entire/cli/runner_gather.go L20
+    quote: tuneDocCap = 6000 // max chars embedded per doc (CLAUDE.md etc.)
+    quote_sha256: a8b7d1e5877ac752ddbb137a4c6f2dadc233ede4f7fe75e31948aee528fe0583
+    source_revision: github.com/entireio/cli @eb51bb1d7e81b62bd956d9a8409aa47f1e23d887 (2026-10-22, MIT)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh. The SWE-chat paper (intake-2397) describes a "dedicated branch"; current CLI stores per-checkpoint refs (git-branch
+      is the legacy backend) - narrowing, not conflict.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Fresh absence claim; trees searched: README.md, docs/*.md, docs/architecture/*.md @eb51bb1d.'
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Fresh. Corrects the assumption that import could rescue our rolled-off history: the lookback equals the agent cleanup
+      horizon.'
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 5
+    effect: unaffected
+    note: 'Fresh absence claim; trees searched: cmd/entire/cli/runner_*.go, explain*.go, api/checkpoint/metadata.go.'
+  depends_on: []
+- id: intake-2408
+  arxiv_id: '2606.06448'
+  url: https://arxiv.org/abs/2606.06448
+  source_type: paper
+  title: 'Agent Memory: Characterization and System Implications of Stateful Long-Horizon Workloads'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2387
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Yasmine Omri
+  - Ziyu Gan
+  - Zachary Broveak
+  - Robin Geens
+  - Zexue He
+  - Alex Pentland
+  - Marian Verhelst
+  - Tsachy Weissman
+  - Thierry Tambe
+  key_claims:
+  - 'Scope: a systems characterization (not a quality study) of ten agent-memory systems in four paradigms (long-context,
+    flat RAG, structure-augmented RAG, agentic/LLM-mediated) on MemoryAgentBench (LongMemEval_S_* centre: 5 samples of ~360K
+    tokens, 300 queries) and MemoryArena, with a phase-aware profiler that attributes tokens, calls, latency and GPU energy
+    to construction, retrieval and generation; every benchmark is recall-accuracy over conversational or long-context history,
+    none measures whether stored memory changes later agent behaviour, and none is a coding-agent workload.'
+  - 'Headline: construction, not query-time serving, dominates lifecycle cost for LLM-mediated memories; end-to-end energy
+    spans 26.5x from BM25 (582 kJ) to Letta (15,429 kJ) on LongMemEval with Qwen3-32B, and per-query latency differs by two
+    orders of magnitude on identical hardware.'
+  - 'Lexical baseline wins on accuracy per joule: on the same run BM25 scores 47.0% accuracy at 582 kJ versus GraphRAG 46.0,
+    HippoRAG v2 44.3, A-Mem 42.7, embedRAG 39.8, SimpleMem 36.0, Mem0 32.0, Letta 27.7, MIRIX 20.0; none of the LLM-mediated
+    constructions beats the no-LLM index on accuracy in this setting, and the accuracy differences among the top rows are
+    small relative to the sample size (5 samples, 300 queries; no confidence intervals in the text read).'
+  - 'Capability floor: systems with strict output contracts fail structurally when the construction model is too small (MIRIX
+    collapses at Qwen3-1.7B because malformed JSON/tool calls corrupt the store), while systems without hard contracts degrade
+    smoothly; the paper''s recommendation is to validate the minimum viable construction LLM before deployment.'
+  - 'Maintenance is the weak stage: the authors state that in many current systems memory accumulates indefinitely with no
+    freshness or pruning policy, and per-user footprint growth diverges across systems (Sec. 4.7); inter-session construction
+    creates a freshness-latency trade-off when writes are slower than session arrival (Sec. 4.6).'
+  - 'Artifact: phase-aware profiling harness plus the ten systems and scripts are released at github.com/Tambe-Lab/agent-memory-profiling
+    (archived at Zenodo 10.5281/zenodo.21846239); repo licence and contents were not fetched (GitHub API rate-limited), so
+    reuse is unverified.'
+  techniques:
+  - phase-aware cost attribution (construction / retrieval / generation)
+  - energy-per-correct-answer normalisation
+  - construction-LLM capability ladder
+  - taxonomy of memory paradigms by construction, storage, retrieval and mutability
+  reported_results:
+  - energy span 26.5x (BM25 582 kJ to Letta 15,429 kJ), LongMemEval_S_*, Qwen3-32B local vLLM
+  - BM25 47.0% accuracy vs 20.0-46.0% for LLM-mediated systems (same run)
+  - Mem0 construction 13.4x slower than HippoRAG v2 under TP=8 Qwen3-235B (32,114 s vs 2,402 s)
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+  credibility_score: 3
+  contradicting_evidence:
+  - No downstream-behaviour or coding-task evaluation; recall QA on LongMemEval does not transfer to lesson-following, so
+    the cost findings port but the accuracy ordering does not.
+  notes: Read v2 HTML text (Sec. 1, 2.1, 3, 4.1-4.5, 4.8 recommendations, 5, artifact appendix); Sec. 4.6-4.7 and Table 1
+    read only by headings/recommendation lines. Figures not inspected. Repo github.com/Tambe-Lab/agent-memory-profiling not
+    fetched (API rate limit); no code run.
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the paper is a cost characterization of QA-recall memories;
+    it contains no evidence on whether memory content changes agent behaviour, so it does not fill the wave-1 gap. Its transferable
+    content is cost discipline (price write-side construction, floor the construction model, budget maintenance) and the BM25
+    baseline result.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 1
+    quote: Existing benchmarks evaluate these systems purely on downstream accuracy [14, 28, 6, 27], leaving their system-level
+      behavior uncharacterized.
+    quote_sha256: 7d0df83ce029ef11fb37b5fe6771ec3a5426fc696b917a92b812f61d4b1ad790
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 3.1
+    quote: This workload contains five samples, each with approximately 360 K tokens of history and 60 queries (300 total),
+      cleanly separating construction over a long interaction history from repeated query-time retrieval and generation.
+    quote_sha256: 302c19f09b220474529a3c1516327f9354797568de791a41bab77cc8655ce381
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 4.2
+    quote: Table 3 shows that end-to-end energy span is over 26.5×, from BM25 at 582 kJ to Letta at 15,429 kJ.
+    quote_sha256: 323b69a97d7868e1d317531728945a034b5d7f27ea58ab28a07c89abc52698c5
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 5
+    quote: we find that the dominant cost in agent memory is not query-time serving but construction
+    quote_sha256: a118cc9720789a96b52ce13a681a92ef16eab4b43ed5c84acd298fbfb9b1459c
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: Sec. 4.2 Table 3 (BM25 row)
+    quote: BM25 47.0 16.3m 300 582 4,128
+    quote_sha256: b200fa90e3c499b36565954d89038078b82d60fb9839ecc194a670e06bb17088
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: Sec. 4.2 Table 3 (Mem0 row)
+    quote: Mem0 32.0 4.02h 4,538 4,878 50,813
+    quote_sha256: 92f87e02a840c6b499b2e0ecb95b4c9da8486fd1b22933584457136c4b13672a
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: Sec. 4.4 Insight 4
+    quote: MIRIX fails entirely at Qwen3-1.7B, because its pipeline relies on multiple sub-agent tool calls that require well-formed
+      JSON schemas and legal tool-call syntax.
+    quote_sha256: b0a1e80471a56c6c95ce99cceb9acf2d50b62ee83b11c319407a553ff377610b
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Sec. 2.1 Maintenance
+    quote: 'In many current systems, maintenance is weak or absent: memory accumulates indefinitely with no freshness or pruning
+      policy'
+    quote_sha256: 3a740a5629a381d0b379a1a5d59e3b44cffd8f20bc4936e7f11d69d7e517cac7
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: Artifact appendix
+    quote: 'The artifact is available as a GitHub repository: https://github.com/Tambe-Lab/agent-memory-profiling.'
+    quote_sha256: baf650b2ea9171405a8674ea06503d6e10b725c6bd50c40fd9c2a276b722e820
+    source_revision: arXiv:2606.06448v2 (HTML, v2 of 2026-09-22, retrieved 2026-10-22, sha256-12 013c58c8c46e)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh; absence claim (no behaviour-change evaluation) from a search of the v2 text for lesson/behavio/coding/instruction
+      terms.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Fresh; arithmetic checked: 15,429 / 582 = 26.5.'
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh; numbers copied from Table 3 (columns Acc., Wall, Calls, Total kJ, J/correct); the Letta 15,429 kJ and BM25
+      582 kJ cells match the Sec. 4.2 prose.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh; repo not fetched.
+  depends_on: []
+- id: intake-2409
+  arxiv_id: '2605.18854'
+  url: https://arxiv.org/abs/2605.18854
+  source_type: paper
+  title: Evaluating Memory Condensation Strategies for Coding Agents in Data-Driven Scientific Discovery
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2387
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Renuka Chintalapati
+  - Sid Raskar
+  - Anurag Acharya
+  - Jared Willard
+  - Patrick Emami
+  - Sameera Horawalavithana
+  key_claims:
+  - 'Design: eight OpenHands condensers (NoOp, RecentEvents, AmortizedForgetting, ObservationMasking, ConversationWindow,
+    LLMSummarizing, StructuredSummary, LLMAttention) compared on DiscoveryBench, 10 test tasks in each of 6 domains = 60 tasks
+    x 8 = 480 runs, one backbone (GPT-4o via Azure, temperature 0), LLM condensers use GPT-5-mini, quality judged by GPT-4o
+    against gold hypotheses.'
+  - 'Scale caveat that bounds every result: the tasks are SHORT (5-22 events, NoOp mean 9.0 events, about 75k tokens) and
+    condensation triggers at max_size=8, so the study is a regime of barely-over-threshold histories, not hundreds-of-turns
+    coding sessions; the authors list this as limitation 2.'
+  - 'Cost: only ObservationMasking (8.6% fewer tokens than NoOp, quality 0.572) and ConversationWindow (1.2%) save tokens
+    overall; every LLM-based condenser increases total tokens (LLMSummarizing +23.6%, StructuredSummary +59.0%, LLMAttention
+    +93.9%) and 41-70% of tasks need more events, which the authors attribute to agents losing context and retrying.'
+  - 'Quality: no condenser changes hypothesis quality significantly (range 0.559-0.637 vs NoOp 0.591, paired Wilcoxon p>0.05
+    Bonferroni-corrected, overlapping CIs); with n=60 paired tasks this is absence of evidence, not equivalence (no power
+    or minimum-detectable-effect analysis is reported).'
+  - 'Task length and domain matter: only long tasks (>10 events) yield positive savings for heuristic condensers (17-34%;
+    ObservationMasking +33.5%), LLM condensers stay net-negative even there except LLMSummarizing at about break-even (+0.4%),
+    and ObservationMasking saves 52% in verbose sociology tasks but nothing in compact meta-science.'
+  - 'Relation to prior work: this replicates, on a different harness (OpenHands CodeAct vs SWE-agent) and domain (scientific
+    discovery vs SWE-bench), the Complexity Trap finding already in the index as intake-274 that simple observation masking
+    matches or beats LLM summarization; it is a corroboration, not new mechanism.'
+  techniques:
+  - observation masking outside an attention window
+  - sliding-window / amortized forgetting
+  - LLM summarization and structured-summary condensers
+  - LLM relevance ranking of events
+  reported_results:
+  - ObservationMasking 68,718 tokens vs NoOp 75,147 (-8.6%); LLMAttention 145,738 (+93.9%)
+  - hypothesis quality 0.559-0.637 vs NoOp 0.591, no significant difference
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+    - intake-274
+  credibility_score: 2
+  contradicting_evidence:
+  - Very short tasks, single backbone, single temperature-0 run per cell, same-vendor LLM judge; limits stated by the authors.
+  notes: Read the full arXiv v1 HTML text (sections 1-6; tables 1-3; figures not inspected). No code release link found in
+    the text. Nothing run.
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): useful only as a second, independent-harness data point that
+    heuristic observation masking is the cheap, safe condenser and LLM condensers cost more than they save at short horizons;
+    it says nothing about the 100+-event regime our harnesses actually run in, and it does not touch lesson memory.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 3.2
+    quote: 'Our evaluation uses stratified sampling: 10 tasks per domain (test split only) across six domains (60 total) yielding
+      480 evaluations in total (60×8 condensers).'
+    quote_sha256: 85c95fce94f23bd7d9db3673cb7374894c2171a55ab1cb3079f1bc28f92f323e
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 3.4
+    quote: 'which averages 9 events per task (range: 5–22) and roughly 75k tokens. Based on these statistics, we set max_size=8'
+    quote_sha256: 40e9093e8a797d4a29ba1f92521a1d57f842eb76099234e04e109d6113026eab
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 6
+    quote: Second, DiscoveryBench tasks range from 5–22 events; real-world scientific workflows involving hundreds of iterations
+      may amplify or shift the patterns we observe
+    quote_sha256: 070dccc709de82ae9f83f6f3f1705637e1aa9231d6852dc4cc4a1612f3d137ee
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: Sec. 4 Table 3
+    quote: ObservationMasking 68,718 8.6%
+    quote_sha256: e37cd21c91086d18629d5a353bea11fb35c8d996d903522538d25198d8d811b6
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: Sec. 4 Table 3
+    quote: LLMAttention 145,738 −93.9%
+    quote_sha256: 2b7596ca9aa651881f13c9848af87be224535d069d4316524c43340d162d5ffc
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: Sec. 4.1
+    quote: No condenser produces a statistically significant change in hypothesis quality.
+    quote_sha256: 2cecb650a332e24fd816c8a65bc46ed6ba050c2e795b5513065b353467ada74b
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Sec. 5
+    quote: Only long tasks (>10 events) yield positive savings for heuristic condensers (17–34%), while short tasks see increased
+      costs across all strategies.
+    quote_sha256: d9d1ef880d47c91a7da5f3294aced10c322c54cef3e7662df43b35846a4d0422
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: Sec. 1
+    quote: none of these works compare multiple condensation strategies while controlling for task type and model.
+    quote_sha256: ed690bc81dce6700e0dac6b20e9565ae06c08910349f71d4a66580477806d204
+    source_revision: arXiv:2605.18854v1 (HTML, 2026-05-13, retrieved 2026-10-22, sha256-12 e9ca106f05d3)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh; low-priority paper, read in full text.
+  - claim_index: 1
+    effect: unaffected
+    note: Fresh; this is the main narrowing on how far results port to long coding sessions.
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh; the paper text says "+8.6%" for savings in one place and Table 3 shows -23.6% etc. as savings sign, both
+      consistent with the signs used here.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh; "absence of evidence" wording is ours - the paper concludes "cost, not quality, differentiates strategies".
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh; the paper itself does not cite intake-274 (arXiv 2508.21433) in the passages read - the link is ours.
+  depends_on: []
+- id: intake-2410
+  arxiv_id: '2603.24639'
+  url: https://arxiv.org/abs/2603.24639
+  source_type: paper
+  title: Experiential Reflective Learning for Self-Improving LLM Agents
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - autonomous_research
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2387
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Marc-Antoine Allard
+  - Arnaud Teinturier
+  - Victor Xing
+  - Gautier Viaud
+  key_claims:
+  - 'Method: after each single-attempt task the agent reflects on trajectory plus a binary outcome into a structured heuristic
+    (analysis + guideline with explicit trigger conditions and recommended actions); at test time an LLM scores the pool and
+    the top-k (k=20) are injected into the system prompt, with no change to the ReAct loop.'
+  - 'This IS a lesson-efficacy A/B on outcomes, which narrows the wave-1 statement that no source measures whether hand-kept
+    lessons change behaviour: on Gaia2 Search+Execution, heuristics accumulated on 8 universes are tested on 2 held-out universes
+    (48 execution + 28 search tasks, 3 runs, GPT-5-mini) and raise success from 48.3% to 56.1% (7.8 points). The unit is task
+    success of a pool, not violation recurrence of an individual lesson, and no confidence interval or significance test is
+    reported.'
+  - 'Selection beats dumping and bloat hurts: random k heuristics peak at about 40-60 and then degrade; LLM-selected k=20
+    (56.1) beats embedding retrieval (53.3) and the best random configuration (53.8); raw-trajectory few-shot is below baseline
+    (46.4); but ablation gaps of 2-3 points sit inside the noise of a 76-task, 3-run test set.'
+  - 'Failure-derived versus success-derived lessons split by task type: failures-only reach 58.9 overall (Search 67.9, Execution
+    50.0) while successes-only reach 49.9 (Execution 52.1, Search 47.6); the authors advise using both when the task mix is
+    unknown.'
+  - 'Outcome signal quality: without environment rewards the agent mislabels its own outcome 30% of the time (70% correct)
+    and ERL falls to 51.2 (still above the 48.3 baseline); on tau2-bench ERL is +1.3 points overall (38.0 vs 36.7) with Telecom
+    worse (28.3 vs 30.0, pass^3 to zero), and an iterative variant generalizes worse to held-out universes (50.7 vs 56.1).'
+  - 'Cost: injecting about 20k tokens of heuristics on top of a ~12k-token system prompt at every turn nearly doubles rollout
+    input tokens (+85%) and raises total API cost 40% (rollout +15% after prompt caching, plus generation and retrieval calls);
+    turns per scenario are unchanged (16.6 vs 17.6).'
+  techniques:
+  - trigger-conditioned heuristics distilled from single-attempt trajectories
+  - LLM relevance scoring for top-k injection
+  - held-out-universe evaluation (disjoint data partitions, identical tools)
+  - pass@3 vs pass^3 reliability reporting
+  reported_results:
+  - Gaia2 overall 56.1% vs ReAct baseline 48.3% (ExpeL 50.9, AutoGuide 50.8, few-shot 46.4)
+  - failures-only 58.9, successes-only 49.9, embedding retrieval 53.3, no-reward self-assessment 51.2
+  - total API cost +40% ($15.27 to $21.40 per full evaluation run)
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+  credibility_score: 2
+  contradicting_evidence:
+  - Small test set (76 tasks x 3 runs), single backbone, no uncertainty estimates; the iterative variant and tau2-Telecom
+    results run against the headline; baselines ExpeL and AutoGuide are re-implemented by the authors.
+  notes: 'Read from v2 HTML text: abstract, Sec. 1-4, App. A (tau2-bench), B, C.1, C.2 (tables partly), D, E, F/G only by
+    heading. NOT read: Figure images, Appendix F example heuristic, Appendix G prompts, full Table 3 k-sweep rows beyond k=1..4.
+    No code released link found. Nothing run.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): ERL is the one source in this group that runs a held-out A/B
+    of injected lessons on task outcomes, so it supplies a design template (disjoint-universe split, pass^3 reliability, random-k
+    and reward-free controls, token-cost line) for our lesson-efficacy study; but its effect sizes are single-digit points
+    on 76 tasks without uncertainty, and nothing in it observes whether a specific lesson stopped a specific mistake.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 2 Heuristic generation
+    quote: a learned guideline with explicit trigger conditions and recommended actions
+    quote_sha256: 459cb057c1631c2df34d01c7b95807badb837b8a6b9b551ac468c30bb94ed5c8
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 2 Retrieval
+    quote: The top-k heuristics are then injected into the agent’s system prompt, ensuring that the agent receives task-specific
+      advice rather than being overwhelmed with the full heuristic pool.
+    quote_sha256: 3324ec50b04a9ff85bbdbdc03c195f13ead3b40f1abaa1b1ae0fde280f3360a2
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 3 Experimental setup
+    quote: we accumulate heuristics on 8 universes (112 execution / 132 search tasks) and evaluate on 2 held-out test universes
+      (48 / 28 tasks).
+    quote_sha256: 3dd8794dba8ebf82326a90354c3f5c8fc1f495e4ad00374779a676fbf4393b28
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: table-row
+    locator: Sec. 3 Figure 2(a)
+    quote: Baseline 43.1 53.6 48.3
+    quote_sha256: 710f0592acd5f4cb61c756e040fbad1c95f0f827eb7650115e6ba7e3ecc013fd
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: table-row
+    locator: Sec. 3 Figure 2(a)
+    quote: ERL (Ours) 51.4 60.7 56.1
+    quote_sha256: 3cc6828cbc67f4f1a1034fa529e29b9e6c063eb73733871997dc0d0a694c06b9
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: Sec. 3
+    quote: Performance exhibits a non-monotonic pattern, peaking around 40–60 heuristics before degrading with excessive inclusion.
+    quote_sha256: 0ab8f0f1964666ceec77d5afe18d78468b1856bb4de9237c796412345c52a757
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table-row
+    locator: Sec. 3 Figure 2(b)
+    quote: embedding retrieval 50.7 56.0 53.3
+    quote_sha256: a892931c217c3966c8656f001166b4f8af8131bb1fe470b8ee04d37e88008225
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table-row
+    locator: Sec. 3 Figure 2(b)
+    quote: only failures 50.0 67.9 58.9
+    quote_sha256: a6dc6b817420645f39e5ae946e8505ee1e44ea3577eeb7f51e56d91247c3c3db
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table-row
+    locator: Sec. 3 Figure 2(b)
+    quote: only successes 52.1 47.6 49.9
+    quote_sha256: 696a7f84a4284d5ac4ecdbb8095fbd94f5f72cdbd3c57b46d2e8cc915c5ce030
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: App. C.2
+    quote: In this setting, the agent correctly identifies success or failure only 70% of the time, and the success rate of
+      ERL drops to 51.2% (-4.8%).
+    quote_sha256: 6d4cddacb7dc39db92f65cebeece1ef086e9e422bf350d0629a0bdfee7ad89aa
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: App. E Table 5
+    quote: Iterative ERL achieves higher source task performance but lower test generalization.
+    quote_sha256: 7558d16085893c6adce7dc4a31f00da5a8e9c9a69672b154e44d32253e3c4f21
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: App. D
+    quote: Input tokens for scenario rollout nearly double (+85%), primarily because retrieved heuristics (∼20k tokens) are
+      appended to the base system prompt (∼12k tokens) at every turn
+    quote_sha256: 99ba5737ffff5397c8de081f5a7ff9138a8c61e9560f160417196df1ad6cdfe1
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: App. D
+    quote: Accounting for heuristic generation and retrieval, ERL incurs a 40% overall increase in API costs.
+    quote_sha256: 9592e205ab30880f9a98c84ab5ac24f65b23d234cdfc864c85e0d60c8e26e0e7
+    source_revision: arXiv:2603.24639v2 (HTML, v2 of 2026-03-31, retrieved 2026-10-22, sha256-12 d9df614c3c36)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 1
+    effect: unaffected
+    note: 'NARROWS the wave-1 premise "no source measures lesson efficacy": ERL is a pool-level outcome A/B with a disjoint
+      held-out split; it still does not measure per-lesson violation recurrence or an operator-correction rate. The abstract/intro
+      phrase "+7.8%" means percentage points (56.1 - 48.3), not relative gain.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Fresh; the 2-3 point ablation gaps vs ~3+ point binomial standard error (our arithmetic: sqrt(0.5*0.5/228) = 3.3
+      points, larger with task clustering) are noise-level; the baseline-vs-ERL 7.8 points is about 2 SE.'
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh.
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh.
+  depends_on: []
+- id: intake-2411
+  arxiv_id: null
+  url: https://github.com/Hanchenli/vllm-continuum
+  source_type: repo
+  title: 'vllm-continuum: vLLM with Continuum scheduling (KV pin with TTL, program-level FCFS)'
+  categories:
+  - inference_serving
+  - kv_cache
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2398
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-overturned
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Hanchen Li (repo owner)
+  key_claims:
+  - The repository README states that the released code is Continuum-style scheduling WITHOUT the estimation described in
+    the paper, and says multi-node use needs sticky-session routing (README.md L3).
+  - 'The shipped TTL logic is a fixed 2.0 s pin gate: a finished request that parsed to a tool call is pinned for exactly
+    FIXED_THRESHOLD_CONTINUUM = 2.0 s when that tool name''s mean observed duration is <= 2.0 s, and not pinned otherwise;
+    a tool name with no history counts as 0.0 s and IS pinned (estimate_with_func.py L10, L154-159). There is no empirical
+    CDF, no argmax over candidate TTLs, no queueing-delay term, no memoryfulness factor, no reload-cost profile and no K=100
+    cold-start ladder anywhere in the tree (searched vllm/, continuum_exp/, test_scripts/, mini-swe-agent/src).'
+  - The per-tool duration statistic is a running arithmetic mean of (next-request arrival - previous-request departure) keyed
+    by tool name, labelled TODO "currently just an average" by the author (estimate_with_func.py L135-146); the interval includes
+    client, network and harness time, not only tool execution.
+  - 'Pin mechanics are an engine-side list pinned_requests of (request, expiry): _free_blocks skips kv_cache_manager.free
+    for a pinned request; every schedule step unpins entries whose expiry passed AND whose job_id has no request in the waiting
+    queue; the last step of a job and a pool-exhaustion deadlock unpin early (scheduler.py L248-256, L1357-1364).'
+  - 'Program-level FCFS: the waiting queue serves pinned jobs first (earliest job first-arrival), otherwise the request whose
+    job_id first arrived earliest (request_queue.py L233-258). Preemption under CONTINUUM avoids last-step jobs and, when
+    <= 1 request is running, unpins the pinned request with the LATEST EXPIRY (scheduler.py L196-207), not the latest program
+    arrival as the paper text says.'
+  - Program identity and the last-step hint are CLIENT-SUPPLIED request fields (job_id, is_last_step added to the OpenAI protocol;
+    mini-swe-agent computes is_last_step from its step_limit). The server cannot infer program boundaries on its own in the
+    released code.
+  - The tool-name parser is specific to mini-swe-agent output (first word of a single ```bash fenced block); other agents
+    need their own parser (estimate_with_func.py L73-92).
+  - 'Portability read: the estimator plus TTL arithmetic is ~60 lines of engine-independent Python and can live in an orchestrator
+    layer; the pin enforcement is welded to vLLM''s block manager and cannot be lifted, so on llama-server it becomes either
+    a slot-residency policy (--no-cache-idle-slots plus orchestrator-side victim steering) or an experimental-branch server
+    change.'
+  techniques:
+  - KV pin with expiry
+  - program-level FCFS
+  - per-tool duration estimator
+  - sticky-session routing
+  reported_results:
+  - 'NOT-FOUND-IN-SOURCE: the repository carries no benchmark numbers of its own beyond result directories continuum_exp/swebench_llama70B_{continuum,vllm}
+    (not read); paper numbers are in intake-2398.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - heterogeneous-slot-fabric-residency.md
+    - kv-unified-stack-rollout.md
+    - agentic-serving-harness-fixes.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2398
+    - intake-1816
+    - intake-1819
+  credibility_score: 2
+  contradicting_evidence:
+  - The paper (intake-2398, v7 2026-09-08) describes an empirical-CDF argmax TTL with queueing-delay and memoryfulness terms;
+    the author's own released code at 316a587 implements none of it (README L3 says so). Any benefit measured with this repo
+    is the fixed-2 s + program-FCFS ablation, not the full policy.
+  notes: 'Cloned depth 1 (HEAD = main = 316a58794a6f, 2026-03-19; remote also lists dependabot branches and PR refs, not fetched).
+    Files read in full: README.md, vllm/v1/core/estimate_with_func.py (206 lines), vllm/v1/core/sched/request_queue.py (ContinuumRequestQueue),
+    relevant ranges of vllm/v1/core/sched/scheduler.py, protocol.py ranges, mini-swe-agent vllm_model.py ranges. sha256-12:
+    README 580711553689, estimate_with_func 23406dca89fa, scheduler e2f4d30fef5d, request_queue 74a26b260ccd. NOT read: the
+    rest of the vendored vLLM tree, continuum_exp result JSON, tests/. The sibling entry intake-2398 recorded the repo as
+    "pushed 2026-08-13, not cloned"; HEAD commit date here is 2026-03-19 (push date and commit date can differ).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read the repo at 316a587. The estimation the paper centres
+    on (empirical-CDF argmax TTL) is absent from the released code by the author''s own README; only a fixed 2 s pin gate,
+    mean-based tool statistic and program-FCFS are present. Portability judgement therefore rests on the paper formula (intake-2398
+    Sec 4.2) plus the repo''s pin/unpin control flow.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: README.md:L3 @ 316a587
+    quote: 'This repository contains a modified version of vLLM with Continuum-style scheduling support (without the estimation
+      in the paper) for improved inference performance. For multi-node support, you should use sticky-session routing. '
+    quote_sha256: 54d20d85462746eb98bc8ab67f2f5f337669862116403cbdf0987135753593e8
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: vllm/v1/core/estimate_with_func.py:L154-L159 @ 316a587
+    quote: "        this_func_call_exec_time = self.get_func_call_exec_time(request.this_func_call) or 0.0\n\n        if this_func_call_exec_time\
+      \ > FIXED_THRESHOLD_CONTINUUM:\n            return 0\n        \n        return FIXED_THRESHOLD_CONTINUUM"
+    quote_sha256: 75c3f7a998d2e8a5205466d0bad3efb6aa24a6e8507c82f3640ffcc77d46eb68
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: vllm/v1/core/estimate_with_func.py:L135-L146 @ 316a587
+    quote: "    #TODO Hanchen This is currently just an average \n    def update_func_call_exec_time(self, job_id: str) ->\
+      \ None:\n        #this is called when the func call is back again in scheduler.py, update the exec time with last_func_call\n\
+      \        last_departure_time = self.job_to_history[job_id][-1][\"departure_time\"]\n        func = self.job_to_history[job_id][-1][\"\
+      func_call\"]\n        exec_time = time.time() - last_departure_time\n\n        if func not in self.record_func_call_to_exec_time:\n\
+      \            self.record_func_call_to_exec_time[func] = [exec_time]\n        else:\n            self.record_func_call_to_exec_time[func].append(exec_time)\n\
+      \        self.func_call_to_exec_time[func] = sum(self.record_func_call_to_exec_time[func]) / len(self.record_func_call_to_exec_time[func])"
+    quote_sha256: c6cb6669d36f44f6d55ea8c939e56d707aafdd58ffebd9268ba3913a31d219dc
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: vllm/v1/core/sched/scheduler.py:L1357-L1364 and L246-L256 @ 316a587
+    quote: "        #############\n        if self.policy == SchedulingPolicy.CONTINUUM and not request.is_last_step:\n  \
+      \          length_of_pin = self.tool_call_estimator.set_up_pin(request)\n\n            #print(f\"Setting up pin for\
+      \ request {request.request_id} with length {length_of_pin}\")\n            #Floating point error\n            if length_of_pin\
+      \ > 0.01:\n                self.pin_request(request, length_of_pin)\n    def unpin_requests_regular(self) -> None:\n\
+      \        # Check if job id \"1\" is in waiting requests\n        waiting_job_ids = [req.job_id for req in self.waiting]\n\
+      \n        for request, end_time in self.pinned_requests:\n            #print(\"time.time() - end_time:\", time.time()\
+      \ - end_time)\n            if request.job_id not in waiting_job_ids and time.time() >= end_time:\n                #print(f\"\
+      Unpinning request {request.request_id} with job id {request.job_id}\")\n                self.unpin_request(request,\
+      \ end_time)"
+    quote_sha256: aea07ef1a19d3d4ef8e7581aff5c7861133b1786ac1d8100e27d9a742337adac
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: vllm/v1/core/sched/request_queue.py:L233-L258 @ 316a587
+    quote: "\n    def pop_request(self, pinned_requests: list[Tuple[Request, float]], kv_cache_manager: KVCacheManager, connector:\
+      \ KVConnectorBase_V1) -> Request:\n        \"\"\"Pop a request from the queue according to continuum policy.\"\"\"\n\
+      \        request = self.peek_request(pinned_requests, kv_cache_manager, connector)\n        self.remove_request(request)\n\
+      \        return request\n\n    # NOTE (Hanchen): priority is pinned request -> job_id level FCFS\n    def peek_request(self,\
+      \ pinned_requests: list[Tuple[Request, float]], kv_cache_manager: KVCacheManager, connector: KVConnectorBase_V1) ->\
+      \ Request:\n        if not self:\n            raise IndexError(\"peek from an empty queue\")\n        # Extract just\
+      \ the requests from pinned_requests tuples\n        pinned_request_job_id_set = {req.job_id for req, _ in pinned_requests}\n\
+      \n        # First, use the pinned request\n        earliest_request = None\n        earliest_entry_time = float('inf')\n\
+      \        for request in self:\n            if request.job_id in pinned_request_job_id_set:\n                job_entry_time\
+      \ = self.job_id_first_entry_time.get(request.job_id, request.arrival_time)\n                if job_entry_time < earliest_entry_time:\n\
+      \                    earliest_entry_time = job_entry_time\n                    earliest_request = request\n        \n\
+      \        if earliest_request is not None:\n            return earliest_request"
+    quote_sha256: 6a38501b0a9ac12763e58339c5eb06c06e5afdaea368c438b70a0960e27e377d
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: vllm/entrypoints/openai/protocol.py:L293-L296 and mini-swe-agent/src/minisweagent/models/vllm_model.py:L124-L127
+      @ 316a587
+    quote: "    # Custom fields for job/function-call metadata\n    job_id: Optional[str] = None\n    last_func_call: Optional[str]\
+      \ = None\n    is_last_step: Optional[bool] = None\n            # Calculate is_last_step based on step_limit\n      \
+      \      is_last_step = False\n            if self.config.step_limit > 0:\n                is_last_step = (self.n_calls\
+      \ + 1) >= self.config.step_limit"
+    quote_sha256: c7e87b276978d6043b2f684b821eecc4b4f5212fcfbb997a68f4c2c285683b75
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: code
+    locator: vllm/v1/core/estimate_with_func.py:L73-L92 @ 316a587
+    quote: "    def parse(self, text: str) -> Optional[str]:\n        \"\"\"Parse LLM output and extract the function call\
+      \ name.\n\n        Args:\n            text: Output text from the LLM\n\n        Returns:\n            The function call\
+      \ name (e.g., \"ls\", \"cd\", \"git\"), or None if not found\n        \"\"\"\n        # Same regex pattern as mini-swe-agent:\
+      \ r\"```bash\\s*\\n(.*?)\\n```\"\n        actions = re.findall(r\"```bash\\s*\\n(.*?)\\n```\", text, re.DOTALL)\n\n\
+      \        if len(actions) == 1:\n            bash_action = actions[0].strip()\n            # Extract the first word (command)\
+      \ from the action\n            words = bash_action.split()\n            if words:\n                return words[0]\n\
+      \n        return None"
+    quote_sha256: ed6286ac32c35ea23e7ba3b1bf4e6ecd93104f6ddaea1a01bfa8859d0f8ae5dc
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: vllm/v1/core/sched/scheduler.py:L196-L207 @ 316a587
+    quote: "        \"\"\"Pop a request from running queue based on job_id level FCFS and last step.\"\"\"\n        if len(self.running)\
+      \ <= 1:\n            #wpop from pinned requests from smallest end_time\n            latest_pin_end_request = None\n\
+      \            latest_pin_end_time = -float('inf')\n            for req, end_time in self.pinned_requests:\n         \
+      \       if end_time > latest_pin_end_time:\n                    latest_pin_end_time = end_time\n                   \
+      \ latest_pin_end_request = req\n            if latest_pin_end_request is not None:\n                self.pinned_requests.remove((latest_pin_end_request,\
+      \ latest_pin_end_time))\n                return latest_pin_end_request, True"
+    quote_sha256: 19610cfd5651864e3789195ae46c2ff5aa0faeb57a340928a03541ec55ecaeb5
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: code
+    locator: vllm/v1/core/sched/scheduler.py:L236-L243 @ 316a587 (pin/unpin are calls into vLLM kv_cache_manager.free)
+    quote: "    def pin_request(self, request: Request, length_of_pin: float) -> None:\n        self.continuum_recorder.request_pinned(request)\n\
+      \        self.pinned_requests.append((request, time.time() + length_of_pin))\n\n    def unpin_request(self, request:\
+      \ Request, end_time: float) -> None:\n        self.pinned_requests.remove((request, end_time))\n        self.continuum_recorder.request_unpinned(request)"
+    quote_sha256: ee2e9e7b4d192d1eeac07e48c78772f93b5d1e0106540f8b5f12321f0275b7b5
+    source_revision: Hanchenli/vllm-continuum @ 316a58794a6ff86b216e579b74fd56ed0c5a911f (main, 2026-03-19), cloned 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: overturned
+    note: Stage-1 premise (code implements per-tool-CDF argmax TTL) is overturned by the README and the code.
+  - claim_index: 1
+    effect: narrowed
+    note: TTL is binary-gated fixed 2.0 s.
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 4
+    effect: narrowed
+    note: Eviction order differs from the paper text (latest expiry vs latest program arrival).
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 6
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 7
+    effect: unaffected
+    note: Own inference from the read; labelled as such.
+  depends_on: []
+- id: intake-2412
+  arxiv_id: '2312.05516'
+  url: https://arxiv.org/abs/2312.05516
+  source_type: paper
+  title: Stateful Large Language Model Serving with Pensieve
+  categories:
+  - inference_serving
+  - kv_cache
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2398
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Lingfan Yu
+  - Jinkun Lin
+  - Jinyang Li
+  key_claims:
+  - Pensieve keeps finished conversations' KV in a GPU tier plus a CPU tier instead of freeing it at request end, and claims
+    1.14-3.0x the throughput of vLLM and TensorRT-LLM on ShareGPT/UltraChat with OPT-13B and Llama-2-13B on one A100-80GB
+    (Abstract; Sec 6.2).
+  - Eviction uses a per-32-token-chunk retention value V = Cost(s,l)/T (recompute cost over time since the conversation was
+    last active) and evicts lowest V first, which both prefers idle conversations and drops LEADING tokens first because attention
+    recompute cost grows with context position (Sec 4.3.1).
+  - Dropping leading tokens forces a two-range prefill (recompute the dropped head plus the new tail, attending over swapped-in
+    middle), which needs a new multi-token attention kernel over non-contiguous KV (Sec 4.3.4, 4.4).
+  - Ahead-of-time swapping copies selected KV to CPU when GPU free slots drop below a threshold (e.g. 25%) so eviction overlaps
+    compute, and swap-in is pipelined layer by layer (Sec 4.3.2-4.3.3).
+  - 'The retention-value policy beats plain LRU only at high load: both match until ~3 req/s, after which it recomputes up
+    to 14.6% fewer KV-tokens and gets up to 4.4 points higher CPU hit rate (Sec 6.6).'
+  - 'No mention of recurrent/SSM/hybrid state anywhere in the text (searched the full HTML text for recurrent, state space,
+    hybrid, mamba): the design assumes every cached token is an independently droppable attention KV entry.'
+  techniques:
+  - two-tier GPU/CPU KV cache
+  - retention value = recompute cost / idle time
+  - ahead-of-time swap-out
+  - pipelined swap-in
+  - multi-token paged attention
+  reported_results:
+  - 'AUTHOR-REPORTED: 1.14-3.0x throughput vs vLLM/TensorRT-LLM (Abstract); 1.36x/1.14x (OPT-13B, ShareGPT) and 1.70x/1.58x
+    (Llama-2-13B, ShareGPT) vs vLLM/TRT-LLM at fixed latency (Sec 6.2); recomputed tokens -14.6% max vs LRU (Sec 6.6).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-2398
+  credibility_score: 1
+  contradicting_evidence:
+  - Gain is smaller where conversations are short (UltraChat < ShareGPT, Sec 6.2) and shrinks as think time grows to 600 s
+    (Sec 6.7). Baselines are vLLM and TensorRT-LLM that always re-prefill; no comparison to prefix-caching engines (SGLang/vLLM
+    APC) in the text read.
+  notes: Read arxiv.org/html/2312.05516 (v3, 07 Oct 2024), tag-stripped to src/txt_2312.05516.txt; figures and equations beyond
+    alttext not read. Venue (EuroSys 2025) taken from the paper's own ACM conference header (derived text L74), not independently
+    checked.
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): full read of arXiv v3 text. The part that ports is the scoring
+    rule V = recompute-cost / idle-time as a victim-ordering key; the leading-chunk drop, two-range prefill and multi-token
+    kernel do not port to Gated-DeltaNet hybrids, whose recurrent state is a whole-history summary and cannot be truncated
+    from the front (mechanism reason; flagged for operator, not dismissed).'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: Abstract (derived text L94-L102)
+    quote: "In this paper, we design $Pensieve$ , a system optimized for multi-turn\nconversation LLM serving. $Pensieve$\
+      \ maintains the conversation state across\nrequests by caching previously processed history to avoid duplicate processing.\n\
+      \ $Pensieve$ ’s multi-tier caching strategy can utilize both GPU and CPU memory to\nefficiently store and retrieve cached\
+      \ data. $Pensieve$ also generalizes the\nrecent PagedAttention kernel to support attention between multiple input tokens\n\
+      with a GPU cache spread over non-contiguous memory. Our evaluation shows that\n $Pensieve$ can achieve $1.14$ - $3.0\\\
+      times$ the throughput of vLLM and TensorRT-LLM and\nsignificantly reduce latency."
+    quote_sha256: 129c8252a7e6fe0b13dc313f27d9ea8a45f44445800f59ddef5349b05615f36f
+    source_revision: arXiv:2312.05516v3 (07 Oct 2024; EuroSys 2025 per its own ACM header), HTML retrieved 2026-10-22, sha256-12
+      72eb0bd02b4c
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: Sec 4.3.1 (derived text L250-L253)
+    quote: "In order to combine both the LRU preference and the evicting from the front preference, we calculate a score\n\
+      for each chunk to capture its retention value. Specifically,\nthe retention value of a chunk is $V=\\frac{Cost(s,l)}{T}$\
+      \ , where\n $Cost(s,l)$ represents the cost of recomputing a chunk of size $s$ with a"
+    quote_sha256: ce922641a80f417da5908c023a5d5ed5a6e4a212f4609ee5375ac4997839ebaa
+    source_revision: arXiv:2312.05516v3 (07 Oct 2024; EuroSys 2025 per its own ACM header), HTML retrieved 2026-10-22, sha256-12
+      72eb0bd02b4c
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: Sec 4.3.4 (derived text L284-L286)
+    quote: 'If a request has some of its KV-tokens dropped due to CPU memory pressure, we
+
+      resort to recomputation to handle such dropped tokens.
+
+      Figure 5 shows the whereabouts of a typical new request’s KV-tokens. As we always evict cached tokens from the leading
+      end of a conversation, the GPU cache generally'
+    quote_sha256: 79ace56a8b4fc4d1cfcd7a70fda09660d7bf934eae45a140f0a1d2a158d6d2bb
+    source_revision: arXiv:2312.05516v3 (07 Oct 2024; EuroSys 2025 per its own ACM header), HTML retrieved 2026-10-22, sha256-12
+      72eb0bd02b4c
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: Sec 4.3.2 (derived text L267-L270)
+    quote: 'Instead of waiting until the GPU cache has run out, the scheduler asks the
+
+      worker to copy (aka swap out) selected KV-tokens to the CPU if less than a
+
+      threshold (e.g. 25%) of the GPU cache slots are available. The corresponding
+
+      GPU memory is reclaimed in a lazy manner and is not immediately released until'
+    quote_sha256: dd4d91d3cb7da8a0bfe4952f1ad103c76b2159482270d58e38c05f1286a744be
+    source_revision: arXiv:2312.05516v3 (07 Oct 2024; EuroSys 2025 per its own ACM header), HTML retrieved 2026-10-22, sha256-12
+      72eb0bd02b4c
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: Sec 6.2 (derived text L498-L503)
+    quote: 'Figure 10 shows the normalized latency vs
+
+      throughput for OPT-13B and Llama 2-13B served with a single A100-80GB GPU. The
+
+      normalized latency is calculated as the mean of each request’s end-to-end
+
+      latency divided by its output length, as done in (Yu et al., 2022; Kwon et al., 2023). On the
+
+      ShareGPT dataset shown in Figure 10(a) and (b),
+
+      Pensieve’s throughput is $1.36\times$ of vLLM and $1.14\times$ of TensorRT-LLM for'
+    quote_sha256: 3e4760718f66cfff7f6a81dcc432c3b11d0e62abc5055477602a6eafc97eabd3
+    source_revision: arXiv:2312.05516v3 (07 Oct 2024; EuroSys 2025 per its own ACM header), HTML retrieved 2026-10-22, sha256-12
+      72eb0bd02b4c
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: text
+    locator: Sec 6.6 (derived text L577-L581)
+    quote: 'Figure 14 shows that both policies exhibit similar
+
+      performance until the workload approaches 3 requests per second, beyond which
+
+      Pensieve’s eviction policy outperforms LRU.
+
+      After analyzing the execution traces, we find that
+
+      both policies have less than 80% cache hit rate, however,'
+    quote_sha256: 484c2c9794f71bc5d3f3d73cc55623fee01c826db1bb3a94dc68e143e418265f
+    source_revision: arXiv:2312.05516v3 (07 Oct 2024; EuroSys 2025 per its own ACM header), HTML retrieved 2026-10-22, sha256-12
+      72eb0bd02b4c
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 1
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh claim.
+  depends_on: []
+- id: intake-2413
+  arxiv_id: '2407.00023'
+  url: https://arxiv.org/abs/2407.00023
+  source_type: paper
+  title: 'Preble: Efficient Distributed Prompt Scheduling for LLM Serving'
+  categories:
+  - inference_serving
+  - kv_cache
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2398
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Vikranth Srivatsa
+  - Zijian He
+  - Reyna Abhyankar
+  - Dongming Li
+  - Yiying Zhang
+  key_claims:
+  - 'E2 (exploitation + exploration) global scheduler: match the request in a global radix tree; if the matched prefix is
+    longer than the unmatched remainder, send it to the GPU holding the longest match (lightest load on ties); otherwise place
+    it by minimum cost L_i + M_i + P_i, all expressed as estimated GPU time from token counts via offline regression (Sec
+    3.2).'
+  - The eviction-cost term M_i = sum over would-be-evicted nodes of (prefill time of the node x share of window-H requests
+    that hit it), so popular prefixes are expensive to displace; load L_i is summed over a 3-minute history window H (Sec
+    3.2).
+  - After placement it rebalances (shift future requests of the hottest GPU when its load exceeds Th_bal x the lightest) and
+    autoscales a prefix by replicating it when average queueing time doubles over H; a prefill/decode balancing rule steers
+    uncached (prefill-like) requests to decode-heavy GPUs (Sec 3.2).
+  - Local scheduler orders waiting requests into P priority groups by cached-token percentage and draws from groups proportionally,
+    so fairness is kept without starving low-cache requests; local eviction is LRU over radix nodes (Sec 3.3).
+  - Reported 1.5x-14.5x lower average and 2x-10x lower p99 latency than data-parallel SGLang on five shared-prompt workloads,
+    Mistral-7B and Llama-3-70B, A6000/H100 (Abstract; Sec 4.3). The baseline is round-robin load balancing across instances;
+    sticky/session-affinity routing is not a baseline and the words session/sticky/affinity do not occur in the text (searched).
+  - Workloads are shared-prompt, short-output (tool use, embodied, programming, video QA, long-doc QA); no recurrent/SSM/hybrid
+    or CPU-instance case appears in the text (searched).
+  techniques:
+  - global radix tree with per-node GPU sets
+  - exploit-vs-explore placement
+  - popularity-weighted eviction cost
+  - prefix autoscaling
+  - cached-share priority groups
+  reported_results:
+  - 'AUTHOR-REPORTED: 1.5-14.5x avg latency, 2-10x p99 vs data-parallel SGLang (Abstract; Sec 4.3); programming workload 1.56-1.8x
+    avg, 3-4x p99 (Sec 4.3); global scheduler 245 req/s (ToolBench) to 2931 req/s (VideoQA) (Sec 4.4).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - heterogeneous-slot-fabric-residency.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-2398
+    - intake-1816
+  credibility_score: 0
+  contradicting_evidence:
+  - Headline gains are against a no-affinity round-robin baseline, so they bound the benefit of ANY prefix-aware router, not
+    of E2 over a session-sticky router. Venue/peer-review status is not stated in the text read.
+  notes: Read arxiv.org/html/2407.00023 (v2, 03 Oct 2024), tag-stripped to src/txt_2407.00023.txt. Appendix A-C (workload
+    studies, SGLang/vLLM version comparisons) skimmed by heading only; figure data not in text.
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the brief gave arXiv 2407.00022, which resolves to "Entropy
+    and Economics"; Preble is 2407.00023 (title verified on the abs page). Wave-1 declined Preble as a single-model prefix
+    router that does not bear on residency (intake-1816 close-out); the full read keeps that for residency but shows two portable
+    cost terms (M_i popularity-weighted eviction cost, cached-share priority groups) that bear on the orchestrator prefix
+    index and the heterogeneous-fabric placement cost, which is why this is adopt_patterns at medium relevance rather than
+    declined.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: Sec 3.2 per-request scheduling policy (derived text L112-L115)
+    quote: 'To schedule a request, the global scheduler uses our proposed E2 scheduling algorithm, as illustrated in Algorithm 1.
+
+      It first matches the request’s prompt in the global prefix trees.
+
+      When the amount of recomputation saved (number of tokens in the matched prefix) is larger than the amount of new computation
+      (number of tokens in the remaining prompt), we favor exploitation over exploration because the gain of saved GPU resources
+      (computation for matched tokens) is higher than the load (computation for unique tokens) that can potentially be balanced
+      in the GPU cluster.
+
+      For such requests, E2 exploits existing cache by assigning the request to the GPU that caches the tree node with the
+      longest tokens in the matched prefix. If multiple such GPUs exist, E2 chooses the GPU with the lightest request load
+      using the load calculation to be introduced next.'
+    quote_sha256: 1e68edab8b22e05b0506be3a5123a4457e243ab3ebd19377a22eca04e5e0be5d
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: Sec 3.2 second cost (derived text L128-L131)
+    quote: 'The second cost is the potential cost to free GPU memory so that the new request, $R_{k}$ , can run. Given that
+      GPUs run at full capacity with our and existing serving policies Agrawal et al. (2023), we expect this cost to always
+      occur.
+
+      Intuitively, the more tokens in a sequence that are shared and by more requests, the more costly it is to evict the
+      sequence.
+
+      Thus, to calculate the eviction cost, $M_{i}$ , the global scheduler first uses the eviction algorithm to be discussed
+      in Section 3.3 to find the tree nodes on $GPU_{i}$ that would be evicted to run $R_{k}$ .
+
+      For each such tree node $j$ , its eviction cost is the recomputation time of the evicted tokens multiplied by the hit
+      rate of the node, $N_{j}$ . Thus, we have $M_{i}=\sum_{j\in E}PT_{j}\times N_{j}$ where $E$ is the eviction node set,
+      $PT_{j}$ is the prefill time for the length of tree node $j$ , and $N_{j}$ is the the number of requests sharing tree
+      node $j$ in history $H$ over the total number of requests on $GPU_{i}$ in $H$ . Note that we do not include the decoding
+      time, as a request’s decoding time is unaffected by prefix cache eviction, and decoding costs have already been counted
+      in $L_{i}$ .'
+    quote_sha256: 6bcd5c8081b41fa8951df4cd3dda3ee90ee0e0352e254773bfb5d177b79378cb
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: text
+    locator: Sec 3.2 post-assignment load adjustment (derived text L137-L141)
+    quote: 'The first way shifts load between GPUs and is applicable when the load surge can be handled by a single GPU in
+      the cluster.
+
+      The global scheduler maintains a per-GPU load as discussed above. If the most heavily loaded GPU’s load is more than
+      $Th_{bal}$ times higher than the lightest GPU, it shifts load from the former to the latter until their difference is
+      below $Th_{bal}$ . $Th_{bal}$ is configurable and can be deducted from profiling GPU and LLM types.
+
+      To perform this load rebalancing, we direct future requests that are supposed to exploit the heavy GPU to the light
+      GPU.
+
+      The second way is to auto-scale a prefix by replicating it and splitting its subtree by load when we detect that a certain
+      prefix’s request load is still too high (average queueing time doubles over $H$ ) even after the above load rebalancing.
+      We calculate the subtree’s load using Algorithm 2.
+
+      Prefill-decoding balancing.'
+    quote_sha256: 57758514300db54c2de5483ed40c516b658f97d4113502164e28269cc5cc808d
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: Sec 3.3 waiting queue ordering (derived text L154-L155)
+    quote: 'Specifically, we create $P$ (a configurable parameter) priority groups and assign a request to the priority group
+      according to its cached token percentage. For example, if 63 out of 100 tokens in a request’s prompt are cached on the
+      GPU and $P$ is 10, it will be assigned priority six.
+
+      When selecting requests to form the next batch, the scheduler proportionally selects requests from each priority group,
+      with the higher priority group getting more requests selected than lower priority ones. For example, if 55 requests
+      are to be selected to form a batch, the scheduler picks ten from priority group 10, nine from priority 9, etc.'
+    quote_sha256: 68a92155c6ae1d8ed5ec58376fe22b8eb9ba52e89d4f90de3beb9632a5014363
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: Sec 4.3 single workload results (derived text L180-L181)
+    quote: 'Overall, Preble significantly outperforms the data-parallel SGLang baseline for all settings, as can be seen from
+      Preble’s lower average and p99 latency, especially under higher RPS (or the other way around, for the same latency target,
+      Preble can serve higher RPS). Our improvements over SGLang range from 1.5 $\times$ to 14.5 $\times$ in terms of average
+      latency and 2 $\times$ to 10 $\times$ in p99 latency.
+
+      Comparing across workloads, we see bigger improvements of Preble over SGLang on the Toolbench, embodied agent, video
+      QA, and LooGLE workloads than the programming workloads.'
+    quote_sha256: 618e63aab67af8e6a84d3064de756561a8e84235fa25eff992f2f2b3968b1b7e
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: Sec 4.2 baseline (derived text L169-L171)
+    quote: 'Our baselines are serving systems that support single-GPU prefix sharing, including SGLang Zheng et al. (2023b)
+      and vLLM (which recently added a beta feature for prefix sharing Moore & Li (2024)).
+
+      To run SGLang and vLLM in a distributed fashion, we set up a load balancer that sends requests in a round-robin fashion
+      to individual SGLang/vLLM instances (i.e., non-prompt-aware data parallelism). As round- robin distributes requests
+      evenly, these baselines capture a distributed serving system that balances request loads and then performs prefix sharing
+      within each parallel instance.
+
+      Metrics.'
+    quote_sha256: 096719fc692c31a2211c94419b8afb326a12662ae944898aac797720c9ad8fea
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: text
+    locator: Sec 4.2 workloads (derived text L163-L163)
+    quote: 'We evaluate our results on five LLM use cases: LLM generation with tool demonstration and calling Schick et al.
+      (2023), LLM interacting with virtual environments as an embodied agent Hao et al. (2023); Huang et al. (2022), LLM for
+      software program generation Nijkamp et al. (2023), answering questions about videos Xiao et al. (2021), and answer questions
+      about long documents Li et al. (2023a). Their properties are presented in Appendix A.'
+    quote_sha256: 9dfa824ab645347d0bb5f7cca15d4e80167e43a205caf5c8832c0f1417487629
+    source_revision: arXiv:2407.00023v2 (03 Oct 2024), HTML retrieved 2026-10-22, sha256-12 57585b97df9d
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 1
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 2
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 4
+    effect: unaffected
+    note: Fresh claim.
+  - claim_index: 5
+    effect: unaffected
+    note: Fresh claim.
+  depends_on: []
+- id: intake-2414
+  arxiv_id: null
+  url: https://guidance-ai.github.io/llguidance/llg-go-brrr
+  source_type: blog
+  title: 'LLGuidance: Making Structured Outputs Go Brrr'
+  categories:
+  - inference_serving
+  - tool_implementation
+  - local_inference
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2388
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Michał Moskal
+  - Harsha Nori
+  - Hudson Cooper
+  - Loc Huynh
+  key_claims:
+  - 'Vendor-reported: LLGuidance computes a token mask in ~50 us on average on MaskBench (other libraries 10-1000x slower,
+    partly outlier-driven) with ~2 ms start-up; the speed is attributed to four factors each worth 10-100x: lexer/parser split,
+    token trie, low-level Rust layout, and the novel "slicer" (page intro).'
+  - 'Cost anatomy: the Earley parser is touched by only 0.1-1% of token checks; trie traversal runs ~13 cycles/node (5 reads
+    + 2 writes) on an AMD EPYC 7V13 at 4.2 IPC with <0.1% branch mispredicts; sparse masks are cheap and DENSE masks (inside
+    unconstrained JSON strings/comments) dominate cost, which the slicer short-circuits with precomputed per-slice masks.'
+  - 'Over ~2M MaskBench masks: 44.6% are sparse (<=2% of vocab) at 28 us each; 53.8% are dense and sliced at 61 us; the 0.5%
+    dense-unsliced tail averages 1577 us and carries 13% of total time; 1.1% intermediate masks average 576 us (11% of time)
+    (section "Mask density statistics").'
+  - The "negligible overhead" argument assumes the mask is computed on CPU WHILE the GPU runs the forward pass (budget 0.1-10
+    ms depending on batch/cores); it states the overhead is zero only if compute_mask() finishes before the forward pass.
+    It says nothing about CPU-resident forward passes where there is no idle CPU to overlap with.
+  - llama.cpp grammars are described qualitatively as significantly slower (no lexer, backtracking parser) with NO llama.cpp
+    number in this page; the page contains no fast-forward / jump-forward / forced-token content at all (grep count 0), so
+    it cannot support a forced-span claim.
+  techniques:
+  - lexer/parser split (derivative regex lexer + Earley)
+  - token-trie DFS traversal
+  - slicer precomputed dense-mask slices
+  - lazy DFA via Brzozowski derivatives
+  reported_results:
+  - ~50 us mean mask (vendor, MaskBench)
+  - 13 cycles/trie node (EPYC 7V13)
+  - 'dense-unsliced tail: 0.5% of masks, 13% of time, 1577 us each'
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2388
+    - intake-2401
+    - intake-2137
+    - intake-2132
+  credibility_score: 0
+  contradicting_evidence:
+  - 'Independent XGrammar-2 measurement (intake-2137) reports llguidance 250 us/token (Harmony format) and >1000 us/token
+    (Llama tool format): different grammars (tool-call formats, not JSON-schema), so not a direct contradiction, but the 50
+    us figure is JSON-schema-on-MaskBench only.'
+  notes: Read guidance-ai.github.io/llguidance/llg-go-brrr html (535476 bytes, sha256-12 7512a5e5463c), converted to text;
+    SVG figures not read. llguidance repo clone 6cef6ed9 (2026-10-14) used only for cross-checks (already intake-2401).
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): page read in full from saved HTML; it is a design/perf write-up
+    with NO fast-forward content and no llama.cpp number; its 50 us figure is vendor, JSON-schema, GPU-overlap framing.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: Introduction ¶ "In MaskBench" @ page
+    quote: it computes a token mask in about 50μs on average, with other libraries being 10-1000x slower (though in some cases
+      this is due to difficult outliers).
+    quote_sha256: 6f9925450eda43d6baae147130bf43c1c79977a414385c75c9d3878aeacd55b6
+    source_revision: retrieved 2026-10-22; page dated 2025-06-11; html sha256-12 7512a5e5463c
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: '"Counting cycles" @ page'
+    quote: On an AMD EPYC 7V13 (a 128-thread server-class CPU commonly used with A100 GPUs) a single node is processed in
+      around 13 cycles (at 4.2 instructions per cycle);
+    quote_sha256: f0a629075a5a030a11e93ac22c83b929f4b1c6fb9be281b0fb185b1c6f5e8a70
+    source_revision: retrieved 2026-10-22; page dated 2025-06-11; html sha256-12 7512a5e5463c
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: table
+    locator: '"Mask density statistics" table @ page'
+    quote: 85%+ & sliced 53.8% 55.0% 61
+    quote_sha256: ef7d9ca93f21f405e46da87d2230ef298da9abbd97aab523eb0c99b14dc10173
+    source_revision: retrieved 2026-10-22; page dated 2025-06-11; html sha256-12 7512a5e5463c
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: text
+    locator: '"Sampling with masks" @ page'
+    quote: Here, compute_mask() can run on the CPU during the time it would be normally just waiting for the GPU to finish.
+    quote_sha256: d5cf7838fc30e5d28236e051c0ef0de48949b6bb5f008e52da519865951db7cf
+    source_revision: retrieved 2026-10-22; page dated 2025-06-11; html sha256-12 7512a5e5463c
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: absence
+    locator: whole page; grep -c -i "fast.forward|jump|forced|ff-token" = 0 (brr.txt, 861 lines)
+    quote: LM-format-enforcer and llama.cpp grammars are similar to llguidance in that they dynamically build token masks
+      for every step of the decoding process. Both are significantly slower
+    quote_sha256: a37774dc3407421fce89abc092edef683194a190ed2ddeec5e89b341c9ddcfbd
+    source_revision: retrieved 2026-10-22; page dated 2025-06-11; html sha256-12 7512a5e5463c
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2415
+  arxiv_id: '2501.10868'
+  url: https://arxiv.org/abs/2501.10868
+  source_type: paper
+  title: 'JSONSchemaBench: A Rigorous Benchmark of Structured Outputs for Language Models'
+  categories:
+  - benchmark_methodology
+  - inference_serving
+  - tool_implementation
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2388
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Saibo Geng
+  - Hudson Cooper
+  - Michał Moskal
+  - Samuel Jenkins
+  - Julian Berman
+  - Nathan Ranchin
+  - Robert West
+  - Eric Horvitz
+  - Harsha Nori
+  key_claims:
+  - 'Efficiency run (Llama-3.1-8B-Instruct Q8, 128k vocab, A100-80GB + 12-core EPYC 7543, batch 1, llama.cpp backend; guidance
+    0.2.0rc, llama-cpp-python 0.3.2): median TPOT LM-only 15.3-16.7 ms; Guidance 6.4-9.5 ms (BELOW unconstrained, via fast-forward);
+    llama.cpp GBNF 27-30 ms (~1.8x unconstrained); Outlines 30-47 ms (Table 13, Table 2).'
+  - 'In that same run Guidance fast-forwarded 4.4-31.4 median tokens per request (Table 13): 15.7/41.6 = 38% GlaiveAI, 10.0/34.9
+    = 29% GitHub-Easy, 14.5/36.8 = 39% Snowplow, 31.4/99.7 = 32% GitHub-Medium, 4.4/28.8 = 15% Kubernetes (ratios are my arithmetic
+    on medians); on HF-Transformers GitHub-Hard 101.4/211.4 = 48% (Table 14).'
+  - 'The paper text does NOT state the whitespace configuration of the Guidance efficiency run (the call snippet is guidance.json(schema=...)
+    with no whitespace argument) and contains no MaskBench section/word (grep 0): mask-time distributions live only in the
+    repo README, not in v3.'
+  - 'MaskBench (repo README @9a94995b, llguidance 0.7.10, xgrammar 0.1.17, llama-cpp-python 0.3.8, single-thread, A100 host
+    with 4 GPUs unused): per-token mask time us avg/p50/p99/p99.9 = LLGuidance 64/46/533/1695; XGrammar (default = FIXED whitespace)
+    728/9/5687/100267; llama.cpp 16565/17021/60371/297552; llama.cpp harness applies the grammar over the FULL vocabulary
+    every step with whitespace limits removed.'
+  - 'MaskBench forced-token (fast-forward) share on VALID instances with the Llama-3 tokenizer, measured for flexible JSON
+    vs compact JSON: TOTAL 13% vs 15%; GitHub_hard 16/19; Glaiveai2K 21/25; MCPspec 20/29; Kubernetes 9/10; JsonSchemaStore
+    7/7. README states 3-10x cheaper per FF token and that a 15% FF share = 10-13% throughput.'
+  - Whitespace flexibility therefore costs ~2 points of forced share in aggregate (13 vs 15) and up to ~9 points on tool-spec-like
+    MCPspec (20 vs 29); the hand estimate of 35-40% forced share for compact OUR-schema JSON is above every measured split
+    (max 29%) - treat as overturned unless our own schemas are measured.
+  techniques:
+  - MaskBench isolated mask-time benchmark
+  - efficiency intersection-of-covered-instances protocol
+  - fast-forward token share measurement (flexible vs compact JSON)
+  reported_results:
+  - Table 13 TPOT/TGT per engine
+  - MaskBench TBM percentiles per engine
+  - FF share 13% flexible / 15% compact (TOTAL)
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2388
+    - intake-2401
+    - intake-2137
+    - intake-2132
+  credibility_score: 2
+  contradicting_evidence:
+  - Co-authored by the llguidance authors (Moskal, Nori, Cooper) - vendor-adjacent; Guidance TPOT below unconstrained is partly
+    an artifact of Guidance generating fewer tokens (41.6 vs 64.9 median) and of per-token Python overhead at 15 ms/token
+    on an A100 8B; XGrammar-2 (intake-2137, XGrammar team) reports llguidance 250 us to >1 ms on tool-call formats vs 64 us
+    here.
+  notes: Read arXiv v3 HTML (684353 bytes, sha256-12 b059e4be3b9c) sections 1,4,App E,App G and grep over the rest; coverage
+    (§5) and quality (§6) sections and appendix A-D NOT read. Repo README read in full at jsonschemabench@9a94995b; maskbench
+    llamacpp_engine.py read. Did not read the figures (hero.png, tbm.png).
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): HTML v3 read for sections 4, App. E, G; MaskBench numbers and
+    FF-share table read from repo README on disk. Measured forced share is 13% flexible / 15% compact (max 29% on MCPspec),
+    not the 35-40% compact hand estimate.'
+  claim_anchors:
+  - claim_index: 0
+    kind: table
+    locator: §4.1 + Table 13 (App. E)
+    quote: GlaiveAI LLM only NA 0.10 15.40 1.08 64.94 (00.00) Guidance 0.00 0.24 6.37 0.50 41.56 (15.70) Llamacpp 0.05 0.20
+      29.98 1.47 43.18 (00.00)
+    quote_sha256: b5dc2007adb317b274af1dcc8f04a621ac324746ecbf431fda117b88669bec66
+    source_revision: arXiv:2501.10868v3 (27 Feb 2025) html sha256-12 b059e4be3b9c; jsonschemabench@9a94995b (2026-09-28)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: table
+    locator: Table 14 (App. E)
+    quote: GitHub Hard Guidance 0.01 0.73 35.88 10.25 211.40(101.40)
+    quote_sha256: f3f46f41014584e6bf0c7c0d3aefe3c741b2d48ac51bd56046e84a76ad06ad10
+    source_revision: arXiv:2501.10868v3 (27 Feb 2025) html sha256-12 b059e4be3b9c; jsonschemabench@9a94995b (2026-09-28)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: App. G, GuidanceModel.compile_grammar @ v3 html (digits are the listing line numbers as rendered)
+    quote: 5 return guidance.json( 6 schema=json_schema, 7 )
+    quote_sha256: 6e763902a743ea50262833e26cadcd97fd0514cbbb06985daffd286748263626
+    source_revision: arXiv:2501.10868v3 (27 Feb 2025) html sha256-12 b059e4be3b9c; jsonschemabench@9a94995b (2026-09-28)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: table
+    locator: maskbench/README.md:L120-L127 @ 9a94995b
+    quote: '| TBM avg | 64 | 728 | 16,565 | 42,158 | 1,858 | | TBM p25 | 29 | 3 | 11,032 | 8 | 2 | | TBM p50 | 46 | 9 | 17,021
+      | 1,677 | 34 |'
+    quote_sha256: 4e4c209223c773fb9820ab62a015707e75002da6f3a706a7630a617d69172161
+    source_revision: arXiv:2501.10868v3 (27 Feb 2025) html sha256-12 b059e4be3b9c; jsonschemabench@9a94995b (2026-09-28)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: table
+    locator: maskbench/README.md:L200-L206 @ 9a94995b
+    quote: '| Glaiveai2K | 1707 | 61% | 1634 | 1104 | 30 | 21% | 25% | | Kubernetes | 1064 | 89% | 1680 | 2908 | 86 | 9% |
+      10% |'
+    quote_sha256: fe4a083b590491218b91d47ed96cb1fe28331cb626170777c0fc263d0844efd1
+    source_revision: arXiv:2501.10868v3 (27 Feb 2025) html sha256-12 b059e4be3b9c; jsonschemabench@9a94995b (2026-09-28)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: table
+    locator: maskbench/README.md:L204-L206 @ 9a94995b
+    quote: '| MCPspec | 45 | 78% | 44 | 44 | 45 | 20% | 29% |'
+    quote_sha256: 5b234e05a62afece44ab3c9a5c2890707ca973a92bdf44eb3144745b23c02233
+    source_revision: arXiv:2501.10868v3 (27 Feb 2025) html sha256-12 b059e4be3b9c; jsonschemabench@9a94995b (2026-09-28)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh
+  - claim_index: 1
+    effect: unaffected
+    note: ratios derived by us from medians of different quantities (median FF / median output tokens); indicative only
+  - claim_index: 2
+    effect: narrowed
+    note: mask-time distributions requested from the paper are in the repo README only
+  - claim_index: 3
+    effect: unaffected
+    note: fresh
+  - claim_index: 4
+    effect: narrowed
+    note: measured 13/15% overturns the hand-estimated 35-40% compact share for OUR schemas
+  - claim_index: 5
+    effect: narrowed
+    note: derived by us from claim 5 versus wave-2 hand estimate
+  depends_on: []
+- id: intake-2416
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/pull/4032
+  source_type: repo
+  title: Misc clean up; Remove the support of jump forward (#4032)
+  categories:
+  - inference_serving
+  - tool_implementation
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2388
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Lianmin Zheng
+  key_claims:
+  - 'SGLang removed jump-forward on 2025-03-03 (PR #4032, 935cda94); the only stated reason is "to simplify the code maintenance"
+    - no performance or correctness measurement is given in the PR text.'
+  - 'The removed design was string-level: on a forced span it re-tokenized prompt+decoded text+jump string, rewrote output_ids/logprob
+    bookkeeping, bumped a detokenizer version id, inserted the old request into the radix cache and RE-QUEUED the request
+    as a new prefill; it bailed out (returned False) on "token fusion" at the prompt/output boundary.'
+  - Before removal the scheduler already force-set disable_jump_forward=True whenever the overlap scheduler (the default)
+    was enabled, so for default-config users it was inert; the removal diff also deletes last_update_decode_tokens logprob
+    recompute code, i.e. the feature complicated logprobs.
+  - 'At HEAD d0a75654 the abstract hooks try_jump_forward / jump_forward_str_state / jump_and_retokenize still exist in base_grammar_backend.py,
+    but schedule_batch.py and scheduler.py contain zero jump_forward references: the capability is a dead interface, not a
+    live path.'
+  - 'The replacement direction is token-level fast-forward as speculative decoding: PR #17062 (JC1DA, Jan 2026) adds an LLGUIDANCE
+    speculative algorithm using llguidance ff-tokens, reporting TPOT 4.5 -> 3.1-3.6 ms (1.24-1.44x) on JSONSchemaBench with
+    Llama-3.2-1B on a 3090; it was closed unmerged by a stale bot on 2026-08-19 (no maintainer review in the thread).'
+  techniques:
+  - string-level jump-forward + retokenize (removed)
+  - token-level ff via speculative worker (proposed, unmerged)
+  reported_results:
+  - 'PR #17062: TPOT 4.54->3.46 ms (GitHub_easy), 4.53->3.13 (Glaiveai2K), 4.52->3.63 (Kubernetes) on 1B/3090 (PR author,
+    not reviewed)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2388
+    - intake-2401
+    - intake-2402
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: 'Read commit 935cda94 diff of schedule_batch.py/scheduler.py/outlines_backend.py (treeless clone, history only),
+    PR 4032 body via API, PR 17062 body + 4 comments via API, base_grammar_backend.py/schedule_batch.py/scheduler.py raw at
+    d0a75654. Did NOT read the lmsys blog (already intake-2402), issue #8954, or PR 17062 diff.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): reason for removal is maintenance simplification only; jump-forward
+    was already inert under the default overlap scheduler. It was not abandoned because forced spans do not pay; the string-level
+    design (retokenize + requeue-as-prefill) was the cost, and token-level ff via spec-decoding (PR 17062) is the live proposal.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'PR #4032 body @ 935cda94'
+    quote: '- Remove jump forward to simplify the code maintenance'
+    quote_sha256: a7024f908c08c808197e5ee92b62b98db30638529fe99dd2674a097dd62d583e
+    source_revision: sgl-project/sglang@935cda944b82 (2025-03-03); HEAD d0a75654 (2026-10-22) for absence checks
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: python/sglang/srt/managers/schedule_batch.py:L518-L522 @ 110e0066 (parent of 935cda94)
+    quote: '# TODO(lsyin): fix token fusion'
+    quote_sha256: 12b50db6947ab3913b7411f09300e3a7e0cfdd3662b741835df5676de2de39bb
+    source_revision: sgl-project/sglang@935cda944b82 (2025-03-03); HEAD d0a75654 (2026-10-22) for absence checks
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: python/sglang/srt/managers/scheduler.py:L254-L255 @ 110e0066 (parent of 935cda94)
+    quote: self.disable_jump_forward = True
+    quote_sha256: 5a629d43f362257b874e0b87ba3511e65cf4db41aef96165ae5065de147da754
+    source_revision: sgl-project/sglang@935cda944b82 (2025-03-03); HEAD d0a75654 (2026-10-22) for absence checks
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: python/sglang/srt/constrained/base_grammar_backend.py:L119 @ d0a75654
+    quote: 'def try_jump_forward(self, tokenizer) -> Optional[Tuple[List[int], str]]:'
+    quote_sha256: 21cbc2138a7d80113e63b51fee0bed703a005fefe8bfc64884a5e4157de6d23c
+    source_revision: sgl-project/sglang@935cda944b82 (2025-03-03); HEAD d0a75654 (2026-10-22) for absence checks
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: text
+    locator: 'PR #17062 body (GitHub API, retrieved 2026-10-22)'
+    quote: achieved speedup ranging from **1.24X to 1.44X** (TPOP - time per output token) while maintaining the same accuracy
+      performance
+    quote_sha256: 9b405b67d0634ded2ec7c538ef352eff2908358bdea4ef58decc89a6f9dfb8c7
+    source_revision: sgl-project/sglang@935cda944b82 (2025-03-03); HEAD d0a75654 (2026-10-22) for absence checks
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh
+  - claim_index: 1
+    effect: unaffected
+    note: fresh
+  - claim_index: 2
+    effect: unaffected
+    note: fresh
+  - claim_index: 3
+    effect: narrowed
+    note: 'premise "SGLang stopped calling jump-forward" is true for the scheduler (files checked: managers/schedule_batch.py,
+      managers/scheduler.py at d0a75654) but not the whole tree; grep not run across all files (GitHub code-search rate-limited)'
+  - claim_index: 4
+    effect: unaffected
+    note: PR body numbers are the author self-report
+  depends_on: []
+- id: intake-2417
+  arxiv_id: null
+  url: https://github.com/callanjfox/kv-cache-tester
+  source_type: repo
+  title: 'kv-cache-tester: Inference Server Cache Performance Testing Suite (WEKA)'
+  categories:
+  - kv_cache
+  - inference_serving
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2389
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Callan Fox (callanjfox)
+  - WEKA (Augmented Memory Grid research)
+  key_claims:
+  - Apache-2.0 repo shipping 739 curated Claude Code traces (59,204 requests per README; 19 traces carry 70 nested sub-agents;
+    657 MB of JSON), captured with claude-code-proxy at WEKA; traces/ + README.md + docs/trace_replay_tester.md.
+  - 'Trace format is token-count-only: per request {t,type,model,in,out,hash_ids[64-token blocks],input_types,output_types,stop,api_time,think_time};
+    no message text. Sub-agents are nested `type:subagent` entries with their own requests array and tool/system token counts.'
+  - 'hash_ids are LOCAL (per conversation, sub-agents share the parent namespace): built as SHA-256 over 64-token blocks of
+    tokenised (tiktoken GPT-4, an approximation) tools+system+messages, chained on the previous block hash with a per-run
+    random salt that is never written out. Cross-session prefix sharing is therefore NOT recoverable from any published trace;
+    the "global" scope is documented as future work and no published trace uses it.'
+  - 'The replayer (trace_replay_tester.py) does not replay content: it uses hash_id set differences only to decide "grow"
+    vs "pull-back" (>10% blocks removed) and to compute an EXPECTED cache-hit rate; message text is drawn from a random token
+    pool seeded by user_id (so sessions share nothing except an optional canonical warm prefix, --warm-prefix-pct). The reported
+    cache hit rate is trace-derived, not read from the server.'
+  - 'Replay topology/timing: sub-agents spawn as separate concurrent users while the parent pauses; --timing-strategy think-only|original|api-scaled
+    separates API time from client think time; cooldown-gated user ramp, per-user ITPM/OTPM backoff, TTFT-SLO goodput. Targets
+    an OpenAI-compatible /v1/chat/completions endpoint (openai SDK, default tokenizer Qwen2.5-Coder-32B), tuned for vLLM.'
+  - 'Corpus statistics reported (README): median 48 requests/trace, median conversation 62 min, median think time 10 s, median
+    API time 6.5 s, median input 109,903 tokens/request, median output 218; per-conversation trace-derived cache hit rate
+    median 96% (P25 92%).'
+  - 'Dive: documents disagree on sub-agent cache semantics (docs/TRACE_FORMAT.md in agentic-coding-analysis says sub-agents
+    run in isolated cache contexts; kv-cache-tester README says they share the parent namespace); the HF-side converter (proxy_to_weka.py)
+    uses ONE hash map across parent and sub-agents, so shared tool-prefix blocks do get equal ids there.'
+  techniques:
+  - trace-driven KV-cache replay
+  - hash-id block-chain prefix simulation
+  - think-time / api-time replay separation
+  - sub-agent fan-out replay
+  - TTFT-headroom user ramp
+  reported_results:
+  - 739 traces / 59,204 requests; median trace-derived cache hit 96%, mean 93% (README table)
+  - 'Changelog: sub-agent separate-user replay raised server-side cache hit 20% -> 95% in their vLLM setup (restatement, not
+    reproduced)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2389
+    - intake-2404
+    - intake-2405
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Intake-2389 (TraceLab) and this repo disagree on sample: TraceLab = 43 developers of mixed Claude/Codex; Weka = proxy
+    capture from a small WEKA/SemiAnalysis population. Neither publishes content, so neither can validate llama-server hybrid-model
+    prefix behaviour; the repo README hit-rate (96%) is a simulation (infinite local cache), not a measurement.'
+  notes: 'Read: README.md, docs/trace_replay_tester.md, CHANGELOG.md, LICENSE, trace_replay_tester.py (185 KB; grep + targeted
+    line ranges L1000-1080, L1325-1500, L1639-1650 only), trace_0026.json (3.8 KB full), repo tree listing. kv-cache-tester
+    master 94f6046dfd9c (2026-07-12); README sha256-12 bdab9903b334; trace_replay_tester.py sha256-12 1b84c5330eca. Companion
+    generator read: callanjfox/agentic-coding-analysis README + docs/TRACE_FORMAT.md @ 15e88f72f902 (code build_minimal_traces.py
+    NOT read). NOT read: cache_rate_tester.py, working_set_tester.py, launcher/, the 739 trace files (only trace_0026), Medium
+    methodology article.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): Stage-1 premise for this group (wave 1 ''TraceLab has synthetic
+    per-session ids and no cross-session sharing; AIPerf replays it'') is CONFIRMED to apply equally to Weka traces: hash_id_scope
+    is ''local'' in every published file read (repo trace_0026, HF 042026/060826/062126 heads); salt discarded at generation;
+    so Weka does not supply the cross-session sharing TraceLab lacks. What Weka adds over TraceLab is (a) nested sub-agent
+    topology with per-request ttft/api_time/think_time, (b) block-level prefix structure (hash_ids) so prefix-growth/pull-back
+    (compaction) events are visible, (c) a replayer that models parent-pauses-while-children-run. The replayer''s own cache-hit
+    figure is trace-derived, not server-measured.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: README.md "Included Traces" @ 94f6046dfd9c
+    quote: The `traces/` directory contains **739 traces** with **59,204 requests**, including 19 traces with nested sub-agent
+      conversations (70 sub-agents total).
+    quote_sha256: 8d4ac72e78211bab5c7a00b5e5b6d9d1f45f3e2c7e4e2a8b486d6308c80b6ccc
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: LICENSE @ 94f6046dfd9c
+    quote: Apache License Version 2.0, January 2004
+    quote_sha256: 4f41c0a15cddcb7d1e998705aad4dfc7480da88b859d949f2cca0db4145cb707
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: README.md "Included Traces"
+    quote: All traces are fully anonymized — no conversation IDs, timestamps, or real agent IDs.
+    quote_sha256: d53dbdf10dd5a39a6b3d8642c499dc2ddc5e47a871ec2ea255582d18f05ffac1
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: docs/TRACE_FORMAT.md "Hash ID Generation Algorithm" @ agentic-coding-analysis 15e88f72f902
+    quote: The salt is **never written to the output trace files** — it exists only during generation.
+    quote_sha256: 93ff0fbc17025462867a3e0849f1294574e9cffee85ae09c16946ecc28ee0dce
+    source_revision: github.com/callanjfox/agentic-coding-analysis @ 15e88f72f902 (master, pushed 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: docs/TRACE_FORMAT.md "Hash ID Assignment"
+    quote: Currently, IDs are assigned **per-conversation** — the same content in different conversations gets different numeric
+      IDs.
+    quote_sha256: e7a16f902303587420d884bd9fbca583c9344d5567692f98761938edb35d9af4
+    source_revision: github.com/callanjfox/agentic-coding-analysis @ 15e88f72f902 (master, pushed 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: README.md "Included Traces"
+    quote: hash IDs are scoped per conversation, with sub-agents sharing the parent's namespace
+    quote_sha256: bb074793ffbb0d88f8181cdd2f66cf4003c805a1d93ef931fbb9074156aeb7d8
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: trace_replay_tester.py:L1455 (build_messages) @ 94f6046dfd9c
+    quote: seed = stable_seed(f"{self.user_id}_{self.current_idx}_{tokens_to_generate}")
+    quote_sha256: 267f80ab33712523eb9c5a8162618c2e0770a6c97efcdd36096ec1c0476f35e8
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: trace_replay_tester.py:L1326 (calculate_cache_hits)
+    quote: '"""Calculate cache hits and misses for this request based on hash_ids."""'
+    quote_sha256: 732177cef1a88b3d9914e97dce1924a57ee22b8a62debd413a722bb0ff6d22b8
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: docs/trace_replay_tester.md "Cross-Conversation Cache Sharing"
+    quote: Generates a **canonical shared prefix** used by ALL users
+    quote_sha256: 8e51704ecf4759bf8462d435935bc8c8c838b745111b69486b9307faa2d16b79
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: docs/trace_replay_tester.md "Sub-Agent Handling"
+    quote: The parent pauses until all sub-agents complete, then resumes
+    quote_sha256: 2fc1f8cc6947f08e36bdd6db7145b968f85deedb7818021b271b526546baadac
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: trace_replay_tester.py:L1639-1648 (_build_request_params)
+    quote: '"max_tokens": max_tokens, "stream": stream, } if stream: params["stream_options"] = {"include_usage": True}'
+    quote_sha256: 5cf4389952b24d527b6d9c82ab2d457ab87ec6a2a0cb6f5c0ceac02489b1db57
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: README.md "Cache hit rates"
+    quote: Cache rates are computed from hash_id overlap between consecutive requests within each conversation.
+    quote_sha256: 97b9a901a5d6dfddfc6c9e7a706c392d57c31da2e8af998d303f5fce41e32783
+    source_revision: github.com/callanjfox/kv-cache-tester @ 94f6046dfd9c (master, 2026-07-12)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: quote
+    locator: docs/TRACE_FORMAT.md "Sub-Agent Cache Behavior" @ agentic-coding-analysis
+    quote: 'Sub-agents run in **isolated cache contexts**:'
+    quote_sha256: 4fade47c8af2260512ef605b57a4773d465ba5e8393d2ace6eff48f126830a3b
+    source_revision: github.com/callanjfox/agentic-coding-analysis @ 15e88f72f902 (master, pushed 2026-04-14)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: code
+    locator: inferencex-e2e/infx/datasets/proxy_to_weka.py:L325 session_to_weka @ InferenceX 2633e9a443
+    quote: 'hash_map: dict[str, int] = {}'
+    quote_sha256: bca2a6b3f6933d37ff222a949bf8cd532b6d81f96a4da4f689b44b95f86d36f9
+    source_revision: github.com/SemiAnalysisAI/InferenceX @ 2633e9a443958ad8 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 6
+    effect: unaffected
+    note: fresh; documented inconsistency between two WEKA-side documents, resolved only structurally via the converter code
+      (not measured on data)
+  depends_on: []
+- id: intake-2418
+  arxiv_id: null
+  url: https://huggingface.co/datasets/semianalysisai/cc-traces-weka-062126
+  source_type: repo
+  title: semianalysisai/cc-traces-weka-* (WekaTrace corpus of Claude Code proxy traces, with sub-agents)
+  categories:
+  - kv_cache
+  - inference_serving
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2389
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - SemiAnalysis (semianalysisai)
+  key_claims:
+  - 'HF family of 25 trace-related repos (22 named cc-traces-weka-*, Apache-2.0 on their cards) (author listing, 2026-10-22):
+    weka-042026 (739 traces, 657 MB, == the kv-cache-tester set), no-subagents v5 (98 traces, 22.8k req, 539 MB), with-subagents
+    v6 060826 (391 traces, 111,031 req, 1.55 GB), v7 062126 (393 traces, 98,827 req, 1.85 GB) and 256k-capped variants (e.g.
+    062126-256k: 68,266 req, 569 MB). Each is one traces.jsonl + card + plots; downloads are small (tens to hundreds; 062126
+    63k, 062126-256k 29k, likely AIPerf auto-fetch).'
+  - 'v7 062126 card: 56,798 main-agent turns + 1,697 sub-agent groups holding 42,029 inner requests, i.e. 42.5% of all 98,827
+    model requests are sub-agent requests; 21.6 B input tokens, 106 M output tokens; filters = Claude Code CLI >= 2.1.139,
+    peak concurrent sub-agent groups <= 10, classifier/utility calls dropped, image rows dropped, dynamic-workflow-bug sessions
+    dropped.'
+  - 'Fields (head of traces.jsonl read, 24 KB range request): id, models, block_size 64, hash_id_scope "local", requests[{t,model,in,out,hash_ids,api_time,type
+    s|n,ttft (streaming only),think_time}]; sub-agent entries add agent_id, subagent_type (label), duration_ms, total_tokens,
+    tool_use_count (always None in the converter), status, requests, models. No message or tool text.'
+  - 'hash_ids remain LOCAL: proxy 24-hex content hashes are remapped to per-session ints in first-seen order and the originals
+    are discarded, so cross-session prefix sharing is not recoverable. Within a session the converter keeps ONE hash map across
+    main stream and sub-agents, so parent/child prefix overlap is structurally preserved (not measured by us).'
+  - '`in` is not a tokenizer count: it is hash-block count x 64 (always a multiple of 64) and overcounts by up to ~260k tokens
+    in the heavy-cache-write tail; v7 caps ISL at 990,016. Sub-agent grouping uses the x-claude-code-agent-id header on CLI
+    >= 2.1.139, with a contiguous-stretch fallback for older rows.'
+  - 'Population/provenance: SemiAnalysis Claude Code proxy traffic (Claude models only; head sample shows opus-4-8 and haiku-4-5),
+    built by infx/datasets/build_weka_hf_dataset.py in SemiAnalysisAI/InferenceX (Apache-2.0); AIPerf loads v7 via --public-dataset
+    semianalysis_cc_traces_weka_with_subagents.'
+  techniques:
+  - proxy-captured agent trace corpus
+  - sub-agent group extraction from request headers
+  - hash-block KV simulation input
+  reported_results:
+  - '042026 card: aggregate prefix-KV hit 96.57% of 129,409,824 blocks (local infinite cache, turn 0 counted as miss)'
+  - 'v7: 98,827 requests, 21.6B input tokens (card stats block)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2389
+    - intake-2404
+    - intake-2405
+  credibility_score: 2
+  contradicting_evidence:
+  - Cards describe hash scope "local" for 042026 explicitly; the kv-cache-tester README and agentic-coding-analysis both advertise
+    "global" scope as supported/future, but no published dataset uses it (checked 042026 card + heads of 060826/062126).
+  - 042026 card says 59,274 requests; kv-cache-tester README says 59,204 for the same 739 traces. The 70-request difference
+    equals the stated 70 sub-agents (inference, not verified request-by-request).
+  notes: 'Read from disk: dataset-list API JSON (all semianalysisai repos, retrieved 2026-10-22), 5 dataset cards + file sizes
+    (blobs=true API), 24 KB head Range requests of traces.jsonl for 062126 and 060826 (schema only, no sub-agent entry fell
+    inside the heads), InferenceX infx/datasets/proxy_to_weka.py (full) and build_weka_hf_dataset.py (fetched, not read in
+    full) @ 2633e9a443958ad8. NOT read: any full traces.jsonl, the other 17 weka cards, cc-traces-0 / swebench-cc-traces-*
+    / multiturn-benchmark-data (no card), plots. Sub-agent shares are from card stats, not recomputed from data.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the cc-traces-weka family is not one dataset but 22 repos with
+    different filters/versions; for EPYC the only variants that matter are v7 062126 (largest sub-agent share, 42.5% of requests)
+    and its 256k-capped sibling (569 MB, closest to our long-context ceilings). Wave-1 conclusion confirmed: ids are local,
+    no content, no cross-session sharing recoverable. NEW vs TraceLab: public per-request ttft (streaming rows) and a measured
+    fan-out topology (1,697 groups, peak <=10 concurrent) that TraceLab''s release lacks.'
+  claim_anchors:
+  - claim_index: 1
+    kind: quote
+    locator: cc-traces-weka-062126 card, Stats block
+    quote: 'main_turns: 56,798 subagent_groups: 1,697 subagent_inner_requests: 42,029 total_model_requests: 98,827'
+    quote_sha256: 22da563eb1fc9369271ddccef1d73940cc7e23af095c8891dacfae96acd90d76
+    source_revision: huggingface.co/datasets/semianalysisai/cc-traces-weka-062126 @ 23f152f6f0 (modified 2026-06-21); sibling
+      cards read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: cc-traces-weka-062126 card, Filters
+    quote: peak concurrent sub-agent groups ≤ 10
+    quote_sha256: 92c1e3cdbcfbaec5a33674ad461d95efa33389a449977f6ebe891abcf5efd5de
+    source_revision: huggingface.co/datasets/semianalysisai/cc-traces-weka-062126 @ 23f152f6f0 (modified 2026-06-21); sibling
+      cards read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: quote
+    locator: cc-traces-weka-062126 card, Loader plugin
+    quote: --public-dataset semianalysis_cc_traces_weka_with_subagents
+    quote_sha256: b5eb1c94fae491d6300e8130ddab03dfd38061179526fc77ba0682bd46c80e08
+    source_revision: huggingface.co/datasets/semianalysisai/cc-traces-weka-062126 @ 23f152f6f0 (modified 2026-06-21); sibling
+      cards read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: proxy_to_weka.py:L289-291 build_subagent_entry @ InferenceX 2633e9a443
+    quote: '"tool_use_count": None,'
+    quote_sha256: 2b27cc74d8a11f6394ca79cb6ea3d602ec5c34c8ecbedc42beac60356960aec1
+    source_revision: github.com/SemiAnalysisAI/InferenceX @ 2633e9a443958ad8 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: proxy_to_weka.py module docstring
+    quote: 'Hash IDs (24-char hex strings in the proxy DB) are remapped to small per-trace ints so we can emit `hash_id_scope:
+      "local"`.'
+    quote_sha256: 1a43d71b6fcefb70203a6a27450852ce6119ca2d50426fe9f46465baaa3ab8d1
+    source_revision: github.com/SemiAnalysisAI/InferenceX @ 2633e9a443958ad8 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: cc-traces-weka-042026 card, header
+    quote: '**Hash scope:** `local` — block hash IDs are only comparable *within* a single trace; they are not a global content-addressable
+      identity.'
+    quote_sha256: b6f92aaf60df83aebf002e716f4cf41cd9a63bc43445d60f516a3d3c6d4d6d14
+    source_revision: huggingface.co/datasets/semianalysisai/cc-traces-weka-042026 @ ae1ab9b568
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: cc-traces-weka-062126 card, ISL cap note
+    quote: it is always an exact multiple of 64, not a true tokenizer count
+    quote_sha256: 4d5b6a110cadba34649c3967c29c8773ae4735a2a3e00b7da9ad66b3fb90d63f
+    source_revision: huggingface.co/datasets/semianalysisai/cc-traces-weka-062126 @ 23f152f6f0 (modified 2026-06-21); sibling
+      cards read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: proxy_to_weka.py MIN_CLI_FOR_HEADER_AS_TRUTH / _id_group_key
+    quote: 'if row.get("agent_id"): return f"cc-agent::{row[''agent_id'']}"'
+    quote_sha256: db330fa0f41b8d893320d8816b4576978c61d239a71613af956f8db1f00cb5cc
+    source_revision: github.com/SemiAnalysisAI/InferenceX @ 2633e9a443958ad8 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: cc-traces-weka-062126 card
+    quote: WekaTrace corpus derived from SemiAnalysis Claude Code proxy traces.
+    quote_sha256: 84169f32c25d5813f5309ba393c2fe6bee6a3dba61235460e07a905399c48fa9
+    source_revision: huggingface.co/datasets/semianalysisai/cc-traces-weka-062126 @ 23f152f6f0 (modified 2026-06-21); sibling
+      cards read 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2419
+  arxiv_id: null
+  url: https://code.claude.com/docs/en/monitoring-usage
+  source_type: blog
+  title: 'Claude Code documentation: Monitoring (OpenTelemetry) usage'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - tool_implementation
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2403
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Anthropic
+  key_claims:
+  - 'Claude Code exports 8 OTel metrics (session.count, lines_of_code.count, pull_request.count, commit.count, cost.usage,
+    token.usage, code_edit_tool.decision, active_time.total), 27 log events (user_prompt, api_request, api_error, tool_decision,
+    tool_result, hook_execution_start/complete, compaction, subagent_completed, skill_activated, mcp_server_connection ...)
+    and, in beta, spans: claude_code.interaction > llm_request / tool (> tool.blocked_on_user, tool.execution) / hook; sub-agent
+    spans nest under the parent tool span.'
+  - 'Tracing is opt-in and off by default: CLAUDE_CODE_ENABLE_TELEMETRY=1 + CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1 + OTEL_TRACES_EXPORTER;
+    hook spans and the content-bearing attributes (new_context, tool_input, response.model_output, system prompt) additionally
+    need ENABLE_BETA_TRACING_DETAILED=1 + BETA_TRACING_ENDPOINT, and interactive CLI sessions need an org allowlist (Agent
+    SDK / -p sessions do not). OTel variables in a repo .claude/settings*.json are ignored.'
+  - 'Privacy toggles all default OFF: prompts (OTEL_LOG_USER_PROMPTS), assistant text (OTEL_LOG_ASSISTANT_RESPONSES, falls
+    back to the prompts flag), tool parameters/Bash commands/MCP names (OTEL_LOG_TOOL_DETAILS), tool output content (OTEL_LOG_TOOL_CONTENT),
+    and full Messages-API bodies (OTEL_LOG_RAW_API_BODIES=1 inline-truncated at 60 KB or file:<dir> untruncated with an index.jsonl);
+    raw bodies imply consent to the others. Only lengths are recorded by default.'
+  - 'GenAI semantic-convention coverage is thin and Anthropic-specific: only gen_ai.system (always "anthropic"), gen_ai.request.model,
+    gen_ai.response.id, gen_ai.response.finish_reasons, gen_ai.tool.call.id and a gen_ai.request.attempt span event. Claude
+    Code does NOT set gen_ai.usage.*; tokens are input_tokens (EXCLUDING cache), cache_read_tokens, cache_creation_tokens,
+    output_tokens and must be summed/mapped by the consumer.'
+  - 'Per-request timing available only via telemetry/spans: llm_request ttft_ms, first_content_ms, duration_ms (incl. retries),
+    attempt, error_class, speed, effort; tool duration_ms, tool.blocked_on_user duration + decision/source, tool.execution
+    duration; hook duration and num_blocking; compaction trigger/pre_tokens/post_tokens/duration; subagent_completed total_tool_uses/duration/model_swapped;
+    agent_id / parent_agent_id / workflow.run_id for fan-out topology.'
+  - 'Join keys to the on-disk transcript: message.uuid, request_id (transcript requestId) and tool_use_id; the docs warn the
+    transcript format is internal and any such join is version-specific. With tracing active, subprocesses (Bash/PowerShell)
+    inherit TRACEPARENT and -p sessions accept inbound TRACEPARENT; traceparent on model requests is sent only when ANTHROPIC_BASE_URL
+    is unset/Anthropic (CLAUDE_CODE_PROPAGATE_TRACEPARENT=1 overrides).'
+  techniques:
+  - OTel metrics/logs/traces export from a coding agent
+  - W3C trace-context propagation into tool subprocesses
+  - opt-in content capture tiers
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2403
+    - intake-2387
+    - intake-2389
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Local observation (single sample): Claude Code 2.1.305-era transcripts under ~/.claude/projects already carry per-request
+    usage incl. cache fields, requestId, thinkingDurationMs, permissionDecision, an api-request record with requestDigest/shapeHash/cacheControl
+    placement, and cost-state totals (totalAPIDuration, totalToolDuration) -- so telemetry is not needed for token/cache accounting,
+    only for TTFT, retries, permission-wait splits, hook timing and live export. Per-request TTFT was NOT found in the sampled
+    transcript.'
+  notes: 'Source: code.claude.com/docs/en/monitoring-usage HTML retrieved 2026-10-22 09:50Z, sha256-12 40269e307b7e, extracted
+    to text (1,408 lines) and read in sections: configuration variables, traces/spans/attributes, metrics, events (user_prompt,
+    assistant_response, tool_result, api_request/error, api_request_body/response_body, tool_decision, hook_*, compaction,
+    subagent_completed), GenAI mapping, security/privacy. NOT read in full: multi-team/Org attribute sections, mTLS, example
+    backend configs, auth/plugin/skill/mcp/feedback events (names only). No settings or env were changed. Local claude --version
+    2.1.308. Codex page developers.openai.com/codex/config-advanced (sha256-12 70f7a22f39ec) states an [otel] log-export option
+    exists (one sentence read); opencode OTel NOT verified.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2403 read only the tracing + llm_request/tool tables
+    of this page (digest 84f37844a930); this entry reads the whole page: metrics list, the full event catalogue, hook/compaction/subagent
+    events, privacy tiers, and the install-time gating. Net findings: (1) only five gen_ai.* names exist and no gen_ai.usage.*
+    -- our private trace store must map cache_read_tokens/cache_creation_tokens itself; (2) the highest-value content (hook
+    spans, system prompt, new_context) needs ENABLE_BETA_TRACING_DETAILED and an org allowlist in interactive mode, so for
+    the interactive CLI the stable surface is metrics + log events + base spans only; (3) local binary is 2.1.308, newer than
+    every ''requires vX'' note on the page (max v2.1.283).'
+  claim_anchors:
+  - claim_index: 0
+    kind: doc-quote
+    locator: Span hierarchy
+    quote: Each user prompt starts a claude_code.interaction root span.
+    quote_sha256: 08dd499582bb52ae2aefb98f0b6fd804c73f9dade06856213e07588452b1a52d
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: doc-quote
+    locator: Metrics table
+    quote: claude_code.active_time.total | Total active time | s |
+    quote_sha256: 5334ca63e7052b5149cf7e84f276b329d44a8bc23ea18f34eacb7c229b517687
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: doc-quote
+    locator: Traces (beta)
+    quote: Tracing is off by default. To enable it, set both CLAUDE_CODE_ENABLE_TELEMETRY=1 and CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1,
+      then set OTEL_TRACES_EXPORTER to choose where spans are sent.
+    quote_sha256: afb2c5a409a3f0802359e3091a5bb2c08d561924380c7dd63ecd9dd2df924774
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: doc-quote
+    locator: claude_code.hook
+    quote: In interactive CLI sessions, detailed beta tracing also requires your organization to be allowlisted for the feature.
+    quote_sha256: 2b99d8bd6d6cd9c20e278744525ab7a414f600c371f04c4d777dd04f6a2a4988
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: doc-quote
+    locator: Traces (beta)
+    quote: Spans redact user prompt text, tool input details, and tool content by default.
+    quote_sha256: 070804ed6a55c854ca5ca2deb2717a9856a51bc1c877ac925554b8676cd05ed8
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: doc-quote
+    locator: Common configuration variables, OTEL_LOG_RAW_API_BODIES
+    quote: Enabling this implies consent to everything OTEL_LOG_USER_PROMPTS, OTEL_LOG_TOOL_DETAILS, and OTEL_LOG_TOOL_CONTENT
+      would reveal
+    quote_sha256: 446bae5f6494c49fba869648d8a493403eae389cf04d7dbb55c80b667164b12f
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: doc-quote
+    locator: Map input tokens to OpenTelemetry GenAI semantic conventions
+    quote: Claude Code doesn’t set gen_ai.usage.* attributes.
+    quote_sha256: 056b3c9322e0c01e25a8073b43884d1e6e75403de2e03411ada80de9d0046358
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: doc-quote
+    locator: claude_code.llm_request
+    quote: gen_ai.system | Always anthropic. OpenTelemetry GenAI semantic convention |
+    quote_sha256: a1a9c755da90bb5e5253962066d363621f324f7d495171310a39fa48cbe52462
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: doc-quote
+    locator: claude_code.llm_request
+    quote: ttft_ms | Time to first token in milliseconds |
+    quote_sha256: 503c08ef42333a5426ee8549f5057cdb8797297f08dc0f382a4e5a1ca50f41e9
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: doc-quote
+    locator: claude_code.tool.blocked_on_user
+    quote: duration_ms | Time spent waiting for the permission decision |
+    quote_sha256: 5b7c1b327293d6e89c9df111aed8f88e47a5ddc695737e191acf2f5fad88dab3
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: doc-quote
+    locator: Event correlation attributes
+    quote: The transcript entry format is internal to Claude Code and changes between versions, so a pipeline that joins on
+      these fields can break on any release; treat the joins as version-specific rather than a stable contract
+    quote_sha256: 3c2e50699c093e7eb8ddf6c94329ab77fded38a30eaa7e2a5544e6fa305ab736
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: doc-quote
+    locator: Traces (beta)
+    quote: The header is not sent to third-party providers.
+    quote_sha256: d35de145805c96ed93060d8161071fcf66ed06be6b006c421f5ebbc4e02ce629
+    source_revision: code.claude.com/docs/en/monitoring-usage (HTML, retrieved 2026-10-22, sha256-12 40269e307b7e; text-extracted)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2420
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/38
+  source_type: repo
+  title: Zen4 Flash Attention - bf16 support
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2386
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - Author expected bf16 KV (Zen4 native bf16 FMA) to beat fp16 in CPU flash attention but reports it ends up basically the
+    same as fp16 (PR body, 2024-09).
+  - Only a tiny gain for Gemma2-2b at 4k and 8k tokens, shown in an image-only graph (numbers not in text; image not read).
+  - 'bf16 is enabled only for K and V both bf16, no mixing (initial PR; later PR #172 allows bf16 V with other K).'
+  techniques:
+  - bf16 KV cache flash attention (Zen4 avx512_bf16 FMA)
+  reported_results:
+  - bf16 ~= fp16 FA on Zen4 (Ryzen 7950X, Gemma2-2b); tiny gain at 4k/8k; graph only
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2386
+  credibility_score: 4
+  contradicting_evidence: null
+  notes: GitHub API pulls/38 retrieved 2026-10-22, sha256-12 b74dfb6085fb; image not read.
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): PR body read from GitHub API JSON; establishes author-measured
+    bf16 KV ~= fp16 KV on Zen4 FA, i.e. no meaningful bf16 speedup expected for LK-H7. Graph image not read (numbers NOT-FOUND-IN-SOURCE
+    text).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: 'PR #38 body para 1'
+    quote: As Zen4 has native support for `bf16` fused-multiply-add, I was hoping that this might give better performance
+      than `fp16`. But with this implementation it is basically the same as `fp16`.
+    quote_sha256: def04e27b94ccc7da24a706bfb90ec2a0525349939ead1d12077f783ff6f4e7f
+    source_revision: merge 7b1b2b2c06c1729139135c9e47611af7161de6f7
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: 'PR #38 body para 1'
+    quote: We get a tiny improvement for Gemma2-2b at 4k and 8k tokens
+    quote_sha256: 0b204bb3d29139311b28f5fbf86aa2382493f33cf5ba28956ab0aa7e7ecd079e
+    source_revision: merge 7b1b2b2c06c1729139135c9e47611af7161de6f7
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: 'PR #38 body para 2'
+    quote: Given this outcome, I have only enabled support for K- and V-cache both as `bf16`
+    quote_sha256: 9f2e187be566c86058fcf6e6c207073384b326199997593c9139b0eea1a96fa0
+    source_revision: merge 7b1b2b2c06c1729139135c9e47611af7161de6f7
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2421
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/172
+  source_type: repo
+  title: CPU Flash Attention improvements
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2386
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'Ryzen 7950X (Zen4), LLaMA-3.1-8B IQ4_XS_R4, PP with FA: bf16 KV and q8_0 KV are equal within ~1-2% at pp512 (276.83 vs
+    275.97 t/s after PR); the gap is only at long ctx.'
+  - At pp32768 bf16 KV reaches 122.47 t/s vs q8_0 113.35 t/s (after PR); before PR bf16 was 82.97 vs q8_0 103.48, i.e. the
+    bf16 win at 32k is created by this PR and is ~8% over q8_0.
+  - No f16 KV row and no TG (decode) row appear in this PR body; bf16-vs-f16 FA speed is NOT-FOUND-IN-SOURCE here (only bf16
+    vs q8_0).
+  - 'Commit message (c606c1910): bf16 V with q8_0 K slightly faster than q8_0/q8_0 on Zen4 for ctx <= 4096; bf16 gain "2-3%"
+    sort of thing and fades beyond 8k before the large-context fix.'
+  techniques:
+  - bf16 KV cache flash attention (Zen4 avx512_bf16 FMA)
+  reported_results:
+  - bf16 KV pp512 276.83 t/s; q8_0 KV 275.97 t/s; pp32768 bf16 122.47 vs q8_0 113.35 (7950X, 8B IQ4_XS_R4)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2386
+  credibility_score: 4
+  contradicting_evidence: null
+  notes: 'GitHub API pulls/172 retrieved 2026-10-22 sha256-12 365893834280; commit c606c1910 read from /mnt/raid0/llm/ik_llama.cpp
+    git log. Image graphs in #38/#173 not read.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): PR body table read; shows bf16 KV only competes with quantized
+    KV, never measured against f16 KV; no TG. Gains are Zen4 ZMM bf16 FMA on a different FA kernel family than production.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: 'PR #172 body table row pp512'
+    quote: '|   bf16 |   bf16 |  1 |   1 |         pp512 |    274.71 ± 0.51 |    276.83 ± 0.36 | 1.008   |   '
+    quote_sha256: 7e0f90b5c878dfb83f668c03998a800dcf516b8e4533adaff72958237172bf90
+    source_revision: merge 0b74397d596bbcdfba27299393406d2b6330b133
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: 'PR #172 body table row pp32768'
+    quote: '|   bf16 |   bf16 |  1 |   1 |       pp32768 |     82.97 ± 0.00 |    122.47 ± 0.00 | 1.476   |   '
+    quote_sha256: 94903597656280c4ec8e919adf5ad1c28173077a191136394f8b850b92cd9405
+    source_revision: merge 0b74397d596bbcdfba27299393406d2b6330b133
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: 'PR #172 body table header'
+    quote: '| type_k | type_v | fa | rtr |          test |    t/s (main)    |    t/s (pr)      | Speedup |'
+    quote_sha256: 315427382a68bf4dce0e1c21d6cfe2fc50e52a14fd56c086a8ca65e40461248c
+    source_revision: merge 0b74397d596bbcdfba27299393406d2b6330b133
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: 'PR #172 body table row q8_0 pp512'
+    quote: '|   q8_0 |   q8_0 |  1 |   1 |         pp512 |    271.56 ± 0.05 |    275.97 ± 0.79 | 1.016   |   '
+    quote_sha256: 4fd54b47d938045ec794bd813db45cea35dd8bbd9294c9d48668946f229e8fa9
+    source_revision: merge 0b74397d596bbcdfba27299393406d2b6330b133
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
   depends_on: []
