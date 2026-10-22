@@ -189,10 +189,11 @@ existing writers (unchanged):
     events, 2.2 s, 64 MB RSS, nice 19); 27 tests in `tests/dev_harness/`. The sample read the live db `immutable=1`; since
     2026-10-22 opencode is read from the read-only snapshots `/mnt/raid0/llm/opencode-db/{epyc,host-daniele}.db`
     (`?mode=ro`), default tenant is all of `epyc,host,twyne`, outputs land under `events/<harness>/<source>/` (see UTM-LB1).
-  - [ ] **UTM-LB2.1 — Full-corpus projector + AgentRun run** under `nice -n 19`, off the inference windows:
+  - [x] **UTM-LB2.1 — Full-corpus projector + AgentRun run** under `nice -n 19`, off the inference windows:
     `python3 scripts/dev_harness/projector.py --claude 0 --codex 0 --opencode 0 --max-file-mb 0 --run-id full-<date>`
     then the same flags on `agentrun.py`; the default `--tenant all` already covers epyc, host and twyne plus both opencode snapshot DBs (`--opencode 0`). Estimate from the
     sample (~45 MB/s single core): ~31 GB vault → ~12–15 min each, ~6 GB + ~4.5 GB private output (raid0 has 608 GB).
+  - *(2026-10-22 13:33Z, workspace-f8.)* ✅ 2026-10-22 projection COMPLETE, run `full-20261022T1310Z`: 42,744 units (claude_code 4,907, codex 20,547, opencode 17,290), 3.2M events, 4,066 commits joined, 858 s; private output only. Evidence: `/mnt/raid0/llm/private/dev-harness-traces/projections/full-20261022T1310Z/run.json`.
   - [ ] **UTM-LB2.2 — Ingest projector events into the unified trace store** (`src/trace/`, new EventSource for
     dev-harness events, detail_json passthrough, dedupe on (source_path, source_line)), private DB path only.
 - [x] **UTM-LB3 — Point the agent_audit ingester at the per-agent agent_audit shard files; its default is the frozen legacy /workspace/logs/agent_audit.log (src/trace/ingest_agent_audit.py:24) (intake-2387).** ✅ 2026-10-22

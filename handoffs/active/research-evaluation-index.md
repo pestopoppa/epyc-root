@@ -53,7 +53,7 @@
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 — quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | — |
 | EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-05 — capture current pool/placement and actual owner window; retain accepted saved-E1 source capture | INF-06, INF-07, RTG-46 |
 | EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | Resolve the served-judge output-schema reliability question at the owner’s inference boundary; route upstream provenance to CJ-10 | EVL-10 |
-| EVL-52 | dev harness trace mining | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) | DHM-1 — count interrupt markers per 1000 turns over the existing conversation backup | RTG-41 |
+| EVL-52 | dev harness trace mining | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) | Tonight dhm-mining-full run (DHM-1..5, 7.2); then DHM-4 operator labels | RTG-41 |
 
 ## Cross-domain
 
