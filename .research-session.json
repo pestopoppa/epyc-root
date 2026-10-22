@@ -1,9 +1,9 @@
 {
   "session_id": "intake-ist-slq-20261022",
   "started_at": "2026-10-22T12:14:39Z",
-  "last_checkpoint": "2026-10-22T12:25:54Z",
-  "stage": 1,
-  "phase": 5,
+  "last_checkpoint": "2026-10-22T12:43:24Z",
+  "stage": 2,
+  "phase": "stage2-wave1-complete",
   "lane": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/root",
   "branch": "intake/ist-slq-20261022",
   "topic": "arXiv 2605.02404 SLQ (Statistically-Lossless Quantization) + github.com/IST-DASLab org triage + HF kaitchup/qwen38-27b-slq; on behalf of workspace-58",
@@ -76,7 +76,328 @@
       "reason": null
     }
   ],
-  "actionable_ledger": [],
+  "actionable_ledger": [
+    {
+      "ledger_id": "A-L1",
+      "source": "intake-2461 dive ledger A-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Add an EAR column beside KLD / same-top-p in the llama.cpp perplexity KLD harness (tools/perplexity/perplexity.cpp, struct kl_divergence_result and the per-token loop at L175-L252 @ ffc1bac82 already has p_base and q for every vocab entry: add sum_ear += min(p_base, q) plus a top-10-renormalized variant matching SLQ evaluation.py:L47-L61, report both next to Mean KLD / Same top p). Edit ONLY on a llama.cpp-experimental branch rebuilt from the current production tip (v10 is frozen). Acceptance checks: EAR(base,base)=1.0; EAR <= 1 and >= 1 - sqrt(KLD/2) (Pinsker) on every run; cross-check one run against a numpy reduction of the saved base logits. Record caveat in the report header: the 27B teacher is Q8_0 (no BF16 on disk), so EAR-vs-Q8_0 is NOT comparable to the card's EAR-vs-BF16 (see A-L3).",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (EXL3-X0c, L89; KLD from X0 carries over) and handoffs/active/iqk-iquant-enablement.md (NEW-10 Step 3 KLD line, ~L100)",
+      "proposed_disposition": "propose-task",
+      "reason": "EAR is a bounded, interpretable 1-TV-style companion to KLD, defined for exactly our teacher-forced pass; costs ~10 lines and no extra forward pass. Paper evidence: EAR separates configurations that KL/benchmark recovery leave close (Fig 10; Tables 19-23). Honest limit: 2606.19558 (intake-1510) reports KLD-type proxies lose ranking signal in the near-baseline zone, and EAR is the same family, so EAR is a diagnostic column, not a gate, until it is shown to rank better on our own quants.",
+      "compute": "patch authoring: none. Build llama-perplexity in llama.cpp-experimental: CPU build under region-lock --cpu-list, correctness class, ~20-40 min. Measurement rides the existing X0c KLD passes on MI210 (~7.6 GB base file, minutes per arm, correctness class, GPU window shared with X0c); no new window.",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "A-L2",
+      "source": "intake-2462 dive ledger A-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Do NOT download the three kaitchup Qwen3.8-27B-SLQ-EAR98/98.5/99 checkpoints (23.7 / 25.6 / 30.5 GB).",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "Not loadable on any host we run: packed Humming int32 safetensors, Humming is NVCC/CUDA-only (README: NVIDIA SM75+/BF16 SM80+; zero ROCm/HIP/CPU hits at 5b500b407a), no GGUF of any SLQ checkpoint exists (HF API 2026-10-22), our serving is llama.cpp GGUF only on MI210 gfx90a and EPYC. Everything they could teach us (bit maps, config) is already extracted from config.json without weights. A dequantize-to-BF16 detour would reproduce only what the card already reports and cost 30+ GB at ~9 MB/s.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "A-L3",
+      "source": "intake-2462 dive ledger A-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Settle the absolute EAR of our incumbent Q8_0 (and UD-Q4_K_M) against a BF16 reference with one measurement: obtain Qwen3.8-27B BF16 (HF safetensors 55.56 GB, or a BF16 GGUF ~54 GB; one download at a time, check disk first), run llama-perplexity --kl-divergence-base with the BF16 model as base (wiki.test.raw, -c 512, --chunks 60, same X0 recipe), then the Q8_0 and UD-Q4_K_M passes, reporting KLD, same-top-p and (after A-L1) EAR. Until measured the answer to 'what EAR does our Q8_0 have' is UNKNOWN: neither the card (no Q8_0 row) nor the paper (no GGUF or Q8_0; nearest datum is Llama-3.1-8B uniform INT8 g128 = EAR 0.992 asym / 0.997 sym) states it. Inference only, not a number to cite: Q8_0 (block-32 int8, ~0.8% max relative step) is far finer than the e4m3 FP8 weights whose weights-only EAR is 98.10% on this model, so Q8_0 EAR should exceed 98.1%.",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (new sub-task under EXL3-X0c; unblocks a BF16-anchored KLD for every later 27B quant claim)",
+      "proposed_disposition": "propose-task",
+      "reason": "The X0 harness uses Q8_0 as teacher proxy because no BF16 is on disk (x0-27b-quants/PLAN.md L16), so none of our 27B KLD numbers is anchored to BF16 and the card's EAR column cannot be compared to ours. The card does give a GGUF datum for calibration: UD-Q4_K_XL 97.44% EAR vs BF16; our UD-Q4_K_M has KLD 0.0076 vs Q8_0 and paper's uniform-INT 5.16-bpw point (KL 0.0068) has EAR 0.964, a consistency sanity check only.",
+      "compute": "download BF16 ~55.6 GB (HF ~9 MB/s ~ 1.7 h, one download at a time, disk-space check; operator disk call if free space < 250 GB). BF16 base pass on MI210 needs ~54 GB weights + buffers: exclusive window with :8083 drained (VRAM 64 GB), ~15 min; Q8_0 and Q4_K_M passes ~5 min each; delete the ~7.6 GB logits file after. Class: correctness (no quiet-host requirement); GPU-exclusive on the MI210 lane.",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "A-L4",
+      "source": "intake-2462 dive ledger A-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Keep the SLQ per-projection bit map as a PRIOR for a GGUF per-tensor type recipe on the 27B (artifact: dive-A/slq-qwen38-27b-bitmap.csv, generator bitmap_extract.py). Mapping to GGUF types: 4->Q4_K, 5->Q5_K, 6->Q6_K, 7/8->Q8_0, BF16->F16/BF16. Observed pattern in all three variants: MLP gate/up gets the fewest bits (EAR98: 4-5 in layers 0-23, 6-7 in last 8), layers 0-3 lowest for MLP, attention out-proj and linear_attn in/out get +1 vs MLP, final-layer MLP highest, tiny in_proj_ba high (EAR98: 6-7) or BF16 (EAR99), embed/lm_head BF16 throughout. Byte projection of an EAR98-shaped GGUF: ~17.9 GB for the 24.35B linear params + ~1.9 GB for embed/lm_head at Q5_K/Q6_K = ~19.9 GB (excl. norms/MTP/vision) versus UD-Q4_K_XL 17.56 GB (EAR 97.44%) and UD-Q4_K_M 16.46 GB: no byte advantage, and K-quants lack GPTQ's Hessian rounding so equal-bit EAR will be lower than SLQ's.",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (EXL3-X0b: 27B GGUF quant decision)",
+      "proposed_disposition": "trigger",
+      "reason": "Trigger (external event, named): EXL3-LB1b confirms the AutoKernel low-quant speed win, which the operator set (2026-10-03) as the only condition for reopening the 27B quant choice. Until then the 27B stays Q8_0 and a custom recipe has no decision to inform. When it fires: build ONE arm via llama-quantize --tensor-type from the CSV on llama.cpp-experimental and compare KLD/same-top-p/EAR (A-L1) vs Q8_0 and UD-Q4_K_M at equal bytes.",
+      "compute": "null now; when triggered: quantize ~0.5-1 h CPU (correctness class) plus a KLD pass ~5 min on MI210",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "A-L5",
+      "source": "intake-2461 dive ledger A-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Record DFlash2 draft acceptance (draft_n_accepted/draft_n) beside KLD / same-top-p / EAR for each 27B quant arm in X0c, and state the relationship correctly. EAR is Sum_k min(p,q) = 1 - TV(p,q) = Leviathan acceptance probability between a DRAFT distribution q and a TARGET p. Paper usage compares the quantized model to BF16 (a 'quantized draft for the BF16 target'). For DFlash2 the draft is the trained 2.06 GB drafter and the target is the (re)quantized 27B, so EAR(quant, BF16) is NOT the acceptance rate; what it licenses is a bound: by the triangle inequality on TV, |alpha(drafter vs quantized target) - alpha(drafter vs BF16 target)| <= TV(p_BF16, p_quant) = 1 - EAR per position (derived here, not in the paper; full-vocab EAR needed, the top-10 renormalized variant is not a strict TV). It does NOT cover the other change a re-quantized target makes: the drafter reads target hidden states at layers [6,20,34,48,62] and was trained on the original model's states, so a perturbed tap is a distribution shift to the drafter that no output-side metric measures. Which overload DFlash2 uses in common/sampling.cpp (plain sampled-token match L637-L698 vs Leviathan rejection with draft distributions L708-L780 @ ffc1bac82) was not traced: at temperature 0 acceptance is top-1 agreement (same-top-p), not EAR.",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (EXL3-X0c output table) with the drafter note cross-linked in handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "proposed_disposition": "propose-task",
+      "reason": "Our own X0 data already shows the effect is small at KLD 0.0076 (same-top-p 96.10%): DFlash2 acceptance np1 Q8_0 0.7256 vs UD-Q4_K_M 0.7323, np4 0.5649 vs 0.5887 (x0-27b-quants/results/summary.json shape_a.*.acc, = draft_n_accepted/draft_n from /completion timings, x0_shape_a.py L164-165), i.e. not lower. Paired with the Qwopus counter-example (fine-tune target, acceptance 0.356, dflash2 handoff L40-L46) it shows target drift that the drafter has not seen is what kills acceptance, not 1-4% output-distribution noise. A column of (EAR, KLD, same-top-p, acceptance) per arm turns that into a measured relation instead of an argument.",
+      "compute": "none beyond X0c (acceptance already recorded per launch)",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "A-L6",
+      "source": "intake-2461 dive ledger A-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Belief-kernel wiring for the new measurement source (CLAUDE.md rule): add a row for the EAR/KLD/acceptance quant-comparison output to scripts/vidya/adapters/README.md source table and a task in handoffs/active/vidya-belief-substrate-program.md, with the claim tuple fields (model file sha, teacher file sha, corpus, ctx, chunks, EAR variant: full-vocab vs top-10-renormalized, GPU/HIP residency proof).",
+      "proposed_owner": "handoffs/active/vidya-belief-substrate-program.md",
+      "proposed_disposition": "propose-task",
+      "reason": "Write side is cheap and permanent; the EAR variant ambiguity found here (renormalized vs full-vocab) must be in the tuple or the numbers are un-comparable later. Applies once A-L1 produces numbers.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "A-L7",
+      "source": "intake-2483 dive ledger A-L7 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-A/patch.yaml)",
+      "action": "Size our paired per-item task gates from 2608.15046 Table 1 instead of leaving 'a paired per-item task eval no worse than UD' (iqk-iquant-enablement.md ~L110-L111) without a margin or n: declare a margin (e.g. 2 pp) and require the item count from the churn-based table (pooled ~1.9k paired items at typical churn, GSM8K ~1.2k, MMLU ~2.2k; 1 pp costs 4x) or report the achieved margin the n supports. Use McNemar/TOST on the per-item pairs we already log.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (T2/NEW-10 gate wording)",
+      "proposed_disposition": "propose-task",
+      "reason": "The source's genuine, usable contribution; the gate currently has no stated resolution so a 'pass' could be absence of power (the paper's central point). Edit is wording-only; the n tables transfer because they are driven by churn, not hardware.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "B-L1",
+      "source": "intake-2481 dive ledger B-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-B/patch.yaml)",
+      "action": "Add task EXL3-X0d to exl3-cpu-mi210-implementation.md (next to EXL3-X0b/X0c): paired A/B of the 27B GSQ-RCO IQ3_S (primary) and IQ3_XXS (secondary), NON-mtp builds, vs the served Unsloth Qwen3.8-27B-Q8_0 on the MI210 with DFlash2 on. DOWNLOAD: Qwen3.8-27B-GSQ-RCO-IQ3_S.gguf 11,771,546,784 B (21.8 min at 9 MB/s) then IQ3_XXS 10,094,357,632 B (18.7 min), one download at a time, ~40 min total, disk 21.9 GB of 588 GB free; pin sha256 64b53b64... (IQ3_S) and fdfcb6a2... (IQ3_XXS) from the HF API LFS oid. ARMS: Q8_0 (champion incumbent), GSQ IQ3_S, GSQ IQ3_XXS, plus UD-Q4_K_M as the calibration arm for the KLD scale (X0 value 0.007607). PINS: same v10 kernel store and DFlash2 drafter, same argv, same chat template (--chat-template-file = the served Unsloth template; the GSQ GGUF embeds the stock one), reasoning on, residency proven, one server at a time. STEP 0 smoke (10 min, correctness class): load on v10, qwen35 arch, native types, verify_ggml_linkage, 'ggml/IQ1' MMVQ present; rocprof per-type MMVQ roofline of the GSQ IQ3_S at decode and ne11 5-8 (IQ3_S 80 VGPR/6 waves, IQ3_XXS 71, IQ2_S 78, IQ4_XS 64, Q4_K 44 are the static values). STEP 1 QUALITY (correctness class, no quiet host needed, GPU claim only, ~1 h): llama-perplexity on the MI210, wiki.test.raw -c 512 60 chunks as X0 (and a -c 4096 pass), one shared reference = the Q8_0 logits file (--kl-divergence-base), then --kl-divergence per arm: PPL ratio, mean KLD +/- SE, median, 99.9%, same-top-1 %; coherence at production prompt length: the ~2k and ~50k prompts of the X0 shape-b harness plus 3 needle/long-context items, every arm, sampling at the card/Qwen recommended values with reasoning on. STEP 2 SPEED (timing class, exclusive :8083-equivalent GPU window >= 2.5 h): canonical np1 and np4 (np4 server, 16k f16 KV, DFlash2 n_max 8, harness serving.py::_measure_once) and the production shape (np4, -c 393216 --kv-unified, q8_0 KV, DFlash2 n_max 7; np1 solo decode ~2k and ~50k, temperature 0), 3 fresh launches per arm, ABA, own-PID VRAM sampled during each launch, DFlash2 draft_acc recorded per launch and for the production mix. PREDECLARED DECISION RULE (fixed before any run; thresholds are proposals the owning session may tighten, never loosen after seeing data): QUALITY gate passes only if IQ3_S mean KLD vs Q8_0 <= 0.015 (about 2x the X0 UD-Q4_K_M 0.0076), same-top-1 >= 94.0% (X0 96.10%), PPL ratio <= 1.010, and zero coherence failures where Q8_0 passes. ACCEPTANCE gate: DFlash2 draft_acc >= Q8_0 arm minus 0.03 absolute at ~2k temp0 and on the production mix (Q8_0 production mix 0.53). SPEED gate: median-of-3 decode >= +10% over Q8_0 at canonical np1 AND production ~2k AND ~50k np1, each gain outside both arms' +/-1 SD, with np4 aggregate not below -5%. OUTCOMES: all three gates -> file the switch decision package for EXL3-X0b (speed, KLD, VRAM freed); quality+acceptance pass but speed fails -> record 'VRAM/fit-only option', no switch (X0b operator trigger: no quant switch without a significant speedup); quality fails -> decline both builds; acceptance fails -> decline (DFlash2 is the champion lever). IQ3_XXS is judged by the identical rule independently. If speed fails on v10 and EXL3-LB1b has confirmed the seed-#1 MMQ route, repeat STEP 2 on the champion build in the same window as EXL3-X0c (shares the Q8_0 arm). Wire the measurements to the belief kernel at run time (scripts/vidya/adapters/README.md source-table row).",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (new row EXL3-X0d under EXL3-X0b/X0c); cross-reference only from handoffs/active/qwen38-27b-replace-qwen36.md",
+      "proposed_disposition": "propose-task",
+      "reason": "Ownership: exl3-cpu-mi210-implementation.md already owns every 27B quant-switch A/B (EXL3-X0 DONE 2026-10-03 (L78-86) with the exact harness and KLD protocol above; X0b 'settle the 27B GGUF quant' trigger-gated (L87); X0c re-run on the seed-#1 build (L89); LB1/LB1b/LB1c own the per-type MMVQ kernel route). It is ACTIVE, not frozen and not a pointer (status 'active experimental implementation program'; only EXL3-6/7 are parked for the 27B). qwen38-27b-replace-qwen36.md does not mention X0 and owns the serving/DFlash2 selection rows (Q38-T7/T9/T10) -- it is the wrong owner for a quant-switch A/B. The question is genuinely new: a 3.5 bpw gradient-allocated mix at 11.8 GB is 0.42x the Q8_0 bytes (UD-Q4_K_M was ~0.6x and gave -8.9% np1 on v10), the card gives no KLD/top-1, and the VRAM win (~16 GiB at the production shape) is large. Not blocked on any operator decision; the X0b switch decision is downstream of this measurement.",
+      "compute": "MI210 GPU (+ host page cache for the 11.8/10.1 GB files). Download 21.9 GB (~40 min at ~9 MB/s, no compute). VRAM estimate at the production shape (np4, -c 393216, q8_0 KV): X0 measured Q8_0 52.08 GiB own-PID peak; weights 27.06 GiB (Q8_0 file) -> 10.96 GiB (IQ3_S) / 9.40 GiB (IQ3_XXS), so IQ3_S ~36.0 GiB, IQ3_XXS ~34.4 GiB (+/-1 GiB; frees ~16-17.7 GiB). Step 0 smoke ~10 min; step 1 quality ~1 h correctness class (no exclusivity); step 2 speed >= 2.5 h exclusive timing window (9 launches ~12 min each + loads); +1.5 h if repeated on the seed-#1 champion build. Class: step 0/1 correctness, step 2 timing.",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "B-L2",
+      "source": "intake-2481 dive ledger B-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-B/patch.yaml)",
+      "action": "Roofline estimate recorded for the A/B (ESTIMATE, not measurement; assumptions stated): np1 no-draft decode relative to Q8_0 = 0.9x-1.65x for IQ3_S (0.92x-1.94x for IQ3_XXS); under DFlash2 on v10 as shipped, expect parity-or-worse (0.6x-1.1x) because the verify GEMMs at ne11 5-8 take the MMVQ path for IQ/K types at 9-15% of roofline (EXL3-LB1 first measurement; X0 UD-Q4_K_M -8.9% np1); with the seed-#1 MMQ route (IQ3_S is on its type list; IQ3_XXS/IQ2_*/Q2_K are not) up to roughly +10..+50%. Basis: streamed bytes IQ3_S 11.35 GB (0.417 of Q8_0 27.23 GB); Q8_0 decode MMVQ 70.2% of 1638 GB/s on the 27B (exl3-cpu-mi210-implementation.md:L95 @ lane worktree); 8B quant-ladder end-to-end effective GB/s (wiki/quantization.md:L281-287): Q8_0 862, IQ4_XS 595, Q4_K_M 546, IQ3_XXS 267, IQ2_XXS 206; static VGPR (wiki/hardware-optimization.md:L4093-4094): IQ4_XS 64 (8 waves), IQ3_XXS 71, IQ2_S 78, IQ3_S 80, IQ2_XS 82 (6 waves). No measured IQ3_S/IQ2_S/IQ2_XS/Q2_K MMVQ efficiency on gfx90a exists in the wiki/handoffs; IQ3_XXS (18.6% HBM on the 8B ladder) is the nearest figure. Pessimistic = 6-wave IQ types at 267/206 GB/s, rest at ladder values; optimistic = every type at IQ4_XS-class 595 GB/s (8-wave kernels). The 8B-ladder basis is end-to-end llama-bench np1 on v9 kernels; the 27B Q8_0 weight-stream time model 31.6 ms/token vs ~33 ms measured no-draft.",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (carried inside EXL3-X0d)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "The estimate exists to size the A/B and to set expectations; it must not be cited as a result. It is superseded the moment STEP 0 rocprof and STEP 2 produce numbers.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "B-L3",
+      "source": "intake-2481 dive ledger B-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-B/patch.yaml)",
+      "action": "Extend EXL3-LB1c's per-type MMVQ-vs-MMQ sweep type list (currently Q4_K, Q6_K, IQ4_XS, IQ4_NL, IQ3_S, Q5_K/Q3_K) with IQ3_XXS, IQ2_S, IQ2_XS, IQ2_XXS and Q2_K, because the GSQ-RCO 27B builds carry those types at the 27B's real shapes (IQ3_S build: IQ3_XXS 18% of bytes, IQ2_S 7%, Q2_K 2%).",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md EXL3-LB1c",
+      "proposed_disposition": "propose-task",
+      "reason": "Cheap addition to an already-owned sweep; the GSQ files are the first available 27B artifacts that exercise those types and the A/B outcome depends on them. Not a new owner or new compute window (rides LB1c).",
+      "compute": "MI210 timing-class sweep, already budgeted under LB1c; add roughly 20-30 min for 5 extra types (estimate).",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "B-L4",
+      "source": "intake-2481 dive ledger B-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-B/patch.yaml)",
+      "action": "Decline the -mtp builds and the IQ2_XS/IQ2_S builds for the first A/B. -mtp: DFlash2 uses its own drafter and issue #11 reports 0% acceptance on IQ3_S-mtp. IQ2_XS/IQ2_S: 67 and 25 IQ1 tensors plus IQ2/Q2_K-heavy mix with 6-wave kernels; add as arms only if IQ3_XXS passes the QUALITY and ACCEPTANCE gates of B-L1.",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (EXL3-X0d condition)",
+      "proposed_disposition": "trigger",
+      "reason": "Trigger: IQ3_XXS passes B-L1 quality+acceptance gates. Not a dismissal of the lower builds; they are sequenced behind the cheaper evidence.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "B-L5",
+      "source": "intake-2465 dive ledger B-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-B/patch.yaml)",
+      "action": "Keep the iqk-iquant-enablement NEW-10/NEW-11 trigger ('GSQ code release adds a GGUF IQ-type or Q2_0 export path or a Qwen3.8-Flash-Next recipe') as UNFIRED and record the evidence date: GSQ main HEAD 03fc164 (2026-07-05), pushed_at 2026-07-11, issues #4 (maintainer: GGUF codebase 'very soon', 2026-06-29), #5, #9 (release pipeline unpublished, 2026-09-07) all unanswered by maintainers; side branch gsvq-iquant-qwen3-sweep-results (c93f2e8, 2026-05-18) holds IQuant repack code with a negative KL result. Re-check with a zero-token API probe: GET /repos/IST-DASLab/GSQ/commits?since=2026-07-05T15:18:11Z (and /branches, /issues/9).",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md NEW-10/NEW-11 trigger text",
+      "proposed_disposition": "trigger",
+      "reason": "The external event is named: a commit or branch on IST-DASLab/GSQ main that adds GGUF/IQ export or a Qwen3.8 config, or an answer to issue #9. The probe is a one-line curl, no LLM polling.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "B-L6",
+      "source": "intake-2465 dive ledger B-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-B/patch.yaml)",
+      "action": "Record, in the knowledge base only, that IQuant fixed-scale assignment refinement lowered weight MSE but increased end-to-end KL on Qwen3-4B UD-Q2_K_XL (c93f2e8 docs/gsvq_iquants.md); do not seed an AutoKernel/IQ-lane hypothesis of 'GSQ-refine our own IQ GGUFs' from the GSQ repo.",
+      "proposed_owner": "wiki/quantization.md (knowledge-only; no handoff row)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Consistent with the project rule that low-bit quality is judged by ppl+NMSE+coherence, not weight MSE; the code is on a side branch and unmaintained.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "C-L1",
+      "source": "intake-2467 dive ledger C-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-C/patch.yaml)",
+      "action": "Zero-training prefill/decode weight-set handoff probe on CPU (Q38FN lane): prefill the prompt+continuation context with the resident higher-bit GGUF (served UD-IQ4_XS) in a first llama_context, copy the sequence state (llama_state_seq_get_data/set_data: KV + GDN recurrent state) into a second llama_context holding the lower-bit GGUF (GSQ-RCO IQ3_XXS from NEW-10), then teacher-force a 256-token held-out continuation and record per-token KLD vs a shared reference. Arms: (A) D-only [prefill D, decode D]; (B) P->D; (C) P-only. Tool is a small harness on a llama.cpp-experimental branch cut fresh from v10 (tools/ or tests/ only; no change to library code).",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (new row beside NEW-10; gated on NEW-10's existing operator download call for the low-bit arm). Status check: file is 'PROMOTED AND FROZEN IN v8' as a kernel but its post-v8 research tasks (NEW-6, NEW-10) are open and it owns the ISTA GSQ-RCO Q38FN work (intake-2206/2207); it is not a pointer/frozen stub. deepseek-v41-flash-evaluation.md is active but under the 2026-10-22 operator directive that every DS41-1017 test except the noise floor is disregarded until AutoKernel kernel work is done, so it cannot own this; qwen38-flash-next-fp8-evaluation.md is BLOCKED (FP8 artifact deleted 2026-08-28) and is the wrong scope.",
+      "proposed_disposition": "propose-task",
+      "reason": "Named blocker is only the NEW-10 operator download call for the low-bit GGUF (no second bit-level of Q38FN or DS41 is on disk: Q38FN has UD-IQ4_XS only, DS41 has the 1017 MXFP4 only). The paper never tests a GGUF-native higher-bit prefill (claim 4), the one source of evidence (Table 7 RTN column) says an untrained ~4.5-bit prefill recovers most of the MMLU-Pro IQ1 gap, so the question is open and cheap. Expected effect at IQ4->IQ3 is small (paper: no gain at 3-bit), so the rule below includes an explicit 'uninformative' outcome. Predeclared decision rule (KLD vs shared reference, N=120 passages x 2048-token prompt + 256 teacher-forced tokens, paired bootstrap over passages, 95% CI): recovery R = (KLD_A - KLD_B)/KLD_A. Gate 0: if KLD_A - KLD_C < 0.005 nats the bit gap is too small to test -> record 'uninformative at this bit-level', stop, do not escalate. Else: R >= 0.25 and CI lower bound > 0.10 -> PASS: open a follow-on to measure ppl/coherence at production prompt length on the 27B-class IQ2_XXS pair (trigger C-L3), no kernel work yet. R < 0.10 or CI spans 0 -> FAIL: record as refuted for GGUF-native higher-bit prefill at this model/bit-level, close. 0.10 <= R < 0.25 -> record, do not escalate. Coherence at production prompt length is required for any PASS (CORE-OBJECTIVE/coherence gate). Also report (not gated): prefill tokens/s of P vs D on the CPU, since iqk IQ2/IQ3 has no Q8_K_R16 repack path (NEW-6b) and a higher-bit repacked prefill may be faster, which would make P->D a speed lever too.",
+      "compute": "class correctness (no quiet host needed; run under region-lock --cpu-list 0-95, one server/process at a time, sole PIDs captured). RAM: both GGUFs mmap'd simultaneously = size(UD-IQ4_XS) + size(IQ3_XXS) + 2 KV/state buffers; both far below the 1.1 TB host (sizes to be read from headers before launch; must stay under the earlyoom budget with no other DS41-class server up). Duration estimate, unmeasured: 120 passages x (2 prefills x ~2.3k tokens + 256 teacher-forced) x 3 arms, roughly 2-4 h wall on the 96-core CPU; build of the harness ~15 min.",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "C-L2",
+      "source": "intake-2467 dive ledger C-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-C/patch.yaml)",
+      "action": "MI210 27B champion (Q8_0 + DFlash2): decline. No FP4 matmul on gfx90a, so NVFP4 prefill gives no speedup; the champion is Q8_0 (not low-bit) and the X0 UD-Q4_K_M A/B shows KLD 0.0076 and acceptance not lower, i.e. there is no quality gap for disaggregation to close (paper: no gain, slight loss at >=3-bit). A second 13.7 GB prefill copy would also cost 64 GB-VRAM headroom or SSD streaming with 0.06-0.73x TTFT below 4K.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "Outside the regime where the paper shows any gain; DFlash2 interaction is additionally untested and risky: the drafter conditions on target hidden states at layers [6,20,34,48,62]; with a different prefill weight set those prompt-position states would come from P, not the D the drafter was trained against, so acceptance could regress (paper has no speculative-decoding evaluation). Re-open only via C-L3.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "C-L3",
+      "source": "intake-2467 dive ledger C-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-C/patch.yaml)",
+      "action": "TRIGGER (no checkbox): if C-L1 PASSES, run the same handoff on a low-bit (IQ2_XXS-class) dense pair of an already-served model to calibrate against the paper's published untrained-prefill reference (27B IQ2_XXS: MMLU-Pro 70.50 weight-only vs 76.06 RTN-NVFP4-prefill), and check DFlash2 acceptance with P-produced hidden states. Gate: operator disk/download call for the extra GGUF.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (trigger line beside NEW-10/NEW-11)",
+      "proposed_disposition": "trigger",
+      "reason": "Trigger, not task: depends on C-L1 outcome.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "C-L4",
+      "source": "intake-2468 dive ledger C-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-C/patch.yaml)",
+      "action": "TRIGGER (no checkbox): port ODP (layer-swap ring + eval-callback) to llama.cpp-experimental only if (a) C-L1/C-L3 show a GGUF-native P->D handoff recovers >=25% of the low-bit KLD gap AND (b) a speed or capacity case exists that needs the swap (e.g. P too large to keep resident beside D). Cost if triggered: hand-merge ~20 files onto a fresh v10 branch (8 files fail git apply --check), replace qwen35-specific packer/hook with the target arch, no FP4 compute benefit on EPYC/gfx90a. Mechanism for a mmap'd CPU host is mostly unnecessary (RAM 1.1 TB can hold both sets), so the port would reduce to a two-context state handoff, not SSD streaming.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (trigger line)",
+      "proposed_disposition": "trigger",
+      "reason": "No quality or speed evidence yet for our regime; Act-Don't-Defer test: the blocking event is the C-L1 result, named.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "C-L5",
+      "source": "intake-2482 dive ledger C-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-C/patch.yaml)",
+      "action": "Do not download the 54.9 GB prefill blocks; decline. They require the Blackwell-only fork and pair only with Unsloth 27B IQ1/IQ2 GGUFs we do not serve.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "Unusable on MI210/EPYC; no served pairing.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "C-L6",
+      "source": "intake-2467 dive ledger C-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-C/patch.yaml)",
+      "action": "Knowledge-only: record in wiki/handoff context that the DQ paper's Table 7 gives a published, per-item-reproducible training-free control (untrained NVFP4 prefill + frozen IQ1_S: +19.35 MMLU-Pro) and that the paper's accuracy is vLLM BF16-dequant, not GGUF-native; use as the calibration reference for C-L1/C-L3.",
+      "proposed_owner": "knowledge-only (intake index entry itself)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Already carried by entry reader_should_conclude.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "D-L1",
+      "source": "intake-2470 dive ledger D-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-D/patch.yaml)",
+      "action": "PRIMITIVE (one): a llama.cpp-native, bytes-budgeted per-tensor GGML-type allocator with KLD confirmation for the Q38FN lane (DS41 excluded: native MXFP4, no requant by operator ruling). Components: (1) emitter turning an allocation (`<gguf tensor>: <TYPE>`, as in the ISTA rco-allocation files) into `llama-quantize --tensor-type-file` regexes (anchored, lowercase, per-layer expert tensors); (2) byte accountant from true ggml block geometry read from GGUF headers, not the toolkit's approximate bpw table; (3) sensitivity table per (tensor group, candidate type: IQ2_XXS/XS/S, IQ3_XXS/S, IQ4_XS, Q2_K..Q6_K) as imatrix-weighted quantize-dequantize NMSE; (4) knapsack over bytes; (5) at most ~40 confirmatory full-candidate KLD runs via llama-perplexity --kl-divergence through the existing digest-pinned receipt writer scripts/vidya/qwen4exp_quality_capture.py (belief-kernel wiring inherited). First consumer, no search needed: ALLOCATION TRANSPLANT - requantize our Q8_0 source with the ISTA Q38FN IQ3_XXS allocation using plain-imatrix llama-quantize and compare at identical bytes with ISTA's GSQ-weights file, isolating GSQ weight quality from RCO allocation (the gap intake-2206 says it cannot answer).",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (new NEW-12 beside NEW-8/NEW-10)",
+      "proposed_disposition": "propose-task",
+      "reason": "Owner is the low-bit lane file that already holds the Q38FN self-quant (NEW-8), the ISTA-arm (NEW-10) and their Q8_0/imatrix prerequisites. NOT AutoKernel: AK owns kernels and runtime knobs (autokernel-research-loop.md); quantizer allocation is artifact production and AK only consumes coverage (NEW-11 table). Consumers: NEW-10, NEW-8, cpu-decode-roofline-program.md XFER-3 (re-decide the served Q38FN file). Paper-default EvoPress is NOT feasible on llama.cpp CPU: 150 x (128x2048 + 16x16384 + 5x131072) = 176.9M token-forwards = about 9.7 days of the whole host at ~212 t/s pp512 (cpu-decode-roofline-program.md L177, d0, 48 threads), plus ~19,200 distinct 85-100 GB candidate files because llama.cpp cannot swap tensors in-process; RCO needs an HF bf16 model plus per-option deltas. So the CPU design is sensitivity table + knapsack + a few confirmatory candidates; EvoPress Table 3 shows additive DP can lose to uniform (Llama-3-8B 3-bit Wiki2 29.00 vs 12.19), which is why step (5) is mandatory and why the transplant, which needs no search, goes first. Named operator decision (blocks only the download-dependent steps): the disk/download call on the Q8_0 source and the ISTA file already named in NEW-8 Step 1 / NEW-10; steps (1)-(2) and header byte accounting need no download. PREDECLARED DECISION RULE: a candidate at total bytes <= B (B1 = on-disk bytes of the served UD-IQ4_XS set; B2 = ISTA IQ3_XXS total bytes) passes iff (i) mean KLD against one shared base-logits file is lower than the incumbent's by more than 2 pooled standard errors as printed by llama-perplexity, (ii) ln(PPL(Q)/PPL(base)) is not worse than the incumbent's, and (iii) the coherence gate at production prompt length passes; any miss closes that arm. KLD is a damage gate only, not a quality ranking among near-baseline files (wiki/quantization.md, intake-1510#02/#04), so a pass authorises the coherence gate and the existing paired task eval, not a stack change. Prior stated now: at B1 (~4.25 bpw) RCO's own Table 2 shows allocators gaining <=0.1 FW PPL at 3.5-4.0 bit, so expect a null at B1 and any real signal at B2 (IQ3-class bytes). A Q8_0 base carries a KLD floor of 0.022-0.027 (NEW-8); prefer a BF16 base if disk allows.",
+      "compute": "P0 transplant: imatrix <=30 min; 1-2 llama-quantize arms at 0.5-1.5 h each; KLD base + 3 files at ~7 min each (NEW-8 estimates, token count not stated there); RAM = one model resident at a time (~85-100 GB per file, DS41 unloaded); disk peak ~400 GB (NEW-8: 188 Q8_0 + 2x~95 arms + ~25 logits); class correctness (shard + build-role claims, no quiet host). P1 allocator: sensitivity table ~6 types x one quantize-pass-equivalent = ~3-9 h CPU on 95 cores (assumption, unmeasured); <=40 confirmatory candidates x (<=15 min assembly assumed + ~7 min KLD) = ~15 h; P1 total ~20-25 h CPU, correctness class, across windows. EvoPress/RCO proper is GPU-days: trigger prose only (D-L2).",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "D-L2",
+      "source": "intake-2470 dive ledger D-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-D/patch.yaml)",
+      "action": "Run RCO or EvoPress proper (HF forward/backward or in-process layer swap) over a Q38FN-family reference.",
+      "proposed_owner": "none",
+      "proposed_disposition": "trigger",
+      "reason": "Needs a full HF bf16 reference (~354 GB) plus per-option deltas on accelerators: GPU-days outside the MI210 (64 GB) and outside the CPU host's budget. Trigger (no checkbox): ISTA releases the RCO/GSQ GGUF-export extension or a Q38FN RCO input database, or an accelerator pool with >=1 TB is provisioned by the operator. Re-assess then against D-L1's measured sensitivity table.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "D-L3",
+      "source": "intake-2466 dive ledger D-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-D/patch.yaml)",
+      "action": "Hazards if anyone reuses gptq-gguf-toolkit tables or code on IQ types or our architectures: splitter type-id map wrong for ids 24,25,29,30,39,42; IQ bpw table approximate (IQ2_S 2.5, IQ3_S 3.44, IQ4_NL 4.56); scalar-bpw filename keys collide for equal-bpw types; dense-only HF layer regex; scale codes narrower than ggml's own quantizer.",
+      "proposed_owner": "none",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Caution only: D-L1 uses stock llama-quantize --tensor-type-file and header-derived byte counts, so none of this code is on its path.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "D-L4",
+      "source": "intake-2475 dive ledger D-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-D/patch.yaml)",
+      "action": "Use GPTQ-Babai min-pivot/act-order, SSQR or HPTQ for any llama.cpp quantization.",
+      "proposed_owner": "none",
+      "proposed_disposition": "decline",
+      "reason": "llama-quantize is not GPTQ: the imatrix is a per-element diagonal weight (ggml-quants.c:1575) with no Hessian or ordering; SSQR/HPTQ have no ggml type; min-pivot gains ~1% in tr(D) by the paper's own table. Not needed by the DS41 lane (native MXFP4, no requant).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "D-L5",
+      "source": "intake-2466 dive ledger D-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-D/patch.yaml)",
+      "action": "GPTQ-with-K-quant-export (toolkit) as a quality upgrade over imatrix llama-quantize at equal bytes for Q38FN.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md",
+      "proposed_disposition": "trigger",
+      "reason": "README evidence is dense Llama-3.x only, HF-evaluated, and mixed on the 8B (GPTQ-4 at 4.50 bpw ties Q4_K_M at 4.80 bpw on C4, 11.35 vs 11.35; GPTQ-6 is worse than Q6_K at 6.56 bpw); MoE is future work in the toolkit. Trigger (no checkbox): toolkit gains fused-expert/MoE support or a qwen4exp recipe.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L1",
+      "source": "intake-2472 dive ledger E-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "Carry the router-weighted (g^p, p=2) per-expert reconstruction loss as a note on the existing GSQ self-quantisation trigger: when that trigger fires, check GSQ's per-expert MSE against MoESQ's gate-weighted loss before running the Q38FN recipe.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (trigger line under NEW-10/NEW-11, ~L321); research-active section, not a pointer; owner INF-26 in inference-research-index.md",
+      "proposed_disposition": "trigger",
+      "reason": "Only portable mechanism; evidence is one ablation (+1.04 recovery pts, Qwen3-30B, lr retuned); GSQ docstring suggests calculate_mse is not gate-weighted but was not traced end to end. No work until the GSQ trigger fires (GSQ export path or Qwen3.8-FN recipe).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L2",
+      "source": "intake-2472 dive ledger E-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "Paired-4:8 + FP4 sparse expert format (2.75 bpw) as a GGUF/EPYC/MI210 candidate, and an offline NMSE probe of it vs IQ2_S/IQ3_XXS on Q38FN expert tensors.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "Needs sparse tensor cores for any speed claim; on AVX-512 it would need a new metadata-unpack kernel plus a 13-28 B200-hour learned mask for quality. An uncalibrated NMSE probe (magnitude prune + RTN) would not predict the learned-mask result and could not change a lane decision since the format is not servable; paper has no accuracy-per-bit advantage over its own GSQ/REAP baselines (Table 3).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L3",
+      "source": "intake-2473 dive ledger E-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "Use MoE-Quant GPTQ-g128 recipe for DS41 requant.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "Hard-bound to DeepseekV3ForCausalLM (quant.py:121); DS41 experts are natively MXFP4 and served lossless, requant \"not pursued, by ruling 1\" (deepseek-v41-flash-evaluation.md L1350); GGUF-targeted GPTQ already tracked via gptq-gguf-toolkit (intake-2466).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L4",
+      "source": "intake-2474 dive ledger E-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "WUSH transform for a weight-only/Q8_0-activation MoE target (derive and, if positive, adopt).",
+      "proposed_owner": "decline",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Derivation done in the dive: weight-only drops the activation-quantisation term but keeps the activation second moment, and still needs an online non-orthogonal per-block, per-expert transform (~120/N extra weight-bytes of reads: 6% at N=2048). FP-Quant weight-only Table 2 shows Hadamard hurts MXFP RTN there, so the W4A4 gain does not transfer by default; native DS41 MXFP4 cannot be transformed without destroying bit-exactness; IQ4_XS/IQ3 are non-uniform codebooks outside the theory. No lane decision it could change.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L5",
+      "source": "intake-2479 dive ledger E-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "Record that stock llama-quantize MXFP4 is plain-rule RTN (no scale search, imatrix ignored) and that range/MSE-fitted E8M0 scales (MXFP4-dagger) are the cheap fix, for any future BF16/FP8-sourced MXFP4 export.",
+      "proposed_owner": "handoffs/active/deepseek-v41-flash-evaluation.md (DS41-W3/W4 fallback note, ~L1350) as a one-line reference; no checkbox",
+      "proposed_disposition": "trigger",
+      "reason": "Trigger = \"the DS41-W3/W4 requant fallback or any MXFP4 export of a non-native model is actually opened\"; DS41 native path (W5 validation) is lossless and unaffected. A llama-quantize MXFP4-vs-IQ4_XS NMSE probe on Q38FN was considered and declined: equal 4.25 bpw, prior from FP-Quant is already adverse for plain MXFP4 RTN (95.58% vs INT4-g32 97.71%, one 8B model), Q38FN is not proposed for an MXFP4 arm, so it changes no decision.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L6",
+      "source": "intake-2479 dive ledger E-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "MR-GPTQ block-Hadamard rotation for DS41 or Q38FN weights.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Weight-only Table 2: RTN+Had worsens MXFP (95.58->93.51) and NVFP4 (98.02->96.80); the W4A4 gain comes from the activation side, which our Q8_0-activation kernels do not have; rotating natively-MXFP4 weights forces a lossy requant.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L7",
+      "source": "intake-2480 dive ledger E-L7 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "QMoE ternary + dictionary entropy coding for DS41/Q38FN experts or a CPU port of the decoder.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Mechanism needs ternary-class natural sparsity (85-89% zeros), shown only on Switch Transformers; ternary quality on gated decoder MoEs is unevidenced and sub-2-bit breadth is deprioritised by standing steer (tq3-quantization-evaluation.md header); variable-length sequential decode has no efficient AVX-512 mapping and the CUDA kernel is shape-hard-coded to Switch.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "E-L8",
+      "source": "intake-2463 dive ledger E-L8 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-E/patch.yaml)",
+      "action": "Org-level triage record and per-repo reasons (see notes_append).",
+      "proposed_owner": "none (record only)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "All 17 quantization/sparsity/kernel repos with a decision have own entries; the rest are training/QAT, GPU-only SM80/89/Blackwell kernels or classic PTQ already known. Re-open spops/sparseprop only if a sparse-weight GGUF type is proposed.",
+      "compute": null,
+      "terminal_mapping": null
+    }
+  ],
   "operator_preapproval": "Approve all recommended deep dives for up to 4 stage 2 waves.",
   "concurrent_sessions": [
     {
@@ -61446,5 +61767,163 @@
       "HF ISTA-DASLab/Qwen3.8-27B-3Bit-GSQ": "safetensors vLLM checkpoint; the GGUF sibling intake-2481 is the servable form"
     }
   },
-  "operator_preapproval_scope": "Stage-2: all recommended dives pre-approved for up to 4 waves (operator, relayed by workspace-58)."
+  "operator_preapproval_scope": "Stage-2: all recommended dives pre-approved for up to 4 waves (operator, relayed by workspace-58).",
+  "dive_surfaced_sources": [
+    {
+      "id_or_url": "Kuebler et al., \"When LLMs get significantly worse: A statistical approach to detect model degradations\" (ICLR 2026; arXiv id not resolved here)",
+      "what_it_would_settle": "Whether the one-sided McNemar detection test (cited by both SLQ and 2608.15046) should be our default for the paired per-item gate in A-L7, versus TOST at a declared margin.",
+      "bears_on": "intake-2483",
+      "recommend": "ingest-and-dive",
+      "reason": "Closest prior work per 2608.15046; our gates are paired per-item; id unverified, locate by title before ingest.",
+      "group": "A"
+    },
+    {
+      "id_or_url": "arXiv:2606.19558 (Nikolic et al., Displacement Is Not Direction) = intake-1510 already in index",
+      "what_it_would_settle": "Whether KLD/EAR-style distribution metrics rank near-lossless quants at all in the silent zone (the risk to A-L1); already dived, so only a cross_references link from intake-2461 and intake-2483 is needed.",
+      "bears_on": "intake-2461",
+      "recommend": "decline",
+      "reason": "Already ingested and dive-verified as intake-1510; no new ingest.",
+      "group": "A"
+    },
+    {
+      "id_or_url": "https://github.com/inclusionAI/humming @5b500b407a716e9dfcede04a5eba97a6eece0508",
+      "what_it_would_settle": "Whether any ROCm/CPU path exists or is planned for Humming (none found).",
+      "bears_on": "intake-2462",
+      "recommend": "decline",
+      "reason": "CUDA/NVCC-only, JIT GEMM for NVIDIA SM75+; nothing portable to gfx90a or llama.cpp; the portable idea (arbitrary-bit weights with dynamic zero-point) is already covered by GGUF K-quants.",
+      "group": "A"
+    },
+    {
+      "id_or_url": "https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF/discussions (58 threads, API retrieved 2026-10-22)",
+      "what_it_would_settle": "Further independent field reports (AMD 7900XTX/9070XT Vulkan/ROCm speeds, KLD requests, long-context drift) beyond the 7 threads read; no controlled measurement expected.",
+      "bears_on": "intake-2481",
+      "recommend": "decline",
+      "reason": "Anecdotal and uncontrolled; the proposed A/B measures the same things under our predeclared rule. Declined as a dive target only; threads 6/22/23/28/29/32/43 are already recorded in this entry.",
+      "group": "B"
+    },
+    {
+      "id_or_url": "https://github.com/IST-DASLab/GSQ/tree/gsvq-iquant-qwen3-sweep-results (c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f)",
+      "what_it_would_settle": "Whether activation/KL-aware acceptance would make IQ2/IQ3 assignment refinement net-positive (the branch ends at a negative KL result) and how src/gguf_iq.py decomposes IQ2/IQ3 blocks (reusable reference for our own IQ tooling).",
+      "bears_on": "intake-2465",
+      "recommend": "ingest-and-dive",
+      "reason": "Only public GSQ code touching IQ-type GGUF bytes; code was listed but not read in this dive. Low priority.",
+      "group": "B"
+    },
+    {
+      "id_or_url": "https://huggingface.co/HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF (cited in HF discussion 23)",
+      "what_it_would_settle": "A community DFlash2 draft for a Q2_K_S-mix target: whether a drafter trained/tuned on a low-bit target shifts acceptance versus our Q8_0-trained DFlash2.",
+      "bears_on": "intake-2481",
+      "recommend": "ingest-and-dive",
+      "reason": "Relevant only if B-L1 shows acceptance degradation on the GSQ targets; surfaced, not fetched.",
+      "group": "B"
+    },
+    {
+      "id_or_url": "intake-2466 IST-DASLab/gptq-gguf-toolkit (in this batch)",
+      "what_it_would_settle": "The only public GGUF stitcher/exporter from the same lab (K-quant export, EvoPress search); its dive should state whether any IQ type is reachable, since GSQ itself exports none.",
+      "bears_on": "intake-2465",
+      "recommend": "ingest-and-dive",
+      "reason": "Already ingested in the batch; flagged so its owner checks IQ-type reach and the stitcher against the 27B allocation format.",
+      "group": "B"
+    },
+    {
+      "id_or_url": "arXiv:2410.13461 (Progressive Mixed-Precision Decoding, Chen et al. 2025a)",
+      "what_it_would_settle": "Earlier training-free evidence on high-precision prefill / low-precision decode (precision policy per phase), the nearest published match to the zero-training probe; cited by the DQ paper §4.",
+      "bears_on": "intake-2467",
+      "recommend": "ingest-and-dive",
+      "reason": "Directly tests the training-free direction DQ does not.",
+      "group": "C"
+    },
+    {
+      "id_or_url": "arXiv:2605.20315 (Mix-Quant: Quantized Prefilling, Precise Decoding for Agentic LLMs)",
+      "what_it_would_settle": "The reverse split (quantized prefill, precise decode) and agentic multi-turn behaviour, which DQ lists as untested.",
+      "bears_on": "intake-2467",
+      "recommend": "decline",
+      "reason": "Opposite direction to our probe and not low-bit-weight focused; revisit only if C-L1 passes.",
+      "group": "C"
+    },
+    {
+      "id_or_url": "https://discuss.huggingface.co/t/kv-cache-precision-compatibility-in-spatial-disaggregation-prefill-decode-setups-with-awq-gptq-models/174261",
+      "what_it_would_settle": "Practitioner discussion of KV compatibility between differently quantized prefill and decode models; a lead only.",
+      "bears_on": "intake-2467",
+      "recommend": "decline",
+      "reason": "Forum thread, no data.",
+      "group": "C"
+    },
+    {
+      "id_or_url": "arXiv:2601.14277 (title unverified; surfaced by web search as a Jan-2026 study of llama.cpp quantization formats on Llama-3.1-8B-Instruct)",
+      "what_it_would_settle": "Independent, non-ISTA baseline ordering of llama.cpp K/IQ formats at equal bytes, to calibrate how much room an allocator has over stock mixes.",
+      "bears_on": "intake-2466",
+      "recommend": "ingest-and-dive",
+      "reason": "Only independent llama.cpp-format evidence found; lead from a web search, must be fetched and read before any use.",
+      "group": "D"
+    },
+    {
+      "id_or_url": "MxMoE (github.com/cat538/MxMoE; Duanmu et al. 2025)",
+      "what_it_would_settle": "MoE-specific mixed-precision allocation baseline used in RCO Table 3, including per-expert bitwidths and a throughput term; may bear on how to group fused expert tensors.",
+      "bears_on": "intake-2470",
+      "recommend": "ingest-and-dive",
+      "reason": "Named baseline in the RCO paper (App. G.3); not in the index as far as this dive checked.",
+      "group": "D"
+    },
+    {
+      "id_or_url": "IST-DASLab GSQ code release (referenced by intake-2207)",
+      "what_it_would_settle": "Whether ISTA's GGUF/IQ export path and the RCO-to-ggml cost table exist and how GSQ weights were produced for IQ/Q2_0 grids.",
+      "bears_on": "intake-2470",
+      "recommend": "decline",
+      "reason": "Already tracked as the NEW-10 trigger; nothing new to ingest until a release exists.",
+      "group": "D"
+    },
+    {
+      "id_or_url": "arXiv:2608.25188 \"Transforms for LLM Quantization: The Great Inversion and Format Co-Design\" (surfaced by WebSearch 2026-10-22, not read)",
+      "what_it_would_settle": "Independent comparison of WUSH vs MR-GPTQ/Hadamard across MXFP4/NVFP4; whether WUSH's NVFP4 gain survives outside the authors' setup and whether any weight-only regime is covered.",
+      "bears_on": "intake-2474",
+      "recommend": "ingest-and-dive",
+      "reason": "Low priority (W4A4 theme, no lane decision depends on it) but cheap, and the only candidate independent source; per standing rule not dismissed without operator review.",
+      "group": "E"
+    },
+    {
+      "id_or_url": "arXiv:2606.26587 SharQ: Bridging Activation Sparsity and FP4 Quantization (surfaced by WebSearch, not read)",
+      "what_it_would_settle": "Whether another group uses the same paired-4:8 NVFP4 constraint and reports independent numbers.",
+      "bears_on": "intake-2472",
+      "recommend": "decline",
+      "reason": "Activation-sparsity method on Blackwell; no bearing on CPU/MI210 lanes; flagged for operator veto per the never-dismiss rule.",
+      "group": "E"
+    }
+  ],
+  "stage2_waves": {
+    "wave1": {
+      "groups": {
+        "A": [
+          "intake-2461",
+          "intake-2462",
+          "intake-2464",
+          "intake-2483"
+        ],
+        "B": [
+          "intake-2481",
+          "intake-2465"
+        ],
+        "C": [
+          "intake-2467",
+          "intake-2468",
+          "intake-2482"
+        ],
+        "D": [
+          "intake-2466",
+          "intake-2469",
+          "intake-2470",
+          "intake-2475"
+        ],
+        "E": [
+          "intake-2472",
+          "intake-2473",
+          "intake-2474",
+          "intake-2479",
+          "intake-2480",
+          "intake-2463"
+        ]
+      },
+      "patch_dir": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/"
+    }
+  }
 }
