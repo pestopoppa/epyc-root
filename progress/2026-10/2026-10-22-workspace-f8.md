@@ -42,3 +42,9 @@ Every session: (1) keep zero-token watchers on its own end/FAILED flags; (2) on 
 - Flips: DS41-W5b-floor (new, ticked), KVU-12.5 s4 re-run (ticked as DECLINED) = 2.
 - New `- [ ]` filed: DS41-W5b-compare; register the 2.862% floor in the floor registry once its tests pass (owner f8, today); run the floor-registry / champion_reanchor / serial_run tests in a granted window then land both `f8/floor-registry` branches (AKX-AUTO-6/-11); re-run `f8/prior-check` tests, land, wire `validate_fillers.py` (CTC-Q-A/B); NIB2-101 = 5. `DS41-W5.1a-floor` confirmed (owner workspace-58 added).
 - Explicit declines: KVU-12.5 s4 / 128k bank + poolfull (above). No other "we could" conclusions were left unfiled.
+
+### SPEC-RNG.1.1 and SPEC-GRAM.1(1) results (2026-10-22)
+
+- SPEC-RNG.1.1 (`experimental/spec-rng-argv-20261022` e3bf8dac8): argv/request switch landed, unit and kill-switch tests pass; np1==np4 and depth0==depth3 identity failed (7/8, 6/8 differ). Cause is CPU batch-shape logit drift, not the RNG (stateful control drifts identically). poskey matters only on the DFlash2 rejection path. Acceptance amended (np4 serial == np1 8/8; divergences low-margin via n_probs); SPEC-RNG.1.2 filed.
+- SPEC-GRAM.1(1): frontdoor schema-eager B1 7.07% of a 25 ms step (tail-driven, 4.5% full-vocab fallbacks) -> OPENS_DI110; DI-110 materialized as XGRAMMAR-A2. Sensitivity: <5% if step > 35.3 ms. Part (2) unrun.
+- Checklist sync: flips 1 (SPEC-GRAM.1(1) added ticked); new `- [ ]` 2 (SPEC-RNG.1.2, XGRAMMAR-A2).
