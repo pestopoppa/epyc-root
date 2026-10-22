@@ -27,7 +27,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
 | UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.5/2.6 candidate-arm preflight, then 2.2+2.7 offline eval (2.4 write side first) | UFH-07, INF-78, EVL-37, UFH-01 |
-| UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-1 — give run_shell/run_python_code children a minimal allowlisted env; planted-key test | — |
+| UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-POST-e: operator decides exec_containment / web_fetch_guard enable; then POST-c container recreate + POST-d live proofs | — |
 
 ## Cross-domain
 

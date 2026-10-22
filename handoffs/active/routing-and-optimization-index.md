@@ -61,7 +61,7 @@
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16g-1 row-5c A/B on 98c0ce12a; KVU-19b-rework-c2-cal; V11-FA-4/-6 into v11; fold-c1-p3; CPU-FA-VKQ-2 bench | RTG-19, RTG-36, INF-41 |
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-64 night arms (8 arms, ~4 nights) read-out; KPF-13.1 rules v3 re-judge, KPF-13.1a; KPF-18.0b CPU; KPF-17.4 SWA; KPF-19.2 | RTG-57, RTG-27, INF-65 |
-| RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-1 — record HF commit sha + per-file sha256 at download; pin them in the registry schema | — |
+| RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-e: publish the terse template, land f8/sec-art-post-e, then SEC-ART-POST-f recompile lean registry + stack_priors | — |
 
 ## Cross-domain
 
