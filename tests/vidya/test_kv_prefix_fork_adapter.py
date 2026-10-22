@@ -77,3 +77,61 @@ def test_unknown_arm_refused(sidecar):
 
 def test_missing_sidecar_is_zero_rows(tmp_path):
     assert kpf.native_rows(tmp_path / "nope.jsonl") == ()
+
+
+# ---------------------------------------------------------------- VB-KVU-PF.2: the real KPF-18-S1 sidecar
+S1 = Path(__file__).parent / "fixtures" / "kpf18_s1"  # verbatim copy of /mnt/raid0/llm/tmp/kpf18-s1/out (sidecar + rows)
+
+
+@pytest.fixture()
+def s1_sidecar(tmp_path):
+    shutil.copytree(S1, tmp_path / "s1")
+    return tmp_path / "s1" / "belief_measurements.jsonl"
+
+
+def test_real_s1_sidecar_projects_every_record(s1_sidecar):
+    natives = kpf.native_rows(s1_sidecar)
+    assert len(natives) == 15
+    tuples = [kpf.project(n) for n in natives]
+    assert len({t.measurement_id for t in tuples}) == 15 and len({t.attestation_locator for t in tuples}) == 15
+    items = {t.extra["kpf18_item"] for t in tuples}
+    assert {2, 3, 181, 182, 183, 184} <= items                     # the item-2 and item-3 records included
+    for t in tuples:
+        assert t.extra["arm"] in kpf.ARMS or t.extra["kpf18_arm"] == t.extra["arm"]
+        assert ct.grade(t)[:2] == ("Judged", "Located")            # the shared ladder decides: n=1, no protocol
+
+
+def test_s1_record_without_rows_sha256_is_attested_absent_not_dropped(s1_sidecar):
+    tuples = {kpf.project(n).extra["arm"]: kpf.project(n) for n in kpf.native_rows(s1_sidecar)}
+    t = tuples["parity_summary"]
+    assert t.attestation_sha256 == "" and t.attestation_present is False and t.attestation_verified is None
+    assert "attested-absent" in t.extra["attestation_absent"]
+    assert ct.grade(t)[:2] == ("Judged", "Located")
+    others = [v for k, v in tuples.items() if k != "parity_summary"]
+    assert all(v.attestation_present and v.attestation_verified is True and v.extra["attestation_absent"] is None
+               for v in others)                                     # their rows files re-hash on read
+
+
+def test_sub_arm_must_be_declared_for_its_item_and_carry_kpf18_arm(s1_sidecar):
+    recs = [json.loads(x) for x in s1_sidecar.read_text().splitlines()]
+    a = next(r for r in recs if r["arm"] == "A_ckpt")
+    assert kpf.validate_row(a) == []
+    assert any("sub-arm" in p for p in kpf.validate_row(dict(a, kpf18_item=182)))      # A_* is a KPF-18.1 arm only
+    assert any("kpf18_arm" in p for p in kpf.validate_row(dict(a, kpf18_arm=None)))
+    assert any("sub-arm" in p for p in kpf.validate_row(dict(a, arm="A_whatever", kpf18_arm="A_whatever")))
+    assert any("rows_sha256" in p for p in kpf.validate_row(dict(a, rows_sha256="abc")))
+    for arm, item in [("parity_mtp_launch", 182), ("D_hit_count_prediction_nodraft", 181),
+                      ("B_identical_resend_and_child_eq_trunk_forkoff", 181), ("request_lane", 183)]:
+        assert kpf.is_sub_arm(arm, item)
+    assert not kpf.is_sub_arm("parity_summary", 181) and not kpf.is_sub_arm("fork_on", 182)
+
+
+def test_s1_sidecar_ingests_one_claim_per_record(s1_sidecar, tmp_path):
+    import ingest_sources
+    from ledger import Ledger
+    led = Ledger(tmp_path / "ledger.jsonl")
+    rep = ingest_sources.ingest(led, "kv-prefix-fork", [s1_sidecar], as_of="2026-10-22T12:30:00Z")
+    text = (tmp_path / "ledger.jsonl").read_text()
+    import re
+    assert rep["rows_projected"] == 15 and not rep["refused"] and not rep["declined"]
+    assert len(set(re.findall(r"kpf-[0-9a-f]{32}", text))) == 15

@@ -6,6 +6,14 @@ refused when its schema is wrong, its ``record_sha256`` does not re-derive, or a
 an invalid line voids the WHOLE file (the writer appends complete records; partial validity is corruption).
 Pre-extension records (no ``kpf_ext``) still project; the VB-KVU-PF.1 fields are then simply absent, never filled.
 
+VB-KVU-PF.2 (KPF-18.1/.2/.3 arms and the S1 composite). ``arm`` is either a fork-vocabulary arm (``ARMS``) or one of
+the DECLARED KPF-18 sub-arms (``KPF18_SUB_ARMS``, the names ``kpf18_arms.py`` ``open_run`` writes, keyed by
+``kpf18_item``); a sub-arm record must also carry ``kpf18_arm == arm`` (the runner writes both), and that name is
+the locator's arm token. Anything else is refused. A record with no ``rows_sha256`` (the runner wrote no
+per-request rows file -- e.g. S1's ``parity_summary``, which issues no request) is ATTESTED-ABSENT: it projects with
+an empty ``attestation_sha256`` and ``attestation_present=False``, and the shared ladder grades the absence. No
+digest is computed on read for it: a hash taken now would claim a warrant the run never recorded.
+
 Locator: run x arm x dflash2 x prompt-set sha256 x binary sha256 x window id. Item 1's DFlash2-off record shares
 window and binary with its DFlash2-on record, so ``dflash2`` is part of the locator and the arm is
 ``fork_on_dflash2_off`` (VB-KVU-PF.1 fix; the runner used to label it ``fork_on``).
@@ -53,9 +61,30 @@ KNOB_FAMILY = "slot_serving"
 # Per-arm knob the arm changes against its comparison arm (DESIGN 12.2 `varied`).
 VARIED_BY_ARM = {"fork_off": ["slot_fork"], "fork_on": ["slot_fork"], "fork_on_dflash2_off": ["dflash2"],
                  "champion": ["binary"]}
+#: VB-KVU-PF.2: the declared KPF-18 sub-arm set, per ``kpf18_item`` (research
+#: ``scripts/benchmark/kpf18/kpf18_arms.py`` ``open_run`` call sites; ``<cfg>`` is the config name the runner derives
+#: from the launched argv -- ``mtp``, ``dflash2``, ``nodraft``, ``draft-<x>`` -- or a ``--kpf-config-argv NAME``).
+_CFG = r"[A-Za-z0-9][A-Za-z0-9_.-]*"
+KPF18_SUB_ARMS = {
+    181: (r"A_(?:ckpt|tailonly)(?:_forkoff)?", r"B_identical_resend_and_child_eq_trunk(?:_forkoff)?",
+          r"C_length_sweep_drafter_(?:on|off)", rf"D_hit_count_prediction_{_CFG}"),
+    182: (r"cold_control_probe", rf"parity_{_CFG}_(?:drafter_on|request_off|launch)", rf"policy_control_{_CFG}",
+          r"parity_summary"),
+    183: (r"chunk_split_cost", r"end_ckpt_position_and_multi_turn", r"request_lane", r"warm_vs_cold_long_prompt"),
+    184: (r"item3_localisation",),
+}
+_SUB_ARM_RE = {item: re.compile("^(?:" + "|".join(pats) + ")$") for item, pats in KPF18_SUB_ARMS.items()}
+
+
+def is_sub_arm(arm: Any, item: Any) -> bool:
+    """True iff ``arm`` is a declared KPF-18 sub-arm of ``item`` (parity_summary is not a parity column)."""
+    rx = _SUB_ARM_RE.get(item) if type(item) is int else None
+    return bool(rx and isinstance(arm, str) and rx.match(arm))
+
+
 _WINDOW = re.compile(r"^(?P<stem>.+)-(?P<arm>[AB])(?P<k>\d+)$")
 REQUIRED = ("run_id", "arm", "binary_sha256", "prompt_set_sha256", "window_id", "end_utc", "host", "argv",
-            "equivalence", "rows", "rows_sha256", "record_sha256", "category")
+            "equivalence", "rows", "record_sha256", "category")  # rows_sha256 absent = attested-absent (VB-KVU-PF.2)
 EXT_KEYS = ("checkpoint_set", "hit_components", "hit_length_min", "hit_tokens", "tokens_lost_to_missing_checkpoint",
             "drafter_drop_kind", "request_lane", "cache_skip_control", "pinned_count")
 
@@ -73,8 +102,16 @@ def validate_row(row: Any) -> list[str]:
     for key in REQUIRED:
         if row.get(key) in (None, "", [], {}):
             problems.append(f"missing {key}")
-    if row.get("arm") not in ARMS:
-        problems.append(f"arm {row.get('arm')!r} not in {sorted(ARMS)}")
+    arm = row.get("arm")
+    if arm not in ARMS:
+        if not is_sub_arm(arm, row.get("kpf18_item")):
+            problems.append(f"arm {arm!r} not in {sorted(ARMS)} nor a declared KPF-18 sub-arm of item "
+                            f"{row.get('kpf18_item')!r}")
+        elif row.get("kpf18_arm") != arm:
+            problems.append(f"sub-arm {arm!r} without the matching kpf18_arm locator ({row.get('kpf18_arm')!r})")
+    rsha = row.get("rows_sha256")
+    if rsha is not None and not (isinstance(rsha, str) and re.fullmatch(r"[0-9a-f]{64}", rsha)):
+        problems.append("rows_sha256 is present but not a sha256 hex digest")
     if not problems:
         body = {k: v for k, v in row.items() if k != "record_sha256"}
         if _digest(body) != row["record_sha256"]:
@@ -89,6 +126,8 @@ def _rows_path(row: dict, sidecar: Path) -> Path:
 
 
 def _rows_present(row: dict, sidecar: Path) -> bool:
+    if not row.get("rows_sha256"):
+        return False  # attested-absent: nothing was hashed at write time, so nothing is re-derived now
     path = _rows_path(row, sidecar)
     if not path.is_file():
         return False
@@ -245,14 +284,17 @@ def project(native: Any) -> ClaimTuple:
         reps_basis=basis,
         unit=unit,
         attestation_path=str(_rows_path(row, sidecar)),
-        attestation_sha256=row["rows_sha256"],
+        attestation_sha256=row.get("rows_sha256") or "",
         attestation_locator=locator,
         attestation_present=present,
         attestation_verified=True if present else None,
         source_kind=SOURCE_KIND,
         extra={
             "schema": row["schema"], "run_id": row["run_id"], "arm": row["arm"], "dflash2": dflash2,
-            "kpf18_item": row.get("kpf18_item"), "window_id": row["window_id"],
+            "kpf18_item": row.get("kpf18_item"), "kpf18_arm": row.get("kpf18_arm"),
+            "attestation_absent": None if row.get("rows_sha256") else
+            "record carries no rows_sha256: the runner hashed no per-request rows file (attested-absent)",
+            "window_id": row["window_id"],
             "gpu_window_id": row.get("gpu_window_id"), "binary_sha256": row["binary_sha256"],
             "prompt_set_sha256": row["prompt_set_sha256"], "host": row["host"], "argv": row["argv"],
             "start_utc": row.get("start_utc"), "end_utc": row["end_utc"],
@@ -300,7 +342,7 @@ def _project_measure(native: dict, row: dict, sidecar: Path, present: bool) -> C
                f"{anchor['window_id']}): {metric} {shown} {unit} vs {base_shown} {unit}{effect}; "
                f"{basis}; n=1 A/B window pair, no codified protocol, no verdict"),
         metric_direction=direction, protocol_id="", reps=reps, reps_basis=basis,
-        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row["rows_sha256"],
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
         attestation_locator=locator, attestation_present=present,
         attestation_verified=True if present else None, source_kind=SOURCE_KIND,
         extra={"schema": row["schema"], "run_id": row["run_id"], "arm": row["arm"], "measure": name,
@@ -317,5 +359,5 @@ def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:
     return frames
 
 
-__all__ = ["ADAPTER_ID", "AUTHORITY", "SOURCE_KIND", "SCHEMA", "SIDECAR_NAME", "native_rows", "project",
-           "validate_row", "frames_for_sidecar"]
+__all__ = ["ADAPTER_ID", "AUTHORITY", "SOURCE_KIND", "SCHEMA", "SIDECAR_NAME", "KPF18_SUB_ARMS", "is_sub_arm",
+           "native_rows", "project", "validate_row", "frames_for_sidecar"]
