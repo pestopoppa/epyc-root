@@ -4,28 +4,15 @@
     "handoff-active": 183,
     "handoff-blocked": 2,
     "handoff-completed": 213,
-    "progress": 769,
+    "progress": 770,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-22T20:07:09Z",
-  "last_touch": {
-    "advanced": {
-      "added": 0,
-      "changed": 0,
-      "removed": 0
-    },
-    "at": "2026-10-22T20:09:16Z",
-    "scope_paths": [
-      "handoffs/active/model-artifact-integrity.md",
-      "progress/2026-10/2026-10-22-workspace-f8.md"
-    ],
-    "scope_types": []
-  },
-  "mode": "touch:scoped",
-  "scan_time": "2026-10-22T20:09:16Z",
+  "last_compile": "2026-10-22T20:13:59Z",
+  "mode": "touch",
+  "scan_time": "2026-10-22T20:13:59Z",
   "schema_version": 1,
-  "source_set_hash": "c8a0bf08bdd5a00b4619e4947b6544768a7d87cb2e17848086b64a509cd5dcfa",
+  "source_set_hash": "db8da6b87dbd5d59616b6d07d548d9e5e88be7d28db142f1ca85b85874d7fb88",
   "sources": [
     {
       "content_hash": "9e8a567daaa33164cf276a6ffe9235a21c338954bb455ab14e204478698a8289",
@@ -748,10 +735,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "83b5c5d9bf32568f0ba58688fcd79a3f67c397d6184640d0d902cc0a1c6426ec",
-      "modified": "2026-10-22T20:00:02Z",
+      "content_hash": "abc8bbf37bc8004de48147dd5006a0ab799cf2976c260eac24818c777e9d664e",
+      "modified": "2026-10-22T20:12:00Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 161632,
+      "size": 162881,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
@@ -10292,6 +10279,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "ced25737bcf3970059005248c45e4b49f544b2220b0fcc689e905613e57cae7b",
+      "modified": "2026-10-22T20:12:00Z",
+      "path": "progress/2026-10/2026-10-22-kpf261-diagnosis.md",
+      "size": 1754,
+      "title": "2026-10-22 \u2014 KPF-26.1 window 1 INVALID: diagnosis and runner v2 (3c4ca599 + subagent)",
+      "type": "progress"
+    },
+    {
       "content_hash": "5193c71808f1966d25e37a40544cb333e1375d1d6c10faca6407d70cd8bc1a88",
       "modified": "2026-10-22T20:00:02Z",
       "path": "progress/2026-10/2026-10-22-kpf261-runner.md",
@@ -10444,10 +10439,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "3ed63b98e6609fbd3cc4c05bc34da825e5d2994257f52d01ad416ba2d765d801",
-      "modified": "2026-10-22T20:03:16Z",
+      "content_hash": "e1d6124cc22d54fa3297ed64007774304b565f7422805c0c614b2acd942d5fab",
+      "modified": "2026-10-22T20:10:53Z",
       "path": "progress/2026-10/2026-10-22-workspace-f8.md",
-      "size": 45952,
+      "size": 46565,
       "title": "2026-10-22 workspace-f8",
       "type": "progress"
     },
@@ -12052,7 +12047,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1503,
+  "total_new": 1504,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
