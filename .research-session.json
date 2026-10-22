@@ -48876,5 +48876,64 @@
     "cap": 4,
     "waves_run": 4,
     "ruling_date": "2026-10-22"
-  }
+  },
+  "concurrent_sessions": [
+    {
+      "session_id": "intake-locals-beacon-20261022",
+      "started_at": "2026-10-22T09:05:00Z",
+      "last_checkpoint": "2026-10-22T09:30:00Z",
+      "stage": "stage1-complete",
+      "phase": 5,
+      "lane": "/mnt/raid0/llm/tmp/intake-locals-beacon-20261022/root",
+      "branch": "intake/locals-beacon-20261022",
+      "topic": "Generated-Computers/Locals (Apple-silicon agent server: small-batch kernels, GPU grammar, recurrent prompt cache) + Asymptote-Labs/agent-beacon (cross-harness trace capture and trace-to-memory distillation)",
+      "concurrency_note": "Runs concurrently with intake-underdog-bark-20261021 (top-level record, Stage 2 in flight, its dive entries are slug-only and not yet minted). This session minted intake-2386..2394 against origin/main b8e36fb69; whichever integration lands second must allocate after the other.",
+      "urls_processed": [
+        "https://github.com/Generated-Computers/Locals",
+        "https://github.com/Asymptote-Labs/agent-beacon"
+      ],
+      "entries_processed": [
+        "intake-2386",
+        "intake-2387",
+        "intake-2388",
+        "intake-2389",
+        "intake-2390",
+        "intake-2391",
+        "intake-2392",
+        "intake-2393",
+        "intake-2394"
+      ],
+      "entries_remaining": [],
+      "next_intake_id": 2355,
+      "expansion_cap": 10,
+      "expansion_count": 7,
+      "expansion_entries": [
+        "intake-2388",
+        "intake-2389",
+        "intake-2390",
+        "intake-2391",
+        "intake-2392",
+        "intake-2393",
+        "intake-2394"
+      ],
+      "expansion_refused": [
+        {
+          "seed": "intake-2387",
+          "reason": "Socratic-SWE (arXiv 2606.07412) and 2606.03461 considered and not ingested in Stage 1: both target training weights from traces; EPYC does not train coding agents, so they would not change a harness decision. Available to Stage-2b if a dive surfaces them as load-bearing."
+        }
+      ],
+      "steering_ledger": [
+        {
+          "seq": 1,
+          "stage": 1,
+          "ts": "2026-10-22T09:04:00Z",
+          "verbatim": "Approve all recommended deep dives and stage 2 literature expansion for up to six stage 2 waves. Focus on principles we can distill for improving our kernel performances (potetnitally hypotheses we can seed into autokernel), and leveraging harness traces to further improve how our orchestration harness, user-facing harness, and develeopment harnesses (what we're using now - opencode/claude/codex) operate. We have a database of all agent conversations that we could lvereage to this aim. I imagine that important improvements for the orchestrator's harness can be distilled for this research-intake session. The 'Locals' kernel work is extremely relevant to us even if it's focused on apple silicon. Any improvement lead we can find is gold for us.",
+          "disposition": "pending-stage3",
+          "plan_ref": null,
+          "reason": "Recorded at session start; pre-authorizes all recommended Stage-2 dives and up to six Stage-2b waves; disposition assigned in the Stage-3 plan."
+        }
+      ],
+      "actionable_ledger": []
+    }
+  ]
 }

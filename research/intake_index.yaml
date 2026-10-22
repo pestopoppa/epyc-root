@@ -341352,3 +341352,471 @@
     \ not run in the dive; one gh search if C4 triggers (dive's own reason); operator 4-wave cap (2026-10-22) applies\n  -\
     \ audio.cpp PR 542 (Vulkan COL2IM_1D dispatch for large tensors) -> declined: Vulkan defect class, noted as evidence only\
     \ (dive's own reason)"
+- id: intake-2386
+  arxiv_id: null
+  url: https://github.com/Generated-Computers/Locals
+  source_type: repo
+  title: 'Locals (Generated-Computers/Locals): agent-oriented local inference server for Apple silicon (MLX), small-batch
+    kernels, GPU grammar masks, recurrent-state prompt cache, multi-agent harness'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - quantization
+  - kv_cache
+  - ssm_hybrid
+  - tool_implementation
+  - agent_architecture
+  novelty: high
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: adopt_patterns
+  authors:
+  - Generated Computers (Arip Asadulaev et al.)
+  key_claims:
+  - 'README @0d39e161 (retrieved 2026-10-22): with 8 concurrent requests on an M2 Pro 16 GB and Qwen3.5-4B 4-bit, Locals decodes
+    271 tok/s vs 87 for mlx-lm (3.1x); with one request it is about equal (64 vs 61).'
+  - 'docs/why-faster @0d39e161: the gain is attributed to model computation, not scheduling: Locals model under mlx-lm BatchGenerator
+    is equally fast; removing the small-batch 4-bit matmul kernels alone drops 8-request decode to 119 tok/s; bf16 instead
+    of fp16 drops it to 98; fused projections are worth 4-10%; a one-kernel Gated DeltaNet decode step 1-2%; CPU/GPU pipelining
+    13-16%.'
+  - 'docs/why-faster @0d39e161: the stock MLX quantized matrix-vector kernel reads the weights once per row, and from about
+    6 rows switches to a 32-row tile that a batch of 8 fills a quarter; Locals routes every few-row 4-bit matmul to the fastest
+    of several kernels (multi-row qmv, dequant-into-matrix-fragment qmv, MMA-built) chosen by on-device per-shape timing,
+    cached, with presets and idle-time background tuning.'
+  - 'README/docs @0d39e161: tool calls and JSON are decoded under a GPU-resident grammar transition table; tokens the grammar
+    forces are written without running the model; a reply truncated by its token limit still closes its call.'
+  - 'docs/why-faster @0d39e161: for recurrent-state (Gated DeltaNet hybrid) models a cache is only reusable at exact stored
+    points, so snapshots are stored at the end of the system prompt, the start of the last message and the template-rendered
+    reply start; with four multi-turn conversations 83% of prompt tokens came from cache instead of 28%.'
+  techniques:
+  - per-shape on-device kernel autotuning with cached choice + idle background tuning
+  - multi-row quantized GEMV for M=2..16
+  - dequantize directly into matrix-unit fragments
+  - fp16 compute when bf16 is emulated, gated by a logit/next-token probe
+  - QKV / gate-up / GDN input projection fusion
+  - single-kernel Gated DeltaNet decode step
+  - GPU-resident grammar masks with forced-span skipping and budget-aware masking
+  - recurrent-state snapshot placement at template boundaries
+  - mixed prefill+decode passes
+  - memory admission + growth guard
+  - repetition / tool-loop reply guards
+  - 'multi-agent harness: parallel racers in project copies, tests as the check, repair rounds'
+  reported_results:
+  - 8 req decode 271 vs 87 tok/s (mlx-lm), M2 Pro, Qwen3.5-4B 4-bit (README table)
+  - 'mixed passes: longest stream gap 12 s -> 3 s with an 8,000-token prompt arriving (README)'
+  - single request ~= mlx-lm (64 vs 61 tok/s); mxfp4 MoE (Mellum) no gain (README)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - autokernel-rebuild-program.md
+    - autokernel-research-loop.md
+    - batched-decode-measurement.md
+    - log-linear-gated-deltanet-readiness.md
+    - kv-prefix-fork-and-paged-attention.md
+    - agentic-serving-harness-fixes.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-1979
+    - intake-2132
+    - intake-2137
+    - intake-469
+  credibility_score: null
+  contradicting_evidence:
+  - Bounded search found no independent replication of the 3x claim (restatement-free search 2026-10-22, provisional).
+  - 'Self-reported: single-request speed equal to mlx-lm; gain shrinks to ~1.5x on M5 Pro where MLX has neural-accelerator
+    kernels; mxfp4 MoE no gain (all from the README itself).'
+  notes: 'Stage-1 read: README.md (sha256 2d8b46bb1a37) and docs/why-faster/README.md at commit 0d39e16194e2c123ce10695e45619111eb0e45b0
+    (2026-10-21), plus docs heading scan of runtime/engine/decoding/prompt-cache/agents/server/benchmarks/measurements. MIT.
+    Platform is Apple silicon/MLX; the operator flagged the kernel work as extremely relevant regardless of platform, so portability
+    is judged per mechanism in the dive. Companion paper arXiv:2610.09139 ingested separately (intake-2388). Prior related
+    entry: Magnitude (intake-1979, per-hardware kernel tuning).'
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2387
+  arxiv_id: null
+  url: https://github.com/Asymptote-Labs/agent-beacon
+  source_type: repo
+  title: 'Beacon (Asymptote-Labs/agent-beacon): cross-harness agent session capture, OTel-normalized trace schema, trace-to-memory
+    distillation skills, lenses and detection rules'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - benchmark_methodology
+  - context_management
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: adopt_patterns
+  authors:
+  - Asymptote Labs
+  key_claims:
+  - 'README @808a3219 (retrieved 2026-10-22): captures session history from Claude Code, Codex, OpenCode, Cursor and 20+ harnesses
+    via OTLP, hooks, plugins and log polling, normalized into one OpenTelemetry-based event model covering sessions, prompts/responses,
+    tool calls, commands, file activity, approvals, MCP and tokens, written to local JSONL by default.'
+  - 'README @808a3219: a loop runs capture -> evaluate what worked -> extract knowledge -> human review/approve -> reuse across
+    harnesses through MCP or Agent Skills.'
+  - 'agent-skills/skills/beacon-memory-distill/SKILL.md @808a3219: an external evaluator (TypeSafe Jev or SubQ) scores traces;
+    a trace becomes a candidate only when task_success >= 0.50 and the mean score >= 0.60; the agent writes the lesson from
+    the source trace and the user approves it; placeholder bodies must never be approved.'
+  - 'Repo tree @808a3219: ships YAML threat-detection rules (prompt-injection, credential-access, context-exfiltration, risky-command,
+    sensitive-edit ...) with a spec, and sandboxed single-file HTML "lenses" over one trace.'
+  techniques:
+  - cross-harness trace normalization (OTel event model)
+  - evaluator-gated trace selection for lesson distillation
+  - human-approved memory promotion
+  - session handoff across harnesses
+  - YAML detection rules over agent events
+  - per-trace lenses
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - frontier-f3-data-flywheel.md
+    - harness-selection-and-integration.md
+    - evidence-plane-event-sourcing-and-narrative.md
+    experiments: []
+    intake_entries:
+    - intake-517
+    - intake-518
+    - intake-338
+    - intake-395
+    - intake-117
+    - intake-393
+  credibility_score: null
+  contradicting_evidence:
+  - 'Bounded search 2026-10-22: no benchmark or user report that distilled lessons improve agent outcomes; one newsletter
+    covering it is vendor-partnered (restatement, not corroboration). Provisional.'
+  notes: 'Stage-1 read: README.md (sha256 374632189c99), beacon-memory-distill SKILL.md, repo tree at commit 808a32199c16c68d0c18597ccf54d05d0c9078ab
+    (2026-10-21). MIT, Go. The scoring evaluator is TypeSafe Jev, already heavily covered in the index (Jev cluster around
+    intake-1493). Relevance to EPYC is the trace substrate and distillation loop for our three harness layers and our own
+    agent-conversation stores, not adopting the product.'
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2388
+  arxiv_id: '2610.09139'
+  url: https://arxiv.org/abs/2610.09139
+  source_type: paper
+  title: Breaking the Space Barrier and its Application to Language Model Inference
+  categories:
+  - tool_implementation
+  - inference_serving
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2386
+  verdict: worth_investigating
+  authors:
+  - Arip Asadulaev
+  key_claims:
+  - 'Abstract (v1, 2026-10-06): the token-constraint automaton has the property that from any state each token leads along
+    exactly one path; reachability on such few-path graphs is placed in ReachUL, LOGDCFL, C=L and SC2 with O(log^2 n / log
+    log n) space.'
+  - 'Abstract: the constructions become an inference engine: forced text is written without running the model, the mask is
+    recomputed on the GPU without a table, recursive formats use a small stack, outputs stay valid under a token limit, and
+    independent fields are decoded in parallel and verified.'
+  - 'Abstract: on an M2 Pro with Qwen3.5-2B/4B vs MLX+llguidance, schema-constrained extraction finishes 1.2-1.3x sooner with
+    the same answers, a grammar costs 3 MB instead of up to 1.5 GB, and sixteen tool-calling agents finish 2.5x sooner.'
+  techniques:
+  - table-free GPU mask recomputation
+  - forced-span emission without model forward
+  - budget-aware valid termination
+  - parallel independent-field decoding
+  reported_results:
+  - 16 tool-calling agents 2.5x sooner vs MLX+llguidance (abstract)
+  - grammar memory 3 MB vs up to 1.5 GB (abstract)
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-2386
+    - intake-2132
+    - intake-2137
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: 'Companion paper of Locals (intake-2386), distinct artifact. Identifier resolved 2026-10-22: abs page title matches;
+    v1 only. Single author, not peer reviewed; score = +1 recent. Complexity-theory part is out of EPYC scope; the engine
+    part is the relevant one.'
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2389
+  arxiv_id: '2606.30560'
+  url: https://arxiv.org/abs/2606.30560
+  source_type: paper
+  title: 'TraceLab: Characterizing Coding Agent Workloads for LLM Serving'
+  categories:
+  - inference_serving
+  - kv_cache
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2387
+  verdict: worth_investigating
+  authors:
+  - Kan Zhu
+  - Mathew Jacob
+  - Chenxi Ma
+  - Yi Pan
+  - Stephanie Wang
+  - Arvind Krishnamurthy
+  key_claims:
+  - 'Abstract (v2): releases ~4,300 coding-agent sessions (~350,000 LLM steps, ~430,000 tool calls) from the authors own Claude
+    Code and Codex use, with collection pipeline and analysis code.'
+  - 'Abstract: workloads show long autonomous loops, long contexts with short outputs, heavy-tailed tool calls, and high but
+    imperfect prefix-cache hit rates.'
+  - 'Abstract: proposed serving opportunities are lower-overhead tool calling, append-length-aware prefill, semantic-aware
+    tool-latency prediction, and KV management around human-paced gaps.'
+  techniques:
+  - coding-agent trace collection pipeline
+  - workload characterization for serving
+  reported_results:
+  - ~4,300 sessions / 350k LLM steps / 430k tool calls (abstract)
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - dynamic-stack-concurrency.md
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: 'Previously only cited inside another entry notes/referenced ids (not an entry); not a collision. Identifier resolved
+    2026-10-22 (title match, v2 current). Score: recent +1, known systems group +1. Directly relevant as a template for characterizing
+    our own Claude/Codex/opencode transcript stores.'
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2390
+  arxiv_id: null
+  url: https://icml.cc/virtual/2026/poster/62392
+  source_type: paper
+  title: 'Gram2Token: Enabling Run-time GPU-Native Grammar-Constrained Decoding for LLMs (ICML 2026 poster)'
+  categories:
+  - tool_implementation
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2388
+  verdict: worth_investigating
+  authors:
+  - Hantao Hua
+  - Jiming Su
+  - Hao Tang
+  - Yiping Yao
+  - Feng Zhu
+  key_claims:
+  - 'Search-result digest only (2026-10-22): compiles a grammar to a PDA aligned with the tokenizer trie so stack configurations
+    become a finite set of augmented states; run-time masking becomes O(1) table lookups on the GPU with no CPU->GPU control
+    dependency; reports 1.5-2.3x decode throughput on large-batch JSON/SQL. UNVERIFIED digest.'
+  techniques:
+  - augmented-state token tables
+  - GPU-resident grammar masking
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-2388
+    - intake-2132
+    - intake-2137
+  credibility_score: 3
+  contradicting_evidence: null
+  notes: No arXiv version found in a bounded search (provisional, not evidence of absence). Peer-reviewed venue (+2), recent
+    (+1). Primary text not yet read; digest-level only.
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2391
+  arxiv_id: '2506.03887'
+  url: https://arxiv.org/abs/2506.03887
+  source_type: paper
+  title: 'Pre$^3$: Enabling Deterministic Pushdown Automata for Faster Structured LLM Generation'
+  categories:
+  - tool_implementation
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2388
+  verdict: worth_investigating
+  authors:
+  - Junyi Chen
+  - Shihao Bai
+  - Zaijun Wang
+  - Siyu Wu
+  - Chuheng Du
+  - Hailong Yang
+  key_claims:
+  - 'Abstract (v1): precomputes prefix-conditioned edges to turn LR(1) transition graphs into a DPDA, removing run-time path
+    exploration; reports up to 40% lower TPOT and up to 36% higher throughput.'
+  techniques:
+  - DPDA conversion of LR(1) grammars
+  - prefix-conditioned edge precomputation
+  reported_results:
+  - TPOT up to -40%, throughput up to +36% (abstract)
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-2388
+    - intake-2132
+  credibility_score: 0
+  contradicting_evidence: null
+  notes: Identifier resolved 2026-10-22 (title match, v1). 12-24 months old (0), not confirmed peer-reviewed. Prior art for
+    the determinism property Locals/2610.09139 exploits.
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2392
+  arxiv_id: '2605.25430'
+  url: https://arxiv.org/abs/2605.25430
+  source_type: paper
+  title: 'CODESKILL: Learning Self-Evolving Skills for Coding Agents'
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2387
+  verdict: worth_investigating
+  authors:
+  - Yanzhou Li
+  - Yiran Zhang
+  - Xiaoyu Zhang
+  - Xiaoxia Liu
+  - Yang Liu
+  key_claims:
+  - 'Abstract (v2): extracts multi-granularity procedural skills from coding-agent trajectories and maintains a compact skill
+    bank with an RL-trained management policy (hybrid rubric + execution reward); reports +11.03 average pass rate over no-skill
+    and +5.10 over the strongest prompt/memory baseline on EnvBench, SWE-Bench Verified and Terminal-Bench 2.'
+  techniques:
+  - trajectory-to-skill extraction
+  - learned skill-bank maintenance policy
+  reported_results:
+  - +11.03 avg pass rate vs no-skill (abstract)
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2387
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: Previously only referenced inside another entry; not a collision. Identifier resolved 2026-10-22 (title match, v2
+    current). Related index entries already cover Trace2Skill (2603.25158) and SkillOpt (2605.23904).
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2393
+  arxiv_id: null
+  url: https://github.com/ml-explore/mlx/issues/3661
+  source_type: blog
+  title: 'ml-explore/mlx issue 3661: ~3x bandwidth drop from GEMV (M=1) to tiled GEMM for skinny M (M=2-64), the continuous-batching
+    decode regime'
+  categories:
+  - hardware_optimization
+  - quantization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2386
+  verdict: worth_investigating
+  authors:
+  - hvasconcelos
+  key_claims:
+  - 'Issue body (2026-06-11, closed): on an M1 Pro, 4-bit quantized_matmul cost grows near-linearly in M at small M (0.70/1.20/2.17/3.38
+    ms for M=1/2/4/8 on a 151936x1024 weight), i.e. the weight sweep is re-paid per row; fp16 M=2..64 all cost one GEMM tile.'
+  techniques:
+  - skinny-M matmul microbenchmark
+  reported_results:
+  - 4-bit qmm 0.703 ms M=1 vs 3.384 ms M=8 (issue table)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - batched-decode-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-2386
+  credibility_score: null
+  contradicting_evidence: null
+  notes: Third-party issue, independent of Locals; corroborates the premise that a stock quantized matvec re-reads weights
+    per row in the M=2..8 regime on MLX. Read from the GitHub API 2026-10-22.
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2394
+  arxiv_id: null
+  url: https://nvidia.github.io/TensorRT-LLM/1.2.1/blogs/tech_blog/blog12_Combining_Guided_Decoding_and_Speculative_Decoding.html
+  source_type: blog
+  title: 'Combining Guided Decoding and Speculative Decoding: Making CPU and GPU Cooperate Seamlessly (TensorRT-LLM tech blog
+    12, NVIDIA + XGrammar teams)'
+  categories:
+  - speculative_decoding
+  - tool_implementation
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2388
+  verdict: worth_investigating
+  authors:
+  - NVIDIA TensorRT LLM Team
+  - XGrammar Team
+  key_claims:
+  - 'Table of contents read 2026-10-22: covers tracing grammar state for draft-token proposal and rejection, and making grammar
+    computation capturable by CUDA graphs via CUDA callbacks. Body not yet read.'
+  techniques:
+  - grammar-state rollback under speculative rejection
+  - CUDA-graph-capturable grammar callbacks
+  reported_results: []
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-2132
+    - intake-2137
+    - intake-2388
+  credibility_score: null
+  contradicting_evidence: null
+  notes: Vendor blog (sha256 d952488a7242 of fetched HTML). Relevant because EPYC serves tool-calling roles with speculative
+    decoding (MTP/DFlash2), where grammar state must survive draft rejection.
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
