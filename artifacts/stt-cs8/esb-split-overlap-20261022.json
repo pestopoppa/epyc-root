@@ -1,0 +1,12 @@
+{
+ "schema": "esb-split-overlap/v1",
+ "date": "2026-10-22",
+ "question": "Do the six ArtificialAnalysis/Earnings22-Cleaned-AA calls overlap the ESB Earnings-22 train split?",
+ "answer": "yes-inferred",
+ "method": "esb/datasets is gated and the supplied read token is not in its authorized list (HTTP 403). Instead read only the source_id column (parquet column projection, no audio) of the public ESB-derived mirror sanchit-gandhi/earnings22_split and compared call ids. The mirror's train split is the whole 125-call corpus (it also contains the validation and test calls), so membership is decided by exclusion: ESB train = corpus minus validation minus test.",
+ "mirror_counts": {"train_segments": 52006, "train_calls": 125, "validation_calls": 6, "validation_segments": 2650, "test_calls": 6, "test_segments": 2735, "corpus_minus_val_minus_test_calls": 113},
+ "aa_calls": {"4483046": {"in_val": false, "in_test": false, "mirror_train_segments": 237}, "4474955": {"in_val": false, "in_test": false, "mirror_train_segments": 115}, "4468919": {"in_val": false, "in_test": false, "mirror_train_segments": 167}, "4482968": {"in_val": false, "in_test": false, "mirror_train_segments": 158}, "4471586": {"in_val": false, "in_test": false, "mirror_train_segments": 185}, "4475604": {"in_val": false, "in_test": false, "mirror_train_segments": 154}},
+ "leaderboard_standard_test_calls_equal_mirror_test_calls": true,
+ "caveats": ["inference by exclusion, not a read of the authoritative esb/datasets lists", "mirror test has 2735 segments versus the leaderboard's 2741 utterances (same six calls)"],
+ "consequence": "Earnings22-Cleaned-AA is train-contaminable for arms trained on ESB; label train-overlap-yes-inferred; ordering and sanity only."
+}
