@@ -1,18 +1,45 @@
 {
   "by_type": {
-    "docs": 187,
+    "docs": 188,
     "handoff-active": 183,
     "handoff-blocked": 2,
     "handoff-completed": 211,
-    "progress": 727,
+    "progress": 741,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-22T11:48:14Z",
-  "mode": "touch",
-  "scan_time": "2026-10-22T11:48:14Z",
+  "last_touch": {
+    "advanced": {
+      "added": 15,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-10-22T16:53:33Z",
+    "scope_paths": [
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "docs/reference/speech/tts-italian-text-prep.md",
+      "progress/2026-10/2026-10-22-ak-profile-reader-v2.md",
+      "progress/2026-10/2026-10-22-akx26-cpu-wire.md",
+      "progress/2026-10/2026-10-22-cs8l-ratings.md",
+      "progress/2026-10/2026-10-22-hil6-b-seams.md",
+      "progress/2026-10/2026-10-22-hil6j-pilot-wiring.md",
+      "progress/2026-10/2026-10-22-it-tts-normalizer.md",
+      "progress/2026-10/2026-10-22-kpf64-decode-fix.md",
+      "progress/2026-10/2026-10-22-qwen-thinking-source-fix.md",
+      "progress/2026-10/2026-10-22-rtepfx2-thinking-off.md",
+      "progress/2026-10/2026-10-22-v11-086-integrity.md",
+      "progress/2026-10/2026-10-22-vb-speech-listen.md",
+      "progress/2026-10/2026-10-22-vidya-test-fixes.md",
+      "progress/2026-10/2026-10-22-yarn-gate-power-note.md",
+      "progress/2026-10/2026-10-22-yarn-native-gate-runner.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-22T16:53:33Z",
   "schema_version": 1,
-  "source_set_hash": "46135c4ec253353e375ed28307542c11965f52c8fd549dfee66c8134c6f80489",
+  "source_set_hash": "43ccd380ff332e7684f787f320ccfc94f77717e9a402d38e632f5636f46eeef5",
   "sources": [
     {
       "content_hash": "2ba1e99b54e02b5546c3bd70e1f2a1ec9111d82f4f0266abd895813ecc058dff",
@@ -10055,11 +10082,35 @@
       "type": "progress"
     },
     {
+      "content_hash": "5bb4d872684704f73203230d0e509a6f7e8964729068f0e4178020cf12bf81e9",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-ak-profile-reader-v2.md",
+      "size": 5678,
+      "title": "2026-10-22: AutoKernel CPU profile reader v2 (sampled-CPU topology), coordinator 3c4ca599",
+      "type": "progress"
+    },
+    {
+      "content_hash": "73d7a632ca4d7ece6890d9181a550df1ad07f6c8d063fe6dcabab696f890ae83",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-akx26-cpu-wire.md",
+      "size": 1875,
+      "title": "2026-10-22 AKX-ALL-26 CPU cells wire + legacy-serving idempotence test (session 3c4ca599 lane, no inference)",
+      "type": "progress"
+    },
+    {
       "content_hash": "b2e0cd38366a83dd109a0e79db9f45858fe33ef3842986b00baf2282c9f24557",
       "modified": "2026-10-22T11:41:08Z",
       "path": "progress/2026-10/2026-10-22-bark-integrator.md",
       "size": 1083,
       "title": "2026-10-22 bark-integrator: intake-underdog-bark-20261021 Stage-2 close-out",
+      "type": "progress"
+    },
+    {
+      "content_hash": "35121d5dceca1b69f461938fd17ffac1dae9dfc4ee11798bb9e19afb2205c190",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-cs8l-ratings.md",
+      "size": 1338,
+      "title": "2026-10-22 \u2014 CS-8.L Italian listen check recorded (coordinator 3c4ca599, no inference)",
       "type": "progress"
     },
     {
@@ -10071,11 +10122,51 @@
       "type": "progress"
     },
     {
+      "content_hash": "008cb20d742382314e56e9dd3fd90736cdcc11e5b263d36cadc3196e8ddbf17f",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-hil6-b-seams.md",
+      "size": 8285,
+      "title": "2026-10-22 HIL-6 option B: seams S2\u2013S5, concrete parts, first-feature pilot (coordinator 3c4ca599)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5c77a593e20320e6b2b8ff795b7fb387c19c5411e06171da75cc33f6bbe1fedf",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-hil6j-pilot-wiring.md",
+      "size": 11527,
+      "title": "2026-10-22 HIL-6j: the HIL-6 pilot entrypoint, AutoPilot exclusion and filler job (coordinator 3c4ca599)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0f7a3eaabe8ef3ff25e5016c35cdb5d37b63ce39f4489e820d10459835a5200a",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-it-tts-normalizer.md",
+      "size": 4263,
+      "title": "2026-10-22: Italian TTS text normalizer (CS-8.L1/L2), subagent of 3c4ca599",
+      "type": "progress"
+    },
+    {
       "content_hash": "6d514c38eaa866604fb75b240fc693323697ebb9872097bd237d035e32296661",
       "modified": "2026-10-22T11:41:08Z",
       "path": "progress/2026-10/2026-10-22-kpf62-fix.md",
       "size": 1685,
       "title": "2026-10-22 \u2014 kpf62-fix: KPF-62.8 real-role G1 failure diagnosed and fixed",
+      "type": "progress"
+    },
+    {
+      "content_hash": "230c592c4dfcbce15f2697b47411d8869db927fb22a2edd51cd5d9cc531faf54",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-kpf64-decode-fix.md",
+      "size": 1496,
+      "title": "2026-10-22 KPF-64 replay harness: run-time fix (coordinator session 3c4ca599)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "27f5dd5f371c5e9a0a6281387daf5f230b70f39cc412d1ddad7efcc29f4cecaf",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-qwen-thinking-source-fix.md",
+      "size": 1411,
+      "title": "2026-10-22 Qwen3.x thinking-off at the source (coordinator 3c4ca599)",
       "type": "progress"
     },
     {
@@ -10087,6 +10178,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "8e05eca5df1e5b7cdb0b497f7e748ccebda3a79d4ff76783aadbf5386047bb97",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-rtepfx2-thinking-off.md",
+      "size": 995,
+      "title": "2026-10-22 RTE-PFX-2 filler: Qwen3.6 thinking-off source fix",
+      "type": "progress"
+    },
+    {
       "content_hash": "b1523a6884de7ce738a27ee665584f417c29fc3a3f69c1e16829454636567ade",
       "modified": "2026-10-22T11:41:08Z",
       "path": "progress/2026-10/2026-10-22-rulings-20261022.md",
@@ -10095,11 +10194,35 @@
       "type": "progress"
     },
     {
+      "content_hash": "9dcd5fc7aebd09b49657d0b9c3388d04f5e971374444333393936375a4d98570",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-v11-086-integrity.md",
+      "size": 9926,
+      "title": "2026-10-22 \u2014 V11-086 integrity check (AGENT_ID v11-086-integrity, subagent of 3c4ca599)",
+      "type": "progress"
+    },
+    {
       "content_hash": "b018e879135a0420b5f1487e87b887929302e7a0cabddf05fcf30ae381978c57",
       "modified": "2026-10-22T11:47:16Z",
       "path": "progress/2026-10/2026-10-22-v11-086-unhold.md",
       "size": 2299,
       "title": "2026-10-22 \u2014 V11-086 un-hold (AGENT_ID v11-086-unhold, subagent of 3c4ca599)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "673e0fa8b0f5399ca9e538d9bf625e8e611d18402645d8bf9de2f92238513b38",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-vb-speech-listen.md",
+      "size": 1043,
+      "title": "2026-10-22 \u2014 VB-SPEECH-LISTEN-1 wired (coordinator 3c4ca599, no inference)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9175c091b2936e6f5b70c500bc946fafa57bb3be9824934e95eac10b6dd0185b",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-vidya-test-fixes.md",
+      "size": 2092,
+      "title": "2026-10-22 \u2014 vidya test fixes and CS-8.L1/L2 ticks (coordinator 3c4ca599)",
       "type": "progress"
     },
     {
@@ -10116,6 +10239,22 @@
       "path": "progress/2026-10/2026-10-22-workspace-f8.md",
       "size": 13338,
       "title": "2026-10-22 workspace-f8",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d078783cc0cc6417b3285ad0a6869185a94b97000ff20e2e643028b4a4262b0d",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-yarn-gate-power-note.md",
+      "size": 1791,
+      "title": "2026-10-22 YaRN native-window gate: power fields so a NOT-FAIL cannot be over-read (3c4ca599)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8a3d374b53be4d0ff3b61a4c969fd29ac4ca984bc83245fe6642bd99c148f657",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "progress/2026-10/2026-10-22-yarn-native-gate-runner.md",
+      "size": 3250,
+      "title": "2026-10-22 \u2014 YaRN native-window gate harness (yarn-native-gate, yarn-extension-arms)",
       "type": "progress"
     },
     {
@@ -10447,10 +10586,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "bac5575db5b58d83b7e2aa8b5f4217a17bf1f00d827d8b2ecbf9b08ee63ed459",
-      "modified": "2026-10-22T11:47:16Z",
+      "content_hash": "4684b3fd27e84983c7615a6ca2ad303d832fd47e49b9eab8db38016f2b859884",
+      "modified": "2026-10-22T16:45:28Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 10832,
+      "size": 18538,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -11247,6 +11386,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "b0f0a4479c5609e22e624de73f19482263a082a2977ff7ab954ba5ceb6f258db",
+      "modified": "2026-10-22T16:44:59Z",
+      "path": "docs/reference/speech/tts-italian-text-prep.md",
+      "size": 7750,
+      "title": "TTS text preparation: Italian normalizer and the lexicon/stress question",
+      "type": "docs"
+    },
+    {
       "content_hash": "b1be6713874b8247cfb543c2a5a18e4a47f4363df9bb8362c489256940392a28",
       "modified": "2026-10-22T11:41:07Z",
       "path": "docs/reference/speech/turn-taking-measurands.md",
@@ -11615,7 +11762,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1450,
+  "total_new": 1465,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
