@@ -9,3 +9,35 @@ Results recorded in the handoffs (evidence under `/mnt/raid0/llm/tmp/`):
 - **KPF-18 item 3 (G1 repeats, ended rc1=0 rc2=0)**: cumulative over all six item-3 records, fork vs no-fork token-identical 17/21, A/A 20/21, min prefix 43 both. Fork divergences: group 0 at token 43 (once), group 3 at token 161 (3 of 3 passes); A/A divergence: group 0 at token 43 (once). Observation grade; group-3 check filed.
 - **KVU-12.4 / 12.5 redo**: np4 L64k ABA NO_DIFFERENCE (PROPOSED-until-ratified; unified -22.78% decode sum against a 12.48% anchor floor, weak). np8 L64k pair CONFOUNDED (unified gpu_busy_frac 0.47 vs split 0.0). s4 hit its 12,000 s cap (rc 125). Bank build and mtp-off np8 done; pool-full step skipped for time.
 - Operator decisions of 2026-10-21 recorded: DP-1 = (a), DP-4 = (A) (queue rows removed), VB-AP-SPINUP-AP3-SCOPED added; SEC-SECRETS-1 D9 ack, SEC-ART-3 allowlist, SEC-EXEC-6 revoke (operator task added), AKX-AUTO-6 owner = workspace-f8.
+
+## Morning wrap-up 2026-10-22 (WRAPUP_AGENT_ID=workspace-f8)
+
+### DS41-1017 noise floor: COMPLETE (compare still running)
+
+- Stage-3 baseline from 06:30Z (`gate_1017.py`, `/mnt/raid0/llm/tmp/ds41-1017-baseline-20261021/`): floor **2.862%**, unit = process, n = 24 A/A pairs, gates k = 5-pair compares, interval 1.974-5.757%, 7394 s, build `cpu-20261020-dd3d9721c`, `matched_process_v2`. Floor file `aa/floor-store/serving-floor.ds41-1017-mxfp4-cpu-t48-targetonly.requests-e50732d9ce365259d5bb95fe31e36995f98bcd0986dc0e48d489f99390e42f58.matched_process_v2.pairs-5.json`.
+- Sensitivity check (`FLOOR_SENSITIVITY.md`): STANDS as decision-grade. Every exclusion variant lowers the floor (2.33-2.55%), tagged launches show no systematic shift, PREDECLARED forbids post-hoc exclusion. Annotation, verbatim: "launch 1 is a cold-start outlier (10.67 tok/s, before any disclosed activity); floor without it is 2.445%; launch 39 (14.85) dips inside a disclosed-activity window; post-hoc exclusion forbidden by PREDECLARED".
+- Valid ONLY for build `dd3d9721c` (pre-W5.1a numerics epoch). The post-C2-CAS, post-W5.1a recalibration on the new anchor stays a separate open box (`DS41-W5.1a-floor`, FILLERS row `ds41-1017-ak-floor-postcas`, owner workspace-58).
+- The champion-vs-C2 (`49550eda5`) 5-pair compare was still RUNNING at 08:41Z (2 of 10 launches in `cmp/launches-compare.jsonl`; no `RUN_RECORD.json`), so DS41-W5b, CH-20.1 (i) and VB-DS41-1017-BASELINE-WIRE stay open; only the floor sub-box is ticked.
+- Disclosure: an f8 subagent ran pytest (49 tests) and `prior_check.py` inside stage-3's quiet baseline (~08:10-08:50Z). Logged in `HOST_ACTIVITY_DISCLOSURES.md`; the sensitivity check cleared it (tagged launches 38-48 within ~1% of untagged on average, no systematic shift).
+
+### Operator rule 2026-10-22 (relayed by workspace-58)
+
+Every session: (1) keep zero-token watchers on its own end/FAILED flags; (2) on a failure or a >1.5x overrun: why, then fix, then re-queue, unasked; (3) `ram_admit.sh <peak_host_GiB> [ds41]` before any model load (peak host RAM = private + file-mapped weights; DS41-1017 server-class = 739 GiB); (4) a wrap-up at each task boundary. Already canonical in `docs/guides/agent-workflows/compute-fillers.md` (*Owner duties*, *RAM admission*), so no agents/shared edit was made (no clearly fitting new section).
+
+### D4 overrun root cause and KVU-12.5 decline
+
+- Workspace-58's `/mnt/raid0/llm/tmp/d4-why-20261022/REPORT.md`: the driver's estimate model was wrong (128k prefill ~65 tok/s vs 195 modelled; shared-batch decode 0.08-0.12 tok/s per stream), so k5_s4's 12,000 s cap was unreachable. GPU contention refuted.
+- Re-runs of s4 and the 128k bank + poolfull were DECLINED by f8: CPU timing of a 35B frontdoor that is moving to GPU, so no live decision needs it. Recorded on the KVU-12.5 tasks in `kv-unified-stack-rollout.md` (original KVU-12.5 box ticked as declined; the `KVU-12.5 re-run` box narrowed to part (a), the np8 L64k pair).
+- Estimate model fixed on research `f8/kvu12-arms` `8e532d23f`, re-costed: KVU-12.1 8k ~2.1 h on one quarter / 0.6 h full host; the 32k pair +3.5 h / 0.9 h.
+
+### Other state
+
+- Job 67 launcher is v5 (RAM-gated at 739 GiB + DS41 single-server check), pid 507665, window 10:45-14:15Z.
+- Shared research clone `/mnt/raid0/llm/epyc-inference-research`: 221 commits behind origin/main, 5 uncommitted tracked files no session claims. Plan agreed by all three sessions: rescue branch, then fast-forward after `7B_AK_ENDED`, with a `/proc` cwd check first. Filed as NIB2-101 in `non-inference-backlog.md`.
+- Tools built, tests NOT yet run in a granted window (no box ticked): `prior_check.py` + `validate_fillers.py` (root `f8/prior-check`; 49 tests passed inside the disclosed quiet window), floor registry + AKX-AUTO-6 `champion_reanchor` + `serial_run --new-anchor-epoch` pass-through (research + root `f8/floor-registry`). FILLERS.md column 6 redefined as peak host RAM GiB.
+
+### Checklist sync / derived actionables
+
+- Flips: DS41-W5b-floor (new, ticked), KVU-12.5 s4 re-run (ticked as DECLINED) = 2.
+- New `- [ ]` filed: DS41-W5b-compare; register the 2.862% floor in the floor registry once its tests pass (owner f8, today); run the floor-registry / champion_reanchor / serial_run tests in a granted window then land both `f8/floor-registry` branches (AKX-AUTO-6/-11); re-run `f8/prior-check` tests, land, wire `validate_fillers.py` (CTC-Q-A/B); NIB2-101 = 5. `DS41-W5.1a-floor` confirmed (owner workspace-58 added).
+- Explicit declines: KVU-12.5 s4 / 128k bank + poolfull (above). No other "we could" conclusions were left unfiled.
