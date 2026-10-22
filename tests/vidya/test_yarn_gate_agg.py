@@ -153,3 +153,56 @@ def test_no_sidecar_zero_rows_and_foreign_projection(tmp_path):
     assert y.native_rows(tmp_path / "none.jsonl") == ()
     with pytest.raises(ct.ProjectionError):
         y.project({"row": {}})
+
+
+RULER_PINS = {"ruler_repo": "/mnt/raid0/llm/data/eval/ruler/repo", "ruler_pin": "ab17b78", "essay_sha256": S,
+              "words_source": "essay_vocab_hyphen_pairs",
+              "deviations": ["word_keys: hyphenated pairs from Paul Graham essay vocabulary",
+                             "essay_source: local PaulGrahamEssays/*.txt"]}
+
+
+def ruler_cell(role="A1", **kw):
+    return cell(role, mock=False, suite="ruler", task="niah_multikey_2", nominal_length=32768,
+                prompt_n={"source": "model_tokenizer_json", "count": 5, "min": 30000, "median": 31000, "max": 32000},
+                bin="0-32768", zone="native", source_pins=dict(RULER_PINS), judged=False,
+                judge_pin=None, judge_validation=None, metric="accuracy", n_units=5, **kw)
+
+
+def _clean(r):
+    return {k: v for k, v in r.items() if k not in ("judge_pin", "judge_validation")}
+
+
+def test_ruler_final_fixture_projects_as_observation(tmp_path):
+    recs = [_clean(ruler_cell("A0")), _clean(ruler_cell("A1"))]
+    side = write(tmp_path, [dict(r, mock=True) for r in recs], fixture=True)
+    nats = y.native_rows(side, allow_fixture=True)
+    assert len(nats) == 2
+    for n in nats:
+        tup = y.project(n)
+        d = tup.extra["decision"]
+        assert d["suite"] == "ruler" and d["source_pins"]["words_source"] == "essay_vocab_hyphen_pairs"
+        assert d["comparable_to_published"] is False and tup.protocol_id == ""
+        assert ct.grade(tup)[:2] == ("Judged", "Located")
+    # real (non-mock) ruler record projects too
+    side2 = write(tmp_path, [_clean(ruler_cell("A1"))])
+    assert len(y.native_rows(side2)) == 1
+
+
+def test_ruler_interim_fixture_projects_nothing(tmp_path):
+    # an INTERIM pass never calls the writer, so no sidecar exists and nothing projects
+    assert y.native_rows(tmp_path / y.SIDECAR_NAME) == ()
+    assert y.frames_for_sidecar(tmp_path / y.SIDECAR_NAME, as_of=WHEN) == []
+
+
+def test_ruler_pins_required_and_published_comparison_refused():
+    base = _clean(ruler_cell())
+    assert y.record_problems(base) == []
+    for k in ("ruler_pin", "essay_sha256", "words_source", "deviations"):
+        bad = copy.deepcopy(base)
+        del bad["source_pins"][k]
+        assert y.record_problems(bad), k
+    bad = copy.deepcopy(base)
+    bad["source_pins"]["deviations"] = []
+    assert y.record_problems(bad)
+    bad = dict(base, comparable_to_published=True)
+    assert y.record_problems(bad)

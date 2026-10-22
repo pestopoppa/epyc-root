@@ -27,7 +27,11 @@ Expected record fields (all REQUIRED unless marked optional; absent -> CaptureEr
                     (a cell is one zone); min and max must land in that zone (native 262144, reserve 4096)
   source_pins       per suite: oolong -> {"source_revision": "oolongbench/oolong-synth@<40hex>",
                     "vendored_sha256"}; helmet -> {"helmet_pin": 40hex, "config_file", "config_sha256",
-                    "max_test_samples"}; longbio -> {"generator_pin": 40hex}
+                    "max_test_samples"}; longbio -> {"generator_pin": 40hex}; ruler -> {"ruler_repo", "ruler_pin" (7-40 hex
+                    checkout commit), "essay_sha256" (64hex, local Paul Graham essay haystack), "words_source"
+                    == "essay_vocab_hyphen_pairs" (hyphenated-pair keys), "deviations" (non-empty list of the
+                    local-generation deviations from upstream RULER, research ruler_local.py DEVIATIONS)}.
+                    RULER items are locally generated, never comparable to published RULER numbers.
   judged            bool. True -> ``judge_pin`` {model, prompt_version, prompt_sha256 (64hex),
                     temperature, seed, max_tokens} (== JudgePin.claim_fields()) AND
                     ``judge_validation`` {n_compared, accuracy, cohen_kappa (null ok), sheet_sha256}
@@ -85,13 +89,15 @@ MEASURED_SOURCES = ("served_tokenizer", "server_timings", "model_tokenizer_json"
 ZONES = ("native", "boundary", "beyond-native")
 COMPARISONS = {"A0_vs_A1": ("A0", "A1", "A1_vs_A0"), "CN_vs_CY2": ("CN", "CY2", "CY2_vs_CN")}
 BASELINE_ROLES, CANDIDATE_ROLES = ("A0", "CN"), ("A1", "CY2")
-SUITES = ("oolong", "helmet", "longbio")
+SUITES = ("oolong", "helmet", "longbio", "ruler")
 CELL_METRICS = {"mean_score": "higher_better", "accuracy": "higher_better",
                 "attempted_rate": "higher_better", "exact_match": "higher_better",
                 "no_answer_rate": "lower_better"}
 VERDICTS = ("PASS", "FAIL", "INCONCLUSIVE", "NOT-FAIL")
 VERDICT_METRIC = "yarn_net_paired_score_diff_a1_minus_a0"
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
+RULER_PIN = re.compile(r"^[0-9a-f]{7,40}$")
+RULER_WORDS_SOURCE = "essay_vocab_hyphen_pairs"
 JUDGE_PIN_KEYS = ("model", "prompt_version", "prompt_sha256", "temperature", "seed", "max_tokens")
 
 
@@ -157,6 +163,14 @@ def record_problems(rec: Any, *, where: str = "record") -> list[str]:
         if not HEX40.match(str(sp.get("helmet_pin", ""))) or not ns.text(sp.get("config_file")) \
                 or not ns.SHA256.match(str(sp.get("config_sha256", ""))) or "max_test_samples" not in sp:
             p.append(f"{where}: helmet source_pins needs helmet_pin(40hex), config_file, config_sha256, max_test_samples")
+    elif suite == "ruler":
+        dev = sp.get("deviations")
+        if not ns.text(sp.get("ruler_repo")) or not RULER_PIN.match(str(sp.get("ruler_pin", ""))) \
+                or not ns.SHA256.match(str(sp.get("essay_sha256", ""))) \
+                or sp.get("words_source") != RULER_WORDS_SOURCE \
+                or not isinstance(dev, list) or not dev or not all(ns.text(d) for d in dev):
+            p.append(f"{where}: ruler source_pins needs ruler_repo, ruler_pin(7-40hex), essay_sha256, "
+                     f"words_source={RULER_WORDS_SOURCE!r} and a non-empty deviations list")
     elif not HEX40.match(str(sp.get("generator_pin", ""))):
         p.append(f"{where}: longbio source_pins needs generator_pin(40hex)")
     # judge
