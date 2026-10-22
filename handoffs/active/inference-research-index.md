@@ -35,10 +35,10 @@
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
 | INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 — broader K2 admission runner/package: build the dry-run-first K2 | — |
-| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | GPS-PIN-1: after OP-81 is signed, reload pinned roles + probe P1; P0-1 E8 ratification once Codex presents the D4 bundle | — |
+| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | GPS-PIN-1b/1c: reload pinned roles (:8083 first) at next stack bring-up; probe P1 10-23 after C2 b; P0-1 E8 on Codex's D4 bundle | — |
 | INF-23 | heterogeneous slot fabric residency | [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) | HSF-3 — publish per-session inter-call gap p50/p90/p99 from existing session-keyed logs; HSF-1 receipts accrue on GPU launches | — |
 | INF-24 | inference batch loop | [inference-batch-loop.md](inference-batch-loop.md) | P0 RCP prologue — RCP-W1 relaunch + preflight, RCP-W2 ledger materialize, RCP-W3 calibration smoke; gated OP-6a/6b + stack-restart approval | — |
-| INF-26 | iqk iquant enablement | [iqk-iquant-enablement.md](iqk-iquant-enablement.md) | NEW-10 quality re-run with GGML_FUSED_DECODE_OFF=1 (q3 tonight); NEW-13 probe after it; NEW-8 steps 0-1 | — |
+| INF-26 | iqk iquant enablement | [iqk-iquant-enablement.md](iqk-iquant-enablement.md) | NEW-13 probe (harness in build), then NEW-13-RM: delete IQ3_XXS weights; VB-QUANTCMP-NEW10 capture before the delete; NEW-8 steps 0-1 | — |
 | INF-28 | laguna s21 cpu port | [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) | L-9P — conditional CPU throughput/config discovery. The prepared | — |
 | INF-29 | large moe expert parallelism | [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md) | CPU15-REVAL — Fresh canonical matrix if reopening: before enabling EP anywhere, run: | — |
 | INF-30 | lightning attention port | [lightning-attention-port.md](lightning-attention-port.md) | LQ-2 — Run a focused AIME/MATH/GPQA bundle (reasoning_budget=0, exact templates); waits on an owned current-era q-scorer/routing A/B | — |
