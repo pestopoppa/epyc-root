@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -11,38 +12,52 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import claim_tuple as claims
 from adapters import autokernel_profile as profile
+from ak_cpu_profile_producers import PRODUCERS, produce_bundle
+
+LEGACY = profile.LEGACY_CAPTURE.name
+SAMPLED = profile.SAMPLED_CPU_CAPTURE.name
+
+
+@pytest.fixture(scope="module", params=list(PRODUCERS))
+def producer(request):
+    return request.param
 
 
 @pytest.fixture(scope="module")
-def actual_profile(tmp_path_factory):
-    tmp_path = tmp_path_factory.mktemp("actual-cpu-profile")
-    configured = os.environ.get("EPYC_RESEARCH_ROOT")
-    if not configured:
-        pytest.skip("set EPYC_RESEARCH_ROOT for actual CPU profile producer conformance")
-    research = Path(configured).resolve()
-    sys.path.insert(0, str(research / "scripts" / "kernel_rnd"))
-    try:
-        from autokernel.loop.test_cpu_profile_runtime import _start, fixture
-        materialized, registry, _target, config, _events, _request = fixture(tmp_path)
-        controller, runtime = _start(materialized, registry)
-        try:
-            runtime.tick()
-            entries = controller._journal.read_all()
-            terminal = next(item.envelope() for item in entries
-                if item.kind == profile.LIFECYCLE_KIND
-                and item.payload.get("event") == "WORKER_RESULT_ACCEPTED")
-            published = next(item.envelope() for item in entries
-                if item.kind == profile.PROFILE_KIND
-                and item.payload.get("event") == "PROFILE_VERIFIED")
-        finally:
-            runtime.close()
-            controller.close()
-        yield {"terminal": terminal, "profile": published}, Path(config["storage"])
-    finally:
-        sys.path.remove(str(research / "scripts" / "kernel_rnd"))
+def actual_profile(producer, tmp_path_factory):
+    """One real PROFILE_VERIFIED bundle per pinned capture version (and the live tree)."""
+    return produce_bundle(producer, tmp_path_factory)
+
+
+def _version(producer):
+    return PRODUCERS[producer][1]
+
+
+def _republish(changed, raw, tmp_path, *, tuples=False):
+    """Store changed capture bytes and re-derive the publication's own digests over them."""
+    event = changed["profile"]["payload"]
+    locator = event["artifact_identity"]["locator"]
+    (tmp_path / locator).write_bytes(raw)
+    digest = hashlib.sha256(raw).hexdigest()
+    event["artifact_identity"]["sha256"] = digest
+    if tuples:
+        for name in ("profile_claim_tuple", "validation_claim_tuple"):
+            event["measurement_carrier"][name]["attestation_sha256"] = digest
+    event["target_profile_digest"] = profile._digest({
+        "profile_content": event["profile_content"],
+        "loaded_identity": event["loaded_identity"],
+        "artifact_identity": event["artifact_identity"],
+    })
+    changed["profile"]["record_id"] = event["target_profile_digest"]
+
+
+def _capture(native, artifact_root):
+    locator = native["profile"]["payload"]["artifact_identity"]["locator"]
+    return json.loads((artifact_root / locator).read_text())
 
 
 def test_actual_prospective_profile_projects_only_observation_and_integrity(actual_profile):
@@ -60,11 +75,66 @@ def test_actual_prospective_profile_projects_only_observation_and_integrity(actu
     assert measurement.attestation_verified is integrity.attestation_verified is True
 
 
+_IDENTITY = "profile publication and original terminal identity differ"
+_SCOPE = "target profile exceeds the original CPU observation scope"
+_TUPLES = "producer-authored profile tuples do not rederive"
+# The refusal each substitution must reach, per capture version. Journal identity, scope and
+# tuple joins are version-independent checks, so both versions refuse at the same named check;
+# what differs per version is the scope and limitation text the tuple is rederived against.
+SUBSTITUTION_REFUSALS = {
+    version: {"worker": _IDENTITY, "generation": _IDENTITY, "request": _IDENTITY,
+              "transition": _IDENTITY, "target": _SCOPE,
+              "loaded": "target profile digest does not rederive", "metric": _TUPLES,
+              "value": _TUPLES, "claim": _TUPLES, "proposition": _TUPLES}
+    for version in (LEGACY, SAMPLED)
+}
+
+
+def test_actual_producer_capture_version_and_pinned_source(actual_profile, producer):
+    native, artifact_root = actual_profile
+    _commit, version, pinned = PRODUCERS[producer]
+    capture = _capture(native, artifact_root)
+    assert profile.capture_version(capture["phases"]) is version
+    assert capture["limitations"] == list(version.limitations)
+    rows = profile.native_rows(native, corpus_root=artifact_root)
+    digest = rows[0]["capture_source_digest"]
+    assert digest == pinned if pinned else digest in version.bundle_source_digests
+    measurement, integrity = profile.project_journal_pair(native, corpus_root=artifact_root)
+    assert measurement.extra["limitations"] == list(version.limitations)
+    if version.sampled_cpu:
+        topology = [phase["topology"]["topology_digest"] for phase in capture["phases"]]
+        for claim in (measurement, integrity):
+            assert claim.extra["capture_version"] == SAMPLED
+            assert claim.extra["sampled_cpu_topology_digests"] == topology
+    else:
+        for claim in (measurement, integrity):
+            assert "capture_version" not in claim.extra
+            assert "sampled_cpu_topology_digests" not in claim.extra
+
+
+def test_pinned_versions_are_closed():
+    assert profile.SAMPLED_CPU_LIMITATIONS[:-2] == profile.LEGACY_LIMITATIONS[:-1]
+    assert profile.SAMPLED_CPU_LIMITATIONS[-1] == profile.LEGACY_LIMITATIONS[-1]
+    assert len(profile.SAMPLED_CPU_LIMITATIONS) == len(profile.LEGACY_LIMITATIONS) + 1
+    assert profile.SAMPLED_CPU_CAPTURE.bundle_source_digests == {
+        "54b4a0ef0df78ddda4ed22802ad84bd498381c00d329fe999c99b7e3678f9686",
+        "69dea977d0b0c62e30e5cb7f128e2b26090fcda510b436ec3c357d107146ca19"}
+    assert profile.SAMPLED_CPU_CAPTURE.loop_source_digests == \
+        profile.SAMPLED_CPU_CAPTURE.bundle_source_digests
+    assert not profile.SAMPLED_CPU_CAPTURE.bundle_source_digests & (
+        profile.LEGACY_CAPTURE.bundle_source_digests | profile.LEGACY_CAPTURE.loop_source_digests)
+    assert profile.LEGACY_CAPTURE.phase_fields == profile._PHASE_FIELDS
+    assert profile.LEGACY_CAPTURE.sample_fields == profile._SAMPLE_FIELDS
+    assert profile.SAMPLED_CPU_CAPTURE.phase_fields - profile._PHASE_FIELDS == {"topology"}
+    assert profile.SAMPLED_CPU_CAPTURE.sample_fields - profile._SAMPLE_FIELDS == {
+        "location_periods"}
+
+
 @pytest.mark.parametrize("change", [
     "worker", "generation", "request", "transition", "target", "loaded", "metric",
     "value", "claim", "proposition",
 ])
-def test_same_plan_and_tuple_substitutions_refuse(actual_profile, change):
+def test_same_plan_and_tuple_substitutions_refuse(actual_profile, producer, change):
     original, artifact_root = actual_profile
     native = copy.deepcopy(original)
     terminal = native["terminal"]["payload"]
@@ -89,7 +159,8 @@ def test_same_plan_and_tuple_substitutions_refuse(actual_profile, change):
         event["measurement_carrier"]["profile_claim_tuple"]["claim"] = "speedup"
     else:
         event["measurement_carrier"]["validation_claim_tuple"]["decided_proposition"] = "production valid"
-    with pytest.raises(claims.ProjectionError):
+    expected = SUBSTITUTION_REFUSALS[_version(producer).name][change]
+    with pytest.raises(claims.ProjectionError, match=f"^{re.escape(expected)}$"):
         profile.project_journal_pair(native, corpus_root=artifact_root)
 
 
@@ -222,8 +293,11 @@ def test_unsampled_pinned_target_tid_is_preserved_without_fabricated_period(
     assert measurement.value > 0 and integrity.value == 1
 
 
-@pytest.mark.parametrize("field", ["terminal_data", "loaded_identity"])
-def test_null_identity_mappings_refuse_canonically(actual_profile, field):
+@pytest.mark.parametrize("field,match", [
+    ("terminal_data", "not an original accepted worker result"),
+    ("loaded_identity", "loaded identity must be an object"),
+])
+def test_null_identity_mappings_refuse_canonically(actual_profile, field, match):
     original, artifact_root = actual_profile
     changed = copy.deepcopy(original)
     if field == "terminal_data":
@@ -237,5 +311,112 @@ def test_null_identity_mappings_refuse_canonically(actual_profile, field):
             "artifact_identity": event["artifact_identity"],
         })
         changed["profile"]["record_id"] = event["target_profile_digest"]
-    with pytest.raises(claims.ProjectionError):
+    with pytest.raises(claims.ProjectionError, match=match):
         profile.project_journal_pair(changed, corpus_root=artifact_root)
+
+
+def test_widened_kept_scope_refuses_under_either_version(actual_profile, tmp_path):
+    original, artifact_root = actual_profile
+    changed = copy.deepcopy(original)
+    event = changed["profile"]["payload"]
+    event["profile_content"]["kept_scope"].append("an unsampled field became a claim")
+    _republish(changed, (artifact_root / event["artifact_identity"]["locator"]).read_bytes(),
+               tmp_path)
+    with pytest.raises(claims.ProjectionError, match=f"^{re.escape(_SCOPE)}$"):
+        profile.project_journal_pair(changed, corpus_root=tmp_path)
+
+
+def _mutate_topology_digest(capture):
+    topology = capture["phases"][1]["topology"]
+    first = str(topology["logical_cpus"][0])
+    topology["cpu_to_numa_node"][first] += 1
+
+
+def _mutate_location_node(capture):
+    row = capture["phases"][1]["samples"]["location_periods"][0]
+    row["numa_node"] += 1
+
+
+def _strip_sample_cpu(capture, phases):
+    for index in phases:
+        command = capture["phases"][index]["tools"][0]["command"]
+        command.remove(profile.SAMPLED_CPU_FLAG)
+
+
+def _add_sample_cpu(capture):
+    for phase in capture["phases"]:
+        command = phase["tools"][0]["command"]
+        command.insert(command.index("-T") + 1, profile.SAMPLED_CPU_FLAG)
+
+
+# Sampled-CPU (v2) captures: each sampled field is validated, and a record that is not wholly
+# one version is refused with a message naming the failed join.
+SAMPLED_REFUSALS = {
+    "topology_absent": (lambda c: c["phases"][1].pop("topology"),
+                        "sampled CPU topology is absent"),
+    "topology_digest": (_mutate_topology_digest, "sampled CPU topology digest does not rederive"),
+    "topology_schema": (lambda c: c["phases"][0]["topology"].update(schema="other"),
+                        "sampled CPU topology schema differs"),
+    "location_absent": (lambda c: c["phases"][1]["samples"].pop("location_periods"),
+                        "profile sample reduction has missing or unknown fields"),
+    "location_period": (lambda c: c["phases"][1]["samples"]["location_periods"][0].update(
+                            period=c["phases"][1]["samples"]["location_periods"][0]["period"] + 1),
+                        "sampled CPU location periods do not rederive"),
+    "location_node": (_mutate_location_node,
+                      "sampled CPU location differs from its captured topology/TIDs"),
+    "script_fields": (lambda c: c["phases"][1]["parser"]["command"].__setitem__(
+                          c["phases"][1]["parser"]["command"].index("-F") + 1,
+                          profile.LEGACY_SCRIPT_FIELDS),
+                      "sampled CPU perf script fields differ from its record command"),
+    "mixed_phases": (lambda c: _strip_sample_cpu(c, [1]),
+                     "profile capture mixes sampled-CPU and legacy perf record phases"),
+    # Claiming legacy while publishing the sampled scope: read as legacy, refused at scope.
+    "claims_legacy": (lambda c: _strip_sample_cpu(c, [0, 1]), _SCOPE),
+    "legacy_limitations": (lambda c: c.update(limitations=list(profile.LEGACY_LIMITATIONS)),
+                           "profile capture differs from original publication"),
+    "unpinned_source": (lambda c: c["source_closure"]["files"][0].update(sha256="0" * 64),
+                        "CPU profile source closure is not the supported producer for capture "
+                        "version " + SAMPLED),
+}
+# Legacy captures stay exactly as strict: no sampled field can be added after the fact.
+LEGACY_REFUSALS = {
+    "topology_injected": (lambda c: c["phases"][1].update(topology=None),
+                          "measurement phase has missing or unknown fields"),
+    "location_injected": (lambda c: c["phases"][1]["samples"].update(location_periods=[]),
+                          "profile sample reduction has missing or unknown fields"),
+    "claims_sampled": (_add_sample_cpu, _SCOPE),
+    "sampled_limitations": (lambda c: c.update(limitations=list(profile.SAMPLED_CPU_LIMITATIONS)),
+                            "profile capture differs from original publication"),
+    "unpinned_source": (lambda c: c["source_closure"]["files"][0].update(sha256="0" * 64),
+                        "CPU profile source closure is not the supported producer"),
+}
+
+
+@pytest.mark.parametrize("mutation", sorted(set(SAMPLED_REFUSALS) | set(LEGACY_REFUSALS)))
+def test_capture_version_fields_refuse_per_version(actual_profile, producer, tmp_path, mutation):
+    original, artifact_root = actual_profile
+    table = SAMPLED_REFUSALS if _version(producer).sampled_cpu else LEGACY_REFUSALS
+    if mutation not in table:
+        pytest.skip(f"{mutation} applies to the other capture version")
+    mutate, expected = table[mutation]
+    changed = copy.deepcopy(original)
+    capture = _capture(changed, artifact_root)
+    mutate(capture)
+    _republish(changed, json.dumps(capture, sort_keys=True, separators=(",", ":")).encode(),
+               tmp_path, tuples=True)
+    with pytest.raises(claims.ProjectionError, match=f"^{re.escape(expected)}$"):
+        profile.project_journal_pair(changed, corpus_root=tmp_path)
+
+
+def test_projected_sampled_fields_cannot_be_added_or_rewritten(actual_profile, producer):
+    original, artifact_root = actual_profile
+    rows = profile.native_rows(original, corpus_root=artifact_root)
+    forged = copy.deepcopy(rows[0])
+    if _version(producer).sampled_cpu:
+        forged["sampled_cpu_topology_digests"] = ["0" * 64, "0" * 64]
+        key = "sampled_cpu_topology_digests"
+    else:
+        forged["capture_version"] = SAMPLED
+        key = "capture_version"
+    with pytest.raises(claims.ProjectionError, match=f"row mutated {key}"):
+        profile.project_profile(forged)

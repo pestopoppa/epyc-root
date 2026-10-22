@@ -2,35 +2,29 @@
 import copy
 import hashlib
 import json
-import os
-import subprocess
+import re
 import sys
 from pathlib import Path
 
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts/vidya"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from adapters import autokernel_corpus as corpus
 from adapters import autokernel_profile as profile
+from ak_cpu_profile_producers import PRODUCERS, produce_loop
 from claim_tuple import ProjectionError
 
 
+@pytest.fixture(scope="module", params=list(PRODUCERS))
+def producer(request):
+    return request.param
+
+
 @pytest.fixture(scope="module")
-def actual(tmp_path_factory):
-    configured = os.environ.get("EPYC_RESEARCH_ROOT")
-    if not configured:
-        pytest.skip("set EPYC_RESEARCH_ROOT for original direct CPU producer")
-    research = Path(configured).resolve()
-    root = tmp_path_factory.mktemp("direct-cpu-profile")
-    code = (
-        "import json,sys; from pathlib import Path; "
-        "from autokernel.loop.test_loop_cpu_profile import produce; "
-        "result,_,_=produce(Path(sys.argv[1])); print(json.dumps(result))")
-    completed = subprocess.run([sys.executable, "-c", code, str(root)], cwd=research,
-        env={**os.environ, "PYTHONPATH": str(research / "scripts/kernel_rnd")},
-        capture_output=True, text=True, timeout=60, check=False)
-    assert completed.returncode == 0, completed.stderr
-    result = json.loads(completed.stdout)
+def actual(producer, tmp_path_factory):
+    """One real direct loop record per pinned capture version (and the live tree)."""
+    result = produce_loop(producer, tmp_path_factory)
     path = Path(result["record"])
     return path, json.loads(path.read_text()), result
 
@@ -90,11 +84,80 @@ def test_direct_shape_does_not_issue_an_integrity_row(actual):
         profile.project_integrity(row)
 
 
-def test_current_exact_source_is_additive_and_retains_original_projection_identity(actual):
+def test_current_exact_source_is_additive_and_retains_original_projection_identity(
+        actual, producer):
     path, record, _ = actual
+    _commit, version, pinned = PRODUCERS[producer]
     row = profile.native_rows(record, corpus_root=path.parent)[0]
-    assert row["capture_source_digest"] == profile.MATCHED_CPU_SOURCE_DIGEST
+    digest = row["capture_source_digest"]
+    assert digest == pinned if pinned else digest in version.loop_source_digests
+    assert profile.MATCHED_CPU_SOURCE_DIGEST == "09e804897a555d19e6b3f37ba56cbc493e5c02b57fc7bc09e41bfdf03e345fc7"
     assert profile.RUNTIME_CPU_SOURCE_DIGEST == "95dcf5179f7eb1e26b4f481e790de740577d30baebe27c939a548a1abf9ffe48"
     assert profile.CURRENT_CPU_SOURCE_DIGEST == "926f9cce5fa92598e5120006611be5d97189952907af06c7561f6f5628c3b2ba"
     assert profile.DIRECT_CPU_SOURCE_DIGEST == "6b2f6060df5b5d36980bc9ea7137168bd9ca978959b22038dfba88b12c50b146"
     assert profile.CPU_SOURCE_DIGEST == "c8c1184429e07d8d692f1e698232814169c21beeeeff88f10286f148a38feec5"
+
+
+def _rewrite(path, original, mutate, leaf):
+    record = copy.deepcopy(original)
+    body = json.loads((path.parent / record["capture"]["locator"]).read_text())
+    mutate(body)
+    raw = json.dumps(body).encode()
+    sha = hashlib.sha256(raw).hexdigest()
+    (path.parent / leaf).write_bytes(raw)
+    record["capture"] = {"locator": leaf, "sha256": sha, "verified": True}
+    record["profile_claim_tuple"].update(attestation_locator=leaf, attestation_sha256=sha)
+    return record
+
+
+def test_direct_capture_version_projects_only_sampled_fields(actual, producer):
+    path, record, _ = actual
+    version = PRODUCERS[producer][1]
+    body = json.loads((path.parent / record["capture"]["locator"]).read_text())
+    assert profile.capture_version(body["phases"]) is version
+    row = profile.native_rows(record, corpus_root=path.parent)[0]
+    claim = profile.project(row)
+    assert claim.extra["limitations"] == list(version.limitations)
+    if version.sampled_cpu:
+        assert claim.extra["capture_version"] == version.name
+        assert claim.extra["sampled_cpu_topology_digests"] == [
+            phase["topology"]["topology_digest"] for phase in body["phases"]]
+    else:
+        assert "capture_version" not in claim.extra
+        assert "sampled_cpu_topology_digests" not in claim.extra
+    forged = {**row, "capture_version": profile.SAMPLED_CPU_CAPTURE.name}
+    forged["sampled_cpu_topology_digests"] = ["0" * 64, "0" * 64]
+    with pytest.raises(ProjectionError, match="direct profile projected row changed"):
+        profile.project(forged)
+
+
+def _forge_topology(body):
+    topology = body["phases"][1]["topology"]
+    topology["cpu_to_numa_node"][str(topology["logical_cpus"][0])] += 1
+
+
+def _swap_limitations(body):
+    sampled = profile.SAMPLED_CPU_FLAG in body["phases"][0]["tools"][0]["command"]
+    body["limitations"] = list(profile.LEGACY_LIMITATIONS if sampled
+                               else profile.SAMPLED_CPU_LIMITATIONS)
+
+
+@pytest.mark.parametrize("mutation,sampled_match,legacy_match", [
+    ("topology", "sampled CPU topology digest does not rederive", None),
+    ("limitations", "direct loop capture identity/scope differs",
+     "direct loop capture identity/scope differs"),
+    ("source", "direct CPU profile source closure differs for capture version "
+     + profile.SAMPLED_CPU_CAPTURE.name, "direct CPU profile source closure differs"),
+])
+def test_direct_capture_version_refusals_are_specific(
+        actual, producer, mutation, sampled_match, legacy_match):
+    path, original, _ = actual
+    expected = sampled_match if PRODUCERS[producer][1].sampled_cpu else legacy_match
+    if expected is None:
+        pytest.skip(f"{mutation} applies only to sampled-CPU captures")
+    mutate = {"topology": _forge_topology, "limitations": _swap_limitations,
+              "source": lambda body: body["settings"]["source_closure"]["files"][0].update(
+                  sha256="0" * 64)}[mutation]
+    record = _rewrite(path, original, mutate, f"test-only-version-{mutation}.json")
+    with pytest.raises(ProjectionError, match=f"^{re.escape(expected)}$"):
+        profile.native_rows(record, corpus_root=path.parent)

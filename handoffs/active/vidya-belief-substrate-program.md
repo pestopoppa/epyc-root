@@ -1022,7 +1022,14 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
     an A2 nomination as a keep, validation or release result.
 
   - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
-    - [ ] **2026-09-17 sampled-location extension, before first live GLM use** (GLM-5.3-Flash deleted 2026-09-22; read as "before first live use on the next CPU target", e.g. DeepSeek-V4.1-Flash): write bounded per-TID×symbol-family×sampled-CPU/NUMA-location period fields and the `perf --sample-cpu` capture identity in the original immutable profile receipt. Project only native sampled fields through the existing measurement ladder; old captures remain location-unknown, and CPU location alone cannot establish remote memory traffic or a throughput gain.
+    - [x] **2026-09-17 sampled-location extension, before first live GLM use** (GLM-5.3-Flash deleted 2026-09-22; read as "before first live use on the next CPU target", e.g. DeepSeek-V4.1-Flash): write bounded per-TID×symbol-family×sampled-CPU/NUMA-location period fields and the `perf --sample-cpu` capture identity in the original immutable profile receipt. Project only native sampled fields through the existing measurement ladder; old captures remain location-unknown, and CPU location alone cannot establish remote memory traffic or a throughput gain.
+      ✅ 2026-10-22. Write side: research `07333b884`. Read side: ROOT `autokernel_profile.py` reader v2
+      (`SAMPLED_CPU_CAPTURE`). The version is read from the receipt's own `perf record` command; legacy
+      captures keep exactly the old checks and projection. v2 validates the per-phase topology (digest
+      rederived) and the location periods (they rederive the sample totals) and pins two source digests
+      (07333b884, research main b93017dc9). Only the version and the topology digests are projected;
+      `claim_tuple.grade()` is unchanged. Tests use real producers at 83334d892, 07333b884, b93017dc9
+      and live. `progress/2026-10/2026-10-22-ak-profile-reader-v2.md`.
     - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
       ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
       actual execution/frozen-request identity and sampled-period measurement. The existing

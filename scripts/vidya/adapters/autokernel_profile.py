@@ -13,6 +13,7 @@ import math
 import os
 import re
 import stat
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -55,6 +56,32 @@ LIMITATIONS = (
     "no exact generated-token, MTP, correctness, contention or GPU warrant",
     "no ratified measurement protocol or opportunity is supplied",
 )
+# The legacy (pre-research-07333b884) capture scope. ``LIMITATIONS`` keeps its name so the
+# legacy reader and its callers are byte-for-byte what they were before the v2 reader.
+LEGACY_LIMITATIONS = LIMITATIONS
+# Research 07333b884 (2026-09-17, "Capture sampled CPU topology in original-request CPU
+# profiles") inserts exactly one limitation before the last, as the producer's own
+# ``LEGACY_LIMITATIONS = LIMITATIONS[:-2] + LIMITATIONS[-1:]`` records.
+SAMPLED_CPU_LIMITATIONS = LIMITATIONS[:-1] + (
+    "sampled CPU/NUMA attribution is execution location, not remote-memory traffic or a causal diagnosis",
+) + LIMITATIONS[-1:]
+# Source-closure digests of the sampled-CPU producer, computed with the producer's own method
+# (``lifecycle_observation._digest(cpu_profile.source_identity())``) on a ``git archive`` of the
+# named research commit. The closure includes the interpreter identity; both were computed under
+# /usr/bin/python3.13 (sha256 efb29ce53d36ebaeee80e3aa44fd6c7f9d71bbded5fe1665240b2ed8ecaeee0e),
+# the interpreter that produced the legacy pins (research 83334d892 reproduces
+# MATCHED_CPU_SOURCE_DIGEST under it). No other sampled-CPU closure is pinned.
+# Research 07333b884 (2026-09-17): the first producer that writes ``--sample-cpu`` captures.
+SAMPLED_CPU_SOURCE_DIGEST_07333B884 = (
+    "54b4a0ef0df78ddda4ed22802ad84bd498381c00d329fe999c99b7e3678f9686")
+# Research main b93017dc9 (2026-10-22): same capture shape; closure files changed after
+# 07333b884 (cpu_profile.py c3a727bf2, f4a5d240b, dc1828a0a, plus closure dependencies).
+SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9 = (
+    "69dea977d0b0c62e30e5cb7f128e2b26090fcda510b436ec3c357d107146ca19")
+TOPOLOGY_SCHEMA = "epyc.autokernel.cpu_topology.v1"
+SAMPLED_CPU_FLAG = "--sample-cpu"
+LEGACY_SCRIPT_FIELDS = "pid,tid,time,period,event,ip,sym,dso"
+SAMPLED_CPU_SCRIPT_FIELDS = "pid,tid,cpu,time,period,event,ip,sym,dso"
 PROPOSITION = (
     "This original CPU profile receipt reopens with the recorded request, artifact, source and "
     "window joins"
@@ -63,6 +90,8 @@ _SHA = re.compile(r"^[0-9a-f]{64}$")
 _MAX_CAPTURE_BYTES = 16 * 1024 * 1024
 _MAX_TIDS = 4096
 _MAX_SYMBOLS = 4096
+_MAX_CPU_IDS = 4096
+_MAX_LOCATION_GROUPS = 16384
 _ENVELOPE = {"journal_schema", "event_id", "seq", "kind", "campaign_id", "record_id",
              "written_at", "payload"}
 _PROFILE_FIELDS = {
@@ -90,6 +119,9 @@ _TOOL_FIELDS = {"kind", "identity", "returncode", "process_observation", "comman
 _ARTIFACT_FIELDS = {"path", "size", "sha256", "dev", "ino", "mtime_ns", "ctime_ns"}
 _SAMPLE_FIELDS = {"samples", "sampled_period_total", "outside_request_samples", "lost_records",
                   "symbol_periods", "tid_periods"}
+_TOPOLOGY_FIELDS = {"schema", "logical_cpus", "physical_sibling_groups", "cpu_to_physical_group",
+                    "cpu_to_numa_node", "topology_digest"}
+_LOCATION_FIELDS = {"tid", "cpu", "numa_node", "family", "period"}
 _PROFILE_CONTENT_FIELDS = {"schema", "target_revision_digest", "freshness", "quant", "hotspots",
                            "observation_states", "kept_scope", "resource_cost", "opportunities"}
 _PROFILE_TUPLE_FIELDS = {"date", "category", "protocol_id", "reps", "reps_basis",
@@ -97,6 +129,41 @@ _PROFILE_TUPLE_FIELDS = {"date", "category", "protocol_id", "reps", "reps_basis"
                          "attestation_verified", "measurement_id", "metric", "value",
                          "metric_direction", "unit", "claim", "source_class", "extra"}
 _VALIDATION_TUPLE_FIELDS = _PROFILE_TUPLE_FIELDS | {"decided_proposition", "binding_kind"}
+
+
+@dataclass(frozen=True)
+class CaptureVersion:
+    """One closed capture shape. A record is read under exactly one of these or refused."""
+    name: str
+    limitations: tuple[str, ...]
+    sampled_cpu: bool
+    phase_fields: frozenset[str]
+    sample_fields: frozenset[str]
+    bundle_source_digests: frozenset[str]
+    loop_source_digests: frozenset[str]
+
+
+# Exactly the pre-07333b884 reader: same fields, limitations and source allow-lists.
+LEGACY_CAPTURE = CaptureVersion(
+    name="legacy-v1", limitations=LEGACY_LIMITATIONS, sampled_cpu=False,
+    phase_fields=frozenset(_PHASE_FIELDS), sample_fields=frozenset(_SAMPLE_FIELDS),
+    bundle_source_digests=frozenset({
+        CPU_SOURCE_DIGEST, DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
+        FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST, MATCHED_CPU_SOURCE_DIGEST}),
+    loop_source_digests=frozenset({
+        DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST, FACTUAL_CPU_SOURCE_DIGEST,
+        RUNTIME_CPU_SOURCE_DIGEST, MATCHED_CPU_SOURCE_DIGEST}))
+# Research 07333b884 onward: ``perf record --sample-cpu``, a per-phase sampled topology and
+# per-TID x family x sampled-CPU/NUMA location periods. Only these sampled fields are added.
+SAMPLED_CPU_CAPTURE = CaptureVersion(
+    name="sampled-cpu-topology-v2", limitations=SAMPLED_CPU_LIMITATIONS, sampled_cpu=True,
+    phase_fields=frozenset(_PHASE_FIELDS | {"topology"}),
+    sample_fields=frozenset(_SAMPLE_FIELDS | {"location_periods"}),
+    bundle_source_digests=frozenset({SAMPLED_CPU_SOURCE_DIGEST_07333B884,
+                                     SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9}),
+    loop_source_digests=frozenset({SAMPLED_CPU_SOURCE_DIGEST_07333B884,
+                                   SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9}))
+CAPTURE_VERSIONS = (LEGACY_CAPTURE, SAMPLED_CPU_CAPTURE)
 
 
 def _canonical(value: Any) -> bytes:
@@ -242,24 +309,125 @@ def _artifact(root: Path, reference: Any, *, fields=None) -> dict:
     return _exact(body, _CAPTURE_FIELDS if fields is None else fields, "profile capture")
 
 
-def _validate_source(value: Any) -> dict:
+def capture_version(phases: Any) -> CaptureVersion:
+    """Read the capture version from the record's own perf record commands.
+
+    This is the producer's own discriminator (``"--sample-cpu" in phases[0].tools[0].command``),
+    required here to agree across every phase whose record command is readable. A phase whose
+    command cannot be read decides nothing: the selected reader's structural checks refuse it
+    (with that check's own message), so such a record can never be accepted under either version.
+    A record with no readable command is handed to the legacy reader only to be refused there.
+    """
+    flags = set()
+    for phase in phases if isinstance(phases, list) else ():
+        tools = phase.get("tools") if isinstance(phase, dict) else None
+        record = tools[0] if isinstance(tools, list) and tools else None
+        command = record.get("command") if isinstance(record, dict) else None
+        if isinstance(command, list):
+            flags.add(SAMPLED_CPU_FLAG in command)
+    if len(flags) > 1:
+        raise ProjectionError("profile capture mixes sampled-CPU and legacy perf record phases")
+    return SAMPLED_CPU_CAPTURE if flags == {True} else LEGACY_CAPTURE
+
+
+def _validate_source(value: Any, version: CaptureVersion = LEGACY_CAPTURE) -> dict:
     source = _exact(value, {"schema", "callables", "files", "python", "constants"},
                     "CPU profile source closure")
-    if source["schema"] != CPU_SOURCE_SCHEMA or _digest(source) not in (
-            CPU_SOURCE_DIGEST, DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
-            FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST, MATCHED_CPU_SOURCE_DIGEST):
-        raise ProjectionError("CPU profile source closure is not the supported producer")
+    if source["schema"] != CPU_SOURCE_SCHEMA or _digest(source) not in version.bundle_source_digests:
+        raise ProjectionError("CPU profile source closure is not the supported producer"
+                              + ("" if version is LEGACY_CAPTURE
+                                 else f" for capture version {version.name}"))
     constants = source["constants"]
     if (not isinstance(constants, dict) or constants.get("mode") != MODE
-            or constants.get("limitations") != list(LIMITATIONS)
+            or constants.get("limitations") != list(version.limitations)
             or constants.get("target_tid_limit") != _MAX_TIDS
             or constants.get("limits", {}).get("max_metadata_bytes") != _MAX_CAPTURE_BYTES):
         raise ProjectionError("CPU profile source constants differ")
     return source
 
 
-def _validate_phase(value: Any, expected_phase: str, raw_limit: int) -> dict:
-    phase = _exact(value, _PHASE_FIELDS, f"{expected_phase} phase")
+def _validate_topology(value: Any) -> dict:
+    if value is None:
+        raise ProjectionError("sampled CPU topology is absent")
+    topology = _exact(value, _TOPOLOGY_FIELDS, "sampled CPU topology")
+    if topology["schema"] != TOPOLOGY_SCHEMA:
+        raise ProjectionError("sampled CPU topology schema differs")
+    cpus = topology["logical_cpus"]
+    if (not isinstance(cpus, list) or not cpus or len(cpus) > _MAX_CPU_IDS
+            or any(type(item) is not int or item < 0 for item in cpus)
+            or cpus != sorted(set(cpus))):
+        raise ProjectionError("sampled CPU topology CPU set is malformed or exceeds its bound")
+    keys = {str(item) for item in cpus}
+    nodes = topology["cpu_to_numa_node"]
+    if (not isinstance(nodes, dict) or set(nodes) != keys
+            or any(type(item) is not int or item < 0 for item in nodes.values())):
+        raise ProjectionError("sampled CPU topology NUMA mapping is malformed")
+    siblings, groups = topology["cpu_to_physical_group"], topology["physical_sibling_groups"]
+    sibling_error = ProjectionError("sampled CPU topology sibling mapping is malformed")
+    if (not isinstance(siblings, dict) or set(siblings) != keys
+            or not isinstance(groups, list) or len(groups) > _MAX_CPU_IDS):
+        raise sibling_error
+    for cpu, group in siblings.items():
+        if (not isinstance(group, list) or int(cpu) not in group or group != sorted(set(group))
+                or any(type(item) is not int or str(item) not in keys for item in group)):
+            raise sibling_error
+    # The physical groups partition the logical CPUs and agree with every per-CPU sibling set.
+    covered = []
+    for group in groups:
+        if not isinstance(group, list) or not group or type(group[0]) is not int \
+                or siblings.get(str(group[0])) != group:
+            raise sibling_error
+        covered.extend(group)
+    if sorted(covered) != cpus:
+        raise sibling_error
+    _sha(topology["topology_digest"], "sampled CPU topology digest")
+    if topology["topology_digest"] != _digest(
+            {key: item for key, item in topology.items() if key != "topology_digest"}):
+        raise ProjectionError("sampled CPU topology digest does not rederive")
+    return topology
+
+
+def _validate_locations(samples: dict, tids: list, topology: dict) -> None:
+    rows = samples["location_periods"]
+    if not isinstance(rows, list) or not rows or len(rows) > _MAX_LOCATION_GROUPS:
+        raise ProjectionError("sampled CPU location table exceeds its bound")
+    nodes, members = topology["cpu_to_numa_node"], set(tids)
+    keys, by_tid, total = [], {}, 0
+    for row in rows:
+        _exact(row, _LOCATION_FIELDS, "sampled CPU location period")
+        tid = _integer(row["tid"], "sampled location TID", minimum=1)
+        cpu = _integer(row["cpu"], "sampled location CPU")
+        period = _integer(row["period"], "sampled location period", minimum=1)
+        family = _text(row["family"], "sampled location family")
+        if tid not in members or nodes.get(str(cpu)) != row["numa_node"] \
+                or type(row["numa_node"]) is not int:
+            raise ProjectionError("sampled CPU location differs from its captured topology/TIDs")
+        keys.append((tid, cpu, row["numa_node"], family))
+        by_tid[str(tid)] = by_tid.get(str(tid), 0) + period
+        total += period
+    if keys != sorted(set(keys)):
+        raise ProjectionError("sampled CPU location table order/uniqueness differs")
+    if total != samples["sampled_period_total"] or by_tid != samples["tid_periods"]:
+        raise ProjectionError("sampled CPU location periods do not rederive")
+
+
+def _validate_sampled_cpu_phase(phase: dict) -> dict:
+    parser = phase["parser"]
+    command = parser.get("command") if isinstance(parser, dict) else None
+    if (not isinstance(command, list) or "-F" not in command
+            or command.index("-F") + 1 >= len(command)
+            or command[command.index("-F") + 1] != SAMPLED_CPU_SCRIPT_FIELDS):
+        raise ProjectionError("sampled CPU perf script fields differ from its record command")
+    topology = _validate_topology(phase["topology"])
+    _validate_locations(phase["samples"], phase["tids"], topology)
+    return topology
+
+
+def _validate_phase(value: Any, expected_phase: str, raw_limit: int,
+                    version: CaptureVersion = LEGACY_CAPTURE) -> dict:
+    if version.sampled_cpu and isinstance(value, dict) and value.get("topology") is None:
+        raise ProjectionError("sampled CPU topology is absent")
+    phase = _exact(value, set(version.phase_fields), f"{expected_phase} phase")
     if phase["phase"] != expected_phase:
         raise ProjectionError("profile capture phase order differs")
     interval = phase["enabled_interval"]
@@ -300,7 +468,7 @@ def _validate_phase(value: Any, expected_phase: str, raw_limit: int) -> dict:
             _integer(artifact[name], f"profile raw artifact {name}")
         if artifact["size"] > raw_limit:
             raise ProjectionError("profile raw artifact exceeds producer bound")
-    samples = _exact(phase["samples"], _SAMPLE_FIELDS, "profile sample reduction")
+    samples = _exact(phase["samples"], set(version.sample_fields), "profile sample reduction")
     _integer(samples["samples"], "profile samples", minimum=1)
     total = _integer(samples["sampled_period_total"], "sampled period total", minimum=1)
     _integer(samples["outside_request_samples"], "outside-request samples")
@@ -323,6 +491,8 @@ def _validate_phase(value: Any, expected_phase: str, raw_limit: int) -> dict:
                     for item in periods.values())
     if symbol_total != total or tid_total != total:
         raise ProjectionError("profile period totals do not rederive")
+    if version.sampled_cpu:
+        _validate_sampled_cpu_phase(phase)
     return phase
 
 
@@ -368,7 +538,8 @@ def joined_journal_pair(native: Any) -> tuple[dict, dict]:
     return profile, terminal
 
 
-def _validate_bundle(native: Any, *, corpus_root: Path) -> tuple[dict, dict, dict, dict, dict]:
+def _validate_bundle(native: Any, *, corpus_root: Path
+                     ) -> tuple[dict, dict, dict, dict, dict, CaptureVersion]:
     profile, terminal = joined_journal_pair(native)
     request_digest = profile["profile_request_digest"]
     content = _exact(profile["profile_content"], _PROFILE_CONTENT_FIELDS, "target profile")
@@ -379,7 +550,7 @@ def _validate_bundle(native: Any, *, corpus_root: Path) -> tuple[dict, dict, dic
             or content["target_revision_digest"] != profile["target_revision_digest"]
             or content["freshness"] != "fresh" or content["observation_states"] != ["unknown"]
             or content["opportunities"] != [] or content["quant"] != loaded.get("quantization")
-            or content["kept_scope"] != [MODE, *LIMITATIONS]):
+            or content["kept_scope"] not in [[MODE, *item.limitations] for item in CAPTURE_VERSIONS]):
         raise ProjectionError("target profile exceeds the original CPU observation scope")
     expected_profile_digest = _digest({"profile_content": content,
                                        "loaded_identity": profile["loaded_identity"],
@@ -387,20 +558,23 @@ def _validate_bundle(native: Any, *, corpus_root: Path) -> tuple[dict, dict, dic
     if expected_profile_digest != profile["target_profile_digest"]:
         raise ProjectionError("target profile digest does not rederive")
     capture = _artifact(Path(corpus_root), profile["artifact_identity"])
-    _validate_source(capture["source_closure"])
+    version = capture_version(capture["phases"])
+    if content["kept_scope"] != [MODE, *version.limitations]:
+        raise ProjectionError("target profile exceeds the original CPU observation scope")
+    _validate_source(capture["source_closure"], version)
     if (capture["schema"] != CAPTURE_SCHEMA or capture["completion"] != "complete"
             or capture["request_digest"] != request_digest
             or capture["target_revision_digest"] != profile["target_revision_digest"]
             or capture["loaded_identity"] != profile["loaded_identity"]
-            or capture["limitations"] != list(LIMITATIONS)):
+            or capture["limitations"] != list(version.limitations)):
         raise ProjectionError("profile capture differs from original publication")
     phases = capture["phases"]
     if not isinstance(phases, list) or len(phases) != 2:
         raise ProjectionError("profile capture phase cardinality/order differs")
     raw_limit = capture["source_closure"]["constants"]["limits"]["max_raw_file_bytes"]
     _integer(raw_limit, "profile raw artifact limit", minimum=1)
-    _validate_phase(phases[0], "warmup", raw_limit)
-    measured = _validate_phase(phases[1], "measurement", raw_limit)["samples"]
+    _validate_phase(phases[0], "warmup", raw_limit, version)
+    measured = _validate_phase(phases[1], "measurement", raw_limit, version)["samples"]
     sampled = measured["sampled_period_total"]
     symbols = measured["symbol_periods"]
     hotspots = [item["dso"] + ":" + item["symbol"]
@@ -435,7 +609,7 @@ def _validate_bundle(native: Any, *, corpus_root: Path) -> tuple[dict, dict, dic
         "value": sampled, "metric_direction": "lower_better",
         "unit": "sampled user-cycle periods",
         "claim": "Recorded sampled-period total for this exact full request; estimated attribution, not exact CPU cost",
-        "source_class": "measurement", "extra": {"limitations": list(LIMITATIONS)}}
+        "source_class": "measurement", "extra": {"limitations": list(version.limitations)}}
     expected_validation = {**common, "date": profile_tuple["date"],
         "measurement_id": run_id + ":integrity", "metric": "original_profile_receipt_integrity",
         "value": 1, "metric_direction": "higher_better", "unit": "checked proposition",
@@ -444,7 +618,16 @@ def _validate_bundle(native: Any, *, corpus_root: Path) -> tuple[dict, dict, dic
         "extra": {"not_model_correctness": True, "not_trial_validation": True}}
     if profile_tuple != expected_profile or validation_tuple != expected_validation:
         raise ProjectionError("producer-authored profile tuples do not rederive")
-    return profile, terminal, capture, profile_tuple, validation_tuple
+    return profile, terminal, capture, profile_tuple, validation_tuple, version
+
+
+def _sampled_cpu_projection(phases: list, version: CaptureVersion) -> dict:
+    """Projection fields that exist only because the capture sampled CPUs (none for legacy)."""
+    if not version.sampled_cpu:
+        return {}
+    return {"capture_version": version.name,
+            "sampled_cpu_topology_digests": [item["topology"]["topology_digest"]
+                                             for item in phases]}
 
 
 def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
@@ -455,15 +638,17 @@ def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
         raise ProjectionError("direct loop profile identity differs")
     body = _artifact(corpus_root, record["capture"], fields={"schema", "request", "settings",
         "profiler", "processes", "phases", "completion", "limitations"})
+    version = capture_version(body["phases"])
     if (body["schema"] != LOOP_CAPTURE_SCHEMA or body["completion"] != "complete"
-            or body["limitations"] != list(LIMITATIONS)):
+            or body["limitations"] != list(version.limitations)):
         raise ProjectionError("direct loop capture identity/scope differs")
     settings = _exact(body["settings"], {"resolved_recipe", "prompt_manifest", "profiler",
                                        "source_closure", "budgets"}, "direct capture settings")
     source_digest = _digest(settings["source_closure"])
-    if source_digest not in (DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
-                            FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST, MATCHED_CPU_SOURCE_DIGEST):
-        raise ProjectionError("direct CPU profile source closure differs")
+    if source_digest not in version.loop_source_digests:
+        raise ProjectionError("direct CPU profile source closure differs"
+                              + ("" if version is LEGACY_CAPTURE
+                                 else f" for capture version {version.name}"))
     request = _exact(body["request"], {"mode", "execution_digest", "prompt_manifest_digest",
         "producer_pid", "started_monotonic_ns"}, "direct original request identity")
     recipe, prompts = settings["resolved_recipe"], settings["prompt_manifest"]
@@ -484,7 +669,7 @@ def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
             or processes["server"].get("ppid") != request["producer_pid"]):
         raise ProjectionError("direct original process ownership differs")
     for value, phase_name in zip(phases, ("warmup", "measurement")):
-        phase = _validate_phase(value, phase_name, 128 * 1024**2)
+        phase = _validate_phase(value, phase_name, 128 * 1024**2, version)
         response = phase["response"]
         try:
             raw = bytes.fromhex(response["request_hex"])
@@ -513,7 +698,7 @@ def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
         "value": phases[1]["samples"]["sampled_period_total"], "metric_direction": "lower_better",
         "unit": "sampled user-cycle periods",
         "claim": "Recorded sampled-period total for this exact full request; estimated attribution, not exact CPU cost",
-        "source_class": "measurement", "extra": {"limitations": list(LIMITATIONS),
+        "source_class": "measurement", "extra": {"limitations": list(version.limitations),
             "mode": LOOP_MODE, "not_performance_comparison": True,
             "model_inventory_verification": "not performed by direct profiler"}}
     if record["run_id"] != run_id or claim != expected:
@@ -522,20 +707,29 @@ def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
         "projection": "loop_profile", "claim": claim,
         "capture_source_digest": source_digest,
         "execution_digest": request["execution_digest"],
-        "prompt_manifest_digest": request["prompt_manifest_digest"]},)
+        "prompt_manifest_digest": request["prompt_manifest_digest"],
+        **_sampled_cpu_projection(phases, version)},)
 
 
 def native_rows(native: Any, *, corpus_root: Path) -> tuple[dict, ...]:
     if isinstance(native, dict) and native.get("schema") == LOOP_PROFILE_SCHEMA:
         return _loop_rows(native, corpus_root=corpus_root)
-    profile, terminal, capture, profile_tuple, validation_tuple = _validate_bundle(
+    profile, terminal, capture, profile_tuple, validation_tuple, version = _validate_bundle(
         native, corpus_root=corpus_root)
     shared = {"native": native, "corpus_root": str(Path(corpus_root).absolute()),
               "profile_event_digest": _digest(profile),
               "terminal_result_digest": terminal["data"]["result_digest"],
-              "capture_source_digest": _digest(capture["source_closure"])}
+              "capture_source_digest": _digest(capture["source_closure"]),
+              **_sampled_cpu_projection(capture["phases"], version)}
     return ({**shared, "projection": "profile", "claim": profile_tuple},
             {**shared, "projection": "integrity", "claim": validation_tuple})
+
+
+_SAMPLED_CPU_ROW_KEYS = ("capture_version", "sampled_cpu_topology_digests")
+
+
+def _sampled_cpu_extra(row: dict) -> dict:
+    return {key: row[key] for key in _SAMPLED_CPU_ROW_KEYS if key in row}
 
 
 def _base_claim(native: Any, expected: str) -> tuple[dict, dict, dict]:
@@ -543,8 +737,9 @@ def _base_claim(native: Any, expected: str) -> tuple[dict, dict, dict]:
         raise ProjectionError(f"CPU profile {expected} row is malformed")
     rows = native_rows(native.get("native"), corpus_root=Path(str(native.get("corpus_root", ""))))
     row = rows[0 if expected == "profile" else 1]
-    for key in ("profile_event_digest", "terminal_result_digest", "capture_source_digest", "claim"):
-        if native.get(key) != row[key]:
+    for key in ("profile_event_digest", "terminal_result_digest", "capture_source_digest", "claim",
+                *_SAMPLED_CPU_ROW_KEYS):
+        if native.get(key) != row.get(key):
             raise ProjectionError(f"CPU profile {expected} row mutated {key}")
     return native["claim"], native["native"]["profile"]["payload"], row
 
@@ -560,7 +755,8 @@ def project_profile(native: Any) -> ClaimTuple:
             "not_production_validation": True, "not_profile_verified": True,
             "execution_digest": native["execution_digest"],
             "prompt_manifest_digest": native["prompt_manifest_digest"],
-            "capture_source_digest": native["capture_source_digest"]}
+            "capture_source_digest": native["capture_source_digest"],
+            **_sampled_cpu_extra(native)}
         return ClaimTuple(**values, source_kind="autokernel-unified-profile-measurement")
     claim, event, row = _base_claim(native, "profile")
     extra = {**claim["extra"], "profile_event_digest": row["profile_event_digest"],
@@ -569,7 +765,8 @@ def project_profile(native: Any) -> ClaimTuple:
              "loaded_identity": event["loaded_identity"],
              "capture_source_digest": row["capture_source_digest"],
              "applicability": "profile_observation_only",
-             "not_performance_comparison": True, "not_production_validation": True}
+             "not_performance_comparison": True, "not_production_validation": True,
+             **_sampled_cpu_extra(row)}
     values = dict(claim)
     values["extra"] = extra
     values.pop("attestation_verified")
@@ -587,7 +784,8 @@ def project_integrity(native: Any) -> ClaimTuple:
              "loaded_identity": event["loaded_identity"],
              "capture_source_digest": row["capture_source_digest"],
              "applicability": "profile_receipt_integrity_only",
-             "not_performance_comparison": True, "not_production_validation": True}
+             "not_performance_comparison": True, "not_production_validation": True,
+             **_sampled_cpu_extra(row)}
     values = dict(claim)
     values["extra"] = extra
     values.pop("attestation_verified")
@@ -605,6 +803,7 @@ def project(native: Any) -> ClaimTuple:
     return project_profile(native)
 
 
-__all__ = ["ADAPTER_ID", "CAPTURE_SCHEMA", "CARRIER_SCHEMA", "CPU_SOURCE_DIGEST",
-           "LIFECYCLE_KIND", "PROFILE_KIND", "joined_journal_pair", "native_rows",
+__all__ = ["ADAPTER_ID", "CAPTURE_SCHEMA", "CAPTURE_VERSIONS", "CARRIER_SCHEMA",
+           "CPU_SOURCE_DIGEST", "LEGACY_CAPTURE", "LIFECYCLE_KIND", "PROFILE_KIND",
+           "SAMPLED_CPU_CAPTURE", "capture_version", "joined_journal_pair", "native_rows",
            "project_integrity", "project_journal_pair", "project_profile"]
