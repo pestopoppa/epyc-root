@@ -60,7 +60,7 @@
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16g-1 row-5c A/B on 98c0ce12a; KVU-19b-rework-c2-cal; V11-FA-4/-6 into v11; fold-c1-p3; CPU-FA-VKQ-2 bench | RTG-19, RTG-36, INF-41 |
-| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-18.0b: re-run CPU items 1/2/5/7 with the fixed runner and read the f8-w1 GPU records; KPF-17.1-17.4 cases; decide KPF-19.2 | RTG-57, RTG-27, INF-65 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-13.1 rules v3 (drafter spread) re-judge, then KPF-13.1a; KPF-18.0b CPU items 1/2/5/7; KPF-17.4 SWA cases; decide KPF-19.2 | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-1 — record HF commit sha + per-file sha256 at download; pin them in the registry schema | — |
 
 ## Cross-domain

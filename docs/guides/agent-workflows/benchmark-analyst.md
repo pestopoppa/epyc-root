@@ -119,6 +119,12 @@ bullets below are the working detail.
   (`epyc-orchestrator/scripts/region-lock`) does `cd "$REPO_ROOT"` so its Python module resolves, so the child runs
   with the orchestrator repo as cwd. Give runner scripts, output dirs and model paths as absolute paths, or `cd` inside
   the child. (origin: 2026-10-04 backlog runners)
+- **Inside `region-lock run`, a bare `python3` is the orchestrator venv's Python 3.11, not system 3.13.** The child
+  PATH puts `epyc-orchestrator/.venv/bin` first, and research drivers need 3.12+ (nested-quote f-strings die at
+  collection with `SyntaxError: f-string: unmatched '['`). Call `/usr/bin/python3` for research and root tools and the
+  venv only for orchestrator tools; run pytest as `bash -c 'cd <worktree> && /usr/bin/python3 -m pytest --rootdir . -c
+  /dev/null ...'` so the orchestrator `tests/conftest.py` (needs fastapi) is not picked up. Put both in every launcher
+  brief. (origin: 2026-10-22, the kvu122 tests, `run_kpf13.sh` and the filler `common.sh`, all within one hour)
 - **Dry-run cleanup removes only the exact paths it created, never a glob.** See INC-20261004-glob-rm-deleted-receipt-evidence
   in `docs/reference/agent-config/INCIDENT_LOG.md` (a `rm -rf receipt-ab/paired-*` deleted a real, ingested run dir).
   Copy any ledger-cited run dir under root `artifacts/` before cleanup runs in its scratch tree.
@@ -154,3 +160,14 @@ bullets below are the working detail.
 - **A scheduled window needs an executor, not only a notifier.** The W2 window ended at 04:44Z but its queue launched only at 08:55Z, because the watcher was notify-only: it told a session and then depended on that session to notice and act. Anything that must start when a window opens is armed as a zero-token launcher (a backgrounded waiter on the claim or window file that runs the queued command itself, see `agents/shared/OPERATING_CONSTRAINTS.md` -> Zero-Token Liveness Watching), with its own record of start time, and the session is notified of the launch rather than asked to perform it. Check the launch timestamp against the window's open time at the first boundary. (origin: 2026-10-21, 4h11m of a granted GPU window unused)
 - **"All recommended" means the full list**, not the first few.
 - **No `pgrep`/`pkill` by name, read-only or not** (CLAUDE.md, Process Management); two subagents did it. Track PIDs you captured.
+
+## Identity checks across batch shapes (2026-10-22)
+
+- **On CPU, a different batch shape gives slightly different logits**: a 1-token ubatch vs n>=2, `np`, speculative
+  verify width, prompt-cache hit vs cold prefill. Near-ties flip, even under greedy.
+- A correctness or identity check compares against a **same-shape, same-cache-state control**, never a cold or
+  differently batched run. A cross-shape divergence is evidence only if the probabilities are identical up to the
+  divergent token (check with `n_probs` at and before it).
+- Instances: KPF-13 fork ≡ prompt-cache hit (`/mnt/raid0/llm/tmp/kpf13-repro/run/verdict.json`; the v1 "fork defect"
+  was a 1-token-ubatch reduction path) and SPEC-RNG.1.1 (np1 vs np4 and depth 0 vs 3 differed only by logit drift;
+  np4 serial == np1 8/8). Records: `kv-prefix-fork-and-paged-attention.md`, `speculative-decoding-mtp-refresh.md`.

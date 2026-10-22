@@ -322,4 +322,4 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
-- [ ] **HSF-LB1 — Correct the reload-cheaper-than-reprefill note with the measured end-to-end restore cost (pre-eval stall median 43.5 s at 20-29k cached tokens, one rep, confounded), and add the preceding tool name and finish_reason to dispatch.v1 so session gaps can be keyed by tool (intake-2398, intake-2411).**
+- [ ] **HSF-LB1 — Correct the reload-cheaper-than-reprefill note with the measured end-to-end restore cost (pre-eval stall median 43.5 s at 20-29k cached tokens, one rep, confounded), and add the preceding tool name and finish_reason to dispatch.v1 so session gaps can be keyed by tool (intake-2398, intake-2411#record).**

@@ -48,3 +48,23 @@ Every session: (1) keep zero-token watchers on its own end/FAILED flags; (2) on 
 - SPEC-RNG.1.1 (`experimental/spec-rng-argv-20261022` e3bf8dac8): argv/request switch landed, unit and kill-switch tests pass; np1==np4 and depth0==depth3 identity failed (7/8, 6/8 differ). Cause is CPU batch-shape logit drift, not the RNG (stateful control drifts identically). poskey matters only on the DFlash2 rejection path. Acceptance amended (np4 serial == np1 8/8; divergences low-margin via n_probs); SPEC-RNG.1.2 filed.
 - SPEC-GRAM.1(1): frontdoor schema-eager B1 7.07% of a 25 ms step (tail-driven, 4.5% full-vocab fallbacks) -> OPENS_DI110; DI-110 materialized as XGRAMMAR-A2. Sensitivity: <5% if step > 35.3 ms. Part (2) unrun.
 - Checklist sync: flips 1 (SPEC-GRAM.1(1) added ticked); new `- [ ]` 2 (SPEC-RNG.1.2, XGRAMMAR-A2).
+
+## Per-task wrap-up 2026-10-22 (afternoon, workspace-f8)
+
+| Item | Result | Recorded in |
+|---|---|---|
+| SPEC-RNG.1.1 retest (`f5cc4269f`/`5450617c5`, final test commit `261db6c7e`) | PASSES the amended rule: same-shape np4 serial == np1 8/8; all divergences (7/8 np1 vs concurrent np4, 6/8 depth 0 vs 3) drift at or before the first divergent token, 0 misaligned. Extra live-candidate check 1/13 exception (tail token p=0.043/0.023, top_p/min_p cut drift), downgraded to a report. SPEC-RNG.1.2 stays open. | `speculative-decoding-mtp-refresh.md` |
+| KVU-12.2 MTP-on bank cells | PASSED: candidate `dd3d9721c` 4/4 cells, acceptance 0.98-1.02, decode 0.98-1.01, tokens identical; unported control 4/4 fail (0.53-0.71 / 0.77-0.82). `/mnt/raid0/llm/tmp/f8-fillers-20261022/kvu122/VERDICT.json` | `kv-unified-stack-rollout.md` |
+| UFH14-LB10 `%llguidance` guard | Orchestrator main `1e707b8d` (`reject_unsafe_grammar`, 14 tests). API NOT reloaded (pending operator): reload task filed. Direct role-port clients bypass it. | `agentic-serving-harness-fixes.md` |
+| KPF-13 fork | Fork cleared (`kpf13-repro`): no-fork cache hit == A1, no-1-token-ubatch prefill == B1. v11 property: fork ≡ cache hit with the same remainder. KPF-13.1 control text corrected; v2 tokens clean, acceptance needs rules v3 (drafter run-to-run spread), filed. | `kv-prefix-fork-and-paged-attention.md` |
+| KPF-17.2 | Closed on prior queue results (jobs 20, 27, 29, 30). | same |
+| AK-RX-1 / AK-RX-1.1 | NULL: real-archive repair-chain replay (research `a13a267d2`), no arm beats the fixed policy. | `autokernel-research-loop.md` |
+| DS41-1017 floor | In the master registry, research `d077d6c55` (`serving_floors`, 2.862%). | `deepseek-v41-flash-evaluation.md` |
+| Pipefail early-exit lint | Landed root `6b2c351ad`; cleanup of ~150 live hits + hook wiring filed. | `non-inference-backlog.md` |
+| Locals + agent-beacon intake | Landed on main (`12206f57b`): intake-2386..2460 (renumbered +40, Bark took 2346..2385), 19 handoffs plus stub `dev-harness-trace-mining.md` (EVL-52). Operator: P4 reads the existing vault `/mnt/raid0/llm/cloud-llm-vault` (no new snapshot); claude-code-proxy declined; follow-up kernel intake approved, not run (CH-18.c filed). | `autokernel-champion-aggregate.md` |
+
+- Docs: `docs/guides/agent-workflows/benchmark-analyst.md` gained *Identity checks across batch shapes* (KPF-13 + SPEC-RNG.1.1 instances) and the region-lock `python3` = venv 3.11 trap. Placed there, not in `agents/shared/MEASUREMENT_POLICY.md`, because that file is inside the human-amendment-only measurement trust boundary.
+- Engine hazard: `filler_run2.sh` stale pollers take re-written grants and a sibling's bogus `refused:own-port` `.ended` deletes the live grant; fix filed as CTC-Q-G (`autokernel-concurrent-target-coordination.md`).
+- CH-19 parked: already recorded (CH-19.3 ✅ 2026-10-21 PARKED); no change.
+- Checklist sync: flips 7 (SPEC-RNG.1.1, KVU-12.2, UFH14-LB10, KPF-17.2, AK-RX-1, AK-RX-1.1, DS41 floor-in-registry) plus 1 new ticked line (LINT-PIPEFAIL-EARLY-EXIT). New `- [ ]`: 5 (UFH14-LB10 API reload, KPF-13.1 rules v3, CH-18.c follow-up kernel intake, LINT-PIPEFAIL-EARLY-EXIT cleanup, CTC-Q-G). Declines: none. Index: Next-action cells refreshed for INF-50, INF-65, RTG-58, UFH-14 (no rows added, deleted or re-pointed).
+- Gate fix: `index_state.py --check` and `cite-check` failed on three overturned entry-level citations filed by today's Locals+beacon Stage 4 (intake-2435 in KPF-LB2, intake-2411 in HSF-LB1, intake-2434 in UTM-LB2). They are provenance tags on filed tasks, so they were narrowed to `#record`. Both validators now exit 0.
