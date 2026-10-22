@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-22T21:57:27Z",
+  "last_compile": "2026-10-22T22:06:39Z",
   "mode": "touch",
-  "scan_time": "2026-10-22T21:57:27Z",
+  "scan_time": "2026-10-22T22:06:39Z",
   "schema_version": 1,
-  "source_set_hash": "2e603ee5b6b116375117db2fcbac20a079bf155fbefb45a4c1b2dc57397d5eb8",
+  "source_set_hash": "d493b79b43e39a1a662b82c0ef139f264686dad06108aee1f66f8fbb1520b6f2",
   "sources": [
     {
       "content_hash": "9e8a567daaa33164cf276a6ffe9235a21c338954bb455ab14e204478698a8289",
@@ -111,10 +111,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c9854c72dac969a0d08b13f9d4f6e23bedf3c4b313e99094962d5b69db503409",
-      "modified": "2026-10-22T21:47:22Z",
+      "content_hash": "84603c110cb9aa16d3a3e60ba5c15be7611f44a49f41eb5e34502e8e0b02fe27",
+      "modified": "2026-10-22T22:06:20Z",
       "path": "handoffs/active/autokernel-concurrent-target-coordination.md",
-      "size": 35276,
+      "size": 35868,
       "title": "AutoKernel concurrent target coordination \u2014 implementation handoff for review",
       "type": "handoff-active"
     },
@@ -159,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "74b0331117ba586fd5f394b87d673bb83e7153e7fec9b04eeba922bbdfc9a515",
-      "modified": "2026-10-22T21:47:22Z",
+      "content_hash": "bf97e7b8ae2d3970670bf5398d81938b0253ed00e04bfad6d3b4044356ee4b71",
+      "modified": "2026-10-22T22:06:20Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 441333,
+      "size": 442002,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -647,10 +647,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "25d4d872423b4e06607839fed5b5b6126e96cb5b63cc21e7368298d64173b258",
-      "modified": "2026-10-22T21:47:22Z",
+      "content_hash": "164f12c9a8c2b97e92e2edb501c0b20f26f7ebafd7cc8c3c8a2faece3b5fc4dd",
+      "modified": "2026-10-22T22:06:20Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 100909,
+      "size": 102355,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -727,10 +727,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "28af7661b7838dd8324ebc6f06d5edef3168d911651f3f853e2fef672027b260",
-      "modified": "2026-10-22T21:47:22Z",
+      "content_hash": "8a9644d8f54f46d85101770a2c54bac08eff5d12a5ece08baaad3781663619a9",
+      "modified": "2026-10-22T22:06:20Z",
       "path": "handoffs/active/iqk-iquant-enablement.md",
-      "size": 46748,
+      "size": 50529,
       "title": "iqk IQ-quant Enablement \u2014 shipped in v8, residual research active",
       "type": "handoff-active"
     },
@@ -1431,10 +1431,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f2ffb8b05551b5cb906e16d38ea9e4a169b5db68c46f6f74c021fac37c8b01cd",
-      "modified": "2026-10-22T21:47:22Z",
+      "content_hash": "8ba1c4a76112ce7d8d322d3c9c50ad1dc1b89dcf6cedc22dd196d3c68b543190",
+      "modified": "2026-10-22T22:06:20Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 516169,
+      "size": 517396,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -10431,18 +10431,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "b0135028f722ae968855a76c07e9888ca4b187c14646bba4cd8c6c00851bc876",
-      "modified": "2026-10-22T21:47:22Z",
+      "content_hash": "1aa403bb6fb6e1dcb478b32a582b7502a3d43a51758495f5281dfbd088ebf0b8",
+      "modified": "2026-10-22T22:06:20Z",
       "path": "progress/2026-10/2026-10-22-workspace-58.md",
-      "size": 40399,
+      "size": 47575,
       "title": "2026-10-22 workspace-58 (compute-calendar owner), 08:00Z-08:40Z",
       "type": "progress"
     },
     {
-      "content_hash": "a0596d12948c36f924b2f547c52c61152abe718fedb30b422922c7de95420768",
-      "modified": "2026-10-22T21:49:24Z",
+      "content_hash": "36824de20b7a4e719d8f8df6ddb4b071c2a62115fd6d5ca6e9ed6c10ba93a6ff",
+      "modified": "2026-10-22T21:58:14Z",
       "path": "progress/2026-10/2026-10-22-workspace-f8.md",
-      "size": 53246,
+      "size": 54788,
       "title": "2026-10-22 workspace-f8",
       "type": "progress"
     },
