@@ -1,9 +1,9 @@
 {
   "session_id": "intake-ist-slq-20261022",
   "started_at": "2026-10-22T12:14:39Z",
-  "last_checkpoint": "2026-10-22T12:43:24Z",
+  "last_checkpoint": "2026-10-22T12:58:30Z",
   "stage": 2,
-  "phase": "stage2-wave1-complete",
+  "phase": "stage2-wave2-complete",
   "lane": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/root",
   "branch": "intake/ist-slq-20261022",
   "topic": "arXiv 2605.02404 SLQ (Statistically-Lossless Quantization) + github.com/IST-DASLab org triage + HF kaitchup/qwen38-27b-slq; on behalf of workspace-58",
@@ -35,10 +35,17 @@
     "intake-2480",
     "intake-2481",
     "intake-2482",
-    "intake-2483"
+    "intake-2483",
+    "intake-2484",
+    "intake-2485",
+    "intake-2486",
+    "intake-2487",
+    "intake-2488",
+    "intake-2489",
+    "intake-2490"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2484,
+  "next_intake_id": 2491,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -395,6 +402,156 @@
       "proposed_disposition": "knowledge-only",
       "reason": "All 17 quantization/sparsity/kernel repos with a decision have own entries; the rest are training/QAT, GPU-only SM80/89/Blackwell kernels or classic PTQ already known. Re-open spops/sparseprop only if a sparse-weight GGUF type is proposed.",
       "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L1",
+      "source": "intake-2484 dive ledger F-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Add an exact one-sided binomial verdict (scipy binomtest alternative=greater on b of b+c, valid at any n) beside the two-sided P-PAIRED McNemar for DEGRADATION gates, and always print n_discordant and the direction (b vs c); keep the two-sided verdict for preference gates.",
+      "proposed_owner": "handoffs/active/tq3-quantization-evaluation.md (STEP 3 decision-flipper L233 and G4 L365) for the gate wording; the P-PAIRED protocol itself (measurement/protocols/quality-eval.md L109-L150, STAGED) is measurement-trust-boundary human-amendment-only",
+      "proposed_disposition": "propose-task",
+      "reason": "Operator decision named: whether to amend the STAGED P-PAIRED block (human-only). Everything else - writing the gate wording and the helper in the owner handoff - does not depend on it. G4 currently gates on a fixed CondFlip>5% / PPL<2% threshold that intake-2484 shows is not robust.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L2",
+      "source": "intake-2484 dive ledger F-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Before any task-eval gate runs (IQ4_KT STEP 3, G4 IFEval N>=250), state the power: required N = p_flip*(2.486/delta)^2 at one-sided alpha 0.05, 80% power, with p_flip taken from a measured FP16-vs-FP16 flip floor. From the paper relation: N=250 at p_flip 10% detects only a ~5-point drop (80% power) and has ~26% power for 2 points - G4 N>=250 is a coarse screen, not a 1-2 point gate.",
+      "proposed_owner": "handoffs/active/tq3-quantization-evaluation.md (G4 L365-L380; STEP 3 L233)",
+      "proposed_disposition": "propose-task",
+      "reason": "Arithmetic only (our derivation from Eq 11, labelled DERIVED); prevents an underpowered null being read as \"no drift\" (BOUNDED-NULL-1 in MEASUREMENT_POLICY.md already requires power on nulls).",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L3",
+      "source": "intake-2484 dive ledger F-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Record in wiki/quantization.md (next compile) that the intake-1519 flip-rate rule is contradicted by intake-2484: same flip rate (8.71% vs 9.03%) with opposite accuracy verdicts, and that lossless serving changes flip 1.3-2.8% on vLLM/8B. Cite by claim (intake-2484#05, #04), not bare.",
+      "proposed_owner": "wiki/quantization.md (compile sweep at /wrap-up)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Sharpens the existing \"flip counts need a floor\" bullet (L180-L181) with an independent measured floor; no task depends on it.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L4",
+      "source": "intake-2484 dive ledger F-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Flip-prone item trimming (Recommendation 1): when a paired gate suite is large (e.g. MMLU-Pro-class), build the trimmed set from 10 noisy reruns of the BASE model and reuse banked outputs; only worth doing at the moment a gate with a large suite is actually scheduled.",
+      "proposed_owner": "handoffs/active/tq3-quantization-evaluation.md",
+      "proposed_disposition": "trigger",
+      "reason": "Trigger = a task-eval gate whose full suite exceeds a few thousand items is approved for inference (tq3 STEP 3 needs operator inference approval per wiki/quantization.md Open questions). Validated by the authors on one dataset and two degraded variants only.",
+      "compute": "if triggered: 10 sampled reruns of the base model on the suite (class timing-insensitive/correctness; GPU or CPU server by the owner) - not run here.",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L5",
+      "source": "intake-2488 dive ledger F-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Bounded weight-domain probe: take a handful of representative tensors from a Q38FN (or DS41 non-expert) source GGUF already on disk, build the residual-stream-rotation-folded variant (an orthogonal residual-stream rotation, e.g. randomized Hadamard, folded as W Q^T into tensors that read the residual and Q W into tensors that write it) in float, quantize both original and folded with llama-quantize to IQ2_XS / IQ3_S / Q4_K, and compare per-tensor weight NMSE. Question: does incoherence processing lower NMSE of OUR formats enough to justify a folded-conversion path (no runtime kernel change needed for the foldable rotations)? NMSE is weight-domain fidelity, not ppl; a positive result only licenses a ppl/KLD follow-up on the lane.",
+      "proposed_owner": "handoffs/active/tq3-quantization-evaluation.md (hosts intake-873 QTIP/incoherence lineage) - or iqk-iquant-enablement.md if the owner prefers the IQ lane",
+      "proposed_disposition": "propose-task",
+      "reason": "Judged as a portable mechanism, not dismissed for being W4A4/GPU. Caveats to resolve first (structural, no compute): norm-gain folding, GDN/hybrid layers and MoE router must admit the fold; DS41 native-MXFP4 experts are excluded (requantizing destroys the bit-exact grid). Evidence that it helps weight-only at low bits is from QuIP#/QTIP (different quantizers), not from this survey.",
+      "compute": "correctness class (not timing): CPU llama-quantize on <=6 extracted tensors, <=32 GB RAM, ~1-2 h; run under region-lock --cpu-list 0-95 per the standing brief; one process; no GPU.",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L6",
+      "source": "intake-2486 dive ledger F-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "No action on the paper's rankings. Optionally note in wiki/quantization.md that an independent llama.cpp F16-vs-Q8_0/Q6_K sweep on Llama-3.1-8B-Instruct finds Q8_0 and Q6_K inside noise of F16 (dAvg -0.06/-0.24, dPPL +0.01/+0.03).",
+      "proposed_owner": "decline (rankings); knowledge-only for the Q8_0 datum",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Verdict is \"superseded\" by intake-1510 cohort evidence, not \"not_applicable\"; flagged for operator review per the research-intake never-dismiss rule because the paper is in-domain (llama.cpp GGUF) even though it adds no decision input.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L7",
+      "source": "intake-2488 dive ledger F-L7 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Correct intake-2474 contradicting_evidence: the \"later survey ranks WUSH best +0.70/+0.26\" line is a verbatim transcription of the WUSH paper's own Table 2, not independent corroboration.",
+      "proposed_owner": "research/intake_index.yaml intake-2474 (owning session applies)",
+      "proposed_disposition": "propose-task",
+      "reason": "Index edit - a subagent prepares, the owning session applies (CLAUDE.md ruling (b)). Exact diff: replace the sentence \"No independent replication found; a later survey (arXiv 2608.25188, not read) reportedly ranks WUSH best ... but a secondary summary.\" with \"No independent replication found. The later survey arXiv 2608.25188v1 (intake-2488) reprints WUSH's own Table 2 ('transcribed from Chen et al. (2026a)'s own table'; 'The sign reversal itself rests on Chen et al. (2026a)'s table alone') - restatement, not corroboration. The one independent check it cites is arXiv:2507.17417 (not read).\"",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "F-L8",
+      "source": "intake-2484 dive ledger F-L8 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-F/patch.yaml)",
+      "action": "Add a pointer on intake-2461 (SLQ): Kubler et al. state that failing to reject is not equivalence and that fixed-threshold rules are not robust; SLQ's \"statistically lossless\" is a mean-recovery threshold with no per-item test (consistent with intake-2483's note).",
+      "proposed_owner": "research/intake_index.yaml intake-2461 contradicting_evidence / reader_should_conclude (owning session applies)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Cross-entry note only; no task. Cite intake-2484#07 not bare.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L1",
+      "source": "intake-2485 dive ledger G-L1 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "Amend dive-C's C-L1 (zero-training prefill/decode weight-set handoff probe on CPU, Q38FN: UD-IQ4_XS prefill -> GSQ-RCO IQ3_XXS decode) with two things from PMPD: (1) add the reverse-order control (prefill on the LOW-bit copy, decode on the HIGH-bit copy; PMPD Table 4 shows 2p/3d recovers only 22.2 vs 28.1 for 3p/2d, so the ordering is part of the hypothesis) as arm D; (2) add a nested-vs-independent caveat to the arm definitions: PMPD only tested nested quantizations, so a P->D FAIL at independent GGUFs does not refute the PMPD mechanism, and a PASS is the first evidence for independent pairs. Keep C-L1's Gate 0 (KLD_A - KLD_C < 0.005 nats -> record 'uninformative'), which PMPD supports: its gains occur where the uniform low-bit model collapses.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (C-L1 row text, as drafted in dive-C; applied by the owning session)",
+      "proposed_disposition": "propose-task",
+      "reason": "No new blocker: this changes the arm list of a task already proposed; the harness (two llama_contexts, KV/state copy) is the same. Extra arm cost ~ +1/3 of the C-L1 wall time.",
+      "compute": "null beyond C-L1; if C-L1 is approved: one more arm, class correctness, same RAM (both GGUFs mmap'd), ~+40-80 min on the 96-core CPU (extrapolated from C-L1's unmeasured 2-4 h estimate, not measured)",
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L2",
+      "source": "intake-2485 dive ledger G-L2 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "Progressive mid-decode switching (high-bit for the first N generated tokens, then low-bit) in serving.",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "Needs a mid-sequence weight-set swap per request (llama.cpp has no such path; it would be a second KV/state handoff per switch), the paper itself rejects frequent switching for weight-load overhead, and the speed claims are GPU-kernel/simulated. Revisit only if C-L1 PASSES and shows a decode-side (not prefill-side) effect; that event is C-L1's result.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L3",
+      "source": "intake-2487 dive ledger G-L3 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "Feed three MxMoE-derived design notes into dive-D's D-L1 (Q38FN bytes-budgeted per-tensor allocator): (a) allocation unit is (layer x {gate,up,down}_exps) because llama.cpp assigns one type per stacked expert tensor; per-expert allocation (MxMoE, EvoPress-style expert pruning) is not expressible; (b) a second sensitivity table is available if the imatrix-weighted NMSE table ranks poorly against the confirmatory KLD runs: decoder-layer-output L2 error with ONE tensor class quantized at a time under real routing (MxMoE quant.py layer_out_norm), which is routing-frequency-aware by construction whereas imatrix NMSE sees only calibration-routed tokens; (c) MxMoE's additive-loss ILP is the same model class as EvoPress Table 3's DP baseline that lost to uniform at 3 bits, so the D-L1 confirmatory KLD runs must stay.",
+      "proposed_owner": "handoffs/active/iqk-iquant-enablement.md (D-L1 / NEW-12 design text; owner applies)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "No separate task: these are inputs to D-L1, whose compute plan already includes confirmatory runs. Cost of (b) for Q38FN was not estimated: it scales with layers x experts x projections x candidate types forward passes, which is large for a 256-512-expert model and is why it is a fallback, not the default.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L4",
+      "source": "intake-2487 dive ledger G-L4 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "Run or port MxMoE code (Gurobi ILP, CUDA GroupGEMM generator, Hadamard+GPTQ).",
+      "proposed_owner": "decline",
+      "proposed_disposition": "decline",
+      "reason": "CUDA/RTX-4090 only, commercial solver, integer formats with rotation that GGUF cannot carry, no licence file in the clone, no GGUF path; nothing on the Q38FN path needs it.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L5",
+      "source": "intake-2489 dive ledger G-L5 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "Do not seed any GSQ-refine-our-own-IQ-GGUF hypothesis from this branch; the negative result (MSE -2.6%, KL +1.9..+4.2%) is carried by the entry and by B-L6. Optional knowledge-only note: src/gguf_iq.py is a pure-Python IQ2/IQ3 block decomposer/repacker that could serve as an independent reference for IQ2/IQ3 bit-layout questions if an iqk repack bug ever needs a second decoder.",
+      "proposed_owner": "knowledge-only (intake index entry; B-L5/B-L6 already own the trigger and the wiki note)",
+      "proposed_disposition": "knowledge-only",
+      "reason": "Duplicate-avoidance: dive-B ledger B-L5 (trigger text) and B-L6 (wiki note) already cover the action; this entry adds only the code-scope facts.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L6",
+      "source": "intake-2490 dive ledger G-L6 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "Annotate intake-1256 (same artifact): its recorded evidence (dummy_imatrix.dat, 571,123,360 B, sha d2457287...) describes the superseded 2026-08-21 upload; the repo was rebuilt 2026-08-25 (commit 59a80e6c) to 561,241,824 B, sha 0c1a01ef..., imatrix draft_imatrix_full.dat. Replace 'fabricated imatrix' by 'imatrix gate is a file-presence check; the artifact's current imatrix is claimed real and unverified'.",
+      "proposed_owner": "research/intake_index.yaml entry intake-1256 dive_corrections append (owner applies; index edits are not a subagent write)",
+      "proposed_disposition": "propose-task",
+      "reason": "A recorded factual claim about an external artifact is now stale; fixing it is the owner's one-line append, no blocker.",
+      "compute": null,
+      "terminal_mapping": null
+    },
+    {
+      "ledger_id": "G-L7",
+      "source": "intake-2490 dive ledger G-L7 (/mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/patch.yaml)",
+      "action": "TRIGGER (no checkbox): when EXL3-X0b/X0c moves the MI210 27B target to a sub-Q8 file (the operator's EXL3-LB1b-gated reopen), add ONE drafter-quant arm to the X0c comparison - the first-party Qwen3.8-27B-DFlash2-Q4_K_M.gguf (1.1 GB, Inco AI) beside the Q8_0 drafter, same target, recording acceptance (draft_n_accepted/draft_n) and tok/s at np1/np4. Do not use the HermiHg Q2_K_S-MIX file.",
+      "proposed_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (EXL3-X0c, beside dive-A A-L5's acceptance column)",
+      "proposed_disposition": "trigger",
+      "reason": "Named event: the target quant on :8083 changes. Until then the Q8_0 drafter is ~6.6% of weight bytes and the card's own table shows a smaller drafter is throughput-neutral, so there is no decision to inform. At an IQ3-class target (11.35 GB streamed, intake-2481) the Q8_0 drafter would be ~15% of bytes and the arm becomes worth ~7% at best (byte arithmetic, before MMVQ-efficiency effects).",
+      "compute": "when triggered: MI210 timing class, inside the already-scheduled X0c window, +3 launches per arm (ABA), Q4_K_M drafter 1.1 GB VRAM; no extra download beyond the 1.1 GB first-party file (operator disk call per the existing download rules)",
       "terminal_mapping": null
     }
   ],
@@ -61888,6 +62045,78 @@
       "recommend": "decline",
       "reason": "Activation-sparsity method on Blackwell; no bearing on CPU/MI210 lanes; flagged for operator veto per the never-dismiss rule.",
       "group": "E"
+    },
+    {
+      "id_or_url": "https://github.com/amazon-science/LLM-Accuracy-Stats",
+      "what_it_would_settle": "Whether the lm-eval-based implementation (pooled / Fisher / max-drop, power curves) can be reused as-is on banked per-item outputs, and how it handles non-binary scores (Appendix D permutation test).",
+      "bears_on": "intake-2484",
+      "recommend": "ingest-and-dive",
+      "reason": "Concrete, small code; directly informs F-L1/F-L2 and the owner of scripts/autopilot/paired_stats.py. Clone-and-read only; no compute.",
+      "group": "F"
+    },
+    {
+      "id_or_url": "arXiv:2507.17417 (Liu, Zhao, Hu 2025b) \"A comprehensive evaluation on quantization techniques for large language models\"",
+      "what_it_would_settle": "The only independent single-protocol check the survey cites that rotation strategies effective for INT4 give limited gains on MXFP4/NVFP4 - an independent check on the WUSH-class transform claims.",
+      "bears_on": "intake-2488",
+      "recommend": "ingest-and-dive",
+      "reason": "Low priority (W4A4, not our serving path) but it is the only non-self-reported evidence on the transform-vs-format question; flagged for review rather than declined per the intake rule.",
+      "group": "F"
+    },
+    {
+      "id_or_url": "Tseng et al. 2024a QuIP# (arXiv 2402.04396) Table 2 ablation without E8 codebook + fine-tuning",
+      "what_it_would_settle": "How much of the 2-bit weight-only gain is the incoherence rotation alone (survey says 12.3 PPL without codebook/fine-tuning, \"isolates nothing\") - the number F-L5 effectively tests on our formats.",
+      "bears_on": "intake-2488",
+      "recommend": "decline",
+      "reason": "Already represented through intake-873 (QTIP) lineage; F-L5 measures the question on our formats directly. Re-open if F-L5 is approved and needs the original ablation.",
+      "group": "F"
+    },
+    {
+      "id_or_url": "Dutta et al. 2024 \"Accuracy is Not All You Need\" (intake-1519) re-read against intake-2484",
+      "what_it_would_settle": "Whether intake-1519 key claims about flip rate as a degradation detector need a contradicting_evidence line citing intake-2484#05.",
+      "bears_on": "intake-2484",
+      "recommend": "ingest-and-dive",
+      "reason": "Already in the index (intake-1519) - no new ingest, just a cross-entry edit for the owning session.",
+      "group": "F"
+    },
+    {
+      "id_or_url": "github.com/SamsungLabs/PMPD (pushed 2025-07-15)",
+      "what_it_would_settle": "Whether the code supports independently quantized prefill/decode weight sets and how the KV hand-off is implemented (nested Any-Precision vs two model objects).",
+      "bears_on": "intake-2485",
+      "recommend": "decline",
+      "reason": "Only relevant after C-L1 reports; the probe is a llama.cpp harness, not a PyTorch port.",
+      "group": "G"
+    },
+    {
+      "id_or_url": "Any-Precision LLM (Park et al., 2024; cited in PMPD S2.1/S5)",
+      "what_it_would_settle": "Why nested bit-plane quantizations share a KV space and whether that transfers to independently quantized GGUFs.",
+      "bears_on": "intake-2485",
+      "recommend": "decline",
+      "reason": "Background to C-L1's nested-vs-independent caveat; not on a decision path.",
+      "group": "G"
+    },
+    {
+      "id_or_url": "Tandem Transformers for Inference Efficient LLMs (Aishwarya et al., ICML 2024; cited by PMPD S3.1 as the motivation for large-prefill/small-decode)",
+      "what_it_would_settle": "Independent precedent for allocating capacity to prefill and less to decode.",
+      "bears_on": "intake-2485",
+      "recommend": "decline",
+      "reason": "Architectural, requires training; outside the training-free probe.",
+      "group": "G"
+    },
+    {
+      "id_or_url": "llama.cpp PR 28715 (DFlash2 + image draft speed fix) and PR 27342 (DFlash2 support)",
+      "what_it_would_settle": "Whether multimodal use changes DFlash2 serving behavior; irrelevant to our text-only 27B champion.",
+      "bears_on": "intake-2490",
+      "recommend": "decline",
+      "reason": "Text-only serving; surfaced from HF discussions 2/4 only.",
+      "group": "G"
+    },
+    {
+      "id_or_url": "bleysg/DeepSeek-V4-Flash-DSpark-drafter-GGUF (Q2_K routed experts, Q8_0 attention; surfaced by WebSearch)",
+      "what_it_would_settle": "Second precedent for drafter quantization insensitivity on a DS41-family drafter (already a declined surfaced source from intake-1256's Stage-2b).",
+      "bears_on": "intake-2490",
+      "recommend": "decline",
+      "reason": "Already recorded as declined in intake-1256; re-raise only if the DF2 drafter-quant arm (G-L7) fires.",
+      "group": "G"
     }
   ],
   "stage2_waves": {
@@ -61924,6 +62153,33 @@
         ]
       },
       "patch_dir": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/"
+    },
+    "wave2": {
+      "groups": {
+        "F": [
+          "intake-2484",
+          "intake-2486",
+          "intake-2488"
+        ],
+        "G": [
+          "intake-2485",
+          "intake-2487",
+          "intake-2489",
+          "intake-2490"
+        ]
+      },
+      "second_reader_wave1": "/mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml"
     }
+  },
+  "stage2b_entries": {
+    "wave2": [
+      "intake-2484",
+      "intake-2485",
+      "intake-2486",
+      "intake-2487",
+      "intake-2488",
+      "intake-2489",
+      "intake-2490"
+    ]
   }
 }

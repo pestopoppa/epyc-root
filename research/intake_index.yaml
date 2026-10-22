@@ -109020,6 +109020,8 @@
 - id: intake-1256
   arxiv_id: null
   url: https://huggingface.co/analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF
+  reencounter_notes:
+  - '2026-10-22 (intake-2490 Stage-2b dive, ledger G-L6): the HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF evidence cited in this entry (dummy_imatrix.dat, 571,123,360 B) describes the superseded 2026-08-21 upload; the repo was rebuilt 2026-08-25 (commit 59a80e6c) to 561,241,824 B with imatrix draft_imatrix_full.dat (content unverified). Read "fabricated imatrix" as: the imatrix gate is a file-presence check; the current artifact''s imatrix is claimed real and unverified. See intake-2490.'
   source_type: repo
   title: 'Qwen3.8-27B-DFlash2-Q2_K (2-Bit Zero-Loss Speculative Drafter)'
   authors:
@@ -354122,7 +354124,9 @@
     read in full from the extracted text v2.txt (abstract, Sec 1-5, App A-G including Tables 1-25, App E, App F); arXiv abs
     page checked 2026-10-22: only v1 and v2 exist, v2 is current. Figures (images) not inspected; Algorithms 1-2 (App A) skimmed
     not audited; App B derivation read. Adversarial pass: 2 WebSearch queries, no independent replication or critique of SLQ/EAR
-    found (leads only); the only third-party text naming SLQ is arXiv 2608.15046 (intake-2483), which does not audit it.'
+    found (leads only); the only third-party text naming SLQ is arXiv 2608.15046 (intake-2483), which does not audit it. |
+    DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 18, partial 4, no 0.'
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -354419,7 +354423,9 @@
     READMEs, three config.json (full ''dynamic'' maps parsed), three model.safetensors.index.json, api.json (siblings with
     sizes, safetensors dtype counts), collection.json, base-model config/index; Humming repo cloned at 5b500b407a716e9dfcede04a5eba97a6eece0508
     (README, grep of whole tree for ROCm/HIP/CPU). Not read: precision.svg, weights (none downloaded), vLLM-side integration
-    code, the AutoRound hum-high card. Collection page ''numParameters'' (7.5B/8.0B/9.2B) counts packed int32 words, not parameters.'
+    code, the AutoRound hum-high card. Collection page ''numParameters'' (7.5B/8.0B/9.2B) counts packed int32 words, not parameters.
+    | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 11, partial 4, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -354650,7 +354656,8 @@
     evolution-strategies, TopK, QRGD, KDVR, MicroAdam, smart-quantizer, gcomp_sim_strip, Yolov8-Pose-Detection-on-Browser,
     marlin_artifact): out of domain. WebSearch: none. Read: repos.json (names, descriptions, archived/fork flags), saved triage
     READMEs head only for spops, sparseprop, unified-sc-laws, CloverLM, Quartet-II, QuEST, CAGE, HALO, llmq, qutlass, Sparse-Marlin,
-    gemm-int8, QUIK.'
+    gemm-int8, QUIK. | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 0, partial 2, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -354731,7 +354738,9 @@
   notes: 'Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-SLQ at eb9f1f294c99940029465cc970862ba36951d0cc. | DIVE 2026-10-22:
     Stage-2 read scope: README.md in full; src/metrics/evaluation.py in full; eval/run_ear.py in full; slq_search_dl.py structure
     + solver lines (L1-L120, function index); slq_build_checkpoint.py quant-format lines; requirements.txt; repo-wide greps.
-    Not read: src/quant/* (GPTQ/humming_pack), slq_build_database.py internals, slq_search_tl.py, eval/run_lmeval.py.'
+    Not read: src/quant/* (GPTQ/humming_pack), slq_build_database.py internals, slq_search_tl.py, eval/run_lmeval.py. | DIVE
+    2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 5, partial 1, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -354872,7 +354881,8 @@
     PNG viewed; GitHub API (commits list, issues all, issue bodies/comments 4/5/9/11/12, branches, pulls, releases) retrieved
     2026-10-22; side branch gsvq-iquant-qwen3-sweep-results cloned (c93f2e8) and docs/gsvq_iquants.md read in full, its code
     (src/gguf_iq.py, scripts/) listed but not read; paper (intake-2207) not read here. RCO repo not dived here (grep only:
-    no GGUF code).'
+    no GGUF code). | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 1, partial 6, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -355033,7 +355043,9 @@
     (scan_available_bitwidths, load_layers, selection, main head), quant/gguf/run_quant.sh head. NOT read: quant/gptq/pack_gptq_into_gguf.py
     (9027-line convert script copy), gptq.py, eval/lmeval.py, config_converter.py, build_ep_database.sh body. Nothing executed.
     Observation (unverified against llama-quantize source): toolkit scale_maxq is 2**5-1 for Q3_K and 2**6-1 for Q6_K while
-    ggml-quants.c:1250/1901 normalise to -32/max and -128/max, i.e. the GPTQ path uses narrower scale codes.'
+    ggml-quants.c:1250/1901 normalise to -32/max and -128/max, i.e. the GPTQ path uses narrower scale codes. | DIVE 2026-10-22:
+    second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 11, partial 2, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -355265,7 +355277,9 @@
     + App. A-D text), repo README, evals/README.md, evals/models.json (27B block), evals/drivers/cross_grid.py header, evals/scores/qwen3.8-27b/{mmlu_pro,mmmu}.json
     (per-item, analysed with python3 -I), summary.json for three arms, notebooks/data CSV. NOT read: qad/ training code, kernels/lloyd43,
     Gemma/Qwen3 core-run results, App. C.2 decode-kernel details, Figures (images). arXiv id resolved: abs page title ''[2609.26333]
-    Disaggregated Quantization: Specializing LLM Prefill and Decode'', submitted 22 Sep 2026, v1 only.'
+    Disaggregated Quantization: Specializing LLM Prefill and Decode'', submitted 22 Sep 2026, v1 only. | DIVE 2026-10-22:
+    second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 14, partial 2, no 0.'
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -355511,10 +355525,13 @@
     and diffs of ggml.h, ggml.c, mmq.cu, quantize.cu, llama-context.cpp, llama-graph.cpp, llama-model.h, llama.h, llama.cpp;
     grep of llama-odp.cpp for backend gating; `git apply --check` of the code patch (docs excluded) against the frozen v10
     tree read-only (no write; check mode). NOT read: full llama-odp.cpp body, pack_prefill.py, tests, common/arg.cpp changes
-    beyond grep. The clone is depth 50 so the merge-base distance on the fork side is unknown.'
+    beyond grep. The clone is depth 50 so the merge-base distance on the fork side is unknown. | DIVE 2026-10-22: second reader
+    2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 5, partial 1, no 2. Mis-indexed anchors re-pointed to the claim they support (second-reader finding); the claims they
+    were filed under are unanchored.'
   read_depth: PARTIAL
   claim_anchors:
-  - claim_index: 0
+  - claim_index: 2
     kind: line-range
     locator: git show --shortstat 967b479 (not a file); docs/ODP.md:L429-L437 @ a0557fc lists what is NOT implemented
     quote: Any model other than Qwen3.8-27B, any backend other than CUDA, any arch other than `qwen35`.
@@ -355564,7 +355581,7 @@
     quote_sha256: 036ee5cd1352d826c8d8de9121bef22560cec04e0af9938720c029350d441b6a
     source_revision: commit a0557fcf59e50a3bcd241e1a7de7b151d315720b
     verified_by: research-intake/stage2
-  - claim_index: 4
+  - claim_index: 1
     kind: line-range
     locator: src/llama-context.cpp:L1376 @ a0557fc (graph_params/ODP eval callback only when ubatch.n_tokens>1)
     quote: ggml_backend_sched_set_eval_callback(sched.get(), llama_odp_eval_callback,
@@ -355665,7 +355682,10 @@
     entry. | DIVE 2026-10-22: Dive 2026-10-22, repo a66a697 and arXiv:2410.14649v2 HTML: read evo_quant_search.py args and
     selection/fitness plumbing, scripts/run_gptq.sh, scripts/run_quant_search.sh, grep for gguf; paper §1-4 text, Table 3,
     Table 8, App. C.2, D.2. Not read: App. G runtime tables in detail, Tables 9-18 (depth pruning / sparsity), EvoPress theory
-    appendix. v2 is the latest version (abs page lists v1,v2).'
+    appendix. v2 is the latest version (abs page lists v1,v2). | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find
+    + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 4, partial
+    2, no 1. Mis-indexed anchors re-pointed to the claim they support (second-reader finding); the claims they were filed
+    under are unanchored.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -355711,7 +355731,7 @@
     quote_sha256: a094880991de3ee81669b0ea3e4f1f23e04201c6440aa4f2c1ac8b67fa4edce1
     source_revision: arXiv:2410.14649v2 retrieved 2026-10-22
     verified_by: research-intake/stage2
-  - claim_index: 4
+  - claim_index: 1
     kind: page-and-quote
     locator: App. D.2
     quote: practically only 2, 3, and 4 bit are used
@@ -355825,7 +355845,9 @@
     in full; rco_search_quant.py args and post-processing; src/search/quant.py (parse_bitwidth_map, InterpolatedModel.setup,
     round_with_budget_dp head); src/store.py layout; paper abstract, §1-4, §6, App. B.1, D (Table 3/10 head), E headings,
     F hardware/F.7/F.9/F.10/F.11, G.2/G.3. Not read: proofs A.1-A.8, MCKP App. H, expert-pruning tables 5-9, run_quantize.py
-    and src/quant/*. v3 is latest (abs page lists v1-v3). Nothing executed.'
+    and src/quant/*. v3 is latest (abs page lists v1-v3). Nothing executed. | DIVE 2026-10-22: second reader 2026-10-22 (mechanical
+    re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 10,
+    partial 3, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -356079,7 +356101,9 @@
     HTML on disk. Combined repo+paper entry. | DIVE 2026-10-22: Dive read scope: paper v1 HTML-to-text (abstract, Sec 2-5,
     App A-C fully; App D kernel/serving detail NOT read), repo README, configs/README.md, integrations/vllm/README.md validation
     + layout tables, qwen3_moe.py loss path, qwen38_flash_next config; grouped-sparse-GEMM @7fdfa49 README only (SM100/SM120
-    requirement). Not read: tests/, third_party, other model wrappers. WebSearch x1 for replications: none found.'
+    requirement). Not read: tests/, third_party, other model wrappers. WebSearch x1 for replications: none found. | DIVE 2026-10-22:
+    second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 13, partial 3, no 0.'
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -356274,7 +356298,9 @@
     ~99% reasoning recovery on an FP8 source (vendor-reported). Do not cite for DS41 requant decisions.
   notes: 'Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-MoE-Quant at 5a3b298cfb5c475a9b6584d48b43fcebc4ddfb2f. | DIVE
     2026-10-22: Read: README in full, quant.py arg block + architecture assert, directory listing. Not read: src/gptq*.py
-    internals, pack_quantized_model.py. No adversarial search run (low-relevance, repo is a recipe, no novel claim).'
+    internals, pack_quantized_model.py. No adversarial search run (low-relevance, repo is a recipe, no novel claim). | DIVE
+    2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 3, partial 1, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -356375,8 +356401,8 @@
     - intake-873
   credibility_score: 4
   contradicting_evidence:
-  - No independent replication found; a later survey (arXiv 2608.25188, not read) reportedly ranks WUSH best on average with
-    +0.70 (MXFP4) and +0.26 (NVFP4) over the nearest baseline, consistent with the authors' numbers but a secondary summary.
+  - 'No independent replication found. The survey arXiv 2608.25188 (intake-2488, dived 2026-10-22) transcribes the WUSH paper''s
+    own table (+0.70 MXFP4 / +0.26 NVFP4) and states the sign reversal rests on that table alone: RESTATEMENT, not corroboration.'
   reader_should_conclude: WUSH is a W4A4 result. Cite it for the Eq 13 split (weight term vs activation term) and the MXFP4
     W4A4 numbers on dense Llama/Qwen3 only. Do NOT cite it as a weight-only technique, as applicable to natively-MXFP4 DS41
     experts (transforming then re-quantising destroys the bit-exact native grid), or as a drop-in for IQ4_XS/IQ3 (non-uniform
@@ -356386,7 +356412,8 @@
     Combined repo+paper entry. | DIVE 2026-10-22: Read: paper v3 abstract, Sec 1-3, Sec 4.1-4.2.3 (theory), Sec 5-6 (kernel,
     experiments) from the saved v3 text; src-WUSH main.py format choices, block_transform.py get_wush_transform; WUSH-mixed-precision
     quantize_fp4.py diff. Not read: Sec 4.3 (INT proof), appendices A/B, cuda_kernels, triton_kernels. WebSearch x1 for replications:
-    only secondary summaries.'
+    only secondary summaries. | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report
+    /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 6, partial 4, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -356483,7 +356510,9 @@
     term, and the non-orthogonal inverse-transpose must still be applied to activations online per block and per expert. Extra
     cost ~ 64*K bytes of transform per expert-projection vs ~0.53*K*N bytes of 4.25-bpw weights, i.e. about 120/N of weight
     bytes (6% at N=2048, 12% at N=1024) on a bandwidth-bound decode. FP-Quant Table 2 (weight-only) shows Hadamard does not
-    help MXFP RTN there (95.58 -> 93.51), so WUSH''s demonstrated W4A4 gain cannot be assumed to transfer.'
+    help MXFP RTN there (95.58 -> 93.51), so WUSH''s demonstrated W4A4 gain cannot be assumed to transfer. || 2026-10-22 Stage-2b
+    (intake-2488 dive, ledger F-L7): the "later survey ranks WUSH best" line was a restatement of the WUSH paper''s own Table
+    2, not independent evidence; contradicting_evidence rewritten.'
 - id: intake-2475
   arxiv_id: '2507.18553'
   url: https://github.com/IST-DASLab/GPTQ-Babai
@@ -356546,7 +356575,10 @@
     v4 HTML on disk. ICLR 2026. Combined repo+paper entry. | DIVE 2026-10-22: Dive 2026-10-22, repo 02d915e and arXiv:2507.18553v4
     HTML (latest, abs lists v1-v4): read abstract, §1-2 headings, §4.1-4.5 (Theorems 1,2,4,5,6 statements), §5, §6, App. D.1
     headline, D.3 Table 2, E.1 heading; repo quantization/gptq_core.py min_pivot dispatch, README, grep for gguf (none). Not
-    read: proofs B/C, Appendix E experiment tables (E.2-E.6), figures, inference_kernels. Nothing executed.'
+    read: proofs B/C, Appendix E experiment tables (E.2-E.6), figures, inference_kernels. Nothing executed. | DIVE 2026-10-22:
+    second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 6, partial 0, no 0. Three anchors (claim 0 anchor 0, claim 1 anchors 2 and 4) are MathML/table renderings, not verbatim
+    spans (strict re-find NOT-FOUND); do not cite them as quotes.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -356777,7 +356809,9 @@
   notes: 'Triaged from the org listing; the dive must clone and read it. DS41 experts are native MXFP4 (wiki/quantization.md:11).
     | DIVE 2026-10-22: Read: README, paper v3 text sections 1-5 head, Sec 3 analysis, Sec 4 intro, Sec 5 Table 1 + discussion,
     Appendix A (Table 2), App H (Table 11), GPU-speed paragraph. Not read: Sec 4.1 MR-GPTQ algorithm detail, App B-G, I-K,
-    src/ code, QuTLASS kernels. WebSearch x1: no independent replication.'
+    src/ code, QuTLASS kernels. WebSearch x1: no independent replication. | DIVE 2026-10-22: second reader 2026-10-22 (mechanical
+    re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 3,
+    partial 4, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -356904,7 +356938,8 @@
   notes: 'Triaged from the org listing; the dive must clone and read it (2023 repo). | DIVE 2026-10-22: Read: README, paper
     v1 abstract/Sec 4.1-4.2.1/Sec 5.2-5.3, sub1.py setup() head, sub1_cuda_kernel.cu head, directory. Not read: Sec 3 system
     design, Sec 4.3 dictionary/kernel detail, switch.py/gptq.py internals. No adversarial search (2023 paper, no replication
-    relevant to our lanes).'
+    relevant to our lanes). | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report
+    /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 4, partial 2, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -357092,7 +357127,8 @@
     plot not analysed beyond table), GSQ issues #4/#5/#9/#11/#12 and HF discussions 6/22/23/28/29/32/43 (API json saved dive-B/gh).
     NOT read: the HF discussions 1-5, 7-21, 24-27, 30-31, 33-42, 44-58 beyond titles; no weights; imatrix file not fetched;
     no run. WebSearch x2 (leads only): no independent KLD/top-1 found. Eval tools/make_plots.py and tools/results are not
-    published in the repo.'
+    published in the repo. | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report
+    /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 6, partial 6, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -357285,7 +357321,9 @@
     reproduced by the released code.'
   notes: 'HF sha b42f9b32657ff8221bbbd705d967a1cb7806bd12; card /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-expansion/Qwen3.8-27B-NVFP4-prefiller.README.md
     sha256 f26202336dcc. | DIVE 2026-10-22: Read FULL: card README and HF API JSON (siblings sizes summed by variant with
-    python3 -I). No weights, no figures downloaded.'
+    python3 -I). No weights, no figures downloaded. | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded
+    support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml): yes 1, partial 1, no 2. Mis-indexed
+    anchors re-pointed to the claim they support (second-reader finding); the claims they were filed under are unanchored.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -357304,14 +357342,14 @@
     quote_sha256: 68685a7055659b0b0fc9bb345eb66b5658b5bb1143d750026ea591c6e220f918
     source_revision: HF ISTA-DASLab/Qwen3.8-27B-NVFP4-prefiller sha b42f9b32657ff8221bbbd705d967a1cb7806bd12 retrieved 2026-10-22
     verified_by: research-intake/stage2
-  - claim_index: 2
+  - claim_index: 1
     kind: line-range
     locator: README.md:L57 @ b42f9b3
     quote: Needs a Blackwell consumer GPU — GB10 (sm_121) or RTX 50-series (sm_120).
     quote_sha256: 878705afcf4eb3a0cb997643c322944524461e446cce1e79d78737051aa7ad42
     source_revision: HF ISTA-DASLab/Qwen3.8-27B-NVFP4-prefiller sha b42f9b32657ff8221bbbd705d967a1cb7806bd12 retrieved 2026-10-22
     verified_by: research-intake/stage2
-  - claim_index: 3
+  - claim_index: 2
     kind: line-range
     locator: README.md:L74 @ b42f9b3 (dangling repo id in run command)
     quote: --odp-blocks ISTA-DASLab/Qwen3.8-27B-disaggregated-NVFP4-prefill
@@ -357410,7 +357448,9 @@
     v1 only. | DIVE 2026-10-22: Stage-2 read scope: arXiv HTML v1 (rendered text 273 KB) read for abstract, Sec 1-3.6, 5.1-5.6,
     9, A.1-A.4, Table 8 claim list, Table 1/4, and every SLQ/Helcig/EAR mention (grep: only Sec 2 and App A.2). Not read in
     detail: Sec 4 atlas construction, Sec 6-7 beyond the headline, App B, D-L (preregistration texts, artifact datasheets).
-    arXiv abs page fetched 2026-10-22: only v1 exists. WebSearch (2 queries) found no independent replication of SLQ/EAR.'
+    arXiv abs page fetched 2026-10-22: only v1 exists. WebSearch (2 queries) found no independent replication of SLQ/EAR.
+    | DIVE 2026-10-22: second reader 2026-10-22 (mechanical re-find + bounded support check, report /mnt/raid0/llm/tmp/intake-ist-slq-20261022/second-reader/report.yaml):
+    yes 11, partial 1, no 0.'
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -357529,3 +357569,1744 @@
     or any kaitchup card; SLQ is cited once in Related Work and App A.2 as a complementary definition+method paper that ''contains
     no equivalence test at a declared margin, no power or required-n computation''. The paper does supply a usable instrument
     (TOST + churn-based item-count tables) for sizing OUR paired per-item gates.'
+- id: intake-2484
+  arxiv_id: '2602.10144'
+  url: https://arxiv.org/abs/2602.10144
+  source_type: paper
+  title: 'When LLMs get significantly worse: A statistical approach to detect model degradations'
+  authors:
+  - Jonas Kübler
+  - Kailash Budhathoki
+  - Matthäus Kleindessner
+  - Xiong Zhou
+  - Junming Yin
+  - Ashish Khetan
+  - George Karypis
+  categories:
+  - benchmark_methodology
+  - quantization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2461
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Test: for per-item binary-scored outcomes of a baseline M and an optimized model M~ on the SAME items, only the discordant
+    items carry signal. Let b = baseline correct / optimized wrong and c = the reverse; the statistic is q = b/(b+c) and H0
+    is q = 1/2 (accuracy equal), tested one-sided for degradation with an exact binomial test (scipy binomtest(k=b, n=b+c,
+    p=0.5, alternative=''greater''), Algorithm 1). The authors call it the ''exact one-sided McNemar test''; they say it is
+    not claimed novel. CONFIRMED.'
+  - 'Why pairing matters: treating the two accuracies as independent overestimates the uncertainty of the difference; at accuracy
+    ~50% and flip probability ~10% the variance of the paired difference is ~1/5 of the independent sum, i.e. the naive standard
+    error is ~2.2x too large, so real degradations are attributed to noise. CONFIRMED (stated for these example values, Sec
+    3.2).'
+  - 'Sample size and power: no universal required-N exists. Power depends only on SNR = sqrt(N/p_flip) * delta (Eq 11; p_flip
+    = flip probability, delta = accuracy drop); for a fixed delta, detection power FALLS as p_flip grows, so the paper says
+    ''we cannot answer such questions in general'' (e.g. N needed to detect a 0.2% drop). Recommendation 1: drop items unlikely
+    to flip - SNR is unchanged. CONFIRMED. No N table is given; any N we quote is our own arithmetic from Eq 11 (see reported_results).'
+  - 'Multi-suite aggregation: three tests - pooled (sum b and c over tasks; most powerful when degradation is spread across
+    tasks, robust to how tasks are grouped), max-drop (Monte-Carlo null of the maximum per-task z; for a single affected task),
+    Fisher''s method over per-task p-values (balanced). Combined rule: flag if ANY of the three rejects at alpha; Bonferroni
+    bound 3*alpha, observed type-I tighter in synthetic runs. CONFIRMED.'
+  - 'Empirical (lm-eval Open-LLM-Leaderboard-v2 suite, N = 25,282 items, vLLM 0.10.0, BF16 baseline on 8xH100, RedHatAI quantized
+    checkpoints): four theoretically lossless variants of Llama-3.1-8B-Instruct (rerun, transformers engine, TP1, A100) show
+    1.31-2.76% flips and are not flagged; all three w4a16 INT4 checkpoints are flagged (8B delta 1.73%, p_pool 4.8e-15; 24B
+    0.87%); 8B KV-FP8 (pooled delta 0.79%) and 70B KV-FP8 (delta 0.29%, p_pool 0.025) are flagged although neither fixed baseline
+    rule fires; 70B w8a8 (delta 0.61%) is flagged. PARTIAL nuance: 8B w8a16 (INT8 weight-only, delta 0.11%) has p_pool 0.211
+    but p_maxdrop 0.0136 and p_fisher 0.0133, i.e. below 0.05 under the paper''s own any-of-three rule, and the prose never
+    discusses it; 70B FP8-dynamic (delta 0.20%) is borderline (p_pool 0.063, p_fisher 0.061).'
+  - 'Critique of flip-rate and fixed-threshold rules (Dutta et al. 2024 = intake-1519): 8B FP8 has flip rate 8.71% (>= 5%
+    rule) yet ''no accuracy concerns at all'' while 8B KV-FP8 has 9.03% and IS degraded - same flip rate, opposite verdicts;
+    on 70B no checkpoint trips either baseline rule although KV-FP8 and w8a8 are significantly degraded. The authors conclude
+    a null for ''flips'' cannot be formulated (lossless changes also flip) whereas the degradation probability has a principled
+    null (q = 1/2). CONFIRMED.'
+  - 'Dataset trimming: for MMLU-Pro (12,032 items) 10 reruns of the base model at T=0.3 identify 5,604 items that never flip;
+    dropping them leaves 6,807 items (-43%) and keeps 2,116 of 2,472 (85.6%) w4a16 flips and 1,662 of 1,864 (89.2%) KV-FP8
+    flips. CONFIRMED for this one dataset/model; the selection uses the base model''s own noise and was validated on only
+    two degraded variants.'
+  - 'Scope and limits: binary-scored task accuracy only (non-binary via a permutation test in App D - NOT READ); vLLM + H100
+    + RedHat/HF checkpoints; no GGUF/llama.cpp, no KLD/PPL, no CPU. It is a test of H0 ''no degradation'' vs ''worse'', not
+    an equivalence/non-inferiority test: the authors state a checkpoint that barely passes ''might still have some (small)
+    accuracy degradation''. They propose the same tests for integration-testing kernels and speculative-decoding implementations.
+    NOT-FOUND-IN-SOURCE: any mention of SLQ (it predates arXiv 2605.02404), GGUF, llama.cpp, an equivalence margin or a required-n
+    table.'
+  techniques:
+  - exact one-sided McNemar (binomial on discordant pairs)
+  - pooled / max-drop / Fisher aggregation across task suites
+  - SNR-based power analysis
+  - flip-prone item trimming via noisy reruns
+  reported_results:
+  - 'Table 2 (Llama-3.1-8B-Instruct, pooled over 25,282 items; delta = baseline - variant): rerun -0.02% p_pool 0.629; transformers
+    0.079% 0.787; TP1 -0.01% 0.564; A100 -0.14% 0.921 (flips 1.31-2.76%); w4a16 1.73% 4.8e-15 (flips 12.63%); FP8 -0.04% 0.601;
+    w8a16 0.11% p_pool 0.211 / p_maxdrop 0.0136 / p_fisher 0.0133; FP8-dynamic 0.05% 0.401; w8a8 0.02% 0.463; KV-FP8 0.79%
+    1.69e-5 (flips 9.03%). 70B: FP8-dynamic 0.20% 0.063; w8a8 0.61% 1.34e-5; KV-FP8 0.29% 0.0251 (Table 2; Sec 4).'
+  - 'Sec 4.1: MMLU-Pro flips w4a16 2,472/12,032 (20.55%) -> 2,116/6,807 (31.09%) after trimming; KV-FP8 1,864 (15.49%) ->
+    1,662 (24.42%).'
+  - 'DERIVED (our arithmetic from Eq 11 with one-sided alpha 0.05, 80% power, normal approximation; NOT a paper number): N
+    = p_flip * (2.486/delta)^2 -> delta 5% at p_flip 10% needs ~247 items; delta 2% needs ~1,546; delta 1% needs ~6,183; delta
+    0.1% at p_flip 4.45% needs ~275,000. Power at p_flip 10%: N=250 -> 13% (delta 1%), 26% (2%), 80% (5%); N=500 -> 17% /
+    41% / 97%; N=1000 -> 26% / 64% / ~100%. The 8B w8a16 pooled test (N=25,282, delta 0.11%, p_flip 4.45%) has ~21% power,
+    which is why only max-drop/Fisher fired.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2461
+    - intake-1519
+    - intake-1510
+    - intake-2483
+  credibility_score: 4
+  contradicting_evidence:
+  - 'No independent replication or critique found (WebSearch x1, 2026-10-22: only the arXiv/ICLR/Amazon Science/OpenReview
+    listings). Single-lab (Amazon) evidence on vLLM/H100; checkpoints are RedHatAI releases, not llama.cpp GGUF.'
+  - The paper's own 70B w4a16 row (17.70% accuracy) is attributed to a vLLM bug by the authors (a transformers spot-check
+    shows a much smaller drop), so one of its three 'clearly flagged' INT4 cases is an engine defect, not a quantization effect;
+    Table 2 therefore also demonstrates the test as a bug detector.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 3.1 (after Eq 7)
+    quote: In effect, our test is just a standard binomial test (Algorithm 1).
+    quote_sha256: faf04ba007c77f7486b778c4afe54e62d2b78e1fc9700afd1d2924e341f450e7
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 3.1 footnote text
+    quote: we call it exact one-sided McNemar test.
+    quote_sha256: f6c870e08fda366aa20b67b3cbdf853bc11be7f4dc19b05ee1f143ee94f618a1
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 3.2 after Eq 10
+    quote: This implies that in relevant scenarios for LLMs a naive approach that ignores the correlation would overestimate
+      the uncertainty of the accuracy degradation by around
+    quote_sha256: 6e82e3f044de67d41eda2d96df0f1f209805cdc8f9e5f756e8c243e27dff604d
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 3.2 after Eq 11
+    quote: So the test power is solely determined by the signal to noise ratio
+    quote_sha256: be173b24f93f6d008b28932cb5ce7112169e73393aa0c47b383fed2e2784a8ab
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 3.2 Recommendation 1
+    quote: Examples that are unlikely to flip should be removed from datasets for degradation analysis.
+    quote_sha256: e4a8524a41f955263a1dc56d85171d0223dd23f53a8ec6e3279a7200e534b2a6
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 3.2
+    quote: Thus, we cannot answer such questions in general.
+    quote_sha256: 599f3d0e15d9c9933a4837cf9ce4cea3012e374f5845128e6d471601d2305bab
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 3.3 Combined Decision
+    quote: we propose to consider the simple decision rule to flag accuracy degradation when any of the three tests rejects
+      at
+    quote_sha256: e9a5eedd49ff779353bcfffa37048d92500e8078c70fc564a6f38e492ba36f92
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 4 Lossless variants
+    quote: It is very important to note that even those, in theory, lossless changes lead to a notable number of flips of
+      1.3% to 2.8%.
+    quote_sha256: 88d63e54f4f9a2a100c3b789c24c85b643f880aeb6e4676c6a49f200011d6cfa
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Table 2 row 8B w8a16
+    quote: w8a16 | 42.32% | 0.11% | 0.13% | 2.11e-01 | 1.36e-02 | 1.33e-02 | 4.45%
+    quote_sha256: a08f343306c05efc4e37626784543daf5dfe5c9e006d04430979458d8d2ec8c9
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Table 2 row 70B KV-FP8
+    quote: KV-FP8 | 56.87% | 0.29% | 0.14% | 2.51e-02 | 4.62e-02 | 7.57e-02 | 4.18%
+    quote_sha256: ccc36349ce1dd53c3f71d926e46ca475e35925de2dfec93b5beb9c3a986ba7d7
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 4 Lossy variants
+    quote: Our tests clearly flag all three INT4 checkpoints w4a16 with extremely small
+    quote_sha256: facc59475c6cd0a1a6eface9c35bfede1d354deed91a074f636e7a3cd3a11442
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 4 setup
+    quote: We use vLLM (vLLM Contributors, 2024) v0.10.0 and lm-eval v0.4.8.
+    quote_sha256: 6ea538caff9501a940db9f99f4b459152e8b4e501ddfac88e1c4729d751a20a0
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 4 Lossy variants
+    quote: our analysis shows that the 8B FP8 has no accuracy concerns at all, while the flip probability
+    quote_sha256: 2f017ae25b7f423336d88c66877c23514c921ce94e01f3ba3df959bde5e93ef3
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 5 Discussion
+    quote: Thus, there is no principled way to formulate a null hypothesis about flips, whereas for the degradation probability
+      it is given by
+    quote_sha256: bb8d872338252666bf737bfede5b9a5ebd960783108c4ca13aa44e051df5408b
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Sec 4.1
+    quote: Our approach thus allows us to almost halve the dataset size, while keeping most of the actually relevant examples
+      in it.
+    quote_sha256: 61c194de75e20ad88e4fefeb0c63a45d0fd9fd360ffd5d5efb24e31803abea49
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Sec 5 Interpretation
+    quote: there is no magical discontinuity at the test threshold, so even a checkpoint that barely passed might still have
+      some (small) accuracy degradation.
+    quote_sha256: b792b2ebaa9504fe8a5c01d0302f1fd7689af712486d611496c1b551b0e14644
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Sec 5 Extensions
+    quote: an equally important use-case for our proposed testing framework is integration testing in inference engines.
+    quote_sha256: d334ccd1e21b2eb080fc847a281b1dd9c2ca789d2dfc499629588ba9fbaf662c
+    source_revision: arXiv:2602.10144v2 (06 May 2026; ICLR 2026) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Algorithm 1 and Sec 3.1 read from disk.
+  - claim_index: 1
+    effect: narrowed
+    note: The ~2.2x figure is for the example accuracy ~50% and p_flip ~10%, not a general constant; at p_flip 1.3-4% (lossless
+      variants / 70B) the gap is larger.
+  - claim_index: 2
+    effect: narrowed
+    note: The paper gives the power relation but no sample-size table; a Stage-1 reading that it "gives sample-size needs"
+      would overstate. Needed N is our derivation.
+  - claim_index: 3
+    effect: unaffected
+    note: Sec 3.3 and Algorithms 2-4 read.
+  - claim_index: 4
+    effect: narrowed
+    note: Includes the w8a16 row that crosses 0.05 under the any-of-three rule, which the prose does not mention, and the
+      70B w4a16 vLLM-bug case.
+  - claim_index: 5
+    effect: unaffected
+    note: Sec 4 text and Sec 5 Discussion.
+  - claim_index: 6
+    effect: unaffected
+    note: Sec 4.1 numbers recomputed (85.6% / 89.2% retained flips = our division).
+  - claim_index: 7
+    effect: uncertain
+    note: Appendix D (non-binary permutation test) and C.2 synthetic experiments were not read; absence-of-equivalence-test
+      checked by grep over the whole text (only McNemar 1947 "equivalence of proportions" mention).
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass; v2 (06 May 2026, ICLR 2026) HTML read
+    from disk.'
+  reader_should_conclude: 'CITE for: the exact one-sided McNemar/binomial test on discordant pairs (Alg 1), the power relation
+    SNR = sqrt(N/p_flip)*delta (Eq 11), the pooled/Fisher/max-drop aggregation, the measured flip floor of 1.3-2.8% for theoretically
+    lossless serving changes (vLLM, 8B, 25k items), and the finding that fixed flip-rate (>=5%) and aggregate-delta (<=2%)
+    rules both miss real degradations and false-flag harmless ones. This SUPPORTS our paired per-item gate practice (MEASUREMENT_POLICY.md:L135-136
+    ''McNemar-discordant set carries the signal''; quality-eval.md P-PAIRED L109-L150, STAGED not ratified; wiki/quantization.md:L178-L181)
+    and SHARPENS it: the gate statistic should be the DIRECTION b vs c with n_discordant reported, not a flip count or a fixed
+    CondFlip threshold (tq3-quantization-evaluation.md G4 ''CondFlip > 5% while PPL drift < 2%'' is exactly the fixed-threshold
+    style the paper shows is not robust). Differences from P-PAIRED: Kubler is one-sided exact binomial at any b+c (P-PAIRED:
+    two-sided, exact only <=25 discordants then normal approximation) and adds multi-suite aggregation and a power relation.
+    DO NOT cite as: (a) evidence about GGUF/llama.cpp, KLD or PPL (binary task accuracy, vLLM, H100, RedHat checkpoints only);
+    (b) an equivalence test or a licence to say ''lossless'' - non-rejection is not equivalence and the pooled test at 8B
+    w8a16 had ~21% power; (c) a required-N rule - N depends on a measured p_flip. ON SLQ (intake-2461): SLQ''s ''statistically
+    lossless'' (task-lossless = >=99% mean recovery over 7 benchmarks, 3 seeds, non-greedy; distribution-lossless = EAR target)
+    is a recovery-ratio threshold on seed means with no per-item pairing and no test; Kubler''s framework is what it would
+    need (and would need per-item outputs SLQ did not publish). It undercuts the framing as a STATISTICAL statement, it does
+    not show SLQ models are degraded. On Q8_0/''near-lossless references'': the nearest datum (INT8 weight-only w8a16, delta
+    0.11%) was flagged by two of three tests at 25k items - near-lossless 8-bit is not demonstrably identical at high power;
+    this is a different quantizer from Q8_0, so carry it only as a caution.'
+  notes: 'Read from disk (dive-F/k-v2.html, text k-v2.txt): abstract, Sec 1-5 in full, References skimmed, Appendix A (algorithms),
+    B (variance), C.1 and Tables 4-6 header region. NOT read: Appendix C.2 synthetic experiments, Appendix D (non-binary /
+    permutation tests, gpt-oss and TruthfulQA runs). Code repo amazon-science/LLM-Accuracy-Stats not cloned (recorded as a
+    surfaced source). WebSearch x1 for replications: none found. v1 exists (arxiv.org/pdf/2602.10144v1); v2 read is current
+    as of 2026-10-22 (atom feed updated 2026-05-06).'
+- id: intake-2485
+  arxiv_id: '2410.13461'
+  url: https://arxiv.org/abs/2410.13461
+  source_type: paper
+  title: Progressive Mixed-Precision Decoding for Efficient LLM Inference
+  authors:
+  - Hao (Mark) Chen
+  - Fuwen Tan
+  - Alexandros Kouris
+  - Royson Lee
+  - Hongxiang Fan
+  - Stylianos I. Venieris
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2467
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Phase-aware precision allocation (higher-precision weights for the prefill, lower for decode) needs no training of the
+    LLM weights: it takes PTQ variants of ONE model (Any-Precision nested quantization, so multiple precisions add no memory)
+    and finds, by a calibration search over (prefill-bit, decode-bit) pairs, the lowest pair meeting a quality target. The
+    only learned part is the optional small scheduler (attention-pool + MLP over the prefilled KV) that picks the decode-time
+    switch point. CONFIRMED (v2 S4.1, S4.3, S5, App. A.1).'
+  - 'Prefill-high / decode-low is the load-bearing asymmetry (Vicuna-7B, MT-Bench, Rouge-L against fp16 outputs): 2-bit prefill+2-bit
+    decode 18.3; 3-bit prefill+2-bit decode 28.1; 2-bit prefill+3-bit decode 22.2 (App. A.2 Table 4). Raising only the prefill
+    recovers most of the gap, raising only decode does not. CONFIRMED; single run, no CI, free-generation overlap metric not
+    ppl/KLD.'
+  - 'End-task results (Table 1, Vicuna-7B 2/3-bit, CNN/DM Rouge-L/BERTScore): uniform 2-bit 8.30/78.4, uniform 3-bit 24.2/86.9,
+    PMPD-Static at 2.39 average bits 24.3/87.0, PMPD-Learned at 2.43 bits 24.0/86.7. The ''average bitwidth'' is the decode-token-weighted
+    mean over the decode schedule (prefill is the higher precision), so the headline ''up to 33% bit reduction'' is a decode-side
+    figure. CONFIRMED for the quoted rows; the gain is measured where the uniform low-bit baseline COLLAPSES (2-bit, Rouge
+    8.3 vs 24.2) and shrinks where the gap is small (MobileLLaMA 3/4-bit CNN/DM: uniform-3 16.3 vs uniform-4 17.2).'
+  - 'Scope of evidence: Vicuna-7B, MobileLLaMA-1.4B, Stable LM Zephyr-3B, Phi-1.5, plus Llama3-8B and Longchat-13B in App.
+    A.3 (Table 5: Llama3-8B CNN/DM uniform-2 4.35/75.8, uniform-3 18.3/85.2, PMPD-Static 2.66 bits 17.8/84.8). All dense,
+    <=13B, 2-4-bit nested integer quantization (GPTQ only as a one-table alternative, App. A.7 Table 9), metrics ROUGE/BLEU/BERTScore
+    against references or fp16 outputs. NO MoE, NO >=27B model, NO GGUF/K-quant/IQ formats, NO perplexity or KL, NO recurrent/hybrid-attention
+    state, NO speculative decoding. The ''high'' precision is defined as the lowest lossless bit-width on C4 ppl and the ''low''
+    as exactly one bit lower (S5), i.e. the study is of 1-bit gaps in the 2-4-bit regime. CONFIRMED as a scope statement.'
+  - 'Mechanism: the KV cache written by the higher-precision prefill model is consumed by the lower-precision decode model
+    (S3.1, Algorithm 1 lines 10/17: K0V0 from m_prefill, then m_new(t_i, K_iV_i)). The paper attributes the benefit to prefill
+    KV quality. It does NOT test whether this holds when the two weight sets are independently quantized: its precisions are
+    nested (Any-Precision: one weight set, multiple precisions, S2.1/S5), which plausibly makes the low-bit model''s KV-space
+    compatible with the high-bit model''s; no ablation compares nested against independent quantizations. PARTIAL: mechanism
+    confirmed, cross-weight-set compatibility for independent quants NOT-FOUND-IN-SOURCE.'
+  - 'Speed evidence is kernel-level or simulated, not an end-to-end CPU/llama.cpp measurement: GPU linear-layer speedups 1.40-12.20x
+    over fp16 on RTX 4090/A40 (Table 3, weighted by decode steps), end-to-end GPU 1.74-3.36x (Table 6, PMPD vs baseline-h
+    up to +0.31x), NPU 3.8-8.0x from an ANALYTICAL FlightLLM performance model (App. A.6). The authors report that running
+    the higher-precision model for the prefill costs only 0.07-1.05% latency on GPU (S5.3). The abstract''s 1.4-12.2x is a
+    per-layer kernel figure, not a serving figure. CONFIRMED for the numbers; scoped as GPU-kernel/simulation.'
+  - 'Progressive switching during decode: using the high-precision model for the FIRST half of generated tokens matches all-high
+    quality (Fig. 3, Phi-1.5 CNN/DM, 3/4-bit; text statement only, figure values not read), and per-token alternation also
+    works but is rejected as impractical because of weight-load and memory-traffic overhead. CONFIRMED from the text; figure
+    not read.'
+  techniques:
+  - phase-aware precision allocation (prefill at higher bit-width than decode)
+  - progressive mixed-precision decoding (switch to lower-bit weights deeper into the output)
+  - Any-Precision nested quantization (one weight set, several precisions)
+  - static and KV-feature-learned precision-switch schedulers
+  reported_results:
+  - 'App. A.2 Table 4 (Vicuna-7B, MT-Bench, Rouge-L vs fp16): 2/2-bit 18.3; 3-bit prefill + 2-bit decode 28.1; 2-bit prefill
+    + 3-bit decode 22.2.'
+  - 'S5.1 Table 1 (Vicuna-7B CNN/DM Rouge-L/BERTScore): uniform-2 8.30/78.4; uniform-3 24.2/86.9; PMPD-Static 2.39 bits 24.3/87.0;
+    PMPD-Learned 2.43 bits 24.0/86.7.'
+  - 'App. A.3 Table 5 (Llama3-8B CNN/DM): uniform-2 4.35/75.8; uniform-3 18.3/85.2; PMPD-Static 2.66 bits 17.8/84.8.'
+  - 'S5.3: prefill at the higher precision adds 0.07-1.05% latency (GPU, PyTorch profiler). Table 3: GPU linear-layer speedup
+    1.40-12.20x vs fp16 (RTX 4090/A40); Table 6 end-to-end GPU 1.74-3.36x; NPU 3.8-8.0x from an analytical model.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2467
+    - intake-2468
+    - intake-2481
+  credibility_score: 3
+  contradicting_evidence:
+  - 'The paper''s own Table 1: PMPD-Static is within noise of uniform-high when the bit gap is small (MobileLLaMA 3/4-bit
+    CNN/DM 17.6 vs 17.2 Rouge-L, single run) and drops up to 2.3% on IWSLT; the gain is concentrated where uniform low-bit
+    collapses (2-bit).'
+  - 'No independent replication or critique found (3 WebSearch queries 2026-10-22: PMPD critique/replication, KV-mismatch;
+    results were the paper, ICLR 2025 poster page, Samsung page and summaries only; leads, not evidence). Code exists at SamsungLabs/PMPD
+    (pushed 2025-07-15, 4 open issues, licence NOASSERTION) - not read.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: S4.1 Phase-Aware Precision Allocation
+    quote: Through this process, we determine the lowest pair of precisions that meet the quality target (line 2).
+    quote_sha256: ab95e432a9c3e0ed1ae68788328d5a924db3d37aa63eee5c9babbf67e4c4ee61
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: S5 PMPD Implementation Details
+    quote: For PTQ method, we adopted the nested quantization method of Any-Precision LLM (Park et al., 2024), ensuring that
+      using multiple weight precisions incurs no memory footprint overhead.
+    quote_sha256: f9cf07b1632552d6d2782196eb8d7ba7fd5c0729ccd57c49b729b007a9a4d8cd
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: App. A.2 Table 4 + text
+    quote: 2bit Prefill, 2bit Decode | 18.3 | 3bit Prefill, 2bit Decode | 28.1 | 2bit Prefill, 3bit Decode | 22.2
+    quote_sha256: dc2359b722064a382edd32b8f14b6071252f6c034f544502b9714ea8bacebfa4
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: App. A.2 text
+    quote: we observed that using a higher bitwidth for prefilling significantly improves output quality. On the other hand,
+      using higher bitwidth for decoding does not improve the performance as much.
+    quote_sha256: e6b4f796fddc4ee8dbd4302abe31559a229727986ff8d4c506f602054b89e7a2
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: S5.1 Table 1 rows (Vicuna-7B CNN/DM Rouge-L/BERTScore)
+    quote: Baseline-l | 2 | 8.30 / 78.4 | 2 | 10.2 / 75.5 | 2 | 1.2 / 1.2 | Baseline-h | 3 | 24.2 / 86.9 | 3 | 24.4 / 88.2
+      | 3 | 31.6 / 31.6 | DNS | 2.39 | 24.2 / 86.8 | 2.0 | - | 2.68 | 27.6 / 27.6 | PMPD-Static | 2.39 | 24.3 / 87.0
+    quote_sha256: bb14bb28484f1d7df8b7495401990a69656d3b8042d637a737c29a83c53be6bd
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: S5.1 PMPD vs. Baselines
+    quote: Both schedulers deliver lossless performance on the CNN/DM and Dialogsum datasets with up to 33% reduction in bitwidth,
+      highlighting their ability to effectively capture context and generate high-quality outputs.
+    quote_sha256: 901b2cb16ec12ce23c0811279888aada069c0043d5535927807e7ac6a0c84795
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: S5 Evaluation, Models and Datasets
+    quote: We conducted experiments on edge-deployable models, including Vicuna-7B (Chiang et al., 2023), MobileLLaMA-1.4B
+      (Chu et al., 2023), Stable LM Zephyr-3B
+    quote_sha256: d311b9ecb35993da54bf746978b8bf890a50ca1a84a24c367f4ff5034963580f
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: App. A.3 Table 5 + text
+    quote: Baseline-l | 2 | 4.35 / 75.8 | 2 | 5.58 / 81.7 | 2 | 0 / 0.16 | Baseline-h | 3 | 18.3 / 85.2
+    quote_sha256: e3da195affa505fcbad93a795b007c095398c1f7cc43fd1d7bf83705d295bf52
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: S5 Evaluation, Implementation Details
+    quote: The high-precision variant of each model is quantized to the lowest lossless precision determined by perplexity
+      on the C4 dataset, while low precision is defined to be one bit lower than the high precision.
+    quote_sha256: 9d9e42881cd25b48ebfcd35721f441da8e1d59f5c5a283c2897be03862fbe7d4
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: S3.1 Observation One
+    quote: Specifically, a high-quality KV cache extracted from the input prompt during prefilling provides good understanding
+      of the task and information-rich context, enhancing in this way the generation capability of the low-precision model.
+    quote_sha256: 3f4ef6529406ecc3f52123eb16a5e77eb00d05168415fbb4787342f13c3d9b08
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: S2.1 Weight-only Quantization
+    quote: Any-Precision LLM (Park et al., 2024) enables the post-training quantization of a single set of weights to multiple
+      lower precisions.
+    quote_sha256: 65d1045bfa4c7f55343eaf24e074245a0bdaca275d509a73f7b16e79fa70bf7b
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: S5.3 Phase-Aware Precision Allocation
+    quote: Latency overhead from using higher precision is minimal, ranging from 0.07% to 1.05%, confirming that the prefill
+      phase is compute-bound.
+    quote_sha256: b5b3f9a80d71cadcf91fed490093280b6d41e0ea8dea8cf5d6e0bc631705c4b8
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: S5 NPU Simulation Measurements
+    quote: To estimate the processing speed of PMPD when deployed on an NPU, we developed an analytical performance model
+      of the hardware architecture of FlightLLM
+    quote_sha256: cc241d1b98ffb2697396476953c1c699e86183fc9bb313607046a0964e1e46d0
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: S3.2 Observation Two
+    quote: adopting high precision at the first half of the decoding stage yields the best performance, matching the performance
+      of using high precision throughout the generation process.
+    quote_sha256: 3220962f7d91550e645d35c1212d367c4bf9d7a8c493ed61850792985c2231d5
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: S3.2 Observation Two
+    quote: However, frequent precision switching introduces hardware overhead, both in terms of weights loading time and additional
+      memory traffic, so this schedule is not considered practical for real deployment.
+    quote_sha256: 95061708b454ad78f0562e0a2bf569ea739a691411eeed957a939e7b25967e3a
+    source_revision: arXiv:2410.13461v2 (27 Feb 2025) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Stage-1-style summary 'no training' holds for the weights; the learned scheduler is the only trained part and is
+      optional (static scheduler needs only a validation set).
+  - claim_index: 1
+    effect: unaffected
+    note: Table 4 numbers read verbatim from v2 HTML. Metric is Rouge-L against fp16 outputs, single run.
+  - claim_index: 2
+    effect: narrowed
+    note: Gain exists where the uniform baseline collapses; at a 1-bit gap in the 3/4-bit regime PMPD-Static is within noise
+      of uniform-high (17.6 vs 17.2 Rouge-L, no CI). Do not read 'lossless' as a measured KLD statement.
+  - claim_index: 3
+    effect: unaffected
+    note: Scope list verified against S5 and App. A.3/A.7.
+  - claim_index: 4
+    effect: uncertain
+    note: The paper never ablates independently quantized prefill/decode pairs; every pair is nested Any-Precision. Whether
+      KV written by one GGUF is read cleanly by another is exactly what the paper does not establish.
+  - claim_index: 5
+    effect: narrowed
+    note: Abstract speedups are per-linear-layer GPU kernel latencies and an analytical NPU model; none is an end-to-end CPU
+      or llama.cpp measurement.
+  - claim_index: 6
+    effect: unaffected
+    note: Text statement confirmed; Fig. 3 data points not read.
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b combined pass: new entry. The decisive facts for a GGUF-native ''prefill with the
+    higher-bit copy, decode with the lower-bit copy'' probe are (1) the asymmetry is real in the paper (3p/2d 28.1 vs 2p/3d
+    22.2 vs 2/2 18.3) and needs no training of the weights; (2) every pair in the paper is NESTED Any-Precision quantization
+    of one model, so the paper never tests KV written by one independent quantization and read by another; (3) evidence is
+    2-4-bit dense <=13B with overlap metrics and a 1-bit gap, so it predicts nothing at an IQ4->IQ3 gap and nothing for MoE/hybrid-recurrent
+    targets.'
+  reader_should_conclude: 'Cite for: prefill precision matters more than decode precision (Table 4) and a higher-precision
+    prefill needs no training and costs ~1% prefill latency on GPU. Do NOT carry: the 1.4-12.2x speedups (per-layer GPU kernel
+    / simulated NPU), ''lossless'' as a KLD statement, or any implication that independently quantized GGUF pairs share a
+    compatible KV space - the paper only tested nested quantizations. For the Q38FN P->D probe (dive-C C-L1) this is a second,
+    independent precedent for the mechanism, and it supports C-L1''s own prediction that the effect is small at a 1-bit gap
+    in the 3-4-bit regime.'
+  notes: 'Read scope: arXiv abs page (v1 2024-10-17, v2 2025-02-27) and version-pinned v2 HTML in full except figures/images
+    (Fig. 3, Fig. 6, Fig. 7 values not read) and the App. A.5 per-layer latency tables and A.8 example outputs. Code repository
+    only checked via GitHub API metadata. No compute run. Model weights not applicable.'
+- id: intake-2486
+  arxiv_id: '2601.14277'
+  url: https://arxiv.org/abs/2601.14277
+  source_type: paper
+  title: Which Quantization Should I Use? A Unified Evaluation of llama.cpp Quantization on Llama-3.1-8B-Instruct
+  authors:
+  - Uygar Kurt
+  categories:
+  - quantization
+  - local_inference
+  - benchmark_methodology
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2466
+  verdict: superseded
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Scope: 13 llama.cpp GGUF types (Q3_K_S/M/L, Q4_0/1, Q4_K_S/M, Q5_0/1, Q5_K_S/M, Q6_K, Q8_0) quantized from one F16 GGUF
+    of Llama-3.1-8B-Instruct with llama-quantize, ''scheme identifier as the only varying parameter'' (llama.cpp b7600, lm-eval
+    0.4.9.2). NO IQ types (no IQ4_XS, IQ3_XXS/S, IQ2*), NO imatrix, NO Q2_K evaluation, NO UD/mixed recipes, NO KLD. Metrics:
+    GSM8K (5-shot, flexible-extract), HellaSwag acc_norm, IFEval (mean of 4), MMLU, TruthfulQA MC2, unweighted Avg, WikiText-2
+    PPL; plus pp512/tg128 on CPU. NOT-FOUND-IN-SOURCE for every IQ/imatrix/KLD number the dive was asked for.'
+  - 'Numbers vs F16 (Avg 69.47, PPL 7.32): Q8_0 Avg 69.41 / PPL 7.33 / 8137.64 MiB (-46.87% size); Q6_K 69.23 / 7.35 / 6282.97
+    MiB (-58.98%); Q5_K_M 69.36 / 7.40 / 5459.93 MiB (-64.35%); Q4_K_M 69.15 / 7.56 / 4685.30 MiB (-69.41%); Q4_K_S 69.17
+    / 7.62; Q3_K_L 68.78 / 7.81; Q3_K_M 68.07 / 7.96; Q3_K_S 65.49 / 8.96. Avg recomputed from the five columns for all 14
+    rows: matches. CONFIRMED as arithmetic.'
+  - 'Consistent with our practice: Q8_0 is indistinguishable from F16 on this model (dAvg -0.06, dPPL +0.01, every task within
+    its standard error) and PPL orders the K-quants as expected (Q5_K_M 7.40 < Q5_0/1 and Q5_K_S 7.43; Q4_K_M 7.56 < Q4_K_S
+    7.62). PARTIAL support for ''Q8_0 as near-lossless reference'': one model, no KLD, no paired test, so ''indistinguishable''
+    is a power-limited null.'
+  - 'The headline ranking is NOT supported: ''Q5_0 is the accuracy-favouring choice'' (Avg 69.92, +0.45 over F16), ''Q4_K_S
+    dominates Q4_K_M'', and ''Q6_K and Q8_0 are dominated'' rest on differences of 0.1-0.5 points of a 5-benchmark unweighted
+    mean whose components carry standard errors of 0.38 (MMLU), 0.45 (HellaSwag), 1.15 (GSM8K), 1.6 (TruthfulQA), ~1.8 (IFEval
+    prompt-level). Our unpaired estimate: SE(Avg) ~0.55, SE(difference between two models) ~0.78 points. No CI, paired test
+    or seed spread is reported for Avg. The paper itself says Q5 > F16 ''should be interpreted cautiously'' and then builds
+    its Pareto frontier and Table 4 recommendations on the same ordering. OVERTURNED as a ranking (stays valid for the coarse
+    finding that Q3_K_S is clearly worse: Avg -3.98, GSM8K -9.32, MMLU -4.19, PPL +1.64).'
+  - '''Perplexity is not a complete predictor'': Q5_0 / Q5_1 / Q5_K_S share PPL 7.43 but GSM8K 79.08 / 78.47 / 75.66 and IFEval
+    80.14 / 79.79 / 79.50. Direction agrees with wiki/quantization.md:L165-L181 (KLD/PPL rank damage, not quality) but this
+    is unpaired, one model, and the largest gap (3.4 GSM8K points, SE ~1.2 each) is ~2 sigma among many comparisons. Suggestive
+    only.'
+  - 'CPU throughput (dual Xeon Platinum 8488C, 96 cores / 192 threads, AVX-512+BF16; thread count and NUMA policy NOT reported):
+    F16 tg128 2.83 t/s, Q8_0 5.03, Q6_K 6.33, Q5_0 6.66, Q4_K_M 5.12, Q4_K_S 4.65, Q4_0 4.36, Q4_1 6.80, Q3_K_S 9.91. DERIVED
+    from file sizes: implied weight-stream rate is 36-46 GB/s for F16/Q8_0/Q6_K/Q5_0/Q3_K_S but only 20-25 GB/s for Q4_0/Q4_K_S/Q4_K_M,
+    far below what a 192-thread dual-socket DDR5 box can stream; Q4_0 decodes slower than Q8_0 and Q4_1 faster than Q4_K_M.
+    The table is not a usable speed ranking and does not transfer to EPYC 9655 with iqk kernels (different ISA paths, different
+    threading).'
+  techniques:
+  - single-model GGUF format sweep (llama-quantize, lm-eval, llama-bench)
+  reported_results:
+  - 'Table 2: F16 GSM8K 77.63 / HSwag 72.51 / IFEval 78.93 / MMLU 63.50 / TQA-MC2 54.79 / Avg 69.47 / PPL 7.32; Q8_0 77.48
+    / 72.52 / 78.79 / 63.43 / 54.81 / 69.41 / 7.33; Q6_K 78.17 / 72.48 / 77.63 / 63.17 / 54.71 / 69.23 / 7.35; Q5_K_M 78.54
+    / 72.33 / 78.67 / 62.80 / 54.45 / 69.36 / 7.40; Q5_0 79.08 / 72.63 / 80.14 / 63.18 / 54.57 / 69.92 / 7.43; Q4_K_M 77.41
+    / 72.35 / 79.06 / 62.43 / 54.49 / 69.15 / 7.56; Q4_K_S 77.33 / 72.79 / 80.26 / 62.06 / 53.40 / 69.17 / 7.62; Q3_K_S 68.31
+    / 71.87 / 73.89 / 59.31 / 54.08 / 65.49 / 8.96.'
+  - 'Table 3 (pp512 / tg128, t/s, mean +- sd): F16 79.57 / 2.83; Q8_0 71.42 / 5.03; Q6_K 59.81 / 6.33; Q5_K_M 58.24 / 6.85;
+    Q4_K_M 87.70 / 5.12; Q4_K_S 92.52 / 4.65; Q4_0 97.35 / 4.36; Q3_K_S 57.39 / 9.91.'
+  - 'Appendix B Table 6: standard errors, e.g. F16 GSM8K 77.63 +- 1.15, MMLU 63.50 +- 0.38, TQA-MC2 54.79 +- 1.60, IFEval
+    PLL 77.08 +- 1.81.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2466
+    - intake-1510
+    - intake-1519
+    - intake-2484
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Superseded for the question ''which quant ranks best near the baseline'' by our own cohort evidence: wiki/quantization.md:L165-L173
+    (28 Qwen3.6-35B-A3B and 41 Devstral-24B GGUF quants served on llama.cpp; KLD and task composite correlate over the full
+    cohort but the correlation collapses to ~0 inside the near-baseline zone; intake-1510). The present paper''s near-baseline
+    ordering is within noise by its own standard errors.'
+  - 'No replication found (WebSearch x1: only the arXiv listing and unrelated blog/guide pages; a secondary page quotes a
+    KLD table - Q8_0 0.0017, Q6_K 0.0052, Q5_K_M 0.0263, IQ4_XS 0.0264 - for an unnamed model, which is a lead only and NOT
+    citable).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 1 contributions
+    quote: Evaluate 13 quantization configurations (Q3_K*, Q4_0/1, Q4_K*, Q5_0/1, Q5_K*, Q6_K, Q8_0) alongside a full-precision
+      FP16 baseline
+    quote_sha256: ea3346aa6c4bed2f00999bd8a552c708f736dda7b048a42b8f0f19fc0b22f7f2
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 3.2
+    quote: with the scheme identifier as the only varying parameter.
+    quote_sha256: 13436b4c9052b0fb66413334b4c24efd14139990e89e339117a0ab787c4b220e
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 3.1
+    quote: We used llama.cpp (commit b7600)
+    quote_sha256: a0154139b63f0949cb057c0dea750c0712d365d13bbaef0dce52d124162a215c
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 3.1
+    quote: dual-socket CPU server with two Intel Xeon Platinum 8488C processors
+    quote_sha256: ddcc30e0b507b85000a4fc30edd52279a1387fa7bcb3b6f8fcd43aff50b435c2
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 2 row F16
+    quote: F16 (baseline) | – | 77.63 | 72.51 | 78.93 | 63.50 | 54.79 | 69.47 | 7.32
+    quote_sha256: f8bd14174e2ff427cd1fc0d3e18f15598bb8d22cf81fafc6845ff48ed0bbfc53
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 2 row Q8_0
+    quote: Q8_0 | 46.87 | 77.48 | 72.52 | 78.79 | 63.43 | 54.81 | 69.41 | 7.33
+    quote_sha256: a6b155231d63d8530d1c9214c8916dd7824078e9ffa8eed4fce7197eaa313efa
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 2 row Q4_K_M
+    quote: Q4_K_M | 69.41 | 77.41 | 72.35 | 79.06 | 62.43 | 54.49 | 69.15 | 7.56
+    quote_sha256: 75a1cb82f0d38d8b36727c2735806de439ca37e437dd8620ba0b505f82c50a5a
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table 2 row Q6_K
+    quote: Q6_K | 58.98 | 78.17 | 72.48 | 77.63 | 63.17 | 54.71 | 69.23 | 7.35
+    quote_sha256: 3234b0030d58285304c7cafe31b8c66d2f0f2b1526ad57ad4848b7a8c07dfe94
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Table 2 row Q5_0
+    quote: Q5_0 | 65.19 | 79.08 | 72.63 | 80.14 | 63.18 | 54.57 | 69.92 | 7.43
+    quote_sha256: 0a2a3e5f7e08bffbddea0bba9cc966d3691e708ab0aa988c2da9941bcdee253b
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 4.1
+    quote: These small gains over F16 should be interpreted cautiously.
+    quote_sha256: c60496601978046af5f63852e19ba0efdd8e6deb6f87b6a9641c3870225486cf
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 4.3
+    quote: Schemes like Q6_K and Q8_0 stay close to baseline quality, but they are nevertheless dominated because Q5_0 provides
+      both higher reduction and lower AvgLoss.
+    quote_sha256: 0705566ff1565e3f8ee9bb8b5bf4d745a87b9c31dfb5cf88f9bf4075aeb84200
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: App B Table 6 (F16 GSM8K SE)
+    quote: F16 (baseline) | GSM8K (FE) | EM | 77.63 ±\pm 1.15
+    quote_sha256: a92c41bf8e485ec215d09df9393daede2b35485798f1dfae533bd1c0d50b9330
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 4.2
+    quote: several 5-bit variants share essentially the same PPL (e.g., 7.437.43 for Q5_0, Q5_1, and Q5_K_S) while exhibiting
+      markedly different GSM8K and IFEval outcomes
+    quote_sha256: 91956ca52a70a9d3fa25972d6333afb5373f2809cbec484dccb6c2ee94e966ab
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Table 3 row Q8_0
+    quote: Q8_0 | 71.42 ±\pm 3.15 | 5.03 ±\pm 0.16
+    quote_sha256: ab6175fd0078a2d843b32971a28afffda0be34c5709453bdbfd56d20caf824f9
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Table 3 row Q4_0
+    quote: Q4_0 | 97.35 ±\pm 0.68 | 4.36 ±\pm 0.20
+    quote_sha256: a713834eb70475c86825ee00c1acb47ca4b0e6718570486a6f770964828848ab
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Table 5 (App A) Q8_0 size
+    quote: Q8_0 | 8 | 8137.64 | 46.87 | 29.26
+    quote_sha256: 7ba8c048bbe8d5c1af52fa47efe5723b6b4b29fe9e4a71045c81c01f384d81d1
+    source_revision: arXiv:2601.14277v1 (11 Jan 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'grep over the whole text: no imatrix, no KL, no IQ type (only a generic "IQ*" in the Sec 2.1 format list), no llama-server.'
+  - claim_index: 1
+    effect: unaffected
+    note: Avg column recomputed for all rows from the five task columns; all match to 0.01.
+  - claim_index: 2
+    effect: narrowed
+    note: Supports Q8_0 near-F16 only as a power-limited null on one model.
+  - claim_index: 3
+    effect: overturned
+    note: The paper's Pareto/Table 4 ranking rests on sub-SE differences; the SE(Avg) figure is our unpaired estimate (IFEval
+      SE taken as 1.85 from prompt-level), a paired test could be tighter, which the paper did not run.
+  - claim_index: 4
+    effect: narrowed
+    note: Direction agrees with intake-1510/1519 cohort evidence but this paper alone is not evidence for it.
+  - claim_index: 5
+    effect: uncertain
+    note: Implied-bandwidth figures are our division of Table 5 MiB by Table 3 tg128; cause (threads/NUMA/VM limits) unknowable
+      from the text.
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass; v1 HTML (only version) read in full
+    from disk.'
+  reader_should_conclude: 'Do NOT use for IQ4_XS, IQ3_XXS/IQ3_S, IQ2*, imatrix, UD mixes, KLD or any EPYC/MI210 speed claim
+    - none are in the source. Usable only as one more independent datum that Q8_0 and Q6_K sit within noise of F16 on Llama-3.1-8B-Instruct
+    (dAvg -0.06 / -0.24, dPPL +0.01 / +0.03) and that PPL ordering of K-quants is monotone in bits; it neither supports nor
+    contradicts our UD-mix/imatrix/IQ2-IQ3 practice because it never tests them. Do NOT carry its ''Q5_0 best, Q4_K_S dominates
+    Q4_K_M, Q6_K/Q8_0 dominated'' recommendations: they are sub-standard-error differences with no paired test, and they would
+    mislead exactly where wiki/quantization.md:L165-L181 already warns. Do NOT carry the tg128 table (non-monotone vs size,
+    20-45 GB/s implied, thread count unreported).'
+  notes: 'Read in full from disk (dive-F/q-v1.html -> q-v1.txt): abstract, Sec 1-5, Appendix A Table 5, Appendix B Table 6
+    header and F16/Q8_0 rows. Hugging Face model repo uygarkurt/Llama-3.1-8B-Instruct-GGUF not fetched (weights, not needed).
+    WebSearch x1 for replications: none.'
+- id: intake-2487
+  arxiv_id: '2505.05799'
+  url: https://github.com/cat538/MxMoE
+  source_type: repo
+  title: 'MxMoE: Mixed-precision Quantization for MoE with Accuracy and Performance Co-Design (code + paper)'
+  authors:
+  - Haojie Duanmu
+  - Xiuhong Li
+  - Zhihang Yuan
+  - Size Zheng
+  - Jiangfei Duan
+  - Xingcheng Zhang
+  - Dahua Lin
+  categories:
+  - quantization
+  - moe_optimization
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2470
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Method (paper S4.2, code bits_solver.py): a binary ILP picks ONE hardware-supported scheme per (expert, linear block)
+    from a set S of (w-bits, a-bits, group, sym) configs, minimising L^r * T^(1-r) subject to a total weight-bit memory budget.
+    L = sum of Delta_{i,j,k}, where Delta is the L2 distance of the decoder LAYER output (real routing included) when ONLY
+    that one linear block of that one expert is quantized with scheme k (128 x 4096-token WikiText2 samples, RTN or GPTQ-had);
+    the code ties gate and up of an expert to the same scheme, and the default solver runs per layer with a per-layer bit
+    budget (--solve_mode layer: bits cannot migrate between layers). Solver is Gurobi (commercial). CONFIRMED.'
+  - 'The hardware cost term T is a sum of PRE-PROFILED CUDA tile runtimes (perf/performance_table.json: RTX 4090, 19 schemes
+    from w8a8/w4a4/w4a16/w2a16 x g-1/g128 x sym/asym), divided by SM count. For the headline weight-only accuracy results
+    the authors set r=1, which in the code replaces the runtime table by constant 1.0, i.e. the accuracy numbers against GPTQ
+    come from the sensitivity-only ILP, with NO hardware term. CONFIRMED.'
+  - 'Accuracy results (Table 1, WikiText2 PPL, GPTQ* = GPTQ + random Hadamard, MoE blocks quantized, attention left in full
+    precision): at 2.25 bits GPTQ* -> MxMoE: DeepSeek-V2-Lite 8.49 -> 7.01, Qwen1.5-MoE 11.19 -> 8.79 (this is the abstract''s
+    ''2.4 lower PPL''), Qwen2-MoE 7.98 -> 7.57, Mixtral-8x7B 5.69 -> 5.63; at 3.25 bits the gain is within 0.1 PPL and MxMoE
+    is slightly WORSE on Qwen2-MoE (6.18 vs 6.11). Baseline is uniform-bit GPTQ only; no sensitivity-DP, EvoPress or expert-pruning
+    baseline. CONFIRMED; the 2.4 is the best of four models and the gain collapses on 8-expert Mixtral (+0.06).'
+  - 'Granularity ablation (paper Table 3, 5-bit weight-activation): linear-block-level vs expert-level allocation PPL 6.11
+    vs 6.32 on DeepSeek-V2-Lite and 6.95 vs 6.98 on Qwen1.5-MoE (two models, one setting, no repeats). The paper''s conclusion
+    ''consistently outperforms'' rests on these two rows. CONFIRMED but thin.'
+  - 'Portability facts: kernels are CUDA tensor-core templates (int8 MMA etc.) validated ''mainly on RTX-4090''; formats are
+    uniform integer W2/W4/W8 with per-channel or g128 scales (+ optional A4/A8 activation quantization) and a random Hadamard
+    rotation fused before GPTQ; no codebook/IQ/K-quant formats; no GGUF/ggml/llama.cpp reference anywhere in the repo (case-insensitive
+    grep over all files: only ''llama'' in a Llama GPTQ routine and the rotation model list). Repo clone has no LICENSE file.
+    Models: Mixtral-8x7B, Qwen1.5-MoE, Qwen2-MoE, DeepSeek-V2-Lite (no shared-expert-aware, GDN/hybrid, or 256-expert model).
+    CONFIRMED.'
+  - 'DIVE INFERENCE (not a paper claim) on mapping to GGUF for the Q38FN lane: llama.cpp stores routed experts as ONE stacked
+    3-D tensor per (layer, gate/up/down) and assigns ONE ggml type per tensor (llama-quant.cpp picks new_type per tensor,
+    keyed on tensor->ne[2] > 1), so MxMoE''s per-expert granularity is not expressible and the allocation unit would be (layer
+    x {gate,up,down}_exps) - coarser than anything the paper tests. The runtime-cost term T has no CPU analogue worth modelling
+    (decode is bytes-bound, so T collapses into the byte budget), leaving MxMoE''s reusable idea as: an additive output-error
+    sensitivity measured at the decoder-layer output under real routing, fed to a budgeted ILP. That additive form is the
+    same class EvoPress Table 3 shows can lose to uniform at 3 bits (intake-2469), and MxMoE never compares against a non-additive
+    search.'
+  techniques:
+  - per-linear-block bit allocation by ILP (Gurobi) under a memory budget
+  - layer-output L2 sensitivity under real routing, one block quantized at a time
+  - pre-profiled tile-runtime cost model for mixed-precision GroupGEMM
+  - random-Hadamard + GPTQ weight quantization
+  - template-generated mixed-precision CUDA GroupGEMM kernels
+  reported_results:
+  - 'Table 1 WikiText2 PPL at 2.25 bits, GPTQ* -> MxMoE: DeepSeek-V2-Lite 8.49 -> 7.01; Qwen1.5-MoE 11.19 -> 8.79; Qwen2-MoE
+    7.98 -> 7.57; Mixtral-8x7B 5.69 -> 5.63 (abstract''s ''2.4 lower'' = Qwen1.5-MoE).'
+  - 'Table 1 at 3.25 bits: DeepSeek-V2-Lite 6.18 -> 6.08; Qwen2-MoE 6.11 -> 6.18 (MxMoE worse).'
+  - 'Paper Table 3 (5-bit W-A) linear-block vs expert-level allocation PPL: DeepSeek-V2-Lite 6.11 vs 6.32; Qwen1.5-MoE 6.95
+    vs 6.98.'
+  - 'S5.3: mixed-precision MoE-block throughput 1.6-2.7x (512 tokens) and 3-3.4x (8192 tokens) vs fp16 on RTX 4090; up to
+    29.4% over W8A8 at W5A5 (author-reported).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2470
+    - intake-2469
+    - intake-2466
+  credibility_score: 3
+  contradicting_evidence:
+  - Only baseline is uniform-bit GPTQ; no sensitivity-DP or search baseline. The additive per-block loss L = sum Delta is
+    the model class EvoPress Table 3 (intake-2469) shows can lose to uniform at 3 bits, so MxMoE's accuracy gain is not evidence
+    that additive sensitivity is adequate.
+  - At 3.25 bits MxMoE is within noise of GPTQ* and slightly worse on Qwen2-MoE; at 8 experts (Mixtral) the 2.25-bit gain
+    is 0.06 PPL. The authors attribute the Qwen2-MoE miss to inter-layer dependencies.
+  - ICML 2025 per the venue pages surfaced by search (leads, not read); no independent reproduction, no GGUF/llama.cpp port
+    found (2 WebSearch queries 2026-10-22).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: S4.2.1 Quantization Loss Formulation
+    quote: we employ a small calibration set (e.g., 128 samples from WikiText2) to compute Δi,j,k values. Each linear block
+      in expert i is sequentially quantized with scheme k∈S, with the corresponding output perturbation statistically estimated
+      across calibration samples.
+    quote_sha256: ed1a0f0e9e5f749aa769f04cdeb1b061410ae4cb05dec453250276a3eeb83f73
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: mxmoe/quant/quant.py:L589 @ a2b034d
+    quote: quant_err = torch.norm(quantized_outs-full_precision_outs).item()
+    quote_sha256: b40b2e1333613145bfa11dbbe2407d6860565403da47a50ee405d8ff07445efe
+    source_revision: github.com/cat538/MxMoE commit a2b034d276acb1371c3b41954b7c538d4cafa09b (2025-07-04), retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: mxmoe/quant/bits_solver.py:L720 @ a2b034d
+    quote: wbits_bugdet = args.wbits * (model_num_weights if args.solve_mode == "model" else layer_num_weights)
+    quote_sha256: 594d0b271058e524efde7769b8c254e947477362be09e0566429a85bb5b085a4
+    source_revision: github.com/cat538/MxMoE commit a2b034d276acb1371c3b41954b7c538d4cafa09b (2025-07-04), retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: mxmoe/quant/bits_solver.py:L378-L379 @ a2b034d
+    quote: 'for e, s in itertools.product(range(E), range(S)): model.addConstr(x[e, 0, s] == x[e, 1, s], name=f"x_equal_for_E{e}_S{s}")'
+    quote_sha256: c4b36dd55f856c267bd6103e5f7a74605e09243ff2e57021bd1e4641479c1096
+    source_revision: github.com/cat538/MxMoE commit a2b034d276acb1371c3b41954b7c538d4cafa09b (2025-07-04), retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: mxmoe/quant/bits_solver.py:L8 @ a2b034d
+    quote: import gurobipy as gp
+    quote_sha256: cde5f0c93e2d605c0efc492edce997d9445f0681e54e89078dcb053b76de4702
+    source_revision: github.com/cat538/MxMoE commit a2b034d276acb1371c3b41954b7c538d4cafa09b (2025-07-04), retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: S4.2.2 Runtime Cost Modeling
+    quote: MxMoE generates candidate tile configurations for each quantization scheme and profiles their runtime costs ct
+      ahead-of-time.
+    quote_sha256: 29971707d2f59a4135faf26ee4c1efb1c541bbf3eb49c93749a64acf95c6d8b3
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: S5.2 Accuracy Results
+    quote: MxMoE use r=1 as extremely low-bitwidth implies resource-constrained environment, where model accuracy is more
+      important.
+    quote_sha256: dfee9bf9d18bdeb4a02b4a0c091339491d8f2f1fc13c4977c300a2960cbb2422
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: mxmoe/quant/bits_solver.py:L252-L254 @ a2b034d
+    quote: 'if r == 1: tile_cfgs: list[list[TileConfig]] = [[] for _ in range(1)] runtime_cost: list[list[list[list[float]]]]
+      = [[[[1.0 for _ in range(1)] for _ in range(S)] for _ in range(E)] for _ in range(E)]'
+    quote_sha256: 5d6289506e03b3bc1b0fae41d2f6c1531d8870a2baef1124309a3d1f0f1775a0
+    source_revision: github.com/cat538/MxMoE commit a2b034d276acb1371c3b41954b7c538d4cafa09b (2025-07-04), retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: S5.2 Table 1, Qwen1.5-MoE rows
+    quote: GPTQ⋆ | 2.25-16 | 30.89 | 47.14 | 60.77 | 43.72 | 34.81 | 69.97 | 56.20 | 49.07 | 11.19
+    quote_sha256: 74b3606fbba2f97ba6016e64aaf7e3745747d84b2068545621087b3fd84ea80e
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: S5.2 Table 1, Qwen1.5-MoE rows
+    quote: MxMoE | 2.25-16 | 31.66 | 53.28 | 62.80 | 56.43 | 51.00 | 71.33 | 61.25 | 55.39 | 8.79
+    quote_sha256: 217b07c664c3e1c6c4150de0174568ef7bba46c87ab4b1ce0509b52ee95de565
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: S5.2 Table 1, DeepSeek-V2-Lite rows
+    quote: GPTQ⋆ | 2.25-16 | 37.63 | 63.47 | 65.45 | 52.53 | 48.55 | 74.59 | 64.09 | 58.04 | 8.49
+    quote_sha256: e8745c871c41d445aace6837a7e5806bad883c891c9f125b2fbc956f327f1495
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: S5.2 Table 1, Qwen2-MoE rows
+    quote: MxMoE | 3.25-16 | 53.84 | 76.30 | 82.81 | 72.39 | 60.95 | 81.34 | 69.69 | 71.05 | 6.18
+    quote_sha256: 31fafe62bee69d118553af98c690849ed1cfc4ab4c1f73f42e4494f0355024db
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: S5.4 Table 3
+    quote: DeepSeek-V2-Lite | 6.11 | 6.32 | 69.01 | 67.88 | Qwen1.5-MoE | 6.95 | 6.98 | 67.35 | 67.11
+    quote_sha256: f3fc6c577e3d9c1e21ce55f94f610eea20159223da2bacc3a166c4e64dd25e25
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L94 @ a2b034d
+    quote: ⚠️ MxMoE is mainly test on RTX-4090. The current implementation cannot fully utilize the performance of hopper
+      and later GPU architectures.
+    quote_sha256: 2ab06cb78f56c2542352e05138f1d1579719fbc7dc509f3543dbfbc78ae106fc
+    source_revision: github.com/cat538/MxMoE commit a2b034d276acb1371c3b41954b7c538d4cafa09b (2025-07-04), retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: S5.1 Experimental Setup
+    quote: We focus on the quantization of MoE blocks, retaining full precision for the attention modules. Experiments conducted
+      on Nvidia RTX-4090.
+    quote_sha256: 68d93095d72cdb05d4acfe421cc1c6cdc3cad7f6eea304546d7aee86e0f0a022
+    source_revision: arXiv:2505.05799v1 (9 May 2025, only version) HTML retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: src/llama-quant.cpp:L474-L478 @ production-consolidated-v10 ffc1bac82 (read-only frozen tree)
+    quote: if (tensor->ne[2] > 1) { new_type = GGML_TYPE_MXFP4; } else { new_type = GGML_TYPE_Q8_0; }
+    quote_sha256: d3bd3f7279a6a23fe8c0b6a75b53c73a7df4e10ac8de8b3384691f4150713d54
+    source_revision: commit ffc1bac82eeca6f9099e1ccd9ba49703c460a115 (production-consolidated-v10), read 2026-10-22
+    verified_by: research-intake/stage2
+    note: Shows per-TENSOR type assignment keyed on the stacked-expert dimension (ne[2] > 1); MXFP4_MOE case used as the visible
+      example of the stacked-tensor rule.
+  - claim_index: 5
+    kind: line-range
+    locator: handoffs/active/iqk-iquant-enablement.md:L31 @ lane 365d0e1fb
+    quote: 'In every case the covered tensors are the MoE routed experts (`ffn_gate_exps` / `ffn_up_exps` / `ffn_down_exps`).
+      For a 256-expert/8-active MoE those *are* the model: the parameter bulk, the dominant term in decode bandwidth, and
+      the dominant term in prefill FLOPs. **Qwen3-Next-80B is the biggest proportional beneficiary** — more than half its
+      tensor count — which was not obvious before the headers were parsed, and is a reason not to treat this as a GLM-only
+      fix.'
+    quote_sha256: 23bbc134ad121c95be56941f2372c58d1dd7d49cf3c1da2b1de72f6b8661d43d
+    source_revision: lane worktree commit 365d0e1fb
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Paper and code agree. Code detail beyond the paper: gate/up tied per expert, per-layer budget in default solve
+      mode, Gurobi required.'
+  - claim_index: 1
+    effect: narrowed
+    note: The headline accuracy-vs-GPTQ results do not use the hardware co-design at all (r=1); the 'accuracy and performance
+      co-design' title applies to the r=0.75 W5A5 results.
+  - claim_index: 2
+    effect: narrowed
+    note: 2.4 PPL is the best of four models; the other three are 1.48, 0.41 and 0.06. Baseline is uniform GPTQ only.
+  - claim_index: 3
+    effect: narrowed
+    note: Two-model, one-setting ablation; second row differs by 0.03 PPL.
+  - claim_index: 4
+    effect: unaffected
+    note: All items verified from README, code and paper.
+  - claim_index: 5
+    effect: uncertain
+    note: Dive inference, not a source claim; the one-type-per-stacked-tensor fact is anchored in llama-quant.cpp but the
+      full set of Q38FN tensor names was not enumerated here (see intake-2481 allocation files for the dense 27B; Q38FN expert
+      tensor names per iqk-iquant-enablement.md:31).
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b combined pass: new entry. arXiv id resolved from the repo README badge and the abs
+    page title matched exactly (2505.05799, v1 only). Key corrections to a naive reading: the accuracy headline uses r=1 (no
+    hardware term), the hardware term is RTX-4090 CUDA tile profiles, and the allocator''s unit (per expert x linear) cannot
+    be expressed in GGUF where routed experts are one stacked tensor per (layer, projection).'
+  reader_should_conclude: 'Cite for the allocation recipe only: budgeted ILP over per-linear options with an additive layer-output
+    sensitivity measured under real routing. Do NOT plan to run or port the code (Gurobi, CUDA/RTX-4090, Hadamard+GPTQ integer
+    formats, no licence file, no GGUF path). For the Q38FN allocator (dive-D D-L1) treat MxMoE''s sensitivity as an optional
+    second table to cross-check an imatrix-weighted NMSE table against confirmatory KLD runs, and remember the allocation
+    unit in GGUF is (layer x gate/up/down _exps), coarser than anything MxMoE tests. Do not cite its 2.4 PPL figure without
+    ''best of four models, vs uniform GPTQ only''.'
+  notes: 'Read scope: README in full; paper v1 HTML S1-S6 text, Tables 1-3, App. A headings (App. A.1/A.2 and Figures 1-6
+    not read); code: bits_solver.py (L1-L420 skimmed: objective, constraints, budget, r==1 branch; get_best_tile_configs/build_workloads
+    not read), quant.py layer_out_norm calibration (L519-L660), qconfig.py, perf/performance_table.json key list; mxmoe/kernels/*
+    CUDA templates NOT read. Clone: /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/src-MxMoE at a2b034d. Nothing executed.'
+- id: intake-2488
+  arxiv_id: '2608.25188'
+  url: https://arxiv.org/abs/2608.25188
+  source_type: paper
+  title: 'Transforms for LLM Quantization: The Great Inversion and Format Co-Design'
+  authors:
+  - Ehsan Jokar
+  categories:
+  - quantization
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2474
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Nature of source: a single-author theory-plus-literature survey (200 works to a June 2026 cutoff, 43 transform methods
+    classified; theory = the ''Great Inversion'': allocation-flexible coding rewards energy concentration, grouped shared-scale
+    quantization rewards within-group flattening, proved under within-group majorization, ''no optimality guarantee transfers
+    across the divide''). It runs no quantization experiment of its own; its only own computation is one illustrative crest-factor
+    figure on a TinyLlama-1.1B layer (''an illustrative single layer, not a benchmark''). CONFIRMED.'
+  - It is NOT an independent comparison of WUSH vs Hadamard. Table 13 (the 'format flip' W4A4 table on Llama-3.1-8B-Instruct)
+    is 'transcribed from Chen et al. (2026a)'s own table' - the WUSH paper's Table 2 (intake-2474) - and baseline rows match
+    Egiazarian et al. (MR-GPTQ) cell for cell; the survey states 'The sign reversal itself rests on Chen et al. (2026a)'s
+    table alone' and repeats that WUSH's NVFP4 gains are 'often within run-to-run variability'. The '+0.70 (MXFP4) / +0.26
+    (NVFP4)' ranking quoted in intake-2474's contradicting_evidence is therefore a restatement, not corroboration. REATTRIBUTED.
+    The one independent check it cites is Liu et al. 2025b (arXiv:2507.17417, 'A comprehensive evaluation on quantization
+    techniques for large language models'), described as finding rotation strategies effective for INT4 'offer only limited
+    gains on MXFP4 and NVFP4' - not read by us.
+  - 'Weight-only relevance: the survey''s own guide (Table 16) says for weight-only W4A16 ''a rotation typically helps little
+    at 4-bit weight-only, though it becomes valuable at 2-3 bits (Table 12)''. Table 12 is QuIP# numbers transcribed from
+    Tseng et al. 2024a (Llama-2 WikiText-2 PPL) where the 2-bit result includes a lattice codebook plus inter-layer fine-tuning,
+    and the survey itself notes the ablation ''isolates nothing on its own''. WUSH is W4A4 only (Table 13/16). The survey
+    contains no content on GGUF block formats, K-quants, IQ types or imatrix; llama.cpp appears only for the KV-cache rotation.
+    NOT-FOUND-IN-SOURCE for any weight-only GGUF result.'
+  - 'llama.cpp KV rotation: the survey says llama.cpp applies a Walsh-Hadamard rotation to the KV cache by default whenever
+    the cache is quantized and the head dimension is a multiple of 64 (citing src/llama-kv-cache.cpp). CONFIRMED against our
+    frozen v10 tree: attn_rot_k / attn_rot_v require !LLAMA_ATTN_ROT_DISABLE, ggml_is_quantized(type) and n_embd_head % 64
+    == 0 (src/llama-kv-cache.cpp:L322-L337 @ ffc1bac82), and the tree additionally force-enables the rotation tensors for
+    the DSA lightning indexer of DEEPSEEK32 / DEEPSEEK4 / GLM_DSA when the indexer head size equals the full head size (L328-L332)
+    - matching the survey''s report (Sec 10.5) that DeepSeek''s reference code rotates the 4-bit-QAT indexer query/key path.
+    The survey adds nothing to handoffs/active/tq3-quantization-evaluation.md:L26-L35 and L335-L338, which already records
+    this.'
+  - 'Shipped-model reading (Sec 10.5): frontier MoE 4-bit WEIGHT paths ship without a transform (gpt-oss MXFP4 experts, Kimi
+    K2 INT4 QAT g32, DeepSeek FP4 routed experts with most other parameters FP8), buying accuracy via training control and
+    by scoping quantization to memory-dominant outlier-poor tensors; transforms appear on activation paths. This is the survey''s
+    reading of model cards (secondary, not verified by us) and is consistent with the reader conclusion in intake-2474 that
+    WUSH-style transforms do not apply to natively-MXFP4 DS41 experts.'
+  - 'Evaluation pitfalls (Sec 12.1): hold group size, scale rule, rounder (RTN vs GPTQ) and format fixed across arms; count
+    effective bits including metadata; validate on the deployed metric, not a layer-error surrogate; report online-transform
+    runtime. Method/consensus advice, not a measurement; consistent with our MEASUREMENT.md era/claim grammar.'
+  techniques:
+  - transform taxonomy (diagonal / permutation / fixed orthogonal / learned orthogonal / affine)
+  - computational-invariance folding of residual-stream rotations into weights (Theorem 2.17)
+  - block-confined Hadamard sized to the scale group
+  - format-aware transform selection (INT vs MXFP4 vs NVFP4)
+  reported_results:
+  - 'Table 13 (transcribed from the WUSH paper, NOT new): Llama-3.1-8B-Instruct W4A4 average accuracy - MXFP4: RTN 69.32,
+    RTN+block-H 70.45, MR-GPTQ 73.65, WUSH 74.35, QuaRot 62.9; NVFP4: RTN 74.73, RTN+block-H 74.05, MR-GPTQ 75.84 (survey
+    text: 75.8), WUSH 76.1, QuaRot 74.1. Survey Table 16: WUSH leads by 0.70 (MXFP4) and 0.26 (NVFP4).'
+  - 'Table 12 (transcribed from Tseng et al. 2024a Table 2; Llama-2 WikiText-2 PPL, activations FP16): at 4-bit weight-only
+    every method is 5.56-6.15 against FP16 5.47 (Llama-2-7B); QuIP# at 2 bits 6.66 (context 2048), the same source''s ablation
+    without E8 codebook and inter-layer fine-tuning 12.3.'
+  - Sec 11.5 fused-kernel overhead figures (~7% for fused data-aware maps; 0.07x vs 0.26x slowdown for fused affine vs QuaRot
+    online Hadamards) are relayed from other papers; not read in primary form.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2474
+    - intake-2478
+    - intake-873
+    - intake-2461
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Not a primary source for any number: Table 12/13 are transcriptions. Single author (gmail address, no affiliation printed),
+    arXiv-only. No peer review or replication found (WebSearch x1: only the arXiv listing, alphaXiv and two secondary summaries).'
+  - Its survey statement that flattening is optimal for 'every deployed LLM GEMM kernel' (Assumption 4.1, datapath fixes the
+    rate) is argued for tensor-core/SIMD tiles; whether it binds a CPU dequantize-in-register kernel with non-uniform codebooks
+    (iqk IQ2/IQ3) is not addressed in the text and is our extrapolation to make, not the paper's.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: Yet we are aware of no survey dedicated to this transform stage
+    quote_sha256: 27e6b64beb39606400040440862b2ddc91320219fb0ce829d279be93dac151f2
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: Through it we survey 200 works to a June 2026 cutoff, classifying 43 transform methods
+    quote_sha256: 9b69efd65307974086e874cd50074f431437d90b7371e02554157c17ea677e08
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Fig 5 caption
+    quote: an illustrative single layer, not a benchmark.
+    quote_sha256: 16598241f41532df2d0c60f4c4c84695aa2ccaf3cb91006aba2f8d217dd86704
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 11.3 Table 13 text
+    quote: Every row in Table 13 is transcribed from Chen et al. (2026a)’s own table.
+    quote_sha256: ca9f7937f2c997f327bfcea8545a61dfc2f5b399463025eeefcc0e23c70b334b
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 11.3
+    quote: The sign reversal itself rests on Chen et al. (2026a)’s table alone.
+    quote_sha256: ad5492459fb8206a2bcbc095a35f88166385f61d5bc26cef79e5cb63790a0e47
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 11.3
+    quote: finding that rotation strategies effective for INT4 offer only limited gains on MXFP4 and NVFP4 (Liu et al., 2025b).
+    quote_sha256: 7f9b4bf5dad65d52bd9052c33d0dabc54733302143be1e1eb299b8612808d57e
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table 16 row W4A16
+    quote: A rotation typically helps little at 4-bit weight-only, though it becomes valuable at 2–3 bits (Table 12).
+    quote_sha256: 83977c4f90cc587547c370cc601ebba4a2400c77c98b0040295c6b16b1791bf7
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 11.2
+    quote: That row isolates nothing on its own, since it drops the codebook and the fine-tuning together
+    quote_sha256: f5599f83bc09ba6fd55081310de112765a05cf746046039236dffbc761850253
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 10.5
+    quote: llama.cpp applies a Walsh–Hadamard to the KV cache by default whenever that cache is quantized and the head dimension
+      is a multiple of 64
+    quote_sha256: d33a048d24424b03ab7e97ded018908b5ecf64b62881b385f4c099ea7fbd49d0
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: src/llama-kv-cache.cpp:L322-L326 @ ffc1bac82
+    quote: attn_rot_k = !attn_rot_disable && n_embd_head_k_all > 0 && ggml_is_quantized(type_k) && hparams.n_embd_head_k()
+      % 64 == 0;
+    quote_sha256: 14a5b53545ed3e62be52b0125162324b8e4904f2ead8f65fbb749c50b400def5
+    source_revision: commit ffc1bac82eeca6f9099e1ccd9ba49703c460a115 (frozen v10 tree, read-only)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: src/llama-kv-cache.cpp:L328-L332 @ ffc1bac82
+    quote: model.arch == LLM_ARCH_DEEPSEEK32 || model.arch == LLM_ARCH_DEEPSEEK4 || model.arch == LLM_ARCH_GLM_DSA
+    quote_sha256: f7e7940c27234613ee502c6b84caecd132afa0de9a0c67e56cf3e4dc7d538981
+    source_revision: commit ffc1bac82eeca6f9099e1ccd9ba49703c460a115 (frozen v10 tree, read-only)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 10.5
+    quote: On the 4-bit weight path the frontier mixture-of-experts releases agree on a transform-free recipe, though the
+      shipped record is not unanimous.
+    quote_sha256: 59d8884ad25966f2f286b0cf415daae8448d337fdb666d916010c7e437aef465
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 12.1
+    quote: Any claim about a transform must therefore be validated on the deployed metric (perplexity or downstream accuracy
+      at the actual bit-width, group size, and scale rule), not on a surrogate the hardware does not optimize.
+    quote_sha256: 4415636988fc906e71004e15ffbad636a798f16c2671f6e88c4245683f188587
+    source_revision: arXiv:2608.25188v1 (25 Aug 2026; only version) retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Abstract, Sec 1, Fig 5 caption read.
+  - claim_index: 1
+    effect: reattributed
+    note: The WUSH-ranks-best statement is the WUSH paper own table re-printed; intake-2474 contradicting_evidence should
+      read "restatement, not independent".
+  - claim_index: 2
+    effect: narrowed
+    note: 'grep over the full text: llama.cpp matches only at the KV-rotation lines and its reference; no GGUF/K-quant/IQ/imatrix.'
+  - claim_index: 3
+    effect: unaffected
+    note: Survey statement matches the frozen tree line for line; the tree read was read-only.
+  - claim_index: 4
+    effect: uncertain
+    note: Model-card assertions relayed by the survey; not verified against the cards.
+  - claim_index: 5
+    effect: unaffected
+    note: Sec 12.1 read.
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b: entry minted and dived in one combined pass; v1 HTML (only version) read from disk
+    (abstract, Sec 1, 2.8, 4.1, 5, 7.3, 8 transform-format text, 9.3, 10.4-10.5, 11.2-11.3, 12.1-12.2 / Table 16).'
+  reader_should_conclude: 'Cite only for: (1) the theory framing (flattening vs concentration; no optimum transfers) as background,
+    (2) the explicit statement that its WUSH evidence is a transcription of the WUSH paper''s own Table 2, (3) the guide row
+    ''rotation helps little at 4-bit weight-only, valuable at 2-3 bits'' (derived from QuIP#, a different method with codebook
+    and fine-tuning), (4) its list of comparison pitfalls. Do NOT cite as independent corroboration of WUSH (intake-2474 should
+    drop the ''later survey ranks WUSH best'' line as corroboration), as evidence about weight-only GGUF block formats, K-quants
+    or IQ types, or as anything about llama.cpp beyond the KV-rotation gate already in our tree. Nothing in it changes the
+    tq3-quantization-evaluation KV-rotation record; the only portable weight-side mechanism it points at is offline computational-invariance
+    folding of a residual-stream rotation into the weights (Theorem 2.17), which needs no runtime kernel change but was never
+    measured by us on IQ2/IQ3 - see ledger F-L5 (hypothesis, not a finding).'
+  notes: 'Read from disk (dive-F/t-v1.html -> t-v1.txt, 5,609 text lines): abstract, Sec 1, 2.8, 4.1, 5, 7.3, 9.3, 9.4, 10.4,
+    10.5, 11.2, 11.3, 12.1, Table 16, the llama.cpp reference. NOT read: Sec 2.1-2.7, 3, 4.2-4.7 proofs, 6, 7.1-7.2, 8 (only
+    skimmed), 9.1-9.2, 9.5, 10.1-10.3, 11.1, 11.4-11.5, 13, appendices and the 200-entry bibliography. Tree reads: /mnt/raid0/llm/llama.cpp
+    src/llama-kv-cache.cpp (HEAD ffc1bac82, read-only, no build). WebSearch x1.'
+- id: intake-2489
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/GSQ/tree/gsvq-iquant-qwen3-sweep-results
+  source_type: repo
+  title: 'IST-DASLab/GSQ side branch gsvq-iquant-qwen3-sweep-results: GSVQ for GGUF IQuants (fixed-scale IQ2/IQ3 assignment
+    refinement)'
+  authors:
+  - Dan Alistarh
+  - IST-DASLab
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2465
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'What the branch does: it exactly decomposes GGUF IQ2_XXS / IQ2_XS / IQ2_S / IQ3_XXS / IQ3_S tensors into (fixed per-block
+    scales, magnitude-grid codeword indices, sign-pattern indices), re-optimises only the DISCRETE assignments with a factorized
+    Gumbel-softmax over a 2-3 candidate shortlist (one current-code neighbour + one nearest-to-dense-target) against plain
+    MSE to the dense HF weights, accepts a chunk only if hard MSE decreases, and repacks the new indices into the original
+    GGUF bytes (scales untouched). Other types (Q2_K/Q3_K/Q4_K/Q6_K...) are untouched; IQ1_S/IQ1_M/IQ4_XS/IQ4_NL raise NotImplementedError.
+    Python on the `gguf` library; no llama.cpp involvement. CONFIRMED (docs/gsvq_iquants.md L30-55, src/gguf_iq.py L317-339).'
+  - 'Measured result (author-reported, Qwen3-4B UD-Q2_K_XL, all 45 IQ tensors <4 bpw patched): weight reconstruction MSE falls
+    2.5914% (800 steps, lr 0.12, 2 candidates) and 2.6974% (normalized-init best); end-to-end KL against the DENSE HF model,
+    wikitext2, 256-token windows, WORSENS: original 0.510352 -> 0.519979 nats/token (+1.89%) and -> 0.527014 (+3.26%) at 64
+    seqs / 16,320 positions; original 0.497393 -> 0.508674 (+2.27%) and -> 0.518081 (+4.16%) at 128 seqs / 32,640 positions.
+    The Stage-1 ''reconstruction -2.6..2.7%, KL worse 1.9-4.2%'' framing is CONFIRMED exactly (the doc prints the KL change
+    as negative ''delta'' meaning KL increased). The authors'' own conclusion: the pass ''did not improve end-to-end KL''.'
+  - 'Why the result is weak evidence either way: one model (4B dense), one GGUF, one calibration-free eval set, 64/128 sequences
+    x 256 tokens, one seed each (seed 0 and seed 1 for the two sets), KL computed in HF from dequantized GGUF weights (not
+    llama.cpp), no confidence intervals. The objective is UNWEIGHTED weight MSE (the quantizer''s `importance` buffer defaults
+    to ones and the requantize/KL scripts never pass one), so the optimiser is blind to activation importance; the authors
+    list activation-/KL-aware acceptance and calibration importance weights as the NEXT checkpoints. Whether the original
+    UD GGUF''s assignments were importance-weighted (so that unweighted-MSE reassignment undoes them) is NOT stated in the
+    source; that mechanism is a hypothesis only. The sign is consistent across 2 recipes x 2 eval sizes (4 of 4 worse).'
+  - 'Fit to the Q38FN IQ lanes: weak. The HF-name map covers only dense attention and dense mlp.{gate,up,down}_proj tensors
+    (no *_exps routed-expert tensors, no GDN/ssm tensors), so the code cannot touch the MoE experts that hold the Q38FN bytes;
+    IQ1_S/IQ1_M/IQ4_XS (types present in the ISTA 27B allocations) are unsupported; the method needs a dense HF reference
+    (~354 GB for Q38FN) and a GPU. The only potentially reusable artefact is the pure-Python IQ2/IQ3 block decomposer/repacker
+    (src/gguf_iq.py) as an independent reference for the bit layout. CONFIRMED as a scope statement; usability for Q38FN:
+    NO.'
+  techniques:
+  - factorized Gumbel-softmax vector quantization over IQ magnitude-grid and sign-pattern choices
+  - exact IQ2_XXS/XS/S and IQ3_XXS/S decomposition and byte repacking at fixed scales
+  - per-chunk MSE acceptance guard
+  - dense-reference KL evaluation of patched vs original GGUF
+  reported_results:
+  - 'docs/gsvq_iquants.md L101-L107 and L166-L171: all-IQuant (45 tensors) weight MSE 2.310157e-05 -> 2.250513e-05 (-2.5818%)
+    read-only, -2.5914% after patching; normalized init 2.2478e-05 (-2.6974%).'
+  - 'docs/gsvq_iquants.md L193-L207: Wikitext2 KL vs dense HF, original -> first patch: 0.510352 -> 0.519979 (64x256) and
+    0.497393 -> 0.508674 (128x256) nats/token; second patch: 0.527014 and 0.518081 (L271-L283). Author-reported, single seed
+    each.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2465
+    - intake-2206
+    - intake-2207
+  credibility_score: null
+  contradicting_evidence:
+  - 'The branch''s own end-to-end result contradicts the implied benefit of its MSE gain: KL worsened in 4 of 4 reported comparisons
+    (+1.89%, +2.27%, +3.26%, +4.16%).'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L40-L44 @ c93f2e8
+    quote: '- `src/gguf_iq.py`: GGUF tensor discovery, HF name mapping, dense dequant loading, and exact IQ2_XXS/IQ2_XS/IQ2_S
+      decomposition into scales and codes. - Exact IQ3_XXS/IQ3_S decomposition and byte repacking for IQ2_XS, IQ2_S, IQ2_XXS,
+      IQ3_XXS, and IQ3_S. Repacking preserves fixed GGUF scales and only changes discrete assignment payloads.'
+    quote_sha256: 18b09dd0c355efdaad46b0dec9667e79342754db9cc777a8b2985e76133cfe35
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: src/gguf_iq.py:L336-L339 @ c93f2e8
+    quote: raise NotImplementedError( f"Exact IQuant decomposition is not implemented yet for {qtype_name}. " "Current exact
+      path supports IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, and IQ3_S." )
+    quote_sha256: fe0f40f4968075efe0f0b876bb087b78e8773a3ca9783378fdc204f528b12b0a
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L162-L164 @ c93f2e8
+    quote: The output GGUF patches all 45 IQuant tensors below 4 bits in `Qwen3-4B-UD-Q2_K_XL.gguf`. Each tensor was dequantized
+      after patching and checked against the accepted reconstruction MSE.
+    quote_sha256: 0dfa569d1d6f4ba2e7387a7cec9f5abd514f93390b1465f5c2a49d517f904294
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L168-L171 @ c93f2e8
+    quote: '```text 2.310157283154e-05 -> 2.250291738853e-05 relative reduction = 2.5914% ```'
+    quote_sha256: 2639ca2cc8d9a26fa2b3449d465fb5f372d2056fdd5d4246f44313869f55acd2
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L193-L207 @ c93f2e8
+    quote: 'Wikitext2 test, 64 sequences, sequence length 256, 16,320 next-token positions: ```text original GGUF KL: 0.510352478
+      nats/token GSVQ GGUF KL : 0.519978976 nats/token delta : -0.009626498 nats/token (-1.8862% relative) ``` Wikitext2 test,
+      128 sequences, sequence length 256, 32,640 next-token positions: ```text original GGUF KL: 0.497392662 nats/token GSVQ
+      GGUF KL : 0.508673574 nats/token delta : -0.011280912 nats/token (-2.2680% relative) ```'
+    quote_sha256: 51f5571322c13596081057936807320b8ef8fcdc5be4e9597c67271bb353eac5
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L209-L212 @ c93f2e8
+    quote: 'Conclusion: the fixed-scale assignment-only GSVQ pass reliably decreases IQuant weight reconstruction error, but
+      it did not improve end-to-end KL for this full Qwen3-4B Unsloth GGUF. On the two Wikitext2 checks above, KL worsened
+      despite the `2.5914%` IQuant reconstruction MSE reduction.'
+    quote_sha256: 6e53e4eca65d4802539c4e73275525bb7c5a88c66e52aa1f38ec7b680d913a7e
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L263-L265 and L277-L282 @ c93f2e8
+    quote: 2.310157283154e-05 -> 2.247843325782e-05 relative reduction = 2.6974% ```
+    quote_sha256: ef9674f7696c10e6520a1da8c21735ea439ae2598979688e46db54a6c2c12436
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L274-L283 @ c93f2e8
+    quote: 'Wikitext2, 64 sequences, 16,320 positions: original GGUF KL: 0.510352478 nats/token new GSVQ GGUF KL: 0.527014296
+      nats/token delta : -0.016661818 nats/token (-3.2648% relative) Wikitext2, 128 sequences, 32,640 positions: original
+      GGUF KL: 0.497392662 nats/token new GSVQ GGUF KL: 0.518081333 nats/token delta : -0.020688671 nats/token (-4.1594% relative)
+      ```'
+    quote_sha256: a6749f597561f81c026c8d1ab49b1b20d82e6c12b03280949585bc9639ec0d75
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L188-L191 @ c93f2e8
+    quote: End-to-end KL was checked by loading the dense HF Qwen3-4B model as the reference and loading all 398 GGUF tensors
+      into a second HF model shell. The candidate model only differs from the original GGUF in the patched IQuant tensors.
+    quote_sha256: 39780e156a5eac10db62158e435c596c2fa618b3f71a461f30434b22c804b934
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: src/quantization/gsvq.py:L437 @ c93f2e8
+    quote: self.register_buffer("importance", importance if importance is not None else torch.ones_like(target_vectors))
+    quote_sha256: 4ca52690c38892879d196be15b48c1b311928322ed1759191961dc0c0495fcc4
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: docs/gsvq_iquants.md:L61-L62 @ c93f2e8
+    quote: 1. Add activation-aware or output-KL-aware acceptance. Weight reconstruction MSE alone decreased, but end-to-end
+      KL worsened in the full GGUF check below.
+    quote_sha256: 4c258b6baf804452d91ad073f02c852f626b29d9dba83aa3f336d93345e91e87
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: src/gguf_iq.py:L67-L71 @ c93f2e8
+    quote: '"attn_q_norm.weight": "self_attn.q_norm", "attn_k_norm.weight": "self_attn.k_norm", "ffn_gate.weight": "mlp.gate_proj",
+      "ffn_up.weight": "mlp.up_proj", "ffn_down.weight": "mlp.down_proj",'
+    quote_sha256: 86d4844b8925c112640b4925625455fcb2387ae3b0ff429ae4d23463d2b47aae
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+    note: 'Complete HF-name map for blk.* tensors is L62-L73: attn q/k/v/o + q/k norm, dense ffn_gate/up/down, two norms.
+      No *_exps or ssm_* key.'
+  - claim_index: 3
+    kind: line-range
+    locator: src/gguf_iq.py:L15-L26 @ c93f2e8
+    quote: ') GGUF_TYPE_TO_NAME = { 16: "IQ2_XXS", 17: "IQ2_XS", 18: "IQ3_XXS", 19: "IQ1_S", 20: "IQ4_NL", 21: "IQ3_S", 22:
+      "IQ2_S", 23: "IQ4_XS",'
+    quote_sha256: bfa4f4d6be63621b908272539001dfa6ca815724a07d09e229cadf10cf0e9bd8
+    source_revision: commit c93f2e81a1cf8070ee7c32bec7f787d0ed7f496f (side branch gsvq-iquant-qwen3-sweep-results, 2026-05-18),
+      cloned 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Group B read the doc but listed the code as not read; this dive read gguf_iq.py decompose/patch dispatch, requantize
+      and KL scripts.
+  - claim_index: 1
+    effect: unaffected
+    note: All eight KL and MSE figures read from docs/gsvq_iquants.md and re-checked against docs/results/qwen3_4b_gsvq_iquant_requant_kl.json
+      (baseline 0.510352478 / 0.497392662, candidate 0.519978976 / 0.508673574, rel -0.018862 / -0.02268).
+  - claim_index: 2
+    effect: uncertain
+    note: The imatrix/importance-weighting mechanism is a hypothesis; source only shows unweighted MSE and the authors' own
+      next-checkpoint list.
+  - claim_index: 3
+    effect: unaffected
+    note: Absence claims (no *_exps, no ssm mapping, no IQ1/IQ4_XS) verified by reading the name map and the NotImplementedError;
+      branch has no LICENSE file in its tree (main has one).
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b combined pass: new entry (the branch was previously only a side-channel mention inside
+    intake-2465 and its code was listed, not read). Confirms the reported numbers exactly and adds: the objective is unweighted
+    MSE to dense weights, the name map is dense-only, and unsupported types are IQ1_S, IQ1_M, IQ4_XS, IQ4_NL.'
+  reader_should_conclude: 'Cite only as a negative result: fixed-scale assignment-only refinement of an existing IQ2/IQ3 GGUF
+    reduced weight MSE ~2.6% yet increased KL vs the dense model by 1.9-4.2% on Qwen3-4B UD-Q2_K_XL (author-reported, HF-dequantized
+    eval, tiny N, single seed). Weight MSE is not evidence of quality for IQ-type GGUFs. Do not plan on running this for Q38FN:
+    dense-only name map, no routed-expert or GDN tensors, no IQ1/IQ4_XS, needs a dense HF reference. The B-L5 trigger on the
+    GSQ main repo is unaffected.'
+  notes: 'Read scope: docs/gsvq_iquants.md in full (288 lines), docs/results/*.json heads, src/gguf_iq.py L1-L340 (types,
+    name map, decompose dispatch, patch dispatch) , scripts/requantize_gsvq_iquant_gguf.py L150-L240, scripts/eval_gguf_kl.py
+    L20-L70 and the KL function, gsvq.py importance buffer. NOT read: packers L393-L480, per-type decompose bodies L517-L720,
+    gsvq.py quantizer internals, runtime/ sweep CSVs. Clone: /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/src-GSQ-iquant
+    at c93f2e8 (depth 1). Nothing executed.'
+- id: intake-2490
+  arxiv_id: null
+  url: https://huggingface.co/HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF
+  source_type: repo
+  title: HermiHg Qwen3.8-27B-DFlash2 Q2_K_S-MIX (2.33 bpw re-quantized DFlash2 drafter GGUF)
+  authors:
+  - HermiHg
+  categories:
+  - quantization
+  - speculative_decoding
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2481
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  key_claims:
+  - 'Artifact: a single-file re-quantization of the DFlash2 drafter (incoai/Qwen3.8-27B-DFlash2, DeepSeek-style block-diffusion
+    drafter; arch ''dflash'') from the upstream BF16 GGUF with llama-quantize (q2_k_s base + per-tensor overrides): FFN gate/up/down
+    IQ2_XXS (~69% of params), selector hidden Q5_K and pred/succ IQ2_S, feature projection fc Q3_K, conv projections IQ2_XXS,
+    attention q/o IQ2_S and k/v IQ3_S, norms/conv bases F32. HF API: file 561,241,824 B (535 MiB), LFS sha256 0c1a01ef...bed528,
+    gguf.total 1,924,404,480 parameters -> 2.333 bits/weight (matches the card''s 2.33 bpw). Needs the DFlash2 llama.cpp support
+    (PR 27342, merged to main 2026-08-27 per card). CONFIRMED from card + API; tensor-level mix not independently verified
+    (GGUF not read).'
+  - 'The artifact CHANGED since the earlier read recorded in intake-1256: the repo history shows ''Rebuild Q2_K_S-MIX on current
+    DFlash2 build'' (2026-08-25T16:04:37Z), the file is now 561,241,824 B (earlier read: 571,123,360 B) and the HF-API GGUF
+    metadata field quantize.imatrix.file now reads /home/hermi/dflash_bf16/draft_imatrix_full.dat, whereas intake-1256 read
+    /home/hermi/dflash_bf16/dummy_imatrix.dat on the superseded upload. The card now says the imatrix is ''a real activation-calibrated
+    importance matrix ... captured from the draft''s own decode activations''. A file NAME is not evidence of content and
+    the imatrix itself was not inspected, so ''real'' is author-reported; but intake-1256''s ''fabricated imatrix'' characterisation
+    applies only to the superseded 2026-08-21 file.'
+  - 'Acceptance numbers (author-reported; llama-server DFlash2 PR 27342 against Qwen3.8-27B on a 24 GB NVIDIA GPU, ONE fixed
+    prompt, medium reasoning effort, T=1.0, concurrency 1, 5 replicate runs, no variance printed). The target quantization
+    used for THIS table is NOT STATED (the card''s base-model evaluation section, a separate Inco AI table, names a Q4_K_M
+    target). Per-draft-token acceptance Q4_K_M / Q3_K_M / Q2_K / Q2_K_S-MIX at n_max 3: 0.539/0.543/0.525/0.524; n_max 4:
+    0.466/0.459/0.441/0.435; n_max 5: 0.403/0.403/0.388/0.373; mean draft length (Q4_K_M vs MIX) 2.62 vs 2.57, 2.86 vs 2.74,
+    3.01 vs 2.86; tok/s 95.2 vs 96.2, 99.2 vs 95.6, 104.2 vs 101.9 (MIX/Q4 = 1.01, 0.96, 0.98). Draft length = 1 + n_max x
+    acceptance reproduces all 12 draft-length cells within 0.005 (bonus-token convention, same as intake-1256). The Q8_0 drafter
+    - the one we serve - is NOT in this table; the card''s separate first-party table (n_max 7, first 8 GSM8K prompts, Q4_K_M
+    target) gives acceptance LENGTH BF16 5.28 / Q8_0 5.13 / Q4_K_M 5.39, i.e. Q4_K_M above BF16, so those differences are
+    noise-level.'
+  - 'Reading the table: dropping the drafter from 4.76 to 2.33 bpw (-51% bytes) costs 2-5% mean draft length and 0-7% per-token
+    acceptance and is throughput-neutral (-4% to +1%) on that GPU/target. Card defects: the ''Q2_K'' column header links to
+    the Q3_K_M repo (same URL as the Q3_K_M column), the claim that non-imatrix Q2_K quants were ''strictly worse'' is stated
+    without data, and ''costs speed, not quality'' is true by DFlash2''s lossless-verification design but no output-equivalence
+    check is shown. Single prompt, so no claim about acceptance on code/agentic/long-context workloads.'
+  - 'Relevance to our MI210 DFlash2 drafter (Qwen3.8-27B-DFlash2-Q8_0.gguf, 2,056,414,752 B, taps [6,20,34,48,62]; served
+    with the Q8_0 29.05 GB target): DERIVED, not in the source. (a) Drafter weight-bytes are ~6.6% of target+drafter bytes
+    at the Q8_0 target, so even a free drafter shrink to 561 MB caps the weight-read saving at ~4.8% per cycle, and that is
+    before the measured lower MMVQ efficiency of small-quant types on MI210 (Q8_0 70.2% vs Q4_K 46.5% of peak, handoffs exl3-cpu-mi210-implementation.md):
+    effective read time Q8_0 2.056/0.702 = 2.93 vs Q4_K-class 1.14/0.465 = 2.45 (-16%), IQ2-class no better measured. (b)
+    The card''s own table shows the acceptance loss (2-5% draft length) cancels that kind of saving: net 0. (c) The share
+    rises only if the TARGET is re-quantized small: at a 11.35 GB IQ3_S-class target (intake-2481) Q8_0 drafter is ~15% of
+    bytes, Q4_K_M ~9%, Q2 mix ~5%. (d) The axis that matters for a re-quantized target is the target''s hidden-state drift
+    at the five taps, which this artifact does not test (its target quant is unstated); our X0 data (UD-Q4_K_M target: acceptance
+    np1 0.7323 vs Q8_0 0.7256, np4 0.5887 vs 0.5649) is the relevant evidence there. Conclusion: keep the Q8_0 drafter; if
+    the target moves to a sub-Q8 quant on MI210, test the first-party Q4_K_M drafter (1.1 GB, Inco AI) as one extra arm; the
+    HermiHg file is not needed.'
+  techniques:
+  - per-tensor mixed 2-3-bit re-quantization of a DFlash2 block-diffusion drafter from BF16 with an imatrix
+  - drafter bytes vs acceptance/throughput frontier at n_max 3/4/5
+  reported_results:
+  - 'README L40-L49: acceptance Q4_K_M/Q3_K_M/Q2_K/Q2_K_S-MIX at n_max=3: 0.539/0.543/0.525/0.524; n_max=4: 0.466/0.459/0.441/0.435;
+    n_max=5: 0.403/0.403/0.388/0.373; tok/s MIX 96.2/95.6/101.9 vs Q4_K_M 95.2/99.2/104.2; size 535 MiB vs 1,090 MiB (author-reported,
+    one prompt, 5 replicates, target quant unstated).'
+  - 'README L198-L202 (first-party Inco AI eval inside the same README, Q4_K_M target, n_max 7, 8 GSM8K prompts): acceptance
+    length BF16 5.28, Q8_0 5.13, Q4_K_M 5.39.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-2481
+    - intake-1256
+    - intake-2461
+  credibility_score: null
+  contradicting_evidence:
+  - 'Supersedes part of intake-1256''s recorded evidence: the file read there (571,123,360 B, dummy_imatrix.dat) was replaced
+    on 2026-08-25; the current file''s imatrix path is draft_imatrix_full.dat and the card claims a real decode-activation
+    imatrix (unverified).'
+  - 'WebSearch lead (not verified): an MLX affine-4 DFlash2 drafter on Apple silicon reported acceptance 87.9% -> 86.9% for
+    bf16 -> 4-bit, and a DeepSeek-V4-Flash DSpark drafter with Q2_K routed experts reported equal acceptance to Q4_K - both
+    consistent with drafter-quantization insensitivity, neither is this artifact.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L19-L29 @ 2b45274
+    quote: '# Qwen3.8-27B-DFlash2 — Q2_K_S-MIX draft (half the reference size) A **mixed-precision 2–3-bit quantization**
+      of the DFlash 2 draft model for [`Qwen/Qwen3.8-27B`](https://huggingface.co/Qwen/Qwen3.8-27B), built to be **50% the
+      size** of the reference `Q4_K_M` checkpoint while retaining **~98% of its throughput**. `Q2_K_S-MIX` is a mixed-precision
+      quant that compresses the large feed-forward blocks hard while keeping the small, high-impact tensors (the path selector
+      and feature projection) more precise, so it lands at half the reference size with only a small acceptance loss.'
+    quote_sha256: fa8b47afe069aae4b94004e2cf14bd952e43611ac33105f6206bc83da895c096
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L84-L91 (component table) @ 2b45274
+    quote: '| Component | Tensors | Quant | | :--- | :--- | :--- | | Feed-forward (SwiGLU gate/up/down) | ~69% of params |
+      `iq2_xxs` | | Token-path selector (hidden / predecessor / successor) | ~7% | hidden `q5_k`; pred/succ `iq2_s` | | Feature
+      projection `fc` | `5120 × 25600` | `q3_k` | | Two-tap dynamic-conv projections (attn + ffn) | 2 × 5 blocks | `iq2_xxs`
+      | | Attention (q / output ; k / v) | per block | `iq2_s` ; `iq3_s` | | Layer norms + conv bases | 32 tensors | `f32`
+      (held, not quantized) |'
+    quote_sha256: 6924174005cc616a21c0cdd33cf21338dd608a47117bfbe2ab3bad3a81a1c265
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: json-pointer
+    locator: /siblings[rfilename=Qwen3.8-27B-DFlash2-Q2_K_S-MIX.gguf] (HF API ?blobs=true)
+    quote: '"rfilename":"Qwen3.8-27B-DFlash2-Q2_K_S-MIX.gguf","blobId":"1e9d7e682261b9797663bf6dc3adfbc7a8779779","size":561241824,"lfs":{"sha256":"0c1a01efa952a752b8bf139e8beb934d07278422eefc2e0ba968a75ee8bed528"'
+    quote_sha256: 0f8d4746702b3a9fd2be04bced84d32fe70d1389841a71ebd50752e850d6d31e
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: json-pointer
+    locator: /gguf/total (HF API expand[]=gguf)
+    quote: '"total":1924404480'
+    quote_sha256: 44949f0e890b0255fc0705d0b01c27eae8481c946b1746b1577dc2f42535ade4
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: /gguf/quantize_imatrix_file (HF API expand[]=gguf)
+    quote: '"quantize_imatrix_file":"/home/hermi/dflash_bf16/draft_imatrix_full.dat"'
+    quote_sha256: 7b29339c960b6f93fc4d0d8db8d2958f99c157a6d1a66a1113aa99e95fd5bc52
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: /[id=59a80e6c] commits/main (HF API)
+    quote: '"title":"Rebuild Q2_K_S-MIX on current DFlash2 build"'
+    quote_sha256: 7d62db9137ea6d4a6fa30a6370bea2c6b1e77f52107cb5d8c0279b42fa5b1e03
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22; commit 59a80e6c 2026-08-25T16:04:37Z
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L78-L82 @ 2b45274
+    quote: 'No dequant-from-quant: the source is the full-precision checkpoint. It is a `q2_k_s` base with per-tensor `--tensor-type`
+      overrides, and the low-bit I-quants are quantized with a **real activation-calibrated importance matrix (imatrix)**
+      — captured from the draft''s own decode activations — rather than a flat one, so each super-block is weighted by the
+      magnitudes it actually sees:'
+    quote_sha256: d2508f1eff2ab46e1596b4ca67e9e9abb2ed2d1eee1147a2839911bfa0663033
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L33-L35 @ 2b45274
+    quote: 'All draft models served with `llama-server` (DFlash 2, PR #27342) against the `Qwen3.8-27B` target on a 24 GB
+      NVIDIA GPU, one fixed conversational prompt with medium reasoning effort, temperature 1.0, concurrency 1, 5 replicate
+      runs. `n_max` is the draft block'
+    quote_sha256: 1ca9ae73fe470f1f0ef162edef5078a9e14b331cdce92a4b83e77b9452f235b4
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L40-L48 @ 2b45274
+    quote: '| 3 | acceptance | 0.539 | 0.543 | 0.525 | 0.524 | 0.97 | | 4 | acceptance | 0.466 | 0.459 | 0.441 | 0.435 | 0.93
+      | | 5 | acceptance | 0.403 | 0.403 | 0.388 | 0.373 | 0.93 | | 3 | draft len | 2.62 | 2.63 | 2.57 | 2.57 | 0.98 | | 4
+      | draft len | 2.86 | 2.83 | 2.76 | 2.74 | 0.96 | | 5 | draft len | 3.01 | 3.01 | 2.93 | 2.86 | 0.95 | | 3 | tok/s |
+      95.2 | 96.6 | 94.9 | 96.2 | 1.01 | | 4 | tok/s | 99.2 | 98.3 | 96.1 | 95.6 | 0.96 | | 5 | tok/s | 104.2 | 104.8 | 102.4
+      | 101.9 | 0.98 |'
+    quote_sha256: 5e9097475ae6a07a1759b1b6bd87b9dc68febb5461323f5355e71dec5b3226a0
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L188-L202 @ 2b45274
+    quote: '- Target: [`ggml-org/Qwen3.8-27B-GGUF`](https://huggingface.co/ggml-org/Qwen3.8-27B-GGUF), `Q4_K_M` - Sampling:
+      Qwen3.8''s officially recommended parameters (temperature 1.0, top-p 0.95, top-k 20), with `xhigh` reasoning effort
+      - Maximum new tokens: 2048 - Prompts: the first eight GSM8K test examples ### Acceptance Length Acceptance length is
+      the per-request mean of completion tokens divided by verification steps. Higher is better. | Draft GGUF | Acceptance
+      Length | | :--- | ---: | | BF16 | 5.28 | | Q8_0 | 5.13 | | Q4_K_M | 5.39 |'
+    quote_sha256: 5a9b012d4f2705d409171a45f6c3912e9dbfa8db4a2e7382e0b7bc8df5f4113c
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L53-L62 @ 2b45274
+    quote: within-a-few-percent throughput at every `n_max`. Non-imatrix Q2_K quants were strictly worse than `Q2_K_S-MIX`
+      — larger, with lower acceptance and throughput — so they are omitted here. The 2.33-bit draft model accepts slightly
+      fewer tokens per step than the 4.76-bit reference (e.g. 0.524 vs 0.539 acceptance, 2.57 vs 2.62 draft len at `n_max=3`),
+      which shows up as a small throughput gap (within a few percent at each `n_max`). Because DFlash 2 is lossless, this
+      costs **speed, not quality** — for the same prompt the output is accepted by the same target at the same quality; the
+      smaller drafter just needs marginally more verification steps.
+    quote_sha256: fc2988db87930c8f29d4872a3b1d223b200f342d4c85967bc5db353a854a1ca7
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L38 @ 2b45274
+    quote: '| `n_max` | Metric | `Q4_K_M` (1,090 MiB) | [Q3_K_M](https://huggingface.co/andrew-paul/Qwen3.8-27B-DFlash2-Q3_K_M-GGUF)
+      (874 MiB) | [Q2_K](https://huggingface.co/andrew-paul/Qwen3.8-27B-DFlash2-Q3_K_M-GGUF) (673 MiB) | **Q2_K_S-MIX** (535
+      MiB) | Ratio (vs Q4) |'
+    quote_sha256: 755471e6ec6e5db69b8eb8c0b8844941c227745fa1836195e2f996b87f3efe2b
+    source_revision: HF repo HermiHg/Qwen3.8-27B-DFlash2-Q2_K_S-MIX-GGUF commit 2b4527438b07460dcf27713107aedf0c6853e850 (2026-09-11),
+      retrieved 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: handoffs/active/exl3-cpu-mi210-implementation.md:L78-L86 (X0 acceptance/KLD) @ lane 365d0e1fb
+    quote: '- [x] **EXL3-X0 — Bytes-elasticity and equal-bytes quality pre-gate on the production 27B (operator-approved 2026-10-03,
+      ahead of EXL3-6).** In one exclusive :8083 window, run unsloth UD-Q4_K_M against the incumbent Q8_0 (same publisher,
+      byte-identical) through the DFlash2-np4 serving recipe and the production shape, 3 launches per arm, ABA. Add KLD of
+      Q4_K_M against Q8_0 on the MI210. Decision rule, fixed in advance: if Q4_K_M is under +10% serving speed, EXL3 has no
+      speed case on the 27B; park EXL3-6/7 for it and settle VRAM with GGUF. If it is at or above +10%, fund a performance-grade
+      wave64 kernel (EXL3-P) with a 5-agent-day kill. EXL3-3/4/5 device correctness piggybacks on the same window. turboderp
+      `Qwen3.8-27B-exl3` 4.00bpw is on disk for real-tensor correctness and the later equal-bytes comparison. Plan: `/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`.
+      ROI review: [`docs/reviews/exl3-roi-20261003.md`](../../docs/reviews/exl3-roi-20261003.md). - ✅ 2026-10-03 — **verdict:
+      NO SPEED CASE.** Report: `/mnt/raid0/llm/tmp/x0-27b-quants/results/report.md` (per-launch JSON beside it; `summary.json`).
+      Same v10 kernel store, 3 fresh launches per arm, HIP residency proven every launch.'
+    quote_sha256: 64ac03d1ac236c337113da7f90d0fe4afe9699d66ad75b6a512bb8f542b0b073
+    source_revision: lane worktree commit 365d0e1fb
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Size, sha256, parameter count and bpw cross-check (561241824*8/1924404480 = 2.333).
+  - claim_index: 1
+    effect: narrowed
+    note: 'New finding versus intake-1256: the file was rebuilt on 2026-08-25 and its imatrix path is no longer the dummy
+      file. intake-1256''s refutation of its ''Q2_K floor'' claim still stands mechanically (imatrix gate is a file-presence
+      check) but ''fabricated imatrix'' no longer describes this artifact. Content of the imatrix not verified.'
+  - claim_index: 2
+    effect: unaffected
+    note: Draft-length arithmetic re-computed for all 12 cells; consistent with 1 + n_max x acceptance.
+  - claim_index: 3
+    effect: unaffected
+    note: Card defects verified in the README text.
+  - claim_index: 4
+    effect: uncertain
+    note: Derived arithmetic using byte counts and MMVQ efficiencies measured on the TARGET's shapes; the drafter's own MMVQ
+      efficiency was not measured.
+  depends_on: []
+  dive_corrections: '2026-10-22 Stage-2b combined pass: new entry. Key point for the index: this is the SAME artifact that
+    intake-1256 cited as refuting its ''Q2_K floor'' claim, but the repo was rebuilt on 2026-08-25 and the evidence intake-1256
+    quoted (dummy imatrix, 571,123,360 B file, sha d2457287...) describes a superseded upload. The refutation of the floor
+    claim stays valid on mechanism, not on the ''fabricated'' wording.'
+  reader_should_conclude: 'Cite for: a 2.33 bpw DFlash2 drafter loses 2-5% mean draft length and is throughput-neutral on
+    a 24 GB NVIDIA GPU (author-reported, one prompt, target quant unstated). Do NOT cite it as evidence about how a re-quantized
+    TARGET affects drafter acceptance - it varies the drafter only. Do NOT download it for the MI210 stack: Q8_0 drafter is
+    ~6.6% of weight bytes at the Q8_0 target, the byte saving is cancelled by the acceptance loss, and the first-party Q4_K_M
+    drafter is the better candidate arm if the target ever becomes sub-Q8.'
+  notes: 'Read scope: README in full (230 lines), HF API ?blobs=true and expand[]=gguf JSON in full (chat_template ignored),
+    commits/main list (46 commits), discussions 2 and 4 (multimodal / image-min-tokens, llama.cpp PR 28715; not relevant to
+    text serving). NOT read: the GGUF itself (no weights, no header range fetch per brief), add_dflash2_metadata_field.py,
+    discussions 1 and 3 (thank-you posts, by title). Per-tensor types come from the card table only.'
