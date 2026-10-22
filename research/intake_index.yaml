@@ -351256,3 +351256,486 @@
     effect: unaffected
     note: fresh claim, read from source
   depends_on: []
+- id: intake-2443
+  arxiv_id: null
+  url: https://github.com/TransluceAI/docent
+  source_type: repo
+  title: 'TransluceAI/docent: Docent, an AI agent analysis platform (rubric search, clustering and transcript viewer for agent
+    runs)'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2428
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Transluce (Clarity AI Research Inc.)
+  key_claims:
+  - The LLM layer is provider-registry based (anthropic, google, openai, azure_openai in providers/registry.py; the docs list
+    only the first three). The openai provider builds AsyncOpenAI() with no base_url argument, so pointing it at a local OpenAI-compatible
+    server relies on the openai SDK reading OPENAI_BASE_URL (confirmed in the installed openai 2.31.0 _client.py:184), one
+    base URL per process for every model whose provider is "openai". No local/vLLM/ollama/base_url option exists anywhere
+    in the repo (grep over *.py,*.md,*.yml,*.toml).
+  - Model choice is hard-coded per function in providers/preferences.py (default_judge_models starts gpt-5 medium, then gpt-5
+    low, gpt-5-mini, claude-sonnet-4; clustering uses o3-mini/o4-mini/sonnet/gemini-flash); the documented customisation route
+    is editing that file, so a local judge needs a source patch (a ModelOption with provider "openai" and the local alias)
+    rather than a config switch. Unknown model names only trigger a 100k default-context warning (MODEL_CONTEXT_WINDOWS).
+  - 'The rubric judge (ai_tools/rubric/rubric.py) is prompt-only: the whole run is rendered by AgentRun.to_text_new() into
+    one user message ("reason through the rubric, then output JSON matching this schema"), the reply is json.loads-ed and
+    jsonschema-validated, unparseable replies become None. No response_format/grammar is passed and neither rubric.py, AgentRun.to_text_new()
+    nor prod_llms.py applies a token cap (grep for truncate: no hits in prod_llms.py), so a small local model loses rows on
+    malformed JSON and long Claude Code sessions must be segmented before judging. llama-server (v10 tree ffc1bac8, tools/server/server-schema.cpp:46)
+    aliases max_completion_tokens to n_predict, so the call itself is accepted.'
+  - 'Transcript schema: AgentRun{id,name,description,transcripts:list[Transcript],transcript_groups,metadata} with Transcript{messages:list[ChatMessage],metadata,created_at};
+    ChatMessage is a role-discriminated union (system/user/assistant/tool) with assistant tool_calls (id, function, arguments:dict),
+    ContentText/ContentReasoning blocks and free-form metadata dicts. The only file loader shipped is Inspect .eval (loaders/load_inspect.py)
+    plus an OpenTelemetry tracing SDK; zero hits for claude-code/codex/opencode/jsonl in *.py/*.md, so Claude Code, Codex
+    and opencode transcripts need an adapter that we write, and the schema can represent them (tool_use becomes tool_calls,
+    tool_result becomes tool messages, interrupt markers stay as user text).'
+  - 'Hosted/other dependencies are avoidable for the judge path: self-hosting is docker-compose with local Postgres and Redis;
+    Sentry and PostHog are off unless DEPLOYMENT_ID is set; import of docent_core raises FileNotFoundError without a .env
+    file. Traps: Docent client and tracing SDK default to https://api.docent.transluce.org (any adapter must override server_url/endpoint
+    or transcripts leave the host), embeddings default to OpenAI text-embedding-3-large, and tiktoken fetches its cl100k BPE
+    from openaipublic.blob.core.windows.net on first use unless TIKTOKEN_CACHE_DIR is pre-seeded. Licence: LICENSE is the
+    13-line Apache-2.0 notice (Copyright 2025 Clarity AI Research Inc., dba Transluce) and both pyproject files declare Apache-2.0;
+    GitHub API reports NOASSERTION because the full licence text is absent.'
+  - 'Docent clustering is LLM-driven, not embedding-driven: propose_clusters sends up to 100k tokens of result strings into
+    one prompt and LlmApiClusterAssigner then judges every item against every centroid (items x centroids calls in multi_round_clustering.py),
+    using o3-mini/o4-mini/sonnet/gemini-flash. That is far more calls and context than a local CPU model can serve; the embedding-first
+    design in Clio (intake entry for arXiv 2412.13678) is the local-friendly alternative.'
+  techniques:
+  - rubric-and-JSON-schema LLM judge over agent runs with citation ranges
+  - LLM-proposed and LLM-assigned clustering of judge results
+  - AgentRun/Transcript/ChatMessage schema for agent traces
+  - provider registry with per-function ordered model fallbacks
+  reported_results:
+  - 'Repo facts only, no benchmark claims: HEAD 07edc43 (2026-10-19), created 2025-08-13, 143 stars (GitHub API 2026-10-22)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    - canonical-judge-suite-revamp.md
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2428
+  credibility_score: 2
+  contradicting_evidence:
+  - Docs list three providers while the registry has four (google omitted from docs); no accuracy numbers for the shipped
+    rubric judge exist in the repo (the Transluce post compares against "a small hand-labeled set" with no figures, intake-2428).
+  notes: 'Read TransluceAI/docent HEAD 07edc43f256365c1e6d0c779a624f60fb1893f9a (committed 2026-10-19; shallow clone). Read
+    in full: _llm_util/providers/{registry,openai,preferences}.py (openai client/embedding parts), ai_tools/rubric/rubric.py,
+    ai_tools/clustering/{cluster_generator,cluster_assigner,multi_round_clustering}.py (heads), data_models agent_run/transcript/chat,
+    loaders/load_inspect.py (head), self_hosting docs, .env.template, LICENSE. NOT read: web frontend, alembic migrations,
+    refine.py, tracing SDK internals, anthropic/google providers, tests. Nothing executed or installed. Clone is in the dive
+    dir under docent_repo/.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the Stage-1 note for intake-2428 said the Docent repo was NOT
+    read. Read at 07edc43: the judge/cluster stack can run against a local OpenAI-compatible endpoint only through OPENAI_BASE_URL
+    plus a preferences.py patch (no first-class base_url or local provider), has no hosted-DB dependency (local Postgres+Redis),
+    ships no Claude Code/Codex/opencode loader, and defaults its SDK to the hosted Docent API.'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: docent_core/_llm_util/providers/openai.py:L427 @ 07edc43
+    quote: return AsyncOpenAI(api_key=api_key) if api_key else AsyncOpenAI()
+    quote_sha256: 59367ff337505e3ecef049053dc90e28a5149ecb80b1c80092d4f01a326fd45c
+    source_revision: TransluceAI/docent @ 07edc43f256365c1e6d0c779a624f60fb1893f9a (2026-10-19), shallow clone read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: doc
+    locator: docs/self_hosting/llm_providers_and_calls.md:L55 @ 07edc43
+    quote: 3. Specify the [`ModelOption`][docent_core._llm_util.providers.preferences.ModelOption] objects in the returned
+      list
+    quote_sha256: 90aaca2fccce23f44a8bbb6e9ddedb1f2372e28836093b91d3dd13e425756041
+    source_revision: TransluceAI/docent @ 07edc43f256365c1e6d0c779a624f60fb1893f9a (2026-10-19), shallow clone read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: docent_core/docent/ai_tools/rubric/rubric.py:L286 @ 07edc43
+    quote: parsed_output = json.loads(output.first_text) if output.first_text else None
+    quote_sha256: afd69dc493fe173dc6ca9f6034f9f569ab178734d67ad685d25843a836750b19
+    source_revision: TransluceAI/docent @ 07edc43f256365c1e6d0c779a624f60fb1893f9a (2026-10-19), shallow clone read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: docent/docent/data_models/chat/message.py:L25 @ 07edc43
+    quote: 'role: Literal["system", "user", "assistant", "tool"]'
+    quote_sha256: da2cf98c58ca316164f16372be4a7333d8b3e3d010a6acc4aa6083b901c38cd8
+    source_revision: TransluceAI/docent @ 07edc43f256365c1e6d0c779a624f60fb1893f9a (2026-10-19), shallow clone read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: docent/docent/sdk/client.py:L31 @ 07edc43
+    quote: 'server_url: str = "https://api.docent.transluce.org",'
+    quote_sha256: 4631316b5cb1c50f10db0088dd4b77e72ffc8811a2a4f8a6caa58fb2386385e7
+    source_revision: TransluceAI/docent @ 07edc43f256365c1e6d0c779a624f60fb1893f9a (2026-10-19), shallow clone read 2026-10-22
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: docent_core/docent/ai_tools/clustering/cluster_generator.py:L82 @ 07edc43
+    quote: '# Truncate items to 100k tokens'
+    quote_sha256: 29047386e9176ec9fe0549b85043da8d7180f5d8963732c21c39fb195dad9c45
+    source_revision: TransluceAI/docent @ 07edc43f256365c1e6d0c779a624f60fb1893f9a (2026-10-19), shallow clone read 2026-10-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2444
+  arxiv_id: '2412.13678'
+  url: https://arxiv.org/abs/2412.13678
+  source_type: paper
+  title: 'Clio: Privacy-Preserving Insights into Real-World AI Use'
+  categories:
+  - knowledge_management
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2429
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Alex Tamkin
+  - Miles McCain
+  - Kunal Handa
+  - Esin Durmus
+  - Liane Lovitt
+  - Ankur Rathi
+  - Saffron Huang
+  - Alfred Mountfield
+  - Jerry Hong
+  - Stuart Ritchie
+  - Michael Stern
+  - Brian Clarke
+  - Landon Goldberg
+  - Theodore R. Sumers
+  - Jared Mueller
+  - William McEachen
+  - Wes Mitchell
+  - Shan Carter
+  - Jack Clark
+  - Jared Kaplan
+  - Deep Ganguli
+  key_claims:
+  - 'Pipeline: (1) per-conversation facet extraction (some facets computed mechanically, some by a model, e.g. a 1-2 sentence
+    request summary at temperature 0.2), (2) embed the summary facet with all-mpnet-base-v2 (768-d) and run k-means, (3) a
+    model names each base cluster from 50 in-cluster plus 50 nearest-outside summaries (contrastive naming), (4) hierarchy
+    by embedding cluster names, k-means into neighbourhoods of ~40, then LLM propose/deduplicate/assign/rename per level (the
+    authors found HDBSCAN and agglomerative inferior to this), (5) UMAP map and tree UI. App. B.1-B.4, G.4-G.7.'
+  - 'Cost is dominated by facet extraction: for 100,000 conversations the estimate is $48.81, of which Haiku-3 facet extraction
+    is $45.00 (130.0M input tokens, 10.0M output; about 92% by my arithmetic), cluster labelling $3.75 and hierarchy $0.06
+    (Table 3, assuming 1,000-token conversations and 100-conversation clusters). The extraction step is therefore the one
+    a small local model must carry; the paper reports no open or small-local-model result (NOT-FOUND-IN-SOURCE).'
+  - 'Reported validation, all with Claude 3/3.5 and Anthropic reviewers: 200 conversations manually checked, 96% of summaries
+    accurate (93% random, 98% flagged); 5,904 cluster assignments in 183 clusters, 99% (random) and 96% (flagged) of titles
+    accurate with about 3% of members not clearly belonging; hierarchy titles 97%; synthetic reconstruction of 19,476 conversations
+    over 20 categories 94% (84% on the 18-category concerning set). Dominant failure modes: long multi-topic conversations
+    drop topics, and cluster titles on harmful content are too generic.'
+  - Privacy design has four layers (summary prompt omits private data, minimum-size thresholds on unique accounts and conversations,
+    cluster-summary prompt, LLM cluster audit), is empirical not formal (no differential privacy or k-anonymity guarantee),
+    and the numeric thresholds and k are withheld by the authors (NOT-FOUND-IN-SOURCE). The safety-monitoring use deliberately
+    drops the thresholds and audit so enforcement can reach individual accounts; for a local pass over our own transcripts
+    none of the privacy layers is needed, but the unique-account threshold has a methodological analogue (minimum distinct
+    sessions per cluster).
+  - 'Self-stated limits matter for failure-mode mining: outputs are leads needing validation before decisions, absence of
+    a pattern cannot be proved, and clustering "is not useful for identifying rare (but possibly very consequential) patterns",
+    so rare high-severity failures (a single destructive command) need mechanical detectors, not clusters (Sec. 5.1-5.2).'
+  - Unit of analysis is the chat conversation (cost model assumes 1,000 tokens per conversation; Clio "only analyzes patterns
+    within conversations"). Agentic coding sessions are far longer and contain tool traces, so a transcript pass must cluster
+    segments (task windows or tool-error episodes), not whole sessions; Anthropic's own classifiers over Claude Code sessions
+    truncate each turn to 5,000 characters and each session to 25,000 characters (expertise-report appendix).
+  techniques:
+  - facet extraction by small model
+  - embed-then-k-means base clustering
+  - contrastive cluster naming (in-cluster plus nearest-outside samples)
+  - neighbourhood-wise LLM hierarchy
+  - synthetic-ground-truth reconstruction as end-to-end validation
+  - minimum distinct-source thresholds
+  reported_results:
+  - 96% summary accuracy (n=200)
+  - base-cluster titles 99% random / 96% flagged; ~3% misassigned
+  - hierarchy titles 97%
+  - synthetic reconstruction 94% (20 categories, 19,476 conversations), 84% concerning set
+  - $48.81 per 100k conversations, 92% of it facet extraction
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2429
+  credibility_score: 0
+  contradicting_evidence:
+  - Validation is by Anthropic staff on Anthropic data with Claude 3/3.5 only; no open small-model run, k and thresholds withheld;
+    the paper itself says outputs are preliminary leads. The open reimplementation OpenClio (README) runs the pipeline on
+    a local Qwen3-8B but reports no accuracy.
+  notes: 'Read arXiv:2412.13678v1 HTML (retrieved 2026-10-22, sha256-12 0251dc2918e4; text flattened to clio.txt in the dive
+    dir). Read: Sec. 1-5 text, 6.x headings and privacy part, App. B, C.1-C.2, G.4-G.7, Table 3. NOT read: App. D privacy-eval
+    details, App. E/F data policies, safety-section figures, Sec. 7 related work, the G.1-G.3 sampling/screener text beyond
+    headings. No later arXiv version exists (abs page lists v1 only). OpenClio and Kura were only skimmed from their READMEs.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2429 listed the Clio paper as NOT read. Read the arXiv
+    HTML v1 (abstract, Sec. 1-6 headings and text, App. B, C, G.4-G.7 and Table 3). The privacy thresholds are described but
+    never quantified, and the paper contains no small-model or open-model result, so how well a small local model can do facet
+    extraction is unmeasured by this source.'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Sec. 2.2 item 2 (Semantic clustering) arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12
+      0251dc2918e4
+    quote: Clio then groups similar conversations by creating embeddings
+    quote_sha256: c488e4bf9183ce4f92b14d8d2a913a7b1888b7df5fdfa12cd28da78ff3ab2e44
+    source_revision: arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12 0251dc2918e4
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Sec. 2.2 "Cost of a Clio run"; Table 3 arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22,
+      sha256-12 0251dc2918e4
+    quote: For our example run of 100,000 conversations, the cost of such a run is $48.81
+    quote_sha256: ebf619d824dabfea6108de35f157b882f43b84d496ce4efe0c59ad5f15485817
+    source_revision: arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12 0251dc2918e4
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: App. C.1.1 Conversation summaries
+    quote: We found that 96% of the conversations were summarized accurately
+    quote_sha256: 46937b0b702d085c3a6fcd0ea3c26258895644d1c34bea4a3dffef5cb19b2f79
+    source_revision: arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12 0251dc2918e4
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote
+    locator: App. G.5 Base-Level Clusterer
+    quote: we unfortunately cannot provide our precise values for
+    quote_sha256: ece8d5544baa45b352128c2b9d1b4c9b66fb99603c790db762e0ca79ba366762
+    source_revision: arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12 0251dc2918e4
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Sec. 5.2 item 5
+    quote: Clio will only identify patterns across many different conversations, which means it is not useful for identifying
+      rare (but possibly very consequential) patterns
+    quote_sha256: 0f96e9c68839b7772cbcdb372965221dc4adfef0954389a030080a17a941b5bb
+    source_revision: arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12 0251dc2918e4
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: Table 3 notes
+    quote: 'Assumptions: average conversation length of 1,000 tokens'
+    quote_sha256: 556bd1506cac5909442e25dc58c1c1eed092ee71c25ec4e32c33e98ba23c9e93
+    source_revision: arXiv:2412.13678v1 (submitted 2024-12-18), HTML retrieved 2026-10-22, sha256-12 0251dc2918e4
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
+- id: intake-2445
+  arxiv_id: null
+  url: https://www.anthropic.com/research/claude-code-expertise
+  source_type: blog
+  title: Agentic coding and persistent returns to expertise
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2429
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Zoe Hitzig
+  - Maxim Massenkoff
+  - Eva Lyubich
+  - Shaoyi Zhang
+  - Ryan Heller
+  - Peter McCrory
+  key_claims:
+  - 'Premise correction: the report does not study tenure or interrupts at all (zero occurrences of "interrupt" or "tenure"
+    in the page text, the appendix text and the main-report PDF text). Its covariate is a per-session, task-specific expertise
+    rating (1 novice to 5 expert, by a Sonnet 4.6 classifier from three co-equal transcript signals: setup specificity, targeted-versus-generic
+    verification asks, and direction of correction). Account age (days since Anthropic signup) is listed only as a recorded
+    telemetry field. The tenure and interrupt effect (5% to 9% per turn) lives in intake-2429, not here.'
+  - 'Expertise changes how much the agent does per instruction: a typical novice prompt sets off about 5 actions and about
+    600 words, an expert prompt 12 actions and 3,200 words; the gradient stays at +9% actions and +13% output per expertise
+    level in a regression controlling for work mode, task value, month, occupation and model family with standard errors clustered
+    by user. Consequence for any rate: events per turn and events per tool call move differently as the operator''s specificity
+    changes.'
+  - 'Success gradient (observational, matched on work mode, task value, month, subject and occupation group): novice-rated
+    sessions reach verified success 15% of the time (at least partial 77%) versus 28-33% (91-92%) for intermediate and above;
+    among sessions that hit trouble verified success rises from 4% (novice) to 15% (expert); 19% of troubled novice sessions
+    are abandoned with zero code written versus 5-7% for others. Footnote 9: conditioning on trouble selects harder problems
+    for experts, so part of the recovery gap may be selection. On internal Anthropic sessions joined to landed commits the
+    gradient replicates within engineer (author fixed effects), roughly 3 to 5 points of judged success per level (App. p.22).'
+  - 'Classifier validity is weaker than the headline suggests: against a stronger reference model (Mythos Preview) on 198
+    SWE-chat sessions the report''s classifiers agree on 78-98% of categorical labels, but on ordinal scales (expertise is
+    one) only 53-68% counting exact matches and 78-99% counting adjacent points; the authors say conclusions rest on relative
+    comparisons, and a human audited 15 flagged disagreements and concurred in 11. "Verified success" requires a judged success
+    plus at least one hard signal (commits or PRs, passing tests, explicit user affirmation).'
+  - 'The workload mix drifts inside the observation window: the share of sessions spent fixing broken code fell from 33% to
+    19% between October 2025 and April 2026 while operating software rose from 14% to 21% and average estimated session value
+    rose 27%, i.e. composition, models and products changed under the series (a history threat for any pre/post design; the
+    authors absorb it with month and model-family controls).'
+  - 'Scope and exclusions: interactive sessions only (398,198 sessions, 234,751 users, Oct 2025 to Apr 2026, internal Anthropic
+    usage excluded); headless claude -p sessions, IDE integrations and SDK use are excluded, so subagent and automated-pipeline
+    behaviour, which dominate part of our dev-harness traces, is outside the evidence. All numbers come from Anthropic-internal
+    classifiers with no raw data released.'
+  techniques:
+  - task-specific LLM-rated expertise covariate
+  - fixed-effects comparison within work mode, value band, month, subject and occupation
+  - classifier-versus-telemetry cross-checks
+  - strong-reference-model validation with blind adjudication
+  reported_results:
+  - actions per prompt 5 (novice) vs 12 (expert); words 600 vs 3,200
+  - verified success 15% novice vs 28-33% intermediate+
+  - fixing share 33% to 19% (Oct 2025 to Apr 2026)
+  - ordinal classifier exact agreement 53-68%
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2429
+    - intake-2397
+  credibility_score: 1
+  contradicting_evidence:
+  - First-party vendor analysis of its own product, no raw data; every variable is a Sonnet 4.6 classifier label validated
+    only against another model; expertise-success is observational with selection on trouble (footnote 9); headless and subagent
+    usage excluded.
+  notes: 'Read the HTML page text in full (sha256-12 c0506ed6e386, published 2026-06-16) and the appendix PDF text (sha256-12
+    43139a8128ed; extracted with scripts/pdf_text_literal.py; fi/ff ligatures and en dashes extracted as control characters,
+    so appendix quote anchors avoid those glyphs except one en dash anchor). NOT read: figure images, appendix classifier
+    prompts for success/failure signals and the task-value estimator beyond the headings, Table A1/A2 numeric cells (the tables
+    did not extract), related article Economic Index Cadences, suproteem.cc/agents.pdf beyond its first-page abstract.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): the task brief framed this page as tenure/interrupt evidence;
+    it contains neither (grep: 0 hits for interrupt and tenure). Only rated expertise, actions per prompt, success and abandonment
+    are measured. Appendix PDF (a9472814...) read; the "Read in PDF" copy of the main report was extracted (29.8k chars, 0
+    hits for interrupt/tenure) and then deleted as a duplicate of the HTML page; the internal within-engineer replication
+    on appendix p.22 reads 3 to 5 percentage points of judged success per expertise level with author fixed effects (an en
+    dash that a terminal display collapses to 35; checked byte-level).'
+  claim_anchors:
+  - claim_index: 0
+    kind: quote
+    locator: Section "Level of expertise"
+    quote: From each transcript, Claude rates the user's apparent expertise at the task on a five-point scale from novice
+      to expert.
+    quote_sha256: 6778fa230fe4c0aad132cf6a7a6f384888e6327bdc23a31cbf94b39002e47db2
+    source_revision: Anthropic Economics page published 2026-06-16, HTML retrieved 2026-10-22, sha256-12 c0506ed6e386
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: quote
+    locator: Section "Level of expertise" (Figure 3 text)
+    quote: In typical novice sessions, each prompt sets off about five Claude actions and roughly 600 words of output, while
+      expert sessions set off action chains more than twice as long (12 actions) carrying five times the output (3,200 words)
+      (Figure 3).
+    quote_sha256: 0d59269895b4f83aad699e60a4495a3910c9e1d845d6614319fcf30419cf3d32
+    source_revision: Anthropic Economics page published 2026-06-16, HTML retrieved 2026-10-22, sha256-12 c0506ed6e386
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote
+    locator: Section "The returns to expertise" (Figure 5 text)
+    quote: A novice-rated session reaches our strictest measure, verified success, 15% of the time and at least partial success
+      77% of the time.
+    quote_sha256: 8836c02598f3c389101ab64a05563e4bb0789bc92d1bce68601a0a031279e872
+    source_revision: Anthropic Economics page published 2026-06-16, HTML retrieved 2026-10-22, sha256-12 c0506ed6e386
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: quote-from-text-extraction
+    locator: Appendix p. 23 (Classifier validation via strong-model agreement)
+    quote: reference agree on 78-99% counting adjacent scale points as agreement, and 53-68% counting only exact matches as
+      agreement.
+    quote_sha256: 9e6cf144561b2b0e5bf3afcb1800442ab8a5a6d67d3ed410413513c2c3f72f14
+    source_revision: Appendix PDF cdn.sanity.io a94728142a45694292336165947f8d6e3e1a357e.pdf, sha256-12 43139a8128ed, text
+      via stdlib literal-string extractor (ligature and dash glyphs preserved as Unicode)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: quote
+    locator: Section "The work" (Figure 4 text)
+    quote: The clearest change is that the share of sessions spent fixing broken code fell from 33% to 19% (Figure 4).
+    quote_sha256: 2200f4112cf29f7e19a2a603eaca5eca3c438f89a73b0b0d0fc6cb04c15a1fb6
+    source_revision: Anthropic Economics page published 2026-06-16, HTML retrieved 2026-10-22, sha256-12 c0506ed6e386
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: quote
+    locator: Footnote 04
+    quote: We also therefore exclude sessions in “headless” mode where a user runs a single prompt in the CLI via claude -p
+    quote_sha256: ec51aea1fcb23d8ddeb5ab5f87aee324d7cf29cc1cc4252a36829d8951fa5f84
+    source_revision: Anthropic Economics page published 2026-06-16, HTML retrieved 2026-10-22, sha256-12 c0506ed6e386
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: quote-from-text-extraction
+    locator: Appendix p. 22 (Internal outcome validation)
+    quote: "roughly 3\x965 percentage points per expertise level with author"
+    source_revision: Appendix PDF cdn.sanity.io a94728142a45694292336165947f8d6e3e1a357e.pdf, sha256-12 43139a8128ed, text
+      via stdlib literal-string extractor (ligature and dash glyphs preserved as Unicode)
+    verified_by: research-intake/stage2
+    quote_sha256: 2c46edeca57d0f2844448adb62e96aaf3284f0562b32d655e9515527c916167e
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from the combined pass
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from the combined pass
+  depends_on: []
