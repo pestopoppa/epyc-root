@@ -50618,7 +50618,7 @@
       },
       "stage3_plan": {
         "path": "/mnt/raid0/llm/tmp/intake-locals-beacon-20261022/STAGE3_PLAN.md",
-        "sha256": "c0a151cb72c54258dff258609a239282a34a355a5d0f4ada821509d71d68e9d4",
+        "sha256": "59537b58a09a5ec617e92f52328a34471d4115e4307dd864182ad535ef58ea8a",
         "status": "presented-for-approval"
       }
     }
