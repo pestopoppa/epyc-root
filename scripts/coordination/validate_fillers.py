@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+"""validate_fillers.py -- the grant-writer validator for the shared compute QUEUE (FILLERS.md).
+
+PROPOSED 2026-10-21 (process change A of
+/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md section 4; format fixed by stage-3),
+pending workspace-58 agreement to call it from the grant writer.  Read-only, stdlib only.
+
+    validate_fillers.py [--file F] [--row ID] [--for-grant]
+
+    --file F     default /mnt/raid0/llm/tmp/compute-flags/FILLERS.md
+    --row ID     check only that row (exact filler-id)
+    --for-grant  the row is about to be GRANTED: every violation is a REFUSAL (exit 2).
+                 Requires --row.  Without --for-grant every violation is a WARNING (exit 0):
+                 other owners' rows may still carry "-" or free-form values today.
+
+Exit codes
+    0  nothing refused (warnings may have been printed)
+    2  refused: --for-grant and the row violates at least one rule
+    3  malformed: unreadable file, no table header, header columns differ from the 18 expected,
+       --row not found, --for-grant without --row, or (with --row) the row does not have exactly
+       18 cells.  Rows other than the target that are malformed are WARNings in a full scan.
+
+The table (one markdown table, a leading "| <id> |", no "|" inside a cell, 18 cells per row):
+
+    filler-id | owner | launcher + PID | resources | min useful window | max private RAM |
+    STOP file | status | class | duration | min window | DS41-class y/n | ready y/n | prior |
+    decision | min_effect | substrate | notes
+
+Rules (a cell value of "-" or empty means unfilled and violates the rule for its column)
+    status        first token in {ARMED, REGISTERED, NOT-ARMED, CANCELLED, COMPLETE}; trailing
+                  prose after the token is a violation (keep the cell to the literal token --
+                  launchers flip ARMED->COMPLETE with sed)
+    class         in {filler, block-correctness, block-timing-pairable, block-timing-quiet}
+    DS41-class    exactly y or n
+    ready         exactly y or n
+    substrate     in {cpu, gpu, either}
+    prior         a path (an absolute path, possibly inside backticks or followed by a note), or
+                  `none found (<who>, <date>)` (an ISO date must appear inside the parentheses);
+                  prior_check.py's own `none (checked <ts>)` is also accepted
+    decision      one non-empty line of at least 8 characters
+    min_effect    an effect size containing a number (with its unit), exact-identity wording
+                  (exact / identical / identity / zero), or `n/a (build)` for pure build rows
+    block-timing-quiet additionally (change C): `decision` names a champion / candidate /
+                  baseline, AND `notes` or `prior` cites a floor file (a path or filename with
+                  "floor" and a .json/.md/.jsonl/.txt extension, e.g. serving-floor.*.json).
+Row ids must be unique (duplicate = violation on the later row).
+"""
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+
+DEFAULT_FILE = "/mnt/raid0/llm/tmp/compute-flags/FILLERS.md"
+COLUMNS = ["filler-id", "owner", "launcher + pid", "resources", "min useful window",
+           "max private ram", "stop file", "status", "class", "duration", "min window",
+           "ds41-class y/n", "ready y/n", "prior", "decision", "min_effect", "substrate", "notes"]
+STATUSES = {"ARMED", "REGISTERED", "NOT-ARMED", "CANCELLED", "COMPLETE"}
+CLASSES = {"filler", "block-correctness", "block-timing-pairable", "block-timing-quiet"}
+SUBSTRATES = {"cpu", "gpu", "either"}
+
+PATH_RE = re.compile(r"(?<![\w.])/[\w.@+=-]+(?:/[\w.@+=-]+)+")
+NONE_RE = re.compile(r"^none(?: found)? \(.*\d{4}-\d{2}-\d{2}.*\)", re.I)
+BASELINE_RE = re.compile(r"champion|candidate|baseline", re.I)
+FLOOR_RE = re.compile(r"[\w/.@+=-]*floor[\w/.@+=-]*\.(?:json|md|jsonl|txt)\b", re.I)
+EFFECT_NUM_RE = re.compile(r"\d")
+EFFECT_QUAL_RE = re.compile(r"\b(exact|identical|identity|zero)\b", re.I)
+EFFECT_BUILD_RE = re.compile(r"^n/a \(build[^)]*\)", re.I)
+
+
+class Malformed(Exception):
+    pass
+
+
+def split_row(line: str) -> list[str]:
+    s = line.strip()
+    if not (s.startswith("|") and s.endswith("|")):
+        raise Malformed(f"not a table row: {line[:60]!r}")
+    return [c.strip() for c in s[1:-1].split("|")]
+
+
+def parse_table(text: str) -> tuple[dict[str, int], list[tuple[int, list[str]]], list[str]]:
+    """Return (column index by lowercase name, [(line_no, cells)], notes) for the filler table.
+
+    The table runs to the next heading ('#').  A blank line inside it is tolerated (the rows
+    below are still checked) but reported, because markdown renders them as a separate block."""
+    lines = text.splitlines()
+    hdr = None
+    for i, ln in enumerate(lines):
+        if ln.startswith("|") and ln.split("|")[1].strip().lower() == "filler-id":
+            hdr = i
+            break
+    if hdr is None:
+        raise Malformed("no table header starting with '| filler-id |'")
+    names = [c.lower() for c in split_row(lines[hdr])]
+    if names != COLUMNS:
+        raise Malformed("header columns differ from the 18 expected: got "
+                        f"{len(names)} ({' | '.join(names)})")
+    rows = []
+    notes: list[str] = []
+    blank_at = 0
+    for j in range(hdr + 1, len(lines)):
+        ln = lines[j]
+        if ln.startswith("#"):
+            break
+        if not ln.startswith("|"):
+            if not ln.strip() and not blank_at:
+                blank_at = j + 1
+            continue
+        if blank_at:
+            notes.append(f"line {blank_at}: blank line inside the table; rows below it render "
+                         "as a separate block in markdown (still validated)")
+            blank_at = 0
+        cells = split_row(ln)
+        if cells and set(cells[0]) <= set("-: "):
+            continue  # the |---|---| separator
+        rows.append((j + 1, cells))
+    return {n: k for k, n in enumerate(names)}, rows, notes
+
+
+def unfilled(v: str) -> bool:
+    return v.strip() in ("", "-")
+
+
+def check_row(cells: list[str], col: dict[str, int], seen: set[str]) -> list[str]:
+    """Violations of one 18-cell row (empty list = clean)."""
+    g = lambda name: cells[col[name]]  # noqa: E731
+    out: list[str] = []
+    rid = g("filler-id")
+    if unfilled(rid) or " " in rid:
+        out.append(f"filler-id {rid!r} is empty or contains spaces")
+    if rid in seen:
+        out.append("duplicate filler-id")
+
+    status = g("status")
+    tok = status.split()[0] if status.split() else ""
+    if tok not in STATUSES:
+        out.append(f"status {status!r}: first token must be one of {sorted(STATUSES)}")
+    elif status != tok:
+        out.append(f"status {status!r}: carries text after the token {tok!r} (put it in notes)")
+    if g("class") not in CLASSES:
+        out.append(f"class {g('class')!r} not in {sorted(CLASSES)}")
+    for name in ("ds41-class y/n", "ready y/n"):
+        if g(name) not in ("y", "n"):
+            out.append(f"{name} {g(name)!r} must be exactly y or n")
+    if g("substrate") not in SUBSTRATES:
+        out.append(f"substrate {g('substrate')!r} not in {sorted(SUBSTRATES)}")
+
+    prior = g("prior")
+    if unfilled(prior):
+        out.append("prior unfilled ('-'): path to the checked prior result, or "
+                   "'none found (<who>, <date>)'")
+    elif not (PATH_RE.search(prior) or NONE_RE.match(prior)):
+        out.append(f"prior {prior[:60]!r}: neither a path nor 'none found (<who>, <date>)'")
+
+    dec = g("decision")
+    if unfilled(dec) or len(dec) < 8:
+        out.append("decision unfilled or too short (one line naming the decision it informs)")
+
+    eff = g("min_effect")
+    if unfilled(eff):
+        out.append("min_effect unfilled ('-'): effect size with a unit, or 'n/a (build)'")
+    elif not (EFFECT_BUILD_RE.match(eff) or EFFECT_NUM_RE.search(eff) or EFFECT_QUAL_RE.search(eff)):
+        out.append(f"min_effect {eff[:60]!r}: no number/unit, exact-identity wording or 'n/a (build)'")
+
+    if g("class") == "block-timing-quiet":
+        if not BASELINE_RE.search(dec):
+            out.append("block-timing-quiet: decision must name a champion/candidate baseline")
+        if not (FLOOR_RE.search(g("notes")) or FLOOR_RE.search(prior)):
+            out.append("block-timing-quiet: notes or prior must cite a floor file "
+                       "(e.g. serving-floor.*.json)")
+    return out
+
+
+def run(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="validate the FILLERS.md queue table")
+    ap.add_argument("--file", default=DEFAULT_FILE)
+    ap.add_argument("--row")
+    ap.add_argument("--for-grant", action="store_true")
+    try:
+        a = ap.parse_args(argv)
+    except SystemExit as e:
+        return 3 if e.code else 0
+    if a.for_grant and not a.row:
+        print("MALFORMED: --for-grant requires --row <filler-id>", file=sys.stderr)
+        return 3
+    try:
+        with open(a.file, encoding="utf-8") as f:
+            text = f.read()
+        col, rows, tnotes = parse_table(text)
+    except (OSError, UnicodeDecodeError, Malformed) as exc:
+        print(f"MALFORMED: {a.file}: {exc}", file=sys.stderr)
+        return 3
+
+    seen: set[str] = set()
+    for n in tnotes:
+        print(f"WARN {n}")
+    refused = warned = checked = 0
+    found = False
+    for line_no, cells in rows:
+        rid = cells[0] if cells else ""
+        target = a.row is None or rid == a.row
+        if len(cells) != len(COLUMNS):
+            if a.row is not None and rid == a.row:
+                print(f"MALFORMED: line {line_no} row {rid!r}: {len(cells)} cells, expected "
+                      f"{len(COLUMNS)} (a '|' inside a cell?)", file=sys.stderr)
+                return 3
+            if a.row is None:
+                print(f"WARN line {line_no} {rid}: malformed row, {len(cells)} cells, expected "
+                      f"{len(COLUMNS)} (a '|' inside a cell?)")
+                warned += 1
+            continue
+        probs = check_row(cells, col, seen)
+        seen.add(rid)
+        if not target:
+            continue
+        found = found or rid == a.row
+        checked += 1
+        for p in probs:
+            if a.for_grant:
+                print(f"REFUSE line {line_no} {rid}: {p}")
+                refused += 1
+            else:
+                print(f"WARN line {line_no} {rid}: {p}")
+                warned += 1
+    if a.row is not None and not found:
+        print(f"MALFORMED: row {a.row!r} not found in {a.file}", file=sys.stderr)
+        return 3
+    verdict = "REFUSED" if refused else "OK"
+    print(f"{verdict}: {checked} row(s) checked, {refused} refusal(s), {warned} warning(s)")
+    return 2 if refused else 0
+
+
+if __name__ == "__main__":
+    sys.exit(run())
