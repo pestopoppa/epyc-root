@@ -1,41 +1,88 @@
 {
   "by_type": {
-    "docs": 186,
-    "handoff-active": 182,
+    "docs": 187,
+    "handoff-active": 183,
     "handoff-blocked": 2,
     "handoff-completed": 211,
-    "progress": 702,
+    "progress": 725,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-21T20:35:58Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 6,
+      "added": 25,
+      "changed": 28,
       "removed": 0
     },
-    "at": "2026-10-21T20:40:40Z",
+    "at": "2026-10-22T11:45:50Z",
     "scope_paths": [
-      "handoffs/active/autokernel-champion-aggregate.md",
+      "docs/design/gpu-cpu-noise-contribution-prereg-20261021.md",
+      "docs/design/harness-improvement-loop-design-20261006.md",
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "handoffs/active/CURRENT-CAMPAIGN.md",
+      "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "handoffs/active/autokernel-rebuild-program.md",
+      "handoffs/active/autokernel-unified-surface-program.md",
+      "handoffs/active/conversation-stack.md",
+      "handoffs/active/conversational-memory-eval-instrument.md",
+      "handoffs/active/dev-harness-trace-mining.md",
+      "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "handoffs/active/dynamic-stack-concurrency.md",
+      "handoffs/active/episodic-memory-integrity.md",
+      "handoffs/active/frontier-f3-data-flywheel.md",
       "handoffs/active/gpu-serving-tie-in-program.md",
-      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/harness-improvement-loop.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+      "handoffs/active/model-artifact-integrity.md",
+      "handoffs/active/model-exec-containment.md",
+      "handoffs/active/qwen-chat-template-evaluation.md",
+      "handoffs/active/rao-redel-substrate-spike.md",
+      "handoffs/active/repl-embedding-retrieval.md",
+      "handoffs/active/repl-session-memory-maturity.md",
+      "handoffs/active/repl-turn-efficiency.md",
+      "handoffs/active/tool-output-compression.md",
       "handoffs/active/vidya-belief-substrate-program.md",
-      "progress/2026-10/2026-10-21-workspace-f8.md"
+      "handoffs/active/yarn-context-extension-research.md",
+      "progress/2026-10/2026-10-21-ak-repack-gate.md",
+      "progress/2026-10/2026-10-21-audit-ticks.md",
+      "progress/2026-10/2026-10-21-ds41-ak-seeds.md",
+      "progress/2026-10/2026-10-21-ds41-qdq-tooling.md",
+      "progress/2026-10/2026-10-21-ds41-queue-items.md",
+      "progress/2026-10/2026-10-21-ds41-t412.md",
+      "progress/2026-10/2026-10-21-ds41-w5ab-w62.md",
+      "progress/2026-10/2026-10-21-ds41-w8a.md",
+      "progress/2026-10/2026-10-21-fillers-3c4ca599.md",
+      "progress/2026-10/2026-10-21-gpu-cpu-noise-design.md",
+      "progress/2026-10/2026-10-21-hil16-18.md",
+      "progress/2026-10/2026-10-21-pii-hook-fix.md",
+      "progress/2026-10/2026-10-21-queue-builders-2.md",
+      "progress/2026-10/2026-10-21-queue-builders-3.md",
+      "progress/2026-10/2026-10-21-v11-drivers.md",
+      "progress/2026-10/2026-10-21-wiki-compile-ws58.md",
+      "progress/2026-10/2026-10-21.md",
+      "progress/2026-10/2026-10-22-3c4ca599.md",
+      "progress/2026-10/2026-10-22-bark-integrator.md",
+      "progress/2026-10/2026-10-22-ct18-final.md",
+      "progress/2026-10/2026-10-22-kpf62-fix.md",
+      "progress/2026-10/2026-10-22-rte-toc-writers.md",
+      "progress/2026-10/2026-10-22-rulings-20261022.md",
+      "progress/2026-10/2026-10-22-workspace-58.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-21T20:40:40Z",
+  "scan_time": "2026-10-22T11:45:50Z",
   "schema_version": 1,
-  "source_set_hash": "c376e6d75d97626f3d339ec67703f76d342d19d4883c283ea0cb56b53ac38996",
+  "source_set_hash": "21b47af095b1721f15914ce1d58cb91f3e04d21a7d405aea8b76cc6bf7f3817f",
   "sources": [
     {
-      "content_hash": "33c95f48ca460114e16c4944e8343e8f23a82e71824542d72fec59e0700a74f3",
-      "modified": "2026-10-21T20:27:14Z",
+      "content_hash": "2ba1e99b54e02b5546c3bd70e1f2a1ec9111d82f4f0266abd895813ecc058dff",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 45545,
+      "size": 47280,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -112,10 +159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4b397a9f4a61db7aa556aafdd58754a0c7b3ba07406d734676a2e2502414793a",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "4012690cfc80873558b2c81b3c38172ff90412912e277f9301ed8fc9e445a810",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 118640,
+      "size": 125513,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
@@ -144,18 +191,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0e97c435300b76d2c6fc965a8219257d99b6a473cddda239548ba3226a493f34",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "71b3c0516fbd93866af44fb10c0669d5969d1f84c21433a6c17b8f450b16dbf9",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
-      "size": 62351,
+      "size": 62623,
       "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
       "type": "handoff-active"
     },
     {
-      "content_hash": "368ad536f6952de8af9b1959e4d4dc540d8d3e8f85785a1a3dbd4f47ea222834",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "823b7cd512be946cbdb72f6e4c70a9c1356b3b6baee50db881e8c09dfd367f4c",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/autokernel-rebuild-program.md",
-      "size": 251572,
+      "size": 252809,
       "title": "AutoKernel \u2014 teardown and rebuild program",
       "type": "handoff-active"
     },
@@ -176,10 +223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1520c0fd6ef7b22cd2027bc5acc4bf64e1ea6f59cdb08ff40c214913729114db",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "6b0485033f5f5bcfc96adc08afabe2903c6a77dd21e5ea7852d456e9e631190c",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 435383,
+      "size": 437649,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -304,18 +351,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d652263e4339afa9cfacff6490059af84d0b84be16ef1c2e35b15ba3721e9cd4",
-      "modified": "2026-10-21T20:27:14Z",
+      "content_hash": "71a0b54ba2eba1883e08f0b6ea77b1a53a738b108ec00bff4931f6385265e412",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 142741,
+      "size": 144085,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
     {
-      "content_hash": "c3ab9bef838300006e26a8883bab3db6498be7bb04869a5e11ef492901c641a2",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "7772e5d50840104eb7d7d6daeea017f2e90dcd8d52ca3785665bd6da83a824eb",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/conversational-memory-eval-instrument.md",
-      "size": 19131,
+      "size": 20681,
       "title": "Conversational / Episodic Memory Eval Instruments \u2014 BEAM + Tulving adapters",
       "type": "handoff-active"
     },
@@ -416,10 +463,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d83c567fbb15521f59713157d036847ab7304728b586a3f82ee68c64f590e290",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "3a93a39ba0f2731253fa63e5d2679c99975c3921d46e0b5c1e21916045a40a67",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "handoffs/active/dev-harness-trace-mining.md",
+      "size": 5189,
+      "title": "Dev-Harness Trace Mining",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "11fcba1fe10177a7e69cf5b3badb2e0a282b5b463254ee3fc9355ea3e4dfcd09",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 83850,
+      "size": 84313,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -432,10 +487,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6dd2acbf6503beb64425b7a7ed1aeafb75cfe164257fa388ce8cce49a48a7b0e",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "d71167737fd0a25a98e122f945dd9742b3c17bfefdc78d95e0a7954ddae33587",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/dynamic-stack-concurrency.md",
-      "size": 37378,
+      "size": 37836,
       "title": "Dynamic Stack Assembly & Concurrency Management",
       "type": "handoff-active"
     },
@@ -448,10 +503,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "eaa2f06292f9b426ce95557b09a6b36021ebfad2b8a39bf6e52df36ed743f2b9",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "b8a67efc3b2d4311007819eca76cfec75742b9127cbfe57822f0d571f4f19ed9",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/episodic-memory-integrity.md",
-      "size": 112108,
+      "size": 112381,
       "title": "Episodic Memory Integrity \u2014 2026-07-05 corruption, root cause and repair",
       "type": "handoff-active"
     },
@@ -576,10 +631,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "53003e434d8dea73f23f5c67e0e62d8472a1c34735f7fc896f6ae5d5f294bcd2",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "3a8810a56a851ade84f127b7794f4d22e1e071ae91f3e87a1a5e829b0a0e9465",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 34897,
+      "size": 35271,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -656,10 +711,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0658a42a3bce15d35f9fc466ab20136e5337db3a8639ac9d21aab239c5838fb6",
-      "modified": "2026-10-21T20:39:42Z",
+      "content_hash": "fcb7c0ac284b23f8afda515927b19d591e3832df7cfbbf413fe9d1f4e1cfd5db",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 94717,
+      "size": 97973,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -672,18 +727,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "985404938227d4ca981c18cf252035317b5b411bf3b9b90c8223ce5a991f32d4",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "bd31879f005999e4ca6fef0b8476ac22b4375e73db3d3f3627b082fb8c16ec62",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 135990,
+      "size": 146996,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
     {
-      "content_hash": "7d5d8655a1c69b7514b29411810bf5f5d264e6eeb20346d81deaaf7e222b125c",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "454a36e1e5811c28465f198a74417b1c06107cf010157303458984640000d103",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 67181,
+      "size": 68434,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -848,10 +903,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e8f1313dd1c090871f9b4bfcac068d73ac9f401ef86879b4ec46a4d250af527e",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "2eede2fa8de9b9d624531a71b486a8da87ebffc855e4dead96015629fcf7d697",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
-      "size": 44845,
+      "size": 45298,
       "title": "Handoff: MI210 single-stream roofline \u2014 Q8 dequant-GEMV kernel + batch-1 latency levers",
       "type": "handoff-active"
     },
@@ -872,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "52b9b1c3e20a008f740c6ed519b2252c2ce1864382da27720a04842b75ea8290",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "3bcff43b1a1ff9fc3f4dbc4fb7ee404725d6c9a4fe4ed9ef26013aa5f2c3784e",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/model-artifact-integrity.md",
-      "size": 12863,
+      "size": 13121,
       "title": "Model artifact integrity \u2014 pinned, verified and reviewed weights and templates",
       "type": "handoff-active"
     },
@@ -888,10 +943,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7dec761e9227b9f0ab5df55c3add3e48791c5455e843cc19e7faf610c10a6038",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "74cda1079c80757a08c889904468f9985fa0167e62178d66240268969a4a6f79",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/model-exec-containment.md",
-      "size": 8789,
+      "size": 9179,
       "title": "Model-exec containment \u2014 what an open-weight model's tool calls can reach",
       "type": "handoff-active"
     },
@@ -1056,10 +1111,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f8217c0f16135efe00bf0a8da99ef23d94e2b408f5e5dfec6a247b7c530b30ac",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "81085f900c0d62afdd4569f14ea6390b5d8bc72cb6a1ea90bc8af311f5b62953",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/qwen-chat-template-evaluation.md",
-      "size": 103517,
+      "size": 110695,
       "title": "Qwen Chat-Template Evaluation",
       "type": "handoff-active"
     },
@@ -1088,10 +1143,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a5b9d05bf6911074d0d45928faf78b005c2852e114b2c9b08a09573f92fdcfc6",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "af8ab50388169ff7aec544e142da7b2edaf29e725080d741e2ce86e31e6c4320",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/rao-redel-substrate-spike.md",
-      "size": 50077,
+      "size": 50324,
       "title": "RAO + ReDel Substrate Spike",
       "type": "handoff-active"
     },
@@ -1128,26 +1183,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "611fea0977cf4f8a8bc233c76ad84c47cab620c954ac2ada58a4c01a6b382579",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "d96ad7a297154af6637b13c299b68b32b43bf8cf47bc2cfae42c6f545ed1c0b7",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 72369,
+      "size": 72845,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
     {
-      "content_hash": "65057cf625d817e27ff42019906f868a305c7926c0be74f6340490dbde84cb26",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "c2ad285dcd78b7d381e13802f7362fc30541b8bc753780dcc7f1b3a764a60e17",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/repl-session-memory-maturity.md",
-      "size": 41047,
+      "size": 42413,
       "title": "REPL Session Memory \u2014 Maturity Deltas",
       "type": "handoff-active"
     },
     {
-      "content_hash": "173a5af2e6adb584d3ce549b13edb45f82925a546cd1497e016878889055f4fa",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "3ce64597c2192c9231cbad12915847d3b9af09b9164a38f1896a7f273fe4f406",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 67029,
+      "size": 69808,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -1376,10 +1431,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2e95927ac88dd1eba7b3e59a5ea1b1bb71dbaa181286dd4efd195e221d89042f",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "8d7f7dcb43ee47c86dd9e83139635386918f394755efb877657048ba6456c634",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/tool-output-compression.md",
-      "size": 89913,
+      "size": 93559,
       "title": "Tool Token Optimization \u2014 Output Compression + Definition Reduction",
       "type": "handoff-active"
     },
@@ -1440,10 +1495,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4ac4bc4d9caf6d150e8a44e6329445fb3726a959a259af8f8ece7a7d14366d8e",
-      "modified": "2026-10-21T20:39:42Z",
+      "content_hash": "746071d7846922041f839eda9b79c9d081e61ed5152dd230b6208a706f3c3fa8",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 472396,
+      "size": 486795,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -1480,10 +1535,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "78b3660eefc3e6defcd407d4139c584efd71226f2ce65c23d50a5eb97a1db0f8",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "58be4f2744e57489591c8dff514d8d4a6101bc382271394a894d96b50b892c85",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "handoffs/active/yarn-context-extension-research.md",
-      "size": 52538,
+      "size": 52835,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -9528,11 +9583,27 @@
       "type": "progress"
     },
     {
+      "content_hash": "3408eeb6b418f32cf8c196a5696cf70ca3ddc7596937e740a7a2933700b01143",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ak-repack-gate.md",
+      "size": 3993,
+      "title": "2026-10-21 ak-repack-gate (DS41-W8c)",
+      "type": "progress"
+    },
+    {
       "content_hash": "507c7974da034152206bd14d3cd601dfc565ce67b96340cb6cb2976dc1e93961",
       "modified": "2026-10-21T20:25:39Z",
       "path": "progress/2026-10/2026-10-21-amendment-dpf-stage4.md",
       "size": 1236,
       "title": "2026-10-21 amendment-dpf-stage4 (research-intake Stage 4, harness cluster DP-F amendment)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2749027ea88e3f99c2b6083faa719943091b8e17e74fa8f16be0ef82cc63dd99",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-audit-ticks.md",
+      "size": 382,
+      "title": "2026-10-21 audit-ticks",
       "type": "progress"
     },
     {
@@ -9704,11 +9775,59 @@
       "type": "progress"
     },
     {
+      "content_hash": "bd9898866fb563a0f116c299d3536f247f8829777dc8ebbcbeb74bb1cb32d1ab",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ds41-ak-seeds.md",
+      "size": 4112,
+      "title": "2026-10-21: DS41-1017 AutoKernel hypothesis seeds (DS41-W8)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "dc3c7200d7fc0ee0a43b7492356586b7e91d316a35c3b6ba8b358d846a07bdcf",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ds41-qdq-tooling.md",
+      "size": 3653,
+      "title": "2026-10-21 ds41-qdq-tooling (workspace-58 subagent)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "90f272af066c473de44cd0766f46067a65aefc3be1f4f5f5eadec14cb9701af6",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ds41-queue-items.md",
+      "size": 2892,
+      "title": "2026-10-21 DS41 queue items (workspace-58 request, code and scripts only)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4dfa592bf973bc109c8f4c45621d52bef4a13510722ebbbf7e5079eb120eb531",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ds41-t412.md",
+      "size": 3345,
+      "title": "2026-10-21 DS41-T4.1.2: n_probs on the serial speculative verify path (workspace-58 subagent)",
+      "type": "progress"
+    },
+    {
       "content_hash": "65b946c2012dc6b4f5f6130a223533730f1d608326c4f68c522f51f3c6026af0",
       "modified": "2026-10-21T20:25:39Z",
       "path": "progress/2026-10/2026-10-21-ds41-w5.md",
       "size": 1670,
       "title": "2026-10-21 \u2014 DS41-W5: validate the 1017 MXFP4-experts build in the port (subagent of the DS41 main)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a80ee9007a536adb3a548e647b4c8d1157bd4c5bd96afbfa22dfefe1765f4b04",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ds41-w5ab-w62.md",
+      "size": 2539,
+      "title": "2026-10-21: DS41-W5a / W5b / W6.2 prepared, partly resolved, slot armed",
+      "type": "progress"
+    },
+    {
+      "content_hash": "19643e578e0451298c9b3b6204175e8e6c3d7244807b28afe99ab42be45a761f",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-ds41-w8a.md",
+      "size": 3001,
+      "title": "2026-10-21 ds41-w8a (workspace-58 subagent)",
       "type": "progress"
     },
     {
@@ -9725,6 +9844,22 @@
       "path": "progress/2026-10/2026-10-21-filler-queue.md",
       "size": 930,
       "title": "2026-10-21 filler-queue",
+      "type": "progress"
+    },
+    {
+      "content_hash": "57f2dd1238b723afa3adab4e19f5736a1fe07fc1108a9974d9d3ccce2756d8dd",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-fillers-3c4ca599.md",
+      "size": 1235,
+      "title": "2026-10-21 fillers-3c4ca599: generic grant-polling filler wrapper and queue registration",
+      "type": "progress"
+    },
+    {
+      "content_hash": "513278cf333b8c5450913b6258d81abdf50ca22b674551078dea9f97e8256d2e",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-gpu-cpu-noise-design.md",
+      "size": 5200,
+      "title": "2026-10-21: GPU \u2192 CPU timing contamination experiment, designed, built and queued (subagent for workspace-58)",
       "type": "progress"
     },
     {
@@ -9749,6 +9884,14 @@
       "path": "progress/2026-10/2026-10-21-hil13a.md",
       "size": 810,
       "title": "2026-10-21 hil13a: HIL-13a step-level tool events",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a97857a43dbd304fcdf87daca66777c89626597b18d8c4d6478c15cf2904f424",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-hil16-18.md",
+      "size": 1362,
+      "title": "2026-10-21 hil16-18 \u2014 HIL-16 replay tier and HIL-18 spectrum attribution (non-inference build)",
       "type": "progress"
     },
     {
@@ -9864,6 +10007,30 @@
       "type": "progress"
     },
     {
+      "content_hash": "755e7f0279590998a9700996801415f539459fd45a9fbaf3e5ee7499b71bab36",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-pii-hook-fix.md",
+      "size": 1027,
+      "title": "2026-10-21 pii-hook-fix",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1d6525224b586687b484a001418cec084261f1b983fc473ce1669a5c2bd67c31",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-queue-builders-2.md",
+      "size": 870,
+      "title": "2026-10-21 queue-builders-2: three queued inference items made runnable",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fb7ec933dc87b6e4748b2893e32b8e5be7f6243bfe08ae3a571765f81b840361",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-queue-builders-3.md",
+      "size": 1650,
+      "title": "2026-10-21 queue-builders-3: five inference queue items made runnable (no inference run)",
+      "type": "progress"
+    },
+    {
       "content_hash": "94dbcbc45b3acadb8362703d53037e3b59b8239bede1576b05daae425c3f9603",
       "modified": "2026-10-21T20:25:39Z",
       "path": "progress/2026-10/2026-10-21-qwentts-threadpool.md",
@@ -9877,6 +10044,22 @@
       "path": "progress/2026-10/2026-10-21-runner-3c4ca599.md",
       "size": 2679,
       "title": "2026-10-21 - compute runner for coordinator 3c4ca599 (batch 1, GPU block)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e79f22d5d5afdb35efb71b4371c5dab18128f3e4f3cb5feb74ed7010a23627ff",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-v11-drivers.md",
+      "size": 2651,
+      "title": "2026-10-21 v11-drivers: runnable V11-052/050/051/086 and AKX-ALL-27b measurement drivers",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9f93f4f5d66e8b67c73e4042c1364681b679f0749e3a2a1ceb233c32be53219d",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-21-wiki-compile-ws58.md",
+      "size": 3724,
+      "title": "2026-10-21 \u2014 wiki compile sweep 5 (workspace-58-wiki, operator-invoked /wrap-up Step 5)",
       "type": "progress"
     },
     {
@@ -9920,11 +10103,67 @@
       "type": "progress"
     },
     {
-      "content_hash": "e73a66dc6b7b3fe752014ffa94460e6e0e4715e5fd66a9e007fa51dfa874997b",
-      "modified": "2026-10-21T20:25:39Z",
+      "content_hash": "c902554535b6d4c6faa0671d3da545485819854e51e6fe1fe65a96b6cff253b8",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "progress/2026-10/2026-10-21.md",
-      "size": 518,
+      "size": 1298,
       "title": "2026-10-21",
+      "type": "progress"
+    },
+    {
+      "content_hash": "64b23e3f5c0cbec8242bfdee49e6429b03ac52d38f17bb9d140d75a4318f567d",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-22-3c4ca599.md",
+      "size": 14963,
+      "title": "2026-10-22 3c4ca599 (Opus coordinator) - Wrap-up 3",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b2e0cd38366a83dd109a0e79db9f45858fe33ef3842986b00baf2282c9f24557",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-22-bark-integrator.md",
+      "size": 1083,
+      "title": "2026-10-22 bark-integrator: intake-underdog-bark-20261021 Stage-2 close-out",
+      "type": "progress"
+    },
+    {
+      "content_hash": "87985f6aae185ccd8ae44f2e218c3757b78a1d017f17198dd2ad0198a95f0498",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-22-ct18-final.md",
+      "size": 1229,
+      "title": "2026-10-22 ct18-final: CT-18 / CT-18.1 closed",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6d514c38eaa866604fb75b240fc693323697ebb9872097bd237d035e32296661",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-22-kpf62-fix.md",
+      "size": 1685,
+      "title": "2026-10-22 \u2014 kpf62-fix: KPF-62.8 real-role G1 failure diagnosed and fixed",
+      "type": "progress"
+    },
+    {
+      "content_hash": "380a998de6e61b1f444f5678fc3bcc81e105707b198abdfc9d3966ae8658c828",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-22-rte-toc-writers.md",
+      "size": 1197,
+      "title": "2026-10-22 rte-toc-writers",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b1523a6884de7ce738a27ee665584f417c29fc3a3f69c1e16829454636567ade",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "progress/2026-10/2026-10-22-rulings-20261022.md",
+      "size": 474,
+      "title": "2026-10-22 rulings-20261022",
+      "type": "progress"
+    },
+    {
+      "content_hash": "07487295a3f614a5635b59d5cc746f6dfc562ffaff4c9f3aebb913e6b3c55b61",
+      "modified": "2026-10-22T11:44:21Z",
+      "path": "progress/2026-10/2026-10-22-workspace-58.md",
+      "size": 12186,
+      "title": "2026-10-22 workspace-58 (compute-calendar owner), 08:00Z-08:40Z",
       "type": "progress"
     },
     {
@@ -10024,10 +10263,18 @@
       "type": "docs"
     },
     {
-      "content_hash": "f8e693c69083fd15f99c72809daea82f34688aa2bbd8d50ed89210d070ef01aa",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "540bc18dd6b20a613292965ce48a9caf7bc83ed0baa9c7335d34f3d0e894329e",
+      "modified": "2026-10-22T11:29:10Z",
+      "path": "docs/design/gpu-cpu-noise-contribution-prereg-20261021.md",
+      "size": 14884,
+      "title": "GPU \u2192 CPU timing contamination: bias and noise contribution (pre-registration)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "10a147b9236b277698286aa8d6d96ebcdbcd51c8931a95fde1aa64c472ad0420",
+      "modified": "2026-10-22T11:29:10Z",
       "path": "docs/design/harness-improvement-loop-design-20261006.md",
-      "size": 46141,
+      "size": 50086,
       "title": "Harness improvement loop \u2014 reviewed design and architecture decision",
       "type": "docs"
     },
@@ -10248,10 +10495,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "03875c531446636e049fb0219f0a1f79a1a921e02537c3b12c2e8128e06415db",
-      "modified": "2026-10-21T20:25:38Z",
+      "content_hash": "bac5575db5b58d83b7e2aa8b5f4217a17bf1f00d827d8b2ecbf9b08ee63ed459",
+      "modified": "2026-10-22T11:44:21Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 2439,
+      "size": 10832,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -11416,7 +11663,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1423,
+  "total_new": 1448,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
