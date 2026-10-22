@@ -2,7 +2,7 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Summary
@@ -177,6 +177,21 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
 - **Small-model recall (Qwen3-0.6B, native 32k; NeoX path, no repro of the bug).** 1x: N 6/6, J 6/6. 2x: J 6/6, static YaRN 5/6, X 5/6. 4x: Y 3/6, X 0/6, J not run (CPU too slow). The 4x J arm remains open.
 
 Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [JETLONG_SMALL_RESULTS](../artifacts/ec-wrapup-20261007/JETLONG_SMALL_RESULTS.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md).
+
+## Compiled Update — 2026-10-22 (wrap-up sweep 9): the native-window gate reads NOT-FAIL on 2 discordant pairs, and the gate now says so
+
+**Confidence: verified** for the gate arithmetic and the offline recompute; the run itself is an INTERIM reading.
+
+- **What the gate is.** YARN-AGG-1(i) is a one-sided exact McNemar test on native-zone discordant pairs: FAIL iff p <= 0.05. It detects harm; it does not establish equivalence, and it needs at least 5 losses with 0 wins to fail, so with few discordants it almost always reads NOT-FAIL.
+- **First reading.** The native gate ran 13:25-14:18Z on the MI210 gap: 18 pairs, 2 discordant (b=1, c=1), interim NOT-FAIL, underpowered.
+- **Power fields.** Research `7e7d5ef7f` adds `n_pairs`, `n_discordant`, `b_a0right_a1wrong`, `c_a0wrong_a1right`, `min_losses_to_fail_given_discordant`, a `power_note` and an `interpretation` (FAIL, NOT-FAIL-underpowered when n_discordant < 10, or NOT-FAIL) to every pooled and per-cell block, `decision.json` and the claim tuple. The `verdict` and its rule are unchanged, and the root adapter `yarn_gate_agg.py` mirrors the fields without touching `claim_tuple.grade()` (88 research and 16 root tests).
+- **Operator correction, verbatim:** "changing answers within native windows and regressing quality are not necessarily the same thing. Don't be overly strict please". The handoff wording was relaxed: a changed answer inside a native window is a discordant pair to count, not by itself a regression.
+
+### Source References (2026-10-22 wrap-up sweep 9)
+
+- [progress/2026-10/2026-10-22-yarn-gate-power-note.md](../progress/2026-10/2026-10-22-yarn-gate-power-note.md)
+- [progress/2026-10/2026-10-22-yarn-native-gate-runner.md](../progress/2026-10/2026-10-22-yarn-native-gate-runner.md)
+- [handoffs/active/yarn-context-extension-research.md](../handoffs/active/yarn-context-extension-research.md)
 
 ## Compiled Update — 2026-10-21 (sweep 5): the YaRN gate is specified, the Oolong adapter exists, and the K-shift fix is queued
 

@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -17,6 +17,21 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Compiled Update — 2026-10-22 (wrap-up sweep 9): Qwen3.x thinking is turned off at the server source, not per harness
+
+**Confidence: verified** for the llama.cpp v10 source reading (read-only, line numbers below) and the tests; **inferred** for the effect on a live run, since no inference was started.
+
+- **Cause.** Qwen3.6 defaults to thinking ON. Under a token cap the reasoning consumed the whole budget and `content` came back empty, which voided the first runs of cme7, hsprof1 and the KPF-64 partial arms. Each harness had been patched per request; the cause is one level lower.
+- **Frozen v10 source semantics.** `--reasoning off` sets `enable_reasoning=0` and `default_template_kwargs["enable_thinking"]="false"` (`common/arg.cpp:3463-3465`); `--chat-template-kwargs enable_thinking` is deprecated in its favour (`arg.cpp:3310`). A per-request `chat_template_kwargs {enable_thinking:true}` overrides the server default (`tools/server/server-common.cpp:1074-1087`), so a server-side off is safe for a job that has a pre-registered thinking-ON arm such as YaRN OOL-1. `--reasoning-budget` is a separate sampler budget and is not needed.
+- **Fix in the job layer.** `jobs/qwen_thinking_lib.sh` gives `qwen_reasoning_args` and `qwen_first_reply_preflight` (rc 9 if reasoning is present or content is empty). It is wired into hil15a, hil18a, kpf261-outcome, cme7-poker-smoke and hsprof1-beam; the KPF-64 launcher and `rte_pfx2_role_recipe.py` (orchestrator `c91f3a781`, 13 tests) got the same flag and a 16-token "Reply with OK." preflight after the own-PID port proof. Yarn jobs are untouched because their harness already sends `enable_thinking` per item.
+- **Open decision.** Whether the coder server keeps thinking ON as a pre-registered exception is filed as CT-THINK-CODER in `qwen-chat-template-evaluation.md`; until it is decided a harness must send `enable_thinking` explicitly.
+
+### Source References (2026-10-22 wrap-up sweep 9)
+
+- [progress/2026-10/2026-10-22-qwen-thinking-source-fix.md](../progress/2026-10/2026-10-22-qwen-thinking-source-fix.md)
+- [progress/2026-10/2026-10-22-rtepfx2-thinking-off.md](../progress/2026-10/2026-10-22-rtepfx2-thinking-off.md)
+- [docs/guides/agent-workflows/compute-fillers.md](../docs/guides/agent-workflows/compute-fillers.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): CT-18 closed, DP-G ruling
 
