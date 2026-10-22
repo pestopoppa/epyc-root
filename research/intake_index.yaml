@@ -341549,8 +341549,23 @@
     and 5-10 only; indices 3-4 come from the other dives.'
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
+  - "handoffs/active/autokernel-champion-aggregate.md"
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/dflash2-block-drafter-experimental-build.md"
+  - "handoffs/active/dynamic-stack-concurrency.md"
+  - "handoffs/active/harness-improvement-loop.md"
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
+  - "handoffs/active/mi210-q8-dequant-gemv-roofline.md"
+  - "handoffs/active/repl-turn-efficiency.md"
+  - "handoffs/active/tool-output-compression.md"
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md, autokernel-all-devices-all-dimensions.md, autokernel-champion-aggregate.md, autokernel-research-loop.md, dflash2-block-drafter-experimental-build.md, dynamic-stack-concurrency.md, harness-improvement-loop.md, kv-prefix-fork-and-paged-attention.md, mi210-q8-dequant-gemv-roofline.md, repl-turn-efficiency.md, tool-output-compression.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 4
@@ -342373,8 +342388,16 @@
     send trace data to it (public repo + no-egress posture).'
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/frontier-f3-data-flywheel.md"
+  - "handoffs/active/harness-improvement-loop.md"
+  - "handoffs/active/unified-trace-memory-service.md"
+  - "handoffs/active/vidya-belief-substrate-program.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, frontier-f3-data-flywheel.md, harness-improvement-loop.md, unified-trace-memory-service.md, vidya-belief-substrate-program.md (research-intake plan 2026-10-22)."
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -342606,8 +342629,14 @@
     no independent replication found.'
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
+  - "handoffs/active/speculative-decoding-mtp-refresh.md"
+  - "handoffs/active/vidya-belief-substrate-program.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md, speculative-decoding-mtp-refresh.md, vidya-belief-substrate-program.md (research-intake plan 2026-10-22)."
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -342838,8 +342867,18 @@
     NOT downloaded. Author list missing Baris Kasikci. Companion study CacheWise = intake-1844.'
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
+  - "handoffs/active/autokernel-orchestrator-actor-backend.md"
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/frontier-f3-data-flywheel.md"
+  - "handoffs/active/non-inference-backlog.md"
+  - "handoffs/active/unified-trace-memory-service.md"
+  - "handoffs/active/vidya-belief-substrate-program.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md, autokernel-orchestrator-actor-backend.md, autokernel-research-loop.md, frontier-f3-data-flywheel.md, non-inference-backlog.md, unified-trace-memory-service.md, vidya-belief-substrate-program.md (research-intake plan 2026-10-22)."
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -343079,8 +343118,12 @@
     the batch sizes, and whether the category tables bound memory on 150k-250k vocabularies.'
   ingested_date: '2026-10-22'
   verification: stage1-unverified
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/speculative-decoding-mtp-refresh.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in speculative-decoding-mtp-refresh.md; no immediate step depends on it beyond the cited prose."
   read_depth: DIGEST
   claim_anchors:
   - claim_index: 0
@@ -343171,6 +343214,9 @@
   verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   read_depth: PARTIAL
   claim_anchors:
   - claim_index: 0
@@ -343289,8 +343335,12 @@
     SkillOpt intake-626, SWE-Skills-Bench intake-2337, SkillsBench intake-1685.'
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in harness-improvement-loop.md; no immediate step depends on it beyond the cited prose."
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -343486,8 +343536,13 @@
     (issue body, events and timeline via api.github.com; cross-referenced libmlxforge PRs #37-#39 bodies)'
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
+  - "handoffs/active/mi210-q8-dequant-gemv-roofline.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md, mi210-q8-dequant-gemv-roofline.md (research-intake plan 2026-10-22)."
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -343590,6 +343645,9 @@
   verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   read_depth: FULL
   claim_anchors:
   - claim_index: 0
@@ -343668,8 +343726,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, harness-improvement-loop.md (research-intake plan 2026-10-22)."
   authors:
   - Le Chen
   - Zishen Wan
@@ -343820,8 +343883,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Taeil Kim
   - Kangsan Kim
@@ -344004,8 +344072,14 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  - "handoffs/active/unified-trace-memory-service.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, harness-improvement-loop.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Joachim Baumann
   - Vishakh Padmakumar
@@ -344134,8 +344208,15 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/heterogeneous-slot-fabric-residency.md"
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md, autokernel-research-loop.md, heterogeneous-slot-fabric-residency.md, kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
   authors:
   - Hanchen Li
   - Runyuan He
@@ -344307,6 +344388,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Bin Gao
   - Zhuomin He
@@ -344447,8 +344531,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md (research-intake plan 2026-10-22)."
   authors:
   - Reyna Abhyankar
   - Zijian He
@@ -344587,8 +344675,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
+  - "handoffs/active/speculative-decoding-mtp-refresh.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md, speculative-decoding-mtp-refresh.md (research-intake plan 2026-10-22)."
   authors:
   - guidance-ai (Microsoft) maintainers
   key_claims:
@@ -344754,6 +344847,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Liangsheng Yin
   - Ying Sheng
@@ -344892,8 +344988,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - OpenTelemetry GenAI SIG
   key_claims:
@@ -345093,8 +345193,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in kv-prefix-fork-and-paged-attention.md; no immediate step depends on it beyond the cited prose."
   authors:
   - NVIDIA / ai-dynamo contributors
   key_claims:
@@ -345294,8 +345398,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/agentic-serving-harness-fixes.md"
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in agentic-serving-harness-fixes.md, autokernel-research-loop.md (research-intake plan 2026-10-22)."
   authors:
   - SemiAnalysis
   key_claims:
@@ -345450,8 +345559,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in unified-trace-memory-service.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Joachim Baumann
   - Vishakh Padmakumar
@@ -345678,6 +345791,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Entire Inc
   key_claims:
@@ -345892,8 +346008,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, harness-improvement-loop.md (research-intake plan 2026-10-22)."
   authors:
   - Yasmine Omri
   - Ziyu Gan
@@ -346063,8 +346184,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in harness-improvement-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Renuka Chintalapati
   - Sid Raskar
@@ -346215,8 +346340,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Marc-Antoine Allard
   - Arnaud Teinturier
@@ -346408,8 +346538,13 @@
   ingested_date: '2026-10-22'
   verification: dive-overturned
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/heterogeneous-slot-fabric-residency.md"
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in heterogeneous-slot-fabric-residency.md, kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
   authors:
   - Hanchen Li (repo owner)
   key_claims:
@@ -346624,8 +346759,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-research-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Lingfan Yu
   - Jinkun Lin
@@ -346796,8 +346935,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in kv-prefix-fork-and-paged-attention.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Vikranth Srivatsa
   - Zijian He
@@ -347007,6 +347150,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Michał Moskal
   - Harsha Nori
@@ -347130,8 +347276,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/speculative-decoding-mtp-refresh.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-research-loop.md, speculative-decoding-mtp-refresh.md (research-intake plan 2026-10-22)."
   authors:
   - Saibo Geng
   - Hudson Cooper
@@ -347277,6 +347428,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Lianmin Zheng
   key_claims:
@@ -347392,8 +347546,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
   authors:
   - Callan Fox (callanjfox)
   - WEKA (Augmented Memory Grid research)
@@ -347600,8 +347758,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
   authors:
   - SemiAnalysis (semianalysisai)
   key_claims:
@@ -347770,8 +347932,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Anthropic
   key_claims:
@@ -347965,6 +348131,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -348042,6 +348211,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -348132,8 +348304,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/speculative-decoding-mtp-refresh.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-research-loop.md, speculative-decoding-mtp-refresh.md (research-intake plan 2026-10-22)."
   authors:
   - JC1DA
   key_claims:
@@ -348287,6 +348464,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Martin Berglund
   - Brink van der Merwe
@@ -348392,6 +348572,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -348513,8 +348696,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md, autokernel-research-loop.md (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -348664,8 +348852,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, harness-improvement-loop.md (research-intake plan 2026-10-22)."
   authors:
   - Christopher Potts
   - Moritz Sudhof
@@ -348809,8 +349002,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in harness-improvement-loop.md, unified-trace-memory-service.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Yifan Wu
   - Zhuokai Zhao
@@ -348964,8 +349162,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, harness-improvement-loop.md (research-intake plan 2026-10-22)."
   authors:
   - Selena Zhang
   - The Docent Team
@@ -349086,8 +349289,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/vidya-belief-substrate-program.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, vidya-belief-substrate-program.md (research-intake plan 2026-10-22)."
   authors:
   - Miles McCain
   - Thomas Millar
@@ -349243,8 +349451,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/dynamic-stack-concurrency.md"
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dynamic-stack-concurrency.md, kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
   authors:
   - NOT-FOUND-IN-SOURCE (author list not extracted from HTML digest)
   key_claims:
@@ -349385,8 +349598,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in unified-trace-memory-service.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Vishnu Sarukkai et al. (full list NOT-FOUND-IN-SOURCE in extracted text)
   key_claims:
@@ -349520,6 +349737,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Salesforce AI Research / Univ. Waterloo (full list NOT-FOUND-IN-SOURCE in extracted text)
   key_claims:
@@ -349629,6 +349849,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - Callan Fox (WEKA)
   key_claims:
@@ -349744,8 +349967,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-research-loop.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Callan Fox (callanjfox)
   key_claims:
@@ -349975,8 +350203,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
+  - "Operator ruling 2026-10-22 (Q6): seifghazi/claude-code-proxy declined as redundant capture; the cloud-llm-vault suffices."
   authors:
   - SemiAnalysis (semianalysisai)
   key_claims:
@@ -350187,8 +350420,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in harness-improvement-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - OpenAI (Codex team)
   key_claims:
@@ -350456,8 +350693,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/kv-prefix-fork-and-paged-attention.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in kv-prefix-fork-and-paged-attention.md (research-intake plan 2026-10-22)."
   authors:
   - anomalyco / opencode contributors
   key_claims:
@@ -350617,8 +350858,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - OpenAI (Codex team)
   key_claims:
@@ -350844,8 +351089,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md, autokernel-research-loop.md (research-intake plan 2026-10-22)."
   authors:
   - am17an
   key_claims:
@@ -350978,8 +351228,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md (research-intake plan 2026-10-22)."
   authors:
   - am17an
   key_claims:
@@ -351090,8 +351344,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md (research-intake plan 2026-10-22)."
   authors:
   - am17an
   key_claims:
@@ -351220,6 +351478,9 @@
   read_depth: PARTIAL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -351318,8 +351579,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Transluce (Clarity AI Research Inc.)
   key_claims:
@@ -351466,8 +351732,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
+  handoffs_created:
+  - "handoffs/active/dev-harness-trace-mining.md"
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in dev-harness-trace-mining.md, unified-trace-memory-service.md (research-intake plan 2026-10-22)."
   authors:
   - Alex Tamkin
   - Miles McCain
@@ -351633,8 +351904,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in harness-improvement-loop.md; no immediate step depends on it beyond the cited prose."
+  - "Operator ruling 2026-10-22 (Q7): the dive-surfaced papers arXiv 2601.18341 and 2606.07448 were minted as knowledge-only entries intake-2459 and intake-2460 instead of declined."
   authors:
   - Zoe Hitzig
   - Maxim Massenkoff
@@ -351802,8 +352078,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in unified-trace-memory-service.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Danielle Ensign (Phylliida)
   key_claims:
@@ -351912,8 +352192,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/unified-trace-memory-service.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in unified-trace-memory-service.md; no immediate step depends on it beyond the cited prose."
   authors:
   - 567-labs (Ivan Leo et al.)
   key_claims:
@@ -351993,8 +352277,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in harness-improvement-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - Suproteem K. Sarkar
   key_claims:
@@ -352107,8 +352395,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-all-devices-all-dimensions.md; no immediate step depends on it beyond the cited prose."
   authors:
   - ikawrakow
   key_claims:
@@ -352208,6 +352500,9 @@
   read_depth: FULL
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Dive-verified context for the plan's packets; it narrows or corroborates a sibling entry and creates no task or trigger of its own (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -352308,8 +352603,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-research-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - ikawrakow
   key_claims:
@@ -352445,8 +352744,13 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md, autokernel-research-loop.md (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -352631,8 +352935,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md (research-intake plan 2026-10-22)."
   authors:
   - ikawrakow
   key_claims:
@@ -352801,8 +353109,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-research-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - ikawrakow
   key_claims:
@@ -352915,8 +353227,14 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
+  - "handoffs/active/autokernel-research-loop.md"
+  - "handoffs/active/kv-unified-stack-rollout.md"
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Cited by owner task lines in autokernel-all-devices-all-dimensions.md, autokernel-research-loop.md, kv-unified-stack-rollout.md (research-intake plan 2026-10-22)."
   authors:
   - ServeurpersoCom
   - 'rafacarrascosa (issue #29774 reporter)'
@@ -353070,8 +353388,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-research-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - matevz-kovacic
   key_claims:
@@ -353197,8 +353519,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-research-loop.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-research-loop.md; no immediate step depends on it beyond the cited prose."
   authors:
   - SongXiaoXi
   key_claims:
@@ -353305,8 +353631,12 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: FULL
-  handoffs_updated: []
+  handoffs_updated:
+  - "handoffs/active/autokernel-all-devices-all-dimensions.md"
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Retained as knowledge or trigger prose (no checkbox) in autokernel-all-devices-all-dimensions.md; no immediate step depends on it beyond the cited prose."
   authors:
   - ikawrakow
   key_claims:
@@ -353397,3 +353727,97 @@
     effect: unaffected
     note: Agrees with EPYC's probe (vis_max=2051).
   depends_on: []
+- id: intake-2459
+  arxiv_id: '2601.18341'
+  url: https://arxiv.org/abs/2601.18341
+  source_type: paper
+  title: 'Agentic Much? Adoption of Coding Agents on GitHub'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2445
+  verdict: not_applicable
+  authors:
+  - Romain Robbes
+  - Théo Matricon
+  - Thomas Degueule
+  key_claims:
+  - 'Abstract-level (arXiv abs page, v2 revised 2026-04-08, read 2026-10-22; full text NOT read): a large-scale study of
+    coding-agent adoption across 128,018 GitHub projects, detecting adopters from traces such as co-authored commits and
+    pull requests; it estimates adoption at 22.20% to 28.66% and still rising, across project maturity levels, languages
+    and topics, with agent-assisted commits larger than human-only commits.'
+  techniques:
+  - trace-based adoption detection (co-authored commits, PRs)
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2445
+    - intake-2460
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: Dive-surfaced by intake-2445 (Stage-2b wave 4b) as agent-adoption base-rate context. Held at Stage 3 for the
+    operator (plan Q7); the operator ruled at approval on 2026-10-22 that it becomes a knowledge-only entry rather than
+    a decline. Not dived; abstract only. Never cite as an EPYC coding-agent base rate.
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Operator ruling at plan approval 2026-10-22 (Q7): agent-adoption base-rate context for intake-2445, recorded as knowledge prose in harness-improvement-loop.md; not an EPYC coding-agent base rate and no task or trigger depends on it."
+  read_depth: ABSTRACT
+- id: intake-2460
+  arxiv_id: '2606.07448'
+  url: https://arxiv.org/abs/2606.07448
+  source_type: paper
+  title: 'Agentic Very Much! Adoption of Coding Agent in New GitHub Projects'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2445
+  verdict: not_applicable
+  authors:
+  - Romain Robbes
+  - Théo Matricon
+  - Thomas Degueule
+  key_claims:
+  - 'Abstract-level (arXiv abs page, submitted 2026-06-05, read 2026-10-22; full text NOT read): extends intake-2459 to
+    GitHub projects created after the earlier sample; adoption is reported at over twice the earlier rate with a larger
+    share of AI-assisted commits, and the authors state that their detection misses some AI-assisted activity, so the
+    figures understate use.'
+  techniques:
+  - trace-based adoption detection (co-authored commits, PRs)
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-improvement-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2445
+    - intake-2459
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: Dive-surfaced by intake-2445 (Stage-2b wave 4b) as agent-adoption base-rate context; follow-up study to intake-2459.
+    Operator ruling at approval on 2026-10-22 (plan Q7) made it a knowledge-only entry rather than a decline. Not dived;
+    abstract only. Never cite as an EPYC coding-agent base rate.
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated:
+  - "handoffs/active/harness-improvement-loop.md"
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Operator ruling at plan approval 2026-10-22 (Q7): agent-adoption base-rate context for intake-2445, recorded as knowledge prose in harness-improvement-loop.md; not an EPYC coding-agent base rate and no task or trigger depends on it."
+  read_depth: ABSTRACT
