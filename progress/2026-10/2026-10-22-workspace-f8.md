@@ -91,3 +91,21 @@ Branch `experimental/locals-kernel-fixes-20261022` (worktree `/mnt/raid0/llm/wor
 | AKX-ALL-LB4 iqk CPU FA, step 1 | `8f0fa64ca` | fa/ vendored + build wiring behind `GGML_IQK_FLASH_ATTENTION` (OFF), FLASH_ATTN_EXT hook + work size, opt-in `fa_cpu_long_ctx` set + `test-fa-rowexact`. Configure-only checked ON/OFF. Remaining: compile fixes, gates, row-exact decision, argv switch. |
 
 Build+test specs are under each task in its handoff. Boxes stay unticked until build+tests pass. Default test-backend-ops corpus unchanged (new cases are opt-in via `TEST_BACKEND_OPS_EXTRA_CASES`) so AK per-op case counts do not move.
+## Locals + agent-beacon non-inference tasks (locals-a, 2026-10-22)
+
+Orchestrator branch `f8/locals-a-orch-20261022` (6 commits on origin/main `1e707b8da`, unmerged, not pushed); root branch `f8/locals-a-root-20261022` (handoff ticks and this entry).
+
+| Task | Outcome | Evidence |
+|---|---|---|
+| UFH14-LB2 | persist half done (`365b20c6`): `parse_events.v1` with finish_reason/n_tokens/max_tokens/site; the 14-day classification is child LB2.1 (needs merge + API reload + 14 days) | 13 tests |
+| UFH14-LB3 | PROPOSAL (`658513a4`): `ORCHESTRATOR_TURN1_GRAMMAR=legacy|call|off`, default unchanged; no raw turn text retained; 4/81 enforced rows called a tool | 3 tests; recommendation: `off`, pending A/B (LB3.1) |
+| UFH14-LB6 | extension done (finish_reason, stream_gaps with raw list, p99.9 sample flag); restore NOT proven: 75 records, 0 `infer`, vs 4,739 `llama POST start` lines; recorder now counts and logs drops (`health()`); 8 unrecorded call sites listed (LB6.1, LB6.2) | 6 tests |
+| UFH14-LB9 | done (`3bbb443c`): 2/87 text-only replies (2.3%) re-tokenize one token shorter than generated; tool-call turns not measurable (LB9.1) | 2 tests |
+| KPF-LB1 | tabulated (`80bdae83`): 27B chat path 20-25% of turn 2-3 steps below 10% cache; /completion x turn not measurable from logs; child KPF-LB1.1 carries the needs-compute spec | 2 tests |
+| HSF-LB1 | done (`28ed886f`): correction note under HSF-4, dispatch.v1 `preceding_tool` / `turn_trigger` / `finish_reason` | 3 tests + 107 suite |
+| RTE-PFX-LB1 | done (`567b43c0`): all three local roles are recurrent hybrids (frontdoor `qwen35moe`); `junction-ckpt` arm added to the A/B spec | 2 tests |
+| TOC-SP-LB1 | done (`640e7a37`): consecutive-identical rate 0.03% local, 0.04% deepseek, 0.24% Claude vault, 0.39% Codex vault; decision: wire neither now | 5 tests |
+
+- Reads were read-only and bounded: `opencode.db` opened `mode=ro` with `PRAGMA query_only`, `nice -n 19`, LIMITed sessions; the vault was read, never written. No server, model load, build or background process.
+- Checklist sync: flips 4 (UFH14-LB9, HSF-LB1, RTE-PFX-LB1, TOC-SP-LB1); new `- [ ]` 7 (UFH14-LB2.1, LB3.1, LB6.1, LB6.2, LB9.1, KPF-LB1.1; LB2/LB3/LB6/KPF-LB1 parents stay open).
+- Lesson: a recorder that swallows every exception cannot be told apart from a recorder that was never reached; a 19-record census over 17 days was the only signal. Fail-open writers need a per-process drop counter.
