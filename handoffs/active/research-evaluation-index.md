@@ -53,7 +53,7 @@
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 — quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | — |
 | EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-05 — capture current pool/placement and actual owner window; retain accepted saved-E1 source capture | INF-06, INF-07, RTG-46 |
 | EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | Close CME-7S (cache gate, prompt_prefix basis) and CME-7T (first-call 2048-token budget), then CME-7R; provenance to CJ-10 | EVL-10 |
-| EVL-52 | dev harness trace mining | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) | Read tonight's dhm-mining-full (DHM-1..5, 7.2); run DHM-7.2a granite full-corpus embed; then DHM-4 operator labels | RTG-41 |
+| EVL-52 | dev harness trace mining | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) | DHM-4 operator labels (sheet ready, private); DHM-5.1 usage-field prefix; DHM-7.2a granite full-corpus embed; DHM-8 hook proposal | RTG-41 |
 
 ## Cross-domain
 
