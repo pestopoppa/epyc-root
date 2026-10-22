@@ -54,6 +54,14 @@ Operator directive, relayed by the calendar owner. Every session that owns a fil
 12. **The Bash containment hook refuses variable-expanded write targets.** Use literal paths in launch commands.
 13. **New arms use `filler_run7.sh`** (`/mnt/raid0/llm/tmp/fillers-3c4ca599/`; run6 plus one change). `--class gpu --gpu-quiet exclusive` with neither `--claim-cpus` nor `--no-fold-siblings` exits 64 instead of silently claiming CPUs 0-95. Whole-host timing jobs say `--claim-cpus 0-95` explicitly; GPU-only jobs use `--no-fold-siblings`. Existing pollers migrate at their next re-arm (never edit a live launcher). Dry-run proof: `dryrun7_test.sh`. Containers launched by a GPU job must also carry `--cpuset-cpus "$FILLER_CPUS"`, since `taskset` on the docker client does not confine the container.
 
+### Subagent brief rules (2026-10-22 additions)
+
+14. **Never delete or modify the coordinator's scratchpad (`/tmp/claude-1000/...`) or any path you did not create.** A HIL-6 subagent's scratch cleanup deleted main's watcher script; main's watcher now lives at `/mnt/raid0/llm/tmp/fillers-3c4ca599/own_jobs_watch.sh`. Put anything long-lived under `/mnt/raid0/llm/tmp`.
+15. **Qwen3.6+ endpoints: every harness request on the chat path sends `chat_template_kwargs {enable_thinking:false}`** unless thinking is pre-registered. It bit cme7 and hsprof1 the same way (empty content, all tokens spent on reasoning). Harnesses fail loudly on an empty reply.
+16. **Never run a CPU-wide preflight or bench inside a GPU-only grant.** `run_benchmark` now auto-skips the canonical tripwire under `--existing-server-port`. Containers need `--cpuset-cpus` (item 13).
+17. **Pinned-worktree jobs refuse a dirty tree,** and a shared lib must not reassign a job's pinned tree variable (the pyarrow/shared-lib clobber of RESEARCH in hsprof1 run 1). Yarn jobs are tracked in YARN-DIRTY-TREE-REFUSE.
+18. **Never push when `index_state.py --check` reports a problem.** Fix the row first, then push.
+
 ## RAM admission (2026-10-22)
 
 Operator ask: structure the inference calendar with RAM in mind. Host RAM is a booked resource, like regions.
