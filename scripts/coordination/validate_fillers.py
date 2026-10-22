@@ -27,6 +27,11 @@ The table (one markdown table, a leading "| <id> |", no "|" inside a cell, 18 ce
     decision | min_effect | substrate | notes
 
 Rules (a cell value of "-" or empty means unfilled and violates the rule for its column)
+    col 6         "peak host RAM GiB" (header may still read "max private RAM"): a number in GiB,
+                  `48` or `48 GiB` (a leading ~ and decimals are allowed).  Definition (workspace-58,
+                  2026-10-22): private/anon peak PLUS file-mapped weight bytes -- mapped weights count
+                  even with mmap.  ram_admit.sh compares it with MemAvailable (margin 64 GiB).
+                  Prose such as "~48 GB VRAM", a range, or "-" is a violation.
     status        first token in {ARMED, REGISTERED, NOT-ARMED, CANCELLED, COMPLETE}; trailing
                   prose after the token is a violation (keep the cell to the literal token --
                   launchers flip ARMED->COMPLETE with sed)
@@ -55,6 +60,8 @@ DEFAULT_FILE = "/mnt/raid0/llm/tmp/compute-flags/FILLERS.md"
 COLUMNS = ["filler-id", "owner", "launcher + pid", "resources", "min useful window",
            "max private ram", "stop file", "status", "class", "duration", "min window",
            "ds41-class y/n", "ready y/n", "prior", "decision", "min_effect", "substrate", "notes"]
+HEADER_ALIASES = {"peak host ram gib": "max private ram", "peak host ram (gib)": "max private ram"}
+RAM_RE = re.compile(r"^~?\s*\d+(?:\.\d+)?\s*(?:gib)?$", re.I)
 STATUSES = {"ARMED", "REGISTERED", "NOT-ARMED", "CANCELLED", "COMPLETE"}
 CLASSES = {"filler", "block-correctness", "block-timing-pairable", "block-timing-quiet"}
 SUBSTRATES = {"cpu", "gpu", "either"}
@@ -92,7 +99,7 @@ def parse_table(text: str) -> tuple[dict[str, int], list[tuple[int, list[str]]],
             break
     if hdr is None:
         raise Malformed("no table header starting with '| filler-id |'")
-    names = [c.lower() for c in split_row(lines[hdr])]
+    names = [HEADER_ALIASES.get(c.lower(), c.lower()) for c in split_row(lines[hdr])]
     if names != COLUMNS:
         raise Malformed("header columns differ from the 18 expected: got "
                         f"{len(names)} ({' | '.join(names)})")
@@ -131,6 +138,11 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str]) -> list[str
         out.append(f"filler-id {rid!r} is empty or contains spaces")
     if rid in seen:
         out.append("duplicate filler-id")
+
+    ram = g("max private ram")
+    if not RAM_RE.match(ram):
+        out.append(f"peak host RAM (col 6) {ram[:40]!r}: must be a number in GiB, e.g. '48' or "
+                   "'48 GiB' (private/anon peak + file-mapped weight bytes)")
 
     status = g("status")
     tok = status.split()[0] if status.split() else ""

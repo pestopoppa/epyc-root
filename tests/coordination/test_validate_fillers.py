@@ -15,7 +15,7 @@ SEP = "|" + "---|" * 18
 
 
 def row(**kw):
-    v = dict(id="r1", owner="o", launcher="l", res="q1", minw="20 m", ram="40 GB", stop="/s/STOP",
+    v = dict(id="r1", owner="o", launcher="l", res="q1", minw="20 m", ram="40 GiB", stop="/s/STOP",
              status="ARMED", cls="filler", dur="1 h", mw="20 m", ds="n", ready="y",
              prior="none found (f8, 2026-10-22)", dec="does X beat Y on the champion baseline",
              eff="+2.0% tok/s", sub="cpu", notes="")
@@ -55,6 +55,9 @@ def test_clean_row_passes_for_grant(tmp_path):
     ("dec", "-", "decision"),
     ("eff", "-", "min_effect unfilled"),
     ("eff", "big gain", "min_effect"),
+    ("ram", "-", "peak host RAM"),
+    ("ram", "~48 GB VRAM", "peak host RAM"),
+    ("ram", "45-60 GiB", "peak host RAM"),
 ])
 def test_each_rule_refuses_for_grant_but_only_warns_otherwise(tmp_path, field, val, needle):
     f = table(tmp_path, row(**{field: val}))
@@ -136,3 +139,14 @@ def test_blank_line_inside_table_is_tolerated_and_reported(tmp_path):
     r = cli("--file", str(p), "--row", "b", "--for-grant")
     assert r.returncode == 0
     assert "blank line inside the table" in r.stdout
+
+
+@pytest.mark.parametrize("ram", ["48", "48 GiB", "~48 GiB", "519.5 GiB"])
+def test_ram_forms_accepted(tmp_path, ram):
+    assert cli("--file", table(tmp_path, row(ram=ram)), "--row", "r1", "--for-grant").returncode == 0
+
+
+def test_renamed_ram_header_is_accepted(tmp_path):
+    p = tmp_path / "x.md"
+    p.write_text("\n".join([HEADER.replace("max private RAM", "peak host RAM GiB"), SEP, row()]) + "\n")
+    assert cli("--file", str(p), "--row", "r1", "--for-grant").returncode == 0
