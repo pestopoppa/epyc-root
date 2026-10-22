@@ -78,6 +78,34 @@ test("event hook releases only deleted sessions through the control-only request
   }
 })
 
+test("event hook forwards session.compacted as a control-only packet (TOC-WRITER-HOOKS-1)", async () => {
+  const hooks = (await server(fakeInput, { userId: "u1" })) as AnyHooks
+  const previousFetch = globalThis.fetch
+  const previousBase = process.env.EPYC_ORCHESTRATOR_BASE_URL
+  const calls: Array<{ url: string; init: RequestInit }> = []
+  process.env.EPYC_ORCHESTRATOR_BASE_URL = "http://orchestrator.test/v1"
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    calls.push({ url: String(input), init: init ?? {} })
+    return new Response("{}", { status: 200 })
+  }) as typeof fetch
+  try {
+    await hooks.event?.({ event: { type: "session.compacted", properties: {} } }, {})
+    assert.equal(calls.length, 0, "no session id, no packet")
+    await hooks.event?.({ event: { type: "session.compacted", properties: { sessionID: "ses_c" } } }, {})
+    assert.equal(calls.length, 1)
+    assert.equal(calls[0].url, "http://orchestrator.test/v1/chat/completions")
+    assert.ok(calls[0].init.signal instanceof AbortSignal)
+    assert.equal(new Headers(calls[0].init.headers).get("X-Session-Id"), "ses_c")
+    assert.deepEqual(JSON.parse(String(calls[0].init.body)), {
+      model: "orchestrator", messages: [], x_session_id: "ses_c", x_session_compacted: true,
+    })
+  } finally {
+    globalThis.fetch = previousFetch
+    if (previousBase === undefined) delete process.env.EPYC_ORCHESTRATOR_BASE_URL
+    else process.env.EPYC_ORCHESTRATOR_BASE_URL = previousBase
+  }
+})
+
 test("chat.params: request.ts pattern yields x_* keys in params.options", async () => {
   const hooks = (await server(fakeInput, { userId: "u1", staticKeys: { x_memory: "on" } })) as AnyHooks
   const options = { someOther: 1 }

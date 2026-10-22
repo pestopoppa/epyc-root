@@ -39,11 +39,41 @@ export const server: Plugin = async (_input, rawOptions) => {
     return opts
   }
 
+  // Best-effort control-only request (never enters inference on the server). The server's
+  // idle TTL remains the recovery path when it cannot reach the orchestrator.
+  const sendControl = async (sessionID: string, fields: Record<string, unknown>, what: string) => {
+    const baseURL = (process.env.EPYC_ORCHESTRATOR_BASE_URL ?? "http://127.0.0.1:8000/v1")
+      .replace(/\/+$/, "")
+    try {
+      const response = await fetch(`${baseURL}/chat/completions`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "X-Session-Id": sessionID },
+        body: JSON.stringify({ model: "orchestrator", messages: [], x_session_id: sessionID, ...fields }),
+        signal: AbortSignal.timeout(5_000),
+      })
+      if (!response.ok) {
+        console.warn(`[${PLUGIN_ID}] ${what} signal was not accepted: HTTP ${response.status}`)
+      }
+    } catch (err) {
+      console.warn(`[${PLUGIN_ID}] ${what} signal failed: ${String(err)}`)
+    }
+  }
+
   const hooks: Hooks = {
     event: async ({ event }) => {
       // `session.status: idle` is an ordinary turn boundary, not session end;
       // keep its observed lineage until explicit deletion or the idle TTL.
-      if (configError || !opts || event.type !== "session.deleted") return
+      if (configError || !opts) return
+      if (event.type === "session.compacted") {
+        // TOC-WRITER-HOOKS-1: the shell compacted the session itself (bus event, payload
+        // {sessionID}, published once per completed compaction at the audited pin). Forward it
+        // as a control-only packet so the trajectory artifact records shell_compaction_seen.
+        const compactedID = (event as { properties?: { sessionID?: unknown } }).properties?.sessionID
+        if (typeof compactedID !== "string" || compactedID.length === 0) return
+        await sendControl(compactedID, { x_session_compacted: true }, "session compaction")
+        return
+      }
+      if (event.type !== "session.deleted") return
       const properties = (event as { properties?: { info?: { id?: unknown } } }).properties
       const sessionID = properties?.info?.id
       if (typeof sessionID !== "string" || sessionID.length === 0) return
