@@ -1,0 +1,12 @@
+# STACKCHG-GPUPIN-20261022 intent (phase 0). Nothing else is input.
+change_id: STACKCHG-GPUPIN-20261022
+retire: []
+assign: {}
+topology: {}   # NO declared placement changes; stack_topology.yaml / registry / manifests untouched
+launcher:
+  pinned_launch_env: {HSA_OVERRIDE_CPU_AFFINITY_DEBUG: "0"}   # every stack spawn whose prefix is `taskset -c`
+  post_health: "pin_all_tasks(OUR pid, prefix cpuset); refuse the launch if a task still escapes (D1)"
+  attestation: "every task of every live stack pid inside its port's declared placement"
+autokernel_loader: "post-health re-pin + refuse only; env knob deferred to GPS-PIN-3 after one GPU AK A/A (D2)"
+open: {D3: "cgroup-v2 cpuset, only if probe P1 fails"}
+reloads_by_this_change: []   # owners reload at their own boundary

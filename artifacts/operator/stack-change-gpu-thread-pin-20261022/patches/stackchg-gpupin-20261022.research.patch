@@ -1,0 +1,434 @@
+From dc48371e85988de922d6d1a9080ac43c25954b0c Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Thu, 22 Oct 2026 19:27:37 +0000
+Subject: [PATCH 1/2] autokernel serving: every task of OUR pinned server
+ inside cpu_list before measuring (re-pin + refuse + post-run re-check)
+
+Finding (workspace-58, 2026-10-22): a `taskset -c 184-191` HIP llama-server
+had ONE early ROCr thread on 0-191; installed ROCr 6.2 os::CreateThread hands
+pthread_create an all-CPU affinity unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0.
+
+loop/launch_affinity.py (twin of epyc-orchestrator scripts/server/
+launch_affinity.py): task_masks, escapes, pin_all_tasks (sub-masks kept,
+repeat until clean), pin_own_child (acts only on a direct child -- prove OUR
+pid).
+
+serving._measure_once: after health and before any request, a pinned recipe
+runs pin_own_child; a remaining escape raises ServerDied. The result is
+recorded as residency.affinity, and affinity.escapes_end re-reads the masks
+after the measurement round (read-only).
+
+Deliberately NOT here: the ROCr env knob (layer 1). The loader env is
+identity-bearing across resolved_recipe, unified_planner,
+production_enrollment, runtime_identity and legacy_targets; a first attempt
+that added it as a loader-owned key failed ~173 AK tests on env-equality
+identity checks. Adding it is an AutoKernel identity decision (package D2,
+root artifacts/operator/stack-change-gpu-thread-pin-20261022/PACKAGE.md).
+
+Tests: test_launch_affinity.py (new) + the 16 AK files the first attempt
+broke + recipe/hip/gpu-profile/cpu-serving files: 312 passed, 2 failed --
+both test_serial_roster.py::test_shared_author_sandbox_* and both fail
+identically on origin/main (pre-existing).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ .../autokernel/loop/launch_affinity.py        | 156 ++++++++++++++++++
+ scripts/kernel_rnd/autokernel/loop/serving.py |  30 +++-
+ .../autokernel/loop/test_launch_affinity.py   | 111 +++++++++++++
+ 3 files changed, 295 insertions(+), 2 deletions(-)
+ create mode 100644 scripts/kernel_rnd/autokernel/loop/launch_affinity.py
+ create mode 100644 scripts/kernel_rnd/autokernel/loop/test_launch_affinity.py
+
+diff --git a/scripts/kernel_rnd/autokernel/loop/launch_affinity.py b/scripts/kernel_rnd/autokernel/loop/launch_affinity.py
+new file mode 100644
+index 000000000..f4337b08f
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/launch_affinity.py
+@@ -0,0 +1,156 @@
++"""Every thread of a CPU-pinned serving launch stays on the recipe's ``cpu_list``.
++
++Research-side twin of epyc-orchestrator ``scripts/server/launch_affinity.py`` (same
++semantics, same env key; keep the two in step). The repos do not import each other,
++so the ~60 lines that matter are duplicated rather than path-hacked.
++
++Why (workspace-58, 2026-10-22): a ``taskset -c 184-191`` HIP llama-server had ONE
++early ROCr thread on ``0-191``. The installed ROCr (ROCm 6.2.0,
++libhsa-runtime64.so.1.14.60200) hands every thread it creates an explicit all-CPU
++affinity unless ``HSA_OVERRIDE_CPU_AFFINITY_DEBUG`` is exactly ``"0"``. After health,
++``serving._measure_once`` calls ``pin_own_child``: it re-pins anything still outside the
++placement, and the launch fails if a task escapes. The env key is exported for the
++stack launcher's use. The AutoKernel loader does NOT set it, because its launch env is
++identity-bearing (STACKCHG-GPUPIN-20261022 D2).
++"""
++
++from __future__ import annotations
++
++import os
++from collections.abc import Callable, Iterable
++from dataclasses import dataclass, field
++from pathlib import Path
++
++ROCR_AFFINITY_ENV_KEY = "HSA_OVERRIDE_CPU_AFFINITY_DEBUG"
++ROCR_AFFINITY_ENV_VALUE = "0"
++DEFAULT_PROC_ROOT = Path("/proc")
++
++
++def parse_cpu_list(spec: str) -> frozenset[int]:
++    if not isinstance(spec, str) or not spec.strip():
++        raise ValueError(f"empty cpu list: {spec!r}")
++    cpus: set[int] = set()
++    for part in spec.strip().split(","):
++        lo_s, sep, hi_s = part.strip().partition("-")
++        if not lo_s.isdigit() or (sep and not hi_s.isdigit()):
++            raise ValueError(f"malformed segment {part!r} in cpu list {spec!r}")
++        lo, hi = int(lo_s), int(hi_s) if sep else int(lo_s)
++        if hi < lo:
++            raise ValueError(f"descending range {part!r} in cpu list {spec!r}")
++        cpus.update(range(lo, hi + 1))
++    return frozenset(cpus)
++
++
++def format_cpu_list(cpus: Iterable[int]) -> str:
++    ordered = sorted(set(cpus))
++    runs: list[str] = []
++    i = 0
++    while i < len(ordered):
++        j = i
++        while j + 1 < len(ordered) and ordered[j + 1] == ordered[j] + 1:
++            j += 1
++        runs.append(str(ordered[i]) if i == j else f"{ordered[i]}-{ordered[j]}")
++        i = j + 1
++    return ",".join(runs)
++
++
++def task_masks(pid: int, proc_root: Path = DEFAULT_PROC_ROOT) -> list[tuple[int, str, frozenset[int]]]:
++    """(tid, comm, cpus) for every task of ``pid``; [] when the pid is gone."""
++    root = Path(proc_root) / str(pid) / "task"
++    try:
++        entries = sorted((e for e in root.iterdir() if e.name.isdigit()), key=lambda e: int(e.name))
++    except OSError:
++        return []
++    out = []
++    for entry in entries:
++        try:
++            status = (entry / "status").read_text(encoding="utf-8", errors="replace")
++        except OSError:
++            continue
++        mask = next((ln.split(":", 1)[1].strip() for ln in status.splitlines()
++                     if ln.startswith("Cpus_allowed_list:")), None)
++        if mask is None:
++            continue
++        try:
++            comm = (entry / "comm").read_text(encoding="utf-8", errors="replace").strip()
++        except OSError:
++            comm = "?"
++        out.append((int(entry.name), comm, parse_cpu_list(mask)))
++    return out
++
++
++def escapes(pid: int, cpu_list: str, proc_root: Path = DEFAULT_PROC_ROOT) -> list[dict]:
++    allowed = parse_cpu_list(cpu_list)
++    return [{"tid": t, "comm": c, "cpus": format_cpu_list(m)}
++            for t, c, m in task_masks(pid, proc_root) if not m <= allowed]
++
++
++@dataclass
++class PinResult:
++    pid: int
++    cpus: str
++    tasks_seen: int = 0
++    repinned: list[dict] = field(default_factory=list)
++    errors: list[dict] = field(default_factory=list)
++    escapes_after: list[dict] = field(default_factory=list)
++
++    @property
++    def ok(self) -> bool:
++        return self.tasks_seen > 0 and not self.escapes_after
++
++    def as_dict(self) -> dict:
++        return {"pid": self.pid, "cpus": self.cpus, "tasks_seen": self.tasks_seen,
++                "repinned": self.repinned, "errors": self.errors,
++                "escapes_after": self.escapes_after, "ok": self.ok}
++
++
++def parent_pid(pid: int, proc_root: Path = DEFAULT_PROC_ROOT) -> int | None:
++    try:
++        stat = (Path(proc_root) / str(pid) / "stat").read_text(encoding="utf-8", errors="replace")
++        return int(stat.rsplit(") ", 1)[1].split()[1])
++    except (OSError, IndexError, ValueError):
++        return None
++
++
++def pin_own_child(pid: int, cpu_list: str, *, proc_root: Path = DEFAULT_PROC_ROOT,
++                  setter: Callable[[int, Iterable[int]], None] = os.sched_setaffinity,
++                  launcher_pid: int | None = None) -> PinResult | None:
++    """``pin_all_tasks`` for a pid that is provably OUR direct child; None (untouched) otherwise.
++
++    The spawn is ``taskset -c ... llama-server`` (taskset execs), so the Popen pid is the
++    server and its parent is this process. A recycled pid or a test double is never
++    re-pinned.
++    """
++    me = os.getpid() if launcher_pid is None else launcher_pid
++    if parent_pid(pid, proc_root) != me:
++        return None
++    return pin_all_tasks(pid, cpu_list, proc_root=proc_root, setter=setter)
++
++
++def pin_all_tasks(pid: int, cpu_list: str, *, proc_root: Path = DEFAULT_PROC_ROOT,
++                  setter: Callable[[int, Iterable[int]], None] = os.sched_setaffinity,
++                  passes: int = 4) -> PinResult:
++    """Re-pin each task NOT inside ``cpu_list`` (sub-masks are left alone); repeat until clean."""
++    allowed = parse_cpu_list(cpu_list)
++    result = PinResult(pid=pid, cpus=format_cpu_list(allowed))
++    seen: set[int] = set()
++    for _ in range(max(1, passes)):
++        moved = 0
++        for tid, comm, mask in task_masks(pid, proc_root):
++            seen.add(tid)
++            if mask <= allowed:
++                continue
++            row = {"tid": tid, "comm": comm, "cpus": format_cpu_list(mask)}
++            try:
++                setter(tid, allowed)
++            except OSError as exc:
++                if getattr(exc, "errno", None) != 3:  # ESRCH: exited mid-walk, not an escape
++                    result.errors.append({**row, "error": str(exc)})
++                continue
++            result.repinned.append(row)
++            moved += 1
++        if moved == 0:
++            break
++    result.tasks_seen = len(seen)
++    result.escapes_after = escapes(pid, cpu_list, proc_root)
++    return result
+diff --git a/scripts/kernel_rnd/autokernel/loop/serving.py b/scripts/kernel_rnd/autokernel/loop/serving.py
+index 1fb021bc1..a9c74c85d 100644
+--- a/scripts/kernel_rnd/autokernel/loop/serving.py
++++ b/scripts/kernel_rnd/autokernel/loop/serving.py
+@@ -44,8 +44,8 @@ from typing import TYPE_CHECKING
+ import urllib.request
+ import urllib.error
+ 
+-from . import (headline_admissibility, hip_launch_proof, kernel_coverage, loadgen_selfcheck,
+-               lifecycle_observation, procguard, residency, status)
++from . import (headline_admissibility, hip_launch_proof, kernel_coverage, launch_affinity,
++               loadgen_selfcheck, lifecycle_observation, procguard, residency, status)
+ from . import native_server_response as server_response
+ from .serving_server_owner import (ServerOwnershipRefused, ServerPortOwner,
+                                    require_free_port)
+@@ -1054,6 +1054,7 @@ def _measure_once(recipe: Recipe, build_dir: Path, port: int,
+     request_start: float | None = None
+     request_end: float | None = None
+     hip_maps = None
++    affinity_pin = None
+     try:
+         if cpu_profile_capture is None:
+             sampler = residency.Sampler()
+@@ -1110,6 +1111,21 @@ def _measure_once(recipe: Recipe, build_dir: Path, port: int,
+                         expectations=resolved_recipe.readback_expectations)
+                 if backend == "gpu":
+                     hip_maps = hip_launch_proof.mapped_ggml(srv.pid, Path(build_dir) / "bin")
++                # Every task of OUR server inside the recipe's cpu_list before a token is
++                # measured (2026-10-22): re-pin stragglers, refuse the launch if one escapes.
++                # Layer 2 only. The ROCr env knob (layer 1, HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0)
++                # is NOT set here: the loader env is identity-bearing across resolved_recipe,
++                # unified_planner, production_enrollment, runtime_identity and legacy_targets,
++                # so adding a loader key is an AutoKernel identity change for its owner
++                # (STACKCHG-GPUPIN-20261022 D2). `affinity.escapes_end` records whether a
++                # thread created after this pin (e.g. a later ROCr thread) escaped.
++                if recipe.cpu_list:
++                    pin = launch_affinity.pin_own_child(srv.pid, recipe.cpu_list)
++                    affinity_pin = None if pin is None else pin.as_dict()
++                    if pin is not None and not pin.ok:
++                        raise ServerDied(
++                            f"tasks escape cpu_list {recipe.cpu_list} after re-pin: "
++                            f"{pin.escapes_after or 'no tasks readable'} ({recipe.describe()})")
+ 
+                 sched_log = (loadgen_selfcheck.SchedulingLog()
+                              if loadgen_selfcheck.enabled() else None)
+@@ -1228,6 +1244,14 @@ def _measure_once(recipe: Recipe, build_dir: Path, port: int,
+                 observe("checkpoint", "measurement_end")
+                 request_end = time.time()
+                 request_ended_monotonic = time.monotonic()
++                # Post-warm-up re-check (read-only): threads born at the first request or the
++                # draft load must still be inside cpu_list. Recorded, not enforced, here.
++                if affinity_pin is not None:
++                    try:
++                        affinity_pin["escapes_end"] = launch_affinity.escapes(
++                            srv.pid, recipe.cpu_list)
++                    except Exception as exc:  # telemetry never alters serving
++                        affinity_pin["escapes_end_error"] = f"{type(exc).__name__}: {exc}"[:256]
+                 request_rows = [row[3] for row in warmup_rows + rows]
+                 if response_capture is not None:
+                     # Persistence is outside both timed rounds and still inside the
+@@ -1301,6 +1325,8 @@ def _measure_once(recipe: Recipe, build_dir: Path, port: int,
+                             record, maps=hip_maps,
+                             link=hip_launch_proof.linkage(
+                                 binary, dict(launch_env).get("LD_LIBRARY_PATH")))
++                    if affinity_pin is not None:
++                        record["affinity"] = affinity_pin
+                     if cpu_observer is not None:
+                         try:
+                             record["cpu_lifecycle"] = cpu_observer.observation
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_launch_affinity.py b/scripts/kernel_rnd/autokernel/loop/test_launch_affinity.py
+new file mode 100644
+index 000000000..e582d529d
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/test_launch_affinity.py
+@@ -0,0 +1,111 @@
++"""Loader-side deterministic pinning (2026-10-22). Synthetic /proc only; nothing is launched."""
++
++from __future__ import annotations
++
++import dataclasses
++import errno
++from pathlib import Path
++
++import pytest
++
++from . import launch_affinity as la
++from . import serving
++
++LANE = "184-191"
++
++
++def _task(proc: Path, pid: int, tid: int, mask: str) -> None:
++    d = proc / str(pid) / "task" / str(tid)
++    d.mkdir(parents=True, exist_ok=True)
++    (d / "status").write_text(f"Name:\tllama-server\nCpus_allowed_list:\t{mask}\n")
++    (d / "comm").write_text("llama-server\n")
++
++
++def _proc(tmp_path: Path, pid: int, masks: dict[int, str], ppid: int) -> Path:
++    proc = tmp_path / "proc"
++    for tid, mask in masks.items():
++        _task(proc, pid, tid, mask)
++    (proc / str(pid) / "stat").write_text(f"{pid} (llama-server) S {ppid} 1 1 0\n")
++    return proc
++
++
++def _setter(proc: Path, pid: int, calls: list):
++    def setter(tid, cpus):
++        calls.append(tid)
++        _task(proc, pid, tid, la.format_cpu_list(cpus))
++    return setter
++
++
++def test_the_finding_is_repinned_and_submasks_kept(tmp_path):
++    masks = {100 + i: LANE for i in range(196)}
++    masks[107] = "0-191"
++    masks[400] = "186"
++    proc = _proc(tmp_path, 100, masks, ppid=55)
++    assert [e["tid"] for e in la.escapes(100, LANE, proc)] == [107]
++    calls: list = []
++    res = la.pin_own_child(100, LANE, proc_root=proc, setter=_setter(proc, 100, calls),
++                           launcher_pid=55)
++    assert res is not None and res.ok and calls == [107] and res.tasks_seen == 197
++    assert la.escapes(100, LANE, proc) == []
++    assert dict((t, la.format_cpu_list(m)) for t, _c, m in la.task_masks(100, proc))[400] == "186"
++
++
++def test_not_our_child_is_never_touched(tmp_path):
++    proc = _proc(tmp_path, 100, {100: LANE, 101: "0-191"}, ppid=1)
++    calls: list = []
++    assert la.pin_own_child(100, LANE, proc_root=proc, setter=_setter(proc, 100, calls),
++                            launcher_pid=55) is None
++    assert calls == []
++
++
++def test_eperm_leaves_an_escape_and_fails(tmp_path):
++    proc = _proc(tmp_path, 100, {100: LANE, 101: "0-191"}, ppid=55)
++
++    def setter(tid, cpus):
++        raise OSError(errno.EPERM, "nope")
++
++    res = la.pin_all_tasks(100, LANE, proc_root=proc, setter=setter)
++    assert not res.ok and res.errors and res.escapes_after[0]["tid"] == 101
++
++
++def test_vanished_pid_is_not_ok(tmp_path):
++    assert not la.pin_all_tasks(9, LANE, proc_root=tmp_path, setter=lambda *a: None).ok
++
++
++@pytest.mark.parametrize("bad", ["", "x", "3-1", "1-"])
++def test_parse_rejects(bad):
++    with pytest.raises(ValueError):
++        la.parse_cpu_list(bad)
++
++
++def test_format_round_trip():
++    assert la.format_cpu_list(la.parse_cpu_list("0-3,7,96-99")) == "0-3,7,96-99"
++
++
++def test_loader_env_is_unchanged_and_the_repin_is_wired():
++    """Layer 1 is deliberately NOT in the AK loader (identity-bearing env; package D2)."""
++    import inspect
++
++    assert la.ROCR_AFFINITY_ENV_KEY not in serving.LOADER_OWNED_ENV
++    src = inspect.getsource(serving._measure_once)
++    assert "launch_affinity.pin_own_child(srv.pid, recipe.cpu_list)" in src
++    assert src.index("pin_own_child") < src.index('one(i, "measurement")')
++    assert 'affinity_pin["escapes_end"]' in src
++
++
++def test_every_canonical_gpu_serving_recipe_pins():
++    root = Path(__file__).resolve().parents[4] / "artifacts" / "serving-recipes"
++    paths = sorted(root.rglob("*.json"))
++    assert paths, f"no serving recipes under {root}"
++    checked = 0
++    for path in paths:
++        try:
++            recipe = serving.Recipe.load(path)
++        except Exception:
++            continue  # non-recipe JSON under the tree
++        if recipe.device == "none":
++            continue
++        assert recipe.cpu_list, f"{path.name}: GPU recipe without a cpu_list"
++        la.parse_cpu_list(recipe.cpu_list)
++        checked += 1
++    assert checked >= 1
+-- 
+2.51.0
+
+
+From c70f2bae4394bc72b0527d7caecb76e923eeb2eb Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Thu, 22 Oct 2026 19:40:36 +0000
+Subject: [PATCH 2/2] autokernel serving: record operator decisions D1 (refuse)
+ and D2 (A/A re-check before env knob, GPS-PIN-3)
+
+STACKCHG-GPUPIN-20261022, operator 2026-10-22. Comment only; no behaviour change.
+D1: a task still outside cpu_list after re-pin raises ServerDied (already the
+behaviour). D2: the ROCr env knob is NOT added to the AK loader until one GPU
+AutoKernel A/A is re-checked at the next GPU AK window; then GPS-PIN-3 threads
+it through resolved_recipe, unified_planner, production_enrollment,
+runtime_identity and legacy_targets as one AutoKernel identity change.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ scripts/kernel_rnd/autokernel/loop/serving.py | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/kernel_rnd/autokernel/loop/serving.py b/scripts/kernel_rnd/autokernel/loop/serving.py
+index a9c74c85d..fdcb2e707 100644
+--- a/scripts/kernel_rnd/autokernel/loop/serving.py
++++ b/scripts/kernel_rnd/autokernel/loop/serving.py
+@@ -1116,9 +1116,12 @@ def _measure_once(recipe: Recipe, build_dir: Path, port: int,
+                 # Layer 2 only. The ROCr env knob (layer 1, HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0)
+                 # is NOT set here: the loader env is identity-bearing across resolved_recipe,
+                 # unified_planner, production_enrollment, runtime_identity and legacy_targets,
+-                # so adding a loader key is an AutoKernel identity change for its owner
+-                # (STACKCHG-GPUPIN-20261022 D2). `affinity.escapes_end` records whether a
+-                # thread created after this pin (e.g. a later ROCr thread) escaped.
++                # so adding a loader key is an AutoKernel identity change for its owner.
++                # Operator 2026-10-22, STACKCHG-GPUPIN-20261022: D1 = REFUSE on a stray thread
++                # (the raise below; no warn mode). D2 = re-check one GPU AK A/A at the next GPU
++                # AK window BEFORE the env knob is added here (pending task GPS-PIN-3, which
++                # threads it through the five identity sites). `affinity.escapes_end` records
++                # whether a thread created after this pin (e.g. a later ROCr thread) escaped.
+                 if recipe.cpu_list:
+                     pin = launch_affinity.pin_own_child(srv.pid, recipe.cpu_list)
+                     affinity_pin = None if pin is None else pin.as_dict()
+-- 
+2.51.0
+

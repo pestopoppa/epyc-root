@@ -1,0 +1,1236 @@
+From db2a50bfa5d7783e44d5ff9ef2ffe47042d7ef13 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Thu, 22 Oct 2026 18:51:59 +0000
+Subject: [PATCH 1/2] launch_affinity: every thread of a pinned launch stays on
+ its placement (ROCr knob + re-pin + status assertion)
+
+Finding (workspace-58, 2026-10-22): a `taskset -c 184-191 numactl --membind=3`
+HIP llama-server had 196 threads; 195 read Cpus_allowed_list 184-191, ONE early
+ROCr thread read 0-191. Cause, read from the installed ROCr
+(/opt/rocm/lib/libhsa-runtime64.so.1.14.60200, ROCm 6.2.0): os::CreateThread
+fills a cpu_set with 0..get_nprocs_conf()-1 and passes it to
+pthread_attr_setaffinity_np when a runtime flag is set; the flag is parsed from
+HSA_OVERRIDE_CPU_AFFINITY_DEBUG and is true unless the value is exactly "0".
+
+Three layers, one shared helper (scripts/server/launch_affinity.py):
+1. apply_pinned_launch_env: a spawn whose prefix pins (taskset -c) gets
+   HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0, so ROCr threads (now and later) inherit
+   the pinned mask. Inert for CPU binaries.
+2. enforce_launch_affinity / pin_all_tasks after health: re-pin any task whose
+   mask is not inside the placement (sub-mask OpenMP places are left alone),
+   repeat until clean, and FAIL the launch (kill OUR pid) if a task still
+   escapes. Only acts on a direct child of the launcher (prove OUR pid).
+3. affinity_attestation_warnings in `orchestrator_stack.py status` and
+   runtime_attestation_warnings: every task of the live pid must be inside the
+   port's declared placement; generate_attestation no longer passes a row
+   because ONE task (or the main thread) matches -- task_cpu_escape is
+   reported as cpu_affinity_escape.
+
+Wired into all six start_server llama-server branches and start_aux_service,
+plus the serving gate (env + post-health pin + post-warm-up re-check recorded
+as affinity_escapes_at_stop).
+
+NOT DEPLOYED: stack-change package for one operator signature (root branch
+ws58/gpu-host-thread-pinning-20261022). No production kernel touched.
+
+Tests: tests/unit/test_launch_affinity.py (34) + adjacent launch/attestation
+files: 316 passed. test_stack_change_pipeline.py has 2 failures in untouched
+promotion-gate code (uv-run command shape), unrelated to this change.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ scripts/attest/generate_attestation.py |  24 +-
+ scripts/benchmark/serving_gate.py      |  16 +-
+ scripts/server/launch_affinity.py      | 398 +++++++++++++++++++++++++
+ scripts/server/orchestrator_stack.py   |  82 +++++
+ scripts/server/stack_commands.py       |  22 ++
+ tests/unit/test_launch_affinity.py     | 352 ++++++++++++++++++++++
+ 6 files changed, 891 insertions(+), 3 deletions(-)
+ create mode 100644 scripts/server/launch_affinity.py
+ create mode 100644 tests/unit/test_launch_affinity.py
+
+diff --git a/scripts/attest/generate_attestation.py b/scripts/attest/generate_attestation.py
+index 051c416f..152f75ba 100644
+--- a/scripts/attest/generate_attestation.py
++++ b/scripts/attest/generate_attestation.py
+@@ -1004,12 +1004,26 @@ def build_serving_config(
+         expected_cpus = _parse_cpu_list(numa_intent.get("cpu_list") if numa_intent else None)
+         process_cpus = _parse_cpu_list(cpus_allowed)
+         numa_match = None
++        # 2026-10-22: a mask held by ANY task used to be enough (`... in task_cpu_masks`),
++        # and the main thread's mask was enough on its own -- so a HIP server whose main
++        # thread read 184-191 while one ROCr thread ran on 0-191 attested as a match.
++        # Every task must now lie INSIDE the declared list (a narrower OpenMP place is
++        # inside); an escaping task is reported and makes the row a mismatch.
++        task_cpu_escape = (
++            sorted(
++                mask
++                for mask in task_cpu_masks
++                if not _parse_cpu_list(mask) <= expected_cpus
++            )
++            if numa_intent and expected_cpus
++            else []
++        )
+         if numa_intent and cpus_allowed:
+             numa_match = (
+                 process_cpus == expected_cpus
+                 or task_cpu_union == expected_cpus
+                 or numa_intent.get("cpu_list") in task_cpu_masks
+-            )
++            ) and not task_cpu_escape
+         rows.append(
+             {
+                 "pid": proc["pid"],
+@@ -1032,6 +1046,7 @@ def build_serving_config(
+                 "cpus_allowed_list": cpus_allowed,
+                 "task_cpu_masks": task_cpu_masks,
+                 "task_cpu_union": task_cpu_union_text,
++                "task_cpu_escape": task_cpu_escape,
+                 "numa_intent": numa_intent,
+                 "numa_match": numa_match,
+             }
+@@ -1083,7 +1098,12 @@ def summarize(
+                         f"actual={row.get('cpus_allowed_list')}:"
+                         f"task_union={row.get('task_cpu_union')}:"
+                         f"expected={row.get('numa_intent', {}).get('cpu_list')}"
+-                    ],
++                    ]
++                    + (
++                        ["cpu_affinity_escape:" + ",".join(row["task_cpu_escape"])]
++                        if row.get("task_cpu_escape")
++                        else []
++                    ),
+                 }
+             )
+     if feature_flags and feature_flags.get("status") == "warn":
+diff --git a/scripts/benchmark/serving_gate.py b/scripts/benchmark/serving_gate.py
+index 56ec47d0..b11517f1 100755
+--- a/scripts/benchmark/serving_gate.py
++++ b/scripts/benchmark/serving_gate.py
+@@ -19,6 +19,11 @@ Stops 5 min before --deadline; a phase is skipped (SKIPPED_DEADLINE) if less tha
+ import argparse, ast, datetime, fcntl, hashlib, json, math, os, re, shlex, signal, subprocess, sys, threading, time, urllib.request
+ from pathlib import Path
+ 
++# Deterministic host-thread pinning (2026-10-22): one shared helper with the stack launcher.
++sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++from scripts.server.launch_affinity import (  # noqa: E402
++    affinity_escapes, apply_pinned_launch_env, enforce_launch_affinity, prefix_cpuset)
++
+ STAGE = Path('/mnt/raid0/llm/tmp/q38t101-serving-gate')
+ CORPUS = STAGE / 'corpus.jsonl'
+ CORPUS_SHA = STAGE / 'corpus.sha256'
+@@ -235,6 +240,7 @@ class Server:
+         env['LD_LIBRARY_PATH'] = f'{self.bin_dir}:/opt/rocm/lib' if self.expect_gpu else str(self.bin_dir)      # this tree's own ggml, never the global path
+         for k in ('HSA_OVERRIDE_GFX_VERSION', 'GGML_NOHUGEPAGE_PROCESS', 'LLAMA_SPEC_EXACT', 'LLAMA_SPEC_DIAG_ACCEPT', 'GGML_CUDA_LOG_MMVQ_ROUTE'): env.pop(k, None)
+         if not self.expect_gpu: env['HIP_VISIBLE_DEVICES'] = '-1'; env['ROCR_VISIBLE_DEVICES'] = ''     # CPU role must never touch the MI210
++        apply_pinned_launch_env(env, self.argv)     # ROCr must not widen its own threads off the taskset placement
+         (self.out / f'{self.label}.server_command.txt').write_text(' '.join(shlex.quote(a) for a in self.argv) + '\n')
+         self.log = (self.out / f'{self.label}.server.log').open('wb')
+         self.proc = subprocess.Popen(self.argv, stdout=self.log, stderr=subprocess.STDOUT, env=env)
+@@ -257,8 +263,15 @@ class Server:
+         if self.expect_gpu:
+             if self.vram_ready < VRAM_FLOOR: raise RuntimeError(f'{self.label}: VRAM {self.vram_ready} below residency floor {VRAM_FLOOR}')
+             if not any('libggml-hip' in m for m in self.maps): raise RuntimeError(f'{self.label}: libggml-hip not mapped; not a HIP run: {self.maps}')
++        pin = enforce_launch_affinity(self.pid, self.argv, label=self.label, emit=lambda _m: None)
++        self.affinity = pin.as_dict() if pin is not None else None
++        if pin is not None and not pin.ok: raise RuntimeError(f'{self.label}: tasks escape the placement after re-pin: {self.affinity}')
+     def stop_and_verify(self):
+         dead = True
++        cpuset = prefix_cpuset(self.argv)
++        if self.proc is not None and self.proc.poll() is None and cpuset:
++            # Post-warm-up re-check: threads born at the first request / draft load must have inherited the pin.
++            self.affinity_escapes_at_stop = [{'tid': t.tid, 'comm': t.comm, 'cpus': t.cpu_list} for t in affinity_escapes(self.pid, cpuset)]
+         if self.proc is not None:
+             if self.proc.poll() is None:
+                 self.proc.send_signal(signal.SIGTERM)
+@@ -279,7 +292,8 @@ class Server:
+         return {'label': self.label, 'pid': getattr(self, 'pid', None), 'dead_after': dead, 'expect_gpu': self.expect_gpu, 'samples': len(s), 'libs': self.maps,
+                 'vram_ready_gib': round(getattr(self, 'vram_ready', -1) / 2**30, 2), 'vram_peak_gib': round(max([x['vram'] for x in s] or [0]) / 2**30, 2),
+                 'busy_max': max([x['busy'] for x in s] or [0]), 'busy_nonzero_samples': sum(1 for x in s if x['busy'] > 0),
+-                'child_in_kfd_samples': sum(1 for x in s if x['child_in_kfd'])}
++                'child_in_kfd_samples': sum(1 for x in s if x['child_in_kfd']),
++                'affinity': getattr(self, 'affinity', None), 'affinity_escapes_at_stop': getattr(self, 'affinity_escapes_at_stop', None)}
+ 
+ def gen_body(prompt, n=N_PREDICT):
+     return {'prompt': prompt, 'n_predict': n, 'temperature': 0.0, 'top_k': 1, 'top_p': 1.0, 'min_p': 0.0, 'typical_p': 1.0, 'repeat_penalty': 1.0, 'seed': 42,
+diff --git a/scripts/server/launch_affinity.py b/scripts/server/launch_affinity.py
+new file mode 100644
+index 00000000..4dfd62de
+--- /dev/null
++++ b/scripts/server/launch_affinity.py
+@@ -0,0 +1,398 @@
++#!/usr/bin/env python3
++"""Every thread of a CPU-pinned launch stays on the placement's CPUs.
++
++The finding (workspace-58, 2026-10-22). A HIP llama-server started as
++``taskset -c 184-191 numactl --membind=3 llama-server ... --device ROCm0`` had
++196 threads; 195 of them carried ``Cpus_allowed_list: 184-191`` and ONE, an early
++ROCm-runtime (ROCr) thread, carried ``0-191``. That thread can run on any core of
++the host, including the cores CPU inference and timing windows own. ``taskset -c``
++only sets the mask of the first task; every later task inherits the mask of the
++task that creates it -- unless the creator hands ``pthread_create`` an explicit
++affinity, which is what ROCr does.
++
++The mechanism, read from the installed ROCr (``/opt/rocm/lib/
++libhsa-runtime64.so.1.14.60200``, ROCm 6.2.0): ``os::CreateThread`` checks a
++runtime flag and, when it is set, fills a cpu_set_t with CPUs
++``0..get_nprocs_conf()-1`` and passes it to ``pthread_attr_setaffinity_np``
++before ``pthread_create``. The flag is parsed from
++``HSA_OVERRIDE_CPU_AFFINITY_DEBUG`` and is TRUE unless the value is exactly
++``"0"``. So by default every thread ROCr creates -- at init, and any it creates
++later -- is widened to the whole machine, whatever the process was pinned to.
++(The HIP runtime's own affinity code, ``AMD_CPU_AFFINITY``, defaults off.)
++
++So pinning is made deterministic in two layers, used by every launcher:
++
++1. ``apply_pinned_launch_env(env, prefix)``: a launch whose spawn prefix pins
++   (``taskset -c <cpus>``) gets ``HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0``. ROCr then
++   creates its threads with the default attribute, i.e. they inherit the
++   creating thread's (pinned) mask. This fixes the source, including threads ROCr
++   creates after start-up. The variable is read only by ROCr; for a CPU binary
++   it is inert.
++2. ``pin_all_tasks(pid, cpus)`` after health: every task whose mask is NOT a
++   subset of the placement is re-pinned to the placement (a task already on a
++   narrower sub-mask -- an OpenMP place -- is left alone), repeated until a pass
++   finds nothing new. Then ``affinity_escapes`` must return [] or the launch is a
++   failure. This catches anything layer 1 does not cover (another library, a
++   future ROCr that ignores the knob).
++
++Neither layer is kernel-enforced: a thread that calls ``sched_setaffinity`` on
++itself can still widen its own mask. That is why the third piece exists:
++``affinity_attestation_warnings`` is called from ``orchestrator_stack.py status``
++and the runtime attestation, so a regression is REPORTED on every status read
++instead of being silently tolerated. (A cgroup-v2 cpuset would be the
++kernel-enforced form; see the stack-change package for why it is not the
++primary mechanism here.)
++
++CLI (read-only unless --repin):
++
++    launch_affinity.py --check PID CPUS        # exit 1 on any escaping task
++    launch_affinity.py --check PID CPUS --json
++    launch_affinity.py --repin PID CPUS        # pin_all_tasks, then re-check
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import sys
++from collections.abc import Callable, Iterable, MutableMapping, Sequence
++from dataclasses import dataclass, field
++from pathlib import Path
++
++ROCR_AFFINITY_ENV_KEY = "HSA_OVERRIDE_CPU_AFFINITY_DEBUG"
++ROCR_AFFINITY_ENV_VALUE = "0"
++DEFAULT_PROC_ROOT = Path("/proc")
++DEFAULT_PIN_PASSES = 4
++
++
++class LaunchAffinityError(ValueError):
++    """A cpu list or spawn prefix that cannot be interpreted."""
++
++
++def parse_cpu_list(spec: str) -> frozenset[int]:
++    """Strict taskset-style list ('0-23,96-119') -> cpu ids. Raises on garbage."""
++    if not isinstance(spec, str) or not spec.strip():
++        raise LaunchAffinityError(f"empty cpu list: {spec!r}")
++    cpus: set[int] = set()
++    for part in spec.strip().split(","):
++        part = part.strip()
++        if not part:
++            raise LaunchAffinityError(f"empty segment in cpu list {spec!r}")
++        lo_s, sep, hi_s = part.partition("-")
++        if not lo_s.isdigit() or (sep and not hi_s.isdigit()):
++            raise LaunchAffinityError(f"malformed segment {part!r} in cpu list {spec!r}")
++        lo, hi = int(lo_s), int(hi_s) if sep else int(lo_s)
++        if hi < lo:
++            raise LaunchAffinityError(f"descending range {part!r} in cpu list {spec!r}")
++        cpus.update(range(lo, hi + 1))
++    return frozenset(cpus)
++
++
++def format_cpu_list(cpus: Iterable[int]) -> str:
++    """cpu ids -> compact taskset-style list ('184-191')."""
++    ordered = sorted(set(cpus))
++    if not ordered:
++        return ""
++    runs: list[str] = []
++    start = prev = ordered[0]
++    for cpu in ordered[1:]:
++        if cpu == prev + 1:
++            prev = cpu
++            continue
++        runs.append(f"{start}-{prev}" if prev != start else str(start))
++        start = prev = cpu
++    runs.append(f"{start}-{prev}" if prev != start else str(start))
++    return ",".join(runs)
++
++
++def prefix_cpuset(prefix: Sequence[str]) -> str | None:
++    """The cpu list a spawn prefix pins with ``taskset -c``, or None if it does not pin."""
++    if "taskset" not in prefix:
++        return None
++    idx = list(prefix).index("taskset")
++    if len(prefix) > idx + 2 and prefix[idx + 1] == "-c":
++        return prefix[idx + 2]
++    raise LaunchAffinityError(f"taskset prefix without a `-c <cpu_list>` argument: {list(prefix)!r}")
++
++
++def apply_pinned_launch_env(env: MutableMapping[str, str], prefix: Sequence[str]) -> bool:
++    """Set ``HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0`` on a pinned launch's env.
++
++    Unconditional on a pinned launch (it overrides an inherited value): a declared
++    placement is the contract, and an ambient ``1`` would silently re-open the
++    escape. An unpinned launch is left untouched. Returns True when applied.
++    """
++    if prefix_cpuset(prefix) is None:
++        return False
++    env[ROCR_AFFINITY_ENV_KEY] = ROCR_AFFINITY_ENV_VALUE
++    return True
++
++
++@dataclass(frozen=True)
++class TaskAffinity:
++    tid: int
++    comm: str
++    cpus: frozenset[int]
++
++    @property
++    def cpu_list(self) -> str:
++        return format_cpu_list(self.cpus)
++
++
++def read_task_affinities(pid: int, proc_root: Path = DEFAULT_PROC_ROOT) -> list[TaskAffinity]:
++    """Every task of ``pid`` with its Cpus_allowed_list. [] if the pid is gone.
++
++    A task that exits mid-walk is skipped (it no longer runs anywhere).
++    """
++    task_root = Path(proc_root) / str(pid) / "task"
++    try:
++        entries = sorted((e for e in task_root.iterdir() if e.name.isdigit()), key=lambda e: int(e.name))
++    except OSError:
++        return []
++    out: list[TaskAffinity] = []
++    for entry in entries:
++        try:
++            status = (entry / "status").read_text(encoding="utf-8", errors="replace")
++        except OSError:
++            continue
++        mask = None
++        for line in status.splitlines():
++            if line.startswith("Cpus_allowed_list:"):
++                mask = line.split(":", 1)[1].strip()
++                break
++        if mask is None:
++            continue
++        try:
++            comm = (entry / "comm").read_text(encoding="utf-8", errors="replace").strip()
++        except OSError:
++            comm = "?"
++        out.append(TaskAffinity(tid=int(entry.name), comm=comm, cpus=parse_cpu_list(mask)))
++    return out
++
++
++def affinity_escapes(
++    pid: int, cpus: frozenset[int] | str, proc_root: Path = DEFAULT_PROC_ROOT
++) -> list[TaskAffinity]:
++    """Tasks of ``pid`` allowed to run on any CPU outside ``cpus``."""
++    allowed = parse_cpu_list(cpus) if isinstance(cpus, str) else frozenset(cpus)
++    return [task for task in read_task_affinities(pid, proc_root) if not task.cpus <= allowed]
++
++
++@dataclass
++class PinResult:
++    pid: int
++    cpus: str
++    tasks_seen: int = 0
++    repinned: list[dict] = field(default_factory=list)
++    errors: list[dict] = field(default_factory=list)
++    escapes_after: list[dict] = field(default_factory=list)
++    passes: int = 0
++
++    @property
++    def ok(self) -> bool:
++        return self.tasks_seen > 0 and not self.escapes_after
++
++    def as_dict(self) -> dict:
++        return {
++            "pid": self.pid,
++            "cpus": self.cpus,
++            "tasks_seen": self.tasks_seen,
++            "repinned": self.repinned,
++            "errors": self.errors,
++            "escapes_after": self.escapes_after,
++            "passes": self.passes,
++            "ok": self.ok,
++        }
++
++
++def _task_row(task: TaskAffinity) -> dict:
++    return {"tid": task.tid, "comm": task.comm, "cpus": task.cpu_list}
++
++
++def pin_all_tasks(
++    pid: int,
++    cpus: frozenset[int] | str,
++    *,
++    proc_root: Path = DEFAULT_PROC_ROOT,
++    setter: Callable[[int, Iterable[int]], None] = os.sched_setaffinity,
++    passes: int = DEFAULT_PIN_PASSES,
++) -> PinResult:
++    """Re-pin every task of ``pid`` whose mask is not inside ``cpus``; then re-check.
++
++    ``os.sched_setaffinity`` on a TID sets that one thread's mask (Linux affinity
++    is per task), so this is ``taskset -a -p -c`` done in-process -- but it leaves
++    a task already on a NARROWER sub-mask alone, where ``taskset -a`` would widen
++    an OpenMP-bound thread back to the whole placement. Repeats until a pass
++    re-pins nothing (a thread created mid-walk is caught by the next pass), at
++    most ``passes`` times. Only ever pass a pid this launcher spawned itself.
++    """
++    allowed = parse_cpu_list(cpus) if isinstance(cpus, str) else frozenset(cpus)
++    result = PinResult(pid=pid, cpus=format_cpu_list(allowed))
++    seen: set[int] = set()
++    for _ in range(max(1, passes)):
++        result.passes += 1
++        tasks = read_task_affinities(pid, proc_root)
++        seen.update(task.tid for task in tasks)
++        moved = 0
++        for task in tasks:
++            if task.cpus <= allowed:
++                continue
++            try:
++                setter(task.tid, allowed)
++            except OSError as exc:
++                # ESRCH: the thread exited between the read and the set -- not an escape.
++                if getattr(exc, "errno", None) == 3:
++                    continue
++                result.errors.append({**_task_row(task), "error": str(exc)})
++                continue
++            result.repinned.append(_task_row(task))
++            moved += 1
++        if moved == 0:
++            break
++    result.tasks_seen = len(seen)
++    result.escapes_after = [_task_row(t) for t in affinity_escapes(pid, allowed, proc_root)]
++    return result
++
++
++def parent_pid(pid: int, proc_root: Path = DEFAULT_PROC_ROOT) -> int | None:
++    """PPid of ``pid`` from /proc/<pid>/stat, or None when it cannot be read."""
++    try:
++        stat = (Path(proc_root) / str(pid) / "stat").read_text(encoding="utf-8", errors="replace")
++        # Field 2 (comm) may contain spaces/parens; everything after the LAST ") " is fields 3..
++        return int(stat.rsplit(") ", 1)[1].split()[1])
++    except (OSError, IndexError, ValueError):
++        return None
++
++
++def enforce_launch_affinity(
++    pid: int,
++    prefix: Sequence[str],
++    *,
++    label: str,
++    proc_root: Path = DEFAULT_PROC_ROOT,
++    setter: Callable[[int, Iterable[int]], None] = os.sched_setaffinity,
++    emit: Callable[[str], None] = print,
++    launcher_pid: int | None = None,
++) -> PinResult | None:
++    """Launcher hook: after health, pin every task of OUR pid to the prefix's cpus.
++
++    Returns None for an unpinned prefix (nothing is asserted about a launch that
++    declared no placement) and for a pid that is not a direct child of this
++    launcher (it is never touched: prove OUR pid before acting on it -- a recycled
++    pid or a test double must not get another process re-pinned). Otherwise the
++    PinResult; the caller treats ``not result.ok`` as a failed launch.
++
++    The spawn is ``taskset -c ... [numactl ...] llama-server``: both wrappers
++    exec, so the Popen pid IS the server and its parent is this launcher.
++    """
++    cpuset = prefix_cpuset(prefix)
++    if cpuset is None:
++        return None
++    me = os.getpid() if launcher_pid is None else launcher_pid
++    ppid = parent_pid(pid, proc_root)
++    if ppid != me:
++        emit(
++            f"    [WARN] [affinity] {label}: pid={pid} is not a child of this launcher "
++            f"(ppid={ppid}, launcher={me}); not touching it"
++        )
++        return None
++    result = pin_all_tasks(pid, cpuset, proc_root=proc_root, setter=setter)
++    if result.ok:
++        moved = f", re-pinned {len(result.repinned)}" if result.repinned else ""
++        emit(f"    [affinity] {label}: pid={pid} {result.tasks_seen} tasks inside {cpuset}{moved}")
++    else:
++        emit(
++            f"    [FAIL] [affinity] {label}: pid={pid} tasks escaping {cpuset} after re-pin: "
++            f"{result.escapes_after or 'no tasks readable'}"
++            + (f"; errors {result.errors}" if result.errors else "")
++        )
++    return result
++
++
++def declared_cpuset_for_port(port: int) -> str | None:
++    """The placement the stack declares for a port, or None when it declares none.
++
++    Sources, in the order the launcher consults them: the embedder pool's
++    per-port placement, then NUMA_CONFIG instances (incl. the GPU host lane),
++    then aux services' declared ``cpuset``.
++    """
++    from scripts.server.stack_manifest import AUX_SERVICES, EMBEDDING_PLACEMENT
++    from scripts.server.stack_numa import NUMA_CONFIG
++
++    placement = EMBEDDING_PLACEMENT.get(port)
++    if placement is not None:
++        return placement.cpuset
++    for cfg in NUMA_CONFIG.values():
++        for instance in cfg.get("instances") or []:
++            if len(instance) >= 2 and instance[1] == port:
++                return str(instance[0])
++    for service in AUX_SERVICES.values():
++        if getattr(service, "port", None) == port and getattr(service, "cpuset", None):
++            return str(service.cpuset)
++    return None
++
++
++def affinity_attestation_warnings(
++    name: str,
++    pid: int,
++    port: int,
++    *,
++    proc_root: Path = DEFAULT_PROC_ROOT,
++    declared: str | None = None,
++) -> list[str]:
++    """`status` / runtime-attestation check: every task of the live pid inside its placement.
++
++    The "prove OUR pid" form: it reads the kernel's per-task masks for the pid the
++    state file names, never the declaration or the main thread alone (the main
++    thread read 184-191 while one task ran on 0-191).
++    """
++    if pid is None or pid <= 0:
++        return []
++    cpuset = declared if declared is not None else declared_cpuset_for_port(port)
++    if not cpuset:
++        return []
++    tasks = read_task_affinities(pid, proc_root)
++    if not tasks:
++        return []
++    allowed = parse_cpu_list(cpuset)
++    escapes = [t for t in tasks if not t.cpus <= allowed]
++    if not escapes:
++        return []
++    shown = ", ".join(f"{t.tid}({t.comm})={t.cpu_list}" for t in escapes[:4])
++    more = f" (+{len(escapes) - 4} more)" if len(escapes) > 4 else ""
++    return [
++        f"{name} pid {pid} cpu_affinity_escape: {len(escapes)}/{len(tasks)} tasks "
++        f"outside declared {cpuset}: {shown}{more} "
++        f"(remedy: scripts/server/launch_affinity.py --repin {pid} {cpuset})"
++    ]
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__.split("\n\n", 1)[0])
++    mode = parser.add_mutually_exclusive_group(required=True)
++    mode.add_argument("--check", action="store_true", help="read-only: list escaping tasks")
++    mode.add_argument("--repin", action="store_true", help="pin_all_tasks, then re-check")
++    parser.add_argument("pid", type=int)
++    parser.add_argument("cpus", help="taskset-style cpu list, e.g. 184-191")
++    parser.add_argument("--json", action="store_true")
++    parser.add_argument("--proc-root", type=Path, default=DEFAULT_PROC_ROOT, help=argparse.SUPPRESS)
++    args = parser.parse_args(argv)
++    if args.repin:
++        result = pin_all_tasks(args.pid, args.cpus, proc_root=args.proc_root)
++        payload = result.as_dict()
++        ok = result.ok
++    else:
++        tasks = read_task_affinities(args.pid, args.proc_root)
++        escapes = [_task_row(t) for t in affinity_escapes(args.pid, args.cpus, args.proc_root)]
++        payload = {"pid": args.pid, "cpus": args.cpus, "tasks_seen": len(tasks), "escapes": escapes}
++        ok = bool(tasks) and not escapes
++    if args.json:
++        print(json.dumps(payload, indent=2, sort_keys=True))
++    else:
++        print(("OK " if ok else "FAIL ") + json.dumps(payload, sort_keys=True))
++    return 0 if ok else 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 96747684..3f77aad1 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -137,6 +137,11 @@ from scripts.server.stack_paths import (
+     SLOT_SAVE_DIR,
+     STATE_FILE,
+ )
++from scripts.server.launch_affinity import (
++    LaunchAffinityError,
++    apply_pinned_launch_env,
++    enforce_launch_affinity,
++)
+ from scripts.server.stack_numa_evict import (
+     placement_summary,
+     pre_evict_gib_for_role,
+@@ -1856,6 +1861,34 @@ def _apply_diag_env_override(env: dict[str, str], diag_env_override: dict[str, s
+         print(f"    [EXPERIMENT] diagnostic env override: {diag_env_override}")
+ 
+ 
++def _post_health_affinity_gate(
++    pid: int, spawn_prefix: list[str], label: str, log_file: Any
++) -> bool:
++    """After health: every task of OUR pid inside the spawn prefix's cpuset, or the launch fails.
++
++    2026-10-22 (workspace-58): a `taskset -c 184-191` HIP llama-server carried ONE
++    ROCr thread on 0-191. `apply_pinned_launch_env` removes the cause; this re-pins
++    any task still outside the placement (pin_all_tasks) and refuses the launch when
++    one remains -- a declared placement that does not hold is not a served
++    placement. An unpinned spawn, or a pid that is not this launcher's child, is
++    never touched (returns True). Read by `status` again later
++    (stack_commands -> launch_affinity.affinity_attestation_warnings).
++    """
++    try:
++        result = enforce_launch_affinity(pid, spawn_prefix, label=label)
++    except LaunchAffinityError as exc:
++        print(f"    [FAIL] [affinity] {label}: {exc}")
++        result = None
++        ok = False
++    else:
++        ok = result is None or result.ok
++    if ok:
++        return True
++    print(f"    Check log: {log_file}")
++    kill_process(pid)
++    return False
++
++
+ @_refuse_on_artifact_integrity_error
+ def start_server(
+     port: int,
+@@ -1957,6 +1990,9 @@ def start_server(
+             # other branch (2026-09-26).
+             _strip_ambient_ggml(env, _role_env_overrides(source_role), label="eval_batch")
+             _apply_diag_env_override(env, diag_env_override)
++            # Deterministic host-thread pinning (2026-10-22): ROCr widens its own threads
++            # to every CPU unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0. See launch_affinity.py.
++            apply_pinned_launch_env(env, spawn_prefix)
+             _launch = _log_banner.write_launch_banner(
+                 log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
+             )
+@@ -1973,6 +2009,10 @@ def start_server(
+         print("    Waiting for health...")
+ 
+         if wait_for_health(port, timeout=max(_HEALTH_SERVER_STARTUP, 180)):
++            if not _post_health_affinity_gate(
++                proc.pid, spawn_prefix, f"eval-batch frontdoor :{port}", log_file
++            ):
++                return None
+             print("    [OK] Eval-batch frontdoor ready")
+             return ProcessInfo(
+                 role=primary_role,
+@@ -2030,6 +2070,9 @@ def start_server(
+                 preserve=_role_env_overrides(source_role),
+             )
+             _apply_diag_env_override(env, diag_env_override)
++            # Deterministic host-thread pinning (2026-10-22): ROCr widens its own threads
++            # to every CPU unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0. See launch_affinity.py.
++            apply_pinned_launch_env(env, spawn_prefix)
+             _launch = _log_banner.write_launch_banner(
+                 log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
+             )
+@@ -2046,6 +2089,10 @@ def start_server(
+         print("    Waiting for health...")
+ 
+         if wait_for_health(port, timeout=max(_HEALTH_SERVER_STARTUP, 300)):
++            if not _post_health_affinity_gate(
++                proc.pid, spawn_prefix, f"gpu shadow lane :{port}", log_file
++            ):
++                return None
+             print("    [OK] GPU shadow lane ready")
+             return ProcessInfo(
+                 role=primary_role,
+@@ -2104,6 +2151,9 @@ def start_server(
+                 preserve=_role_env_overrides(roles[0]),
+             )
+             _apply_diag_env_override(env, diag_env_override)
++            # Deterministic host-thread pinning (2026-10-22): ROCr widens its own threads
++            # to every CPU unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0. See launch_affinity.py.
++            apply_pinned_launch_env(env, spawn_prefix)
+             _launch = _log_banner.write_launch_banner(
+                 log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
+             )
+@@ -2122,6 +2172,10 @@ def start_server(
+         # VL models take longer to load (mmproj + main model)
+         timeout = _HEALTH_VISION_SERVER if vision_type == "escalation" else _HEALTH_WORKER_SERVER
+         if wait_for_health(port, timeout=timeout):
++            if not _post_health_affinity_gate(
++                proc.pid, spawn_prefix, f"llama-server :{port}", log_file
++            ):
++                return None
+             print(f"    [OK] Vision server {vision_type or 'worker'} ready")
+             return ProcessInfo(
+                 role=roles[0],
+@@ -2170,6 +2224,9 @@ def start_server(
+                 env.update(env_override)
+                 print(f"    [EXPERIMENT] env override: {env_override}")
+             # NOTE: Do NOT set OMP_NUM_THREADS=1 - it disables parallel tensor repack (2.2x slower loading)
++            # Deterministic host-thread pinning (2026-10-22): ROCr widens its own threads
++            # to every CPU unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0. See launch_affinity.py.
++            apply_pinned_launch_env(env, spawn_prefix)
+             _launch = _log_banner.write_launch_banner(
+                 log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
+             )
+@@ -2186,6 +2243,10 @@ def start_server(
+         print("    Waiting for health...")
+ 
+         if wait_for_health(port, timeout=60):  # Faster timeout for small model
++            if not _post_health_affinity_gate(
++                proc.pid, spawn_prefix, f"embedder :{port}", log_file
++            ):
++                return None
+             print(f"    [OK] Embedder #{instance_idx} ready")
+             return ProcessInfo(
+                 role=roles[0],  # Use actual role name (embedder, embedder_1, etc.)
+@@ -2249,6 +2310,9 @@ def start_server(
+                 _write_llama_marker(port, roles, source=_FLEET_SRC_STACK, tmp_dir=_PATHS["tmp_dir"])
+             except Exception as exc:
+                 print(f"    [WARN] Failed to write llama fleet marker for port {port}: {exc}")
++            # Deterministic host-thread pinning (2026-10-22): ROCr widens its own threads
++            # to every CPU unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0. See launch_affinity.py.
++            apply_pinned_launch_env(env, spawn_prefix)
+             _launch = _log_banner.write_launch_banner(
+                 log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
+             )
+@@ -2271,6 +2335,10 @@ def start_server(
+             else _HEALTH_WORKER_SERVER
+         )
+         if wait_for_health(port, timeout=timeout):
++            if not _post_health_affinity_gate(
++                proc.pid, spawn_prefix, f"llama-server :{port}", log_file
++            ):
++                return None
+             print(f"    [OK] Worker {worker_type} ready")
+             # 2026-05-09: per-thread renice to nice=19 for binary_override roles
+             # (ik_llama.cpp PR #1744 / gemma4 MTP). Reason: PR #1744's OMP_WAIT_POLICY=active
+@@ -2357,6 +2425,9 @@ def start_server(
+             _write_llama_marker(port, roles, source=_FLEET_SRC_STACK, tmp_dir=_PATHS["tmp_dir"])
+         except Exception as exc:
+             print(f"    [WARN] Failed to write llama fleet marker for port {port}: {exc}")
++        # Deterministic host-thread pinning (2026-10-22): ROCr widens its own threads
++        # to every CPU unless HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0. See launch_affinity.py.
++        apply_pinned_launch_env(env, spawn_prefix)
+         _launch = _log_banner.write_launch_banner(
+             log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
+         )
+@@ -2374,6 +2445,10 @@ def start_server(
+     # Wait for health
+     print("    Waiting for health...")
+     if wait_for_health(port, timeout=180):
++        if not _post_health_affinity_gate(
++            proc.pid, spawn_prefix, f"llama-server :{port}", log_file
++        ):
++            return None
+         print("    [OK] Server ready")
+         # INF-70/C7: placement observation, not a gate. The weights are faulted
+         # in by the time health passes, so this is the one moment the operator
+@@ -2991,6 +3066,9 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
+         return None
+ 
+     env = _build_aux_env(service, ld_paths)
++    # A declared aux cpuset (whisper/tts are HIP builds with HIP hidden) gets the same
++    # ROCr affinity override as every pinned llama-server (launch_affinity.py).
++    apply_pinned_launch_env(env, spawn_prefix)
+     # A missing LD_PRELOAD object is NOT fatal to the dynamic loader: glibc prints a
+     # warning and runs the binary without it. For the CPU TTS that silently means
+     # 96 spinning threads on a 16-core cpuset instead of 16 (see nprocs_shim.c), so
+@@ -3034,6 +3112,10 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
+     )
+ 
+     if wait_for_health(service.port, timeout=service.health_timeout, path=service.health_path):
++        if not _post_health_affinity_gate(
++            proc.pid, spawn_prefix, f"aux service {service.name}", log_file
++        ):
++            return None
+         # `/health` proves the PORT answers, not that the service can do its job.
+         # The TTS server returns HTTP 200 with ZERO audio bytes for a request it
+         # cannot satisfy (e.g. an unknown `voice`), and whisper will answer
+diff --git a/scripts/server/stack_commands.py b/scripts/server/stack_commands.py
+index 65feab48..f7716807 100644
+--- a/scripts/server/stack_commands.py
++++ b/scripts/server/stack_commands.py
+@@ -1250,6 +1250,24 @@ def _episodic_embedding_status_line() -> str:
+     )
+ 
+ 
++def _affinity_attestation_warnings(name: str, info: ProcessInfo) -> list[str]:
++    """Every task of the live pid inside the port's declared placement (2026-10-22).
++
++    The main thread's mask is not the process's placement: a `taskset -c 184-191`
++    HIP llama-server read 184-191 in /proc/<pid>/status while one ROCr thread ran
++    on 0-191. Reads /proc/<pid>/task/*/status for the pid the state file names.
++    Docker rows (pid -1) and ports with no declared placement are not asserted.
++    """
++    if info.pid == -1:
++        return []
++    try:
++        from scripts.server.launch_affinity import affinity_attestation_warnings
++
++        return affinity_attestation_warnings(name, info.pid, info.port)
++    except Exception as exc:  # a status read must never die on the check itself
++        return [f"{name} pid {info.pid} cpu_affinity_check_error: {exc}"]
++
++
+ def runtime_attestation_warnings(
+     state: dict[str, ProcessInfo] | None = None,
+ ) -> list[str]:
+@@ -1308,6 +1326,8 @@ def runtime_attestation_warnings(
+         if warning:
+             warnings.append(warning)
+         warnings.extend(_runtime_attestation_warnings(name, info, cmdline, launch_contract))
++        if alive:
++            warnings.extend(_affinity_attestation_warnings(name, info))
+     return warnings
+ 
+ 
+@@ -2572,6 +2592,8 @@ def cmd_status(args: argparse.Namespace) -> int:
+         attestation_warnings.extend(
+             _runtime_attestation_warnings(name, info, cmdline, launch_contract)
+         )
++        if alive:
++            attestation_warnings.extend(_affinity_attestation_warnings(name, info))
+ 
+         print(
+             f"{name:<25} {info.port:<8} {pid_str:<10} {status:<10} "
+diff --git a/tests/unit/test_launch_affinity.py b/tests/unit/test_launch_affinity.py
+new file mode 100644
+index 00000000..12275b35
+--- /dev/null
++++ b/tests/unit/test_launch_affinity.py
+@@ -0,0 +1,352 @@
++"""Deterministic host-thread pinning for pinned launches (workspace-58, 2026-10-22).
++
++Fixture shape mirrors the live finding: a `taskset -c 184-191` HIP llama-server whose
++main thread and 194 others read 184-191 while ONE early ROCr thread read 0-191.
++Everything runs against a synthetic /proc tree; no real process is touched.
++"""
++
++from __future__ import annotations
++
++import errno
++import types
++from pathlib import Path
++
++import pytest
++
++from scripts.server import launch_affinity as la
++
++LANE = "184-191"
++PREFIX = ["numactl", "--membind=3", "--", "taskset", "-c", LANE]
++
++
++def _write_task(proc: Path, pid: int, tid: int, mask: str, comm: str = "llama-server") -> None:
++    task = proc / str(pid) / "task" / str(tid)
++    task.mkdir(parents=True, exist_ok=True)
++    (task / "status").write_text(f"Name:\t{comm}\nCpus_allowed_list:\t{mask}\n")
++    (task / "comm").write_text(comm + "\n")
++
++
++def _make_proc(tmp_path: Path, pid: int, masks: dict[int, str], ppid: int) -> Path:
++    proc = tmp_path / "proc"
++    for tid, mask in masks.items():
++        _write_task(proc, pid, tid, mask)
++    (proc / str(pid) / "stat").write_text(f"{pid} (llama-server) S {ppid} {pid} {pid} 0\n")
++    return proc
++
++
++def _finding(tmp_path: Path, ppid: int = 1000) -> tuple[Path, int]:
++    pid = 3638945
++    masks = {pid + i: LANE for i in range(196)}
++    masks[pid + 7] = "0-191"  # the ROCr thread the diag found (tid = pid + 7)
++    return _make_proc(tmp_path, pid, masks, ppid), pid
++
++
++def _fs_setter(proc: Path, pid: int, calls: list[tuple[int, str]]):
++    def setter(tid: int, cpus) -> None:
++        mask = la.format_cpu_list(cpus)
++        calls.append((tid, mask))
++        _write_task(proc, pid, tid, mask)
++
++    return setter
++
++
++# ── parsing ──────────────────────────────────────────────────────────────────
++
++
++def test_parse_and_format_round_trip():
++    assert la.parse_cpu_list("184-191") == frozenset(range(184, 192))
++    assert la.parse_cpu_list("0-3,96-99,7") == frozenset([0, 1, 2, 3, 7, 96, 97, 98, 99])
++    assert la.format_cpu_list(la.parse_cpu_list("0-3,96-99,7")) == "0-3,7,96-99"
++    assert la.format_cpu_list([5]) == "5"
++
++
++@pytest.mark.parametrize("bad", ["", " ", "0-", "a-3", "3-1", "1,,2"])
++def test_parse_rejects_garbage(bad):
++    with pytest.raises(la.LaunchAffinityError):
++        la.parse_cpu_list(bad)
++
++
++def test_prefix_cpuset():
++    assert la.prefix_cpuset(PREFIX) == LANE
++    assert la.prefix_cpuset(["taskset", "-c", "0-95"]) == "0-95"
++    assert la.prefix_cpuset([]) is None
++    assert la.prefix_cpuset(["numactl", "--interleave=all", "--"]) is None
++    with pytest.raises(la.LaunchAffinityError):
++        la.prefix_cpuset(["taskset", "0x3"])
++
++
++# ── layer 1: the ROCr env knob ───────────────────────────────────────────────
++
++
++def test_pinned_launch_gets_rocr_override_even_over_ambient():
++    env = {"HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "1", "PATH": "/bin"}
++    assert la.apply_pinned_launch_env(env, PREFIX) is True
++    assert env["HSA_OVERRIDE_CPU_AFFINITY_DEBUG"] == "0"
++    assert env["PATH"] == "/bin"
++
++
++def test_unpinned_launch_env_untouched():
++    env = {"PATH": "/bin"}
++    assert la.apply_pinned_launch_env(env, []) is False
++    assert env == {"PATH": "/bin"}
++
++
++# ── layer 2: re-pin + assert ─────────────────────────────────────────────────
++
++
++def test_escapes_find_the_rocr_thread(tmp_path):
++    proc, pid = _finding(tmp_path)
++    escapes = la.affinity_escapes(pid, LANE, proc)
++    assert [(t.tid, t.cpu_list) for t in escapes] == [(pid + 7, "0-191")]
++    assert len(la.read_task_affinities(pid, proc)) == 196
++
++
++def test_narrower_submask_is_not_an_escape(tmp_path):
++    proc = _make_proc(tmp_path, 10, {10: LANE, 11: "184", 12: "185,189"}, ppid=1)
++    assert la.affinity_escapes(10, LANE, proc) == []
++
++
++def test_pin_all_tasks_repins_only_the_escape(tmp_path):
++    proc, pid = _finding(tmp_path)
++    _write_task(proc, pid, pid + 300, "186")  # an OpenMP-place thread on a sub-mask
++    calls: list[tuple[int, str]] = []
++    result = la.pin_all_tasks(pid, LANE, proc_root=proc, setter=_fs_setter(proc, pid, calls))
++    assert calls == [(pid + 7, LANE)]
++    assert result.ok and result.escapes_after == [] and result.tasks_seen == 197
++    # the sub-mask thread was NOT widened back to the lane (what `taskset -a` would do)
++    assert la.read_task_affinities(pid, proc)[-1].cpu_list == "186"
++
++
++def test_pin_all_tasks_catches_thread_born_mid_walk(tmp_path):
++    proc = _make_proc(tmp_path, 20, {20: LANE, 21: "0-191"}, ppid=1)
++    calls: list[tuple[int, str]] = []
++    base = _fs_setter(proc, 20, calls)
++    born = {"done": False}
++
++    def setter(tid, cpus):
++        base(tid, cpus)
++        if not born["done"]:  # a new ROCr thread appears after the first pass read
++            born["done"] = True
++            _write_task(proc, 20, 22, "0-191")
++
++    result = la.pin_all_tasks(20, LANE, proc_root=proc, setter=setter)
++    assert [c[0] for c in calls] == [21, 22]
++    assert result.ok and result.passes == 3  # move 21, move 22, then a clean pass
++
++
++def test_pin_all_tasks_esrch_is_not_an_escape_eperm_is_a_failure(tmp_path):
++    proc = _make_proc(tmp_path, 30, {30: LANE, 31: "0-191", 32: "0-191"}, ppid=1)
++
++    def setter(tid, cpus):
++        if tid == 31:
++            (proc / "30" / "task" / "31" / "status").unlink()  # thread exited
++            raise OSError(errno.ESRCH, "No such process")
++        raise OSError(errno.EPERM, "Operation not permitted")
++
++    result = la.pin_all_tasks(30, LANE, proc_root=proc, setter=setter, passes=1)
++    assert [e["tid"] for e in result.errors] == [32]
++    assert [e["tid"] for e in result.escapes_after] == [32]
++    assert not result.ok
++
++
++def test_pin_all_tasks_on_vanished_pid_is_not_ok(tmp_path):
++    result = la.pin_all_tasks(999, LANE, proc_root=tmp_path, setter=lambda *a: None)
++    assert result.tasks_seen == 0 and not result.ok
++
++
++def test_enforce_refuses_a_pid_that_is_not_our_child(tmp_path):
++    proc, pid = _finding(tmp_path, ppid=1)
++    calls: list = []
++    out: list[str] = []
++    got = la.enforce_launch_affinity(
++        pid, PREFIX, label="t", proc_root=proc, setter=lambda *a: calls.append(a),
++        emit=out.append, launcher_pid=1000,
++    )
++    assert got is None and calls == [] and "not a child" in out[0]
++
++
++def test_enforce_unpinned_prefix_is_not_asserted(tmp_path):
++    proc, pid = _finding(tmp_path)
++    assert la.enforce_launch_affinity(pid, [], label="t", proc_root=proc, launcher_pid=1000) is None
++
++
++def test_enforce_pins_our_child(tmp_path):
++    proc, pid = _finding(tmp_path, ppid=1000)
++    calls: list = []
++    out: list[str] = []
++    got = la.enforce_launch_affinity(
++        pid, PREFIX, label="gpu", proc_root=proc, setter=_fs_setter(proc, pid, calls),
++        emit=out.append, launcher_pid=1000,
++    )
++    assert got is not None and got.ok and len(calls) == 1
++    assert "196 tasks inside 184-191, re-pinned 1" in out[0]
++
++
++def test_parent_pid_handles_comm_with_spaces(tmp_path):
++    d = tmp_path / "5"
++    d.mkdir()
++    (d / "stat").write_text("5 (a) b (c) S 77 5 5 0\n")
++    assert la.parent_pid(5, tmp_path) == 77
++    assert la.parent_pid(6, tmp_path) is None
++
++
++# ── layer 3: status / attestation assertion ──────────────────────────────────
++
++
++def test_attestation_warning_names_the_escape_and_the_remedy(tmp_path):
++    proc, pid = _finding(tmp_path)
++    warnings = la.affinity_attestation_warnings("architect_critic", pid, 8083, proc_root=proc,
++                                                declared=LANE)
++    assert len(warnings) == 1
++    w = warnings[0]
++    assert "cpu_affinity_escape: 1/196" in w and f"{pid + 7}(llama-server)=0-191" in w
++    assert f"launch_affinity.py --repin {pid} {LANE}" in w
++
++
++def test_attestation_clean_and_undeclared_are_silent(tmp_path):
++    proc = _make_proc(tmp_path, 40, {40: LANE, 41: "188"}, ppid=1)
++    assert la.affinity_attestation_warnings("x", 40, 8083, proc_root=proc, declared=LANE) == []
++    assert la.affinity_attestation_warnings("x", 40, 1, proc_root=proc, declared="") == []
++    assert la.affinity_attestation_warnings("x", -1, 8083, proc_root=proc, declared=LANE) == []
++
++
++def test_declared_cpuset_for_port_reads_the_gpu_host_lane():
++    from scripts.server.stack_numa import NUMA_CONFIG
++
++    lane_ports = [
++        (inst[1], inst[0])
++        for cfg in NUMA_CONFIG.values() if cfg.get("gpu_host_lane")
++        for inst in cfg["instances"]
++    ]
++    assert lane_ports, "no gpu_host_lane role declared -- fixture assumption broken"
++    for port, cpus in lane_ports:
++        assert la.declared_cpuset_for_port(port) == cpus
++    assert la.declared_cpuset_for_port(1) is None
++
++
++def test_cli_check_exit_codes(tmp_path, capsys):
++    proc, pid = _finding(tmp_path)
++    assert la.main(["--check", str(pid), LANE, "--proc-root", str(proc)]) == 1
++    assert "FAIL" in capsys.readouterr().out
++    assert la.main(["--check", str(pid), "0-191", "--proc-root", str(proc)]) == 0
++    assert la.main(["--check", "424242", LANE, "--proc-root", str(proc)]) == 1  # no tasks = FAIL
++
++
++# ── generate_attestation: the lenient match is gone ──────────────────────────
++
++
++def test_generate_attestation_flags_a_single_escaping_task():
++    from scripts.attest import generate_attestation as attest
++
++    row = {
++        "pid": 1, "kind": "llama_server", "port": 8083, "registry_matches": [{}], "args": {},
++        "cpus_allowed_list": LANE, "task_cpu_masks": {LANE: 195, "0-191": 1},
++    }
++    rows = attest.build_serving_config(
++        [row], numa_ports={8083: {"role": "architect_critic", "cpu_list": LANE, "threads": 8}}
++    )
++    assert rows[0]["numa_match"] is False
++    assert rows[0]["task_cpu_escape"] == ["0-191"]
++    summary = attest.summarize([], serving_config=rows)
++    assert any("cpu_affinity_escape:0-191" in i for issue in summary["issues"] for i in issue["issues"])
++
++    clean = dict(row, task_cpu_masks={LANE: 190, "186": 6})
++    rows = attest.build_serving_config(
++        [clean], numa_ports={8083: {"role": "architect_critic", "cpu_list": LANE, "threads": 8}}
++    )
++    assert rows[0]["numa_match"] is True and rows[0]["task_cpu_escape"] == []
++
++
++# ── orchestrator_stack: every launch branch carries both layers ──────────────
++
++
++@pytest.fixture
++def pinned_harness(monkeypatch, tmp_path):
++    from scripts.server import orchestrator_stack as osk
++
++    captured: list[dict[str, str]] = []
++    gates: list[tuple[int, list[str], str]] = []
++
++    def fake_popen(argv, **kwargs):
++        captured.append({"argv": list(argv), "env": dict(kwargs["env"])})
++        return types.SimpleNamespace(pid=4242)
++
++    def fake_enforce(pid, prefix, *, label, **kw):
++        gates.append((pid, list(prefix), label))
++        return types.SimpleNamespace(ok=True)
++
++    monkeypatch.setenv("HSA_OVERRIDE_CPU_AFFINITY_DEBUG", "1")
++    monkeypatch.setattr(osk.subprocess, "Popen", fake_popen)
++    monkeypatch.setattr(osk, "enforce_launch_affinity", fake_enforce)
++    monkeypatch.setattr(osk, "build_server_command", lambda *a, **k: ["llama-server", "--port", "1"])
++    monkeypatch.setattr(osk, "_bench_guarded_numa_prefix", lambda *a, **k: list(PREFIX))
++    monkeypatch.setattr(osk, "_embedding_spawn_prefix", lambda *a, **k: list(PREFIX))
++    monkeypatch.setattr(osk, "_write_llama_marker", lambda *a, **k: None)
++    monkeypatch.setattr(osk, "wait_for_health", lambda port, timeout=0, path="/health": True)
++    monkeypatch.setattr(osk, "pre_evict_nodes", lambda gib, **kw: (True, "faked"))
++    monkeypatch.setattr(osk, "placement_summary", lambda pid: "faked")
++    monkeypatch.setattr(osk, "_renice_all_threads", lambda *a, **k: None)
++    monkeypatch.setattr(osk, "LOG_DIR", tmp_path)
++    monkeypatch.setattr(osk, "_stack_prior_runtime_overrides", lambda role: ("/k/bin/llama-server", []))
++    monkeypatch.setattr(osk, "_runtime_requirements_for_role", lambda registry, role: ("/k/bin", []))
++    monkeypatch.setattr(osk, "_stack_prior_launch", lambda role: ({"model_path": "/m/fake.gguf"}, {}))
++    model = types.SimpleNamespace(name="fake-model", full_path="/m/fake.gguf")
++    registry = types.SimpleNamespace(get_role=lambda r: types.SimpleNamespace(model=model, name=r))
++    return types.SimpleNamespace(osk=osk, captured=captured, gates=gates, registry=registry)
++
++
++BRANCHES = {
++    "registry": dict(roles=["architect_critic"]),
++    "vision": dict(roles=["worker_vision"], vision_mode=True),
++    "gpu_shadow_lane": dict(roles=["frontdoor"], gpu_shadow_lane_mode=True),
++    "worker_pool": dict(roles=["worker_general"], worker_pool_mode=True, worker_type="__first__"),
++    "embedding": dict(roles=["embedder"], embedding_mode=True),
++    "eval_batch": dict(roles=["frontdoor"], eval_batch_frontdoor_mode=True),
++}
++
++
++@pytest.mark.parametrize("branch", sorted(BRANCHES))
++def test_every_llama_server_branch_pins_env_and_gates(pinned_harness, branch):
++    from scripts.server.stack_manifest import WORKER_POOL_MODELS
++
++    kw = dict(BRANCHES[branch])
++    roles = kw.pop("roles")
++    if kw.get("worker_type") == "__first__":
++        kw["worker_type"] = sorted(WORKER_POOL_MODELS)[0]
++    info = pinned_harness.osk.start_server(8083, roles, pinned_harness.registry, **kw)
++    assert info is not None
++    launch = pinned_harness.captured[-1]
++    assert launch["argv"][: len(PREFIX)] == PREFIX
++    assert launch["env"]["HSA_OVERRIDE_CPU_AFFINITY_DEBUG"] == "0"
++    assert pinned_harness.gates and pinned_harness.gates[-1][:2] == (4242, PREFIX)
++
++
++def test_failed_affinity_gate_fails_the_launch_and_kills_our_pid(pinned_harness, monkeypatch):
++    osk = pinned_harness.osk
++    killed: list[int] = []
++    monkeypatch.setattr(osk, "kill_process", lambda pid, timeout=5: killed.append(pid) or True)
++    monkeypatch.setattr(
++        osk, "enforce_launch_affinity", lambda *a, **k: types.SimpleNamespace(ok=False)
++    )
++    assert osk.start_server(8083, ["architect_critic"], pinned_harness.registry) is None
++    assert killed == [4242]
++
++
++def test_unpinned_launch_passes_the_gate_untouched(pinned_harness, monkeypatch):
++    osk = pinned_harness.osk
++    monkeypatch.setattr(osk, "_bench_guarded_numa_prefix", lambda *a, **k: [])
++    monkeypatch.setattr(osk, "enforce_launch_affinity", la.enforce_launch_affinity)
++    assert osk.start_server(8083, ["architect_critic"], pinned_harness.registry) is not None
++    assert pinned_harness.captured[-1]["env"]["HSA_OVERRIDE_CPU_AFFINITY_DEBUG"] == "1"
++
++
++def test_aux_launch_source_applies_env_and_gate():
++    """start_aux_service has heavier prerequisites; assert its source carries both layers."""
++    import inspect
++
++    from scripts.server import orchestrator_stack as osk
++
++    src = inspect.getsource(osk.start_aux_service)
++    assert "apply_pinned_launch_env(env, spawn_prefix)" in src
++    assert "_post_health_affinity_gate(" in src
++    assert src.index("apply_pinned_launch_env") < src.index("subprocess.Popen")
+-- 
+2.51.0
+
+
+From ca0beb4bf7007206b84bbabaa5629b2d0a1b04af Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Thu, 22 Oct 2026 19:40:19 +0000
+Subject: [PATCH 2/2] launch_affinity: record operator decision D1 (refuse on a
+ stray thread, no warn mode)
+
+STACKCHG-GPUPIN-20261022, operator 2026-10-22: D1 = REFUSE the launch when a task
+still escapes the declared placement after re-pin. The gate already refused;
+this records the decision in the code and adds a test that no flag or env
+downgrades it to a warning.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ scripts/server/launch_affinity.py    |  3 ++-
+ scripts/server/orchestrator_stack.py |  4 ++++
+ tests/unit/test_launch_affinity.py   | 12 ++++++++++++
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/server/launch_affinity.py b/scripts/server/launch_affinity.py
+index 4dfd62de..5839ef8b 100644
+--- a/scripts/server/launch_affinity.py
++++ b/scripts/server/launch_affinity.py
+@@ -281,7 +281,8 @@ def enforce_launch_affinity(
+     declared no placement) and for a pid that is not a direct child of this
+     launcher (it is never touched: prove OUR pid before acting on it -- a recycled
+     pid or a test double must not get another process re-pinned). Otherwise the
+-    PinResult; the caller treats ``not result.ok`` as a failed launch.
++    PinResult; the caller treats ``not result.ok`` as a failed launch (operator
++    decision D1, 2026-10-22: refuse, no warn-only mode).
+ 
+     The spawn is ``taskset -c ... [numactl ...] llama-server``: both wrappers
+     exec, so the Popen pid IS the server and its parent is this launcher.
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 3f77aad1..c02d0408 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -1873,6 +1873,10 @@ def _post_health_affinity_gate(
+     placement. An unpinned spawn, or a pid that is not this launcher's child, is
+     never touched (returns True). Read by `status` again later
+     (stack_commands -> launch_affinity.affinity_attestation_warnings).
++
++    OPERATOR DECISION D1 (STACKCHG-GPUPIN-20261022, 2026-10-22): REFUSE. There is
++    deliberately no warn-only mode, flag or env override: a launch that cannot hold
++    its declared placement does not come up.
+     """
+     try:
+         result = enforce_launch_affinity(pid, spawn_prefix, label=label)
+diff --git a/tests/unit/test_launch_affinity.py b/tests/unit/test_launch_affinity.py
+index 12275b35..6923c95b 100644
+--- a/tests/unit/test_launch_affinity.py
++++ b/tests/unit/test_launch_affinity.py
+@@ -350,3 +350,15 @@ def test_aux_launch_source_applies_env_and_gate():
+     assert "apply_pinned_launch_env(env, spawn_prefix)" in src
+     assert "_post_health_affinity_gate(" in src
+     assert src.index("apply_pinned_launch_env") < src.index("subprocess.Popen")
++
++
++def test_d1_refuse_has_no_warn_mode_or_bypass(monkeypatch):
++    """Operator decision D1 (2026-10-22): refuse, with no flag or env that downgrades to warn."""
++    import inspect
++
++    from scripts.server import orchestrator_stack as osk
++
++    src = inspect.getsource(osk._post_health_affinity_gate)
++    assert "kill_process(pid)" in src and "return False" in src
++    assert "environ" not in src and "getenv" not in src
++    assert "environ" not in inspect.getsource(la.enforce_launch_affinity)
+-- 
+2.51.0
+
