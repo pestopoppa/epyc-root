@@ -4,6 +4,14 @@
 Place this wrapper inside the existing measurement/region-lock invocation so it launches
 exactly the already-approved producer argv while it captures the producer's actual process,
 environment, loaded shared objects, and native output. It makes no quality verdict.
+
+Mode ``kld-quantcmp`` (VB-QUANTCMP-WIRE, 2026-10-22) is ``kld`` plus the quant-comparison
+receipt: the native ``Same top p`` row, both EAR rows llama-perplexity emits on
+llama.cpp-experimental (EXL3-EAR1: ``EAR full vocab`` and ``EAR top10 renorm``, which are NOT
+interchangeable), the native Pinsker check, a declared CPU/HIP substrate with residency proof
+sampled during the child (loaded ggml backend objects plus per-PID KFD VRAM), and optionally the
+DFlash2 draft acceptance of a server run against the same target model. EAR is a fidelity
+metric (1 - TV against the base logits); it is never recorded as drafter acceptance.
 """
 from __future__ import annotations
 
@@ -44,6 +52,21 @@ KLD_MEAN = re.compile(r"^Mean\s+KLD:\s*([^\s]+)\s*±\s*([^\s]+)\s*$", re.M)
 KLD_LABELS = ("Maximum", "99.9%", "99.0%", "95.0%", "90.0%", "Median", "10.0%", "5.0%", "1.0%", "0.1%", "Minimum")
 KLD_PERCENTILE = re.compile(r"^\s*(Maximum|99\.9%|99\.0%|95\.0%|90\.0%|Median|10\.0%|5\.0%|1\.0%|0\.1%|Minimum)\s+KLD:\s*([^\s]+)\s*$", re.M)
 CHUNKS = re.compile(r"(?:--chunks\s+)(\d+)")
+KLD_MODES = ("kld", "kld-quantcmp")
+SAME_TOP = re.compile(r"^Same top p:\s*([^\s]+)\s*±\s*([^\s]+)\s*%\s*$", re.M)
+EAR_FULL = re.compile(r"^EAR full vocab\s*:\s*([^\s]+)\s*±\s*([^\s]+)\s*%\s*$", re.M)
+EAR_TOP = re.compile(r"^EAR top10 renorm\s*:\s*([^\s]+)\s*±\s*([^\s]+)\s*%\s*$", re.M)
+EAR_PINSKER = re.compile(r"^EAR Pinsker check: (pass|FAIL)\s*$", re.M)
+QUANTCMP_LABELS = ("Same top p", "EAR full vocab", "EAR top10 renorm")
+EAR_VARIANTS = {"EAR full vocab": "full_vocab", "EAR top10 renorm": "top10_renormalized"}
+# one uint16 step of the --kl-divergence-base log-prob encoding (tools/perplexity/kld-ear.h)
+EAR_BASE_QUANT_TOL = 16.0 / 65535.0
+ACCEPT_LABEL = "DFlash2 acceptance"
+SUBSTRATES = ("cpu", "hip")
+KFD_ROOT = Path("/sys/class/kfd/kfd/proc")
+KFD_SAMPLE_INTERVAL_S = 0.25
+ACCEL_OBJECT = re.compile(r"^libggml-(hip|cuda|vulkan|sycl|metal|opencl|musa|cann)[.-]")
+CPU_OBJECT = re.compile(r"^libggml-cpu[.-]")
 RUN_SETTINGS = re.compile(
     r"(?:calculating perplexity|computing):? (?:computing over|over) (\d+) chunks, "
     r"n_ctx=(\d+), batch_size=(\d+), n_seq=(\d+)"
@@ -262,7 +285,121 @@ def parse_native_metrics(log_text: str, mode: str) -> list[dict[str, Any]]:
     for label, value in percentile_rows:
         out.append(metric(f"{label} KLD", value, None,
                           "unknown"))
+    if mode == "kld-quantcmp":
+        out.extend(parse_quantcmp_rows(log_text, out))
     return out
+
+
+def parse_quantcmp_rows(log_text: str, kld_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Same-top-1 and both EAR variants; the native Pinsker line must pass and must re-derive."""
+    rows = []
+    for pattern, label in ((SAME_TOP, "Same top p"), (EAR_FULL, "EAR full vocab"), (EAR_TOP, "EAR top10 renorm")):
+        matches = pattern.findall(log_text)
+        if len(matches) != 1:
+            raise ValueError(f"expected exactly one native {label} row, got {len(matches)}")
+        rows.append(metric(label, matches[0][0], matches[0][1], "unknown"))
+    checks = EAR_PINSKER.findall(log_text)
+    if checks != ["pass"]:
+        raise ValueError("native EAR Pinsker check line is missing, repeated or not 'pass'")
+    mean_kld = next(r["value"] for r in kld_rows if r["native_label"] == "Mean KLD")
+    ear_full = rows[1]["value"] / 100.0
+    ear_top = rows[2]["value"] / 100.0
+    floor = 1.0 - math.sqrt(max(mean_kld, 0.0) / 2.0)
+    if not (floor - EAR_BASE_QUANT_TOL <= ear_full <= 1.0 + EAR_BASE_QUANT_TOL) or not (0.0 <= ear_top <= 1.0 + EAR_BASE_QUANT_TOL):
+        raise ValueError("EAR rows violate 1 - sqrt(KLD/2) <= EAR <= 1 (Pinsker) on re-derivation")
+    for row in rows[1:]:
+        row["ear_variant"] = EAR_VARIANTS[row["native_label"]]
+    return rows
+
+
+def monitor_kfd(proc: subprocess.Popen[bytes], state: dict[str, Any], stop: threading.Event,
+                *, kfd_root: Path | None = None) -> None:
+    """Per-PID KFD residency samples while the child is live (counts and endpoints only)."""
+    root = KFD_ROOT if kfd_root is None else kfd_root
+    while not stop.is_set() and proc.poll() is None:
+        try:
+            if not root.is_dir():
+                raise FileNotFoundError(f"KFD process directory absent: {root}")
+            entry = root / str(proc.pid)
+            present = entry.is_dir()
+            vram = 0
+            if present:
+                for node in sorted(entry.glob("vram_*")):
+                    vram += int(node.read_text(encoding="ascii").strip() or "0")
+        except (OSError, ValueError) as exc:
+            if stop.is_set() or proc.poll() is not None:
+                break
+            if state["error"] is None:
+                state["error"] = type(exc).__name__ + ": " + str(exc)[:240]
+        else:
+            if stop.is_set() or proc.poll() is not None:
+                break
+            now = utc_now()
+            state["samples_total"] += 1
+            if state["first_sample_at_utc"] is None:
+                state["first_sample_at_utc"] = now
+            state["latest_sample_at_utc"] = now
+            if present:
+                state["child_entry_samples"] += 1
+            if vram > 0:
+                state["vram_positive_samples"] += 1
+                state["max_vram_bytes"] = max(state["max_vram_bytes"], vram)
+        stop.wait(KFD_SAMPLE_INTERVAL_S)
+
+
+def new_kfd_state(root: Path | None = None) -> dict[str, Any]:
+    return {"kfd_root": str(KFD_ROOT if root is None else root), "sample_interval_s": KFD_SAMPLE_INTERVAL_S,
+            "sample_basis": "per-PID /sys/class/kfd/kfd/proc/<child pid> presence and vram_* bytes while child was live",
+            "samples_total": 0, "child_entry_samples": 0, "vram_positive_samples": 0, "max_vram_bytes": 0,
+            "first_sample_at_utc": None, "latest_sample_at_utc": None, "error": None}
+
+
+def residency_refusals(substrate: str, loaded: list[dict[str, Any]], kfd: dict[str, Any]) -> list[str]:
+    """CPU: CPU backend mapped, no accelerator backend, child never in KFD. HIP: libggml-hip mapped
+    and >= 2 in-window samples of non-zero child VRAM (two-sample persistence)."""
+    names = [Path(str(row.get("path", ""))).name for row in loaded]
+    accel = [n for n in names if ACCEL_OBJECT.match(n)]
+    reasons = []
+    if kfd.get("error"):
+        reasons.append("KFD residency sampling error: " + str(kfd["error"]))
+    if kfd.get("samples_total", 0) < 2:
+        reasons.append("fewer than two KFD residency samples during the child")
+    if substrate == "cpu":
+        if accel:
+            reasons.append("CPU substrate declared but an accelerator ggml backend was mapped: " + ", ".join(sorted(set(accel))))
+        if not any(CPU_OBJECT.match(n) for n in names):
+            reasons.append("CPU substrate declared but no libggml-cpu object was mapped")
+        if kfd.get("child_entry_samples", 0):
+            reasons.append("CPU substrate declared but the child registered with KFD")
+    elif substrate == "hip":
+        if not any(n.startswith("libggml-hip") for n in accel):
+            reasons.append("HIP substrate declared but libggml-hip was never mapped in the child")
+        if kfd.get("vram_positive_samples", 0) < 2:
+            reasons.append("HIP substrate declared but fewer than two non-zero child VRAM samples")
+    else:
+        reasons.append("unknown substrate")
+    return reasons
+
+
+def parse_acceptance_log(raw: bytes) -> dict[str, int]:
+    """llama-server /completion responses, one JSON object per line, each with timings.draft_n
+    and timings.draft_n_accepted (integers, 0 <= accepted <= drafted)."""
+    responses = drafted = accepted = 0
+    for line in raw.decode("utf-8").splitlines():
+        if not line.strip():
+            continue
+        obj = json.loads(line, object_pairs_hook=unique_json_pairs,
+                         parse_constant=lambda x: (_ for _ in ()).throw(ValueError("non-finite JSON constant: " + x)))
+        timings = obj.get("timings") if isinstance(obj, dict) else None
+        if not isinstance(timings, dict):
+            raise ValueError("acceptance log line has no timings object")
+        n, k = timings.get("draft_n"), timings.get("draft_n_accepted")
+        if type(n) is not int or type(k) is not int or n < 0 or not 0 <= k <= n:
+            raise ValueError("acceptance log timings.draft_n/draft_n_accepted missing or inconsistent")
+        responses += 1; drafted += n; accepted += k
+    if responses == 0 or drafted == 0:
+        raise ValueError("acceptance log has no drafted tokens")
+    return {"response_count": responses, "draft_n": drafted, "draft_n_accepted": accepted}
 
 
 def parse_native_window(log_text: str, mode: str) -> dict[str, Any]:
@@ -413,7 +550,7 @@ def main() -> int:
     ap.add_argument("--pair-id", required=True,
                     help="shared identity for the paired anchor/candidate window")
     ap.add_argument("--arm-id", required=True)
-    ap.add_argument("--mode", choices=("ppl", "ppl-anchor", "kld"), required=True)
+    ap.add_argument("--mode", choices=("ppl", "ppl-anchor", "kld", "kld-quantcmp"), required=True)
     ap.add_argument("--source-revision", required=True,
                     help="revision asserted by the invoking source harness; never substitutes for binary digest")
     ap.add_argument("--model-name", required=True)
@@ -434,6 +571,12 @@ def main() -> int:
                     help="anchor GGUF whose logits are stored in --reference-logits")
     ap.add_argument("--anchor-receipt", type=Path,
                     help="immutable successful PPL-anchor receipt binding paired model/logits/corpus/window for KLD")
+    ap.add_argument("--substrate", choices=SUBSTRATES,
+                    help="kld-quantcmp only: producer-declared compute substrate whose residency is proven during the child")
+    ap.add_argument("--acceptance-log", type=Path,
+                    help="kld-quantcmp only: immutable llama-server /completion JSONL (timings.draft_n/draft_n_accepted) of a DFlash2 run against the same target model")
+    ap.add_argument("--drafter-model", type=Path, help="kld-quantcmp only: drafter GGUF of the acceptance run")
+    ap.add_argument("--acceptance-server-binary", type=Path, help="kld-quantcmp only: llama-server binary of the acceptance run")
     ap.add_argument("--out-dir", type=Path, required=True)
     ap.add_argument("--env", action="append", default=[], metavar="NAME=VALUE",
                     help="explicit effective GGML_*/OMP_*/LD_LIBRARY_PATH override")
@@ -445,15 +588,22 @@ def main() -> int:
         ap.error("empty producer argv")
     if a.ny <= 0:
         ap.error("--ny must be positive and producer-authored by the harness")
-    if a.mode == "kld" and a.reference_logits is None:
+    if a.mode in KLD_MODES and a.reference_logits is None:
         ap.error("KLD requires --reference-logits")
-    if a.mode == "kld" and a.reference_model is None:
+    if a.mode in KLD_MODES and a.reference_model is None:
         ap.error("KLD requires --reference-model")
-    if a.mode == "kld" and a.anchor_receipt is None:
+    if a.mode in KLD_MODES and a.anchor_receipt is None:
         ap.error("KLD requires the original prospective PPL-anchor producer receipt")
-    if a.mode == "kld" and a.reference_model.resolve()==a.model.resolve():
+    if a.mode in KLD_MODES and a.reference_model.resolve()==a.model.resolve():
         ap.error("KLD reference model must be the paired anchor, not the candidate")
-    if a.mode != "kld" and (a.reference_logits is not None or a.reference_model is not None or a.anchor_receipt is not None):
+    acceptance_args = (a.acceptance_log, a.drafter_model, a.acceptance_server_binary)
+    if a.mode == "kld-quantcmp" and a.substrate is None:
+        ap.error("kld-quantcmp requires --substrate cpu|hip")
+    if a.mode != "kld-quantcmp" and (a.substrate is not None or any(x is not None for x in acceptance_args)):
+        ap.error("--substrate and the acceptance inputs are only valid for kld-quantcmp")
+    if any(x is not None for x in acceptance_args) and not all(x is not None for x in acceptance_args):
+        ap.error("--acceptance-log, --drafter-model and --acceptance-server-binary go together")
+    if a.mode not in KLD_MODES and (a.reference_logits is not None or a.reference_model is not None or a.anchor_receipt is not None):
         ap.error("--reference-logits/--reference-model are inputs only for KLD mode")
     if a.mode == "ppl-anchor" and a.output_logits is None:
         ap.error("PPL anchor mode requires --output-logits")
@@ -485,7 +635,7 @@ def main() -> int:
     if context_arg is None or chunks_arg is None:
         ap.error("exact producer argv must carry -c/--ctx-size and --chunks")
     kld_flags=argv.count("--kl-divergence");base_values=option_values("--kl-divergence-base")
-    if a.mode == "kld":
+    if a.mode in KLD_MODES:
         if kld_flags!=1 or len(base_values)!=1 or Path(base_values[0]).resolve()!=a.reference_logits.resolve() or argv.index("--kl-divergence")!=len(argv)-1 or argv.index("--kl-divergence-base")+2!=len(argv)-1:
             ap.error("KLD requires exact single --kl-divergence and digest-pinned --kl-divergence-base")
     elif a.mode == "ppl-anchor":
@@ -499,6 +649,9 @@ def main() -> int:
     if a.reference_model is not None:a.reference_model=a.reference_model.resolve(strict=True)
     if a.anchor_receipt is not None:a.anchor_receipt=a.anchor_receipt.resolve(strict=True)
     if a.output_logits is not None:a.output_logits=a.output_logits.resolve(strict=False)
+    if a.acceptance_log is not None:
+        a.acceptance_log=a.acceptance_log.resolve(strict=True);a.drafter_model=a.drafter_model.resolve(strict=True)
+        a.acceptance_server_binary=a.acceptance_server_binary.resolve(strict=True)
     for i,item in enumerate(argv[:-1]):
         if item in {"-m","--model"}:argv[i+1]=str(a.model)
         elif item in {"-f","--file"}:argv[i+1]=str(a.corpus)
@@ -536,6 +689,8 @@ def main() -> int:
         raise ValueError("metric declaration protocol_id must be a string")
     expected_labels=({"Final estimate: PPL"} if a.mode in {"ppl","ppl-anchor"} else
         {"Mean PPL(Q)","Mean PPL(base)","Mean PPL(Q)/PPL(base)","Mean PPL(Q)-PPL(base)","Mean ln(PPL(Q)/PPL(base))","Mean KLD",*(f"{x} KLD" for x in KLD_LABELS)})
+    if a.mode == "kld-quantcmp":
+        expected_labels |= set(QUANTCMP_LABELS) | ({ACCEPT_LABEL} if a.acceptance_log is not None else set())
     if set(metric_spec["metrics"])!=expected_labels:
         raise ValueError("pre-run metric declaration labels differ from exact native mode output contract")
     for native_label,declaration in metric_spec["metrics"].items():
@@ -556,6 +711,11 @@ def main() -> int:
     ref_identity = file_identity(a.reference_logits) if a.reference_logits else None
     ref_model_identity = file_identity(a.reference_model) if a.reference_model else None
     anchor_receipt_before = file_identity(a.anchor_receipt) if a.anchor_receipt else None
+    acceptance_before = None
+    if a.acceptance_log is not None:
+        acceptance_before = {"timings_log": file_identity(a.acceptance_log), "drafter_model": file_identity(a.drafter_model),
+                             "server_binary": file_identity(a.acceptance_server_binary)}
+    kfd_state = new_kfd_state() if a.mode == "kld-quantcmp" else None
     started = utc_now()
     start_ns = time.time_ns()
     seen_so: dict[tuple, dict[str, Any]] = {}
@@ -565,11 +725,17 @@ def main() -> int:
                                 stderr=subprocess.STDOUT, env=env, shell=False)
         monitor = threading.Thread(target=monitor_maps, args=(proc, seen_so, stop), daemon=True)
         monitor.start()
+        kfd_monitor = None
+        if kfd_state is not None:
+            kfd_monitor = threading.Thread(target=monitor_kfd, args=(proc, kfd_state, stop), daemon=True)
+            kfd_monitor.start()
         exit_code = proc.wait()
         end_ns = time.time_ns()
         ended = datetime.fromtimestamp(end_ns / 1e9, timezone.utc).isoformat(timespec="microseconds").replace("+00:00","Z")
         stop.set()
         monitor.join()
+        if kfd_monitor is not None:
+            kfd_monitor.join()
         log.flush()
         os.fsync(log.fileno())
     binary_after = file_identity(binary)
@@ -650,8 +816,28 @@ def main() -> int:
         refusal.append("model, corpus, anchor receipt, or KLD reference input identity changed during measured process")
     if refusal_message:
         refusal.append(refusal_message)
+    acceptance_block = None
+    acceptance_row = None
+    if acceptance_before is not None:
+        try:
+            acceptance_after = {"timings_log": file_identity(a.acceptance_log), "drafter_model": file_identity(a.drafter_model),
+                                "server_binary": file_identity(a.acceptance_server_binary)}
+            if acceptance_after != acceptance_before:
+                raise ValueError("acceptance inputs changed during measured process")
+            counts = parse_acceptance_log(a.acceptance_log.read_bytes())
+            if sha256_file(a.acceptance_log) != acceptance_before["timings_log"]["sha256"]:
+                raise ValueError("acceptance log changed while it was parsed")
+            acceptance_block = {**acceptance_before, **counts, "target_model_sha256": model_identity["sha256"],
+                                "custody_scope": "timings log, drafter, server binary and target identities hashed at capture; "
+                                                 "the llama-server process itself was not captured by this wrapper",
+                                "not_ear": "draft acceptance of the drafter against this arm's model; EAR is a separate fidelity metric"}
+            acceptance_row = metric(ACCEPT_LABEL, repr(counts["draft_n_accepted"] / counts["draft_n"]), None, "unknown")
+        except (OSError, ValueError, UnicodeDecodeError) as exc:
+            refusal.append(f"acceptance input refused: {exc}")
     try:
         metrics = parse_native_metrics(log_text, a.mode)
+        if acceptance_row is not None:
+            metrics.append(acceptance_row)
         native_window = parse_native_window(log_text, a.mode)
         for item in metrics:
             declaration = metric_spec["metrics"].get(item["native_label"])
@@ -687,6 +873,8 @@ def main() -> int:
         refusal.append("effective GGML_IQK state is absent or unrecognized")
     if a.ny < 32:
         refusal.append("PPL/KLD Ny below 32 is outside the SC54 quality-evaluation regime")
+    if kfd_state is not None:
+        refusal.extend(residency_refusals(a.substrate, loaded, kfd_state))
     argv_text = shlex.join(argv)
     n_ctx: int | None = None
     for i, arg in enumerate(argv[:-1]):
@@ -740,6 +928,13 @@ def main() -> int:
         "capture_status": "captured" if not refusal else "refused",
         "refusal_reasons": refusal,
     }
+    if a.mode == "kld-quantcmp":
+        record["quantcmp"] = {
+            "substrate": a.substrate, "kfd_residency": kfd_state, "acceptance": acceptance_block,
+            "ear_variants": dict(EAR_VARIANTS), "ear_base_quant_tolerance": EAR_BASE_QUANT_TOL,
+            "scope": {"ear": "EAR = sum min(p_base, q) = 1 - TV against the base logits; a fidelity metric, never drafter acceptance",
+                      "ear_variants": "full_vocab is a strict 1 - TV; top10_renormalized is SLQ's evaluation.py variant; never compare across variants",
+                      "base": "EAR/KLD are relative to the reference logits named here; an EAR against a Q8_0 base is not comparable to one against BF16"}}
     atomic_json(receipt_path, record)
     print(receipt_path)
     return 0 if not refusal else 3

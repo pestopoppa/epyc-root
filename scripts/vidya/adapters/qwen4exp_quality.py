@@ -20,7 +20,7 @@ ADAPTER_ID = "vidya.adapters.qwen4exp_quality/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "epyc.vidya.qwen4exp_quality_measurement.v1"
 READER_PATH = Path(__file__).with_name("qwen4exp_quality_reader.py")
-READER_SHA256 = "172e046bc596f2d1afa12ac0617ea6b2737f0536fd7c443508c5a1c231ba3532"
+READER_SHA256 = "407af3fe7172ac5e8d1ddfcd1c50ecbd60852c43910c13d4dbf2f5dbbc20842b"
 
 
 def _read_pinned_source() -> tuple[bytes, dict[str, int | str]]:

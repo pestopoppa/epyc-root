@@ -14,6 +14,16 @@ _KLD_LABELS=("Maximum","99.9%","99.0%","95.0%","90.0%","Median","10.0%","5.0%","
 _RUN=re.compile(r"(?:calculating perplexity|computing):? (?:computing over|over) (\d+) chunks, n_ctx=(\d+), batch_size=(\d+), n_seq=(\d+)")
 _PPL_CHUNKS=re.compile(r"\[(\d+)\][0-9.eE+-]+")
 _KLD_CHUNKS=re.compile(r"^\s*(\d+)\s+[0-9.eE+-]+\s+±",re.M)
+# VB-QUANTCMP-WIRE (2026-10-22): kld-quantcmp = kld + same-top-1 + both EAR variants + residency (+ DFlash2 acceptance)
+_KLD_MODES=("kld","kld-quantcmp")
+_QUANTCMP_ROWS=(("Same top p",r"^Same top p:\s*([^\s]+)\s*±\s*([^\s]+)\s*%\s*$"),
+                ("EAR full vocab",r"^EAR full vocab\s*:\s*([^\s]+)\s*±\s*([^\s]+)\s*%\s*$"),
+                ("EAR top10 renorm",r"^EAR top10 renorm\s*:\s*([^\s]+)\s*±\s*([^\s]+)\s*%\s*$"))
+_EAR_VARIANTS={"EAR full vocab":"full_vocab","EAR top10 renorm":"top10_renormalized"}
+_EAR_TOL=16.0/65535.0
+_ACCEPT_LABEL="DFlash2 acceptance"
+_ACCEL=re.compile(r"^libggml-(hip|cuda|vulkan|sycl|metal|opencl|musa|cann)[.-]")
+_CPU=re.compile(r"^libggml-cpu[.-]")
 
 def _unique_pairs(pairs):
     result={}
@@ -88,8 +98,8 @@ def _aware(value, name):
     if dt.tzinfo is None or dt.utcoffset() is None: raise ValueError(name+" must include timezone")
     return dt
 
-def _check_native_log(raw, mode, receipt_metrics, window):
-    if mode not in {"ppl","ppl-anchor","kld"}: raise ValueError("unsupported producer mode")
+def _check_native_log(raw, mode, receipt_metrics, window, extra_expected=None):
+    if mode not in {"ppl","ppl-anchor","kld","kld-quantcmp"}: raise ValueError("unsupported producer mode")
     text=raw.decode("utf-8",errors="replace")
     settings=_RUN.findall(text)
     if len(settings)!=1: raise ValueError("native scoring settings are not unique")
@@ -116,6 +126,18 @@ def _check_native_log(raw, mode, receipt_metrics, window):
         rows=_KLD_ROW.findall(text)
         if Counter(x[0] for x in rows)!=Counter(_KLD_LABELS): raise ValueError("native KLD labels duplicated/missing")
         expected.update({f"{label} KLD":(float(value),None) for label,value in rows})
+    if mode=="kld-quantcmp":
+        for label,expr in _QUANTCMP_ROWS:
+            rows=re.findall(expr,text,re.M)
+            if len(rows)!=1: raise ValueError(f"native {label} row not unique")
+            expected[label]=(float(rows[0][0]),float(rows[0][1]))
+        if re.findall(r"^EAR Pinsker check: (pass|FAIL)\s*$",text,re.M)!=["pass"]:
+            raise ValueError("native EAR Pinsker check is missing, repeated or not pass")
+        floor=1.0-math.sqrt(max(expected["Mean KLD"][0],0.0)/2.0)
+        full=expected["EAR full vocab"][0]/100.0; top=expected["EAR top10 renorm"][0]/100.0
+        if not (floor-_EAR_TOL<=full<=1.0+_EAR_TOL) or not (0.0<=top<=1.0+_EAR_TOL):
+            raise ValueError("EAR rows violate Pinsker 1 - sqrt(KLD/2) <= EAR <= 1 on re-derivation")
+    if extra_expected: expected.update(extra_expected)
     actual={m["native_label"]:(m["value"],m.get("native_spread")) for m in receipt_metrics}
     if actual!=expected: raise ValueError("receipt metrics do not rederive from original native output")
 
@@ -188,6 +210,60 @@ def _verify_ppl_anchor(anchor_ref, candidate):
         raise ValueError("PPL-anchor producer argv does not bind model, corpus, window and newly written logits")
     return {"receipt_sha256":ident["sha256"],"receipt_path":ident["path"],"anchor_run_id":a["run_id"],"anchor_pair_id":a["pair_id"]}
 
+def _verify_quantcmp(r, started_dt, ended_dt):
+    """Re-derive the residency verdict and the acceptance ratio; return the tuple facts."""
+    q=r.get("quantcmp")
+    if not isinstance(q,dict) or set(q)!={"substrate","kfd_residency","acceptance","ear_variants","ear_base_quant_tolerance","scope"}:
+        raise ValueError("kld-quantcmp receipt lacks its quantcmp block")
+    if q["ear_variants"]!=_EAR_VARIANTS or q["ear_base_quant_tolerance"]!=_EAR_TOL:
+        raise ValueError("kld-quantcmp EAR variant map or tolerance differs from the contract")
+    sub=q["substrate"]; kfd=q["kfd_residency"]
+    if sub not in {"cpu","hip"}: raise ValueError("substrate unknown")
+    keys={"kfd_root","sample_interval_s","sample_basis","samples_total","child_entry_samples","vram_positive_samples","max_vram_bytes","first_sample_at_utc","latest_sample_at_utc","error"}
+    if not isinstance(kfd,dict) or set(kfd)!=keys: raise ValueError("KFD residency block malformed")
+    if kfd["error"] is not None: raise ValueError("KFD residency sampling had an error")
+    counts=[kfd[k] for k in ("samples_total","child_entry_samples","vram_positive_samples","max_vram_bytes")]
+    if any(type(x) is not int or x<0 for x in counts) or not kfd["samples_total"]>=kfd["child_entry_samples"]>=kfd["vram_positive_samples"]:
+        raise ValueError("KFD residency counts invalid")
+    if kfd["samples_total"]<2: raise ValueError("fewer than two KFD residency samples")
+    for key in ("first_sample_at_utc","latest_sample_at_utc"):
+        when=_aware(kfd[key],"KFD "+key)
+        if not started_dt<=when<=ended_dt: raise ValueError("KFD residency sample outside measured process window")
+    names=[Path(str(row.get("path",""))).name for row in r["loaded_shared_objects"]]
+    accel=[n for n in names if _ACCEL.match(n)]
+    if sub=="cpu":
+        if accel or not any(_CPU.match(n) for n in names) or kfd["child_entry_samples"]:
+            raise ValueError("CPU residency not proven: accelerator backend mapped, no CPU backend, or child in KFD")
+    else:
+        if not any(n.startswith("libggml-hip") for n in accel) or kfd["vram_positive_samples"]<2 or kfd["max_vram_bytes"]<=0:
+            raise ValueError("HIP residency not proven: libggml-hip unmapped or fewer than two non-zero VRAM samples")
+    facts={"substrate":sub,"residency":{"kfd_samples":kfd["samples_total"],"kfd_child_entry_samples":kfd["child_entry_samples"],
+           "kfd_vram_positive_samples":kfd["vram_positive_samples"],"max_vram_bytes":kfd["max_vram_bytes"],
+           "accelerator_objects":sorted(set(accel))}}
+    extra=None; acc=q["acceptance"]
+    if acc is not None:
+        akeys={"timings_log","drafter_model","server_binary","response_count","draft_n","draft_n_accepted","target_model_sha256","custody_scope","not_ear"}
+        if not isinstance(acc,dict) or set(acc)!=akeys: raise ValueError("acceptance block malformed")
+        for key in ("drafter_model","server_binary"): _verify_identity(acc[key])
+        raw=_verify_identity(acc["timings_log"],retain_bytes=True)
+        responses=drafted=accepted=0
+        for line in raw.decode("utf-8").splitlines():
+            if not line.strip(): continue
+            obj=_json(line); t=obj.get("timings") if isinstance(obj,dict) else None
+            if not isinstance(t,dict): raise ValueError("acceptance log line has no timings")
+            n,k=t.get("draft_n"),t.get("draft_n_accepted")
+            if type(n) is not int or type(k) is not int or n<0 or not 0<=k<=n: raise ValueError("acceptance timings inconsistent")
+            responses+=1; drafted+=n; accepted+=k
+        if drafted==0 or (responses,drafted,accepted)!=(acc["response_count"],acc["draft_n"],acc["draft_n_accepted"]):
+            raise ValueError("acceptance counts do not re-derive from the timings log")
+        if acc["target_model_sha256"]!=r["model"]["sha256"]: raise ValueError("acceptance target model is not this arm's model")
+        if acc["drafter_model"]["sha256"] in {r["model"]["sha256"],r["reference_model"]["sha256"]}: raise ValueError("drafter cannot be the target or the base model")
+        extra={_ACCEPT_LABEL:(accepted/drafted,None)}
+        facts["acceptance"]={"drafter_model_sha256":acc["drafter_model"]["sha256"],"server_binary_sha256":acc["server_binary"]["sha256"],
+                             "timings_log_sha256":acc["timings_log"]["sha256"],"draft_n":drafted,"draft_n_accepted":accepted,
+                             "response_count":responses,"custody_scope":acc["custody_scope"]}
+    return facts,extra
+
 def read_project(receipt_path, ClaimTuple):
     """Return ClaimTuple rows only for fully declared and reverified native metrics."""
     raw, receipt_file = _read_stable(Path(receipt_path))
@@ -210,7 +286,7 @@ def read_project(receipt_path, ClaimTuple):
     for ident in (r["producer_binary"]["before"], r["producer_binary"]["after"], base_model, r["model_after"], r["corpus"], r["corpus_after"]): _verify_identity(ident)
     if base_model != r["model_after"] or r["corpus"] != r["corpus_after"]: raise ValueError("model/corpus changed during run")
     mode=r.get("mode")
-    if mode=="kld":
+    if mode in _KLD_MODES:
         if not isinstance(r.get("reference_model"),dict) or not isinstance(r.get("reference_logits"),dict): raise ValueError("KLD requires paired reference model and logits identities")
         r["verified_anchor_origin"]=_verify_ppl_anchor(r.get("anchor_receipt"),r)
     elif mode=="ppl-anchor":
@@ -228,7 +304,10 @@ def read_project(receipt_path, ClaimTuple):
     if not isinstance(log,dict) or set(log)!={"path","sha256"}: raise ValueError("native log reference malformed")
     log_bytes, log_ident = _read_stable(Path(log["path"]))
     if hashlib.sha256(log_bytes).hexdigest()!=log["sha256"]: raise ValueError("native log digest mismatch")
-    _check_native_log(log_bytes,r.get("mode"),r.get("metrics",[]),r.get("native_scoring_window",{}))
+    quantcmp_facts,quantcmp_expected=(None,None)
+    if mode=="kld-quantcmp": quantcmp_facts,quantcmp_expected=_verify_quantcmp(r,started_dt,ended_dt)
+    elif "quantcmp" in r: raise ValueError("quantcmp block outside kld-quantcmp mode")
+    _check_native_log(log_bytes,r.get("mode"),r.get("metrics",[]),r.get("native_scoring_window",{}),quantcmp_expected)
     if r["producer_binary"]["before"] != r["producer_binary"]["after"] or not r["producer_binary"].get("stable_during_capture"):
         raise ValueError("producer binary did not remain stable")
     argv=r.get("argv")
@@ -244,7 +323,7 @@ def read_project(receipt_path, ClaimTuple):
         int(option("--chunks"))!=r.get("native_scoring_window",{}).get("native_chunks_requested_and_reported")):
         raise ValueError("argv disagrees with sealed inputs/native window")
     has_kld="--kl-divergence" in argv; base_opts=[i for i,x in enumerate(argv[:-1]) if x=="--kl-divergence-base"]
-    if mode=="kld":
+    if mode in _KLD_MODES:
         if argv.count("--kl-divergence")!=1 or len(base_opts)!=1 or base_opts[0]+2!=len(argv)-1 or argv[-1]!="--kl-divergence" or Path(argv[base_opts[0]+1]).absolute()!=Path(r["reference_logits"]["path"]).absolute() or Path(r["reference_model"]["path"]).absolute()==Path(r["model"]["path"]).absolute(): raise ValueError("KLD mode/reference argv is not exact and paired")
     elif mode=="ppl-anchor":
         if argv.count("--kl-divergence") or len(base_opts)!=1 or base_opts[0]+2!=len(argv) or Path(argv[base_opts[0]+1]).absolute()!=Path(r["output_logits"]["path"]).absolute(): raise ValueError("PPL anchor mode/output argv is not exact")
@@ -339,6 +418,23 @@ def read_project(receipt_path, ClaimTuple):
         claim=(f"Observed {m['native_label']}={m['value']} {d['unit']} from llama-perplexity; "
                f"corpus={r['corpus']['sha256']}, Ny={r['ny']}, IQK={r['runtime_knobs']['GGML_IQK']['value']}; "
                "PPL quality-evaluation scope only, not a Ny=1 serving warrant.")
+        qextra={}
+        if quantcmp_facts is not None:
+            label=m["native_label"]
+            qextra={"quantcmp":{**{k:v for k,v in quantcmp_facts.items() if k!="acceptance"},
+                    "model_sha256":r["model"]["sha256"],"reference_model_sha256":r["reference_model"]["sha256"],
+                    "reference_logits_sha256":r["reference_logits"]["sha256"],"n_ctx":r["n_ctx"],
+                    "chunks":r["native_scoring_window"]["native_chunks_requested_and_reported"],
+                    "ear_variant":_EAR_VARIANTS.get(label)}}
+            if label in _EAR_VARIANTS:
+                claim=(f"Observed {label}={m['value']} {d['unit']} (EAR variant {_EAR_VARIANTS[label]}) of this arm against base logits "
+                       f"{r['reference_logits']['sha256']} on substrate {quantcmp_facts['substrate']}; a fidelity metric "
+                       "(1 - TV against the base), not drafter acceptance; not comparable across EAR variants or bases.")
+            elif label==_ACCEPT_LABEL:
+                qextra["quantcmp"]["acceptance"]=quantcmp_facts["acceptance"]
+                claim=(f"Observed {label}={m['value']} {d['unit']} (draft_n_accepted/draft_n) of drafter "
+                       f"{quantcmp_facts['acceptance']['drafter_model_sha256']} against target {r['model']['sha256']}; "
+                       "server process custody not captured by the wrapper; acceptance, not EAR.")
         result.append(ClaimTuple(measurement_id=mid, metric=d["metric"], value=m["value"],
             date=r["ended_at_utc"], category=d["category"], claim=claim,
             metric_direction=d["metric_direction"], protocol_id=r.get("protocol_id") or "",
@@ -351,5 +447,5 @@ def read_project(receipt_path, ClaimTuple):
                    "arm_id":r["arm_id"],"corpus_sha256":r["corpus"]["sha256"],"ny":r["ny"],
                    "iqk_state":r["runtime_knobs"]["GGML_IQK"]["value"],"producer_binary_sha256":r["producer_binary"]["before"]["sha256"],
                    "anchor_receipt_sha256":r.get("verified_anchor_origin",{}).get("receipt_sha256"),
-                   "anchor_run_id":r.get("verified_anchor_origin",{}).get("anchor_run_id")}))
+                   "anchor_run_id":r.get("verified_anchor_origin",{}).get("anchor_run_id"),**qextra}))
     return result
