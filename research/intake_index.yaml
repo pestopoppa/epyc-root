@@ -326210,7 +326210,11 @@
   authors:
   - ConwayResearch (Conway Research)
   verification: dive-overturned
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2341:D1 -> P1 / CS-8.STT1; 2341:D2 -> M15; 2341:D3 -> K4; 2341:D4 -> decline; 2341:D5 -> M15; s1.2341 -> decline'
   handoffs_created: []
   key_claims:
   - 'SCOPE: this is a speech-to-TEXT (ASR/STT) model, not text-to-speech. HF pipeline_tag automatic-speech-recognition, base_model
@@ -326265,12 +326269,6 @@
     under /mnt/raid0/llm/tmp/dive-2341/. Independent replication: none found (only vendor cards; no scoring code, no leaderboard
     entry); Plus and Clean cards are the same vendor, i.e. restatement.'
   read_depth: PARTIAL
-  integration_disposition: declined
-  disposition_evidence:
-  - 'conversation-stack.md D2: English mandatory, Italian strongly wanted, de/fr desirable, language is the FIRST bake-off gate;
-    card says "English only" (clean/README.md Notes). Clean cannot pass the gate.'
-  - conversation-stack.md D6 voice-turn contract needs faithful turns with must_preserve/verbatim; Clean deletes false starts
-    and discourse markers by design and publishes no meaning-preservation evaluation.
   depends_on:
   - entry: intake-2343
     claim_index: 0
@@ -326501,7 +326499,11 @@
   verdict: worth_investigating
   ingested_date: '2026-10-21'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): s1.2342 -> M15'
   handoffs_created: []
   key_claims:
   - Verbatim ASR finetune of nvidia/parakeet-tdt-0.6b-v3, CC-BY-4.0, not gated, English (HF API retrieved 2026-10-21, repo
@@ -326525,11 +326527,6 @@
   contradicting_evidence: null
   notes: See intake-2341 notes for pins and artifacts. Shares dive dir /mnt/raid0/llm/tmp/dive-2341/.
   read_depth: PARTIAL
-  integration_disposition: monitor
-  disposition_evidence:
-  - English-only (README Notes); cannot be the STT of record under conversation-stack D2, but is the only faithful arm of the
-    pair and could be an optional English-lane arm in the CS-8 bake-off if the language gate is split.
-  - Weights unpack to dense fp32/fp16; no CPU/MI210 speed mechanism; no EPYC throughput reported.
   depends_on:
   - entry: intake-2343
     claim_index: 1
@@ -326616,7 +326613,11 @@
   verdict: worth_investigating
   ingested_date: '2026-10-21'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2343:L1 -> P1 / CS-8.STT5 / CS-8.STT6; 2343:L2 -> P1 / CS-8.STT4; 2343:L3 -> P1 / CS-8.STT4; 2343:L4 -> decline; 2343:L5 -> K4; 2343:L6 -> P3 / CS-26.LID1; 2343:L7 -> decline; 2343:L8 -> K4; 2343:L9 -> M15; s1.2343 -> P1 / CS-8.STT5'
   handoffs_created: []
   key_claims:
   - Card claims Open ASR 7-English-set average 5.80 vs 6.26 for the original under its own scoring pipeline, FLEURS 9.55 vs
@@ -327069,7 +327070,12 @@
   verdict: worth_investigating
   ingested_date: '2026-10-21'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  - handoffs/active/tq3-quantization-evaluation.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2344:D1 -> P1 / CS-8.STT2 / CS-8.STT4 / CS-8.STT5; 2344:D2 -> P3 / CS-26.F1; 2344:D3 -> decline; 2344:D4 -> decline; 2344:D5 -> K8; 2344:D6 -> M12; 2344:D7 -> P2 / CS-4.STT1; s1.2344 -> P3 / CS-26.F1'
   handoffs_created: []
   key_claims:
   - 'Card (Photon only, author-reported): 113x real time on 8 physical cores of one chiplet of an AMD EPYC 9575F (Zen 5, DDR5-6000),
@@ -327129,11 +327135,6 @@
     packed format is readable without Photon is unknown (ternary.json present; not opened). Noise regression is a risk for real-human-recording
     evaluation.'
   read_depth: PARTIAL
-  integration_disposition: monitor
-  disposition_evidence:
-  - 'Redux itself: CPU-only, regresses on en/es/fr/de/it/pt (card FLEURS), regresses in noise (9.04 vs 6.72) and business speech,
-    and Photon-only speeds were never independently reproduced in magnitude (1.75x vs 2.5x). Monitor; the actionable path is
-    stock Parakeet TDT v3 / Ultra through the open runners (mudler/parakeet.cpp, NeMo-Speech.cpp).'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -327465,6 +327466,9 @@
   ingested_date: '2026-10-21'
   verification: stage1-unverified
   handoffs_updated: []
+  integration_disposition: declined
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): s1.2345 -> decline'
   handoffs_created: []
   key_claims:
   - Title only was resolved this run (arxiv.org/abs/2406.08820 page title matched). The Bark card uses its test set (250 clips)
@@ -327666,11 +327670,13 @@
     Companion artifacts: DIVE.md, dive.json, anchors.json, second_reader.json, src/ (saved sources).
 
     '
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  - handoffs/active/vidya-belief-substrate-program.md
+  integration_disposition: integrated
   disposition_evidence:
-  - Settles three open questions for conversation-stack CS-2 / the STT bake-off (normaliser/refs, RTFx comparability, scorer
-    adoption) and yields draft amendment text; it is a protocol input to CS-2, owned by handoffs/active/conversation-stack.md,
-    not a code or model integration.
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2346:D1 -> P2 / CS-2.STT1; 2346:D2 -> P1 / CS-8.STT1; 2346:D3 -> P1 / CS-8.STT5; 2346:D4 -> K4; 2346:D5 -> P6 / VB-SPEECH-CONV-1B; 2346:D6 -> K4; 2346:D7 -> decline; 2346:D8 -> P2 / CS-4.STT1'
   reader_should_conclude: 'Do not quote any "Open ASR leaderboard average" without its date, set list, reference track (standard
     vs cleaned) and scorer SHA: 4.94, 6.26, 6.32 and 6.34 are four different measurands for one model. Do not transfer leaderboard
     RTFx (A100, batch 64, bf16 PyTorch) to CPU or MI210 batch-1 serving. Do not adopt the leaderboard normaliser as the Annex
@@ -328075,7 +328081,12 @@
     \ and dived as intake-2360 (silero-vad)\n  - localai-org/ced.cpp, voice-detect.cpp -> monitor (dive's own): sound events\
     \ / speaker ID, not on the STT bake-off path\n  - arXiv:2604.19079 unified ASR -> SELECTED and dived as intake-2357 (unified-rnnt-2604.19079)\n\
     \  - nvidia/nemotron-speech-streaming-en-0.6b -> SELECTED and dived as intake-2356 (nemotron-streaming-en)"
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  - handoffs/active/tq3-quantization-evaluation.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2347:D1 -> P1 / CS-8.STT2; 2347:D2 -> P1 / CS-8.STT4; 2347:D3 -> P3 / CS-26.F1; 2347:D4 -> P3 / CS-22.V0; 2347:D5 -> K5; 2347:D6 -> decline; 2347:D7 -> K8; 2347:D8 -> M12'
   handoffs_created: []
   expanded_from: intake-2344
 - id: intake-2348
@@ -328376,7 +328387,11 @@
     \  - nvidia/nemotron-speech-streaming-en-0.6b -> SELECTED and dived as intake-2356 (nemotron-streaming-en)\n  - nvidia/parakeet-unified-en-0.6b\
     \ upstream card -> declined: covered by this entry (dive's own reason)\n  - github.com/vladkens/wavo -> SELECTED and dived\
     \ as intake-2371 (wavo)"
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2348:H1 -> P1 / CS-8.STT5; 2348:H2 -> P1 / CS-8.STT2; 2348:H3 -> K6; 2348:H4 -> decline; 2348:H5 -> K4; 2348:H6 -> M12'
   handoffs_created: []
   expanded_from: intake-2344
 - id: intake-2349
@@ -328582,10 +328597,12 @@
   - Do not adopt as the STT bake-off runner; keep as vendor reference for Nemotron 3.5 streaming. If a second ggml STT arm
     is wanted beyond mudler, build it unpatched (NEMO_SPEECH_GGML_PATCHED=OFF) with a new GGML_HIP hook in an experimental
     tree.
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - 'dive-nemo-speech-cpp/DIVE.md: ultra needs an adapter here but not in mudler; no HIP wiring; unfused HIP route possible
-    but no advantage over mudler for our TDT use.'
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2349:N1 -> P1 / CS-8.STT4; 2349:N2 -> M12; 2349:N3 -> K4; 2349:N4 -> P1 / CS-8.STT1; 2349:N5 -> K5; 2349:N6 -> P1 / CS-8.STT5; 2349:N7 -> decline'
   reader_should_conclude: 'NeMo-Speech.cpp is the vendor reference for NVIDIA ggml speech models and strong for Nemotron streaming,
     but for OUR Parakeet TDT/ultra bake-off it is second choice to mudler/parakeet.cpp: converter takes .nemo only, no HIP
     wiring, offline TDT only. Its headline numbers are Nemotron-streaming on NVIDIA/Intel hardware and must not be cited as
@@ -329031,6 +329048,12 @@
     \ mudler/parakeet.cpp and NeMo-Speech.cpp (dived as intake-2347 (parakeet-cpp-mudler), intake-2349 (nemo-speech-cpp));\
     \ transcribe.cpp was later selected and dived as intake-2359 (transcribe-cpp)\n  - pipecat-ai/smart-turn (intake-2047)\
     \ and LocalAI-org/LocalVQE (intake-2018) -> declined: already ingested, cross-referenced (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2350:S1 -> M13; 2350:S2 -> P1 / CS-8.STT5; 2350:S3 -> P3 / CS-22.D1; 2350:S4 -> P5 / CS-43.1; 2350:S5 -> decline; 2350:S6 -> decline; 2350:S7 -> K5; 2350:S8 -> K4; 2350:S9 -> P3 / CS-26.LID1'
 - id: intake-2351
   arxiv_id: null
   url: https://huggingface.co/Olicorne/parakeet-tdt-0.6b-v3-ultra-onnx
@@ -329410,6 +329433,12 @@
     \ (MIT) @a2fd7530 -> declined: covered here as the runner for O1/O2 (dive's own reason)\n  - beshkenadze/parakeet-ultra-onnx,\
     \ mldecode/parakeet-ultra-onnx-int8 and sherpa-onnx-parakeet-ultra-int8 -> declined: restatements of the same conversion\
     \ (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2351:O1 -> M13; 2351:O2 -> M14; 2351:O3 -> M13; 2351:O4 -> P1 / CS-8.STT1; 2351:O5 -> K4; 2351:O6 -> K4; 2351:O7 -> decline'
 - id: intake-2352
   arxiv_id: null
   url: https://github.com/huggingface/open_asr_leaderboard
@@ -330013,11 +330042,12 @@
     it is a labelled secondary cross-check at most, never the Annex S instrument. whisper.cpp output would enter it as raw
     text, so no ggml work is implied. Companion artifacts: DIVE.md, dive.json, anchors.json, second_reader.json, src/, derive_626_632.json,
     derive_live.json.'
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - Protocol input to conversation-stack.md CS-2 (stt_norm/v2 copy/forbid list) and CS-8 G1; no implementation task of its
-    own beyond the draft rows in DIVE.md, which the owning session applies. Wave-1 already routed the amendment package to
-    CS-2.
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2352:R1 -> P2 / CS-2.STT1; 2352:R2 -> P1 / CS-8.STT1; 2352:R3 -> P1 / CS-8.STT1; 2352:R4 -> P2 / CS-2.STT1; 2352:R5 -> P1 / CS-8.STT5; 2352:R6 -> K4; 2352:R7 -> P1 / CS-8.STT5; 2352:R8 -> K4; 2352:R9 -> decline'
   reader_should_conclude: 'Do not quote "6.26", "6.32" or "6.34" as if they measured one thing: 6.32 = March scorer, 8 sets
     with TED-LIUM, standard refs; 6.23-6.26 = current scorer, 7 sets, standard refs; 4.94 = current scorer, 7 sets, cleaned
     refs; 6.51 = live avg over nine columns. Do not treat the repo CSVs in scripts/data as the live leaderboard (March snapshot).
@@ -330453,11 +330483,12 @@
     the normaliser-request discussion), the AA streaming leaderboard, AA-AgentTalk (proprietary, not obtainable). No code
     was run beyond my own stdlib helper scripts on text. Companion artifacts: DIVE.md, dive.json, anchors.json, second_reader.json,
     set_diff.json, src/.'
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - Useful as a labelled English external anchor for the STT-arm bake-off (conversation-stack.md CS-8 G1 STT arm, wave-1 D3)
-    and as a lesson for CS-4 reference freezing; it fits none of the five CS-4 sets and is English-only, so it cannot serve
-    the it/de/fr gate. No standalone task.
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2353:A1 -> P1 / CS-8.STT5; 2353:A2 -> P2 / CS-2.STT1; 2353:A3 -> P2 / CS-4.STT1; 2353:A4 -> K4; 2353:A5 -> P2 / CS-4.STT1; 2353:A6 -> K4; 2353:A7 -> M21; 2353:A8 -> decline'
   reader_should_conclude: 'Do not describe Earnings22-Cleaned-AA as "Earnings22 test with corrected references": it is six
     other calls (0/6 overlap with the leaderboard standard test), so a standard-vs-cleaned Earnings22 WER difference mixes
     calls, scorer and references. Do not cite the Apache-2.0 tag as the licence of the audio or references; treat as CC-BY-SA-4.0
@@ -330814,6 +330845,12 @@
     \ global south\" (carried from wave-1) -> declined: Hindi, outside the it/de/fr/en gate (dive's own reason)\n  - Promised\
     \ future post on private-set audio and transcript quality tooling -> monitor (dive's own): promised future post not found\
     \ at fetch"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2354:H1 -> P2 / CS-2.STT1; 2354:H2 -> P2 / CS-4.STT2; 2354:H3 -> P2 / CS-4.STT1; 2354:H4 -> K4; 2354:H5 -> decline'
 - id: intake-2355
   arxiv_id: null
   url: https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b
@@ -331275,6 +331312,12 @@
     \  - cjpais/Handy#2138 (app integration of transcribe.cpp allowed_languages) -> declined: application-level PR, no mechanism\
     \ beyond transcribe.cpp #168 (dive's own reason)"
   expanded_from: intake-2349
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2355:N1 -> P1 / CS-8.STT5; 2355:N2 -> P3 / CS-22.A1; 2355:N3 -> P3 / CS-26.LID1; 2355:N4 -> P3 / CS-26.F1; 2355:N5 -> K4; 2355:N6 -> K4; 2355:N7 -> M18; 2355:N8 -> decline; 2355:N9 -> P1 / CS-8.STT4'
 - id: intake-2356
   arxiv_id: null
   url: https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b
@@ -331585,6 +331628,12 @@
     \ 3.5 card; has a transcribe.cpp doc page) -> declined at the wave-3 close-out (operator): nvidia multitalker-parakeet-streaming,\
     \ multi-speaker only; MONITOR"
   expanded_from: intake-2347
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2356:E1 -> P1 / CS-8.STT5; 2356:E2 -> P3 / CS-22.A1; 2356:E3 -> K4; 2356:E4 -> P3 / CS-22.A1; 2356:E5 -> decline; 2356:E6 -> decline'
 - id: intake-2357
   arxiv_id: '2604.19079'
   url: https://arxiv.org/abs/2604.19079
@@ -331882,9 +331931,12 @@
     \ (turbobias2)\n  - arXiv 2312.17279 Stateful Conformer / cache-aware streaming -> SELECTED and dived as intake-2369 (cacheaware-2312.17279)\n\
     \  - arXiv 2604.19079 cited prior work: Dynamic Chunk Convolution (Li et al., ICASSP 2023), Zipformer unification (Sharma\
     \ et al., ACL 2025), TCR (Tseng et  -> declined: background to a method we will not train (dive's own reason)"
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: monitor
   disposition_evidence:
-  - Actionable U1-U2 in DIVE.md target conversation-stack.md CS-22 (prior only); no training task exists.
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2357:U1 -> K6; 2357:U2 -> M12; 2357:U3 -> decline; 2357:U4 -> K6'
   expanded_from: intake-2348
 - id: intake-2358
   arxiv_id: null
@@ -332388,6 +332440,12 @@
     \ \"Selective Projection Decay for Reducing Negative Transfer in Multi-Task Learning\" as  -> declined: ingest was conditional\
     \ on CS-42 opening; not selected at any close-out"
   expanded_from: intake-2351
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2358:M1 -> P4 / CS-8.LEX2; 2358:M2 -> M16; 2358:M3 -> M18; 2358:M4 -> M18; 2358:M5 -> decline; 2358:M6 -> P4 / CS-8.LEX2; 2358:M7 -> K4'
 - id: intake-2359
   arxiv_id: null
   url: https://github.com/handy-computer/transcribe.cpp
@@ -332706,6 +332764,12 @@
     \ own reason)\n  - nvidia/nemotron-speech-streaming-en-0.6b and nemotron-3.5-asr-streaming-0.6b cards -> selected and\
     \ dived as intake-2356 (nemotron-streaming-en) and intake-2355 (nemotron35-asr-streaming)\n  - huggingface.co/handy-computer\
     \ catalog.db release asset -> monitor (dive's own): handy-computer catalog.db release asset"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2359:T1 -> P1 / CS-8.STT2; 2359:T2 -> P1 / CS-8.STT3; 2359:T3 -> P1 / CS-8.STT5; 2359:T4 -> M20; 2359:T5 -> P3 / CS-22.V0; 2359:T6 -> K5; 2359:T7 -> decline; 2359:T8 -> M12'
 - id: intake-2360
   arxiv_id: null
   url: https://github.com/snakers4/silero-vad
@@ -333056,6 +333120,12 @@
     \ (Peng et al. 2025), Silero-based backchannel/interruption scoring -> SELECTED and dived as intake-2365 (fd-bench)\n\
     \  - HF AustinXiao/voxturn -> declined: unverified single-author model card (dive's own reason)\n  - huggingface.co/ggml-org/whisper-vad\
     \ and handy-computer/silero-vad-v6.2-gguf -> declined: artifact hosts, pinned in S1 (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2360:S1 -> P3 / CS-22.V0; 2360:S2 -> P3 / CS-22.V1; 2360:S3 -> P3 / CS-22.V1; 2360:S4 -> K6; 2360:S5 -> P3 / CS-22.V1; 2360:S6 -> decline; 2360:S7 -> M19'
 - id: intake-2361
   arxiv_id: null
   url: https://github.com/ServeurpersoCom/qwentts.cpp
@@ -333360,6 +333430,12 @@
     \ dive (dive's own reason)\n  - llama.cpp PR 29231 HIP FP8 guard -> declined: folded into the llamacpp-pr28957-argsort\
     \ entry (dive's own reason)\n  - ServeurpersoCom/omnivoice.cpp (named in qwentts commit 4eb8c7d as the model for per-request\
     \ language) -> SELECTED and dived as intake-2370 (omnivoice-cpp)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2361:Q1 -> P5 / CS-43.1; 2361:Q2 -> P5 / CS-43.2; 2361:Q3 -> K5; 2361:Q4 -> P5 / CS-43.3; 2361:Q5 -> K7; 2361:Q6 -> M20; 2361:Q7 -> decline; 2361:Q8 -> decline'
 - id: intake-2362
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/28957
@@ -333604,6 +333680,13 @@
     \  - llama.cpp issue 27303 (missing __hip_fp8_e4m3 on ROCm 6.2) -> declined: symptom already in our b86f660 comment (dive's\
     \ own reason)\n  - ServeurpersoCom/qwentts.cpp issue 33 -> declined: already read and anchored in this dive (dive's own\
     \ reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/autokernel-champion-aggregate.md
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2362:A1 -> P5 / CS-43.1 / CH-18.d; 2362:A2 -> P5 / CH-18.d; 2362:A3 -> K5; 2362:A4 -> decline; 2362:A5 -> K5'
 - id: intake-2363
   arxiv_id: '2603.10420'
   url: https://arxiv.org/abs/2603.10420
@@ -333911,6 +333994,12 @@
     \ and dived as intake-2377 (fireredlid)\n  - guynich/vad_eval_comparison (+ HF datasets guynich/librispeech_asr_test_vad,\
     \ guynich/multilingual_librispeech_test_vad) -> SELECTED and dived as intake-2380 (guynich-vad-eval)\n  - arXiv:2601.11329\
     \ F-Actor -> declined: knowledge only, already recommended by dive-silero-vad; not selected"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2363:F1 -> P3 / CS-22.V1; 2363:F2 -> P3 / CS-22.V1; 2363:F3 -> M19; 2363:F4 -> P3 / CS-22.V1; 2363:F5 -> M19; 2363:F6 -> K6; 2363:F7 -> decline'
 - id: intake-2364
   arxiv_id: null
   url: https://github.com/TEN-framework/ten-vad
@@ -334208,6 +334297,12 @@
     \ (sherpa-onnx)\n  - guynich/vad_eval_comparison and HF datasets guynich/librispeech_asr_test_vad, guynich/multilingual_librispeech_test_vad\
     \ -> SELECTED and dived as intake-2380 (guynich-vad-eval)\n  - danielbodart/ten-vad-ggml -> declined: artifact port, pinned\
     \ in T1 (dive's own reason)\n  - arXiv:2603.10420 FireRedASR2S -> SELECTED and dived as intake-2363 (fireredvad)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2364:T1 -> P3 / CS-22.V1; 2364:T2 -> K4; 2364:T3 -> P3 / CS-22.V1; 2364:T4 -> decline; 2364:T5 -> M19'
 - id: intake-2365
   arxiv_id: '2507.19040'
   url: https://arxiv.org/abs/2507.19040
@@ -334503,6 +334598,12 @@
     \ it/de/fr (dive's own reason)\n  - Full-Duplex-Bench family (Lin et al.), intake-2003/2013/2014/2015/2032 -> declined:\
     \ already indexed (intake-2003/2013/2014/2015/2032)\n  - pengyizhou FD-Bench demo page (pengyizhou.github.io/FD-Bench)\
     \ and Output dataset -> declined: audio outputs of three English systems, not needed (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2365:B1 -> P3 / CS-45.2; 2365:B2 -> P3 / CS-45.2; 2365:B3 -> P3 / CS-45.2; 2365:B4 -> decline; 2365:B5 -> K4; 2365:B6 -> M21'
 - id: intake-2366
   arxiv_id: '2608.21343'
   url: https://arxiv.org/abs/2608.21343
@@ -334896,6 +334997,12 @@
     source_revision: arXiv:2608.21343v1
     verified_by: research-intake/stage2b dive-turbobias2
   expanded_from: intake-2358
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2366:T1 -> P4 / CS-8.LEX2; 2366:T2 -> P2 / P4 / CS-8.LEX1 / CS-2.STT1; 2366:T3 -> P4 / CS-8.LEX2; 2366:T4 -> M16; 2366:T5 -> M16; 2366:T6 -> decline; 2366:T7 -> K4'
 - id: intake-2367
   arxiv_id: null
   url: https://github.com/NVIDIA/NeMo/pull/14277
@@ -335132,6 +335239,12 @@
     source_revision: NVIDIA/NeMo-Speech.cpp@2bdfb03b38d5e3b0fa55aeb91a079a9f57385373
     verified_by: research-intake/stage2b dive-nemo-pr14277-boosting
   expanded_from: intake-2358
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2367:P1 -> M16; 2367:P2 -> P4 / CS-8.LEX0; 2367:P3 -> M16; 2367:P4 -> M16; 2367:P5 -> K4; 2367:P6 -> decline'
 - id: intake-2368
   arxiv_id: null
   url: https://huggingface.co/blog/nvidia/fine-tuning-nemotron-35-asr
@@ -335615,6 +335728,12 @@
       no revision id)
     verified_by: research-intake/stage2b dive-nemotron35-blogs
   expanded_from: intake-2355
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2368:B1 -> M18; 2368:B2 -> P3 / CS-22.L1; 2368:B3 -> M18; 2368:B4 -> decline; 2368:B5 -> decline; 2368:B6 -> M18; 2368:B7 -> K4'
 - id: intake-2369
   arxiv_id: '2312.17279'
   url: https://arxiv.org/abs/2312.17279
@@ -335759,10 +335878,12 @@
     \ et al.), Chen et al. streaming transformer transducer, scout network, synchronous transformers (paper refs [33], [9],\
     \ [19], -> declined: background prior art (dive's own reason)\n  - huggingface.co/nvidia/stt_en_fastconformer_hybrid_large_streaming_multi\
     \ (paper ref [35], the released model) -> declined: superseded by the Nemotron streaming checkpoints (dive's own reason)"
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - Mechanism and trade-off reference for the CS-8.P5 streaming arm; actionables A1-A3 in DIVE.md are test-design items; no
-    standalone implementation task.
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2369:A1 -> P3 / CS-22.A1; 2369:A2 -> P3 / CS-22.L1; 2369:A3 -> P1 / CS-8.STT5; 2369:A4 -> K6; 2369:A5 -> K4; 2369:A6 -> decline'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -336304,12 +336425,12 @@
     shows demand but not quality.'
   - The repo is a single squashed commit, so history cannot show how stable the code has been; the maintainer's other repos
     (qwentts.cpp) rewrote their ggml fork history on 2026-10-16, so pins can disappear.
-  integration_disposition: monitor
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Monitor with a named trigger: if the CS-2 language gate (round-trip WER through the frozen STT oracle plus human intelligibility
-    for it/de/fr) fails for the Qwen3-TTS path (qwentts_tts) in any of it/de/fr, the CS-8 bake-off adds omnivoice.cpp Q8_0
-    as the contingency TTS arm. The trigger is an external measured result owned by CS-2/CS-8; no work is blocked on it. The
-    shared-ggml facts are routed to CS-43b as DIVE row O1.'
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2370:O1 -> P5 / CS-43.1; 2370:O2 -> M17; 2370:O3 -> K7; 2370:O4 -> decline; 2370:O5 -> decline'
   reader_should_conclude: 'omnivoice.cpp is a sibling TTS runner, not a replacement for qwentts.cpp and not an STT or interlocutor
     component. Do not cite its README as evidence of working ROCm: the tree has no HIP build path or log, and the only gfx90a-relevant
     fact is that its ggml fork (cc5df49, GGML 0.27.0, the same pin as upstream qwentts.cpp) compiles the CUDA kernel set for
@@ -336565,13 +336686,12 @@
     - wave-1 handy-unified-en-gguf and wave-2 transcribe-cpp flagged it; it follows transcribe.cpp (wave-2 transcribe-cpp)
       model-for-model; integrator maps slugs to ids
   contradicting_evidence: null
-  integration_disposition: declined
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Declined on capability, not platform: (1) offline batch only, streaming "only on request", so it serves neither CS-22
-    nor the streaming arm; (2) no accuracy evidence of its own (fixtures are transcribe.cpp outputs, Q8_0 vs F32 unmeasured,
-    no WER anywhere); (3) no AMD Instinct/ROCm support or test and a pure-Rust wgpu stack that does not fit the frozen whisper.cpp/ggml-HIP
-    speech plane; (4) project under two weeks old, single author, AI-written. The operator may veto the not_applicable verdict;
-    reopening needs a named trigger such as a measured need for a non-ggml Vulkan STT path.'
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2371:V1 -> decline; 2371:V2 -> K5; 2371:V3 -> K4'
   reader_should_conclude: wavo does not matter to our STT or speech plane today. It is a young, AI-written, offline-only Rust
     runner for the same GGUF files transcribe.cpp publishes, with its own speed claims on Apple and NVIDIA hardware and no
     accuracy, streaming or AMD Instinct evidence. Do not cite its speed table as a Parakeet or Whisper latency measurement
@@ -337009,6 +337129,12 @@
     \ hume.ai/blog/measuring-benchmark-optimization-in-speech-recognition (found by web search; HTTP 200, not read) -> declined:\
     \ restatement by the authors (dive's own reason)\n  - ArtificialAnalysis/VoxPopuli-Cleaned-AA (human-corrected references\
     \ used as this paper's validation set) -> declined: folded into aa-earnings22-cleaned (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2372:F1 -> P2 / CS-2.STT1; 2372:F2 -> P2 / CS-8.STT7; 2372:F3 -> P2 / CS-8.STT7; 2372:F4 -> K4; 2372:F5 -> K4; 2372:F6 -> decline'
 - id: intake-2373
   arxiv_id: null
   url: https://artificialanalysis.ai/speech-to-text/streaming
@@ -337414,6 +337540,12 @@
     \ not opened) -> declined: vendor marketing restatement (dive's own reason)\n  - AA NVIDIA Nemotron ASR Streaming model\
     \ page https://artificialanalysis.ai/speech-to-text/models/nvidia-nemotron-asr-streaming (read) -> declined: folded into\
     \ this entry (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2373:L1 -> P3 / CS-22.L1; 2373:L2 -> P3 / CS-22.L1; 2373:L3 -> K4; 2373:L4 -> K4; 2373:L5 -> decline'
 - id: intake-2374
   arxiv_id: '2508.07014'
   url: https://arxiv.org/abs/2508.07014
@@ -337842,6 +337974,12 @@
     source_revision: NVIDIA/NeMo-Speech.cpp@2bdfb03b38d5e3b0fa55aeb91a079a9f57385373 docs/asr/configuration.md
     verified_by: research-intake/stage2b dive-turbobias1
   expanded_from: intake-2366
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2374:V1 -> P4 / CS-8.LEX0; 2374:V2 -> P4 / CS-8.LEX1; 2374:V3 -> P4 / CS-8.LEX1; 2374:V4 -> M16; 2374:V5 -> K4; 2374:V6 -> M16; 2374:V7 -> decline'
 - id: intake-2375
   arxiv_id: '2604.07354'
   url: https://arxiv.org/abs/2604.07354
@@ -338212,6 +338350,12 @@
     source_revision: argmaxinc/OpenBench@e13108070b9693f2646e4a3e22e4b2d0130d779f (2026-09-24)
     verified_by: research-intake/stage2b dive-contextual-earnings22
   expanded_from: intake-2366
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2375:C1 -> P4 / CS-8.LEX2; 2375:C2 -> P4 / CS-8.LEX1; 2375:C3 -> P2 / CS-4.STT1; 2375:C4 -> P4 / CS-8.LEX2; 2375:C5 -> P4 / CS-8.LEX2; 2375:C6 -> M16; 2375:C7 -> decline'
 - id: intake-2376
   url: https://github.com/TEN-framework/ten-turn-detection
   arxiv_id: null
@@ -338502,6 +338646,12 @@
     source_revision: github TEN-framework/ten-turn-detection@ea9a167c
     verified_by: research-intake/stage2b dive-ten-turn-detection
   expanded_from: intake-2364
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2376:N1 -> P3 / CS-22.T1; 2376:N2 -> P3 / CS-45.2; 2376:N3 -> M19; 2376:N4 -> M19; 2376:N5 -> decline; 2376:N6 -> decline'
 - id: intake-2377
   url: https://huggingface.co/FireRedTeam/FireRedLID
   arxiv_id: null
@@ -338779,6 +338929,12 @@
     source_revision: HF aufklarer/FireRedLID-887M-MLX-8bit@1ae12962
     verified_by: research-intake/stage2b dive-fireredlid
   expanded_from: intake-2363
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2377:L1 -> P3 / CS-26.LID1; 2377:L2 -> P3 / CS-26.LID1; 2377:L3 -> P3 / CS-26.LID1; 2377:L4 -> decline; 2377:L5 -> decline'
 - id: intake-2378
   arxiv_id: null
   url: https://github.com/CrispStrobe/CrispASR
@@ -339122,6 +339278,12 @@
     \ (XLM-R punctuation, EN/DE/FR/IT) -> declined: operator 4-wave cap (2026-10-22) (dive recommended ingest-and-dive): cstr/fullstop-punc-multilang-GGUF\n\
     \  - whisper.cpp PR ggml-org/whisper.cpp#2279 (timestamp-token pause handling) -> resolved by the integrator, read-only,\
     \ 2026-10-22 (not a dive): see this entry's notes for the whisper.cpp#2279 answer for production-speech-v1"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2378:C1 -> P1 / CS-8.STT3; 2378:C2 -> P1 / CS-8.STT4; 2378:C3 -> M14; 2378:C4 -> P1 / CS-8.STT3; 2378:C5 -> M19; 2378:C6 -> decline; 2378:C7 -> M12'
 - id: intake-2379
   arxiv_id: null
   url: https://github.com/k2-fsa/sherpa-onnx
@@ -339424,6 +339586,12 @@
     \ docs\n  - nvidia/parakeet-unified-en-0.6b and the Nemotron 3.5 streaming 0.6b ONNX exports on HF (csukuangfj/*) -> declined:\
     \ covered by existing parakeet/nemotron entries (dive's own reason)\n  - k2-fsa/sherpa-onnx PR #1110 / #2370 (ROCm EP)\
     \ -> declined: pinned inside this entry (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2379:S1 -> M14; 2379:S2 -> M13; 2379:S3 -> M14; 2379:S4 -> P3 / CS-26.LID1; 2379:S5 -> decline; 2379:S6 -> decline; 2379:S7 -> M14'
 - id: intake-2380
   arxiv_id: null
   url: https://github.com/guynich/vad_eval_comparison
@@ -339605,10 +339773,12 @@
   - Use the Italian/German/French/English splits (pinned HF revisions, local PCM-SHA-256 manifest) as a language-robustness
     screen on every CS-22 VAD arm; not as a substitute for CS-4 hesitation/backchannel clips.
   - Mix CS-4 noise/breath/laughter into the clean audio to get the non-speech class the dataset lacks.
-  integration_disposition: knowledge_only
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - Datasets are CC-BY-4.0 and small, but the labels are energy-derived on read audiobook speech, so the set can only screen
-    language robustness; the CS-22 decision rests on CS-4 hesitation and backchannel clips (conversation-stack.md CS-4/CS-22).
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2380:G1 -> P3 / CS-22.V1; 2380:G2 -> P3 / CS-22.V1; 2380:G3 -> decline; 2380:G4 -> decline; 2380:G5 -> M19'
   notes: 'Stage 2b wave 4, 2026-10-22, read_depth PARTIAL. Read from disk: full clone at dc2a5c3 (README, main.py head, speech_detector_*.py,
     requirements.txt, LICENSE, signed_log.txt, images/results_auc.txt in full), both HF dataset cards and API records (en
     sha 62e2c8e9, multilingual sha 52223dc0, both cc-by-4.0, lastModified 2025-06-07), parquet sizes from the tree API. NOT
@@ -339955,10 +340125,12 @@
     a conversation-path TTS.
   - 'Operator licence reading: CC-BY-NC weights are fine for research measurement; any shipped use needs a commercial checkpoint
     the maintainers have not released.'
-  integration_disposition: monitor
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Trigger is external and measured: Qwen3-TTS failing the CS-2 it/de/fr language gate (conversation-stack.md CS-2/CS-8
-    G1); until then no OmniVoice build is added (dive omnivoice-cpp O2).'
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2381:V1 -> M17; 2381:V2 -> M17; 2381:V3 -> P2 / CS-2.STT1; 2381:V4 -> K4; 2381:V5 -> decline; 2381:V6 -> decline; 2381:V7 -> K7'
   notes: 'Stage 2b wave 4, 2026-10-22, read_depth FULL. Read from disk: arXiv HTML v1 and v3 (v3 = 21 Apr 2026, text rendered
     to p3f.txt; diffed against v1: wording, a script-dependent duration estimator and an ethics statement added, no table
     value changed), main text, all result tables, Appendices B-E (Table 11 training hours for it/de/fr/en), the HF model card
@@ -340268,6 +340440,12 @@
     \ not opened) -> SELECTED and dived as intake-2354 (hf-benchmaxxer-blog)\n  - Hume-DaiKon corpus (Hume AI, 2026) -> declined:\
     \ proprietary, no public artifact (dive's own reason)\n  - arXiv 2608.19936 (benchmark optimization) -> declined: already\
     \ covered as intake-2372 (asr-benchmark-optimization)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2382:R1 -> K4; 2382:R2 -> P2 / CS-4.STT1; 2382:R3 -> P2 / CS-2.STT1; 2382:R4 -> P1 / CS-8.STT1; 2382:R5 -> K4; 2382:R6 -> M21; 2382:R7 -> decline'
 - id: intake-2383
   arxiv_id: '2602.11298'
   url: https://arxiv.org/abs/2602.11298
@@ -340628,6 +340806,13 @@
     \ on MI210 for STT (dive's own reason)\n  - Kyutai delayed-streams-modeling / DSM 1B En-Fr, 2.6B En (the open streaming\
     \ baselines in the paper) -> declined: already covered (intake-2057 and arXiv 2410.01036), en/fr only\n  - mistralai/Voxtral-Mini-4B-Realtime-Arabic\
     \ and Voxtral-4B-TTS-2603 -> declined: Arabic outside the language gate; TTS already covered (intake-242)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/autokernel-champion-aggregate.md
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2383:V1 -> P1 / CS-8.STT5; 2383:V2 -> P3 / CS-22.L1; 2383:V3 -> P5 / CH-18.d; 2383:V4 -> K4; 2383:V5 -> decline; 2383:V6 -> K4'
 - id: intake-2384
   arxiv_id: null
   url: https://huggingface.co/nvidia/magpie_tts_multilingual_357m
@@ -341004,6 +341189,12 @@
     \ 357M (Elo 1004.8; 1061.5 Feb 2026 version) -> declined: operator 4-wave cap (2026-10-22) (dive recommended ingest-and-dive):\
     \ Artificial Analysis TTS Speech Arena page\n  - soniqo.audio Magpie guide (third-party Apple-silicon port; INT4 247 MB\
     \ / INT8 411 MB, about 120 ms first packet) -> declined: Apple-silicon port, snippet only (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2384:M1 -> M17; 2384:M2 -> M17; 2384:M3 -> M17; 2384:M4 -> K7; 2384:M5 -> K4; 2384:M6 -> decline'
 - id: intake-2385
   arxiv_id: null
   url: https://github.com/0xShug0/audio.cpp
@@ -341352,6 +341543,12 @@
     \ not run in the dive; one gh search if C4 triggers (dive's own reason); operator 4-wave cap (2026-10-22) applies\n  -\
     \ audio.cpp PR 542 (Vulkan COL2IM_1D dispatch for large tensors) -> declined: Vulkan defect class, noted as evidence only\
     \ (dive's own reason)"
+  handoffs_created: []
+  handoffs_updated:
+  - handoffs/active/conversation-stack.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan intake-underdog-bark-20261021 (drafted 2026-10-22): 2385:C1 -> K5; 2385:C2 -> P5 / CS-43.1; 2385:C3 -> P5 / CS-43.1; 2385:C4 -> M17; 2385:C5 -> K4; 2385:C6 -> decline'
 - id: intake-2386
   arxiv_id: null
   url: https://github.com/Generated-Computers/Locals
