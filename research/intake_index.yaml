@@ -354018,3 +354018,950 @@
   disposition_evidence:
   - "Operator ruling at plan approval 2026-10-22 (Q7): agent-adoption base-rate context for intake-2445, recorded as knowledge prose in harness-improvement-loop.md; not an EPYC coding-agent base rate and no task or trigger depends on it."
   read_depth: ABSTRACT
+- id: intake-2461
+  arxiv_id: '2605.02404'
+  url: https://arxiv.org/abs/2605.02404
+  source_type: paper
+  title: Statistically-Lossless Quantization of Large Language Models
+  categories:
+  - quantization
+  - benchmark_methodology
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Michael Helcig
+  - Eldar Kurtic
+  - Dan Alistarh
+  key_claims:
+  - 'Defines two fidelity targets: task-lossless (zero-shot recovery >=99% of BF16) and distribution-lossless (EAR >= ~0.99)
+    (Sec 3.2-3.3).'
+  - EAR = mean over positions of sum_k min(p_k,q_k) over the original model top-10 tokens, i.e. 1 - total variation, the speculative-sampling
+    acceptance probability (Sec 3.2 Eq 3).
+  - 'Method is allocation, not a new quantizer: GPTQ asymmetric INT g128 at every bitwidth 2..8, multi-bitwidth Shapley sensitivity,
+    ILP knapsack, binary search to the fidelity target (Sec 3.3).'
+  - Symmetric-grid noise variance is gamma^2 times asymmetric; asymmetric grids are needed for distribution-lossless (Sec
+    3.1, App B).
+  - Throughput 1.7-3.7x per GPU vs BF16 in vLLM with Humming kernels on NVIDIA L40S (Table 3).
+  techniques:
+  - EAR fidelity metric
+  - multi-bitwidth Shapley sensitivity + ILP bit allocation
+  - single-point KL-to-recovery calibration
+  - asymmetric INT grids
+  reported_results:
+  - Stage-1 digest only; table values to be re-read by the dive (v2 HTML on disk).
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    - deepseek-v41-flash-evaluation.md
+    - qwen38-27b-replace-qwen36.md
+    experiments: []
+    intake_entries:
+    - intake-2207
+    - intake-2206
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Search-seen only: arXiv 2608.15046 (Certifying Compressed Language Models) reportedly critiques losslessness claims without
+    equivalence tests; ingested as intake-2483 for the dive.'
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: arXiv v2 (09 Aug 2026) HTML at /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-paper/v2.html sha256 d3a4e98c8e77a79c4317af842a8c90f5b8b725ca69b6cd788e23e046d729d281.
+    Companion repo = intake-2464; companion Qwen3.8-27B checkpoints = intake-2462. Repo README says COLM 2026 (venue unverified
+    in paper text).
+- id: intake-2462
+  arxiv_id: null
+  url: https://huggingface.co/collections/kaitchup/qwen38-27b-slq
+  source_type: repo
+  title: kaitchup Qwen3.8-27B SLQ collection (Qwen3.8-27B-SLQ-EAR98 / EAR98.5 / EAR99)
+  categories:
+  - quantization
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - The Kaitchup (Benjamin Marie)
+  key_claims:
+  - Three SLQ-allocated mixed uint4-uint8 (group 128, zero point) checkpoints of Qwen/Qwen3.8-27B, quant_method humming, served
+    by vLLM only (model cards).
+  - 'Card EAR vs BF16: EAR98 98.00% at 23.73 GB, EAR98.5 98.50% at 25.61 GB, EAR99 99.00% at 30.52 GB; official FP8 97.71%
+    at 30.87 GB (card table).'
+  - Tokenizer, vocab, chat template identical to base; MTP head kept BF16; speculative decoding not validated (cards).
+  - No speed numbers and no task benchmarks; card disclaims downstream statistical equivalence.
+  techniques:
+  - SLQ per-projection bit allocation
+  - Humming kernel packing
+  - EAR measurement
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen38-27b-replace-qwen36.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-2461
+  credibility_score: 2
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: HF API + cards + configs saved under /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-hf/ (commits EAR98 1165bcbb,
+    EAR98.5 f11e58ea, EAR99 7cf51bcf). No weights downloaded. Created 2026-10-21.
+- id: intake-2463
+  arxiv_id: null
+  url: https://github.com/IST-DASLab
+  source_type: repo
+  title: 'IST-DASLab GitHub organization (Alistarh lab): org-level repo triage record'
+  categories:
+  - quantization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - IST Austria Distributed Algorithms and Systems Lab
+  key_claims:
+  - 95 public repos at retrieval 2026-10-22; quantization/sparsity repos triaged into per-repo entries intake-2464..2480 (GitHub
+    org API).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-1531
+    - intake-2206
+    - intake-2207
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Org listing JSON /mnt/raid0/llm/tmp/intake-ist-slq-20261022/fetch-s1/repos.json. Per-repo triage (own entry or reason)
+    recorded in this entry's dive. marlin = intake-1531 (re-encountered 2026-10-22).
+- id: intake-2464
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/SLQ
+  source_type: repo
+  title: 'IST-DASLab/SLQ: code for Statistically-Lossless Quantization'
+  categories:
+  - quantization
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Michael Helcig
+  - Eldar Kurtic
+  - Dan Alistarh
+  key_claims:
+  - 'Pipeline: layer-wise GPTQ at bitwidths 2..8 -> Shapley sensitivity DB -> ILP (ortools SCIP) binary-searched to the fidelity
+    target (README, slq_search_dl.py).'
+  - 'Output and serving: asymmetric INT g128 via vLLM + Humming CUDA kernels; no GGUF or llama.cpp path (README; grep).'
+  - eval/run_ear.py computes EAR.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    - tq3-quantization-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2461
+    - intake-2207
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-SLQ at eb9f1f294c99940029465cc970862ba36951d0cc.
+- id: intake-2465
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/GSQ
+  source_type: repo
+  title: 'IST-DASLab/GSQ: Gumbel-Softmax post-training quantization code'
+  categories:
+  - quantization
+  - local_inference
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Alireza Dadgarnia
+  - Soroush Tabesh
+  - Mahdi Nikdan
+  - Michael Helcig
+  - Eldar Kurtic
+  - Max Kleinegger
+  - Dan Alistarh
+  key_claims:
+  - GPTQ init then Gumbel-Softmax refinement of per-weight grid assignment, layer by layer (README).
+  - Grids are symmetric INT/ternary/1-bit with group 128; export compressed-tensors pack-quantized for vLLM; no GGUF writer
+    in code (save_model.py; grep).
+  - README claims in-format refinement of Unsloth GGUF K-quants (Qwen3-8B chart) without reproducing code.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries:
+    - intake-2207
+    - intake-2206
+    - intake-2197
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-GSQ at 03fc16484c369e3127225615d5e03e8d3a6043e3 (last commit
+    2026-07-05). Companion of paper intake-2207.
+- id: intake-2466
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/gptq-gguf-toolkit
+  source_type: repo
+  title: 'IST-DASLab/gptq-gguf-toolkit: GPTQ with GGUF K-quant export, EvoPress per-layer search, GGUF stitcher'
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Max Kleinegger
+  - Michael Helcig
+  key_claims:
+  - GPTQ adapted to Q2_K..Q6_K grids and packed into real GGUF (quant_utils.py, packing_utils.py).
+  - EvoPress searches a layer database (llama-quantize and GPTQ outputs) for a per-tensor type map at a target bpw with KL
+    fitness; gguf_stitcher assembles the GGUF (README).
+  - No IQ types, no MoE support (README Future Work).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    - cpu-decode-roofline-program.md
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2469
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-gptq-gguf-toolkit at 7a38bc549aa2ab867ca9837b6ebe0c5ef1da1e7f
+    (2025-09-17).
+- id: intake-2467
+  arxiv_id: '2609.26333'
+  url: https://github.com/IST-DASLab/disaggregated-quantization
+  source_type: repo
+  title: 'Disaggregated Quantization: Specializing LLM Prefill and Decode (code + paper)'
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Andrei Panferov
+  - Maximilian Kleinegger
+  - Sweta Priyadarshi
+  - Tijmen Blankevoort
+  - Dan Alistarh
+  key_claims:
+  - 'Prefill and decode use different weights/formats of one model: compute-native low-precision prefill, compact weight-only
+    decode (README; paper abstract).'
+  - Frozen-decoder mode trains an NVFP4 prefiller around unmodified Unsloth Qwen3.8-27B GGUF decoders IQ1_S..Q3_K_XL (README).
+  - Gain is largest at IQ1_S and vanishes or reverses at 3-bit (qadd27b_accuracy.tex).
+  - Offloaded disaggregated prefill streams the prefill set from SSD in a llama.cpp fork (README; csv).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    - qwen38-27b-replace-qwen36.md
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2468
+    - intake-2482
+    - intake-2206
+  credibility_score: 2
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-disaggregated-quantization at 4a99d6e02817a796bfe3f3d7a5edbf75aeb9f4ba;
+    paper v1 HTML /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-dq-paper/p.html sha256 59448fbac310. No LICENSE file. Combined
+    repo+paper entry (arxiv_id carried here).
+- id: intake-2468
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/disaggregated-llama.cpp
+  source_type: repo
+  title: 'disaggregated-llama.cpp: llama.cpp fork adding Offloaded Disaggregated Prefill (ODP)'
+  categories:
+  - local_inference
+  - inference_serving
+  - quantization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Max Kleinegger
+  key_claims:
+  - Upstream master (base ce8caa6e60a0) plus one distinctive commit 967b479a5ab0 (+2848/-12), no new quant type or ggml op
+    except ggml_mul_mat_set_act_scale (git).
+  - Layer-granular weight swap through the scheduler eval callback with a 2-slot SSD-fed ring (docs/ODP.md).
+  - 'Prototype scope: Qwen3.8-27B (qwen35 arch), CUDA, GB10 only (docs/ODP.md).'
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen38-27b-replace-qwen36.md
+    - autokernel-champion-aggregate.md
+    experiments: []
+    intake_entries:
+    - intake-2467
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone (depth 50) /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-disaggregated-llama.cpp at a0557fcf59e50a3bcd241e1a7de7b151d315720b.
+    Base not an ancestor of v10 ffc1bac82.
+- id: intake-2469
+  arxiv_id: '2410.14649'
+  url: https://github.com/IST-DASLab/EvoPress
+  source_type: repo
+  title: 'EvoPress: Accurate Dynamic Model Compression via Evolutionary Search (code + paper)'
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Oliver Sieberling
+  - Denis Kuznedelev
+  - Eldar Kurtic
+  - Dan Alistarh
+  key_claims:
+  - Per-layer compression levels allocated by evolutionary search on actual model loss (KL default) under a global budget
+    (paper abstract; evo_quant_search.py).
+  - Search space = per-layer GPTQ database at 2..6 bits g128 (scripts/run_gptq.sh).
+  - No GGUF code in the repo (grep).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2466
+    - intake-2470
+    - intake-188
+  credibility_score: 3
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-EvoPress at a66a6974e91d27ede9043f07f885709732a9a9b1; paper
+    v2 HTML /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-evopress-paper/p.html. ICML 2025 per README. Combined repo+paper
+    entry.
+- id: intake-2470
+  arxiv_id: '2605.00649'
+  url: https://github.com/IST-DASLab/RCO
+  source_type: repo
+  title: 'RCO: Model Compression with Exact Budget Constraints via Riemannian Manifolds (code + paper)'
+  categories:
+  - quantization
+  - moe_optimization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Michael Helcig
+  - Dan Alistarh
+  key_claims:
+  - Chooses one option per group under an exact equality budget for a non-decomposable loss via softmax relaxation on a budget
+    manifold (README; src/manifold.py).
+  - Applied to mixed-precision bit allocation 2..8 and MoE expert pruning (README).
+  - Paper reports matching/exceeding EvoPress at lower wall-clock; names GGUF export constraint (paper Table 1 caption).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    - deepseek-v41-flash-evaluation.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2206
+    - intake-2207
+    - intake-2469
+  credibility_score: 2
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-RCO at 9a1e09c07d468109cbe60a1b87d5036034a79d10; paper v3 HTML
+    /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-rco-paper/p.html. 2605.00649 previously only a referenced id (intake-2197/2206/2207
+    notes). Combined repo+paper entry.
+- id: intake-2471
+  arxiv_id: '2602.03537'
+  url: https://github.com/IST-DASLab/MatGPTQ
+  source_type: repo
+  title: 'MatGPTQ: Efficient and Accurate Inference over Nested Quantized Models (code + paper)'
+  categories:
+  - quantization
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Maximilian Kleinegger
+  - Elvir Crncevic
+  - Dan Alistarh
+  key_claims:
+  - One GPTQ-optimised parent whose bit-prefixes give 2/3/4/6/8-bit models (README; paper abstract).
+  - CUDA kernels and vLLM plugin only (README).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1546
+  credibility_score: 2
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: 'Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-MatGPTQ at 86ee3eeae8555531e1e91978c8cbc0c8f74b4853; paper
+    v2 HTML on disk. Low relevance: not recommended for a dive (see Stage-1 declines).'
+- id: intake-2472
+  arxiv_id: '2610.02241'
+  url: https://github.com/IST-DASLab/MoESQ
+  source_type: repo
+  title: Hardware-Native Joint Sparse-Quantization for Trillion-Scale Mixture-of-Experts (MoESQ, code + paper)
+  categories:
+  - quantization
+  - moe_optimization
+  - hardware_optimization
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Kwanhee Lee
+  - Namhoon Lee
+  - Dan Alistarh
+  key_claims:
+  - Routed experts get paired-4:8 sparsity with NVFP4 W4A4, masks and values learned jointly with Gumbel-Softmax and a router-weighted
+    reconstruction loss (README; paper Sec 3).
+  - Wrappers include Qwen3.8-Flash-Next (README).
+  - Kernels are Blackwell SM100/SM120 only (README).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2207
+    - intake-2478
+  credibility_score: 2
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-MoESQ at 584d78c3d24905c24a2574c29317c985328c9fef; paper v1
+    HTML on disk. Combined repo+paper entry.
+- id: intake-2473
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/MoE-Quant
+  source_type: repo
+  title: 'MoE-Quant: data-aware GPTQ compression of DeepSeek-V3/R1'
+  categories:
+  - quantization
+  - moe_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Denis Kuznedelev
+  - Eldar Kurtic
+  - Jiale Chen
+  - Michael Goin
+  - Elias Frantar
+  - Dan Alistarh
+  key_claims:
+  - GPTQ for 671B DeepSeek-V3/R1 via Triton GPTQ kernel, expert-parallel Hessians, data parallelism (README).
+  - Only 4-bit symmetric g128; DeepseekV3ForCausalLM only (README; quant.py).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2466
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-MoE-Quant at 5a3b298cfb5c475a9b6584d48b43fcebc4ddfb2f.
+- id: intake-2474
+  arxiv_id: '2512.00956'
+  url: https://github.com/IST-DASLab/WUSH
+  source_type: repo
+  title: 'WUSH: Near-Optimal Adaptive Transforms for LLM Quantization (code + paper)'
+  categories:
+  - quantization
+  - hardware_optimization
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Jiale Chen
+  - Vage Egiazarian
+  - Roberto L. Castro
+  - Torsten Hoefler
+  - Dan Alistarh
+  key_claims:
+  - Closed-form blockwise non-orthogonal transform (Hadamard backbone x data-dependent second-moment term) for RTN/GPTQ FP4/INT
+    block quantizers (paper abstract; src/block_transform.py).
+  - Released pipeline is MXFP4/NVFP4 W4A4 (README).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-873
+  credibility_score: 4
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-WUSH at 0b69f66cb88aae673d63ae8b5fd96ac751c5a957; paper v3 HTML
+    on disk. WUSH-mixed-precision (26b32cbd) is a 4-file fork adding the NVFP4 4/6 scale search, not mixed bitwidths. Combined
+    repo+paper entry.
+- id: intake-2475
+  arxiv_id: '2507.18553'
+  url: https://github.com/IST-DASLab/GPTQ-Babai
+  source_type: repo
+  title: 'The Geometry of LLM Quantization: GPTQ as Babai''s Nearest Plane Algorithm (code + paper)'
+  categories:
+  - quantization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Jiale Chen
+  - Yalda Shabanzadeh
+  - Elvir Crncevic
+  - Torsten Hoefler
+  - Dan Alistarh
+  key_claims:
+  - Back-to-front GPTQ is identical to Babai's nearest plane on the Hessian lattice and inherits its error bound without clipping
+    (paper abstract).
+  - Proposes min-pivot ordering over act-order and clipping-free designs SSQR and HPTQ (paper body; quantization/main.py flags).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2466
+  credibility_score: 4
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-GPTQ-Babai at 02d915ef1c6493f971732718746e723edd592c06; paper
+    v4 HTML on disk. ICLR 2026. Combined repo+paper entry.
+- id: intake-2476
+  arxiv_id: '2307.03738'
+  url: https://github.com/IST-DASLab/QIGen
+  source_type: repo
+  title: 'QIGen: Generating Efficient Kernels for Quantized Inference on LLMs (CPU, code + paper)'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: superseded
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Tommaso Pegolotti
+  - Elias Frantar
+  - Dan Alistarh
+  - Markus Puschel
+  key_claims:
+  - AVX2 code generator for GPTQ 2/3/4-bit CPU inference with an L1-blocking performance model (README; paper).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries: []
+  credibility_score: 0
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-QIGen at be868d3e0751d1bef5a60f77da25c4a68543de0e (2023). Superseded
+    for serving by the llama.cpp/iqk AVX-512 CPU quant paths in our v10 tree (not benchmarked).
+- id: intake-2477
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/po2-kernels
+  source_type: repo
+  title: 'po2-kernels: two-grid (per-group choice of two 16-entry LUTs) quantized gemv/gemm'
+  categories:
+  - quantization
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Erik Schultheis
+  key_claims:
+  - Per group of 16, choose the lower-MSE of two 16-entry LUTs (e.g. INT4, NF4), flag packed in the scale byte (src/po2mm/quant.py).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - iqk-iquant-enablement.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-po2-kernels at 4a369168a786ea5a9ca3cad10a87e54d79bff901; no
+    README, no results.
+- id: intake-2478
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/grouped-sparse-GEMM
+  source_type: repo
+  title: 'grouped-sparse-GEMM: paired-4:8 sparse NVFP4 grouped GEMM for MoE (MoESQ kernel)'
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  - quantization
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - IST-DASLab
+  key_claims:
+  - Blackwell sparse-tensor-core grouped GEMM for paired-4:8 NVFP4 expert weights (README).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2472
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-grouped-sparse-GEMM at 7fdfa49b7bf44705d7f8fa318f7b2eb8b3955568.
+- id: intake-2479
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/FP-Quant
+  source_type: repo
+  title: 'FP-Quant: MXFP4/NVFP4 PTQ with rotations and GPTQ (code for arXiv 2509.23202)'
+  categories:
+  - quantization
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - IST-DASLab
+  key_claims:
+  - Code for "Bridging the Gap Between Promise and Performance for Microscaling FP4 Quantization" (README; org triage). Not
+    yet read beyond the README head.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2474
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Triaged from the org listing; the dive must clone and read it. DS41 experts are native MXFP4 (wiki/quantization.md:11).
+- id: intake-2480
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/qmoe
+  source_type: repo
+  title: 'QMoE: Practical Sub-1-Bit Compression of Trillion-Parameter Models (code)'
+  categories:
+  - quantization
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - IST-DASLab
+  key_claims:
+  - Sub-1-bit (ternary + dictionary coding) MoE expert compression with a custom CUDA decode kernel (org triage; arXiv 2310.16795
+    named there). Not yet read.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2473
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Triaged from the org listing; the dive must clone and read it (2023 repo).
+- id: intake-2481
+  arxiv_id: null
+  url: https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF
+  source_type: repo
+  title: ISTA-DASLab Qwen3.8-27B GSQ-RCO GGUFs (IQ2_XS / IQ2_S / IQ3_XXS / IQ3_S, with and without MTP)
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2462
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - IST-DASLab (ISTA-DASLab HF org)
+  key_claims:
+  - GSQ-quantized, RCO-allocated non-uniform GGUFs of Qwen/Qwen3.8-27B in IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S, each with an -mtp variant,
+    plus a BF16 mmproj (HF API file list).
+  - Card results table compares against BF16 and Unsloth UD quants on wiki/c4/fw ppl, zero-shot avg, AIME25, GPQA-D, LCB v6
+    (card Results).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen38-27b-replace-qwen36.md
+    - iqk-iquant-enablement.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-2206
+    - intake-2207
+    - intake-2470
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: Sibling of intake-2206 (Q38FN build). HF sha d562806dbafae37109975e970aae91b43e73b440; card /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-expansion/Qwen3.8-27B-GSQ-RCO-GGUF.README.md
+    sha256 867bb809e727. Surfaced by the HF agent and confirmed in the ISTA-DASLab model listing. No weights downloaded.
+- id: intake-2482
+  arxiv_id: null
+  url: https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-NVFP4-prefiller
+  source_type: repo
+  title: ISTA-DASLab Qwen3.8-27B NVFP4 prefiller (ODP per-layer prefill blocks for Unsloth GGUF decoders)
+  categories:
+  - quantization
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2467
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - IST-DASLab (ISTA-DASLab HF org)
+  key_claims:
+  - Per-layer GGUF prefill blocks (e.g. Qwen3.8-27B-ODP-IQ1_M-000NN-of-00064.gguf) paired to low-bit Unsloth GGUF decoders;
+    261 files, about 54.9 GB total (HF API).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen38-27b-replace-qwen36.md
+    experiments: []
+    intake_entries:
+    - intake-2467
+    - intake-2468
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: HF sha b42f9b32657ff8221bbbd705d967a1cb7806bd12; card /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-expansion/Qwen3.8-27B-NVFP4-prefiller.README.md
+    sha256 f26202336dcc.
+- id: intake-2483
+  arxiv_id: '2608.15046'
+  url: https://arxiv.org/abs/2608.15046
+  source_type: paper
+  title: 'Certifying Compressed Language Models: An Audit and a Statistical Toolkit'
+  categories:
+  - quantization
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2461
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  authors: []
+  key_claims:
+  - Found by the Tier-2b contradiction search on intake-2461; a search digest says it audits losslessness claims of compressed
+    LMs (no equivalence test at a declared margin, no power calculation). Not yet read.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2461
+  credibility_score: null
+  contradicting_evidence: null
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, mechanism or number from this entry until a Stage-2
+    dive promotes it.'
+  notes: arXiv abs page resolved 2026-10-22 (title match), /mnt/raid0/llm/tmp/intake-ist-slq-20261022/fetch-s1/abs-2608.15046.html.
+    v1 only.
