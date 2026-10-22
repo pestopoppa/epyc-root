@@ -33,6 +33,16 @@ may never carry `verified`. Retagged 2026-07-31.
 - [progress/2026-10/2026-10-22-bark-stage4.md](../progress/2026-10/2026-10-22-bark-stage4.md) — Stage-4 filing and the CH-18.d ID collision
 - [progress/2026-10/2026-10-22-speech-dpa-dpc-listenkit.md](../progress/2026-10/2026-10-22-speech-dpa-dpc-listenkit.md) — listen kit, private custody repo
 
+## Compiled Update — 2026-10-22 (wrap-up sweep 11): the Italian normalizer is eval-only until the operator enables it live
+
+**Confidence: verified** for the default-off state and the task filing; the re-listen has not run.
+
+- **Ticked is not live.** CS-8.L1/L2 (numbers, units, "pH") are done in code, but the normalizer runs only on the eval/test path; the live speech path keeps it default-off pending the operator, so live conversations still mispronounce these. CS-8.L4 (conversation-stack) carries the enable step, gated on the operator's re-listen of the `s5-cs8l-retts` clips and an explicit on/off decision.
+
+### Source References (2026-10-22 wrap-up sweep 11)
+
+- [handoffs/active/conversation-stack.md](../handoffs/active/conversation-stack.md) — CS-8.L4
+
 ## Compiled Update — 2026-10-22 (wrap-up sweep 9): the Italian TTS listen check: intelligible, with number, unit and pH errors a normalizer can fix
 
 **Confidence: verified** for the ratings and the counts; **inferred** for the benefit of the normalizer, because the re-synthesis (`s5-cs8l-retts`, slotted about 22:00Z) has not run.
