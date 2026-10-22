@@ -327,7 +327,7 @@ paths). Findings ordered by leverage:
       - G3: same-top-1 ≥ 88.55%, from the "within 1 pp" rule applied to UD's published 89.55%.
       - G4: zero coherence regressions.
       - G2 and G3 are TRANSLATIONS of reference-based gates onto a UD base, because no high-precision Q38FN base is on disk.
-    - PASS authorises only the serving-shape speed bench. FAIL closes the arm, and IQ3_S is not pulled. Adoption still needs the NEW-14-sized paired task eval.
+    - PASS authorises only the serving-shape speed bench. FAIL closes the arm, and IQ3_S is not pulled. Adoption still needs the paired task eval as sized by NEW-14 (landed 223b0e298): a 2 pp margin, required N from `degradation_stats.py size`, and the one-sided exact verdict. NEW-14 landed after the pin, so it is recorded in a non-rule addendum, `job/PREDECLARED.ADDENDUM-NEW14.md` (sha `e4f33abb…`); the bars are unchanged.
     - Belief kernel: the job writes `out/quantcmp_receipt.json` (`epyc.quantcmp.receipt.v0`) for the VB-QUANTCMP-WIRE adapter.
     - The card's `--lazy-mode` flag is not used.
 
