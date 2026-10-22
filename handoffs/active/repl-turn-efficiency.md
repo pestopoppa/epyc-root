@@ -50,6 +50,10 @@ Do not add new REPL tools before S4. **Exception (operator D2, 2026-09-26):** em
 - [x] **Cold-start daemon decision**: do not build now. The measured latency gate did not fire; revisit only if a future live workload trips the multi-search or sustained-call-rate gates.
 - [x] **Version/index hygiene**: `epyc-orchestrator` `9b209d3` pins the default runtime path to `/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0`; no ColGREP re-index-on-commit hook for now.
 
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **RTE-PFX-LB1 — Before the repaired prefix-order A/B runs, read the target role's GGUF architecture; if it is a recurrent hybrid, add an arm that places a message_delimiters checkpoint at the stable/volatile boundary so a missing junction checkpoint cannot produce a false negative (intake-2386).**
+
 ## Cold-Start Daemon Gate
 
 Do not implement a daemon unless at least one of these conditions is met during a representative seeding or REPL run:

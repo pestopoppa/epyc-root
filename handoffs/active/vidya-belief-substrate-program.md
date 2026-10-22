@@ -623,6 +623,9 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       `claim_tuple.grade()` decides (`docs/design/vidya-pilot-spec.md` §4.7).
       Source-table row added to `scripts/vidya/adapters/README.md` the same day.
 
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **VB-LB1 — Wire the write side before first run: add source-table rows (diagnostic, aggregate-only) for the dev-harness mining reports, the structured-output repair and finish_reason counters, the opencode prefix/gap baseline and the interrupt and violation series (intake-2387, intake-2388, intake-2389, intake-2429).**
 
 ## Cross-cutting concerns
 

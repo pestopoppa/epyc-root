@@ -73,6 +73,18 @@ need none of these): HS-4 shell integrated (Phase 0 — P0.1–P0.3 landed, P0.4
 one orchestrator-side harness feature built, and the 2026-09-16 AutoPilot merge train (safety →
 gate-frontier → AP-54 → AP-55 → VB writers) merged (VB writers wired 2026-09-16, VB-WIRE-1).
 
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **HIL-LB1 — Score the Locals token-period and paraphrase loop detectors, and an in-grammar variant with a grace window, against the labelled loop set; treat test-after-edit as legitimate repetition; decide whether constrained output gets a loop guard back (intake-2386, intake-2395).**
+
+Retained knowledge (intake-2386..2460; no checkbox):
+- Do not cite SWE-chat's 46% pushback, the 79% invisible-failure share, Transluce's ~2% or SWE-Together's -0.92 as EPYC coding-agent base rates (intake-2397#record, intake-2426#record, intake-2427#record, intake-2428#record).
+- CODESKILL's +11.03/+5.10 is single-run, transductive and the v2 gain came from re-running only the proposed method; it is not evidence for learned skill management (intake-2392#record).
+- LLM-mediated memory consolidation needs a paired accuracy-per-cost readout against a BM25 baseline (intake-2408#record); observation masking stays the default compaction (intake-2409#record).
+- Codex exports metrics to Statsig by default unless analytics is disabled (intake-2436#record); flagged to the operator, no setting changed.
+- Beacon yields no AutoKernel hypotheses (intake-2387#record).
+- The expertise gradient (more planning, fewer asks, higher agent-output acceptance with experience) is directionally consistent across Anthropic's transcript-rated study and Sarkar's Cursor data, with different estimands; the Anthropic study is not evidence on tenure or interrupts; stratify our mined failure modes by session type before reading a gradient into them (intake-2445#record, intake-2448#record).
+- GitHub coding-agent adoption estimates from co-authored commit and PR traces (Robbes et al., two studies) are detection lower bounds and context only, never EPYC coding-agent base rates (intake-2459#record, intake-2460#record).
 
 ## HIL-1 accepted home classification
 

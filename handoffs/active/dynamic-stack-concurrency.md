@@ -60,6 +60,10 @@ earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.m
 - [ ] **Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #309); mlock'd pages free slowly, so it can kill several processes in ~100 ms succession before headroom is reflected. Is a pause-new-model-loads hook (triggered by the `-N` audit hook's sentinel, or by the autopilot) worth wiring into `orchestrator_stack.py`?
 - [ ] **Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_caches/throttle-check) *before* a kill? Risk: a pre-kill script that itself allocates under memory pressure is dangerous — must be allocation-free if used.
 
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **DS-LB1 — Add tokenizer-only prefix-property tests with captured-client fixtures (turn k+1 extends turn k; two sessions share the system trunk) as the static guard for the prefix-stability assumption, and log per-session accumulated service time next to arrival order in the N-session replay so the admission ordering key can be compared offline (intake-2386, intake-2430).**
+
 ## Dependency Graph
 
 ```text

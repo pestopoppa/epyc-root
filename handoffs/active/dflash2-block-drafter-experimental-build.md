@@ -761,3 +761,7 @@ whoever owns the swap, not with this handoff.
 
 All vendor speedup figures above are **CLAIMS**, unverified on gfx90a. Every number in the n-max table is a
 **measured OBSERVATION** (MEASUREMENT.md) — none gates a keep/deploy decision on its own.
+
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **DF2-LB1 — At the next GPU correctness window on an own scratch server with the production 27B shape (np 4, draft n-max 7): census ubatches per target decode with per-slot token counts on a replayed trace (hybrid split_equal turns ragged slots into extra full weight sweeps), and A/B the target backend-sampling flag with the greedy-identity and acceptance checks (intake-2386).**

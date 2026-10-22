@@ -425,3 +425,11 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - DI-111 (intake-2132): knowledge-only: retained use = if a tree/multi-branch drafter is ever added to the champion, branch grammar state by clone-per-branch or adopt a persistent stack; DeepInfer-style cap (NEXTN+2) is a DeepInfer invariant
 - DI-112 (intake-2132): knowledge-only: see dive_surfaced_sources
 - DI-128 (intake-2136): knowledge-only: retained as citation boundary for the cost-aware truncation trigger and SPEC-CONF.1 (vendor +4-7% band is estimated, -1.5% at low concurrency, GPU EP64); no new task, tasks already exist (SEED-D1-A1..A3).
+
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **SPEC-GRAM.2 — Extend the grammar smoke with three zero-model measurements and one window measurement: (1) count grammar rejections and reject-resample time per step at 1 token/step and at verify batch 5; (2) time the temp>0 speculative residual verify with a json_schema request (it runs a full-vocab grammar pass per draft position); (3) offline, replay our recorded tool-call and json_schema outputs through the llguidance matcher with the lineup tokenizers and report the forced-token share (flexible vs compact whitespace, canonical-trimmed), run-length histogram and the 1/(1-f) ceiling; (4) audit the 4-token canonical-trim on each lineup tokenizer; forced-span drafting and an llguidance-ON build stay trigger-gated on these numbers (intake-2388, intake-2401, intake-2415, intake-2422).**
+
+Trigger-gated (no checkbox until the trigger fires):
+- llguidance-ON experimental arm, forced-span-as-draft (verified, then forced-accept), validate-tokens fast path, pin bump, compact-whitespace request flag, HIP mask overlap, draft-side grammar masking and budget-aware closure — open when the extended grammar smoke shows forced share at least 10-15% of constrained-turn tokens, or grammar at least 5% of the frontdoor step or 2 ms/step, or (for budget closure) at least 5% of parse failures are length-truncated (intake-2388#record, intake-2401#record, intake-2415#record, intake-2422#record).
+- Re-dive Gram2Token when its full text or code is reachable (intake-2390#record).

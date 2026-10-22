@@ -205,6 +205,10 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   turn. Governance note: they bypass the `LLMPrimitives` gates (contention, region lock, inference tap) → OAB-16.
   Acceptance still waits on OAB-4's live `orch` arm.
 
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **OAB-LB1 — Read-only census of Codex AK-lane threads: turn failures by error class and wall time by executable from the thread history tables (indexed columns only, nice'd) (intake-2389).**
+
 ## Future (recorded, NOT for now)
 
 - **Architect REPL access** — review `ARCHITECT_MODES` (`seeding_types.py:380`) now that the 27B is

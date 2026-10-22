@@ -171,3 +171,7 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
 ## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
 
 - [x] **F3-W3-P1 — Per-sample poison screen before any W3 training.** The W2 builders emit a screening report (quarantined count and reasons: tool calls to hosts outside the run allowlist, credential-path reads, instructions originating from fetched content) and refuse to export a training set containing unscreened external traces; external trace sources carry commit sha and sha256 (SEC-ART-1 shape) (intake-2199#02, intake-2210#03). ✅ 2026-10-21: `scripts/datasets/poison_screen.py` + `build_planner_sft.py` integration, screening report, export refusal; 44 tests pass (epyc-orchestrator bc61f308). Triage builder out of scope (no trace rows).
+
+### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [ ] **F3-LB1 — Privacy gate for trace-derived outputs: per-session results live only under a private gitignored path; commits carry aggregate counts and rule text only, routed through raw_trace_publish_preflight; extend the staged PII guard to transcript-JSON shapes (intake-2387, intake-2389).**

@@ -1,0 +1,47 @@
+# Dev-Harness Trace Mining
+
+**Status**: stub
+**Created**: 2026-10-22 (via research intake, operator-approved plan of 2026-10-22)
+**Categories**: agent_architecture, benchmark_methodology, knowledge_management
+
+## Objective
+
+Mine EPYC's own development-harness transcripts (Claude Code, Codex, opencode) for operator-signal series,
+guard behaviour and lesson efficacy, so that lessons, hooks and harness rules are kept or promoted on
+measured recurrence rather than on anecdote. Measurement only; hook and policy edits stay human-applied.
+
+## Research Context
+
+| Intake ID | Title | Relevance | Verdict | Verification |
+|-----------|-------|-----------|---------|--------------|
+| intake-2387 | Beacon cross-harness trace capture and distillation | high | adopt_patterns | dive-verified |
+| intake-2395 | Measure Before You Manage (working memory) | medium | worth_investigating | dive-verified |
+| intake-2396 | Agent memory distillation (disjoint-split protocol) | medium | worth_investigating | dive-verified |
+| intake-2397 | SWE-chat (real coding-agent sessions) | medium | worth_investigating | dive-verified |
+| intake-2426 | Invisible failures in human-AI interaction | medium | worth_investigating | dive-verified |
+| intake-2428 | Transluce coding-agent misalignment in the wild | medium | worth_investigating | dive-verified |
+| intake-2429 | Anthropic: measuring agent autonomy in practice | medium | worth_investigating | dive-verified |
+
+## Tasks
+
+- [ ] **DHM-1 — Mechanical operator-signal series: count both interrupt markers (plain and for-tool-use) and the Codex/opencode abort analogues per 1000 turns with Wilson CIs, split main vs subagent and by harness; keyword pass for operator corrections in ~/.claude/history.jsonl since 2026-03 (intake-2397, intake-2429).**
+- [ ] **DHM-2 — Retrospective guard audit over sampled sessions per harness: predicates for pattern kills, edits of a running script, writes outside the allowlist, wholesale git add, piped gate push, glob rm -rf, git clean, llama-cli without timeout and the monitor-evasion surface forms (no-verify, hooks path to /dev/null, skipped or deleted tests), plus a hook-denial and tool-error census; report would-fire, blocked and slipped-through per class and harness (intake-2387, intake-2428).**
+- [ ] **DHM-3 — Lesson registry and interrupted-time-series pilot: register feedback memories, incident rules and CLAUDE.md rules with date, channel and a mechanical detector; write the ITS spec (violation, operator-signal and mechanical verified-outcome families; tool-call exposure with a per-turn companion; segmented regression with trend and model/harness change points; permission-mode, work-mode and specificity covariates; session and day clustering, never-lessoned control classes, campaign-grouped self-exclusion); run 3-5 lessons with forbidden surface forms as violations per 1000 tool calls pre/post, split prose-only vs hook-enforced, with the delivered-context rate (intake-2395, intake-2396, intake-2426, intake-2429).**
+- [ ] **DHM-4 — Prepare a 100-item operator labelling sheet of interrupts plus the next operator message with the reason clusters (correction, slow/hanging, next step myself, requirement change, other) and a lesson-provenance template (harness, session, event range; trigger-phrased applicability) for new incident and feedback lessons; agent labels are not used (intake-2429).**
+- [ ] **DHM-5 — Measure the always-on prefix (CLAUDE.md plus the MEMORY.md index) in tokens per turn from transcript usage fields, per harness (intake-2408, intake-2410).**
+- [ ] **DHM-6 — Draft the guard-denial ledger proposal: every PreToolUse refusal appends ts, hook, session, harness, rule and fidelity=observed to one private JSONL (enables detecting a command executed after its denial); hook edits stay human-applied (intake-2387).**
+- [ ] **DHM-7 — Write a pure-python converter from Claude Code, Codex and opencode transcripts to AgentRun-style JSON (tool calls and results, both interrupt markers kept, sessions split into capped task-window segments, private output), then run a no-LLM clustering baseline over tool-error and denial segments (CPU sentence embedding, k-means, mechanical facets) validated by planted recovery of known incident classes, reporting a cluster only with at least 3 distinct sessions and 2 distinct days (intake-2443, intake-2444).**
+
+## Open Questions
+
+- Does a memory-only lesson change its violation rate at all, or only hook-enforced ones?
+- What fraction of interrupts are agent errors (operator labels, DHM-4) versus slow/hanging or scope change?
+
+## Notes
+
+- Inputs are read from the existing conversation backup (the nightly cloud-llm-vault sync and the ai-sessions tarballs;
+  coverage checked by UTM-LB1) through the private projector (UTM-LB2); no parallel backup is built. Outputs are
+  aggregate-only and private (F3-LB1). epyc-root is a public repository: never commit transcript content.
+- Hosted annotators are not used on our data (typed-decision ruling); labels come from the operator.
+- harness-improvement-loop.md excludes the shell surface from its mutation loop, which is why this measurement
+  work has its own owner.
