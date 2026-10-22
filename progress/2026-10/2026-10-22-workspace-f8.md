@@ -300,3 +300,97 @@ Covers work since the afternoon wrap-up (root `78bbd5687`). Each item below was 
 - Declined 2, both in writing:
   - UTM-LB4 compaction via OTel. A compaction needs a context-filling session, and the transcript projector already records compaction boundaries. The decline is written in `unified-trace-memory-service.md`.
   - The kernel-intake preliminary actionables. They belong to Stage 3 of CH-18.c, which binds each keep to the v11 list or the fold-ledger route once the Stage 2 dives return. Filing them now would bypass that gate and could collide with the in-flight Stage 2 subagent.
+
+## Late evening 2026-10-22 (operator-invoked /wrap-up #2, subagent, branch `f8/wrapup-20261022-late`)
+
+Covers work since the evening wrap-up (root `520138b70`). Each item below was checked against git, the
+FILLERS register or the process table; scheduling items relayed by workspace-58 are marked as such.
+
+- **Kernel follow-up intake (CH-18.c).**
+  - Stage 2 is on main as root `1b8e9d259`: 8 entries dive-verified (intake-2494..2501, 2500 dived as the
+    2498 fix pair). The second-reader waves re-found every anchor quote and re-matched every sha256
+    (72 + 19 + 12 = 103 checks, `.research-session.json`).
+  - Headline findings:
+    - intake-2499: ggml #28576 does NOT fix the MFMA FP16 VKQ overflow. The unnormalized partial is still
+      staged as half before the row-sum division, and opnan arms E and C fail the same 6/228 cases. This
+      overturns the CPU-FA-VKQ-4 premise.
+    - intake-2501: the port's work-size formula alone under-sizes for the runtime -inf trim (model: up to
+      4x on GQA12, up to 31x on DS41). It is safe today only because the mainline prefill tile term
+      dominates the graph-plan MAX, which also makes a sanitizer run vacuous.
+    - intake-2494/2496: sinks can be folded once per row after the merge.
+  - The operator selected 6 sources for Stage 2b (steering seq 3). They became 7 entries on main as root
+    `a30f929d8` (intake-2504..2510: ik #2442, #2710, #2165 with #2287 folded, #2511, #1935, #1880 with
+    issue #809 folded, #1923). The Stage-2 close-out gate is CLOSED.
+  - The Stage-3 plan is drafted at `/mnt/raid0/llm/tmp/intake-kernel-followup-20261022/STAGE3_PLAN.md`
+    (sha256 `3583551b…`). It awaits operator approval and is NOT applied: no handoff or index edits.
+- **SEC lanes landed.** gitnexus flagged `Features` CRITICAL and `_launch_runtime_record` HIGH. The
+  operator approved landing after review; both changes are additive.
+  - Landed: orchestrator `bbc74d5c`, research `0a71fd5d6`, root `a7bfde22d` and `629ea0d17`. All are on
+    origin/main.
+  - D9 ack 2026-10-22 for the `install_git_hooks.sh` epyc-web line, recorded as an amended trailer on
+    root `a7bfde22d`.
+  - Post-landing handoff ticks for 7 boxes (SEC-EXEC-3/5/7, SEC-ART-3/7/9, SEC-SECRETS-1) are at root
+    `85c5ef820`. That commit also filed SEC-ART-POST-a..e and SEC-EXEC-POST-c..e.
+  - The name-only git-history secret scan found 0 real findings across ~18.7k commits in 4 repos.
+- **SEC-ART-POST.**
+  - POST-c: research `c4017b4f4` adds served-only template pins for `reap_25b` and
+    `document_formalizer`, the two non-lineup roles with a GGUF on disk. All 4 lineup roles (frontdoor,
+    architect_general, architect_critic, worker_vision) already carried pins, re-verified against
+    today's bytes. `template_pins_strict` is untouched.
+  - POST-e: the template-store re-point is prepared on research branch `f8/sec-art-post-e` @
+    `929a5d667` (worktree `/mnt/raid0/llm/worktrees/f8-sec-art-post-c`). NOT landed: the store must hold
+    the file first. Order: publish, land the re-point, recompile.
+  - POST-a: the fingerprint job `sec-art-fingerprints` is armed (pid 555983, FILLERS row present). Per
+    workspace-58 it is booked on q0/q1 tonight and done by 06:15Z.
+  - Finding: the orchestrator lean registry and `stack_priors` carry no sha256 or template pins. Pins in
+    the master registry therefore do not reach the launcher until a recompile through the stack-change
+    step. Filed as SEC-ART-POST-f.
+- **/workspace sync (operator-approved).**
+  - The shared clone was 778 commits behind, and its local main carried an unpushed duplicate commit
+    `b397f203e`. It was synced to origin/main `92431e3ab`. The ref `backup/workspace-local-b397f203e` and
+    the backup dir `/mnt/raid0/llm/tmp/workspace-ff-backup-20261022/` keep the old state.
+  - Method: a two-way `read-tree` plus `update-ref`, after the hygiene hook correctly blocked a checkout.
+    Uncommitted edits were preserved, and the epyc-web row was re-applied to CLAUDE.md as a local edit.
+  - Hooks were reinstalled. epyc-web now has a pre-commit hook, and orchestrator/research commits run the
+    current PII/secret hooks. A later plain fast-forward to the then-current main worked; /workspace
+    HEAD is now `85c5ef820`.
+- **Re-index.** The gitnexus re-index `f8-gitnexus2` is armed (pid 308272, FILLERS row present). It
+  refreshes the index of the stale `b397f20` tree. Per workspace-58 it is booked for 10-23 ~06:50Z.
+- **Scheduling (relayed by workspace-58).** The 10-23 whole-CPU block moved to ~07:40Z, and the operator
+  approved the 503 window shift to ~08:25–11:00Z. workspace-58 booked `locals-specgram2-window` and
+  `kvu121b-32k-dense-vs-coarse` on tonight's q2 tail after `akx-lb4-followups`.
+
+| Repo | Commit | What |
+|---|---|---|
+| epyc-root | `1b8e9d259` | kernel follow-up intake Stage 2 (intake-2494..2501) |
+| epyc-root | `a30f929d8` | kernel follow-up intake Stage 2b (intake-2504..2510) |
+| epyc-root | `a7bfde22d`, `629ea0d17` | SEC-SECRETS-1 patterns + epyc-web hook; new-model SEC-ART steps |
+| epyc-root | `85c5ef820` | SEC post-landing ticks; SEC-ART-POST / SEC-EXEC-POST sub-tasks |
+| epyc-orchestrator | `bbc74d5c` (main) | SEC-ART registry tooling, containment, template provenance |
+| epyc-inference-research | `0a71fd5d6` (main) | SEC-ART-3 uploader_class for the lineup roles |
+| epyc-inference-research | `c4017b4f4` (main) | SEC-ART-POST-c template pins for reap_25b and document_formalizer |
+| epyc-inference-research | `929a5d667` on `f8/sec-art-post-e` | SEC-ART-POST-e re-point (NOT landed) |
+
+### Checklist sync / derived actionables (late-evening wrap-up)
+
+- Flips 1: SEC-ART-POST-c (coverage met; see the dated note). Its `template_pins_strict` clause moves to
+  SEC-ART-POST-f, because the master-registry pins do not reach the launcher yet.
+- Notes without a flip: SEC-ART-POST-a (armed, booked) and SEC-ART-POST-e (branch, publish command,
+  expected digest, order).
+- Filed 1 new `- [ ]`: SEC-ART-POST-f, the lean registry + `stack_priors` recompile via stack-change
+  before any `pins_strict` / `template_pins_strict` flip.
+- Declined 2, both in writing:
+  - The kernel-intake Stage-2/2b actionables (LIN-1/LIN-2 ledger rows, the CPU-FA-VKQ-4 premise reversal
+    and the sinks fold). The Stage-3 plan binds them to owners and is unapproved; filing them now would
+    bypass that gate.
+  - Committing the epyc-web row in CLAUDE.md. It exists only as an uncommitted local edit in /workspace.
+    It is not filed as a task: a wrap-up subagent does not edit CLAUDE.md, so the owning session lands it.
+- Index `Next action` cells for RTG-59 (SEC-ART) and UFH-16 (SEC-EXEC) still name tasks that have
+  landed. Refreshed cells are prepared for the owning session.
+- Fixed in this wrap-up: the documented lease helper `wrapup_lease_acquire` (`agents/commands/wrap-up.md`)
+  returned the status of its trailing assignment, so `wrapup_lease_acquire || exit 2` swallowed a
+  refusal. Measured here: this wrap-up's second protected section ran while workspace-58 held the lease.
+  The generated output was never committed; it was redone under a held lease after syncing. The helper
+  now returns the refusal (`|| return $?`). New test
+  `test_documented_wrapup_acquire_refusal_is_visible_without_errexit` passes with the other 5 in
+  `tests/coordination/test_concurrent_wrapup.py`.
