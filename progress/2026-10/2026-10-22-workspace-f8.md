@@ -230,3 +230,14 @@ Three port bugs fixed on `experimental/locals-kernel-fixes-20261022` (c64cd9c14,
 - Not run: the DHM-1 correction keyword pass needs `--history ~/.claude/history.jsonl`, a live store this lane may not open.
 - Shared-dir note: another wave writes `mining/sample-20261022/` (dhm2/3/4/7.2 files); M1 uses the `m1/` subdir. My first
   sample run wrote into the shared dir at 13:44Z and was removed; their files were not touched.
+
+## Afternoon: full projection, mining code, tonight's armed queue
+
+- UTM-LB2.1 full projection done 13:33Z (run full-20261022T1310Z: 42,744 units, 3.2M events, 4,066 commit joins, 858 s; private output only).
+- Mining code landed (M1 b74794809, M2 0e2d51d82); full run armed as FILLERS `dhm-mining-full` for tonight. It reads a private copy of ~/.claude/history.jsonl, never the live file. It produces the operator's DHM-4 labelling sheet (private).
+- Seven compute rows armed with launchers in /mnt/raid0/llm/tmp/f8-launchers-20261022/:
+  - GPU tonight after yarn: kpf18-item3-v2-sameshape, locals-df2-lb1-ubatch-census.
+  - q2/q3 tonight: kvu121b-32k-dense-vs-coarse, locals-specgram2-window.
+  - Whole-host block 10-23 ~07:55-10:30Z: locals-akx-lb3-cpu-lc-premeasure, then locals-kvu-lb1-arch-decode-ab. The operator approved the ~2.5 h of 503s on the 0-95 serving roles via AskUserQuestion.
+- Blocked: KPF-LB1.1 needs a captured 12-turn REPL transcript (replay_recording on for one live run); this ties to the operator's pending API reload.
+- Operator rulings today: no backup work here (root agent owns it); mine everything via the ro snapshots /mnt/raid0/llm/opencode-db; operator name in commits is fine.
