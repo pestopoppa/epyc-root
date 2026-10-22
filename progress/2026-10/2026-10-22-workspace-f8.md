@@ -166,3 +166,17 @@ Pre-existing reds observed, not caused here: `test_campaign_footprint` (three lo
   - KPF write side is producing (15 records). The read side voids the file on the S1 sub-arm names (0/15 project):
     filed VB-KVU-PF.2 and updated the README status cell.
   - KVU-12.1 request rows go through the VB-KVU-CPU emitter: added a note under VB-KVU-CPU (`cells.jsonl` is unhashed).
+
+## KVU-12.1a driver fixes + VB-KVU-PF.2 read side + UFH14-LB1/CH-LB1 ticks (subagent, no compute)
+- **KVU-12.1a** (research `f8/kvu121a-driver-20261022` @ `f7b647705`, not pushed): fail-loud fit (`REFUSED_FIT`), `-c` per cell with a
+  pre-request `REFUSED_CTX`, exact `ServerSim` on rendered token ids, one fresh server per ckpt cell, `REFUSED_SIM_GATE` phase gate (rc 8).
+  Offline re-check of the recorded run (offsets rebuilt without a server; every prompt length equals the logged one): wave 0 went from
+  0/8 cells agreeing to 8/8 cells and 34/34 requests exact. Wave 1 still differs, only by the checkpoint inherited from w0.
+  `test_kvu_ckpt_arms.py` 86 passed.
+- **VB-KVU-PF.2** (root `f8/vbkvupf2-20261022`; research writer `f8/kpf18-rowsha-20261022` @ `5ed8a628d`): the adapter accepts the
+  declared KPF-18 sub-arms (`kpf18_arm` locator), and a record with no `rows_sha256` projects attested-absent (nothing hashed on read).
+  The writer now always attests a rows file. S1 sidecar: 0 -> 15 natives, all Judged/Located (no protocol; 1 attested-absent);
+  checked on a scratch ledger (canonical ledger untouched). The live runner copy at `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf18/` still
+  predates the writer fix.
+- **UFH14-LB1 / CH-LB1** ticked: build + tests passed on `experimental/locals-kernel-fixes-20261022` @ `452887155` (12:33:58Z,
+  `/mnt/raid0/llm/tmp/f8-fillers-20261022/locals-d/off/out/steps.txt`). Fold-into-champion children UFH14-LB1.1 and CH-LB1.1 left open.
