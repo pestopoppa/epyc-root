@@ -214,3 +214,19 @@ Three port bugs fixed on `experimental/locals-kernel-fixes-20261022` (c64cd9c14,
 - DHM-3: registry of 290 lessons and the ITS spec, `docs/design/dev-harness-its-pilot-spec.md`. Memory files and CLAUDE.md were only read.
 - HIL-LB1 was already done (a1-orch-code, orchestrator `258ce2d7`, scored against the Who&When labelled loop set). No work was needed.
 - Belief-kernel wiring for the DHM series was already filed (VB-LB1, adapters README rows 751/754).
+## Mining wave M1 (DHM-1, DHM-5, DHM-6, OAB-LB1, UFH14-LB8) — mining-m1 subagent
+
+- New driver `scripts/dev_harness/mine_m1.py` (stdlib, one events pass for DHM-1+DHM-5, raw vault rollouts for
+  OAB-LB1, read-only opencode snapshots for UFH14-LB8) + `tests/dev_harness/test_mine_m1.py` (15 tests, synthetic
+  fixtures; all 62 dev_harness tests pass). Per-session rows go to `<private-root>/mining/<run>/m1/`, aggregates
+  (dev-harness-aggregate.v1, validated, provenance + sample frame) to `.../m1/aggregates/`. Nothing committed from data.
+- Sample run only (quiet-window rule): `sample-20261022`, 4.3 s, 75 MB RSS. Headlines are in the handoff notes.
+- Findings: (1) Codex fork/spawn children replay parent history with fresh timestamps (one parent's aborts copied into
+  32 forks) — DHM-1 and OAB-LB1 dedupe it; (2) Claude Code JSONL `usage.output_tokens` is a stale streamed value
+  (14.5 chars/token), unusable for calibration; (3) AK-lane exec is ~1% of turn wall time in the first 3,000 threads.
+- DHM-6 ticked: `docs/design/guard-denial-ledger-proposal.md`.
+- Full run (main thread schedules, outside 14:30-22:00Z): `nice -n 19 /usr/bin/python3 scripts/dev_harness/mine_m1.py
+  --projection /mnt/raid0/llm/private/dev-harness-traces/projections/full-20261022T1310Z` — est. 5-10 min, ~1.5 GB peak.
+- Not run: the DHM-1 correction keyword pass needs `--history ~/.claude/history.jsonl`, a live store this lane may not open.
+- Shared-dir note: another wave writes `mining/sample-20261022/` (dhm2/3/4/7.2 files); M1 uses the `m1/` subdir. My first
+  sample run wrote into the shared dir at 13:44Z and was removed; their files were not touched.

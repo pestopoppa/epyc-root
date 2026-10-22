@@ -208,6 +208,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
 - [ ] **OAB-LB1 — Read-only census of Codex AK-lane threads: turn failures by error class and wall time by executable from the thread history tables (indexed columns only, nice'd) (intake-2389).**
+  - *(2026-10-22, workspace-f8 / mining-m1.)* **Code done; full run scheduled** (`mine_m1.py`, `oab_lb1.aggregate.json`). Source is the vault's rollout copies of the threads, not the live `~/.codex/state_5.sqlite` (3.7 GB live store, never opened by mining lanes); AK lane = session cwd under `/mnt/raid0/llm/tmp/ak-*|aku*` or `/mnt/raid0/llm/autokernel/` (~15k epyc threads, Aug-Sep). Turn failures (not completed: aborted by reason / no terminal event; error events by class) and exec wall time by executable (first program after env/wrappers/cd; the output's own `Wall time`); forked children's replayed turns and their tool calls are counted once. Sample (first 3,000 AK threads, 1.0 GiB): 0.17% of turns not completed (0.07% interrupted), no error events; exec wall 2,173 s of 205,649 s turn wall (1.1%): git 1,006 s, rg 525 s, find 226 s, sed 181 s.
 
 ## Future (recorded, NOT for now)
 
