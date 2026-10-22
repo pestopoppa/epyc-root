@@ -190,3 +190,7 @@ Pre-existing reds observed, not caused here: `test_campaign_footprint` (three lo
   opencode covered by fresh (<3 h) snapshots. Tests: `tests/dev_harness/test_opencode_ro.py` (+ updated existing).
 - Smoke on the real snapshots (`select count(*) from session`, ro): epyc.db 1241, host-daniele.db 16045.
 - NIB2-LB1.2 resolved (reaper prunes only `event`, which mining no longer reads); UTM-LB1 and dev-harness-trace-mining.md sources updated.
+
+## AKX-ALL-LB4 iqk CPU FA: correctness gate passed on the experimental branch
+
+Three port bugs fixed on `experimental/locals-kernel-fixes-20261022` (c64cd9c14, dd756036a, 629b545e0); the decisive one was the iqk kernel's binary-mask assumption against FLASH_ATTN_EXT's additive mask. FLASH_ATTN_EXT backend-ops 5182/5182; long-ctx f16 residual failures are the reference's F16 accumulator (pass with GGML_FA_VKQ_F32=1). q2 debug grant f8-lb4-debug (workspace-58) closed 13:07Z. Follow-ups AKX-ALL-LB4.2-.5 filed.
