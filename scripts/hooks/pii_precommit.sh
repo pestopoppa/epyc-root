@@ -93,6 +93,38 @@ ACCOUNT_PATTERNS=(
   $'\\b[0-9]{12,19}\\b\taccount_number\tlong digit run (12-19 digits) — possible account number'
 )
 
+# ─── Transcript-JSON shapes (F3-LB1) ──────────────────────────────────────────
+# epyc-root is PUBLIC. Raw dev-harness transcripts (Claude Code JSONL, Codex rollouts, opencode
+# rows) and per-session projector/AgentRun output must never be committed; only aggregates
+# (schema dev-harness-aggregate.v1, counts + rule text) may be. These match the compact JSON-LINE
+# shape (line starts with `{`), so source code that merely mentions a key does not fire.
+# Zero hits over the tracked tree when added (2026-10-22); each fires on real vault lines.
+TRANSCRIPT_PATTERNS=(
+  $'^[[:space:]]*\{.*"(parentUuid|isSidechain)":.*"sessionId":"\tClaude Code transcript line'
+  $'^[[:space:]]*\{"timestamp":"[^"]+",("ordinal":[0-9]+,)?"type":"(session_meta|response_item|event_msg|turn_context|compacted|token_usage_record|world_state)","payload":\tCodex rollout line'
+  $'^[[:space:]]*\{"type":"tool","tool":"[^"]+","callID":"\topencode tool part row'
+  $'^[[:space:]]*\{"parentID":"msg_[A-Za-z0-9]+","role":"assistant"\topencode assistant message row'
+  $'^[[:space:]]*\{.*("messageID":"msg_[A-Za-z0-9]+".*"sessionID":"ses_|"sessionID":"ses_[A-Za-z0-9]+".*"messageID":"msg_)\topencode V1 storage record'
+  $'"schema":[[:space:]]*"dev-harness-(event|session|agentrun|agentrun-index|commit-join)\.v[0-9]+"\tper-session dev-harness projection (private only)'
+)
+# Oversized blobs skip the secret scan, but a transcript is usually >1 MB: scan their head for shape.
+TRANSCRIPT_HEAD_BYTES=262144
+
+scan_transcript_shapes() {
+  local path="$1" blob_content="$2" entry regex desc lineno match found=0
+  for entry in "${TRANSCRIPT_PATTERNS[@]}"; do
+    IFS=$'\t' read -r regex desc <<<"$entry"
+    while IFS=: read -r lineno match; do
+      [[ -z "$lineno" ]] && continue
+      printf 'BLOCKED: %s:%s: [transcript] %s — raw transcripts and per-session projections stay under the private root (F3-LB1)\n' "$path" "$lineno" "$desc" >&2
+      found=1
+      EXIT_CODE=1
+      break
+    done < <(printf '%s\n' "$blob_content" | command grep -nE -m1 -e "$regex" 2>/dev/null || true)
+  done
+  return $found
+}
+
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 is_allowed() {
@@ -624,6 +656,8 @@ for path in "${STAGED_FILES[@]}"; do
   size=$(git cat-file -s ":${path}" 2>/dev/null) || { size_status=$?; size=0; }
   if [[ "$size" -gt $MAX_FILE_BYTES ]]; then
     if [[ "$size_status" == 0 ]]; then
+      head_content=$(git cat-file blob ":${path}" 2>/dev/null | head -c "$TRANSCRIPT_HEAD_BYTES" || true)
+      scan_transcript_shapes "$path" "$head_content" || true
       pii_record_event "$path" oversized "$MAX_FILE_BYTES"
     else
       pii_record_event "$path" read-error "$size_status:unread:unscanned"
@@ -645,6 +679,7 @@ for path in "${STAGED_FILES[@]}"; do
 
   scan_status=0
   scan_blob "$path" "$blob_content" || scan_status=$?
+  scan_transcript_shapes "$path" "$blob_content" || scan_status=1
   if [[ "$size_status" == 0 && "$read_status" == 0 ]]; then
     pii_record_event "$path" scanned "$scan_status"
   else
