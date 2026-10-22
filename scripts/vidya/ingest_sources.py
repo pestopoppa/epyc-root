@@ -226,6 +226,17 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="HIL-15a flag-on dependency AUC table: per feature set and per delta (CI), edge grade "
                 "observed; mock manifests refused; pre-hook tables emit nothing",
            task="VB-HIL15A-WRITE"),
+    Source("hil17-attribution-ladder", "hil17_attribution",
+           _files("hil17_attribution.beliefs.jsonl", "*/hil17_attribution.beliefs.jsonl"),
+           note="HIL-17 attribution-ladder per-rung accuracy/token table and aggregated nDCG@5 arms, "
+                "OBSERVATION only; mock, unlabelled and undigested reports refused",
+           task="VB-HIL17-WRITE"),
+    Source("hil-lb1-loop-score", "hil_lb1_loop_score",
+           _files("hil_lb1_loop_score.beliefs.jsonl", "*/hil_lb1_loop_score.beliefs.jsonl"),
+           note="HIL-LB1 loop-detector scores on the Who&When Pro labelled loop set (injected "
+                "behaviour, not natural frequency), OBSERVATION only; unlabelled firing counts "
+                "are not projected",
+           task="VB-HILLB1-WRITE"),
     Source("repl-preview", "repl_preview",
            _files("repl_preview.beliefs.jsonl", "*/repl_preview.beliefs.jsonl"),
            note="D-RI-PREVIEW-1 per role x rendering correct-rate with class counts; mock and partial "
