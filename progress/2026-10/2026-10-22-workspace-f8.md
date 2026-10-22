@@ -474,3 +474,25 @@ the run records, the FILLERS register or the process table.
 | epyc-orchestrator | `a73af3cc` (main) | `exec_write_flags` in `PRODUCTION_FEATURE_WAVE_OVERRIDES` (SEC-EXEC-POST-e1) |
 | epyc-inference-research | `95f90f04f` (main) | SEC-ART-POST-e registry re-point at the content-addressed store |
 | epyc-llama (experimental, fork) | `c160433b4`, `7fa55280f`, `581814ae8` | AKX-ALL-LB4.6/.7/.8 |
+
+### Checklist sync / derived actionables (night wrap-up)
+
+- Flips: 18 attributable to f8 in scope `7005bea70..origin/main`, all already committed by the owning
+  commits and verified here. They are DHM-1/2/3, OAB-LB1, UFH14-LB8, AKX-ALL-LB4.2/.3, AKX-LB4-FU,
+  UFH14-LB4, CH-18.c, CPU-FA-VKQ-4, V11-FA-7, CTC-Q-C, SEC-ART-6, SEC-ART-POST-e, SEC-EXEC-6,
+  SEC-EXEC-POST-c and SEC-EXEC-POST-e. This wrap-up made 0 new flips. The other 3 flips in range
+  (HIL-15 x2 and SPEC-GRAM.2) belong to other sessions.
+- Gaps closed with dated notes: AKX-ALL-LB4.6/.7/.8 had code on the fork with no record. AKX-LB4-FU2
+  was armed and booked with no record. SEC-EXEC-POST-e1 still said "land to orch main" after it had
+  landed (`a73af3cc`).
+- Filed 1: SEC-ART-POST-g, the root-own / `chattr +i` template-store decision package. Two notes named
+  it as remaining, but it had no checkbox and no operator-queue row.
+- Declined 2, both in writing:
+  - The specgram2 follow-ups (GRAM-LAZY-1, SPEC-GRAM.3-7). The SPEC-GRAM.2 recorder filed them in
+    `speculative-decoding-mtp-refresh.md` (`1a851d673`, `53029ea71`); this wrap-up does not edit that
+    handoff.
+  - The OP-81 GPUPIN ratification follow-ups (GPS-PIN-3, D3). They belong to workspace-58, which owns
+    GPS-PIN; the OP-81 row deletion is prepared for the owning session.
+- Wiki sweep 15 compiled 9 sources: the 8-source delta plus `53029ea71`. It added Compiled Update
+  sections to speculative-decoding, safety, benchmark-methodology and hardware-optimization.
+  Prune signal: 0 candidates.
