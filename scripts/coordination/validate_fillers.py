@@ -49,6 +49,12 @@ Rules (a cell value of "-" or empty means unfilled and violates the rule for its
     block-timing-quiet additionally (change C): `decision` names a champion / candidate /
                   baseline, AND `notes` or `prior` cites a floor file (a path or filename with
                   "floor" and a .json/.md/.jsonl/.txt extension, e.g. serving-floor.*.json).
+CTC-Q-C (booking class is derived, D9 ack 2026-10-22): derive_booking_class() computes
+                  quiet / timing-pairable / correctness from decision+prior+notes (see its docstring);
+                  a declared class STRICTER than the derived one (quiet > timing-pairable >
+                  correctness) is a violation (REFUSE under --for-grant, WARN otherwise).
+                  `--print-class ROW` prints the derived class for grant writers (gpu-quiet claim:
+                  only block-timing-quiet takes it).
 Row ids must be unique (duplicate = violation on the later row).
 
 Queue semantics (operator ruling relayed by workspace-58, 2026-10-22: "Being queued implies BEING
@@ -94,6 +100,17 @@ PATH_RE = re.compile(r"(?<![\w.])/[\w.@+=-]+(?:/[\w.@+=-]+)+")
 NONE_RE = re.compile(r"^none(?: found)? \(.*\d{4}-\d{2}-\d{2}.*\)", re.I)
 BASELINE_RE = re.compile(r"champion|candidate|baseline", re.I)
 FLOOR_RE = re.compile(r"[\w/.@+=-]*floor[\w/.@+=-]*\.(?:json|md|jsonl|txt)\b", re.I)
+# CTC-Q-C (D9 ack 2026-10-22): booking class is DERIVED from the decision, not defaulted.
+KEEP_GATE_RE = re.compile(r"keep gate|\bKEEP\b|keep[ /]+(?:or|vs)|\bHOLD\b|fold (?:or|vs)", re.I)
+REGISTRY_FLOOR_RE = re.compile(r"registry[\w\s/-]{0,20}floor|floor[\w\s/-]{0,20}registry", re.I)
+TIMING_RE = re.compile(r"indicative|timing|tok/s|\bt/s\b|\bpp\d*\b|\btg\b|latency|"
+                       r"throughput|wall[- ]?clock|ms/|\bhost gap\b", re.I)
+# A row that MEASURES a floor (A/A, noise unit/floor, floor calibration/pairs) for a build is a baseline
+# measurement: it cannot cite a floor file because it produces one.  Needs a build reference too.
+FLOOR_MEASURE_RE = re.compile(r"noise[- ](?:unit|floor)|\ba/?a[- ]floor|floor[- ](?:calibration|pairs?)|"
+                              r"serving-floor calibration|measures? (?:the )?(?:\w+ ){0,2}floor", re.I)
+BUILD_REF_RE = re.compile(r"champion|candidate|baseline|\brecipe\b|\bbuild\b|\b[0-9a-f]{7,12}\b", re.I)
+CLASS_RANK = {"block-correctness": 0, "block-timing-pairable": 1, "block-timing-quiet": 2}
 EFFECT_NUM_RE = re.compile(r"\d")
 EFFECT_QUAL_RE = re.compile(r"\b(exact(?:ly)?|identical|identity|zero)\b", re.I)
 EFFECT_BUILD_RE = re.compile(r"^n/a \([^)\s][^)]*\)", re.I)
@@ -218,6 +235,37 @@ def queue_semantics(cells: list[str], col: dict[str, int], probe) -> list[str]:
     return out
 
 
+def declared_class(cells: list[str], col: dict[str, int]) -> str:
+    """First token of the class cell (tolerates trailing prose such as 'block-timing-quiet (why)')."""
+    t = cells[col["class"]].split()
+    return t[0] if t else ""
+
+
+def derive_booking_class(cells: list[str], col: dict[str, int]) -> str:
+    """CTC-Q-C: derive the booking class of a row from its decision / prior / notes (and min_effect unit).
+
+    QUIET             (also: decision/min_effect says the row MEASURES a floor for a build)
+                      decision names a champion/candidate/baseline or a keep gate, AND a floor file
+                      (serving-floor.*.json style, via FLOOR_RE) or a registry floor is cited in
+                      decision, notes or prior.
+    TIMING-PAIRABLE   not quiet, but the decision / min_effect / notes is indicative or timing-valued.
+    CORRECTNESS       everything else.
+    'filler' rows are not blocks: returned unchanged.  Correctness never takes a quiet window by default."""
+    g = lambda name: cells[col[name]]  # noqa: E731
+    if declared_class(cells, col) == "filler":
+        return "filler"
+    dec, notes, prior = g("decision"), g("notes"), g("prior")
+    names_baseline = bool(BASELINE_RE.search(dec) or KEEP_GATE_RE.search(dec))
+    cites_floor = any(FLOOR_RE.search(t) or REGISTRY_FLOOR_RE.search(t) for t in (dec, notes, prior))
+    if names_baseline and cites_floor:
+        return "block-timing-quiet"
+    if FLOOR_MEASURE_RE.search(dec + " " + g("min_effect")) and BUILD_REF_RE.search(dec):
+        return "block-timing-quiet"
+    if TIMING_RE.search(" ".join((dec, g("min_effect"), notes))):
+        return "block-timing-pairable"
+    return "block-correctness"
+
+
 def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=None) -> list[str]:
     """Violations of one 18-cell row (empty list = clean)."""
     probe = pid_alive or globals()["pid_alive"]
@@ -272,6 +320,12 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=N
         if not (FLOOR_RE.search(g("notes")) or FLOOR_RE.search(prior)):
             out.append("block-timing-quiet: notes or prior must cite a floor file "
                        "(e.g. serving-floor.*.json)")
+    dcl, ecl = declared_class(cells, col), derive_booking_class(cells, col)
+    if dcl in CLASS_RANK and CLASS_RANK[dcl] > CLASS_RANK[ecl]:
+        out.append(f"declared class {dcl} is stricter than derived {ecl} (CTC-Q-C): quiet needs a "
+                   "decision naming a champion/candidate baseline or keep gate AND a cited floor "
+                   "file; timing-pairable needs an indicative/timing decision; correctness jobs "
+                   "must not take quiet windows by default")
     out += queue_semantics(cells, col, probe)
     return out
 
@@ -281,6 +335,9 @@ def run(argv: list[str] | None = None) -> int:
     ap.add_argument("--file", default=DEFAULT_FILE)
     ap.add_argument("--row")
     ap.add_argument("--for-grant", action="store_true")
+    ap.add_argument("--print-class", metavar="ROW",
+                    help="print the DERIVED booking class of ROW (one token on stdout) and exit 0; "
+                         "grant writers set --gpu-quiet from it (3 if the row is unknown/malformed)")
     try:
         a = ap.parse_args(argv)
     except SystemExit as e:
@@ -294,6 +351,17 @@ def run(argv: list[str] | None = None) -> int:
         col, rows, tnotes = parse_table(text)
     except (OSError, UnicodeDecodeError, Malformed) as exc:
         print(f"MALFORMED: {a.file}: {exc}", file=sys.stderr)
+        return 3
+
+    if a.print_class:
+        for _, cells in rows:
+            if cells and cells[0] == a.print_class:
+                if len(cells) != len(COLUMNS):
+                    print(f"MALFORMED: row {a.print_class!r}: {len(cells)} cells", file=sys.stderr)
+                    return 3
+                print(derive_booking_class(cells, col))
+                return 0
+        print(f"MALFORMED: row {a.print_class!r} not found in {a.file}", file=sys.stderr)
         return 3
 
     seen: set[str] = set()

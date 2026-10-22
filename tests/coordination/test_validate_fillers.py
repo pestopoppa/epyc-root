@@ -271,3 +271,65 @@ def test_terminal_rows_skip_field_checks(tmp_path, status):
               launcher="none")
     r = msgs(tmp_path, bad)
     assert r.returncode == 0 and "r1" not in r.stdout.replace("OK", "")
+
+
+# ---- CTC-Q-C: booking class derived from the decision -------------------------------------------
+def _derive(tmp_path, **kw):
+    f = table(tmp_path, row(**kw))
+    return cli("--file", f, "--print-class", "r1")
+
+
+@pytest.mark.parametrize("kw,want", [
+    (dict(cls="block-timing-quiet", dec="keep candidate vs champion baseline",
+          notes="floor /x/serving-floor.q27b.json"), "block-timing-quiet"),
+    (dict(cls="block-correctness", dec="candidate B vs baseline C: keep gate",
+          prior="/a/b/serving-floor.q.json"), "block-timing-quiet"),
+    (dict(cls="block-correctness", dec="keep gate on the registry floor for Q38FN decode"),
+     "block-timing-quiet"),
+    # baseline named but no floor file: not quiet; timing words make it pairable
+    (dict(cls="block-timing-quiet", dec="candidate vs champion baseline", eff="tg 2.00%"),
+     "block-timing-pairable"),
+    (dict(cls="block-timing-pairable", dec="indicative: does the cache help prefill", eff="5% tok/s"),
+     "block-timing-pairable"),
+    (dict(cls="block-timing-quiet", dec="are the 12 failures pre-existing on baseline C", eff="exact"),
+     "block-correctness"),
+    (dict(cls="block-correctness", dec="is the output identical across arms", eff="exact identity"),
+     "block-correctness"),
+    (dict(cls="filler", dec="is the output identical across arms"), "filler"),
+])
+def test_derive_booking_class(tmp_path, kw, want):
+    r = _derive(tmp_path, **kw)
+    assert r.returncode == 0 and r.stdout.strip() == want
+
+
+def test_print_class_unknown_row_exit_3(tmp_path):
+    assert cli("--file", table(tmp_path, row()), "--print-class", "nope").returncode == 3
+
+
+def test_declared_stricter_than_derived_refuses_for_grant_warns_otherwise(tmp_path):
+    f = table(tmp_path, row(cls="block-timing-quiet", dec="are the 12 failures pre-existing on a base",
+                            eff="exact", notes="serving-floor.x.json"))
+    g = cli("--file", f, "--row", "r1", "--for-grant")
+    assert g.returncode == 2 and "stricter than derived block-correctness" in g.stdout
+    w = cli("--file", f)
+    assert w.returncode == 0 and "WARN" in w.stdout and "stricter than derived" in w.stdout
+
+
+def test_declared_laxer_than_derived_is_fine(tmp_path):
+    f = table(tmp_path, row(cls="block-correctness", dec="candidate vs champion baseline",
+                            notes="serving-floor.x.json"))
+    assert cli("--file", f, "--row", "r1", "--for-grant").returncode == 0
+
+
+def test_floor_measuring_row_derives_quiet(tmp_path):
+    """c2-q38fn-aa-floor's real text: it produces a floor, so it cannot cite one."""
+    kw = dict(cls="block-timing-quiet", eff="n/a (noise unit)",
+              dec="C2 CAS: noise unit for the dd3d9721c Q38FN recipe on the current host state; "
+                  "contextualises c2-q38fn-b-rerun and later 7b ABAs",
+              prior="stored 24-pair Q38FN floors 0.65-8.4% for other recipes/builds: "
+                    "`/mnt/raid0/llm/autokernel/campaigns/x/runtime-source-floors/`",
+              notes="Optional, same grant as c2-q38fn-b-rerun. Output is per-pair spread")
+    assert _derive(tmp_path, **kw).stdout.strip() == "block-timing-quiet"
+    # no build reference -> not a baseline measurement
+    kw["dec"] = "noise unit for the thing"
+    assert _derive(tmp_path, **kw).stdout.strip() != "block-timing-quiet"
