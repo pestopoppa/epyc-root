@@ -142,3 +142,27 @@ Seven filed tasks done, all zero-compute (no server, no weights, no build, no GP
 Index rows PREPARED, NOT APPLIED (owning session applies): `INF-81` next action add "AKX-ALL-LB2.1 (measure N=16/32/ragged for the first 27B keep; MI210 window)"; `RTG-58` add "KPF-LB2.1 opencode V2 real-row check; KPF-LB2.2 recalibrate E/F knobs at the first live arm"; `INF-06` add "AK-PORT-LB1.1 wire the noise-floor gate into the first multi-row candidate"; `UFH-14` add "UFH14-LB5.1 live-server confirmation of the static template result". INF-37 and RTG-11 need no change.
 
 Pre-existing reds observed, not caused here: `test_campaign_footprint` (three loop modules without a FOOTPRINT row plus totals drift); KPF-64 `test_launcher_*` need `KPF64_PORT=31111` because ports 18964/18971 have listeners on this host.
+
+## KVU-12.1 + KPF-18-S1 verdicts (runs ended ~12:24Z; analysis only, no compute)
+
+- **KVU-12.1** (`/mnt/raid0/llm/tmp/kvu121-arms/out/`; read-only `decide` → `/mnt/raid0/llm/tmp/f8-kvu121-kpf18-verdicts/kvu121_decide.json`,
+  selection `{"q36_35b": null}`): **DENSE_STAYS** for every arm, so keep `--ctx-checkpoints 32 --checkpoint-min-step 8192`. Not ticked.
+  - 8k does not discriminate: the spacing arms tie dense on bytes, and fixed_s4k is +27.8%.
+  - tail_junction fails on substance at 32k: 40% fewer bytes, but deep edits fully re-prefill (37,976 vs 9,200 tokens).
+  - Simulator NOT validated: `sim_matches_log=false` in 16/16 cells. Causes: estimated user-start offsets, the first user
+    start is dropped, the n_ubatch checkpoint is off by 4, and wave 1 inherits wave 0's checkpoint on the warm server.
+    The launcher ran phase 2 without checking agreement.
+  - The 32k w1 ERRORS are a driver bug. `fit_conversation` overshoots its target (38,868 tokens vs 32,688) and
+    `extend_1` overflows `-c 40960` (HTTP 400). That also explains tail_junction's 3,233 s wall: three full ~38.7k-token
+    re-prefills.
+  - Filed KVU-12.1a (driver fixes) and KVU-12.1b (32k dense vs coarse holdout, ~2.2 h quarter, ~45 GiB, predicted DENSE_STAYS).
+- **KPF-18-S1** (`/mnt/raid0/llm/tmp/kpf18-s1/out/records/`): steps 1-5 ran; steps 6 and 7 did not run.
+  - Item 2 rule not met (0/12 against a zero, placement-fixed A/A floor).
+  - 18.1 A/B/C/D, 18.2 and 18.3.1 rules met; 18.3.4 abstained.
+  - Item 3 group 3: `aa_diverges_earlier` (undetermined). Read as batch-shape/placement numerics, not a fork defect:
+    the A/A flips at 114 without any fork, the 161 flip sits at a 0.167-nat near-tie, and CPU 17.2(3) is byte-identical.
+  - Filed KPF-18.0d(item 3) v2 (same-shape control) and the S1 remainder + oracle repair.
+- **Belief wiring**:
+  - KPF write side is producing (15 records). The read side voids the file on the S1 sub-arm names (0/15 project):
+    filed VB-KVU-PF.2 and updated the README status cell.
+  - KVU-12.1 request rows go through the VB-KVU-CPU emitter: added a note under VB-KVU-CPU (`cells.jsonl` is unhashed).
