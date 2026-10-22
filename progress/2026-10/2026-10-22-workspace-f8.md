@@ -394,3 +394,12 @@ FILLERS register or the process table; scheduling items relayed by workspace-58 
   now returns the refusal (`|| return $?`). New test
   `test_documented_wrapup_acquire_refusal_is_visible_without_errexit` passes with the other 5 in
   `tests/coordination/test_concurrent_wrapup.py`.
+
+## Mining results (full-20261022T1310Z, aggregates only)
+
+- Run: 42,420 units, 863 interrupt candidates, 13,989 cluster docs, 80 clusters, planted 3/5 (TF-IDF baseline), would-fire total 21,924. DHM-4 sheet (100 items) ready in the private root; not ticked.
+- DHM-1 interrupts per 1000 turns: Claude main 6.30 (CI 5.70-6.97), Claude subagent 0.088, Codex main 6.83, Codex subagent 2.21, opencode main 0.71, opencode subagent 2.36.
+- DHM-3 per 1000 tool calls (Claude): pattern_kill 1.71 -> 0.089 and llama_cli 0.45 -> 0.032 after hooks; glob_rm 0.62 -> 1.30 and wholesale_git_add 0.36 -> 1.22 ROSE.
+- DHM-5: always-on est. 17,158 tok/turn (Claude main), 8,326 elsewhere (file-size estimate, not usage-field; DHM-5.1 filed).
+- OAB-LB1: 15,144 threads, exec wall 0.64% of turn wall. UFH14-LB8: token-weighted prefix hit 0.915 (0.940 excl. first step).
+- Ticked DHM-1, DHM-2, DHM-3, OAB-LB1, UFH14-LB8. Filed DHM-5.1, DHM-8 to DHM-11. Detail: `docs/design/dev-harness-mining-results-20261022.md`; aggregate `data/dev_harness/mining-full-20261022T1310Z.aggregate.json`.
