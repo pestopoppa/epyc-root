@@ -352090,3 +352090,204 @@
     effect: unaffected
     note: fresh claim
   depends_on: []
+- id: intake-2449
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/794
+  source_type: repo
+  title: 'cpu: fused softmax+topk'
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2442
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'PR title and body: a CPU implementation of fused top-k + softmax for MoE routing, the CPU counterpart of #789 (CUDA).'
+  - Reported gain is 2-3% on both PP and TG for most MoE models; the body gives no model name, CPU, thread count or table,
+    so the magnitude is author-asserted only.
+  - 'Mechanism (diff, ggml.c): when the SOFT_MAX node is followed by RESHAPE, ARGSORT, VIEW, GET_ROWS (with F32/I32 type guards)
+    the five nodes are executed as one iqk_topk_moe call that does a per-row partial_sort of expert ids by logit and a softmax,
+    with rows split across threads; ggml_compute_forward now returns the advanced node index so the four fused nodes are skipped.'
+  - 'Scope: no flash-attention code is touched (files: ggml.c, iqk_mul_mat.cpp, iqk_mul_mat.h); the stage-1 premise that #794
+    belongs to ik''s CPU FA work is wrong.'
+  techniques:
+  - graph-pattern fusion SOFT_MAX+RESHAPE+ARGSORT+VIEW+GET_ROWS into one CPU top-k op
+  - per-row partial_sort router top-k split across threads
+  reported_results:
+  - 2-3% PP and TG improvement for most MoE models (no model, CPU, thread count or table in the body)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2442
+    - intake-2425
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: 'Read: GitHub API pulls/794 (sha256-12 d9f9c5a46977), full 3-file diff (pr794.diff sha256-12 0fbd05aa5cb6), issue
+    comments (0). Merge cde2eb5e95722ca8af656057015af78040110cd9 (closed 2025-09-24). Not read: the CUDA sibling #789. Mainline
+    v10 ggml-cpu fuses only RMS_NORM+MUL (ggml-cpu.c ggml_cpu_try_fuse_ops L4048-L4073); no top-k+softmax fusion there.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): this PR is NOT flash attention. Its three files (ggml.c, iqk_mul_mat.cpp,
+    iqk_mul_mat.h) implement MoE-router fusion only; the stage-1 framing of #794/#796 as ''other parts of ik''s 2025 CPU FA
+    work'' is overturned. It is one of the three ''relatively minor optimizations'' (#794, #796, #797) that ikawrakow credits
+    in the #797 comment for the combined PP/TG gain. The gain figure is a single sentence with no hardware or table (NOT-FOUND-IN-SOURCE).'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'PR #794 body para 1'
+    quote: CPU implementation of fused top-k + softmax.
+    quote_sha256: fa19b73e4e63ca1127b99e08a7a568f3445e262ea20514ec64ff2f91430a7430
+    source_revision: 'ikawrakow/ik_llama.cpp PR #794 merge cde2eb5e95722ca8af656057015af78040110cd9; API body retrieved 2026-10-22
+      sha256-12 d9f9c5a46977'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: 'PR #794 body para 2'
+    quote: Leads to 2-3% PP and TG improvement for most MoE models.
+    quote_sha256: d9d46d38c3ee0debac227afdf16a040b381be9e640181f0bd31da3a387a0b9ac
+    source_revision: 'ikawrakow/ik_llama.cpp PR #794 merge cde2eb5e95722ca8af656057015af78040110cd9; API body retrieved 2026-10-22
+      sha256-12 d9f9c5a46977'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: pr794.diff ggml.c hunk @@ -20586 (SOFT_MAX case)
+    quote: cgraph->nodes[i+2]->op == GGML_OP_ARGSORT  &&
+    quote_sha256: ad7e3c17a184d65dc3f5c705db0e67c0669ecc4a99315c335741aa7e610f0d42
+    source_revision: 'ikawrakow/ik_llama.cpp PR #794 merge cde2eb5e95722ca8af656057015af78040110cd9; pulls/794.diff retrieved
+      2026-10-22 sha256-12 0fbd05aa5cb6'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: absence
+    locator: 'pr794.diff file list (3 files: ggml.c, iqk_mul_mat.cpp, iqk_mul_mat.h; no FA file)'
+    quote: diff --git a/ggml/src/iqk/iqk_mul_mat.h b/ggml/src/iqk/iqk_mul_mat.h
+    quote_sha256: 2df64db1802b5b0acc5295496458d60441e62b99f7798738aad9eafe7710095d
+    source_revision: 'ikawrakow/ik_llama.cpp PR #794 merge cde2eb5e95722ca8af656057015af78040110cd9; pulls/794.diff retrieved
+      2026-10-22 sha256-12 0fbd05aa5cb6'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2450
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/796
+  source_type: repo
+  title: Fused matrix multiplications (CUDA and CPU)
+  categories:
+  - hardware_optimization
+  - local_inference
+  - inference_serving
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2442
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - 'PR body: adds the ability to fuse quantized matrix multiplications that operate on the same activations A (typically
+    the Q, K and V projections) on CUDA and CPU; it does not fuse them into one kernel, it saves the quantization of A and
+    the thread synchronization between the matmuls.'
+  - The author reports the performance gain as surprisingly small, typically <= 1%, and adds it as a micro-optimization.
+  - 'Mechanism (diff, ggml.c): after one MUL_MAT completes via iqk_mul_mat_4d, a while-loop runs the following graph nodes
+    while they are MUL_MAT with the same src1 and the same vec_dot_type, reusing the already-quantized wdata; ggml_compute_forward_mul_mat
+    returns the advanced node index. src/llama.cpp adds llm_build_mul_mat_qkv so Q/K/V matmuls are adjacent in the graph.'
+  - 'Scope: no flash-attention code; the premise that #796 belongs to ik''s CPU FA work is wrong.'
+  techniques:
+  - execute consecutive MUL_MAT nodes that share one quantized activation inside one op call (quantize src1 once, skip per-op
+    barrier)
+  - graph builder emits Q/K/V matmuls adjacent
+  reported_results:
+  - 'typically <= 1% gain (author: "surprisingly small")'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-2442
+    - intake-2425
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: 'Read: GitHub API pulls/796 (sha256-12 065232c36802), full 3-file diff (pr796.diff sha256-12 7a1a1380453d), 0 comments.
+    Merge 8e497e704e733e0a14df0eee284b51c92e11ab29 (closed 2025-09-24). The CUDA half of the diff (ggml-cuda.cu) was only
+    skimmed. No hardware is named in the body.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): this PR is NOT flash attention (files: ggml-cuda.cu, ggml.c,
+    llama.cpp). It fuses consecutive quantized MUL_MATs that read the same activations (Q/K/V projections) so the activation
+    is quantized once and one thread barrier per matmul is saved; the author himself reports <=1%. The stage-1 premise that
+    #796 is part of ik''s CPU FA work is overturned. Whether the saved barrier is worth more at 96 threads than at the 16-thread
+    7950X is a hypothesis, not in the source.'
+  claim_anchors:
+  - claim_index: 0
+    kind: text
+    locator: 'PR #796 body para 1'
+    quote: The implementation does not go as far as fusing these into a single kernel, but it does save the quantization of
+      $A$ into the required type, along with the thread synchronization between such matrix multiplications.
+    quote_sha256: 4d309e23a1233b36c30ec3a3e501651678d59fd55b2e12a0be46c318392e5d42
+    source_revision: 'ikawrakow/ik_llama.cpp PR #796 merge 8e497e704e733e0a14df0eee284b51c92e11ab29; API body retrieved 2026-10-22
+      sha256-12 065232c36802'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: text
+    locator: 'PR #796 body para 2'
+    quote: The performance gain is surprisingly small, typically being $\le 1$%.
+    quote_sha256: 0c45f0b2462b3eeaa52e48de4200d355d125b39dcf531dc269caf9e15d5222a5
+    source_revision: 'ikawrakow/ik_llama.cpp PR #796 merge 8e497e704e733e0a14df0eee284b51c92e11ab29; API body retrieved 2026-10-22
+      sha256-12 065232c36802'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: pr796.diff ggml.c hunk @@ -15163 (fusion loop)
+    quote: cgraph->nodes[node_n+1]->src[1] == src1 &&
+    quote_sha256: ec0bb12ff3471b7e03a7dd690ab215a32c9f1adc044605a3fe23bbe66e7b6549
+    source_revision: 'ikawrakow/ik_llama.cpp PR #796 merge 8e497e704e733e0a14df0eee284b51c92e11ab29; pulls/796.diff retrieved
+      2026-10-22 sha256-12 7a1a1380453d'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: absence
+    locator: 'pr796.diff file list (3 files: ggml-cuda.cu, ggml.c, src/llama.cpp; no FA file)'
+    quote: diff --git a/src/llama.cpp b/src/llama.cpp
+    quote_sha256: 1f893580baa2453348c29834abb433b6afb537e4520b6f7ed12f62188f093383
+    source_revision: 'ikawrakow/ik_llama.cpp PR #796 merge 8e497e704e733e0a14df0eee284b51c92e11ab29; pulls/796.diff retrieved
+      2026-10-22 sha256-12 7a1a1380453d'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
