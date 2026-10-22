@@ -351739,3 +351739,306 @@
     effect: unaffected
     note: fresh claim from the combined pass
   depends_on: []
+- id: intake-2446
+  arxiv_id: null
+  url: https://github.com/Phylliida/OpenClio
+  source_type: repo
+  title: OpenClio
+  categories:
+  - knowledge_management
+  - local_inference
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2444
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Danielle Ensign (Phylliida)
+  key_claims:
+  - MIT-licensed Clio reimplementation whose LLM interface is hard-bound to an in-process vllm.LLM (runClio signature, tokenizer.apply_chat_template
+    prompt building, llm.generate with vllm.SamplingParams); there is no OpenAI-compatible/base_url path, so it cannot target
+    a llama-server endpoint without rewriting its 4 LLM call sites and prompt builder.
+  - 'Pipeline: dedup -> per-conversation facet extraction (LLM) -> facet-value embedding (SentenceTransformer, README example
+    all-mpnet-base-v2) -> FAISS k-means base clusters (n//10) -> LLM names/summaries per cluster (5 resamples, medoid pick)
+    -> neighborhood k-means -> LLM higher-level names -> dedup -> LLM assignment -> rename, until <=5 top clusters; i.e. embed-first
+    like Clio, with LLM facet extraction BEFORE embedding (embeds facet values, not raw conversations).'
+  - Inputs are lists of {role,content} turns (conversationToString, truncated at 8000 tokens on assistant-turn boundaries);
+    non-conversation data is supported via a custom Facet.getFacetPrompt or clio.genericSummaryFacets with a dataToStr callable,
+    so transcript segments can be fed by mapping to role/content turns.
+  - No quality/accuracy numbers are reported in the README (only a demo run on ~400k WildChat conversations); the repo ships
+    no evaluation of cluster quality.
+  - GPU dependence is vllm (hard dependency in pyproject along with torch); embedding and FAISS k-means run on CPU-capable
+    libs (faiss-cpu), so only the LLM side is the blocker for our local pass.
+  techniques:
+  - hierarchical k-means clustering with LLM naming
+  - LLM facet extraction
+  - embedding dedup of cluster names
+  - neighborhood-based cluster labeling
+  reported_results:
+  - 'README demo: ~400,000 English WildChat conversations (not independently evaluated)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2444
+  credibility_score: 1
+  contradicting_evidence: null
+  notes: 'OpenClio commit 28ec1d8 (last push 2025-08-19), MIT (LICENSE 1070B). Read: README, pyproject, openclio.py (grep-level,
+    structure), opencliotypes.py config, prompts.py conversationToString. Not read in full: writeOutput.py, websiteTemplate.html,
+    utils.py internals, wiki docs. Fetched files in /mnt/raid0/llm/tmp/dive-2b-w5b-openclio/oc_*.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2444 notes said OpenClio was only README-skimmed; source
+    read shows it is vLLM-in-process only (not OpenAI-compatible) and embeds facet values after LLM extraction. Not a drop-in
+    for a llama-server endpoint; reusable as a reference for pipeline shape and prompts (prompts.py, 454 lines).'
+  claim_anchors:
+  - claim_index: 0
+    kind: source-quote
+    locator: README.md L4 @ 28ec1d8
+    quote: Designed to run using local LLMs via [VLLM](https://github.com/vllm-project/vllm).
+    quote_sha256: b29e81c8b850cfe3ab890838eeafcfe1f509683dbc5dc4317761b36bec24b749
+    source_revision: 28ec1d8fc07d196d15cf142c6dbc3c82fad1643d (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: source-quote
+    locator: openclio/openclio.py L85-L87, L367 @ 28ec1d8
+    quote: 'def runClio(facets: List[Facet], llm: vllm.LLM, embeddingModel: SentenceTransformer,'
+    quote_sha256: edce65a7bf4c2fae04567b4df2d5f3a22e4920c536dfa30a97d8a3e57663f9eb
+    source_revision: 28ec1d8fc07d196d15cf142c6dbc3c82fad1643d (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: source-quote
+    locator: openclio/prompts.py L62-L76 @ 28ec1d8
+    quote: 'def conversationToString(conversation: List[Dict[str, str]], tokenizer, maxTokens: int=-1) -> str:'
+    quote_sha256: a8efe175f1c07c29b6a2b232eb3fc3b3e8f164b10389040972f775bef7ae9520
+    source_revision: 28ec1d8fc07d196d15cf142c6dbc3c82fad1643d (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: absence
+    locator: README.md full text (absence) @ 28ec1d8
+    quote: 'NOT-FOUND-IN-SOURCE: no quality metrics in README (searched README.md, project-wiki/*.md headings)'
+    quote_sha256: a2fa922a60af86de429dadd00dbd0c820277be40a878a5830a17d605ea6e7cfc
+    source_revision: 28ec1d8fc07d196d15cf142c6dbc3c82fad1643d (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: source-quote
+    locator: pyproject.toml dependencies @ 28ec1d8
+    quote: "\"vllm\",\n    \"pandas\",\n    \"sentence_transformers\","
+    quote_sha256: 888756293c46790355a1d6d657ff94b553078362a820cdbe4efbbd8df8924f7e
+    source_revision: 28ec1d8fc07d196d15cf142c6dbc3c82fad1643d (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2447
+  arxiv_id: null
+  url: https://github.com/567-labs/kura
+  source_type: repo
+  title: Kura
+  categories:
+  - knowledge_management
+  - tool_implementation
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2444
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - 567-labs (Ivan Leo et al.)
+  key_claims:
+  - 'No LICENSE file in the repo tree and GitHub reports no SPDX licence (pyproject has no licence field): legally all-rights-reserved
+    by default, so code must not be copied; patterns only.'
+  - LLM calls go through instructor.from_provider(model_string, async_client=True) with default openai/gpt-4o-mini in SummaryModel
+    and ClusterDescriptionModel; embeddings default to OpenAI text-embedding-3-small with a SentenceTransformer (all-MiniLM-L6-v2)
+    alternative. A local OpenAI-compatible endpoint is plausible via instructor provider strings but is not documented in
+    README (no ollama/base_url/vllm mention).
+  - 'Pipeline differs from Clio ordering: summarise each conversation (LLM, structured output) -> embed summaries -> MiniBatch
+    K-means (or HDBSCAN) -> LLM meta-clustering -> UMAP; requires structured-output (response_model) support from the model.'
+  techniques:
+  - conversation summarisation then embedding
+  - MiniBatch k-means
+  - instructor structured outputs
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-2444
+  credibility_score: 0
+  contradicting_evidence: null
+  notes: 'Kura commit 956d95a (pushed 2025-09-10). Read README, pyproject, cluster.py/summarisation.py/embedding.py grep-level.
+    Not read: docs/, hdbscan.py, meta_cluster.py internals.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2444 treated Kura as an MIT-style open reimplementation;
+    no licence file exists, so it is a pattern reference only. Low priority; OpenClio''s facet-first design is closer to Clio.'
+  claim_anchors:
+  - claim_index: 0
+    kind: absence
+    locator: 'repo tree listing @ 956d95a (absence: no LICENSE*)'
+    quote: 'NOT-FOUND-IN-SOURCE: no LICENSE file in root tree (.cursorrules .github .gitignore ... AGENT.md CLAUDE.md CONTRIBUTING.md
+      MANIFEST.in README.md ...); GitHub API license: null'
+    quote_sha256: 6abdf8773e667f7377ad28ca6bdbe3ae223a59bb4ae687ce3afa2f5f0ed3f07b
+    source_revision: 956d95ac6a19c841c59eefe692f3341dfc2ba410 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: source-quote
+    locator: kura/cluster.py L81, L122 @ 956d95a
+    quote: 'model: Union[str, "KnownModelName"] = "openai/gpt-4o-mini",'
+    quote_sha256: 27c9f8b501dfe3495b469d92441fde2a2a9c96c1a75de788c75d5df6cb4c04c1
+    source_revision: 956d95ac6a19c841c59eefe692f3341dfc2ba410 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: source-quote
+    locator: README.md L177 @ 956d95a
+    quote: 3. **Clusters** similar conversations using MiniBatch K-means for speed
+    quote_sha256: 51d84187172d1427b23ca9d81830d64dfe205cceec91af13247374425900fa23
+    source_revision: 956d95ac6a19c841c59eefe692f3341dfc2ba410 (main, retrieved 2026-10-22)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
+- id: intake-2448
+  arxiv_id: null
+  url: https://suproteem.cc/agents.pdf
+  source_type: paper
+  title: AI Agents and Higher-Order Work
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2444
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - Suproteem K. Sarkar
+  key_claims:
+  - 'Cursor data: 119,960 users across 1,000 sampled firms; agents passed autocompletion as most-used AI feature in April
+    2025; 92% of active users used agents by start of 2026.'
+  - 59% of agent messages are write-code instructions, 33% are questions, 4% of first messages are plans (message-intent classifier
+    from a Cursor service, subset of firms).
+  - 'Expertise gradient (years of work experience from LLM-labelled work-history summaries): +1 SD experience -> 4% lower
+    ask-intent rate, 11% higher plan rate in first messages, 2% higher agent-output accept rate vs 4% LOWER autocompletion
+    accept rate.'
+  - 'Diff-in-diff on 32 firms (24 eligible vs 8 baseline): weekly merges +39% in 15 weeks after the Feb 19 2025 full release,
+    no significant revert-rate change; +50% (low engineer share) vs +30%; +52% (high avg experience) vs +23% (low).'
+  - 'Corroboration of intake-2445 is directional only: both find expertise raises agent effectiveness and shifts to plan/specification,
+    but with different expertise proxies (tenure/work history vs per-session transcript-rated task expertise), different tools
+    and associational designs; this is not independent replication of the same estimand.'
+  techniques:
+  - difference-in-differences on firm merges
+  - LLM message-intent classification
+  - LLM labelling of work histories
+  reported_results:
+  - +39% weekly merges (24 vs 8 firms, 15 weeks)
+  - +52% vs +23% by firm experience
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2445
+  credibility_score: 1
+  contradicting_evidence:
+  - single-platform vendor-supplied data; only 32 firms in the output design; revert/quality horizon short (paper's own caveat)
+  notes: 'PDF 5.0MB retrieved 2026-10-22 sha256-12 0c2825e06a26; extracted with stdlib script extract_pdf.py (words merge,
+    ligatures \002=fi); read the opening summary, related literature and data/method fragments; not read: appendices, robustness
+    tables.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): intake-2444 notes had read only the first-page abstract; full
+    text read (summary section ~5 pages; appendix and figures not read in depth). Author attribution to Sarkar taken from
+    the task brief, not verified from the extracted text.'
+  claim_anchors:
+  - claim_index: 0
+    kind: source-quote
+    locator: first-page background (extracted text)
+    quote: The main analysis sample studies usage patterns using internal data covering 119,960 users across 1,000 randomly
+      sampled firms.
+    quote_sha256: d9928ba345000e05acc7a5e1459862ec1156c2d6f0f1b6460c009f92dc8725d0
+    source_revision: agents.pdf sha256-12 0c2825e06a26, retrieved 2026-10-22; text via stdlib extraction (agents.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: source-quote
+    locator: p.3
+    quote: 59% of agent messages are instructions to write code
+    quote_sha256: 807778c4c58590ba3683dc29dffa00a0ff72a54d193de7d1cd758d3f3d7c6c0c
+    source_revision: agents.pdf sha256-12 0c2825e06a26, retrieved 2026-10-22; text via stdlib extraction (agents.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: source-quote
+    locator: p.4
+    quote: One standard deviation increase in work experience is associated with 4% lower ask intent rates across all agent
+      messages, and 11% higher plan intent rates in conversation-starting messages.
+    quote_sha256: d5783fe5cae7cc7d58d0bbc56d2d0ba758aa0a73f3d973ede3bdce7450ea704f
+    source_revision: agents.pdf sha256-12 0c2825e06a26, retrieved 2026-10-22; text via stdlib extraction (agents.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: source-quote
+    locator: p.4-5
+    quote: In the 15-week period after the agent's full release, weekly code merges were 39% higher in the eligible group
+      relative to time trends in the baseline group.
+    quote_sha256: ca89f98384b1e2c9188a4bb7372ba7da1c2c0466b3feb709f2a858d247ffb049
+    source_revision: agents.pdf sha256-12 0c2825e06a26, retrieved 2026-10-22; text via stdlib extraction (agents.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: derived
+    locator: synthesis vs intake-2445 (own words, no source quote)
+    quote: 'DERIVED: comparison of expertise proxies; no single source sentence'
+    quote_sha256: baefd7a3a12d04cbe657880a9271922e084f9932d32ed7c193e596c4a2627c4d
+    source_revision: agents.pdf sha256-12 0c2825e06a26, retrieved 2026-10-22; text via stdlib extraction (agents.txt)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim
+  depends_on: []
