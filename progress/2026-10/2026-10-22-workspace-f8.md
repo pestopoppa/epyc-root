@@ -241,3 +241,62 @@ Three port bugs fixed on `experimental/locals-kernel-fixes-20261022` (c64cd9c14,
   - Whole-host block 10-23 ~07:55-10:30Z: locals-akx-lb3-cpu-lc-premeasure, then locals-kvu-lb1-arch-decode-ab. The operator approved the ~2.5 h of 503s on the 0-95 serving roles via AskUserQuestion.
 - Blocked: KPF-LB1.1 needs a captured 12-turn REPL transcript (replay_recording on for one live run); this ties to the operator's pending API reload.
 - Operator rulings today: no backup work here (root agent owns it); mine everything via the ro snapshots /mnt/raid0/llm/opencode-db; operator name in commits is fine.
+
+## Evening 2026-10-22 (operator-invoked /wrap-up, subagent, branch `f8/wrapup-20261022-evening`)
+
+Covers work since the afternoon wrap-up (root `78bbd5687`). Each item below was checked against git.
+
+- **HF token (SEC-EXEC-6).** The operator closed the huggingface.co revoke sub-task as declined (root `4b071084d`, rollup `a6cea4160`). Both local token files were already deleted on 2026-10-21. The SEC-EXEC-6 parent stays open for its chmod / token-free nextplaid mount remainder.
+- **KPF-LB1.1 no longer needs the operator's API reload.** The launcher captures its own 12-turn REPL transcript in-window, on one private 27B server: `capture.py`, a socket guard, every URL on the private port, and a server restart before the lanes. The PREDECLARATION was amended at 16:15Z, before any compute. workspace-58 armed the launcher (pid 3419004) and booked it on tonight's GPU tail (root `55a61404f`, rollup `04b091f4b`). The capture found two orchestrator bugs, fixed on orchestrator main `cdbca26b` (operator approved):
+  - `registry_role_urls` ignored the `ORCHESTRATOR_SERVER_URLS_<ROLE>` overrides, so the context-limit fallback contacted production :8083 from a private-URL harness. The override is unset in production, so serving does not change.
+  - `auto_wrap_final` wrapped one-line assignments into an always-failing `FINAL(...)`. This fix goes live at the next API reload.
+  - The operator noted that the next kernel/stack upgrade opens a new era anyway, so the second fix needs no era row of its own.
+- **Floor registry.** The tests (42 pass on research `b93017dc9`) and the landing are ticked. AKX-AUTO-6 and AKX-AUTO-11 each got an exercise sub-task. workspace-7b's Q38FN longctx digests are recorded as UNREGISTERED and indicative only, because no `dd3d9721c` store-build floor record exists (root `ed8ec14d7`, rollup `a9dcd63d9`).
+- **Locals+beacon non-inference follow-ups:**
+  - Orchestrator main `d0e0e477` holds two items. The UFH14-LB3.1 turn-1 probe logs `turn1_grammar_shape` and `turn1_output`. The UFH14-LB6.2 change records worker_pool `/completion`, schema repair and both VL calls through `record_http_call`. A subagent pushed this commit to main by mistake: it ran a bare `git push` with `push.default=upstream` on a branch cut from origin/main. The operator reviewed the commit and chose to keep it. A memory was saved: always push with an explicit refspec.
+  - Research main `ea3c98434`: KPF-64.1 adds the opt-in `--vault-sources` to the replay adapter (operator approved). It is off by default, so the predeclared seed-64 draw is unchanged.
+  - Root `1b88d6c1d`:
+    - UFH14-LB9.1: 444 of 450 tool-call turns re-tokenize exactly.
+    - DHM-7.2: the granite-97m CPU embedder recovered 5 of 5 planted classes, against 3 of 5 for hashed TF-IDF, on the sample.
+    - The UTM-LB4 OTel field list.
+    - Ticks for F3-LB1, NIB2-LB1 and KVU-LB1.c.
+    - Corrected "unmerged" notes on landed branches.
+  - Root `dac42532e` (rollup `861b8576d`):
+    - AKX-ALL-LB4.2/.3/.5 code is on `experimental/locals-kernel-fixes-20261022` @ `9a338d4f1`, pushed to the fork. Not built.
+    - LB4.4 is closed as won't-port: there is no ARM hardware, and the hook declines on non-AVX2 builds.
+    - The UFH14-LB4 chat-parser test is written.
+    - The v11 manifest has row V11-102, status PEND.
+    - Job `akx-lb4-followups` is armed (pid 3817335) and booked on q2 tonight.
+- **Follow-up kernel intake (CH-18.c).** Covers ik FlashMLA #277/#243, the #1212/#1215 q8_0 repack, issue #1205 and ggml #28576. Stage 1 landed (root `89286a640` + `55dad9032`, intake-2494..2503). Another subagent is running the Stage 2 dives, so this wrap-up did not touch those entries.
+- **SEC lanes.** Another subagent is preparing the landing; it started after the gitnexus re-index finished at 16:55Z. Nothing has landed yet.
+- **Still scheduled tonight (FILLERS rows verified):**
+  - `dhm-mining-full`, which produces the DHM-4 labelling sheet.
+  - The GPU runs `kpf18-item3-v2-sameshape`, `locals-df2-lb1-ubatch-census` and `locals-kpf-lb1-1-27b-completion-turns`.
+  - On q2/q3: `kvu121b-32k-dense-vs-coarse`, `locals-specgram2-window` and `akx-lb4-followups`.
+  - On 10-23, the whole-CPU runs `locals-akx-lb3-cpu-lc-premeasure` and `locals-kvu-lb1-arch-decode-ab`.
+
+| Repo | Commit | What |
+|---|---|---|
+| epyc-root | `4b071084d` (+ rollup `a6cea4160`) | SEC-EXEC-6 revoke sub-task declined (operator) |
+| epyc-root | `55a61404f` (+ rollup `04b091f4b`) | KPF-LB1.1 self-captures; capture fixes recorded; run armed |
+| epyc-root | `ed8ec14d7` (+ rollup `a9dcd63d9`) | floor-registry ticks; AKX-AUTO-6/11 exercise sub-tasks; Q38FN unregistered |
+| epyc-root | `1b88d6c1d` | UFH14-LB9.1, DHM-7.2 embedder, UTM-LB4, LB ticks, landed-branch notes |
+| epyc-root | `89286a640`, `55dad9032` | kernel follow-up intake Stage 1 (intake-2494..2503) |
+| epyc-root | `dac42532e` (+ rollup `861b8576d`) | AKX-ALL-LB4.2-.5, UFH14-LB3.1/LB4/LB6.2, KPF-64.1 recorded; V11-102 PEND |
+| epyc-orchestrator | `cdbca26b` (main) | context-limit fallback honours URL overrides; no FINAL-wrap of one-line assignments |
+| epyc-orchestrator | `d0e0e477` (main) | UFH14-LB3.1 turn-1 probe; UFH14-LB6.2 call-site recording |
+| epyc-inference-research | `ea3c98434` (main) | KPF-64.1 vault sources |
+| epyc-llama (experimental, fork) | `9a338d4f1` on `experimental/locals-kernel-fixes-20261022` | LB4.2/.3/.5 + chat-parse truncation test (not built) |
+
+### Checklist sync / derived actionables (this wrap-up)
+
+- Flips 2: UFH14-LB3.1a (the logging half) and UFH14-LB6.2a (the four wrapped call sites). Both were recorded only in prose; the work landed on orchestrator main `d0e0e477`. All other evening items already carried checkbox state.
+- Filed 4 new `- [ ]`:
+  - UFH14-LB3.1b: the A/B run, with its full run spec.
+  - UFH14-LB4.1: the history-echo side finding. A client that echoes a call's invalid-JSON `arguments` back in the history makes `common/chat.cpp:2372` throw `std::runtime_error`. A static read of `ex_wrapper` says that becomes a 500, but this is unconfirmed.
+  - UTM-LB4.1: the tool-call and sub-agent lineage OTel fields.
+  - DHM-7.2a: the granite full-corpus run, with its command. Tonight's `dhm-mining-full` runs `mine_m2.py` without `--embed-gguf`.
+- Repair: the DHM-7.2 embedder note had been inserted under DHM-4, splitting the DHM-7.2 task line. It now sits under DHM-7.2.
+- Declined 2, both in writing:
+  - UTM-LB4 compaction via OTel. A compaction needs a context-filling session, and the transcript projector already records compaction boundaries. The decline is written in `unified-trace-memory-service.md`.
+  - The kernel-intake preliminary actionables. They belong to Stage 3 of CH-18.c, which binds each keep to the v11 list or the fold-ledger route once the Stage 2 dives return. Filing them now would bypass that gate and could collide with the in-flight Stage 2 subagent.
