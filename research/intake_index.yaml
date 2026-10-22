@@ -350557,3 +350557,702 @@
     effect: unaffected
     note: 'Fresh: schema difference read from sql.ts; host DB inspected read-only (immutable=1), counts via LIMITed subquery.'
   depends_on: []
+- id: intake-2438
+  arxiv_id: null
+  url: https://github.com/openai/codex
+  source_type: repo
+  title: openai/codex - rollout JSONL writer, state_5.sqlite and thread_history sqlite session-store schemas (codex-rs/rollout,
+    history, protocol, state)
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - tool_implementation
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2436
+  verdict: adopt_patterns
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - OpenAI (Codex team)
+  key_claims:
+  - 'Rollout files are JSONL under ~/.codex/sessions/YYYY/MM/DD/rollout-<UTC-second-ts>-<thread-uuid>[_<rollout-uuid>].jsonl
+    (archived_sessions/ sibling). Each line is {timestamp (ms, Z), optional ordinal, type, payload} where type is a snake_case
+    tag from a closed set: session_meta, response_item (payload plus optional harness metadata), inter_agent_communication,
+    inter_agent_communication_metadata, compacted, turn_context, token_usage_record, world_state, retained_context, security_risk_score,
+    event_msg (payload is itself type-tagged, e.g. token_count, task_started, task_complete, item_completed; the turn_started/turn_complete
+    names are serde ALIASES accepted on read, the written tags are task_started/task_complete), realtime_item. [rollout_payload.rs:L31-L72;
+    recorder.rs:L2113-L2120; recorder.rs:L1760; rollout_file_name.rs]'
+  - 'Token semantics: Codex input_tokens INCLUDES cached_input_tokens (non_cached_input() = input - cached), and the Responses-API
+    fixture shows cache_write_input_tokens is also inside input_tokens (input 100 = cached 40 + write 60); reasoning_output_tokens
+    is a subset of output_tokens and total_tokens = input + output (110 = 100 + 10). So Codex is the INCLUSIVE convention,
+    opposite to Claude Code / Anthropic and opencode (which store input non-cached). [protocol.rs:L2575-L2581; codex-api/src/sse/responses.rs:L868-L891]'
+  - 'Two usage records exist and must not be mixed: (a) event_msg/token_count carries info{total_token_usage (cumulative across
+    the thread, built by add_assign of each response), last_token_usage (the latest response), model_context_window} plus
+    rate_limits, with info optional (rate-limit-only updates) - summing token_count lines over-counts; (b) top-level token_usage_record,
+    one per completed Responses API response, carries thread_id, session_id, turn_id, root_turn_id, response_id, usage (this
+    response), turn_token_usage and thread_token_usage (running totals). The per-response record is the clean unit for a projector;
+    response_id is the join key to gen_ai.response.id. [protocol.rs:L2413-L2423; protocol.rs:L2460-L2463; core/src/state/session.rs:L229-L267]'
+  - 'Stable ids and parent/child linkage: session_meta.session_id equals the ROOT thread''s id (older rollouts lacking it
+    get id copied in by the deserializer); id is the thread id (UUIDv7); a sub-agent thread carries parent_thread_id, forked_from_id
+    (+ordinal), session_meta.source = {subagent:{thread_spawn:{parent_thread_id, depth, agent_path, agent_nickname, agent_role}}}
+    and subagent_history_start_ordinal (earlier lines are inherited parent context, not child work - a projector that counts
+    them double-counts parent turns/usage). the task_started event (wire tag; alias turn_started) carries turn_id, root_turn_id
+    and an optional trace_id (the OTel trace id - the join key from rollout to codex OTel spans; ABSENT in the live 0.163.0
+    rollout sampled here, where OTel is off, so it cannot be relied on). Tool calls are keyed by call_id on function_call
+    / function_call_output (also custom_tool_call, local_shell_call); the optional response-item id is prefix_uuidv7. SQLite
+    thread_spawn_edges(parent_thread_id, child_thread_id PRIMARY KEY, status) mirrors the tree. [protocol.rs:L3283-L3293;
+    L2323-L2337; models.rs FunctionCall; migrations/0021]'
+  - 'Schema versioning: there is NO schema/format version field anywhere in rollout, history, protocol or state source (grep
+    for schema_version|format_version|rollout_version|rollout_format returns only a sqlite PRAGMA test). Evolution is by serde
+    default/alias/skip_serializing_if (old rollouts remain readable), session_meta.cli_version (writer version), and ThreadHistoryMode
+    {legacy, paginated} in session_meta.history_mode: paginated rollouts stamp a per-line ordinal and persist item_completed
+    TurnItems, legacy rollouts persist the older user_message/agent_message/exec events instead and no ordinal. SQLite files
+    are versioned by FILENAME (state_5.sqlite with 61 numbered migrations; thread_history_1.sqlite with 8). A projector must
+    key on (cli_version, history_mode, presence of ordinal), not on a version field. [sqlite.rs:L47-L48; protocol.rs:L885-L889;
+    ordinal.rs:L37]'
+  - 'The SQLite stores are derived indexes; the JSONL is authoritative. state_5.sqlite threads(id, rollout_path, ... tokens_used,
+    history_mode, thread_source ...) points at the rollout file; thread_history_1.sqlite (thread_turns, thread_items(item_json),
+    thread_history_projection_state.next_rollout_byte_offset/next_rollout_ordinal) is an incrementally replayed projection
+    of paginated rollouts. Persistence is lossy by policy: command output and MCP results are truncated to 64 KiB, and ExecCommandEnd/ExecCommandBegin/Error/streaming
+    deltas are transient (not written), so tool-result fidelity in the rollout is bounded. A trace projector should read JSONL
+    and use SQLite only for the spawn-edge tree and fast thread lookup. [state/thread_history_migrations/0001:L34-L37; policy.rs:L17;
+    policy.rs persisted_event_msg]'
+  techniques:
+  - append-only JSONL rollout with type-tagged items
+  - per-response token_usage_record with running turn/thread totals
+  - derived sqlite projection with byte-offset replay cursor
+  - trace_id stamped into rollout turn_started for OTel join
+  - history_mode (legacy|paginated) as the de-facto schema axis
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - unified-trace-memory-service.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2436
+    - intake-2437
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: 'Read openai/codex @ b337fe06b7d8d6e5b42295e04c5e92c2b9c46567 (HEAD of default branch at 2026-10-22, depth-1 blobless
+    sparse clone: codex-rs/{rollout,history,protocol,state,core/src,codex-api}). NOT read: app-server projection of thread
+    history to clients, codex-rs/thread-store, rollout-trace crate, TUI resume path; one live ~/.codex/sessions rollout (cli
+    0.163.0, exec, paginated) was key-peeked for line/event type names and one token_count only. Unresolved: how turn_id (sub_id)
+    is minted for user turns (uuid::new_v4 seen only for pending-work turns); whether TokenUsageRecord is emitted for every
+    provider (only Responses-API path read).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read the writer and protocol types directly at b337fe06 (same
+    revision intake-2436 used for codex-rs/otel). Settled: input_tokens INCLUDES cached (and cache-write) tokens; reasoning
+    is a subset of output; token_count.total_token_usage is cumulative so summing token_count lines over-counts; per-response
+    truth is token_usage_record; no rollout schema-version field exists (version axes are cli_version, history_mode and sqlite
+    filename suffix).'
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: codex-rs/history/src/rollout_payload.rs:L31-L35 @ b337fe06
+    quote: "#[derive(Serialize, Deserialize, JsonSchema)]\n#[serde(tag = \"type\", rename_all = \"snake_case\")]\npub(super)\
+      \ enum RolloutItemWire<'a> {\n    SessionMeta {\n        payload: Cow<'a, SessionMetaLine>,"
+    quote_sha256: b86ab67066a4ee0ff1af1563d00c689ca09f0fb48dba9db3e48d758763bd5db0
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: code
+    locator: codex-rs/rollout/src/recorder.rs:L2112-L2121 @ b337fe06
+    quote: "#[derive(serde::Serialize)]\nstruct RolloutLineRef<'a> {\n    timestamp: String,\n    #[serde(skip_serializing_if\
+      \ = \"Option::is_none\")]\n    ordinal: Option<u64>,\n    #[serde(flatten)]\n    item: &'a RolloutItem,\n}\n\nimpl JsonlWriter\
+      \ {"
+    quote_sha256: b3b1aae5690fa7fe59bb0f0ddf98ea13e7998bbc48488d0aac7c0e4c771d2e46
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: codex-rs/protocol/src/protocol.rs:L2575-L2581 @ b337fe06
+    quote: "    pub fn cached_input(&self) -> i64 {\n        self.cached_input_tokens.max(0)\n    }\n\n    pub fn non_cached_input(&self)\
+      \ -> i64 {\n        (self.input_tokens - self.cached_input()).max(0)\n    }"
+    quote_sha256: fae3b9f742eaa20d3a2ea027551d0496956feb94883a4a5e61277f6eb50284fb
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: code
+    locator: codex-rs/codex-api/src/sse/responses.rs:L868-L891 @ b337fe06
+    quote: "    fn parses_cache_write_token_usage() {\n        let usage: ResponseCompletedUsage = serde_json::from_value(json!({\n\
+      \            \"input_tokens\": 100,\n            \"input_tokens_details\": {\n                \"cached_tokens\": 40,\n\
+      \                \"cache_write_tokens\": 60\n            },\n            \"output_tokens\": 10,\n            \"output_tokens_details\"\
+      : { \"reasoning_tokens\": 5 },\n            \"total_tokens\": 110,\n            \"codex_rollout_budget_units\": 2.5\n\
+      \        }))\n        .expect(\"valid response usage\");\n\n        assert_eq!(\n            TokenUsage::from(usage),\n\
+      \            TokenUsage {\n                input_tokens: 100,\n                cached_input_tokens: 40,\n          \
+      \      cache_write_input_tokens: 60,\n                output_tokens: 10,\n                reasoning_output_tokens: 5,\n\
+      \                total_tokens: 110,\n                codex_rollout_budget_units: serde_json::Number::from_f64(2.5),"
+    quote_sha256: 3ec9c73ee1fdc1e268049fa1ad397de8765b7b68b269a156acca48f0b96bf078
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: codex-rs/protocol/src/protocol.rs:L2413-L2423 @ b337fe06
+    quote: "pub struct TokenUsageRecord {\n    pub thread_id: ThreadId,\n    pub turn_id: String,\n    pub session_id: SessionId,\n\
+      \    pub root_turn_id: String,\n    pub response_id: String,\n    pub usage: TokenUsage,\n    pub turn_token_usage:\
+      \ TokenUsage,\n    pub thread_token_usage: TokenUsage,\n}\n"
+    quote_sha256: 05a0a9cdb37995b24595489711d4319c162a64e62825155ed67d8b6ab093cddc
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: codex-rs/protocol/src/protocol.rs:L2460-L2463 @ b337fe06
+    quote: "    pub fn append_last_usage(&mut self, last: &TokenUsage) {\n        self.total_token_usage.add_assign(last);\n\
+      \        self.last_token_usage = last.clone();\n    }"
+    quote_sha256: 4bdf87636b8c44839aa2fb3ac3e58cd8fd264cec9e8595fdc151f19c908e3864
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: codex-rs/protocol/src/protocol.rs:L3283-L3284 @ b337fe06
+    quote: "    /// session_id is equal to the root thread's ID.\n    pub session_id: SessionId,"
+    quote_sha256: f5b4b33ff0c5b5c6d64cc58495ca0feaec856ae71605334459609a340cb54090
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: codex-rs/protocol/src/protocol.rs:L2330-L2337 @ b337fe06
+    quote: "    /// ID of the originating turn in the root thread; equals `turn_id` for root turns.\n    #[serde(default,\
+      \ skip_serializing_if = \"Option::is_none\")]\n    #[ts(optional)]\n    pub root_turn_id: Option<String>,\n    // Persist\
+      \ for rollout consumers that correlate turns with telemetry traces.\n    #[serde(default, skip_serializing_if = \"Option::is_none\"\
+      )]\n    #[ts(optional)]\n    pub trace_id: Option<String>,"
+    quote_sha256: c9a84639408db071a94e604d6ddbdb276070de64abdcd6b85bc0a0ad756bbb23
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: codex-rs/state/migrations/0021_thread_spawn_edges.sql:L1-L5 @ b337fe06
+    quote: "CREATE TABLE thread_spawn_edges (\n    parent_thread_id TEXT NOT NULL,\n    child_thread_id TEXT NOT NULL PRIMARY\
+      \ KEY,\n    status TEXT NOT NULL\n);"
+    quote_sha256: 627e42e6a4f090dfdee6bf5a6a2bff3144c4808e9aaffee51a251888c41c4373
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: codex-rs/state/src/sqlite.rs:L47-L48 @ b337fe06
+    quote: 'const STATE_DB_FILENAME: &str = "state_5.sqlite";
+
+      const THREAD_HISTORY_DB_FILENAME: &str = "thread_history_1.sqlite";'
+    quote_sha256: 42901318f5905323e52779de340598392b53f6f1ab618da8d16be025e93465b0
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: code
+    locator: codex-rs/protocol/src/protocol.rs:L885-L889 @ b337fe06
+    quote: "pub enum ThreadHistoryMode {\n    #[default]\n    Legacy,\n    Paginated,\n}"
+    quote_sha256: 86ce86e8bd18b2742af4d37efde8b2586ce5c54275c505b46aac4d6b1612c8d7
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: codex-rs/state/thread_history_migrations/0001_thread_history.sql:L34-L37 @ b337fe06
+    quote: "CREATE TABLE thread_history_projection_state (\n    thread_id TEXT PRIMARY KEY,\n    next_rollout_byte_offset\
+      \ INTEGER NOT NULL,\n    next_rollout_ordinal INTEGER NOT NULL"
+    quote_sha256: 0164aa66068c6a8d18521b34d78dec2091928d6063f9df427bdedbdcebc0bd9b
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: codex-rs/rollout/src/policy.rs:L17-L17 @ b337fe06
+    quote: 'pub(super) const PERSISTED_COMMAND_OUTPUT_MAX_BYTES: usize = 64 * 1024;'
+    quote_sha256: ed70f0d9d028eda8e9ac4e950f2552101913c157872bb8168960a6119e3b443d
+    source_revision: openai/codex@b337fe06b7d8d6e5b42295e04c5e92c2b9c46567
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim from this read
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim from this read
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim from this read
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim from this read
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim from this read
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim from this read
+  depends_on: []
+- id: intake-2439
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/19209
+  source_type: repo
+  title: 'ggml-cpu: FA split across kv for faster TG'
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: already_integrated
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - am17an
+  key_claims:
+  - 'CPU FA decode is split across the KV/context dimension: each thread owns a KV chunk, keeps partial (max, sum, V-accumulator)
+    for ALL query heads, and a final reduction merges the partials (flash-decoding) (PR body).'
+  - Before this PR the CPU FA kernel parallelised only over query rows (= query heads at N=1), so going from 32 to 64 threads
+    gave nothing when n_heads < n_threads (PR body).
+  - 'Reported decode gain grows with context, >2x at depth; figure (read from the PNG, approx +-0.3 t/s): llama-8B Q4_K_M
+    64t ~3.0 -> ~6.7 t/s at 32K, ~5.3 -> ~10.2 at 16K; deepseek2-30B-A3B 64t ~2.6 -> ~7.7 at 32K; gpt-oss-20B 64t ~9.1 ->
+    ~13.6 at 32K. KV type of the bench is NOT stated in the source (llama-bench default f16 presumed, not verified).'
+  - The optimised path engages only for f16/f32 KV (author, 2026-02-03); q8_0/bf16 KV keep the old vec kernel.
+  - The PR added a CPU 'use_ref' reference flag so test-backend-ops -b CPU compares the optimised CPU FA against the simple
+    vec kernel (CPU-vs-ref pattern).
+  - In v10 (ffc1bac82) the path engages iff GGML_FA_SPLIT_KV is not 0 (local INF-70 patch c51e4dabf, default ON), !use_ref,
+    N==1, single sequence (neq3==1), K/V f16 or f32 with k.type==v.type, Q f32, padded n_kv >= 512; chunk = ceil(n_kv/nth).
+  techniques:
+  - split-KV flash-decoding on CPU
+  - per-thread partial softmax accumulators + reduce
+  - CPU reference-kernel flag for test-backend-ops
+  reported_results:
+  - llama-8B Q4_K_M 64t TG@32K ~3.0 -> ~6.7 t/s (figure, approx)
+  - gpt-oss-20B 64t TG@32K ~9.1 -> ~13.6 t/s (figure, approx)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - iqk-iquant-enablement.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+  credibility_score: 4
+  contradicting_evidence:
+  - Independent Zen3/Zen5 16-core runs in the thread (Djip007) show CPU FA still slower than no-FA with bf16/f16 KV at 16-32K
+    (e.g. Zen3 f16 tg16@d32768 2.24 no-FA vs 2.03 FA) - but those are 16-thread runs, the regime where split-KV helps least.
+  notes: 'Read: PR JSON + issue comments (pr19209.txt sha256-12 4d0a74ab137f), figure PNG (f2ffef3105c1; numbers read off
+    the plot, approximate), v10 ops.cpp L9420-L9548 @ ffc1bac82. Not read: the commit diff itself (v10 code read instead),
+    the 7adc22d38 use_ref commit, CI workflow follow-up.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): body, all 21 issue comments (no inline review comments exist),
+    figure and the v10 dispatch code read. Established: split-KV engages only at N==1 with f16/f32 KV and padded n_kv>=512;
+    GGML_FA_SPLIT_KV is a LOCAL INF-70 knob (c51e4dabf), not upstream; MTP verify (N=5) and q8_0 KV never take it.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_body
+    locator: 'PR #19209 body (pr19209.txt:L7)'
+    quote: This PR introduces chunking across the context size, where each thread maintains partial accumulators for the sum,
+      maximum, and running VKQ sum for the the soft-max calculation and calculates this for all query heads.
+    quote_sha256: e0e30bce328230e9bf1d53657a340002e5220ae40d27e57817bad3263bfa0f18
+    source_revision: 'PR #19209 merged 2026-02-02 as 9f682fb64 (ancestor of v10 ffc1bac82); API JSON retrieved 2026-10-22,
+      pr19209.txt sha256-12 4d0a74ab137f'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: pr_body
+    locator: 'PR #19209 body (pr19209.txt:L9)'
+    quote: Also note that going from 32->64 cores on master doesn't make a difference in some cases because we only parallelize
+      the query heads which can be < n_threads
+    quote_sha256: 946fb1d86e6df445601168736047ba420a3c4107e3d3375ba2f40dbb0a2fbb5e
+    source_revision: 'PR #19209 merged 2026-02-02 as 9f682fb64 (ancestor of v10 ffc1bac82); API JSON retrieved 2026-10-22,
+      pr19209.txt sha256-12 4d0a74ab137f'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: pr_body+figure
+    locator: 'PR #19209 body (pr19209.txt:L9) + figure benchmark_comparison_log (pr19209_fig.png sha256-12 f2ffef3105c1)'
+    quote: Tested on three models and the results are good, larger (>2x) speed-ups as context size grows.
+    quote_sha256: 35ce7bcdf58f76d79b8125d3d7dd428651b800f4d43431be83990e9c9979c981
+    source_revision: 'PR #19209 merged 2026-02-02 as 9f682fb64 (ancestor of v10 ffc1bac82); API JSON retrieved 2026-10-22,
+      pr19209.txt sha256-12 4d0a74ab137f'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: review_comment
+    locator: 'PR #19209 comment am17an 2026-02-03T02:46:01Z (pr19209.txt:L160)'
+    quote: at this point optimised FA path is only used for kv f16 or f32.
+    quote_sha256: 30111bcf2c290af4b08b5b0137fbcedcc70c4ad28acbe720f3931eab4bee7c5f
+    source_revision: 'PR #19209 merged 2026-02-02 as 9f682fb64 (ancestor of v10 ffc1bac82); API JSON retrieved 2026-10-22,
+      pr19209.txt sha256-12 4d0a74ab137f'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: review_comment
+    locator: 'PR #19209 comment ggerganov 2026-02-02T09:33:41Z (pr19209.txt:L53)'
+    quote: It runs two CPU backends against each other. We just have to figure out a way to make one of the runs to use the
+      vec kernel.
+    quote_sha256: bd701dc87ab4384e72599863174b2116915fb1acc81b761cce9895a6cc772039
+    source_revision: 'PR #19209 merged 2026-02-02 as 9f682fb64 (ancestor of v10 ffc1bac82); API JSON retrieved 2026-10-22,
+      pr19209.txt sha256-12 4d0a74ab137f'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: code
+    locator: ggml/src/ggml-cpu/ops.cpp:L9464 @ ffc1bac82
+    quote: const bool use_split_kv_path = fa_split_kv_enabled && !use_ref && (neq1 == 1 && neq3 == 1) && kv_is_f32_or_f16
+      && (k->type == v->type) && q->type == GGML_TYPE_F32 && nek1 >= 512;
+    quote_sha256: 6f8d595e2d1f64a95a77f045cda26fe8f0a22ab01e3f5ea8bffa2d1cea2fab33
+    source_revision: llama.cpp ffc1bac82 (production v10)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim, read from source
+  depends_on: []
+- id: intake-2440
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/19012
+  source_type: repo
+  title: 'ggml-cpu: Use tiled FA for prompt-processing'
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: already_integrated
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: FULL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - am17an
+  key_claims:
+  - Adds a tiled (Q-tile x KV-tile) CPU FA kernel for prompt processing; tile sizes tuned on a single-socket 64-core AMD EPYC
+    (PR body).
+  - llama-8B Q4_K_M pp512@d16384 14.24 -> 62.50 t/s (4.39x); gpt-oss-20B pp512@d16384 25.12 -> 97.29 (3.87x); ~1.0x at d0
+    (PR table, vs a14b960bc).
+  - 'Profile after the change: most time in ggml_vec_dot_f16 and ggml_vec_mad_f32, ~10% in ggml_lookup_f16_to_f32 - i.e. still
+    scalar-dot-per-cell, no GEMM (fixed by #19422).'
+  - In v10 the tiled path runs only when Q f32, KV f16/f32 with k.type==v.type, N >= GGML_FA_TILE_Q (=64 in v10) and DV divisible
+    by the SIMD f32 width; decode (N=1) and MTP verify (N=5) never take it.
+  - Review produced a fully-masked KV-tile skip (load mask tile, continue if all -inf); a NaN bug from accumulating V on all-masked
+    rows was fixed in-PR.
+  techniques:
+  - Q-tile x KV-tile CPU flash attention
+  - all--inf mask tile skip
+  reported_results:
+  - llama-8B Q4_K_M pp512@d16384 14.24 -> 62.50 t/s (64c EPYC)
+  - gpt-oss-20B pp512@d16384 25.12 -> 97.29 t/s
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - iqk-iquant-enablement.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+  credibility_score: 4
+  contradicting_evidence: null
+  notes: 'Read: pr19012.txt (6ae7bc683045) incl. 9 inline review comments; v10 ops.cpp tiled kernel L9047-L9300 and dispatch
+    L9521-L9532, common.h L9-L10 @ ffc1bac82. Not read: full PR diff (v10 code read instead).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): body, comments and inline review read; v10 gate read. The tiled
+    kernel never serves decode or N=5 verify on any KV type, and never serves q8_0 KV at any N.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_body
+    locator: 'PR #19012 body (pr19012.txt:L7)'
+    quote: This PR adds a tiled FA for PP. Perf tuning for tile sizes done on a AMD EPYC single-socket 64-c machine.
+    quote_sha256: ebab78f63a950c09d95f66d6e309c520946a14d0491bcea04b467e4c6e058f04
+    source_revision: 'PR #19012 merged 2026-01-25 as bcb43163a (ancestor of v10); pr19012.txt sha256-12 6ae7bc683045, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: pr_table
+    locator: 'PR #19012 body table (pr19012.txt:L22)'
+    quote: '| llama 8B Q4_K_M       | pp512@d16384 |           14.24 |             62.50 |      4.39 |'
+    quote_sha256: 386cb850b48f07f42c51d733ccf255c7997cbdddfefb7bfe2611c033cbbb805c
+    source_revision: 'PR #19012 merged 2026-01-25 as bcb43163a (ancestor of v10); pr19012.txt sha256-12 6ae7bc683045, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: pr_body
+    locator: 'PR #19012 body (pr19012.txt:L7)'
+    quote: According to perf, most of the time is spent in `ggml_vec_dot_f16` and `ggml_vec_mad_f32`, and about ~10% of the
+      time in `ggml_lookup_f16_to_f32`
+    quote_sha256: 3a53ea9ef391f98c1f05612e432ebba94cc679e38b3745811640be20f09edbac
+    source_revision: 'PR #19012 merged 2026-01-25 as bcb43163a (ancestor of v10); pr19012.txt sha256-12 6ae7bc683045, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: code
+    locator: ggml/src/ggml-cpu/ops.cpp:L9521-L9525 @ ffc1bac82 (+ common.h:L9 GGML_FA_TILE_Q 64)
+    quote: bool use_tiled = !use_ref && (q->type == GGML_TYPE_F32 && kv_is_f32_or_f16 && k->type == v->type && neq1 >= Q_TILE_SZ);
+    quote_sha256: d5fd2d5a455f14d854bfb300ceb49c322bd426af03b3eb1fc06e7f53424ba7bb
+    source_revision: llama.cpp ffc1bac82 (production v10)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: review_comment
+    locator: 'PR #19012 comment am17an 2026-01-23T18:11:52Z (pr19012.txt:L61)'
+    quote: When the row is all masked, we were accumulating V still which leads to NaNs. I added the change to skip those
+      rows and confirmed locally that the test passes
+    quote_sha256: 1072aeef5b5f9c5cc64d48dddc4799d53f76bfb02e8220ff7d1d9496660fdae6
+    source_revision: 'PR #19012 merged 2026-01-25 as bcb43163a (ancestor of v10); pr19012.txt sha256-12 6ae7bc683045, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim, read from source
+  depends_on: []
+- id: intake-2441
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/19422
+  source_type: repo
+  title: 'ggml-cpu: FA add GEMM microkernel'
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: already_integrated
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - am17an
+  key_claims:
+  - Adds an f32 register-blocked SIMD GEMM inside the tiled CPU FA kernel, retunes tile sizes and drops the n_kv % KV_TILE
+    requirement; merged and in v10.
+  - '64-core EPYC: llama-8B Q4_K_M pp512@d32768 31.33 -> 49.53 t/s (1.58x), @d16384 56.15 -> 79.88 (1.42x); gpt-oss-20B @d32768
+    56.46 -> 91.62 (1.62x).'
+  - 'The AVX-512 GEMM branch (RM=4, RN=4) is marked untested; v10 simd-gemm.h still carries ''TODO: untested on avx512''.
+    The author wrote the AVX2 micro-kernel; the rest was AI-written (PR disclosure).'
+  - test-backend-ops never exercised the tiled path because every test batch was smaller than Q_TILE_SZ; the fix proposed
+    was to add nb=65 cases.
+  - 'Independent Zen5 16-core tile sweep (Djip007, f16 KV): the default 64/64 tiles are SLOWER than no-FA at depth (pp512@d16384
+    75.05 vs 86.70 no-FA f16), while TILE_Q 300 / KV 64 / 6x4 gives 116.39 - tile size is strongly machine-dependent and compile-time.'
+  - 'Maintainer position: a pre-packed KV-cache layout for CPU FA is probably not worth the complexity; FA code must stay
+    easy to understand and test.'
+  techniques:
+  - f32 SIMD GEMM micro-kernel inside tiled FA
+  - compile-time Q/KV tile + RMxRN register blocking
+  reported_results:
+  - llama-8B Q4_K_M pp512@d32768 31.33 -> 49.53 t/s (64c EPYC)
+  - 'Zen5-16c llama-8B BF16 pp512@d16384: 64/64 tiles 75.05, 300/64 6x4 116.39, no-FA f16 86.70 t/s'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - iqk-iquant-enablement.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+  credibility_score: 5
+  contradicting_evidence:
+  - 'Djip007 Zen5 sweep: default tiles regress vs no-FA at d8192-d16384 on 16 cores (independent).'
+  notes: 'Read: body, all issue comments, inline-review thread skimmed (pr19422.txt bc58445fdfa5, 651 lines; review hunks
+    read only where they touch simd-gemm.h/common.h); v10 simd-gemm.h L1-L20. Not read: full diff; whether the nb=65 test
+    case landed (NOT checked).'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): merged and in v10; AVX-512 GEMM branch still untested at v10;
+    tiled path had zero test coverage at merge time; an independent Zen5 sweep shows the compile-time tiles are far from optimal
+    on Zen5.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_body
+    locator: 'PR #19422 body (pr19422.txt:L8)'
+    quote: '- Add a simd gemm for float32 in the tiled FA kernel.'
+    quote_sha256: 6539a6fea60191df45ee7070b1eea1e59907a56a215e7fcea4dc717c276b0b2e
+    source_revision: 'PR #19422 merged 2026-02-15 as 684b36101 (ancestor of v10); pr19422.txt sha256-12 bc58445fdfa5, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: pr_table
+    locator: 'PR #19422 body table (pr19422.txt:L31)'
+    quote: '| llama 8B Q4_K_M       | pp512@d32768 |                31.33 |                   49.53 |      1.58 |'
+    quote_sha256: 7e03401631170e8bdfa787f45e93e289456baf09501fbb94f6f2c3c4868bb091
+    source_revision: 'PR #19422 merged 2026-02-15 as 684b36101 (ancestor of v10); pr19422.txt sha256-12 bc58445fdfa5, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: ggml/src/ggml-cpu/simd-gemm.h:L10 @ ffc1bac82
+    quote: '// TODO: untested on avx512'
+    quote_sha256: c626c8bb45bd4c00b4e64bde8b3661b740c0530420a67ca6a27b5e4f21ee97eb
+    source_revision: llama.cpp ffc1bac82 (production v10)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: review_comment
+    locator: 'PR #19422 comment ggerganov 2026-02-13T07:03:28Z (pr19422.txt:L76)'
+    quote: The problem is that the tiled version is never exercised atm. `use_tiled` is always `false` because in all tests
+      the batch size is less than `Q_TILE_SZ`.
+    quote_sha256: f56df43ec19e38298933d6d65f5d21d87f15f10bcc16f329bbfaaf1076763dbf
+    source_revision: 'PR #19422 merged 2026-02-15 as 684b36101 (ancestor of v10); pr19422.txt sha256-12 bc58445fdfa5, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: review_comment
+    locator: 'PR #19422 comment Djip007 2026-02-16T23:09:51Z (pr19422.txt:L102)'
+    quote: '| llama 8B BF16   |  pp512 @ d16384 |   161.54 ± 0.89 |     97.82 ± 0.40 |     86.70 ± 0.21 |     75.05 ± 0.08
+      |   78.68 ± 0.01 |     76.93 ± 0.47 |     90.11 ± 0.82 |   116.39 ± 0.19 |  105.02 ± 0.13 |'
+    quote_sha256: 2242abde26f067e74aeaaaed5e877b3ddb13e93d9999e9d1718a63108db71842
+    source_revision: 'PR #19422 merged 2026-02-15 as 684b36101 (ancestor of v10); pr19422.txt sha256-12 bc58445fdfa5, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: review_comment
+    locator: 'PR #19422 comment ggerganov 2026-02-17T09:19:40Z (pr19422.txt:L122)'
+    quote: My feeling is even if it is possible, it wouldn't be worth the extra complexity.
+    quote_sha256: 25f557b18b380f1b9bcf1f3cc54bc8db9b58ac7187388619b991ec92baf74913
+    source_revision: 'PR #19422 merged 2026-02-15 as 684b36101 (ancestor of v10); pr19422.txt sha256-12 bc58445fdfa5, retrieved
+      2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 4
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 5
+    effect: unaffected
+    note: fresh claim, read from source
+  depends_on: []
+- id: intake-2442
+  arxiv_id: null
+  url: https://github.com/ikawrakow/ik_llama.cpp/pull/797
+  source_type: repo
+  title: 'CPU: faster FA'
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2425
+  verdict: worth_investigating
+  ingested_date: '2026-10-22'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  authors:
+  - ikawrakow
+  key_claims:
+  - Uses the KQ mask to skip fully masked parts of ik's CPU FA kernels; up to ~10% PP gain on tested models (Ryzen 7950X,
+    Qwen3-30B-A3B IQ2_XXS, q8_0 K).
+  - 'Mechanism (diff): reads the mask row of the LAST query in the q_step tile, walks back from the end in k_step blocks while
+    the block''s FIRST mask entry is non-zero, and truncates the KV loop there - a trailing-suffix (causal) truncation; one
+    q8_0 path instead breaks at the first block whose first entry is masked. Interior masked blocks are not skipped.'
+  - 'TG is unchanged by the PR (N_KV 7168: 25.09 -> 25.03 t/s).'
+  - 'ik (after #794/#796/#797) vs mainline e789095 (Sept 2025) at N_KV 7168, q8_0 K: PP 253.17 vs 34.28 t/s, TG 25.97 vs 13.08
+    t/s - a pre-#19012/#19209 mainline baseline.'
+  techniques:
+  - causal-suffix KV-loop truncation from the mask
+  reported_results:
+  - Qwen3-30B-A3B IQ2_XXS 7950X PP@N_KV7168 234.42 -> 251.91 t/s
+  - vs mainline e789095 TG@7168 13.08 (mainline) vs 25.97 (ik)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - iqk-iquant-enablement.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2425
+  credibility_score: 2
+  contradicting_evidence: null
+  notes: 'Read: body, ikawrakow comments, 52-line diff. Not read: graphs (images), ubergarm/Ph0rk0z/magikRUKKOLA benchmark
+    comments (ik797.txt L83-L350 skimmed headers only), PRs #794/#796.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): diff read; the skip is a trailing-suffix truncation keyed on
+    the first column of each k_step block of the last query row, so it does not help (and as written would be UNSAFE for)
+    top-k sparse masks whose block-first cell can be -inf while later cells are live. Mainline''s vec kernel already skips
+    -inf per cell.'
+  claim_anchors:
+  - claim_index: 0
+    kind: pr_body
+    locator: 'ik PR #797 body (ik797.txt:L10)'
+    quote: This results in noticeable  PP performance gains of up to ~10% for the tested models.
+    quote_sha256: d30678631acd38c9149dedd12e4205ab6f4846eca4202dd74883d6709934449e
+    source_revision: 'ik_llama.cpp PR #797 merged 2025-09-26 as c108e4b7c; ik797.txt 63d94c5f445f, ik797.diff 95fd12362ecd,
+      retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: diff
+    locator: ggml/src/iqk/fa/iqk_fa_templates.h hunk @1355 (ik797.diff:L12)
+    quote: for (; ik >=0 && Mc[ik] != 0; ik -= k_step);
+    quote_sha256: 0cdcb2f394b3809934a5efcd0211e4bdec45fa13ad0bf36b366d0d1ab63ad6ca
+    source_revision: 'ik_llama.cpp PR #797 merged 2025-09-26 as c108e4b7c; ik797.txt 63d94c5f445f, ik797.diff 95fd12362ecd,
+      retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: pr_table
+    locator: 'ik PR #797 body, PR table (ik797.txt:L38)'
+    quote: '|  1024 |    256 |   7168 |    4.065 |   251.91 |   10.228 |    25.03 |'
+    quote_sha256: cffb087bd7a0b554662f794dacb7bb2db95fa2e16c7156e0b193527737be5669
+    source_revision: 'ik_llama.cpp PR #797 merged 2025-09-26 as c108e4b7c; ik797.txt 63d94c5f445f, ik797.diff 95fd12362ecd,
+      retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: comment_table
+    locator: 'ik PR #797 comment ikawrakow 2025-09-24T15:33:43Z (ik797.txt:L79)'
+    quote: '|  1024 |    256 |   7168 |   29.873 |    34.28 |   19.574 |    13.08 |'
+    quote_sha256: 9bcb5b804a962e1a1a51bd2df417b03ef9a7bb245020132cbfa9ec898d0be769
+    source_revision: 'ik_llama.cpp PR #797 merged 2025-09-26 as c108e4b7c; ik797.txt 63d94c5f445f, ik797.diff 95fd12362ecd,
+      retrieved 2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 1
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 2
+    effect: unaffected
+    note: fresh claim, read from source
+  - claim_index: 3
+    effect: unaffected
+    note: fresh claim, read from source
+  depends_on: []
