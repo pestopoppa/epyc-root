@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "epyc-root/scripts/dev_harness/mining_m2_aggregate.schema.json",
+  "title": "dev-harness mining M2 aggregate (counts tree of a dev-harness-aggregate.v1 document)",
+  "description": "Written by scripts/dev_harness/mine_m2.py as <private-root>/mining/<run>/aggregate.json. The envelope is dh_privacy.AGGREGATE_SCHEMA (validate_aggregate: counts are nested objects with numeric leaves only, no lists, no per-session keys). This file documents the counts tree. <h> = harness (claude_code|codex|opencode), <s> = source (epyc|host|twyne|unknown), <cls> = a DHM-2 guard class (m2_guards.CLASSES), <o> = outcome (would_fire|blocked_hook|blocked_user|errored|slipped_through|no_result), <era> = hook_present|pre_hook|harness_uncovered|prose_only|unknown. Rates are per 1000; lo/hi are 95% Poisson intervals (rule of three when k=0).",
+  "type": "object",
+  "required": [
+    "schema",
+    "counts"
+  ],
+  "properties": {
+    "schema": {
+      "const": "dev-harness-aggregate.v1"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "units": {
+          "type": "integer"
+        },
+        "dhm2": {
+          "type": "object",
+          "description": "Retrospective guard audit and census.",
+          "properties": {
+            "classes": {
+              "description": "<cls>.<h>.<s>.<o> -> count"
+            },
+            "by_hook_era": {
+              "description": "<cls>.<h>.<era>.<o> -> count"
+            },
+            "containment_codes": {
+              "description": "write_outside_allowlist|write_tool_outside_allowlist . code:<refusal code> -> count"
+            },
+            "exposure": {
+              "description": "<h>.<s>.{units,main_units,subagent_units,tool_calls,shell_calls,write_calls,truncated_commands}"
+            },
+            "denial_census": {
+              "description": "<h>.<s>.{blocked_hook,blocked_user,hook:<hook name>} -> count"
+            },
+            "tool_error_census": {
+              "description": "<h>.tool:<name>.{calls,errors,error_rate} (top 25 tools by calls)"
+            },
+            "would_fire_per_1k_tool_calls": {
+              "description": "<cls>.<h> -> rate"
+            }
+          }
+        },
+        "dhm3": {
+          "type": "object",
+          "description": "ITS pilot, one key per pilot class (m2_lessons.PILOT).",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "lesson_date_ordinal": {
+                "type": "integer"
+              },
+              "hook_date_ordinal": {
+                "type": "integer",
+                "description": "0 = prose-only"
+              },
+              "self_excluded_units": {
+                "type": "integer"
+              },
+              "segments": {
+                "description": "pre_lesson|post_lesson_prose_only|post_hook|post_hook_harness_uncovered . {per_1k_tool_calls:{k,n,rate,lo,hi}, per_1k_human_turns:{...}, control_per_1k_tool_calls:{...} (never-lessoned classes m2_lessons.CONTROL_CLASSES), delivered_context_rate, delivered_context_rate_by_channel:{<channel>}, units}"
+              },
+              "by_harness": {
+                "description": "<h>.<segment>.{k,n,rate,lo,hi} per 1000 tool calls"
+              },
+              "segmented_regression": {
+                "description": "{fit_ok, n_days, intercept, trend, level_change_lesson, slope_change_lesson, level_change_hook, slope_change_hook} exposure-weighted OLS on daily rate per 1000 tool calls; fit_ok=0 with too_few_days|numpy_unavailable"
+              }
+            }
+          }
+        },
+        "dhm4": {
+          "type": "object",
+          "properties": {
+            "interrupt_candidates": {
+              "type": "integer"
+            },
+            "sheet_items": {
+              "type": "integer"
+            },
+            "interrupts_by_harness_source_role_marker": {
+              "description": "<h>.<s>.<main|subagent>.<marker> -> count"
+            },
+            "sheet_mix": {
+              "description": "<h>.<s> -> items on the sheet"
+            }
+          }
+        },
+        "dhm72": {
+          "type": "object",
+          "properties": {
+            "n_docs": {
+              "type": "integer"
+            },
+            "n_planted": {
+              "type": "integer"
+            },
+            "k": {
+              "type": "integer"
+            },
+            "clusters_total": {
+              "type": "integer"
+            },
+            "clusters_reported": {
+              "type": "integer"
+            },
+            "reported_doc_share": {
+              "type": "number"
+            },
+            "planted_recovery": {
+              "description": "<planted class>.{share_in_best_cluster, best_cluster_purity, separation_from_other_planted, recovered}"
+            },
+            "planted_recovered": {
+              "type": "integer"
+            },
+            "clusters": {
+              "description": "c<NN>.{n_docs,n_sessions,n_days,harness:{<h>},source:{<s>},tool:{tool:<name>},error_type:{...},top_terms:{t:<term>: log-odds},planted_in_cluster}; only clusters with >=3 sessions and >=2 days"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -201,3 +201,16 @@ Three port bugs fixed on `experimental/locals-kernel-fixes-20261022` (c64cd9c14,
 - Gap (a): the KPF-64 replay adapter opens the live `opencode.db`, contrary to the read-only-snapshot ruling. Filed `KPF-64.1` (repoint to snapshots, add vault sources; explicit decline for the live Claude/Codex JSONL as an additional source).
 - Verified present: CTC-Q-G (ticked), AKX-ALL-LB4.2-.5 (open). CTC-Q-B stays open: workspace-58 wires `grant_ok.sh` and ticks it.
 - Observation for the record (another session's, not f8's): the cs8l-asr2 stage-3 subagent ran a job without a grant. Noted only; no action here.
+
+## Dev-harness mining M2 (DHM-2, DHM-3, DHM-4, DHM-7.2, HIL-LB1)
+
+- One driver, `scripts/dev_harness/mine_m2.py`, runs all four analyses in a single streaming pass over a projection and its AgentRun conversion. Per-session output goes only under `/mnt/raid0/llm/private/dev-harness-traces/mining/<run>/`. The aggregate passes `dh_privacy.validate_aggregate`; its schema is in `scripts/dev_harness/mining_m2_aggregate.schema.json`. Modules are `m2_common`, `m2_guards`, `m2_lessons`, `m2_label_sheet` and `m2_cluster`. Tests: `tests/dev_harness/test_mining_m2.py`, 45 passing.
+- Sample run (`sample-20261022`; 65 units, 4,050 tool calls; 2.0 s, 60 MB RSS):
+  - 63 would-fire calls. 43 are containment refusals, all blocked by the hook; the rest are git stash 5, git reset --hard 4, pgrep on a pattern 3, worktree prune/force 3, glob rm 2, wholesale add 2 (blocked) and hooks-path-null 1.
+  - 75 hook denials, all from Claude Code.
+  - 3 interrupts.
+  - 6 clusters reported; 3 of 5 planted classes recovered.
+- Full run: scheduled by the main thread, outside the quiet window. Estimated 10–25 min, ~1–2 GB RSS.
+- DHM-3: registry of 290 lessons and the ITS spec, `docs/design/dev-harness-its-pilot-spec.md`. Memory files and CLAUDE.md were only read.
+- HIL-LB1 was already done (a1-orch-code, orchestrator `258ce2d7`, scored against the Who&When labelled loop set). No work was needed.
+- Belief-kernel wiring for the DHM series was already filed (VB-LB1, adapters README rows 751/754).

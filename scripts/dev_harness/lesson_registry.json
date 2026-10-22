@@ -1,0 +1,3322 @@
+{
+ "counts": {
+  "by_kind": {
+   "claude_md_rule": 25,
+   "feedback_memory": 227,
+   "incident_rule": 38
+  },
+  "hook_enforced": 9,
+  "lessons": 290,
+  "with_detector": 22
+ },
+ "detector_map_ids_not_found": [],
+ "lessons": [
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback-never-defer-discovery-tasks",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "discovery in-session"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-01",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_27b_always_dflash2",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "27B ALWAYS DFlash2"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_accumulate_ratifications_into_one_command",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ratifications: ONE command"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-05",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_accuracy_token_tradeoff_rescue_metric",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "rescue-rate metric"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_agent_loop_pseudocode_first",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "pseudocode first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_ak_gate_threat_model_honest_author",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "AK gate: honest-author threat model (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_all_recommended_means_full_list",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "all recommended = FULL list (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_allocate_ids_against_origin_main",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "allocate IDs vs origin/main"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-19",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_always_sweep",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "never skip sweeps"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-01",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_arm_watch_before_event_then_verify_state",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "arm watch before event"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-18",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_audit_parallel_agent_first",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "audit parallel agent first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_auditor_reviews_on_fable",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "auditor=Fable (superseded)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-04",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autokernel_all_devices_all_dimensions",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "AK covers CPU+GPU, all dims (10-04)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autokernel_decides_runtime_knobs",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "AK decides runtime knobs"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-03",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autokernel_lowbit_multimodel_fable_seeds",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "low-bit is AK's job"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-05",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autokernel_must_be_autonomous",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "AK harness must run unattended (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-10",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autokernel_runs_autonomously",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "campaign runs autonomously"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-09",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autopilot_host_health_remediation",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "auto drop_caches remediation"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autopilot_journal_rotation_read_all_shards",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "read all journal shards"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-31",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autopilot_noise_window_not_contention",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "noise window != contention"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-31",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autopilot_rewind_must_purge_strategy_store",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "rewind purges strategy store"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_autopilot_stop_semantics",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "pause no-op; use SIGTERM"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_belief_context_mandatory_for_loops",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "loops NEVER plan without belief context (10-21)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_bench_defaults",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "llama-bench defaults"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_bench_max_opt_and_config_probe_first",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "MAX opt; probe config first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-19",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_bench_thread_and_split_params",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "bench thread/split params"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-19",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_benchmark_methodology",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "single + concurrent benchmarks"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_bus_routing_intent_is_structural",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "bus routing is structural"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-05",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_byte_roofline_overprices_l3_resident_tensors",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "byte roofline overprices L3"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_calendar_owner_watch_step_boundaries",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "calendar owner watches step boundaries (10-21)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_campaign_resolve_verify_artifacts_hashes_model",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verify-artifacts hashes 519GB"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_canonical_baseline_protocol",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "canonical baseline protocol"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_champion_always_current_rebuild_on_every_unlock",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "champion always current"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-05",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_cheapest_capable_subagent",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "CHEAPEST capable subagent (10-05)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-03",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_checkpoint_and_periodic_wrapup_subagent",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "checkpoint often"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-15",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_checkpoint_pareto_state",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "save Pareto checkpoint state"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_classify_eval_failures_by_reason",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "classify failures by REASON"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-03",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_claude_cli_headless_actor_auth_and_overlay",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "claude -p needs API key"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-04",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_cleanup_must_check_env_and_launch_scripts",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "cleanup checks env and launchers"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_clear_only_after_wrapup_and_only_if_disjoint",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "/clear only after wrap-up"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_closure_inflation",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "closure inflation"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-03",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_coherence_gate_at_production_prompt_length",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "coherence gate at prod length"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_commit_hygiene_hook_chain_false_positive",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "hygiene hook: commit ALONE"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_compare_against_top_optimized_spec",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "compare vs TOP spec"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-16",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_consumer_env_is_not_resource_liveness",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "consumer env != live resource"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_core_objective_gate",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "CORE-OBJECTIVE gate"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_correctness_vs_timing_scheduling",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "correctness=build role, timing=window (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_correctness_work_needs_no_quiet_host",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "correctness work needs no quiet host (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_cpu_decode_bw_bound",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "CPU decode is BW-bound"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_credibility_from_source_not_readme",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "credibility from source, not README"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_critical_impact_proceed_methodically",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "CRITICAL impact: proceed methodically (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_critique_panels_need_a_delete_lens",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "critique panels need delete lens"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-02",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_custom_llama_implementation",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "other-platform != dismiss; judge mechanism (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-16",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_deep_dives_inform_planning_not_execution",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "dives inform planning"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_deploy_dashboards_by_pushing_to_main",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "deploy dashboards by push"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-31",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_derive_blast_radius_structurally",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "derive blast radius structurally"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_design_artifacts_via_design_lead",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "canvas via design lead"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_diagnosis_is_not_implementation",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "diagnosis != implementation"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_doc_discipline_indices_and_audits",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "indices are TODOs"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-17",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_dont_dismiss_creative_uses",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "creative roles first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-27",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_dont_spam_taskoutput_on_slow_benches",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "no stdout on slow benches"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_dry_run_does_not_exercise_live_checks",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "dry-run != live checks"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_ds41_tests_wait_for_kernel_work",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "DS41-1017: ONLY the noise floor until AK kernel work; all other DS41 tests disregarded, free compute (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_enable_thinking_requires_chat_completions_path",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "enable_thinking needs chat path"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_eval_saturation_masks_model_gap",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "saturation hides model gap"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-10",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_experimental_repo",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "debug in experimental repo"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-02",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fable5_godtier_architect_use",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "Fable5 = architect"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fail_open_defaults_conceal_their_own_corruption",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "fail-open defaults poison"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fastest_route_to_measurement",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "fastest route to measurement"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fetch_before_commit_on_main",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "fetch before commit"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_filtered_log_masks_working_codepath",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "no log != dead code"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fixture_must_not_remove_signal_under_test",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "fixture keeps tested signal"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fold_into_champions_big_releases",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "fold into CHAMPIONS; rare big prod bundles (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_folding_a_superseded_decision",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "folding: check current decision"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_fork_status_checks_can_go_rogue_and_write",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "status forks go rogue"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_gate_scope_must_match_measured_subset",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "gate scope = measured subset"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_gemma4_mtp_fa_assert_wedge",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "gemma4 MTP FA assert wedge"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "bare_gitnexus_analyze"
+   ],
+   "enforced_by": [],
+   "id": "feedback_gitnexus_bloat_protection",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "never bare gitnexus"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_gpu_runner_host_threads_claim_cpu_quarter",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "GPU runner claims CPU quarter (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_guard_must_not_forbid_its_own_idiom",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "guard must allow own idiom"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-13",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_handoff_driven_tracking",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "multi-phase work: handoff tracking"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-05",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_handoff_ownership_stays_with_assigned_session",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "handoff = whole scope"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-30",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_headline_numbers_must_be_production_optimal",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "headlines = production-optimal"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_health_probe_must_prove_own_server",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "health probe must prove OUR pid (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-04",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_host_drifts_3pct_over_hours_same_window_alternating",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "host drift: ABA alternate"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-19",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_host_throttle_check",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verify CPU freq/throttle"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-23",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_human_only_paths_need_ratify_script",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "human-only paths need ratify script"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_idle_compute_is_a_reportable_condition",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "idle compute is reportable (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_ik_llamacpp_omp_idle_spin",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ik_llama OMP idle-spin"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_incremental_persistence",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "persist per-question results"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_intake_companion_artifact_conflation",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "companion artifact != paper"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_intake_max_four_stage2_waves",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "intake: MAX 4 Stage-2 waves (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_intake_medium_relevance_must_be_dived",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "intake: medium+ MUST get Stage-2 dive (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_intake_techniques_seed_at_intake",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "intake: seed techniques into lanes (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_lean_registry_compiled",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "lean compiled registry"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_ledger_goes_in_master_not_compiled_output",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ledger lives in MASTER"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_lessons_go_into_project_docs",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "lessons go in PROJECT docs"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-04",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_limit_fable_token_use",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "LIMIT Fable agents (10-04)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_live_results_artifact",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "live results artifact"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "llama_cli_unbounded"
+   ],
+   "enforced_by": [
+    {
+     "class": "llama_cli_unbounded",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_llama_cli_guard.sh",
+     "since": "2026-09-01"
+    }
+   ],
+   "id": "feedback_llama_cli_repl_must_be_killed",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "llama-cli REPL must be killed"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-01",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_lock_dir_must_be_worktree_invariant",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "lock dirs worktree-invariant"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_loop_liveness_needs_durable_watch",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "AK liveness durable watchdog"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_low_key_evening_stop_reminder",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "quiet evening nudge"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_lowbit_focus_current_lanes",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "LOW-BIT = DS41/Q38FN lanes only (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_mains_always_fan_out_subagents",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "mains always fan out"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_mains_escalate_operator_input_as_options",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "dry mains escalate options"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-15",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "glob_rm"
+   ],
+   "enforced_by": [],
+   "id": "feedback_manual_confirm_before_deletion",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "confirm before deleting"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_measure_alpha_before_specdec_investment",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "measure alpha before specdec"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_measurement_attribution_hygiene",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ps %CPU is cumulative"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_mi210_host_threads_smt_siblings",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "GPU host threads = SMT siblings"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-30",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_mmap_shares_numa_placement_across_instances",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "mmap shares NUMA placement"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_model_not_role_indexing",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "index by model/quant"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "piped_gate_push"
+   ],
+   "enforced_by": [],
+   "id": "feedback_never_chain_push_after_piped_tests",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "no push after piped tests"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "edit_running_script"
+   ],
+   "enforced_by": [],
+   "id": "feedback_never_edit_running_shell_script",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "never edit running .sh"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_never_idle_autokernel_compute",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "NEVER idle AK compute"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_never_kill_a_main_to_clear_a_block",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verify before killing a main"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_new_handoff_goes_in_amendment_plan",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "mid-sweep needs amendment plan"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-30",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_ngram_fills_weak_drafter_headroom",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ngram claim RETRACTED (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_concurrent_downloads_shared_host",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "no racing downloads"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-16",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_concurrent_inference",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "region claim != gate"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_context_switching_delegate_clerical_to_opus_subagents",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "delegate clerical to Opus"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-03-25",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_core_dumps",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "NEVER core dumps"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_deferral_fix_immediately",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "fix now, whole plan"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_kernel_research_until_champion_fully_consolidated",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "kernel gate: v10 freeze"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-04",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_q4_weights_on_key_roles",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "Q4 not a FIT shortcut; low-quant perf priority (10-06)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_no_region_lock_around_orchestrator_traffic",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "no region-lock around orchestrator traffic"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "wholesale_git_add"
+   ],
+   "enforced_by": [
+    {
+     "class": "wholesale_git_add",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_commit_hygiene.py",
+     "since": "2026-07-27"
+    }
+   ],
+   "id": "feedback_no_wholesale_git_add_shared_files",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "no wholesale git add"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_noise_floor_must_carry_its_unit",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "noise floor carries unit"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-17",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_numa_concurrency_complexity",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "parallel seeding NUMA complexity"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_observe_before_diagnosing",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "observe primitive evidence first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_omp_env_stack_required",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "OMP env stack required"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_one_champion_invariant",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ONE champion invariant"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_one_ds41_server_at_a_time_earlyoom",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "ONE DS41 server at a time (10-21)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_operator_owns_host_reboots",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "operator owns reboots"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_operator_question_is_a_directive",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "operator question = directive (10-21)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_operator_remote_app_no_bang_commands",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "remote app: no '!' commands"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_operator_runs_ratify_scripts_themselves",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "operator runs ratify scripts (10-04)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_page_cache_defeats_numa_interleave",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "page cache defeats NUMA"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_pair_speed_with_correctness_check",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "pair speed with correctness"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_pane_capture_cannot_detect_compaction",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "pane capture != compaction"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_parallel_agent_staged_files_ride_along",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "STAGED files ride along"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-15",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_parallel_clerks_unique_idempotent_scripts",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "clerk scripts unique+idempotent"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_parallel_lane_never_gated_on_cpu_windows",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "2nd lane starts NOW"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_parse_failure_rate_is_a_scoring_artifact",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "parse-fail rate = scorer artifact"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "wholesale_git_add"
+   ],
+   "enforced_by": [
+    {
+     "class": "wholesale_git_add",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_commit_hygiene.py",
+     "since": "2026-07-27"
+    }
+   ],
+   "id": "feedback_pathspec_limited_commit_in_shared_tree",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "commit with pathspec"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_pause_own_subagent_tests_before_measuring",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "pause own subagent tests before timing"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_per_suite_gate_resolution_artifact",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "per-suite gate resolution"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-22",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_phased_plan_gates",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "phase gates"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-01",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_pin_code_root_for_inprocess_runs",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "pin code root for runs"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_pinned_gpu_host_threads_still_degrade_cpu_floor_9x",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "GPU hurts CPU floor 9x"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "piped_gate_push"
+   ],
+   "enforced_by": [],
+   "id": "feedback_pipe_hazards",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "never pipe"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_placement_queue_test_via_eval_path",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "test placement via eval path"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_plans_map_fixes_to_operator_symptoms",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "map fixes to symptoms"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_point_work_at_the_thesis_experiment",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "thesis experiment focus"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-04",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_pragmatic_noise_and_model_specific_kernels",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "bg load != poisoning"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_preempt_by_drain_not_force",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "preempt by drain"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_preflight_validates_resolution_not_implementedness",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "preflight != runnable"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-31",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_present_decisions_as_options_with_tradeoffs",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "decisions as options+tradeoffs"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_private_index_commits_rot_shared_index",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "private index: reset paths after"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_private_index_commits_rot_the_shared_index",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "private index rots shared index"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_process_name_probe_needs_observer_registry_row",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "name probe needs registry row"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_promotion_push_needs_push_lock_and_lane_upstream",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "push needs PUSH lock"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_queued_means_runnable",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "QUEUED = armed + runnable; else BACKLOG with a named blocker; never \"queued but not ready\" (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_quiet_host_only_for_baselines",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "quiet host only for baselines (10-21)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-15",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_qwen35_27b_architecture",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "Qwen3.5-27B is hybrid SSM"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_qwen3x_enable_thinking_false",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "Qwen3.6+ think=False"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-31",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_reclaim_must_check_lean_retention_notes",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "check LEAN retention notes"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_reclaim_no_go_artifacts_recipe_in_git_first",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "reclaim NO-GO artifacts"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_region_lock_python_is_venv_311",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "region-lock python3 = .venv 3.11 (not 3.13); use /usr/bin/python3 + cd worktree for pytest (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-17",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_registry_scope",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "registry scope"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_repo_hygiene_imports_and_binaries",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "import minimum, no binaries"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_research_exhaustion_first",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "exhaust research first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_research_intake_gate_never_lapses",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "intake: FULL flow always"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_research_intake_lane_owns_its_leftovers",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "intake lane owns leftovers"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_research_intake_never_takes_compute",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "intake never takes compute"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-03",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_research_material_only_as_wiki_knowledge",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "research only as wiki"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_reuse_main_aliases_after_reboot",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "re-spawn same main ids"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_roles_bind_to_models_not_roles",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "roles bind to models"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_same_file_reconciliation_misses",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "same-file superseded rows"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_same_model_roles_share_server",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "same GGUF = one server"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-22",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_sanity_check_before_compute",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "sanity-check infra first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_schema_repair_invents_required_fields",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "schema repair invents fields"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-09",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "write_outside_allowlist"
+   ],
+   "enforced_by": [
+    {
+     "class": "write_outside_allowlist",
+     "harnesses": [
+      "claude_code",
+      "codex",
+      "opencode"
+     ],
+     "hook": "scripts/hooks/check_filesystem_containment.sh",
+     "since": "2026-08-23"
+    }
+   ],
+   "id": "feedback_scratchpad_blocked_use_workspace_tmp",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "/tmp blocked; use workspace tmp"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_search_handoffs_before_designing",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "search handoffs first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_seed_autopilot_via_strategy_store",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "seed via strategy store"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-04-11",
+   "date_basis": "file_mtime",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_sequential_model_loading",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "load models sequentially"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_shared_file_commit_sweep",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "commit sweep: diff first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "git_stash"
+   ],
+   "enforced_by": [
+    {
+     "class": "git_stash",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_commit_hygiene.py",
+     "since": "2026-07-27"
+    }
+   ],
+   "id": "feedback_shared_file_whole_file_operations",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "shared files: whole-file ops"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-25",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_sourcing_and_licensing_policy",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "open-source only"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-20",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_speech_corpus_needs_human_ear",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "speech corpus needs human ear (10-20)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "run_benchmark_invocation"
+   ],
+   "enforced_by": [],
+   "id": "feedback_speed_verify_via_llama_bench",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "NEVER run_benchmark; use llama-bench"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_sqlite_secure_delete_makes_mass_delete_write_everything",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "sqlite SECURE_DELETE mass-delete cost"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_stack_change_three_gates",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "3 stack-change gates"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_stack_managed_services",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "services are first-class"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_stack_reload_checks_cpu_bench_not_autopilot",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "reload checks CPU bench"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-01",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_stale_build_artifact_masquerades_as_kernel_bug",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "stale build looks like kernel bug"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-30",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_stop_own_launched_loop_to_deploy_fix",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "stop own loop to deploy fix"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_stopping_autokernel_leaves_actor_orphans",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "stopping AK orphans actors"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-06",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_subagent_brief_hard_rules",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "SUBAGENT BRIEF HARD RULES (10-07)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_subagent_classifier_misses_relayed_approval",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "shared-repo edits: MAIN applies (10-21)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-23",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_subagent_model_effort_matching",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "match subagent model+effort"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_subagent_no_branch_switch_shared_clone",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "subagent: no branch switch"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-07",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_subagent_self_document_and_clean",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "subagents self-document, clean scratch (10-07)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_subagent_zero_process_management",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "subagent: ZERO process mgmt"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-01",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_substring_scorer_comma_brittle",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "substring scorer comma-brittle"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_surface_codex_ratification_requests",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "surface codex ratification asks"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_token_budget_codex_fallback_roster",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "codex fallback roster"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-22",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_unwritten_code_is_never_a_blocker",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "unwritten code is NEVER a blocker: dispatch subagents same turn, sweep proactively (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-02",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "git_worktree_prune_or_force"
+   ],
+   "enforced_by": [],
+   "id": "feedback_update_ref_with_stale_worktree_publishes_deletions",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "update-ref publishes deletions"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-28",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_use_codified_recipes_not_memory",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "use codified recipes"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_use_orchestrator_stack_for_lifecycle",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "use orchestrator_stack.py lifecycle"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_vacuous_verification_empty_input",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "vacuous passes on empty input"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-12",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verification_key_too_wide",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verification key too wide"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-08",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verify_current_stack_before_claiming_role_replacement",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verify deployed stack"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verify_evidence_in_git_not_filesystem",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "resolve evidence against GIT"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-31",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verify_integrity_not_presence_of_own_edit",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verify edit INTEGRITY"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verify_live_affinity_not_just_topology_hash",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "verify LIVE affinity"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-27",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verify_negatives_before_concluding_absence",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "one key != absence"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-06-24",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_verify_test_method_before_calling_it_a_bug",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "rule out TEST method first"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-21",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_watch_own_jobs_fix_failures_autonomously",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "watch own jobs, fix failures unasked (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-10",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_wire_new_sources_into_belief_kernel",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "wire sources into belief kernel"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-02",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [
+    "git_worktree_prune_or_force"
+   ],
+   "enforced_by": [],
+   "id": "feedback_worktree_remove_force_destroys_orphan_work",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "worktree rm --force destroys work"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-05-26",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_wrap_up_while_waiting_for_inference",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "/wrap-up while waiting"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-09-17",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_wrapup_must_verify_branch_landed",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "wrap-up: cherry empty"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-08-11",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_wrapup_per_task_not_session_end",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "one task = one wrap-up (10-07)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-10-05",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_yarn_must_not_regress_native_window",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "YaRN must not REGRESS native window; changed outputs != regression; net-paired gate (10-22)"
+  },
+  {
+   "channel": "memory",
+   "date": "2026-07-29",
+   "date_basis": "earliest_iso_date_in_text",
+   "detector": [],
+   "enforced_by": [],
+   "id": "feedback_zsh_footguns_look_like_tool_defects",
+   "indexed_in_memory_md": true,
+   "kind": "feedback_memory",
+   "title": "zsh footguns"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-06",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260706-iqk-missing-subsystem",
+   "kind": "incident_rule",
+   "title": "iqk missing subsystem"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-27",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260727-stale-heartbeat",
+   "kind": "incident_rule",
+   "title": "stale heartbeat"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-28",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260728-reload-preemption",
+   "kind": "incident_rule",
+   "title": "reload preemption"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-28",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260728-ctrlc-destroyed-main",
+   "kind": "incident_rule",
+   "title": "ctrlc destroyed main"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-28",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260728-unread-inbox",
+   "kind": "incident_rule",
+   "title": "unread inbox"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-28",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260728-idle-mains",
+   "kind": "incident_rule",
+   "title": "idle mains"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-28",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260728-cleared-context",
+   "kind": "incident_rule",
+   "title": "cleared context"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-28",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260728-heartbeat-bypass",
+   "kind": "incident_rule",
+   "title": "heartbeat bypass"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-29",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260729-rate-limit-respawn",
+   "kind": "incident_rule",
+   "title": "rate limit respawn"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-31",
+   "date_basis": "incident_id",
+   "detector": [
+    "pattern_kill",
+    "pgrep_pattern"
+   ],
+   "enforced_by": [
+    {
+     "class": "pattern_kill",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_process_pattern_kill.sh",
+     "since": "2026-08-12"
+    },
+    {
+     "class": "pgrep_pattern",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_process_pattern_kill.sh",
+     "since": "2026-08-12"
+    }
+   ],
+   "id": "INC-20260731-broad-process-pattern-kills",
+   "kind": "incident_rule",
+   "title": "broad process pattern kills"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-31",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260731-warm-server-repeat-prompt-recurrence",
+   "kind": "incident_rule",
+   "title": "warm server repeat prompt recurrence"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-31",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260731-stale-config-outranked-operator-decision",
+   "kind": "incident_rule",
+   "title": "stale config outranked operator decision"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-31",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260731-optimum-misread-as-baseline",
+   "kind": "incident_rule",
+   "title": "optimum misread as baseline"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-31",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260731-acceptance-dilution-under-composed-recipe",
+   "kind": "incident_rule",
+   "title": "acceptance dilution under composed recipe"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-07-31",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260731-ggml-linkage-silent-cpu-fallback",
+   "kind": "incident_rule",
+   "title": "ggml linkage silent cpu fallback"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-08-06",
+   "date_basis": "incident_id",
+   "detector": [
+    "pytest_xdist_auto"
+   ],
+   "enforced_by": [
+    {
+     "class": "pytest_xdist_auto",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_pytest_safety.sh",
+     "since": "2026-02-25"
+    }
+   ],
+   "id": "INC-20260806-pytest-api-escape",
+   "kind": "incident_rule",
+   "title": "pytest api escape"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-08-12",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260812-compacting-read-as-idle",
+   "kind": "incident_rule",
+   "title": "compacting read as idle"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-08-12",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260812-post-exit-vram-sample",
+   "kind": "incident_rule",
+   "title": "post exit vram sample"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-08-12",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260812-dispatch-by-line-number",
+   "kind": "incident_rule",
+   "title": "dispatch by line number"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-08-16",
+   "date_basis": "incident_id",
+   "detector": [
+    "git_clean"
+   ],
+   "enforced_by": [],
+   "id": "INC-20260816-git-clean-shared-clone",
+   "kind": "incident_rule",
+   "title": "git clean shared clone"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-08-23",
+   "date_basis": "incident_id",
+   "detector": [
+    "write_outside_allowlist",
+    "write_tool_outside_allowlist"
+   ],
+   "enforced_by": [
+    {
+     "class": "write_outside_allowlist",
+     "harnesses": [
+      "claude_code",
+      "codex",
+      "opencode"
+     ],
+     "hook": "scripts/hooks/check_filesystem_containment.sh",
+     "since": "2026-08-23"
+    },
+    {
+     "class": "write_tool_outside_allowlist",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_filesystem_path.sh",
+     "since": "2026-02-25"
+    }
+   ],
+   "id": "INC-20260823-filesystem-containment-gap",
+   "kind": "incident_rule",
+   "title": "filesystem containment gap"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-17",
+   "date_basis": "incident_id",
+   "detector": [
+    "edit_running_script"
+   ],
+   "enforced_by": [],
+   "id": "INC-20260917-daemon-stale-script-inode",
+   "kind": "incident_rule",
+   "title": "daemon stale script inode"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-25",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260925-parallel-repack-lost-in-bundled-revert",
+   "kind": "incident_rule",
+   "title": "parallel repack lost in bundled revert"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-26",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260926-local-actor-bringup",
+   "kind": "incident_rule",
+   "title": "local actor bringup"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-29",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260929-peer-window-closing-overrun",
+   "kind": "incident_rule",
+   "title": "peer window closing overrun"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-29",
+   "date_basis": "incident_id",
+   "detector": [
+    "piped_gate_push"
+   ],
+   "enforced_by": [],
+   "id": "INC-20260929-piped-gate-push",
+   "kind": "incident_rule",
+   "title": "piped gate push"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-29",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260929-dry-run-missed-live-checks",
+   "kind": "incident_rule",
+   "title": "dry run missed live checks"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-09-29",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20260929-tty-gated-operator-scripts",
+   "kind": "incident_rule",
+   "title": "tty gated operator scripts"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-01",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261001-shared-clone-drift-voided-ri18-revise",
+   "kind": "incident_rule",
+   "title": "shared clone drift voided ri18 revise"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-03",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261003-start-dry-run-launched-stack",
+   "kind": "incident_rule",
+   "title": "start dry run launched stack"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-03",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261003-runtime-flag-survived-reboot",
+   "kind": "incident_rule",
+   "title": "runtime flag survived reboot"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-03",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261003-dflash2-ruling-never-compiled",
+   "kind": "incident_rule",
+   "title": "dflash2 ruling never compiled"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-03",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261003-urgent-fix-slowed-by-bundling",
+   "kind": "incident_rule",
+   "title": "urgent fix slowed by bundling"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-03",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261003-subagent-gpu-tests-in-peer-window",
+   "kind": "incident_rule",
+   "title": "subagent gpu tests in peer window"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-04",
+   "date_basis": "incident_id",
+   "detector": [
+    "git_worktree_prune_or_force"
+   ],
+   "enforced_by": [],
+   "id": "INC-20261004-cleanup-removed-load-bearing-worktree",
+   "kind": "incident_rule",
+   "title": "cleanup removed load bearing worktree"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-04",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261004-subagent-unlocked-cpu-in-held-window",
+   "kind": "incident_rule",
+   "title": "subagent unlocked cpu in held window"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-04",
+   "date_basis": "incident_id",
+   "detector": [
+    "glob_rm"
+   ],
+   "enforced_by": [],
+   "id": "INC-20261004-glob-rm-deleted-receipt-evidence",
+   "kind": "incident_rule",
+   "title": "glob rm deleted receipt evidence"
+  },
+  {
+   "channel": "incident_log",
+   "date": "2026-10-05",
+   "date_basis": "incident_id",
+   "detector": [],
+   "enforced_by": [],
+   "id": "INC-20261005-unclaimed-host-code-index",
+   "kind": "incident_rule",
+   "title": "unclaimed host code index"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-03",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:act-don-t-defer-read-this-before-decidin:1",
+   "kind": "claude_md_rule",
+   "title": "Find a bug \u2192 fix it."
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-03",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:act-don-t-defer-read-this-before-decidin:2",
+   "kind": "claude_md_rule",
+   "title": "Work the operator already approved is not re-openable"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-03",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:act-don-t-defer-read-this-before-decidin:3",
+   "kind": "claude_md_rule",
+   "title": "Recurrence check:"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:handoff-workflow:1",
+   "kind": "claude_md_rule",
+   "title": "Start here"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-10",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:handoff-workflow:2",
+   "kind": "claude_md_rule",
+   "title": "Six domain indices"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:handoff-workflow:3",
+   "kind": "claude_md_rule",
+   "title": "Checkbox discipline"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-12",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:handoff-workflow:4",
+   "kind": "claude_md_rule",
+   "title": "Dispatching or claiming a row: the task TEXT is the identity, file.md:LINE is only a hint"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-31",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [
+    "pattern_kill",
+    "pgrep_pattern"
+   ],
+   "enforced_by": [
+    {
+     "class": "pattern_kill",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_process_pattern_kill.sh",
+     "since": "2026-08-12"
+    },
+    {
+     "class": "pgrep_pattern",
+     "harnesses": [
+      "claude_code"
+     ],
+     "hook": "scripts/hooks/check_process_pattern_kill.sh",
+     "since": "2026-08-12"
+    }
+   ],
+   "id": "claude_md:process-management:1",
+   "kind": "claude_md_rule",
+   "title": "Kill only PIDs you captured yourself. NEVER pkill/pgrep on a name pattern on this host"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-09-05",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:process-management:2",
+   "kind": "claude_md_rule",
+   "title": "The same rule applies to BUILD ARTIFACTS, and this is the one that bites."
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:process-management:3",
+   "kind": "claude_md_rule",
+   "title": "API reload vs full stack"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:process-management:4",
+   "kind": "claude_md_rule",
+   "title": "Reload ownership"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-04-17",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:research-intake:1",
+   "kind": "claude_md_rule",
+   "title": "Never dismiss a research source, model, or technique as \"not applicable\" without asking the user first"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-10-21",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:research-intake:2",
+   "kind": "claude_md_rule",
+   "title": "Missing software, plumbing, kernels, server features, platform ports or upstream \"not supported\" are never a decline rea"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:debugging:1",
+   "kind": "claude_md_rule",
+   "title": "Always confirm metric direction"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-12",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:debugging:2",
+   "kind": "claude_md_rule",
+   "title": "A measurement whose window does not overlap the phenomenon is not evidence of its absence."
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-12",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:debugging:3",
+   "kind": "claude_md_rule",
+   "title": "\"I invoked the HIP build\" is not evidence of a HIP run, and ldd cannot prove one"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-12",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:1",
+   "kind": "claude_md_rule",
+   "title": "Fan out subagents by default \u2014 always, not only when a dispatch says so."
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:2",
+   "kind": "claude_md_rule",
+   "title": "Codex delegation & long-horizon throughput contract"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:3",
+   "kind": "claude_md_rule",
+   "title": "Bus drain (M1)"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-16",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:4",
+   "kind": "claude_md_rule",
+   "title": "The 15 coordination invariants are canonical in [agents/shared/INVARIANTS.md](agents/shared/INVARIANTS.md)"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-16",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:5",
+   "kind": "claude_md_rule",
+   "title": "Doctrine rulings (2026-08-16)"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-16",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:6",
+   "kind": "claude_md_rule",
+   "title": "Wrap-up cadence: one task done = one wrap-up, AS YOU GO."
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:7",
+   "kind": "claude_md_rule",
+   "title": "Coordinating other sessions?"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-07-30",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:8",
+   "kind": "claude_md_rule",
+   "title": "Refresh your heartbeat at the same boundary"
+  },
+  {
+   "channel": "claude_md",
+   "date": "2026-08-12",
+   "date_basis": "git_pickaxe_current_wording",
+   "detector": [],
+   "enforced_by": [],
+   "id": "claude_md:agents-automation:9",
+   "kind": "claude_md_rule",
+   "title": "Reading ANOTHER session's state? Three states, not two \u2014 working / compacting / idle"
+  }
+ ],
+ "pilot": {
+  "glob_rm": [
+   "INC-20261004-glob-rm-deleted-receipt-evidence"
+  ],
+  "llama_cli_unbounded": [
+   "feedback_llama_cli_repl_must_be_killed"
+  ],
+  "pattern_kill": [
+   "INC-20260731-broad-process-pattern-kills"
+  ],
+  "piped_gate_push": [
+   "INC-20260929-piped-gate-push",
+   "feedback_never_chain_push_after_piped_tests"
+  ],
+  "wholesale_git_add": [
+   "feedback_no_wholesale_git_add_shared_files"
+  ]
+ },
+ "schema": "dev-harness-lesson-registry.v1",
+ "sources": {
+  "claude_md": "CLAUDE.md",
+  "incident_log": "docs/reference/agent-config/INCIDENT_LOG.md",
+  "memory_dir": "~/.claude/projects/-workspace/memory"
+ }
+}

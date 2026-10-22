@@ -237,6 +237,12 @@
       "reason": "Same as above: the scanner, not an observer."
     },
     {
+      "id": "dev_harness_m2_guards",
+      "script": "scripts/dev_harness/m2_guards.py",
+      "contract": "exempt",
+      "reason": "Retrospective audit (DHM-2): it names pkill/pgrep only as forbidden surface forms to count in historical transcripts. It observes no live process and takes no corrective action."
+    },
+    {
       "id": "operator_ratifier_autopilot_gates",
       "script": "artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh",
       "contract": "exempt",
