@@ -171,6 +171,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/workspace/repos/epyc-inference-research/data/gpu-mi210/kv-quant-27b-v10-sweep"),
            note="v10 MI210 KV-quant sweep sidecars; pre-hook/failed runs yield no claims",
            task="VB-KVQ-V10"),
+    Source("speech-cpu-measurement", "speech_cpu_measurement",
+           _files("speech_cpu_capture.jsonl", "*/speech_cpu_capture.jsonl"),
+           note="prospective CPU STT/TTS capture rows (speech_cpu_bench.py / live_llm_contention_capture.py "
+                "with SPEECH_CPU_CAPTURE_DIR); 2026-09-24 raw/ rows are never backfilled; capped/aborted "
+                "requests are counted, never projected; no default",
+           task="VB-SPEECH-CPU-1 / VB-SPEECH-CPU-1a"),
     Source("ds41-1017-validation", "ds41_1017_validation",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="INF-77 DS41-W5/W6 1017 MXFP4-experts validation rows; each binds the 9 shard sha256s "
@@ -204,6 +210,17 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="KPF-60/KPF-64 prefill rate, inject latency, drift curve, realised vs ideal prefix "
                 "hit, and RTE-LOG-1 reader reports; each row carries served pin + window claim",
            task="VB-KVCHUNK-WRITE"),
+    Source("conversation-stack-measurement", "conversation_stack_measurement",
+           _files("conversation_stack.beliefs.jsonl", "*/conversation_stack.beliefs.jsonl"),
+           note="INF-79 conversation-stack harness rows (generic, STT arm/fitting/lexicon, VAD, "
+                "end-of-turn, time-to-final, interruption, degraded co-residency); literature "
+                "reference rows are never projected; OBSERVATION until CS-2 Annex S; no default",
+           task="VB-SPEECH-CONV-1 / 1B-1E"),
+    Source("speech-ggml-optest", "speech_ggml_optest",
+           _files("speech_ggml_optest.beliefs.jsonl", "*/speech_ggml_optest.beliefs.jsonl"),
+           note="CS-43.1 / CH-18.d test-backend-ops records (measurement class, the same ladder as "
+                "the test-backend-ops property source); upstream statements stay literature; no default",
+           task="VB-SPEECH-KOPT-1"),
     Source("kv-prefix-fork", "kv_prefix_fork",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl",
                   "*/*/belief_measurements.jsonl"),

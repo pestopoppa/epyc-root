@@ -582,6 +582,8 @@ _FILE_SOURCES = (
     "ds41-1017-validation",
     "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
     "injection-fixture", "chunk-kv",
+    "conversation-stack-measurement", "speech-ggml-optest",
+    "speech-cpu-measurement",
 )
 
 

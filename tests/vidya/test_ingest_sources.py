@@ -233,6 +233,9 @@ BUILDERS = {
     "ak-history": lambda tmp: _helpers("test_prospective_ab_carriers").ak_write(tmp),
     "injection-fixture": lambda tmp: _helpers("test_ibench_kvchunk_carriers").inj_write(tmp),
     "chunk-kv": lambda tmp: _helpers("test_ibench_kvchunk_carriers").kv_write(tmp),
+    "conversation-stack-measurement":
+        lambda tmp: _helpers("test_conversation_stack_measurement_adapter").write_fixture(tmp),
+    "speech-ggml-optest": lambda tmp: _helpers("test_speech_ggml_optest_adapter").write_fixture(tmp),
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.
@@ -299,7 +302,10 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "qwen4exp-quality-measurement",
         # The reports bind cross-repository producer/input bytes; the dedicated
         # adapter tests exercise producer-shaped native envelopes and shared-grade CLI dispatch.
-        "verify-before-stop-measurement", "eval-suite-discriminability"}
+        "verify-before-stop-measurement", "eval-suite-discriminability",
+        # Cross-repo capture-module pin (research speech_cpu_capture.py), censored-row counting,
+        # legacy zero-tuple refusal and ledger ingest: test_speech_cpu_measurement_adapter.py.
+        "speech-cpu-measurement"}
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():
