@@ -41,7 +41,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-YARNLABELS | Hand-label the 50-item YARN-JUDGE-1 blind sheet (judge-calibration ground truth; agent labels are circular). | [yarn-context-extension-research.md](yarn-context-extension-research.md) YARN-JUDGE-1 | 2026-10-21 |
 | OP-CS8L | Italian listen check of `/mnt/raid0/llm/tmp/speech-queue-20261020/g1_out/wav/` (human ear; agent QA is circular). | [conversation-stack.md](conversation-stack.md) CS-8.L | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
-| OP-KPF64-ARM | Permission decision: the auto-mode classifier refused arming filler `s5-kpf64-replay` ("Safety Bypass Flag": its job exports WINDOW_CONFIRMED=1 inside a granted window). Allow the arm, or say how it must be armed. Arm command is in the FILLERS.md row. | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) KPF-64 | 2026-10-22 |
 | OP-DSPARK-RM | Delete `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10.0 GB, unmapped, no live refs; the agent's rm was blocked by the classifier), then the graveyard row. | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) DS41-W7.2 | 2026-10-22 |
 | OP-RAMADMIT-D9 | D9 ack to land `/mnt/raid0/llm/tmp/ram_admit.durable-copy-pending-D9.sh` as `scripts/coordination/ram_admit.sh` (the live copy is the tmp path). | [compute-fillers.md](../../docs/guides/agent-workflows/compute-fillers.md) / DS41-W8d | 2026-10-22 |
 | OP-ESB-SPLIT | One authenticated HF metadata call settles whether AA Earnings22-Cleaned overlaps the ESB train split (dive-aa-earnings22-cleaned A7). | [conversation-stack.md](conversation-stack.md) M21 | 2026-10-22 |
@@ -117,6 +116,9 @@ OP-TOC-RD-1A (DECIDED 2026-10-06, choice 1B: both credential fixtures stay scann
 wire `check_cpu_fa_real_mask_identity` into `run.py`) were pruned from the queue at the 2026-10-22 operator `/wrap-up`.
 Recorded in [tool-output-compression.md](tool-output-compression.md) → TOC-RD-1a and
 [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) → AKX-ALL-11 (OP80 settled).
+OP-KPF64-ARM was DECIDED by the operator on 2026-10-22: compute-filler jobs may export `WINDOW_CONFIRMED=1` inside a
+calendar-granted window. This unblocks s5-kpf64-replay, s5-akrsg-shakedown, s5-hsprof1-beam and s5-cme7-poker-smoke.
+Recorded in [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) → KPF-64 and `docs/guides/agent-workflows/compute-fillers.md`.
 
 ## Standing contracts
 
