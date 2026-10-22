@@ -25,6 +25,17 @@ _MATCHED_CAPTURE = "epyc.vidya.legacy_serving_capture.v3"
 _MAX_BYTES = 64 << 20
 
 
+SESSION_REPS_BASIS = ("scored:session rounds against one running server per arm (paired A/B rounds, "
+                      "not independent server launches); not threads/prompts/affinity samples")
+LAUNCH_REPS_BASIS = "scored:original independent server launches; not threads/prompts/affinity samples"
+
+
+def _reps_basis(inputs):
+    """The producer's own unit decides the text (paired_loadgen declares `session`); the grade
+    reads only the `attempted` prefix, so this states the basis without loosening anything."""
+    return SESSION_REPS_BASIS if (inputs.get("recipe") or {}).get("unit") == "session" else LAUNCH_REPS_BASIS
+
+
 def _digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
                                     allow_nan=False).encode()).hexdigest()
@@ -188,7 +199,7 @@ def _rows(source, receipt):
                      "unit": "t/s", "metric_direction": "higher_better", "category": category,
                      "claim": f"{arm} observed median aggregate serving rate; protocol and scientific witnesses unqualified",
                      "date": date, "protocol_id": "", "reps": pairs,
-                     "reps_basis": "scored:original independent server launches; not threads/prompts/affinity samples",
+                     "reps_basis": _reps_basis(inputs),
                      "extra": {"arm": arm, "capture_id": capture["capture_id"],
                                "native_sha256": digest,
                                "build_path": inputs["build_paths"][arm],

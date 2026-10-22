@@ -48,6 +48,8 @@ def test_fixture_record_exports_reads_back_and_grades(loop, tmp_path):
     assert all(grade(t)[:2] == ("Judged", "Located") for t in tuples)
     (v2,) = _v2(path)
     assert "unit: session" in v2["claim"]["claim"] and "PIPELINE-ONLY" not in v2["claim"]["claim"]
+    assert all(t.reps_basis == reader.SESSION_REPS_BASIS for t in tuples)
+    assert "not independent server launches" in v2["claim"]["reps_basis"]
     assert v2["applicability"]["model_file"] == "/m/x.gguf"
 
 

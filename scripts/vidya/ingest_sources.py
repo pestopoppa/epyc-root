@@ -333,6 +333,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="OCC-1 run dirs (`run_occ1.py report` sidecars); VOID/pre-hook runs decline",
            task="SC85"),
+    Source("ak-width-dimension", "autokernel_width_dimension",
+           _files("width_dimension.json", "*/width_dimension.json"),
+           note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "
+                "DECISION.json and parent/ + keep/ cells.jsonl); the comparison is re-derived from "
+                "both cell tables and refused if it differs; CPU half not read",
+           task="VB-AKX-ALL-26-CELLS-WIRE / VB-AKRSG-INGEST"),
     Source("tale-budget", "tale_budget",
            _files("*.beliefs.jsonl", "**/*.beliefs.jsonl"),
            note="PRB-T4 `prb_t4_tale_gpu.py --out` dirs (`<results>.beliefs.jsonl` beside each "
