@@ -80,3 +80,14 @@ Every session: (1) keep zero-token watchers on its own end/FAILED flags; (2) on 
 ## KVU-LB1 upstream post (operator-approved)
 
 Posted our CPU FP16 V-accumulator evidence on llama.cpp PR #29810 after operator review: https://github.com/ggml-org/llama.cpp/pull/29810#issuecomment-6340235109. Draft and sources: /mnt/raid0/llm/tmp/kvu-lb1-upstream-draft/ (DRAFT.md §c maps every number to its log). KVU-LB1.a ticked; .b (architect decode A/B) and .c (dense-MTP >64k check priority) remain open.
+## Locals intake packet D: experimental llama.cpp code for UFH14-LB1, CH-LB1, AKX-ALL-LB4 (f8 locals-d subagent)
+
+Branch `experimental/locals-kernel-fixes-20261022` (worktree `/mnt/raid0/llm/worktrees/llama-locals-kernel-fixes-20261022`), cut from the champion `ak/champion/llama-cpp-ffc1bac82eec` = `dd3d9721c`; local only, not pushed, NOT built (a build needs a calendar grant). Production tree untouched (`production-consolidated-v10` @ `ffc1bac82`).
+
+| Task | Commit | State |
+|---|---|---|
+| CH-LB1 BF16 GDN state guard | `5f1eee195` | CPU supports_op refuses a non-F32 state, compute aborts with a named message, load-time warning; `test-gdn-state-guard` (ctest) + opt-in `gdn_bf16_state` test-backend-ops set. Launcher audit: no CPU launcher sets `GGML_CUDA_GDN_STATE_BF16`. |
+| UFH14-LB1 `%llguidance` abort | `0daa3ca8d` | throw instead of GGML_ABORT, server answers 400 and keeps serving; server pytest added. Role ports all bind 127.0.0.1 (local clients only bypass the orchestrator guard). |
+| AKX-ALL-LB4 iqk CPU FA, step 1 | `8f0fa64ca` | fa/ vendored + build wiring behind `GGML_IQK_FLASH_ATTENTION` (OFF), FLASH_ATTN_EXT hook + work size, opt-in `fa_cpu_long_ctx` set + `test-fa-rowexact`. Configure-only checked ON/OFF. Remaining: compile fixes, gates, row-exact decision, argv switch. |
+
+Build+test specs are under each task in its handoff. Boxes stay unticked until build+tests pass. Default test-backend-ops corpus unchanged (new cases are opt-in via `TEST_BACKEND_OPS_EXTRA_CASES`) so AK per-op case counts do not move.
