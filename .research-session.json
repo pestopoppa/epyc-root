@@ -48,7 +48,7 @@
     "intake-2493"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2494,
+  "next_intake_id": 2504,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -6928,6 +6928,103 @@
         "checkboxes_ticked": 0,
         "index_row_prepared_not_applied": "| EVL-52 | dev harness trace mining | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) | DHM-1 — count interrupt markers per 1000 turns over the existing conversation backup | RTG-41 |",
         "follow_up_kernel_intake_approved_not_run": "ik FlashMLA PRs 277/243; ik q8_0 repack commits + ik issue 1205; ggml PR 28576"
+      }
+    },
+    {
+      "session_id": "intake-kernel-followup-20261022",
+      "started_at": "2026-10-22T16:40:00Z",
+      "last_checkpoint": "2026-10-22T17:10:00Z",
+      "stage": 1,
+      "phase": "stage1-complete",
+      "lane": "/mnt/raid0/llm/worktrees/f8-intake-kernel-followup",
+      "branch": "intake/kernel-followup-20261022",
+      "owner": "workspace-f8 (subagent prepared; main session applies/lands)",
+      "topic": "Follow-up kernel intake approved 2026-10-22 in intake-locals-beacon-20261022 (steering seq 10): ik_llama.cpp FlashMLA PRs 277/243, ik q8_0 repack work (commits 2bf2fa8ba = PR 1212, d5498c446 = PR 1215) plus ik issue 1205, and ggml-org/llama.cpp PR 28576. Bears on AKX-ALL-LB3/LB4, AKX-ALL-9/10/12, V11-FA-7, CH-18.c.",
+      "concurrency_note": "Allocated against origin/main 04b091f4b: index max intake-2493 and top-level next_intake_id 2494 (larger of the two = 2494). Top-level next_intake_id bumped 2494 -> 2504 so the next allocator does not collide; nothing else in the top-level (intake-ist-slq-20261022) record was changed.",
+      "urls_processed": [
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/277",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/243",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/1212",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/1215",
+        "https://github.com/ikawrakow/ik_llama.cpp/issues/1205",
+        "https://github.com/ggml-org/llama.cpp/pull/28576"
+      ],
+      "source_resolution": {
+        "ik commit 2bf2fa8ba437e6559f204d91a51c77f79061d3c5": "PR 1212 (gh api commits/{sha}/pulls)",
+        "ik commit d5498c446736093067dc24e5285823ee24cedab6": "PR 1215 (gh api commits/{sha}/pulls)",
+        "redirects": "curl -sIL: all submitted URLs 200 with 0 redirects; github.com/ggerganov/llama.cpp/pull/28576 -> github.com/ggml-org/llama.cpp/pull/28576 (1 redirect); dedup ran on both forms."
+      },
+      "dedup": "Unbounded normalized sweep over all 2489 entries (2462 url values, 1222 arxiv_id values) of origin/main research/intake_index.yaml, comparing submitted and post-redirect URLs plus commit URLs: no collision for any source or expansion candidate. No arXiv sources in this set.",
+      "entries_processed": [
+        "intake-2494",
+        "intake-2495",
+        "intake-2496",
+        "intake-2497",
+        "intake-2498",
+        "intake-2499",
+        "intake-2500",
+        "intake-2501",
+        "intake-2502",
+        "intake-2503"
+      ],
+      "entries_remaining": [],
+      "next_intake_id": 2504,
+      "expansion_cap": 10,
+      "expansion_count": 4,
+      "expansion_entries": [
+        "intake-2500",
+        "intake-2501",
+        "intake-2502",
+        "intake-2503"
+      ],
+      "expansion_refused": [
+        {
+          "seed": "intake-2498",
+          "reason": "ik PR 1214 is named in the issue thread as the home of the SWA fix but is an unrelated op-offload PR by another author (metadata read); not ingested."
+        },
+        {
+          "seed": "intake-2499",
+          "reason": "ggml-org PR 28907 (fattn-mma on CDNA for dkq > 256 at large batch): no EPYC GPU model serves that head size; low relevance, not ingested."
+        },
+        {
+          "seed": "intake-2495",
+          "reason": "ik PR 240 (Flash MLA, CPU only) is the lineage origin but is not cited in any text fetched this run; not ingested (drop-unobserved rule)."
+        }
+      ],
+      "tier2b": "Six bounded gh searches (ik_llama.cpp and ggml-org/llama.cpp issues/PRs), results in /mnt/raid0/llm/tmp/intake-kernel-followup-20261022/tier2b/: no contradiction surfaced against any input source; the one hit read (ik #287) concerns MoE matmul threading, not FA.",
+      "fetch_dir": "/mnt/raid0/llm/tmp/intake-kernel-followup-20261022",
+      "fetch_retrieved_utc": "2026-10-22T16:48Z..16:55Z",
+      "steering_ledger": [
+        {
+          "seq": 1,
+          "stage": 1,
+          "ts": "2026-10-22T13:00:00Z",
+          "verbatim": "Follow-up kernel intake approved: ik FlashMLA PRs 277/243, the ik q8_0 repack commits plus issue 1205, and ggml PR 28576. It is run separately.",
+          "disposition": "context-only",
+          "plan_ref": null,
+          "reason": "Carried verbatim from intake-locals-beacon-20261022 steering seq 10 (stage 3 there). It sets the source set of this Stage 1 and authorizes no handoff, stub or index-row write."
+        }
+      ],
+      "actionable_ledger": [],
+      "stage1_report": {
+        "dive_recommended_ranked": [
+          "intake-2496",
+          "intake-2499",
+          "intake-2494",
+          "intake-2495",
+          "intake-2498",
+          "intake-2497",
+          "intake-2501"
+        ],
+        "dive_bundling_suggestion": "Dive intake-2495 + intake-2494 + intake-2496 + intake-2501 as one ik FlashMLA lineage read; intake-2498 with intake-2500.",
+        "declined_medium_plus": {
+          "intake-2503": "Already root-caused and tracked: V11-FA-2 traced DF2-9 to the pre-#27870 divergent-barrier race and V11-FA-1 arm C carried b74f590ea; a dive would change no decision."
+        },
+        "low_relevance_not_dived": {
+          "intake-2500": "Interim disable superseded by intake-2496; its content is covered by the intake-2498 dive.",
+          "intake-2502": "mla= graph option has no mainline counterpart; lineage context only."
+        },
+        "reencounters": {}
       }
     }
   ],
