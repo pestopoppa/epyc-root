@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -17,6 +17,21 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Compiled Update — 2026-10-22 (wrap-up sweep 7): CT-18 closed, DP-G ruling
+
+**Confidence: verified** for the CT-18 / CT-18.1 completion and DP-G ruling (951/951 rows; static fixtures only); **inferred** for UFH14-LB5 and CT-21 (filed, not run).
+
+- **CT-18 and CT-18.1 are COMPLETE.** Both Skill-Inject results files hold 951/951 rows (317 items x 3 arms, plus one `skipped_ctx_overflow` row, 316 complete triples). Worker: 66 items CPU and 250 complete triples GPU-MI210, no item mixes substrates; architect all GPU. Two overnight filler deaths (rc=1) had one cause, an HTTP 400 context overflow on SI-C037 arm C, fixed by `ct18_resume_v2.py` recording a skip instead of raising.
+- **Result:** IB2 strongly favours the boundary sentence (architect ASR 45.8 -> 4.2%), but Skill-Inject gives the worker no benefit and harm under B (25.9 vs 32.0%, p2 .006). Reading is static-fixture only (CT-20 wording rule).
+- **DP-G = "Hold; architect trial" (operator, 2026-10-22):** no template or prompt change for worker/REPL; CT-21 trials an architect-only, default-off, byte-identical-when-off variant with a predeclared competence A/B.
+- **UFH14-LB5 (filed):** render-test every role's GGUF chat template for the prefix property under `enable_thinking=false` (render(turn k) plus the generated reply must be a byte prefix of render(turn k+1) over captured agent conversations; template and tokenizer only, no model). Motivation: 17.8% of follow-on turns diverge inside the previous output, and Locals keeps the empty think block on earlier replies for this reason; UFH14-LB9 sizes non-canonical re-tokenization as the second divergence class.
+
+### Source References (2026-10-22 sweep 7)
+
+- [handoffs/active/qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md)
+- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md)
+- [progress/2026-10/2026-10-22-ct18-final.md](../progress/2026-10/2026-10-22-ct18-final.md)
 
 ## Compiled Update — 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator and the server, and DS41 template parity is not yet a result)
 
