@@ -2,8 +2,26 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
+
+## Compiled Update — 2026-10-22 (wrap-up sweep 10): a native-window answer change is not a quality regression, and the judge labels are agent-produced, not human
+
+**Confidence: verified** for the judge agreement figures (n=50, pinned cloud judge) and the gate-plan contents; **inferred** for what the native-window and extension arms will show, since only 18 native pairs have run.
+
+- **Operator correction on the native-window rule (2026-10-22).** "Changing answers within native windows and regressing quality are not necessarily the same thing." The 7/20 greedy divergence of static YaRN is NOT itself a quality regression; the speed costs still fail the "YaRN must not regress inside native window" rule, and quality is decided by the scored net-paired gate YARN-AGG-1(i). The handoff wording was fixed accordingly.
+- **Gate power caveat.** NOT-FAIL is harm-detection only; an equivalence claim needs a pre-registered margin (M15 / DP-E). `decision.json` carries `n_discordant`, `min_losses_to_fail_given_discordant`, `power_note` and `interpretation` (underpowered = fewer than 10 discordant pairs); the verdict rule is unchanged.
+- **The 50 judge-validation labels are agent-produced under operator delegation, not human.** Operator ruling: build the labels yourself. The coordinator then required a different model family from the judge so agreement is not inflated by shared blind spots: 19 labels by deterministic rule (6 no-answer, 5 exact match, 1 yes/no, 7 numeric mismatch) and 31 by `codex-luna-low`; none by a Claude model. Result: 10 correct, 40 incorrect, 0 undecided. The logged prompt was cut at 200 characters, so hotpotqa's question had to be re-resolved from the dataset (50 of 50 resolved).
+- **Judge of record is the pinned cloud judge `sonnet-5-5-low`, superseding the local-judge design.** Against the 50 labels: accuracy 0.98 (49/50, Wilson 95% 0.895 to 0.996), Cohen kappa 0.940 (95% CI 0.823 to 1.0 analytic, 0.766 to 1.0 bootstrap), confusion 39 / 1 / 0 / 10, 0 unparsed, 50 calls, $0.2156. The one disagreement (j008) is cut-off meta-reasoning that names a candidate but commits no final answer. This is agreement between two model families, not with humans, and is relative to this pinned judge only; the task set no numeric threshold, so the clause is met by reporting agreement with the pin.
+- **YARN-JUDGE-1 stays open on one clause.** No plan contains a judged HELMET category, so a cell must be generated in a GPU window before `helmet_judged_cell.py --judge-backend cloud` can score "one judged HELMET cell end to end".
+- **Gate and arm plumbing exists.** The native-gate plan is frozen at 185 items (Oolong 131072 x 8 contexts; RULER NIAH mk_2/mk_3/mv at 32K/64K/124K, generated locally). Extension-arm builders cover HELMET (a validated 240K local config; nq and hotpotqa optional because the 10.5 GiB RAG data is not on disk) and LongBioBench. The RULER suite was added to the belief-kernel schema so those items are no longer excluded from decision records. Grant-polling jobs refuse when production :8083 is listening or a foreign KFD tenant holds VRAM; a dirty pinned research tree is not yet refused (YARN-DIRTY-TREE-REFUSE open).
+
+### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/yarn-context-extension-research.md](../handoffs/active/yarn-context-extension-research.md) — operator correction, power caveat, AGG-1a-d and JUDGE-1a-d records
+- [progress/2026-10/2026-10-22-yarn-judge1-labels.md](../progress/2026-10/2026-10-22-yarn-judge1-labels.md) — label provenance and judge agreement figures
+- [progress/2026-10/2026-10-22-yarn-ruler-schema.md](../progress/2026-10/2026-10-22-yarn-ruler-schema.md) — RULER suite added to the belief-kernel schema
+- [handoffs/active/CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md) — operator decisions of 2026-10-22 including the delegation
 
 ## Summary
 

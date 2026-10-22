@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -17,6 +17,24 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Compiled Update — 2026-10-22 (wrap-up sweep 10): the stock Qwen3.6-35B template breaks the prefix property, and CT-THINK-CODER is an open owner decision
+
+**Confidence: verified** for the static template render results and the CT-18.2 locator check (tests, no live server); **inferred** for live behaviour, which UFH14-LB5.1 has yet to confirm.
+
+- **All as-served templates hold the prefix property at `enable_thinking=false`; the stock Qwen3.6-35B embedded template does not.** The stock template drops the empty think block from history, so a historic assistant turn renders differently from how its generation prompt began; the terse override fixes it. This is the same divergence found at prompt end - 4 in the CME-7 cache miss, where the end-4 checkpoint covers it. Live-server confirmation is filed as UFH14-LB5.1.
+- **A server-side guard now tests the property.** Prefix-property tests (reply-prefix, token-prefix, shared-system-trunk) run the v10 `test-chat-template` jinja engine and `llama-tokenize` over four synthetic captured-client fixtures (tool loop and its trunk-sharing partner, plain chat, REPL code lines); 22 tests with expected outcomes pinned per role.
+- **CT-THINK-CODER is an open owner decision.** The source fix makes Qwen3.x filler servers launch with `--reasoning off`; a per-request `enable_thinking:true` still overrides it, and the coder server is the one place thinking stays on as a pre-registered exception. Until one decision line is recorded (keep ON citing the pre-registration, or switch to server-side off, naming the dependent arm), no harness may assume either state: it must send `enable_thinking` explicitly.
+- **Thinking-off is also what the CME-7 first run needed.** Thinking consumed the 2048-token budget and left `content` empty (pydantic `json_invalid`); the fix sends `enable_thinking=False` via `chat_template_kwargs` and raises a loud EndpointError on empty content. That the served llama-server honours the per-request kwarg was unverified at the time of the fix. After it, call 0 of runs 0 and 1 still generated the full 2048 tokens (CME-7T, open; raw-reply capture landed, research `2f704ba4a`).
+- **CT-18.2 locators verified (hash only).** The Skill-Inject belief sidecars point at `RESULTS.skillinject.architect.jsonl` (951 rows) and `RESULTS.skillinject.worker.jsonl` (951 rows, shared by the CPU and GPU worker strata, split by the sidecar's served pin); all 9 `results_sha256` values match disk. The results files stay uncommitted because they hold fixture text and the repo is public; an earlier sweep had mis-read the worker path as shared by all three.
+- **CT-19.1 closed as a digest, not a panel.** `scripts/security/injection_flag_digest.py` (orchestrator `7ef529d8`) reports flag counts by source, field and threat plus freshness; an absent ledger is reported as absent, never as clean. Today no ledger exists because `skill_injection_scan` is off. CT-21-code added a default-off `architect_untrusted_boundary_sentence` flag and run prep with a predeclared decision rule; the competence A/B on a frozen set of at least 200 architect items remains open.
+
+### Source References (2026-10-22 wrap-up sweep 10)
+
+- [handoffs/active/qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md) — CT-THINK-CODER, CT-18.2, CT-19.1, CT-21-code
+- [progress/2026-10/2026-10-22-cme7-fix.md](../progress/2026-10/2026-10-22-cme7-fix.md) — thinking-on root cause and the chat_template_kwargs fix
+- [progress/2026-10/2026-10-22-cme7-cache-miss.md](../progress/2026-10/2026-10-22-cme7-cache-miss.md) — historic-turn think block and the end-4 divergence
+- [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — UFH14-LB5 static template result
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 9): Qwen3.x thinking is turned off at the server source, not per harness
 
