@@ -360926,7 +360926,7 @@
     author could not find the cause and disabled the path (PR body; diff sets the constexpr guard to false).'
   - The same diff lets the first KV block run before the masked-block early exit (k1 > 0 && Mc[0] != 0) (diff, iqk_fa_templates.h).
   techniques:
-  - disable a failing fast path pending root cause
+  - interim disabling of a failing fast path (the PR author's stopgap) pending root cause
   reported_results: []
   cross_references:
     chapters: []
