@@ -9,10 +9,22 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-22T22:06:39Z",
-  "mode": "touch",
-  "scan_time": "2026-10-22T22:06:39Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-10-22T22:08:11Z",
+    "scope_paths": [
+      "progress/2026-10/2026-10-22-workspace-f8.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-22T22:08:11Z",
   "schema_version": 1,
-  "source_set_hash": "d493b79b43e39a1a662b82c0ef139f264686dad06108aee1f66f8fbb1520b6f2",
+  "source_set_hash": "5d26242d1f6d30cea6a22c42b0dbcc236d1d513e8391ba9f9b6e6593562f521a",
   "sources": [
     {
       "content_hash": "9e8a567daaa33164cf276a6ffe9235a21c338954bb455ab14e204478698a8289",
@@ -10439,10 +10451,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "36824de20b7a4e719d8f8df6ddb4b071c2a62115fd6d5ca6e9ed6c10ba93a6ff",
-      "modified": "2026-10-22T21:58:14Z",
+      "content_hash": "36e84f766ed495e37b7b39c7b4259dd57fd1cb7f3887e50927f5b3e67de1ad60",
+      "modified": "2026-10-22T22:08:11Z",
       "path": "progress/2026-10/2026-10-22-workspace-f8.md",
-      "size": 54788,
+      "size": 55098,
       "title": "2026-10-22 workspace-f8",
       "type": "progress"
     },

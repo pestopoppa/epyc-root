@@ -493,6 +493,9 @@ the run records, the FILLERS register or the process table.
     handoff.
   - The OP-81 GPUPIN ratification follow-ups (GPS-PIN-3, D3). They belong to workspace-58, which owns
     GPS-PIN; the OP-81 row deletion is prepared for the owning session.
-- Wiki sweep 15 compiled 9 sources: the 8-source delta plus `53029ea71`. It added Compiled Update
-  sections to speculative-decoding, safety, benchmark-methodology and hardware-optimization.
-  Prune signal: 0 candidates.
+- Wiki: this branch compiled the 9-source delta as its own sweep 15. workspace-58 then promoted a
+  sweep 15 over the same delta (`8e5f7e538`), so the merge took origin/main's version of all five wiki
+  files. This branch keeps only what workspace-58's sweep did not carry, as sweep 16:
+  - hardware-optimization: the iqk FA port PASSED at `9a338d4f1`, the LB4.6-8 code, and FU2 armed;
+  - safety: SEC-EXEC-POST-e1 is on orchestrator main, and SEC-ART-POST-g is filed.
+  The delta is 0 after `--touch`. Prune signal: 0 candidates.
