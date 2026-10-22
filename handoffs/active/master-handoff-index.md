@@ -139,7 +139,7 @@ nobody is moving.
 | research-evaluation | 44 | 529 | 18 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 52 | 672 | 18 | 2026-07-29 |
-| user-facing-harness | 14 | 145 | 18 | 2026-07-29 |
+| user-facing-harness | 14 | 143 | 18 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

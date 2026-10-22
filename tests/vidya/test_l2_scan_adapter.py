@@ -87,3 +87,18 @@ def test_writer_refuses_empty_report(tmp_path):
     p = tmp_path / "e.json"; p.write_text(json.dumps({"coverage": {"share_mechanical_signature": None}, "category_rates": {}}))
     with pytest.raises(capture.CaptureError):
         capture.write_belief_measurements(p, kind="scan", run_id="t", producer="t", code_ref="x")
+
+
+def test_trail_rows_scored_only_and_scoped(tmp_path):
+    sc = {"n_positive": 14, "scored": True, "tp": 2, "fp": 10, "precision": 0.1667, "recall": 0.1429,
+          "baseline_last_step": {"tp": 0, "fp": 9, "precision": 0.0, "recall": 0.0}}
+    rep = {"trail": {"scoring": {"gaia": {
+        "api_issues": {"step_level": sc, "trace_level": {"scored": False, "n_positive": 3}},
+        "timeout": {"step_level": {"scored": False, "n_positive": 2}, "trace_level": {"scored": False, "n_positive": 2}}}}}}
+    p = emit(tmp_path, rep, "calibration", "trail.json")
+    rows = {(n["row"]["locator"], n["row"]["metric"]): n["row"] for n in reader.rows_for_report(p)}
+    assert rows[("trail:gaia:api_issues:step", "l2_cal_recall")]["reps"] == 14
+    assert rows[("trail:gaia:api_issues:step", "l2_cal_precision")]["reps"] == 12
+    assert ("trail:gaia:api_issues:step", "l2_cal_baseline_last_step_recall") in rows
+    assert not any("timeout" in k[0] or ":trace" in k[0] for k in rows)
+    assert all(r["protocol_id"] == "" for r in rows.values())

@@ -35,7 +35,7 @@ KINDS = ("scan", "calibration")
 NO_PROTOCOL = ""
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _METRIC = re.compile(r"^l2_(share_mechanical_signature|category_rate_(failed|passed)|"
-                     r"cal_(precision|recall)|cal_baseline_(precision|recall)|te_(exact|within1|within5))$")
+                     r"cal_(precision|recall)|cal_baseline_(precision|recall)|cal_baseline_(first_error|last_step|length)_(precision|recall)|te_(exact|within1|within5))$")
 
 
 class CaptureError(ValueError):
@@ -173,6 +173,28 @@ def _cal_cells(rep: dict) -> list[tuple[str, str, float, int, str, str, str]]:
         if a and a["n"]:
             for key, m in (("exact", "l2_te_exact"), ("within1", "l2_te_within1"), ("within5", "l2_te_within5")):
                 out.append(("traceelephant:ALL", m, a[key] / a["n"], a["n"], "failed traces with a human decisive step", "higher_better", "fraction"))
+    tr = rep.get("trail")
+    for split, cats in sorted(((tr or {}).get("scoring") or {}).items()):
+        for cat, c in sorted(cats.items()):
+            if not isinstance(c, dict) or "step_level" not in c:
+                continue
+            for unit, key in (("step", "step_level"), ("trace", "trace_level")):
+                s = c[key]
+                if not s.get("scored"):
+                    continue          # N under the gate: reported unscored, no row
+                loc = f"trail:{split}:{cat}:{unit}"
+                for m in ("precision", "recall"):
+                    if s.get(m) is not None:
+                        out.append((loc, f"l2_cal_{m}", s[m], s["n_positive"] if m == "recall" else s["tp"] + s["fp"],
+                                    f"gold {unit}s" if m == "recall" else "detector firings", "higher_better", "fraction"))
+                bases = {"step": (("baseline_first_error_step", "first_error"), ("baseline_last_step", "last_step")),
+                         "trace": (("length_baseline", "length"),)}[unit]
+                for bkey, bn in bases:
+                    b = s.get(bkey) or {}
+                    for m in ("precision", "recall"):
+                        if b.get(m) is not None:
+                            out.append((loc, f"l2_cal_baseline_{bn}_{m}", b[m], s["n_positive"] if m == "recall" else b["tp"] + b["fp"],
+                                        f"gold {unit}s" if m == "recall" else "baseline firings", "higher_better", "fraction"))
     return out
 
 

@@ -1,0 +1,734 @@
+{
+ "detector_config": {
+  "loop_threshold": 2,
+  "schemas": "none for foreign tool names"
+ },
+ "trail": {
+  "detector_categories_fired": {
+   "gaia": {
+    "invalid_invocation": 28,
+    "loop": 10,
+    "tool_error": 49
+   },
+   "swe_bench": {
+    "invalid_invocation": 13,
+    "tool_error": 23
+   }
+  },
+  "scope": "natural traces, annotator gold; step unit = Step span (planning LLM calls outside a Step are message units no detector can fire on); not a statement about natural recall of other agents",
+  "scoring": {
+   "ALL": {
+    "api_issues": {
+     "detector": "tool_error",
+     "n_gold_steps": 14,
+     "n_gold_traces": 11,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 13,
+       "fp": 71,
+       "label": "api_issues",
+       "n_positive": 14,
+       "n_total": 1629,
+       "precision": 0.0139,
+       "recall": 0.0714,
+       "scored": true,
+       "tp": 1
+      },
+      "baseline_last_step": {
+       "fn": 14,
+       "fp": 148,
+       "label": "api_issues",
+       "n_positive": 14,
+       "n_total": 1629,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "fn": 12,
+      "fp": 245,
+      "label": "api_issues",
+      "n_positive": 14,
+      "n_total": 1629,
+      "precision": 0.0081,
+      "recall": 0.1429,
+      "scored": true,
+      "tp": 2
+     },
+     "trace_level": {
+      "fn": 1,
+      "fp": 62,
+      "label": "api_issues",
+      "length_baseline": {
+       "f1": 0.375,
+       "fn": 5,
+       "fp": 15,
+       "precision": 0.2857,
+       "recall": 0.5455,
+       "rule": "n_steps >= 19",
+       "tp": 6
+      },
+      "n_positive": 11,
+      "n_total": 148,
+      "precision": 0.1389,
+      "recall": 0.9091,
+      "scored": true,
+      "tp": 10
+     }
+    },
+    "formatting": {
+     "detector": "invalid_invocation",
+     "n_gold_steps": 193,
+     "n_gold_traces": 74,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 183,
+       "fp": 62,
+       "label": "formatting",
+       "n_positive": 193,
+       "n_total": 1629,
+       "precision": 0.1389,
+       "recall": 0.0518,
+       "scored": true,
+       "tp": 10
+      },
+      "baseline_last_step": {
+       "fn": 190,
+       "fp": 145,
+       "label": "formatting",
+       "n_positive": 193,
+       "n_total": 1629,
+       "precision": 0.0203,
+       "recall": 0.0155,
+       "scored": true,
+       "tp": 3
+      },
+      "fn": 123,
+      "fp": 68,
+      "label": "formatting",
+      "n_positive": 193,
+      "n_total": 1629,
+      "precision": 0.5072,
+      "recall": 0.3627,
+      "scored": true,
+      "tp": 70
+     },
+     "trace_level": {
+      "fn": 37,
+      "fp": 4,
+      "label": "formatting",
+      "length_baseline": {
+       "f1": 0.8138,
+       "fn": 15,
+       "fp": 12,
+       "precision": 0.831,
+       "recall": 0.7973,
+       "rule": "n_steps >= 6",
+       "tp": 59
+      },
+      "n_positive": 74,
+      "n_total": 148,
+      "precision": 0.9024,
+      "recall": 0.5,
+      "scored": true,
+      "tp": 37
+     }
+    },
+    "n_steps": 1629,
+    "n_traces": 148,
+    "resource_abuse_supp": {
+     "detector": "loop",
+     "n_gold_steps": 57,
+     "n_gold_traces": 42,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 57,
+       "fp": 72,
+       "label": "resource_abuse_supp",
+       "n_positive": 57,
+       "n_total": 1629,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "baseline_last_step": {
+       "fn": 57,
+       "fp": 148,
+       "label": "resource_abuse_supp",
+       "n_positive": 57,
+       "n_total": 1629,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "fn": 55,
+      "fp": 8,
+      "label": "resource_abuse_supp",
+      "n_positive": 57,
+      "n_total": 1629,
+      "precision": 0.2,
+      "recall": 0.0351,
+      "scored": true,
+      "tp": 2
+     },
+     "trace_level": {
+      "fn": 33,
+      "fp": 1,
+      "label": "resource_abuse_supp",
+      "length_baseline": {
+       "f1": 0.7273,
+       "fn": 2,
+       "fp": 28,
+       "precision": 0.5882,
+       "recall": 0.9524,
+       "rule": "n_steps >= 7",
+       "tp": 40
+      },
+      "n_positive": 42,
+      "n_total": 148,
+      "precision": 0.9,
+      "recall": 0.2143,
+      "scored": true,
+      "tp": 9
+     }
+    },
+    "resource_exhaustion": {
+     "detector": "truncation",
+     "n_gold_steps": 3,
+     "n_gold_traces": 3,
+     "step_level": {
+      "label": "resource_exhaustion",
+      "n_positive": 3,
+      "n_total": 1629,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "resource_exhaustion",
+      "n_positive": 3,
+      "n_total": 148,
+      "reason": "N<10",
+      "scored": false
+     }
+    },
+    "timeout": {
+     "detector": "tool_error",
+     "n_gold_steps": 2,
+     "n_gold_traces": 2,
+     "step_level": {
+      "label": "timeout",
+      "n_positive": 2,
+      "n_total": 1629,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "timeout",
+      "n_positive": 2,
+      "n_total": 148,
+      "reason": "N<10",
+      "scored": false
+     }
+    }
+   },
+   "gaia": {
+    "api_issues": {
+     "detector": "tool_error",
+     "n_gold_steps": 14,
+     "n_gold_traces": 11,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 13,
+       "fp": 48,
+       "label": "api_issues",
+       "n_positive": 14,
+       "n_total": 1164,
+       "precision": 0.0204,
+       "recall": 0.0714,
+       "scored": true,
+       "tp": 1
+      },
+      "baseline_last_step": {
+       "fn": 14,
+       "fp": 117,
+       "label": "api_issues",
+       "n_positive": 14,
+       "n_total": 1164,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "fn": 12,
+      "fp": 190,
+      "label": "api_issues",
+      "n_positive": 14,
+      "n_total": 1164,
+      "precision": 0.0104,
+      "recall": 0.1429,
+      "scored": true,
+      "tp": 2
+     },
+     "trace_level": {
+      "fn": 1,
+      "fp": 39,
+      "label": "api_issues",
+      "length_baseline": {
+       "f1": 0.5455,
+       "fn": 5,
+       "fp": 5,
+       "precision": 0.5455,
+       "recall": 0.5455,
+       "rule": "n_steps >= 19",
+       "tp": 6
+      },
+      "n_positive": 11,
+      "n_total": 117,
+      "precision": 0.2041,
+      "recall": 0.9091,
+      "scored": true,
+      "tp": 10
+     }
+    },
+    "formatting": {
+     "detector": "invalid_invocation",
+     "n_gold_steps": 120,
+     "n_gold_traces": 47,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 110,
+       "fp": 39,
+       "label": "formatting",
+       "n_positive": 120,
+       "n_total": 1164,
+       "precision": 0.2041,
+       "recall": 0.0833,
+       "scored": true,
+       "tp": 10
+      },
+      "baseline_last_step": {
+       "fn": 120,
+       "fp": 117,
+       "label": "formatting",
+       "n_positive": 120,
+       "n_total": 1164,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "fn": 54,
+      "fp": 50,
+      "label": "formatting",
+      "n_positive": 120,
+      "n_total": 1164,
+      "precision": 0.569,
+      "recall": 0.55,
+      "scored": true,
+      "tp": 66
+     },
+     "trace_level": {
+      "fn": 21,
+      "fp": 2,
+      "label": "formatting",
+      "length_baseline": {
+       "f1": 0.7356,
+       "fn": 15,
+       "fp": 8,
+       "precision": 0.8,
+       "recall": 0.6809,
+       "rule": "n_steps >= 6",
+       "tp": 32
+      },
+      "n_positive": 47,
+      "n_total": 117,
+      "precision": 0.9286,
+      "recall": 0.5532,
+      "scored": true,
+      "tp": 26
+     }
+    },
+    "n_steps": 1164,
+    "n_traces": 117,
+    "resource_abuse_supp": {
+     "detector": "loop",
+     "n_gold_steps": 39,
+     "n_gold_traces": 29,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 39,
+       "fp": 49,
+       "label": "resource_abuse_supp",
+       "n_positive": 39,
+       "n_total": 1164,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "baseline_last_step": {
+       "fn": 39,
+       "fp": 117,
+       "label": "resource_abuse_supp",
+       "n_positive": 39,
+       "n_total": 1164,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "fn": 37,
+      "fp": 8,
+      "label": "resource_abuse_supp",
+      "n_positive": 39,
+      "n_total": 1164,
+      "precision": 0.2,
+      "recall": 0.0513,
+      "scored": true,
+      "tp": 2
+     },
+     "trace_level": {
+      "fn": 20,
+      "fp": 1,
+      "label": "resource_abuse_supp",
+      "length_baseline": {
+       "f1": 0.7941,
+       "fn": 2,
+       "fp": 12,
+       "precision": 0.6923,
+       "recall": 0.931,
+       "rule": "n_steps >= 7",
+       "tp": 27
+      },
+      "n_positive": 29,
+      "n_total": 117,
+      "precision": 0.9,
+      "recall": 0.3103,
+      "scored": true,
+      "tp": 9
+     }
+    },
+    "resource_exhaustion": {
+     "detector": "truncation",
+     "n_gold_steps": 2,
+     "n_gold_traces": 2,
+     "step_level": {
+      "label": "resource_exhaustion",
+      "n_positive": 2,
+      "n_total": 1164,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "resource_exhaustion",
+      "n_positive": 2,
+      "n_total": 117,
+      "reason": "N<10",
+      "scored": false
+     }
+    },
+    "timeout": {
+     "detector": "tool_error",
+     "n_gold_steps": 2,
+     "n_gold_traces": 2,
+     "step_level": {
+      "label": "timeout",
+      "n_positive": 2,
+      "n_total": 1164,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "timeout",
+      "n_positive": 2,
+      "n_total": 117,
+      "reason": "N<10",
+      "scored": false
+     }
+    }
+   },
+   "swe_bench": {
+    "api_issues": {
+     "detector": "tool_error",
+     "n_gold_steps": 0,
+     "n_gold_traces": 0,
+     "step_level": {
+      "label": "api_issues",
+      "n_positive": 0,
+      "n_total": 465,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "api_issues",
+      "n_positive": 0,
+      "n_total": 31,
+      "reason": "N<10",
+      "scored": false
+     }
+    },
+    "formatting": {
+     "detector": "invalid_invocation",
+     "n_gold_steps": 73,
+     "n_gold_traces": 27,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 73,
+       "fp": 23,
+       "label": "formatting",
+       "n_positive": 73,
+       "n_total": 465,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "baseline_last_step": {
+       "fn": 70,
+       "fp": 28,
+       "label": "formatting",
+       "n_positive": 73,
+       "n_total": 465,
+       "precision": 0.0968,
+       "recall": 0.0411,
+       "scored": true,
+       "tp": 3
+      },
+      "fn": 69,
+      "fp": 18,
+      "label": "formatting",
+      "n_positive": 73,
+      "n_total": 465,
+      "precision": 0.1818,
+      "recall": 0.0548,
+      "scored": true,
+      "tp": 4
+     },
+     "trace_level": {
+      "fn": 16,
+      "fp": 2,
+      "label": "formatting",
+      "length_baseline": {
+       "f1": 0.931,
+       "fn": 0,
+       "fp": 4,
+       "precision": 0.871,
+       "recall": 1.0,
+       "rule": "n_steps >= 6",
+       "tp": 27
+      },
+      "n_positive": 27,
+      "n_total": 31,
+      "precision": 0.8462,
+      "recall": 0.4074,
+      "scored": true,
+      "tp": 11
+     }
+    },
+    "n_steps": 465,
+    "n_traces": 31,
+    "resource_abuse_supp": {
+     "detector": "loop",
+     "n_gold_steps": 18,
+     "n_gold_traces": 13,
+     "step_level": {
+      "baseline_first_error_step": {
+       "fn": 18,
+       "fp": 23,
+       "label": "resource_abuse_supp",
+       "n_positive": 18,
+       "n_total": 465,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "baseline_last_step": {
+       "fn": 18,
+       "fp": 31,
+       "label": "resource_abuse_supp",
+       "n_positive": 18,
+       "n_total": 465,
+       "precision": 0.0,
+       "recall": 0.0,
+       "scored": true,
+       "tp": 0
+      },
+      "fn": 18,
+      "fp": 0,
+      "label": "resource_abuse_supp",
+      "n_positive": 18,
+      "n_total": 465,
+      "precision": null,
+      "recall": 0.0,
+      "scored": true,
+      "tp": 0
+     },
+     "trace_level": {
+      "fn": 13,
+      "fp": 0,
+      "label": "resource_abuse_supp",
+      "length_baseline": {
+       "f1": 0.619,
+       "fn": 0,
+       "fp": 16,
+       "precision": 0.4483,
+       "recall": 1.0,
+       "rule": "n_steps >= 7",
+       "tp": 13
+      },
+      "n_positive": 13,
+      "n_total": 31,
+      "precision": null,
+      "recall": 0.0,
+      "scored": true,
+      "tp": 0
+     }
+    },
+    "resource_exhaustion": {
+     "detector": "truncation",
+     "n_gold_steps": 1,
+     "n_gold_traces": 1,
+     "step_level": {
+      "label": "resource_exhaustion",
+      "n_positive": 1,
+      "n_total": 465,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "resource_exhaustion",
+      "n_positive": 1,
+      "n_total": 31,
+      "reason": "N<10",
+      "scored": false
+     }
+    },
+    "timeout": {
+     "detector": "tool_error",
+     "n_gold_steps": 0,
+     "n_gold_traces": 0,
+     "step_level": {
+      "label": "timeout",
+      "n_positive": 0,
+      "n_total": 465,
+      "reason": "N<10",
+      "scored": false
+     },
+     "trace_level": {
+      "label": "timeout",
+      "n_positive": 0,
+      "n_total": 31,
+      "reason": "N<10",
+      "scored": false
+     }
+    }
+   }
+  },
+  "tabulate": {
+   "gaia": {
+    "n_traces": 117,
+    "per_leaf": {
+     " Incorrect Problem Identification": 1,
+     "Authentication Errors": 5,
+     "Context Handling Failure": 5,
+     "Context Handling Failures": 19,
+     "Environment Setup Errors": 9,
+     "Formatting Errors": 124,
+     "Goal Deviation": 62,
+     "Goal deviation": 1,
+     "Incorrect Problem Identification": 18,
+     "Instruction Non-compliance": 65,
+     "Language-only": 41,
+     "Poor Information Retrieval": 28,
+     "Resource Abuse": 39,
+     "Resource Exhaustion": 2,
+     "Resource Not Found": 7,
+     "Service Errors": 2,
+     "Task Orchestration": 43,
+     "Task Orchestration Errors": 1,
+     "Timeout Issues": 2,
+     "Tool Definition Issues": 3,
+     "Tool Output Misinterpretation": 16,
+     "Tool Selection": 1,
+     "Tool Selection Errors": 44,
+     "Tool-related": 47
+    },
+    "per_leaf_canon": {
+     "authentication errors": 5,
+     "context handling failure": 5,
+     "context handling failures": 19,
+     "environment setup errors": 9,
+     "formatting errors": 124,
+     "goal deviation": 63,
+     "incorrect problem identification": 19,
+     "instruction non-compliance": 65,
+     "language-only": 41,
+     "poor information retrieval": 28,
+     "resource abuse": 39,
+     "resource exhaustion": 2,
+     "resource not found": 7,
+     "service errors": 2,
+     "task orchestration": 43,
+     "task orchestration errors": 1,
+     "timeout issues": 2,
+     "tool definition issues": 3,
+     "tool output misinterpretation": 16,
+     "tool selection": 1,
+     "tool selection errors": 44,
+     "tool-related": 47
+    }
+   },
+   "swe_bench": {
+    "n_traces": 31,
+    "per_leaf": {
+     "Context Handling Failures": 23,
+     "Formatting Error": 1,
+     "Formatting Errors": 72,
+     "Goal Deviation": 2,
+     "Incorrect Memory Usage": 2,
+     "Incorrect Problem Identification": 9,
+     "Instruction Non-Compliance": 2,
+     "Instruction Non-compliance": 88,
+     "Instruction non complience": 1,
+     "Language-Only": 3,
+     "Language-only": 9,
+     "Poor Information Retrieval": 12,
+     "Poor Information retrieval": 1,
+     "Resource Abuse": 18,
+     "Resource Exhaustion": 1,
+     "Task Orchestration": 3,
+     "Task Orchestration Error": 1,
+     "Task Orchestration Errors": 1,
+     "Tool Output Misinterpretation": 1,
+     "Tool-related": 6
+    },
+    "per_leaf_canon": {
+     "context handling failures": 23,
+     "formatting error": 1,
+     "formatting errors": 72,
+     "goal deviation": 2,
+     "incorrect memory usage": 2,
+     "incorrect problem identification": 9,
+     "instruction non complience": 1,
+     "instruction non-compliance": 90,
+     "language-only": 12,
+     "poor information retrieval": 13,
+     "resource abuse": 18,
+     "resource exhaustion": 1,
+     "task orchestration": 3,
+     "task orchestration error": 1,
+     "task orchestration errors": 1,
+     "tool output misinterpretation": 1,
+     "tool-related": 6
+    }
+   }
+  },
+  "unmapped_gold_locations": {
+   "gaia": 0,
+   "swe_bench": 2
+  }
+ }
+}
