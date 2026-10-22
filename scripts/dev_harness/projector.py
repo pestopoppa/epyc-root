@@ -118,6 +118,7 @@ def project_record(unit: src.Unit, r: dict, key: bytes) -> dict:
     ev = {
         "schema": EVENT_SCHEMA,
         "harness": unit.harness,
+        "source": unit.source,
         "unit_key": unit.unit_key,
         "conversation_id": unit.conversation_id,
         "agent_instance_id": unit.agent_instance_id,
@@ -152,6 +153,7 @@ def summarize_unit(unit: src.Unit, events: list[dict]) -> dict:
     return {
         "schema": SESSION_SCHEMA,
         "harness": unit.harness,
+        "source": unit.source,
         "unit_key": unit.unit_key,
         "conversation_id": unit.conversation_id,
         "agent_name": unit.agent_name,
@@ -214,16 +216,16 @@ def gather_units(a: argparse.Namespace) -> Iterator[src.Unit]:
         yield from src.select_vault_units("codex", a.codex, vault=vault, tenant=a.tenant,
                                           max_bytes=int(a.max_file_mb * (1 << 20)))
     if a.include_live:
-        for main in src.live_claude_newer_than_vault(vault_claude=vault / a.tenant / "claude"):
-            yield src.claude_file_unit(main, "live_file")
+        # the live ~/.claude/projects tree is this (epyc) container's own
+        for main in src.live_claude_newer_than_vault(vault_claude=vault / "epyc" / "claude"):
+            yield src.claude_file_unit(main, "live_file", "epyc")
             for s in sorted((main.parent / main.stem / "subagents").glob("agent-*.jsonl")):
-                yield src.claude_file_unit(s, "live_file")
+                yield src.claude_file_unit(s, "live_file", "epyc")
     for tb in a.tarball or []:
         yield from src.iter_tarball_units(Path(tb), limit=a.tarball_limit)
     if a.opencode is not None:
-        db = Path(a.opencode_db)
-        if db.exists():
-            yield from src.select_opencode_units(db, a.opencode)
+        # default = both read-only snapshots (epyc.db, host-daniele.db); an explicit live path is refused
+        yield from src.select_opencode_units_all(a.opencode_db, a.opencode)
 
 
 def run(a: argparse.Namespace) -> dict:
@@ -237,7 +239,7 @@ def run(a: argparse.Namespace) -> dict:
     by_harness = Counter()
     for unit in gather_units(a):
         events = [project_record(unit, r, key) for r in unit.records]
-        hdir = dh_privacy.private_dir(out / "events" / unit.harness)
+        hdir = dh_privacy.private_dir(out / "events" / unit.harness / (unit.source or "unknown"))
         dh_privacy.private_write(hdir / f"{unit.unit_key}.jsonl",
                                  "".join(json.dumps(e, sort_keys=True) + "\n" for e in events))
         s = summarize_unit(unit, events)
@@ -259,7 +261,8 @@ def run(a: argparse.Namespace) -> dict:
         "schema": RUN_SCHEMA, "run_id": run_id, "code_commit": code_commit(), "semconv": SEMCONV,
         "hash_scheme": HASH_SCHEME, "last_vault_sync": (src.last_vault_sync() or datetime.min).isoformat(),
         "inputs": {"vault": a.vault, "tenant": a.tenant, "claude": a.claude, "codex": a.codex,
-                   "opencode": a.opencode, "max_file_mb": a.max_file_mb, "opencode_db": a.opencode_db if a.opencode is not None else None,
+                   "opencode": a.opencode, "max_file_mb": a.max_file_mb, "opencode_db": (a.opencode_db or [str(p) for p in src.OPENCODE_RO_DBS.values()])
+                   if a.opencode is not None else None,
                    "tarball": a.tarball, "include_live": a.include_live},
         "units": dict(by_harness), "events": n_events, "commit_joins": len(joins),
         "commits_resolved": len(resolved), "elapsed_s": round(time.time() - t0, 2),
@@ -274,14 +277,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--private-root", default=str(dh_privacy.PRIVATE_ROOT))
     p.add_argument("--run-id")
     p.add_argument("--vault", default=str(src.VAULT_ROOT))
-    p.add_argument("--tenant", default="epyc", help="vault tenant dir: epyc | host | twyne")
+    p.add_argument("--tenant", default="all",
+                   help="vault tenant(s): epyc | host | twyne | comma list | all (default: all, 'mine everything')")
     p.add_argument("--claude", type=int, help="N most recent Claude Code sessions from the vault (0 = all)")
     p.add_argument("--codex", type=int, help="N most recent Codex rollouts from the vault (0 = all)")
     p.add_argument("--max-file-mb", type=float, default=8.0,
                    help="skip vault transcripts larger than this (sample cheapness; 0 = no cap for full runs)")
     p.add_argument("--opencode", type=int, help="N most recent opencode sessions (0 = all)")
-    p.add_argument("--opencode-db", default=str(src.LIVE_OPENCODE_DB),
-                   help="opencode sqlite (opened immutable=1); a decompressed backup snapshot also works")
+    p.add_argument("--opencode-db", action="append",
+                   help="opencode READ-ONLY snapshot (repeatable; opened ?mode=ro). Default: "
+                        f"{' and '.join(str(p) for p in src.OPENCODE_RO_DBS.values())}. Live stores are refused.")
     p.add_argument("--tarball", action="append", help="ai-sessions tarball to stream (repeatable)")
     p.add_argument("--tarball-limit", type=int)
     p.add_argument("--include-live", action="store_true",

@@ -23,7 +23,7 @@ Sessions are split into TASK-WINDOW segments: a new segment starts at every genu
 prompt (record.human), and a window is further capped at --max-messages / --max-chars (a cap
 split is marked metadata.continuation=true). Each message text is truncated to --max-msg-chars.
 
-Output is PRIVATE (F3-LB1): <private-root>/agentrun/<run-id>/<harness>/<unit_key>.seg-NNN.json
+Output is PRIVATE (F3-LB1): <private-root>/agentrun/<run-id>/<harness>/<source>/<unit_key>.seg-NNN.json
 plus index.jsonl (segment metadata only, used to pick tool-error / denial segments for the
 clustering baseline, DHM-7.2).
 
@@ -176,7 +176,7 @@ def segment(unit: src.Unit, *, max_messages: int, max_chars: int, max_msg_chars:
         denials = Counter(r.get("denial") for r in recs if r.get("denial"))
         tool_errors = sum(1 for r in recs if r["kind"] == "tool_result" and r.get("is_error"))
         md = {
-            "schema": AGENTRUN_SCHEMA, "harness": unit.harness, "conversation_id": unit.conversation_id,
+            "schema": AGENTRUN_SCHEMA, "harness": unit.harness, "source": unit.source, "conversation_id": unit.conversation_id,
             "unit_key": unit.unit_key, "agent_name": unit.agent_name, "agent_instance_id": unit.agent_instance_id,
             "parent_conversation_id": unit.parent_conversation_id, "edge_kind": unit.edge_kind,
             "collection_method": unit.collection_method, "source_path": unit.source_path,
@@ -188,7 +188,7 @@ def segment(unit: src.Unit, *, max_messages: int, max_chars: int, max_msg_chars:
             "interrupts": dict(interrupts),
         }
         runs.append({
-            "id": f"{unit.harness}:{unit.unit_key}:seg{i:03d}",
+            "id": f"{unit.harness}:{unit.source + ':' if unit.source else ''}{unit.unit_key}:seg{i:03d}",
             "name": f"{unit.harness} {unit.unit_key} segment {i}",
             "description": "",
             "transcripts": [{"messages": msgs, "metadata": {"harness": unit.harness, "segment_index": i},
@@ -208,7 +208,7 @@ def run(a) -> dict:
     n_units = Counter()
     for unit in projector.gather_units(a):
         n_units[unit.harness] += 1
-        hdir = dh_privacy.private_dir(out / unit.harness)
+        hdir = dh_privacy.private_dir(out / unit.harness / (unit.source or "unknown"))
         for ar in segment(unit, max_messages=a.max_messages, max_chars=a.max_chars, max_msg_chars=a.max_msg_chars):
             seg_i = ar["metadata"]["segment_index"]
             path = hdir / f"{unit.unit_key}.seg-{seg_i:03d}.json"

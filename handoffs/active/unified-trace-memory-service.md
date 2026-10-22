@@ -171,16 +171,27 @@ existing writers (unchanged):
     loss. (C) status quo — every uncovered store dies with md127; the opencode event reaper keeps pruning an uncovered
     store. Recommendation: (A), plus explain the missing Oct 4–17 tarballs and the 62-day gap. The operator owns the
     root cron job; no agent builds a backup.
+    **Update 2026-10-22 (operator, root-filesystem agent delivered):** opencode is now covered by hourly consistent
+    `sqlite3 .backup` snapshots, read-only (root:root 0444, `journal_mode=DELETE`, full cumulative history, at most ~1 h
+    stale; nightly zstd + 72 hourly copies on `/mnt/micron/opencode-vault`): `/mnt/raid0/llm/opencode-db/{epyc.db,host-daniele.db}`
+    (symlink to `/mnt/raid0/llm/opencode/readonly/`). Claude Code + Codex stay in `/mnt/raid0/llm/cloud-llm-vault/{host,twyne,epyc}/{claude,codex}/`.
+    **Scope ruling: mine EVERYTHING** — both opencode DBs and Claude/Codex from host, twyne and epyc; every Unit/event/session
+    record carries a `source` tag (`epyc|host|twyne`). `backup_coverage.py` counts `opencode_db` as `covered` while the newest
+    snapshot is under 3 h old (judged by snapshot freshness, not the nightly job). Mining readers open snapshots only
+    (`?mode=ro` + `PRAGMA query_only=1`, one retry, never the `event` table) and REFUSE the live stores
+    (`~/.local/share/opencode`, `/mnt/raid0/llm/opencode/<src>/`); `dh_privacy` lists `/mnt/raid0/llm/opencode{,-db}` as never-write roots.
+    Code: root `f8/opencode-ro-root-20261022`, orchestrator `f8/opencode-ro-orch-20261022`, research `f8/opencode-ro-research-20261022`.
 - [x] **UTM-LB2 — Build the private dev-harness transcript projector reading from the existing backup (cloud-llm-vault copies and the ai-sessions tarballs; live stores only for data newer than the last nightly sync) over Claude Code JSONL, Codex rollouts and opencode V1/V2, read-only, into events with OTel GenAI names in detail_json (operation, tool call id, usage normalized to inclusive OTel input tokens per each harness's convention with the raw tuple kept, conversation and agent lineage), Beacon-style collection_method and observed/inferred fidelity markers, keyed-HMAC 64-token block hashes, Claude usage dedupe by message id, Codex usage read from token_usage_record (never summed token_count), spawn-vs-fork edge kinds, a composite source-schema key per session, the semconv commit stamped, and a session-to-commit join from commit hashes in tool results; outputs private only (intake-2387, intake-2403, intake-2419, intake-2434#record, intake-2438).** ✅ 2026-10-22
   - `scripts/dev_harness/{dh_sources,projector,dh_privacy}.py`; outputs `dev-harness-{event,session,commit-join,projection-run}.v1`
     under `/mnt/raid0/llm/private/dev-harness-traces/projections/<run>/` (0700/0600; content → keyed-HMAC 64-token
     block hashes, key in `keys/`). Semconv stamped `semantic-conventions-genai@9ffc7e00` (gen-ai-dev/1.42.0-dev).
     Sample run `sample-20261022` (8 Claude + 8 Codex + 4 opencode main sessions, 66 units incl. 46 subagents, 16006
-    events, 2.2 s, 64 MB RSS, nice 19); 27 tests in `tests/dev_harness/`. opencode is read from the live db
-    `immutable=1` because no backup holds it (UTM-LB1).
+    events, 2.2 s, 64 MB RSS, nice 19); 27 tests in `tests/dev_harness/`. The sample read the live db `immutable=1`; since
+    2026-10-22 opencode is read from the read-only snapshots `/mnt/raid0/llm/opencode-db/{epyc,host-daniele}.db`
+    (`?mode=ro`), default tenant is all of `epyc,host,twyne`, outputs land under `events/<harness>/<source>/` (see UTM-LB1).
   - [ ] **UTM-LB2.1 — Full-corpus projector + AgentRun run** under `nice -n 19`, off the inference windows:
     `python3 scripts/dev_harness/projector.py --claude 0 --codex 0 --opencode 0 --max-file-mb 0 --run-id full-<date>`
-    then the same flags on `agentrun.py`; repeat with `--tenant host` / `--tenant twyne` if wanted. Estimate from the
+    then the same flags on `agentrun.py`; the default `--tenant all` already covers epyc, host and twyne plus both opencode snapshot DBs (`--opencode 0`). Estimate from the
     sample (~45 MB/s single core): ~31 GB vault → ~12–15 min each, ~6 GB + ~4.5 GB private output (raid0 has 608 GB).
   - [ ] **UTM-LB2.2 — Ingest projector events into the unified trace store** (`src/trace/`, new EventSource for
     dev-harness events, detail_json passthrough, dedupe on (source_path, source_line)), private DB path only.

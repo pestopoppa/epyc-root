@@ -256,7 +256,7 @@ def test_projector_end_to_end_private_and_content_free(tmp_path):
     assert main["interrupts"] == {"tool_use": 1, "plain": 1}
     assert main["commit_shas"] == ["abc1234"] and main["usage"]["n_usage_records"] == 2
     assert main["semconv"] == projector.SEMCONV["commit"]
-    ev = [json.loads(line) for line in (out / f"events/claude_code/{SID}.jsonl").read_text().splitlines()]
+    ev = [json.loads(line) for line in (out / f"events/claude_code/epyc/{SID}.jsonl").read_text().splitlines()]
     assert all(e["schema"] == projector.EVENT_SCHEMA and e["fidelity"] in ("observed", "inferred") for e in ev)
     usage_ev = next(e for e in ev if e["event_kind"] == "usage")
     d = usage_ev["detail_json"]

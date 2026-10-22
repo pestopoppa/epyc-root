@@ -7,6 +7,12 @@ The host already runs a nightly root cron job (operator ruling 2026-10-22: build
           micron snapshot          /mnt/micron/backups (vault only, keep 60; host mount, not visible here)
 and logs to claude-backups/backup.log + LAST_STATUS.
 
+opencode (operator, 2026-10-22): the root filesystem agent now owns opencode backup coverage -- hourly consistent
+``sqlite3 .backup`` snapshots at /mnt/raid0/llm/opencode-db/{epyc.db,host-daniele.db} (root:root 0444, full cumulative
+history, nightly zstd + 72 hourly copies on /mnt/micron/opencode-vault). A store spec's ``snapshots`` globs make it
+``covered`` while the newest snapshot is at most SNAPSHOT_STALE_H old; such a store is judged by snapshot freshness,
+NOT by the nightly vault job (which does not carry opencode).
+
 This tool copies nothing, writes nothing outside --out, changes no retention and never opens a store
 for writing. It answers, per dev-harness store: is it held by the vault or a tarball, and since when.
 
@@ -40,6 +46,8 @@ BACKUPS = Path("/mnt/raid0/llm/claude-backups")
 ORCH = Path("/workspace/repos/epyc-orchestrator")
 KEEP_TARBALLS = 14
 STALE_H = 36
+SNAPSHOT_STALE_H = 3          # hourly snapshots: >3 h old means the sync is not running
+OPENCODE_RO_DIR = Path("/mnt/raid0/llm/opencode-db")
 
 # store -> (live globs, vault globs, tarball member regex, extra backup-file globs)
 STORES: dict[str, dict] = {
@@ -69,7 +77,8 @@ STORES: dict[str, dict] = {
         "tar": r"(^|/)(state|thread_history)_\d+\.sqlite$",
     },
     "opencode_db": {
-        "live": [str(HOME / ".local/share/opencode/opencode.db")],
+        "live": [str(HOME / ".local/share/opencode/opencode.db"), "/mnt/raid0/llm/opencode/*/opencode.db"],
+        "snapshots": [str(OPENCODE_RO_DIR / "*.db")],     # hourly ro snapshots (epyc.db, host-daniele.db)
         "vault": [str(VAULT / "*/opencode*")],
         "tar": r"(^|/)opencode[^/]*\.db$",
         "files": [str(BACKUPS / "opencode-*.db.zst")],
@@ -176,9 +185,14 @@ def store_report(name: str, spec: dict, tar_members: list[str] | None) -> dict:
     live = _files(spec["live"])
     vault = _files(spec["vault"])
     extra = _files(spec.get("files", []))
+    snaps = _files(spec.get("snapshots", []))
+    snap_newest = max((p.stat().st_mtime for p in snaps), default=None)
+    snap_fresh = snap_newest is not None and (datetime.now(timezone.utc).timestamp() - snap_newest) <= SNAPSHOT_STALE_H * 3600
     r: dict = {"store": name, "live_files": len(live), "live_newest": _iso(max((p.stat().st_mtime for p in live), default=None)),
                "vault_files": len(vault), "vault_newest": _iso(max((p.stat().st_mtime for p in vault), default=None)),
                "vault_content_from": _content_start(vault) if vault and name in ("claude_transcripts", "codex_rollouts") else None,
+               "snapshot_files": [p.name for p in snaps], "snapshot_newest": _iso(snap_newest),
+               "snapshot_fresh": snap_fresh,
                "backup_files": [p.name for p in extra],
                "backup_files_newest": _iso(max((p.stat().st_mtime for p in extra), default=None))}
     if tar_members is None:
@@ -189,7 +203,7 @@ def store_report(name: str, spec: dict, tar_members: list[str] | None) -> dict:
         n = sum(1 for m in tar_members if rx.search(m))
         r["tarball_members"] = n
         in_tar = n > 0
-    if vault or in_tar:
+    if vault or in_tar or snap_fresh:
         r["covered"] = "covered"
     elif extra:
         r["covered"] = "partial"          # a backup file exists but no nightly cadence is proven here
@@ -198,6 +212,7 @@ def store_report(name: str, spec: dict, tar_members: list[str] | None) -> dict:
     r["evidence"] = ", ".join(x for x in (
         f"vault {len(vault)} files" if vault else "",
         f"tarball {r['tarball_members']} members" if in_tar else "",
+        f"hourly ro snapshots {', '.join(r['snapshot_files'])} (newest {r['snapshot_newest']})" if snap_fresh else "",
         f"backup files {', '.join(r['backup_files'])}" if extra else "") if x) or "none"
     return r
 
@@ -236,11 +251,13 @@ def cmd_precondition(a) -> int:
         return 2
     r = store_report(a.store, STORES[a.store], _tar_members(a.tarball_listing))
     j = job_status()
-    if r["covered"] != "covered" or not j["live"]:
-        print(f"PRECONDITION FAILED: {a.store} is {r['covered']} (job live={j['live']}); evidence: {r['evidence']}. "
+    # a snapshot-covered store (opencode) is judged by snapshot freshness, not by the nightly vault job
+    job_ok = j["live"] or r["snapshot_fresh"]
+    if r["covered"] != "covered" or not job_ok:
+        print(f"PRECONDITION FAILED: {a.store} is {r['covered']} (job live={j['live']}, snapshot fresh={r['snapshot_fresh']}); evidence: {r['evidence']}. "
               "Do not delete: the operator decides (NIB2-LB1).", file=sys.stderr)
         return 3
-    newest = max(filter(None, [r["vault_newest"], r["backup_files_newest"],
+    newest = max(filter(None, [r["vault_newest"], r["backup_files_newest"], r["snapshot_newest"],
                                (j["tarballs"][-1]["mtime"] if j["tarballs"] and r["tarball_members"] not in (0,) else None)]),
                  default=None)
     if a.rows_before and (newest is None or newest < a.rows_before):

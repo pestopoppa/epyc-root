@@ -47,6 +47,13 @@ measured recurrence rather than on anecdote. Measurement only; hook and policy e
 
 ## Notes
 
+- **Sources (operator 2026-10-22, scope ruling: mine EVERYTHING; every record carries a `source` tag epyc|host|twyne).**
+  opencode: the read-only hourly snapshots `/mnt/raid0/llm/opencode-db/{epyc.db,host-daniele.db}` (symlink to
+  `/mnt/raid0/llm/opencode/readonly/`; at most ~1 h stale, full history; open `file:<path>?mode=ro`, retry once if the open
+  fails because the copy is being replaced; tables `session`/`message`/`part`, never `event`). Claude Code + Codex:
+  `/mnt/raid0/llm/cloud-llm-vault/{host,twyne,epyc}/{claude,codex}/` (append-only JSONL). The LIVE opencode stores
+  (`~/.local/share/opencode/opencode.db`, `/mnt/raid0/llm/opencode/<src>/opencode.db`) are never opened for mining.
+  Shared helper: `scripts/dev_harness/dh_sources.py` (`OPENCODE_RO_DBS`, `open_ro`, `refuse_live_opencode_path`).
 - Inputs are read from the existing conversation backup (the nightly cloud-llm-vault sync and the ai-sessions tarballs;
   coverage checked by UTM-LB1) through the private projector (UTM-LB2); no parallel backup is built. Outputs are
   aggregate-only and private (F3-LB1). epyc-root is a public repository: never commit transcript content.

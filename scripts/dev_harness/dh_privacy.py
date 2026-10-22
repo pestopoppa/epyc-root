@@ -11,7 +11,7 @@ Three guarantees this module enforces, so a caller cannot forget them:
 
 * ``private_dir`` / ``private_write`` refuse any path inside a git work tree, inside the
   backup (cloud-llm-vault, claude-backups) or inside a harness's own store (~/.claude,
-  ~/.codex, ~/.local/share/opencode); they create dirs 0700 and files 0600.
+  ~/.codex, ~/.local/share/opencode, /mnt/raid0/llm/opencode{,-db}); they create dirs 0700 and files 0600.
 * ``validate_aggregate`` refuses a document carrying a per-session key (session/conversation
   ids, source paths, block hashes, content) or a non-numeric count leaf.
 * ``publish_aggregate`` writes nothing into the repo unless the preflight exits 0.
@@ -31,6 +31,8 @@ from typing import Any
 PRIVATE_ROOT = Path(os.environ.get("DEV_HARNESS_PRIVATE_ROOT", "/mnt/raid0/llm/private/dev-harness-traces"))
 VAULT_ROOT = Path("/mnt/raid0/llm/cloud-llm-vault")
 BACKUP_DIR = Path("/mnt/raid0/llm/claude-backups")
+OPENCODE_RO_ROOT = Path("/mnt/raid0/llm/opencode-db")      # operator's read-only snapshots: never written
+OPENCODE_STORE_ROOT = Path("/mnt/raid0/llm/opencode")       # live <src>/opencode.db stores + readonly/
 ORCHESTRATOR_ROOT = Path(os.environ.get("EPYC_ORCHESTRATOR_ROOT", "/workspace/repos/epyc-orchestrator"))
 PREFLIGHT_REL = "scripts/datasets/raw_trace_publish_preflight.py"
 
@@ -50,7 +52,8 @@ class PrivacyError(RuntimeError):
 
 def _protected_roots() -> list[Path]:
     home = Path(os.path.expanduser("~"))
-    return [VAULT_ROOT, BACKUP_DIR, home / ".claude", home / ".codex", home / ".local/share/opencode"]
+    return [VAULT_ROOT, BACKUP_DIR, home / ".claude", home / ".codex", home / ".local/share/opencode",
+            OPENCODE_RO_ROOT, OPENCODE_STORE_ROOT]
 
 
 def _inside(path: Path, root: Path) -> bool:

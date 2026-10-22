@@ -5,16 +5,23 @@ Sources, in preference order (operator ruling 2026-10-22: read the EXISTING back
 
   vault     /mnt/raid0/llm/cloud-llm-vault/{epyc,host,twyne}/{claude,codex}  (nightly 02:00Z, immutable)
   tarball   /mnt/raid0/llm/claude-backups/ai-sessions-*.tar.gz              (streamed, never extracted)
-  live      ~/.claude/projects files newer than the last vault sync (``--include-live``);
-            opencode.db, which neither the vault nor the tarballs hold (UTM-LB1 gap), opened
-            ``immutable=1`` so SQLite can neither write nor take a lock.
+  live      ~/.claude/projects files newer than the last vault sync (``--include-live``).
+  opencode  the operator's READ-ONLY hourly snapshots ``/mnt/raid0/llm/opencode-db/{epyc,host-daniele}.db``
+            (operator ruling 2026-10-22: mine EVERYTHING, both DBs plus claude/codex from the
+            epyc, host and twyne vault tenants). Opened ``?mode=ro`` + ``PRAGMA query_only=1`` with one
+            retry (``open_ro``). The LIVE stores (``~/.local/share/opencode``,
+            ``/mnt/raid0/llm/opencode/<src>/``) are writable and are REFUSED for mining
+            (``refuse_live_opencode_path``).
+
+Every Unit and record carries a ``source`` tag (epyc | host | twyne) naming the machine it came from.
 
 Every reader yields ``Unit`` objects: one per transcript file / opencode session, carrying
 normalized ``records`` (dicts). Records hold content (``text``, ``arguments``) IN MEMORY ONLY;
 the projector drops it (hashes only) and the AgentRun converter writes it to the private root.
 
 Nothing here opens a file for writing. The opencode reader queries an explicit table allowlist
-(session, message, part, session_message) and never touches account/credential/share tables.
+(session, message, part, session_message) and never touches account/credential/share tables, nor the
+``event`` change-feed (pruned by the event reaper; not the conversation record).
 """
 from __future__ import annotations
 
@@ -23,15 +30,30 @@ import os
 import re
 import sqlite3
 import tarfile
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any, Callable, Iterable, Iterator
+from urllib.parse import quote
 
 VAULT_ROOT = Path("/mnt/raid0/llm/cloud-llm-vault")
 BACKUP_LOG = Path("/mnt/raid0/llm/claude-backups/backup.log")
 LIVE_CLAUDE = Path(os.path.expanduser("~/.claude/projects"))
-LIVE_OPENCODE_DB = Path(os.path.expanduser("~/.local/share/opencode/opencode.db"))
+VAULT_TENANTS = ("epyc", "host", "twyne")
+
+# Operator's read-only opencode snapshots (hourly consistent `sqlite3 .backup`, root:root 0444,
+# journal_mode=DELETE so ?mode=ro works). /mnt/raid0/llm/opencode-db -> /mnt/raid0/llm/opencode/readonly.
+OPENCODE_RO_DIR = Path("/mnt/raid0/llm/opencode-db")
+OPENCODE_RO_DBS: dict[str, Path] = {
+    "epyc": OPENCODE_RO_DIR / "epyc.db",
+    "host": OPENCODE_RO_DIR / "host-daniele.db",
+}
+# LIVE writable stores: never opened for mining (a mining reader could corrupt them / contend with the writer).
+_OPENCODE_LIVE_ROOTS = (Path(os.path.expanduser("~/.local/share/opencode")),
+                        Path("/home/node/.local/share/opencode"),
+                        Path("/mnt/raid0/llm/opencode"))
+_OPENCODE_RO_REAL = Path("/mnt/raid0/llm/opencode/readonly")   # the snapshot dir's real location (allowed)
 
 INTERRUPT_PLAIN = "[Request interrupted by user]"
 INTERRUPT_TOOL = "[Request interrupted by user for tool use]"
@@ -59,6 +81,7 @@ class Unit:
     type_sig: set = field(default_factory=set)
     records: list = field(default_factory=list)
     parse_errors: int = 0
+    source: str | None = None    # epyc | host | twyne (machine of origin); None only for untagged tarballs
 
     def source_schema_key(self) -> str:
         """Composite per-session schema key: harness | producer versions | record-type signature."""
@@ -247,7 +270,7 @@ def apply_claude_meta(meta: dict, unit: Unit) -> None:
     unit.edge_fidelity = "observed"
 
 
-def claude_file_unit(path: Path, method: str) -> Unit:
+def claude_file_unit(path: Path, method: str, source: str | None = None) -> Unit:
     is_sub = path.parent.name == "subagents"
     key = path.stem
     if is_sub:
@@ -262,7 +285,7 @@ def claude_file_unit(path: Path, method: str) -> Unit:
             _claude_meta(meta, unit)
         else:
             unit.edge_kind, unit.edge_fidelity = "spawn", "inferred"
-    return unit
+    return tag_source(unit, source)
 
 
 def discover_claude(root: Path) -> list[tuple[Path, list[Path]]]:
@@ -385,12 +408,12 @@ def parse_codex_lines(lines: Iterable[str], unit: Unit) -> Unit:
     return unit
 
 
-def codex_file_unit(path: Path, method: str) -> Unit:
+def codex_file_unit(path: Path, method: str, source: str | None = None) -> Unit:
     unit = Unit("codex", path.stem, None, method, str(path))
     with path.open("r", encoding="utf-8", errors="replace") as fh:
         parse_codex_lines(fh, unit)
     unit.unit_key = unit.agent_instance_id or path.stem
-    return unit
+    return tag_source(unit, source)
 
 
 def discover_codex(root: Path) -> list[Path]:
@@ -402,9 +425,95 @@ def discover_codex(root: Path) -> list[Path]:
 OPENCODE_TABLES = ("session", "message", "part", "session_message")
 
 
+class LiveOpencodeStoreError(ValueError):
+    """A mining reader was pointed at a LIVE (writable) opencode store."""
+
+
+def _under(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
+def is_live_opencode_path(path: Path | str) -> bool:
+    """True for anything under ~/.local/share/opencode or /mnt/raid0/llm/opencode/<src>/ except readonly/.
+
+    Both the lexical and the symlink-resolved path are checked, so a symlink INTO a live store is caught
+    while ``/mnt/raid0/llm/opencode-db`` (-> ``.../opencode/readonly``) is allowed.
+    """
+    raw = Path(os.path.expanduser(str(path)))
+    for cand in (Path(os.path.abspath(raw)), raw.resolve()):
+        if _under(cand, _OPENCODE_RO_REAL) or _under(cand, OPENCODE_RO_DIR):
+            continue
+        if any(_under(cand, root) for root in _OPENCODE_LIVE_ROOTS):
+            return True
+    return False
+
+
+def refuse_live_opencode_path(path: Path | str) -> Path:
+    if is_live_opencode_path(path):
+        raise LiveOpencodeStoreError(
+            f"refusing to mine LIVE opencode store {path}: it is writable and could be corrupted. "
+            f"Use the read-only snapshots {', '.join(str(p) for p in OPENCODE_RO_DBS.values())} "
+            f"(refreshed hourly; operator ruling 2026-10-22).")
+    return Path(path)
+
+
+def open_ro(path: Path | str, *, retries: int = 1, retry_delay: float = 1.0,
+            _connect: Callable[..., sqlite3.Connection] = sqlite3.connect) -> sqlite3.Connection:
+    """Open an opencode snapshot ``?mode=ro`` with ``PRAGMA query_only=1``; retry once on failure.
+
+    A failed ro-open means the snapshot is being atomically replaced; one retry after ``retry_delay``
+    is the operator's contract. Live stores are refused (``LiveOpencodeStoreError``).
+    """
+    p = refuse_live_opencode_path(path)
+    uri = f"file:{quote(str(p), safe='/')}?mode=ro"
+    last: Exception | None = None
+    for attempt in range(retries + 1):
+        conn = None
+        try:
+            conn = _connect(uri, uri=True)
+            conn.execute("PRAGMA query_only=1")
+            conn.execute("SELECT 1 FROM sqlite_master LIMIT 1")      # surfaces a bad/replaced file now
+            return conn
+        except sqlite3.Error as exc:
+            last = exc
+            if conn is not None:
+                try:
+                    conn.close()
+                except sqlite3.Error:
+                    pass
+            if attempt < retries:
+                time.sleep(retry_delay)
+    assert last is not None
+    raise last
+
+
 def open_opencode(db: Path) -> sqlite3.Connection:
-    """Open read-only AND immutable: no write, no lock, no -wal/-shm creation."""
-    return sqlite3.connect(f"file:{db}?immutable=1", uri=True)
+    """Back-compat name: read-only snapshot open (``open_ro``)."""
+    return open_ro(db)
+
+
+def opencode_source_for(db: Path | str) -> str:
+    """Source tag for a snapshot path: epyc | host for the known DBs, else ``unknown`` (never guessed)."""
+    try:
+        rp = Path(db).resolve()
+    except OSError:
+        rp = Path(db)
+    for tag, known in OPENCODE_RO_DBS.items():
+        if Path(db) == known or rp == known.resolve():
+            return tag
+    return "unknown"
+
+
+def tag_source(unit: "Unit", source: str | None) -> "Unit":
+    """Stamp ``source`` on the unit and on every record it carries."""
+    unit.source = source
+    for r in unit.records:
+        r["source"] = source
+    return unit
 
 
 def _ms_iso(ms: Any) -> str | None:
@@ -435,7 +544,7 @@ def opencode_sessions(conn: sqlite3.Connection, limit: int | None = None,
     return conn.execute(q, args).fetchall()
 
 
-def opencode_unit(conn: sqlite3.Connection, srow: tuple, db_path: str) -> Unit:
+def opencode_unit(conn: sqlite3.Connection, srow: tuple, db_path: str, source: str | None = None) -> Unit:
     sid, parent, version, agent, model, _created = srow
     unit = Unit("opencode", sid, sid, "sqlite_row", f"{db_path}#session={sid}", agent_name=agent or "main",
                 agent_instance_id=sid)
@@ -523,7 +632,7 @@ def opencode_unit(conn: sqlite3.Connection, srow: tuple, db_path: str) -> Unit:
         role = p.get("role") if isinstance(p, dict) else None
         _rec(unit, f"session_message:{seq}", _ms_iso(tc), "chat", role=role or "assistant", operation="chat",
              text=_text_of(p.get("content") if isinstance(p, dict) else p), fidelity="inferred", v2_type=typ)
-    return unit
+    return tag_source(unit, source)
 
 
 # ─── tarball streaming ───────────────────────────────────────────────────────
@@ -578,7 +687,7 @@ def iter_tarball_units(path: Path, limit: int | None = None) -> Iterator[Unit]:
                 unit.unit_key = unit.agent_instance_id or p.stem
             else:
                 continue
-            yield unit
+            yield tag_source(unit, None)     # tarball host of origin is not recorded: never guessed
             n += 1
             if limit and n >= limit:
                 return
@@ -604,31 +713,58 @@ def live_claude_newer_than_vault(live_root: Path = LIVE_CLAUDE, vault_claude: Pa
     return out
 
 
-def select_vault_units(harness: str, limit: int, vault: Path = VAULT_ROOT, tenant: str = "epyc",
+def _tenants(tenant: str | Iterable[str]) -> list[str]:
+    """``epyc`` | ``host`` | ``twyne`` | ``all`` | comma list | iterable -> ordered unique tenant names."""
+    names = tenant.split(",") if isinstance(tenant, str) else list(tenant)
+    out: list[str] = []
+    for n in (x.strip() for x in names if x.strip()):
+        for t in (VAULT_TENANTS if n == "all" else (n,)):
+            if t not in out:
+                out.append(t)
+    return out
+
+
+def select_vault_units(harness: str, limit: int, vault: Path = VAULT_ROOT, tenant: str | Iterable[str] = "all",
                        min_bytes: int = 2048, max_bytes: int = 8 << 20) -> Iterator[Unit]:
-    """Most-recent ``limit`` sessions of ``harness`` from the vault (subagents ride with their main)."""
+    """Most-recent ``limit`` sessions of ``harness`` across the tenants (subagents ride with their main).
+
+    Operator ruling 2026-10-22: mine EVERYTHING, so the default is every tenant (epyc, host, twyne);
+    each unit/record carries its tenant as ``source``. ``limit`` is global, newest first.
+    """
+    tenants = _tenants(tenant)
     if harness == "claude_code":
-        pairs = discover_claude(vault / tenant / "claude")
-        pairs = [(m, s) for m, s in pairs if min_bytes <= m.stat().st_size and (not max_bytes or m.stat().st_size <= max_bytes)]
+        pairs = [(m, s, t) for t in tenants for m, s in discover_claude(vault / t / "claude")
+                 if min_bytes <= m.stat().st_size and (not max_bytes or m.stat().st_size <= max_bytes)]
         pairs.sort(key=lambda ms: ms[0].stat().st_mtime, reverse=True)
-        for main, subs in (pairs[:limit] if limit else pairs):
-            yield claude_file_unit(main, "vault_file")
+        for main, subs, t in (pairs[:limit] if limit else pairs):
+            yield claude_file_unit(main, "vault_file", t)
             for s in subs:
-                yield claude_file_unit(s, "vault_file")
+                yield claude_file_unit(s, "vault_file", t)
     elif harness == "codex":
-        files = [f for f in discover_codex(vault / tenant / "codex")
+        files = [(f, t) for t in tenants for f in discover_codex(vault / t / "codex")
                  if min_bytes <= f.stat().st_size and (not max_bytes or f.stat().st_size <= max_bytes)]
-        files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
-        for f in (files[:limit] if limit else files):
-            yield codex_file_unit(f, "vault_file")
+        files.sort(key=lambda ft: ft[0].stat().st_mtime, reverse=True)
+        for f, t in (files[:limit] if limit else files):
+            yield codex_file_unit(f, "vault_file", t)
     else:
         raise ValueError(harness)
 
 
-def select_opencode_units(db: Path, limit: int, session_ids: list[str] | None = None) -> Iterator[Unit]:
-    conn = open_opencode(db)
+def select_opencode_units(db: Path, limit: int, session_ids: list[str] | None = None,
+                          source: str | None = None) -> Iterator[Unit]:
+    """Sessions from ONE read-only snapshot (``open_ro``; live stores refused). ``source`` defaults to the
+    tag of the known snapshot path (epyc | host), else ``unknown``."""
+    conn = open_ro(db)
+    tag = source or opencode_source_for(db)
     try:
         for row in opencode_sessions(conn, limit=limit, session_ids=session_ids):
-            yield opencode_unit(conn, row, str(db))
+            yield opencode_unit(conn, row, str(db), tag)
     finally:
         conn.close()
+
+
+def select_opencode_units_all(dbs: Iterable[Path | str] | None, limit: int) -> Iterator[Unit]:
+    """Mine every snapshot in ``dbs`` (default: both ``OPENCODE_RO_DBS``); a missing file is skipped."""
+    for db in (list(dbs) if dbs else list(OPENCODE_RO_DBS.values())):
+        if Path(db).exists():
+            yield from select_opencode_units(Path(db), limit)

@@ -180,3 +180,13 @@ Pre-existing reds observed, not caused here: `test_campaign_footprint` (three lo
   predates the writer fix.
 - **UFH14-LB1 / CH-LB1** ticked: build + tests passed on `experimental/locals-kernel-fixes-20261022` @ `452887155` (12:33:58Z,
   `/mnt/raid0/llm/tmp/f8-fillers-20261022/locals-d/off/out/steps.txt`). Fold-into-champion children UFH14-LB1.1 and CH-LB1.1 left open.
+## opencode mining readers repointed at the read-only snapshots (f8-ocro)
+
+- Operator ruling 2026-10-22: mine EVERYTHING from `/mnt/raid0/llm/opencode-db/{epyc.db,host-daniele.db}` (hourly ro `.backup`
+  snapshots) and the vault `{host,twyne,epyc}/{claude,codex}`; every record carries a `source` tag. Never the live stores.
+- Root (`f8/opencode-ro-root-20261022`): `dh_sources.py` gains `OPENCODE_RO_DBS`, `open_ro` (`?mode=ro`, `query_only`, retry once),
+  `refuse_live_opencode_path`, `Unit.source`; `projector.py`/`agentrun.py` default to both DBs and `--tenant all`, outputs under
+  `<harness>/<source>/`; `dh_privacy.py` adds `/mnt/raid0/llm/opencode{,-db}` as never-write roots; `backup_coverage.py` counts
+  opencode covered by fresh (<3 h) snapshots. Tests: `tests/dev_harness/test_opencode_ro.py` (+ updated existing).
+- Smoke on the real snapshots (`select count(*) from session`, ro): epyc.db 1241, host-daniele.db 16045.
+- NIB2-LB1.2 resolved (reaper prunes only `event`, which mining no longer reads); UTM-LB1 and dev-harness-trace-mining.md sources updated.

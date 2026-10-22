@@ -940,7 +940,8 @@ The published 220-completion boundary remains historical. This acceptance adds t
     <store> [--rows-before ts]` (exit 0 covered and fresh, 3 not covered, 4 backup older than the rows); rule written into
     `docs/guides/agent-workflows/cleanup-reference-check.md`. Today: `codex_rollouts` → 0 (its apply is disabled anyway);
     `opencode_db` → 3 (partial: one-off `.db.zst` only).
-  - [ ] **NIB2-LB1.2 — wire the precondition into `opencode_event_reaper.sh`** (or retire the requirement for `event`
-    revision rows): blocked on the operator's UTM-LB1.D decision — the task's fallback (a content-stripped extract for an
-    uncovered store) is a new copy job the 2026-10-22 ruling forbids, and gating now would stop a reaper bounding
-    1.7 GB/h growth. Edit the script only while the daemon is stopped (never edit a running .sh).
+  - [x] **NIB2-LB1.2 — wire the precondition into `opencode_event_reaper.sh`** (or retire the requirement for `event`
+    revision rows) ✅ 2026-10-22 RESOLVED by retiring the requirement: the reaper prunes only the `event` table, which no
+    mining reader uses any more, and the operator's hourly read-only snapshots `/mnt/raid0/llm/opencode-db/{epyc,host-daniele}.db`
+    hold the full `session`/`message`/`part` history (`backup_coverage.py` reports `opencode_db` covered by them). The reaper
+    script is untouched; mining readers were repointed at the snapshots (UTM-LB1 update; root `f8/opencode-ro-root-20261022`).
