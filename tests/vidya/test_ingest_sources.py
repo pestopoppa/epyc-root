@@ -320,7 +320,10 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "verify-before-stop-measurement", "eval-suite-discriminability",
         # Cross-repo capture-module pin (research speech_cpu_capture.py), censored-row counting,
         # legacy zero-tuple refusal and ledger ingest: test_speech_cpu_measurement_adapter.py.
-        "speech-cpu-measurement"}
+        "speech-cpu-measurement",
+        # Real operator listen aggregate (CS-8.L, 7 observation tuples) through ingest + CLI:
+        # test_speech_listen_rating_adapter.py (VB-SPEECH-LISTEN-1).
+        "speech-listen-rating"}
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():

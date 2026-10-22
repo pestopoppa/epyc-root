@@ -107,7 +107,12 @@ def _producer_source(path: str) -> str | None:
 
 def test_producer_source_still_writes_the_pinned_vocabulary():
     monitor = _producer_source("scripts/autopilot/eval_leakage_monitor.py")
-    forge = _producer_source("scripts/autopilot/species/prompt_forge.py")
+    # HIL-6 seam S1 (orch 7e9dcfad) moved the MHS guards byte-for-byte into
+    # src/autopilot_core/mutation_guards.py (prompt_forge re-exports them); later seams may move
+    # them again, so the vocabulary is searched across every module that may hold it.
+    forge_parts = [_producer_source(p) for p in (
+        "scripts/autopilot/species/prompt_forge.py", "src/autopilot_core/mutation_guards.py")]
+    forge = "\n".join(part for part in forge_parts if part) if any(forge_parts) else None
     ledger = _producer_source("scripts/autopilot/rejected_mutation_ledger.py")
     actions = _producer_source("scripts/autopilot/actions.py")
     if not all((monitor, forge, ledger, actions)):
