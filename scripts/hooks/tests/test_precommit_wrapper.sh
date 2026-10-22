@@ -63,6 +63,7 @@ REPOS=(
   "/workspace"
   "/mnt/raid0/llm/epyc-inference-research"
   "/mnt/raid0/llm/epyc-orchestrator"
+  "/mnt/raid0/llm/epyc-web"
 )
 
 # A syntactically valid AWS access key ID SHAPE. Not a real credential.
@@ -74,6 +75,9 @@ REPOS=(
 # Do NOT "simplify" this to a single literal, and do NOT add a secret-pattern
 # exemption for this path — the exemption would be a real weakening; this is not.
 BAD_BLOB="AKIA""1234567890ABCDEF"
+
+# SEC-SECRETS-1: Hugging Face token SHAPE ("hf_" + 34 alphanumerics), assembled for the same reason as above.
+BAD_HF_BLOB="HF_TOKEN=hf""_aB3dE5gH7jK9mN1pQ3sT5vW7yZ1bD3fH5j"
 
 FAILURES=0
 pass() { printf '  ok   %s\n' "$1"; }
@@ -106,6 +110,15 @@ for repo in "${REPOS[@]}"; do
     pass "$name blocks a staged secret (exit $rc)"
   else
     fail "$name" "staged AWS-key-shaped blob did NOT block (exit 0) — the wrapper is discarding a hook failure"
+  fi
+
+  ( cd "$tmp" && printf '%s\n' "$BAD_HF_BLOB" > staged.txt && git add staged.txt ) >/dev/null 2>&1
+  ( cd "$tmp" && EPYC_HOOK_SRC_DIR="$HOOKS_HOME" bash "$hook" ) >/dev/null 2>&1
+  rc=$?
+  if [[ "$rc" -ne 0 ]]; then
+    pass "$name blocks a staged Hugging Face token (exit $rc)"
+  else
+    fail "$name" "staged hf_ token-shaped blob did NOT block (exit 0)"
   fi
 
   ( cd "$tmp" && printf 'ordinary content\n' > staged.txt && git add staged.txt ) >/dev/null 2>&1

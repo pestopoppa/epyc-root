@@ -67,6 +67,10 @@ REPOS=(
   "/workspace"
   "/mnt/raid0/llm/epyc-orchestrator"
   "/mnt/raid0/llm/epyc-inference-research"
+  # SEC-SECRETS-1 (2026-10-21): the public-facing site repo had NO pre-commit hook at all (its .git/hooks held only
+  # samples), so a token committed there was never scanned. Like the sibling repos it carries no hook sources of
+  # its own: the wrapper resolves to the primary /workspace/scripts/hooks via tier 4.
+  "/mnt/raid0/llm/epyc-web"
 )
 
 CHECK_ONLY=0

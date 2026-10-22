@@ -83,6 +83,16 @@ SECRET_PATTERNS=(
   $'sk-ant-api03-[A-Za-z0-9_-]{80,}\tsecret\tAnthropic API key'
   $'AIza[0-9A-Za-z_-]{35}\tsecret\tGoogle API key'
   $'glpat-[A-Za-z0-9_-]{20,}\tsecret\tGitLab personal access token'
+  # SEC-SECRETS-1 (intake-2208#07): the model-supply-chain credentials. HF tokens are `hf_` + 34 alnum
+  # (user/fine-grained/org-scoped alike); the leading boundary keeps identifiers like `shelf_<long>` out.
+  # W&B legacy keys are 40 BARE hex chars, indistinguishable from a git sha, so that form only blocks next to
+  # its own key name or `wandb login`; the new `wandb_v1_` format is self-identifying. Fixtures:
+  # research/fixtures/pii_secret_tokens_hf_wandb.jsonl (run by scripts/hooks/tests/test_pii_hf_wandb_patterns.py).
+  $'(^|[^A-Za-z0-9])hf_[A-Za-z0-9]{34,}\tsecret\tHugging Face access token'
+  $'api_org_[A-Za-z0-9]{34,}\tsecret\tHugging Face legacy organisation token'
+  $'wandb_v1_[A-Za-z0-9_]{40,}\tsecret\tW&B API key (wandb_v1_ format)'
+  $'(WANDB_API_KEY|wandb_api_key|WANDB_KEY|WANDB_TOKEN)[[:space:]]*[=:][[:space:]]*[\'"]?[0-9a-fA-F]{40}([^0-9a-fA-F]|$)\tsecret\tW&B API key (40-hex, key-name context)'
+  $'wandb[[:space:]]+login[[:space:]]+(--relogin[[:space:]]+)?[\'"]?[0-9a-fA-F]{40}([^0-9a-fA-F]|$)\tsecret\tW&B API key (wandb login argument)'
   $'eyJ[A-Za-z0-9_-]{10,}\\.eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\tsecret\tJWT (header.payload.signature)'
 )
 
