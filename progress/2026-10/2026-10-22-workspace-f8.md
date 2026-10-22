@@ -403,3 +403,99 @@ FILLERS register or the process table; scheduling items relayed by workspace-58 
 - DHM-5: always-on est. 17,158 tok/turn (Claude main), 8,326 elsewhere (file-size estimate, not usage-field; DHM-5.1 filed).
 - OAB-LB1: 15,144 threads, exec wall 0.64% of turn wall. UFH14-LB8: token-weighted prefix hit 0.915 (0.940 excl. first step).
 - Ticked DHM-1, DHM-2, DHM-3, OAB-LB1, UFH14-LB8. Filed DHM-5.1, DHM-8 to DHM-11. Detail: `docs/design/dev-harness-mining-results-20261022.md`; aggregate `data/dev_harness/mining-full-20261022T1310Z.aggregate.json`.
+
+## Night 2026-10-22 (operator-invoked /wrap-up #3, subagent, branch `f8/wrapup-20261022-night`)
+
+Covers work since the late-evening wrap-up (root `7005bea70`). Each item below was checked against git,
+the run records, the FILLERS register or the process table.
+
+- **Dev-harness mining, full run.** `full-20261022T1310Z` finished rc 0 over 42,420 units. The results
+  landed at root `c43175fad`: an aggregate JSON passed through the privacy gate
+  (`data/dev_harness/mining-full-20261022T1310Z.aggregate.json`, cluster top terms dropped) and
+  `docs/design/dev-harness-mining-results-20261022.md`. Ticked DHM-1, DHM-2, DHM-3, OAB-LB1 and
+  UFH14-LB8; filed DHM-5.1 and DHM-8 to DHM-11. The DHM-4 sheet (100 items from 863 interrupt
+  candidates) is ready in the private root and waits for the operator's labels. Headline numbers are in
+  the "Mining results" section above.
+- **`akx-lb4-followups` PASSED** (2026-10-22T20:33Z on q2, experimental `9a338d4f1`, 14/14 steps):
+  FA backend-ops 5182/5182, long-ctx with `GGML_FA_VKQ_F32` 16/16, test-fa-rowexact 30/30 in each of the
+  three modes (on, iqk0, off), env-ignored OK, bench-switch OK, chat-parse rc 0. Ticked AKX-ALL-LB4.2,
+  LB4.3 and AKX-LB4-FU (root `e7dd12211`) and UFH14-LB4 (root `c18f2e376`), which also filed the
+  UFH14-LB4.2 silent-loss follow-up. LB4.5 stays open for the final-head rerun.
+- **Kernel follow-up intake, Stages 3 and 4.** The operator approved the Stage-3 plan in plan mode
+  (ExitPlanMode, all six answers; plan sha256 `3583551b…`). Stage 4 is root `e7dd12211`:
+  - the `validate_intake.py` `_plan_cells` fix, which unescapes `\|` so a retained action with a literal
+    pipe matches its table cell (new test fails without the fix);
+  - plan edits 1 to 15, with the CH-18.c tick applied last;
+  - CPU-FA-VKQ-4 closed with its premise corrected, V11-FA-7 closed as carried by the pull, V11-FA-8
+    filed, CH-18.c closed.
+  - Edit 16, the INF-65 `Next action` trim, was left to the row's owning session by the Stage-4
+    commit and landed separately at root `c18f2e376`.
+- **LB4 port fixes.** AKX-ALL-LB4.6 (`c160433b4`, sizer + enumeration test), LB4.7 (`7fa55280f`, zeros in
+  the split-KV combines) and LB4.8 (`581814ae8`, swa masks) are on
+  `experimental/locals-kernel-fixes-20261022` and pushed to the fork. Manifest row V11-102 carries the
+  new head (root `22c5e6814`). Job `akx-lb4-followups-2` is armed (pid 130228, FILLERS row present) and
+  booked by workspace-58 on the q2 tail after `kvu121b-32k-dense-vs-coarse`. It ticks LB4.5 to LB4.8.
+- **SEC.**
+  - nextplaid-code and nextplaid-docs: only these two containers were recreated, per the operator's
+    instruction to avoid the whole stack. The shared orchestrator clone was fast-forwarded to `074e9148`
+    first. Both are healthy, and `docker inspect` shows only the `huggingface/hub` mount (no token
+    path). Ticked SEC-EXEC-POST-c and SEC-EXEC-6.
+  - Template store: published `sha256/1443ea9a….jinja` (0444, dir 0555, `verify` 0 problems). The
+    registry is re-pointed on research main `95f90f04f`. Ticked SEC-ART-POST-e and SEC-ART-6; the
+    recompile is SEC-ART-POST-f.
+  - POST-c template pins are at research `c4017b4f4`.
+  - Exec guards: SEC-EXEC-POST-e was decided as option A, staged (`exec_write_flags`, then
+    `web_fetch_guard`, then `exec_containment`). Step 1 (`exec_write_flags`) is on orchestrator main
+    `a73af3cc`, staged by the operator, and goes live at the operator's next API reload. e1 stays open
+    for its live proof.
+  - The fingerprint job `sec-art-fingerprints` is armed (pid 555983) and booked on q0/q1.
+  - Root records: `85c5ef820`, `a35c07e89` (decisions and ticks) and `796a77e06` (RTG-59 and UFH-16
+    `Next action` cells).
+- **CTC-Q-C** landed at root `eb5e162ee` (`derive_booking_class`, `--print-class`, 70 tests) with the
+  operator's D9 ack, after the amendment that classes a floor-measuring row as quiet. workspace-58 cut
+  the live validator over (whole-file run 79 rows, 0 refusals) and reclassified 3 rows to
+  block-correctness. The tick and the CTC-Q-C.1 writer-adoption task are at root `6bc6cbb2d`.
+- **`locals-specgram2-window` PASSED, verdict OPENS_DI110** (20:54Z, Qwen3.6-35B-A3B frontdoor, step
+  24.86 ms). Eager tool-call grammar costs ~17% of the frontdoor step (4.3 ms/token, through
+  reject-resample at a 14.5% rejection rate). Lazy tool-call grammar costs ~2%, and schema grammar
+  ~0.1% at T=0.3. The offline analysis and the SPEC-GRAM.2 record are another subagent's work in
+  progress and are not recorded here.
+- **/workspace** was fast-forwarded several times to stay current. workspace-58 caught one stale-copy
+  hazard along the way.
+
+| Repo | Commit | What |
+|---|---|---|
+| epyc-root | `c43175fad` | dev-harness mining full-run results (aggregates only); DHM ticks and follow-ups |
+| epyc-root | `e7dd12211` | kernel follow-up intake Stage 4 (operator-approved plan); LB4.2/LB4.3/AKX-LB4-FU ticks |
+| epyc-root | `22c5e6814` | manifest V11-102 at `581814ae8` |
+| epyc-root | `c18f2e376` | INF-65 row trim (edit 16); UFH14-LB4 tick; UFH14-LB4.2 filed |
+| epyc-root | `eb5e162ee`, `6bc6cbb2d` | CTC-Q-C booking class; tick + CTC-Q-C.1 |
+| epyc-root | `a35c07e89`, `796a77e06` | SEC-EXEC/SEC-ART operator decisions and ticks; RTG-59/UFH-16 cells |
+| epyc-orchestrator | `a73af3cc` (main) | `exec_write_flags` in `PRODUCTION_FEATURE_WAVE_OVERRIDES` (SEC-EXEC-POST-e1) |
+| epyc-inference-research | `95f90f04f` (main) | SEC-ART-POST-e registry re-point at the content-addressed store |
+| epyc-llama (experimental, fork) | `c160433b4`, `7fa55280f`, `581814ae8` | AKX-ALL-LB4.6/.7/.8 |
+
+### Checklist sync / derived actionables (night wrap-up)
+
+- Flips: 18 attributable to f8 in scope `7005bea70..origin/main`, all already committed by the owning
+  commits and verified here. They are DHM-1/2/3, OAB-LB1, UFH14-LB8, AKX-ALL-LB4.2/.3, AKX-LB4-FU,
+  UFH14-LB4, CH-18.c, CPU-FA-VKQ-4, V11-FA-7, CTC-Q-C, SEC-ART-6, SEC-ART-POST-e, SEC-EXEC-6,
+  SEC-EXEC-POST-c and SEC-EXEC-POST-e. This wrap-up made 0 new flips. The other 3 flips in range
+  (HIL-15 x2 and SPEC-GRAM.2) belong to other sessions.
+- Gaps closed with dated notes: AKX-ALL-LB4.6/.7/.8 had code on the fork with no record. AKX-LB4-FU2
+  was armed and booked with no record. SEC-EXEC-POST-e1 still said "land to orch main" after it had
+  landed (`a73af3cc`).
+- Filed 1: SEC-ART-POST-g, the root-own / `chattr +i` template-store decision package. Two notes named
+  it as remaining, but it had no checkbox and no operator-queue row.
+- Declined 2, both in writing:
+  - The specgram2 follow-ups (GRAM-LAZY-1, SPEC-GRAM.3-7). The SPEC-GRAM.2 recorder filed them in
+    `speculative-decoding-mtp-refresh.md` (`1a851d673`, `53029ea71`); this wrap-up does not edit that
+    handoff.
+  - The OP-81 GPUPIN ratification follow-ups (GPS-PIN-3, D3). They belong to workspace-58, which owns
+    GPS-PIN; the OP-81 row deletion is prepared for the owning session.
+- Wiki: this branch compiled the 9-source delta as its own sweep 15. workspace-58 then promoted a
+  sweep 15 over the same delta (`8e5f7e538`), so the merge took origin/main's version of all five wiki
+  files. This branch keeps only what workspace-58's sweep did not carry, as sweep 16:
+  - hardware-optimization: the iqk FA port PASSED at `9a338d4f1`, the LB4.6-8 code, and FU2 armed;
+  - safety: SEC-EXEC-POST-e1 is on orchestrator main, and SEC-ART-POST-g is filed.
+  The delta is 0 after `--touch`. Prune signal: 0 candidates.
