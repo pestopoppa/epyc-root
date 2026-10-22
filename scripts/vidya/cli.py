@@ -571,6 +571,7 @@ _FILE_SOURCES = (
     "qwen4exp-quality-measurement",
     "evidence-durability",
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
+    "hs-prof1-profile-arms",
     "chat-template-ab", "kv-prefix-fork", "pb-hol", "occ1", "tale-budget", "review-f1", "opencode-shell",
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
@@ -584,6 +585,8 @@ _FILE_SOURCES = (
     "injection-fixture", "chunk-kv",
     "conversation-stack-measurement", "speech-ggml-optest",
     "speech-cpu-measurement",
+    "hil15a-auc", "repl-preview",
+    "rus2-probe", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg",
 )
 
 

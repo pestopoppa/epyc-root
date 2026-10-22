@@ -7,7 +7,7 @@ claim, UTC span) it was taken under: a timing number without its window is not a
 
 Row kinds (``extra.kind``): ``prefill_rate`` (tok/s, higher better, value = median of samples),
 ``inject_latency`` (ms, lower better, median of samples), ``drift_curve`` (value = max drift over
-the declared points, lower better; the points ride in the row), ``prefix_hit_share`` (value =
+the declared points, lower better; the points ride in the row), ``uncached_prompt_tokens`` (tokens, lower better, median of per-trial samples), ``prefix_hit_share`` (value =
 realised_tokens / ideal_tokens, higher better; both counts ride in the row). The strict reader
 re-derives every value. No retrospective tuple, no ladder: ``claim_tuple.grade()`` decides.
 """
@@ -32,7 +32,7 @@ SIDECAR_NAME = "chunk_kv.beliefs.jsonl"
 ADAPTER_ID = "vidya.adapters.chunk_kv/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "chunk-kv-prefix-measurement"
-PROGRAMS = frozenset({"KPF-60", "KPF-64", "RTE-LOG-1"})
+PROGRAMS = frozenset({"KPF-60", "KPF-64", "RTE-LOG-1", "RTE-PFX-2"})
 PIN_KEYS = ("role", "model", "kernel_ref")
 WINDOW_KEYS = ("window_id", "region_lock_claim", "start_utc", "end_utc")
 #: kind -> (metric, unit, direction)
@@ -41,12 +41,14 @@ KINDS = {
     "inject_latency": ("chunk_kv_inject_latency", "ms", "lower_better"),
     "drift_curve": ("chunk_kv_drift_max", "drift_units_as_declared", "lower_better"),
     "prefix_hit_share": ("prefix_hit_realised_over_ideal", "fraction_of_ideal", "higher_better"),
+    # VB-RTEPFX2-WIRE: server-reported uncached prompt tokens per trial (a COUNT; median of samples).
+    "uncached_prompt_tokens": ("chunk_kv_uncached_prompt_tokens", "tokens", "lower_better"),
 }
 
 
 def _derive(kind: str, m: Mapping[str, Any]) -> tuple[float, int, str] | str:
     """(value, reps, reps_basis) from the per-kind payload, or a problem string."""
-    if kind in ("prefill_rate", "inject_latency"):
+    if kind in ("prefill_rate", "inject_latency", "uncached_prompt_tokens"):
         s = m.get("samples")
         if not isinstance(s, list) or not s or not all(ns.finite(x) and x >= 0 for x in s):
             return "samples must be a non-empty list of finite non-negative numbers"
@@ -127,7 +129,7 @@ def write_belief_measurements(
             raise CaptureError(f"{kind}: {d}")
         value, reps, basis = d
         metric, unit, direction = KINDS[kind]
-        keep = ("samples", "points", "drift_unit", "realised_tokens", "ideal_tokens")
+        keep = ("samples", "points", "drift_unit", "realised_tokens", "ideal_tokens", "detail")
         extra = {"kind": kind, "source_program": m.get("source_program"), "subject": m.get("subject"),
                  "served_pin": dict(m.get("served_pin") or {}), "window": dict(m.get("window") or {}),
                  **{k: m[k] for k in keep if k in m}}

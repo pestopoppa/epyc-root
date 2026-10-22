@@ -230,12 +230,22 @@ BUILDERS = {
     "toc-ab": lambda tmp: _helpers("test_prospective_ab_carriers").toc_write(tmp),
     "skillbank-ab": lambda tmp: _helpers("test_prospective_ab_carriers").sk_write(tmp),
     "harness-improvement": lambda tmp: _helpers("test_prospective_ab_carriers").hil_write(tmp),
+    "hs-prof1-profile-arms": lambda tmp: _helpers("test_hs_prof1_profile_arms").write_fixture(tmp),
     "ak-history": lambda tmp: _helpers("test_prospective_ab_carriers").ak_write(tmp),
     "injection-fixture": lambda tmp: _helpers("test_ibench_kvchunk_carriers").inj_write(tmp),
     "chunk-kv": lambda tmp: _helpers("test_ibench_kvchunk_carriers").kv_write(tmp),
     "conversation-stack-measurement":
         lambda tmp: _helpers("test_conversation_stack_measurement_adapter").write_fixture(tmp),
     "speech-ggml-optest": lambda tmp: _helpers("test_speech_ggml_optest_adapter").write_fixture(tmp),
+    "hil15a-auc": lambda tmp: _helpers("test_hil15a_auc").write(tmp),
+    "repl-preview": lambda tmp: _helpers("test_repl_preview").write(tmp),
+    "rus2-probe": lambda tmp: _helpers("test_rus2_probe").write(tmp),
+    "ev19-gold-selfcheck": lambda tmp: (lambda m: m.write(tmp, *m.setup(tmp)))(
+        _helpers("test_ev19_gold_selfcheck")),
+    "oolong": lambda tmp: _helpers("test_oolong_adapter").write(tmp),
+    "yarn-gate-agg": lambda tmp: (lambda m: m.write(
+        tmp, [m.cell("A0", mock=False), m.cell("A1", mock=False), m.verdict(mock=False)]))(
+        _helpers("test_yarn_gate_agg")),
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.

@@ -352,6 +352,13 @@ def _v2_row(source, rows):
              f"{comparison['anchor_tok_s']:.2f} t/s ({effect_text}, {floor_text}, "
              f"{inputs['pairs']} pairs) -- {verdict}; direct serving A/B observation, protocol "
              "unqualified")
+    # Producer-stated qualifiers (paired_loadgen): the floor/effect unit and a pipeline-only mark are
+    # read from native fields only, as claim text -- no grading input, no second ladder.
+    if comparison.get("effect_unit") == "session":
+        claim += "; unit: session rounds against one running server (not independent launches)"
+    if comparison.get("pipeline_only") is True:
+        claim += (f"; PIPELINE-ONLY shakedown ({comparison.get('pipeline_only_reason') or 'unstated'})"
+                  " -- shakes down the record pipeline, not evidence about a mechanism")
     dates = [datetime.fromisoformat(row["date"]) for row in (anchor, candidate)]
     return ({"measurement_id": f"{MEASUREMENT_PREFIX_V2}{capture['capture_id']}",
              "metric": comparison["metric"], "value": comparison["candidate_tok_s"],

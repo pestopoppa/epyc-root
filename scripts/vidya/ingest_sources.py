@@ -221,6 +221,16 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="CS-43.1 / CH-18.d test-backend-ops records (measurement class, the same ladder as "
                 "the test-backend-ops property source); upstream statements stay literature; no default",
            task="VB-SPEECH-KOPT-1"),
+    Source("hil15a-auc", "hil15a_auc",
+           _files("auc_table.beliefs.jsonl", "*/auc_table.beliefs.jsonl"),
+           note="HIL-15a flag-on dependency AUC table: per feature set and per delta (CI), edge grade "
+                "observed; mock manifests refused; pre-hook tables emit nothing",
+           task="VB-HIL15A-WRITE"),
+    Source("repl-preview", "repl_preview",
+           _files("repl_preview.beliefs.jsonl", "*/repl_preview.beliefs.jsonl"),
+           note="D-RI-PREVIEW-1 per role x rendering correct-rate with class counts; mock and partial "
+                "results refused",
+           task="VB-DRIPREVIEW-WRITE"),
     Source("kv-prefix-fork", "kv_prefix_fork",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl",
                   "*/*/belief_measurements.jsonl"),
@@ -281,6 +291,29 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            task="SC21"),
     Source("beam", "beam_memory", _files("belief_measurements.jsonl",
                                          "*/belief_measurements.jsonl"), task="SC68"),
+    Source("hs-prof1-profile-arms", "hs_prof1_profile_arms",
+           _files("hs_prof1_profile_arms.beliefs.jsonl", "*/hs_prof1_profile_arms.beliefs.jsonl"),
+           note="HS-PROF-1 BEAM profile-arm table (research `hs_prof1_profile_arms.py table "
+                "--belief-measurements`): per ability x arm judge-scored means plus paired "
+                "deltas; judge identity is part of every claim; pre-hook tables decline",
+           task="VB-HSPROF1-WRITE"),
+    Source("rus2-probe", "rus2_probe",
+           _files("rus2_probe.beliefs.jsonl", "*/rus2_probe.beliefs.jsonl"),
+           note="RUS-2 trace-length probe cells, OBSERVATION only (temperature and finish_reason "
+                "absent at source)",
+           task="VB-RUS2-PROBE-WIRE"),
+    Source("ev19-gold-selfcheck", "ev19_gold_selfcheck",
+           _files("ev19_gold_selfcheck.beliefs.jsonl", "*/ev19_gold_selfcheck.beliefs.jsonl"),
+           note="EV-19 scorer/pool gold self-check per suite; scorer validity, never a model; "
+                "sampled runs never gating",
+           task="VB-EV19-GOLD-SELFCHECK-WIRE"),
+    Source("oolong", "oolong", _files("oolong.beliefs.jsonl", "*/oolong.beliefs.jsonl"),
+           note="Oolong per (arm, family, context length) cells, context-clustered; labels_given "
+                "records excluded", task="VB-OOLONG-WIRE"),
+    Source("yarn-gate-agg", "yarn_gate_agg",
+           _files("yarn_gate_agg.beliefs.jsonl", "*/yarn_gate_agg.beliefs.jsonl"),
+           note="YaRN gate cells and noninferiority verdicts carrying judge pin, real prompt_n bin "
+                "and zone; fixture rows invisible", task="VB-YARN-AGG-1"),
     Source("tulving", "tulving_episodic", _files("belief_measurements.jsonl",
                                                  "*/belief_measurements.jsonl"), task="SC67"),
     Source("chat-template-ab", "chat_template_ab",

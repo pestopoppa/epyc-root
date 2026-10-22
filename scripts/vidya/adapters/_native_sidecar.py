@@ -99,15 +99,23 @@ def text(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
-def common_problems(row: Any, *, schema: str) -> list[str]:
-    """Envelope checks every carrier shares. Returns problems (empty == envelope valid)."""
+def common_problems(row: Any, *, schema: str,
+                    optional_text: tuple[str, ...] = ()) -> list[str]:
+    """Envelope checks every carrier shares. Returns problems (empty == envelope valid).
+
+    ``optional_text`` names COMMON_TEXT keys that may be the empty string (a carrier whose tuple is a
+    deliberate OBSERVATION carries ``protocol_id == ""``); the key must still be present and a str.
+    """
     if not isinstance(row, dict):
         return ["row is not a JSON object"]
     p: list[str] = []
     if row.get("schema") != schema:
         p.append(f"schema must be {schema!r}")
     for key in COMMON_TEXT:
-        if not text(row.get(key)):
+        if key in optional_text:
+            if not isinstance(row.get(key), str):
+                p.append(f"{key} must be a string (empty when absent)")
+        elif not text(row.get(key)):
             p.append(f"{key} must be a non-empty string")
     if not utc_timestamp(row.get("emitted_at")):
         p.append("emitted_at must be a UTC timestamp")
