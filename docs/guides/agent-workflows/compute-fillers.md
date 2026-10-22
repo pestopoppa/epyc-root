@@ -52,6 +52,7 @@ Operator directive, relayed by the calendar owner. Every session that owns a fil
 10. **Never edit a launcher a live poller is executing.** Version it (`filler_run5.sh` to `filler_run6.sh`), as item 7 does for job scripts, then re-arm pollers onto the new name.
 11. **A subagent brief must say that ANY model execution needs a filler row plus a grant, ASR and TTS included.** "Allowed if no inference" is ambiguous for ASR: a subagent ran an ungranted whisper large-v3 second-ASR job on q2 (2026-10-22; killed and verified dead by main).
 12. **The Bash containment hook refuses variable-expanded write targets.** Use literal paths in launch commands.
+13. **New arms use `filler_run7.sh`** (`/mnt/raid0/llm/tmp/fillers-3c4ca599/`; run6 plus one change). `--class gpu --gpu-quiet exclusive` with neither `--claim-cpus` nor `--no-fold-siblings` exits 64 instead of silently claiming CPUs 0-95. Whole-host timing jobs say `--claim-cpus 0-95` explicitly; GPU-only jobs use `--no-fold-siblings`. Existing pollers migrate at their next re-arm (never edit a live launcher). Dry-run proof: `dryrun7_test.sh`. Containers launched by a GPU job must also carry `--cpuset-cpus "$FILLER_CPUS"`, since `taskset` on the docker client does not confine the container.
 
 ## RAM admission (2026-10-22)
 
