@@ -1030,6 +1030,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       (07333b884, research main b93017dc9). Only the version and the topology digests are projected;
       `claim_tuple.grade()` is unchanged. Tests use real producers at 83334d892, 07333b884, b93017dc9
       and live. `progress/2026-10/2026-10-22-ak-profile-reader-v2.md`.
+    - [ ] **VB-AK-PIN-REPIN — recurring re-pin of the VB adapters' pinned source digests.** The reader v2 pins two research source digests (07333b884, research main b93017dc9, `progress/2026-10/2026-10-22-ak-profile-reader-v2.md`), so every change to research main that touches a producer file makes the adapter's digest stale and its tests fail (the 15 failures found 2026-10-22 had this shape). Add a check that lists each adapter pin whose file changed on research main (read-only `git log -- <file>` against the pinned sha) and re-pin after re-running the producer-backed tests; run it whenever research main changes a producer file and at every operator `/wrap-up`. Zero inference.
     - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
       ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
       actual execution/frozen-request identity and sampled-period measurement. The existing

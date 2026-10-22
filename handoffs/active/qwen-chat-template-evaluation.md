@@ -535,6 +535,7 @@ anything.
       working-through on code-output prediction, i.e. quality drift vs the
       embedded-template era? Reference: CT-1b completed-only hints (57.9 vs 42.9,
       selection-biased subsets; paired flips 3:4 ≈ parity).
+- [ ] **CT-THINK-CODER — owner decision line: does the coder server keep thinking ON as a pre-registered exception?** The 2026-10-22 source fix (`progress/2026-10/2026-10-22-qwen-thinking-source-fix.md`, `compute-fillers.md` item 15) makes Qwen3.x filler servers launch with `--reasoning off`; a per-request `enable_thinking:true` still overrides it. The coder server is the one place thinking stays on as a "pre-registered" exception. Record one decision line here (keep ON with the pre-registration cited, or switch to server-side off), naming the arm or job that depends on it. Until then no harness may assume either state: it must send `enable_thinking` explicitly.
 - [ ] **CT-11 — re-decide the pilot adoption after real traffic accumulates**
       (filed 2026-08-23 from CT-9). CT-9 = HOLD all three roles + no fleet-wide
       extension, but the decision window carried calibration traffic only.

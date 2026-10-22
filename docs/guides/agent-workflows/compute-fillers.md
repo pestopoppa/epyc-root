@@ -61,6 +61,9 @@ Operator directive, relayed by the calendar owner. Every session that owns a fil
 16. **Never run a CPU-wide preflight or bench inside a GPU-only grant.** `run_benchmark` now auto-skips the canonical tripwire under `--existing-server-port`. Containers need `--cpuset-cpus` (item 13).
 17. **Pinned-worktree jobs refuse a dirty tree,** and a shared lib must not reassign a job's pinned tree variable (the pyarrow/shared-lib clobber of RESEARCH in hsprof1 run 1). Yarn jobs are tracked in YARN-DIRTY-TREE-REFUSE.
 18. **Never push when `index_state.py --check` reports a problem.** Fix the row first, then push.
+19. **Never chain a check that only PRINTS with the action it should gate.** Gate in code, failing closed: `if check; then act; fi`. For a shared-clone fast-forward, run a read-only `/proc` cwd/argv walk (never `pgrep`) and refuse if any non-MCP, non-dashboard process uses the clone. Origin (2026-10-22): main's second orchestrator ff (`c69ba5a1` to `cdbca26b`) printed a live-process check but did not gate on it, and ran under workspace-7b's `ak-q38fn-fa` campaign (started 16:14:59Z). The changes were inert for that loop, but the gate was missing. Agreement with 7b: no shared-clone git ops until 18:00Z; later ffs are gated in code.
+20. **Before asking the operator to lift a deferment or approve a run, show its compute cost estimate first** (whole-host hours, windows). The HIL-6 pilot lift was asked before its cost was known; the estimate then came back at about 232-300 whole-host hours, and the operator leaned to a redesign.
+21. **Check a diagnosis of a slow harness against the server logs before naming a cause.** KPF-64 was attributed to thinking-on; the server logs show the cause was decode contention across 4 slots (0.80 tok/s per slot), with outputs feeding later prompts (`2026-10-22-kpf64-decode-fix.md`).
 
 ## RAM admission (2026-10-22)
 
