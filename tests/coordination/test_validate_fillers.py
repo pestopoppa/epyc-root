@@ -100,7 +100,7 @@ def test_prior_forms_accepted(tmp_path, prior):
     assert cli("--file", table(tmp_path, row(prior=prior)), "--row", "r1", "--for-grant").returncode == 0
 
 
-@pytest.mark.parametrize("eff", ["n/a (build)", "exact identity", "gates pass exactly", "+/-5 pp at n=20", "tg 2.00%"])
+@pytest.mark.parametrize("eff", ["n/a (build)", "n/a (noise unit)", "exact identity", "gates pass exactly", "+/-5 pp at n=20", "tg 2.00%"])
 def test_effect_forms_accepted(tmp_path, eff):
     assert cli("--file", table(tmp_path, row(eff=eff)), "--row", "r1", "--for-grant").returncode == 0
 
@@ -258,3 +258,16 @@ def test_ready_y_must_be_armed_and_terminal_rows_exempt(tmp_path):
     for st in ("COMPLETE", "CANCELLED"):
         r = cli("--file", table(tmp_path, row(status=st, launcher="none", ready="y")), "--row", "r1")
         assert "WARN" not in r.stdout
+
+
+@pytest.mark.parametrize("eff", ["n/a", "n/a ()", "n/a ( )"])
+def test_bare_or_empty_na_effect_refused(tmp_path, eff):
+    assert cli("--file", table(tmp_path, row(eff=eff)), "--row", "r1", "--for-grant").returncode == 2
+
+
+@pytest.mark.parametrize("status", ["CANCELLED", "COMPLETE"])
+def test_terminal_rows_skip_field_checks(tmp_path, status):
+    bad = row(status=status, ready="n", ram="lots", prior="-", dec="-", eff="-", sub="?", cls="?",
+              launcher="none")
+    r = msgs(tmp_path, bad)
+    assert r.returncode == 0 and "r1" not in r.stdout.replace("OK", "")

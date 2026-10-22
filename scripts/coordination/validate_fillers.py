@@ -44,7 +44,8 @@ Rules (a cell value of "-" or empty means unfilled and violates the rule for its
                   prior_check.py's own `none (checked <ts>)` is also accepted
     decision      one non-empty line of at least 8 characters
     min_effect    an effect size containing a number (with its unit), exact-identity wording
-                  (exact / identical / identity / zero), or `n/a (build)` for pure build rows
+                  (exact / identical / identity / zero), or `n/a (<reason>)` for rows with no effect
+                  to detect (a build, a noise-floor measurement, ...)
     block-timing-quiet additionally (change C): `decision` names a champion / candidate /
                   baseline, AND `notes` or `prior` cites a floor file (a path or filename with
                   "floor" and a .json/.md/.jsonl/.txt extension, e.g. serving-floor.*.json).
@@ -95,7 +96,7 @@ BASELINE_RE = re.compile(r"champion|candidate|baseline", re.I)
 FLOOR_RE = re.compile(r"[\w/.@+=-]*floor[\w/.@+=-]*\.(?:json|md|jsonl|txt)\b", re.I)
 EFFECT_NUM_RE = re.compile(r"\d")
 EFFECT_QUAL_RE = re.compile(r"\b(exact(?:ly)?|identical|identity|zero)\b", re.I)
-EFFECT_BUILD_RE = re.compile(r"^n/a \(build[^)]*\)", re.I)
+EFFECT_BUILD_RE = re.compile(r"^n/a \([^)\s][^)]*\)", re.I)
 
 
 class Malformed(Exception):
@@ -228,17 +229,18 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=N
     if rid in seen:
         out.append("duplicate filler-id")
 
-    ram = g("max private ram")
-    if not RAM_RE.match(ram):
-        out.append(f"peak host RAM (col 6) {ram[:40]!r}: must be a number in GiB, e.g. '48' or "
-                   "'48 GiB' (private/anon peak + file-mapped weight bytes)")
-
     status = g("status")
     tok = status.split()[0] if status.split() else ""
     if tok not in STATUSES:
         out.append(f"status {status!r}: first token must be one of {sorted(STATUSES)}")
     elif status != tok:
         out.append(f"status {status!r}: carries text after the token {tok!r} (put it in notes)")
+    if tok in TERMINAL:
+        return out  # terminal rows: id, uniqueness and status token only
+    ram = g("max private ram")
+    if not RAM_RE.match(ram):
+        out.append(f"peak host RAM (col 6) {ram[:40]!r}: must be a number in GiB, e.g. '48' or "
+                   "'48 GiB' (private/anon peak + file-mapped weight bytes)")
     if g("class") not in CLASSES:
         out.append(f"class {g('class')!r} not in {sorted(CLASSES)}")
     for name in ("ds41-class y/n", "ready y/n"):
@@ -260,9 +262,9 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=N
 
     eff = g("min_effect")
     if unfilled(eff):
-        out.append("min_effect unfilled ('-'): effect size with a unit, or 'n/a (build)'")
+        out.append("min_effect unfilled ('-'): effect size with a unit, or 'n/a (<reason>)'")
     elif not (EFFECT_BUILD_RE.match(eff) or EFFECT_NUM_RE.search(eff) or EFFECT_QUAL_RE.search(eff)):
-        out.append(f"min_effect {eff[:60]!r}: no number/unit, exact-identity wording or 'n/a (build)'")
+        out.append(f"min_effect {eff[:60]!r}: no number/unit, exact-identity wording or 'n/a (<reason>)'")
 
     if g("class") == "block-timing-quiet":
         if not BASELINE_RE.search(dec):
