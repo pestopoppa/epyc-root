@@ -48881,13 +48881,13 @@
     {
       "session_id": "intake-locals-beacon-20261022",
       "started_at": "2026-10-22T09:05:00Z",
-      "last_checkpoint": "2026-10-22T09:30:00Z",
-      "stage": "stage1-complete",
-      "phase": 5,
+      "last_checkpoint": "2026-10-22T12:00:00Z",
+      "stage": "stage3",
+      "phase": 3,
       "lane": "/mnt/raid0/llm/tmp/intake-locals-beacon-20261022/root",
       "branch": "intake/locals-beacon-20261022",
       "topic": "Generated-Computers/Locals (Apple-silicon agent server: small-batch kernels, GPU grammar, recurrent prompt cache) + Asymptote-Labs/agent-beacon (cross-harness trace capture and trace-to-memory distillation)",
-      "concurrency_note": "Runs concurrently with intake-underdog-bark-20261021 (top-level record, Stage 2 in flight, its dive entries are slug-only and not yet minted). This session minted intake-2386..2394 against origin/main b8e36fb69; whichever integration lands second must allocate after the other.",
+      "concurrency_note": "Runs concurrently with intake-underdog-bark-20261021 (top-level record, Stage 2 in flight, its dive entries are slug-only and not yet minted). This session minted intake-2386..2394 against origin/main b8e36fb69; whichever integration lands second must allocate after the other. Final minted range intake-2386..2458; next free id 2459 if this branch lands first.",
       "urls_processed": [
         "https://github.com/Generated-Computers/Locals",
         "https://github.com/Asymptote-Labs/agent-beacon"
@@ -48901,10 +48901,74 @@
         "intake-2391",
         "intake-2392",
         "intake-2393",
-        "intake-2394"
+        "intake-2394",
+        "intake-2395",
+        "intake-2396",
+        "intake-2397",
+        "intake-2398",
+        "intake-2399",
+        "intake-2400",
+        "intake-2401",
+        "intake-2402",
+        "intake-2403",
+        "intake-2404",
+        "intake-2405",
+        "intake-2406",
+        "intake-2407",
+        "intake-2408",
+        "intake-2409",
+        "intake-2410",
+        "intake-2411",
+        "intake-2412",
+        "intake-2413",
+        "intake-2414",
+        "intake-2415",
+        "intake-2416",
+        "intake-2417",
+        "intake-2418",
+        "intake-2419",
+        "intake-2420",
+        "intake-2421",
+        "intake-2422",
+        "intake-2423",
+        "intake-2424",
+        "intake-2425",
+        "intake-2426",
+        "intake-2427",
+        "intake-2428",
+        "intake-2429",
+        "intake-2430",
+        "intake-2431",
+        "intake-2432",
+        "intake-2433",
+        "intake-2434",
+        "intake-2435",
+        "intake-2436",
+        "intake-2437",
+        "intake-2438",
+        "intake-2439",
+        "intake-2440",
+        "intake-2441",
+        "intake-2442",
+        "intake-2443",
+        "intake-2444",
+        "intake-2445",
+        "intake-2446",
+        "intake-2447",
+        "intake-2448",
+        "intake-2449",
+        "intake-2450",
+        "intake-2451",
+        "intake-2452",
+        "intake-2453",
+        "intake-2454",
+        "intake-2455",
+        "intake-2456",
+        "intake-2457",
+        "intake-2458"
       ],
       "entries_remaining": [],
-      "next_intake_id": 2355,
+      "next_intake_id": 2459,
       "expansion_cap": 10,
       "expansion_count": 7,
       "expansion_entries": [
@@ -48928,12 +48992,1635 @@
           "stage": 1,
           "ts": "2026-10-22T09:04:00Z",
           "verbatim": "Approve all recommended deep dives and stage 2 literature expansion for up to six stage 2 waves. Focus on principles we can distill for improving our kernel performances (potetnitally hypotheses we can seed into autokernel), and leveraging harness traces to further improve how our orchestration harness, user-facing harness, and develeopment harnesses (what we're using now - opencode/claude/codex) operate. We have a database of all agent conversations that we could lvereage to this aim. I imagine that important improvements for the orchestrator's harness can be distilled for this research-intake session. The 'Locals' kernel work is extremely relevant to us even if it's focused on apple silicon. Any improvement lead we can find is gold for us.",
-          "disposition": "pending-stage3",
+          "disposition": "context-only",
           "plan_ref": null,
-          "reason": "Recorded at session start; pre-authorizes all recommended Stage-2 dives and up to six Stage-2b waves; disposition assigned in the Stage-3 plan."
+          "reason": "Interim Stage-1/2 record; the Stage-3 plan reconciles it as planned (P1, with P2-P5); applied only at Stage 4."
         }
       ],
-      "actionable_ledger": []
+      "actionable_ledger": [
+        {
+          "ledger_id": "LK-1",
+          "source": "intake-2386 c15 qmv_frag.py:L3-19 @0d39e16 (dive A)",
+          "action": "Add LK-H1 (LDS-free register-fragment int8 MFMA, K-permuted 16-B lane loads, runtime N) as an arm and null control of akg-ri-mfma-i8-stream-gemm",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-2",
+          "source": "intake-2386 c-packed rows kernels.py:L747-775 + llama-batch.cpp:573-603 (dive A)",
+          "action": "Census ubatches per target llama_decode at :8083 np=4 on a replayed production trace, logging per-slot token counts",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-3",
+          "source": "intake-2386 c16 gdn_kernel.py:L3-158 (dive A)",
+          "action": "Seed the one-kernel GDN verify step on HIP (whole chain; subsumes AK-D)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-4",
+          "source": "intake-2386 c17 fuse.py:L22-45 (dive A)",
+          "action": "Append Locals evidence (exact row-concat rule, M2 4-10%/M5 33%, qwen3next precedent, loader concat route) to akg-stack-gdn-attn-projections",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-5",
+          "source": "intake-2386 c18 kernels.py:L548-718,L1123-1201 (dive A)",
+          "action": "Generate the CDNA2 MUL_MAT dispatch table keyed on (type,nrows,K,ne11) with margin, legal next-best fallback, compute-at, whole-step confirm",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-6",
+          "source": "intake-2393 c0 + qmv_multi.py:L39-81 (dive A)",
+          "action": "Static ISA audit of mul_mat_vec_q at ncols 1 vs 2..8 (Q8_0, Q4_K, IQ4_XS): is weight load/unpack hoisted out of the column loop",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-7",
+          "source": "intake-2386 runtime.py:L113-162 dtype probe (dive A)",
+          "action": "Check vdpbf16ps in the serving CPU build, then BF16 KV FA at Q38FN shapes: correctness, perf, longctx surface",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-8",
+          "source": "intake-2386 why-faster:L110-118 pipelining (dive A)",
+          "action": "A/B --backend-sampling on the 27B target in a GPU window with DF2-17 greedy-identity and tau checks",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-9",
+          "source": "intake-2386 c16 (dive A)",
+          "action": "Record that a CPU whole-GDN-chain op is a superset of AK-A; measure AK-A first",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-10",
+          "source": "intake-2386 kernels.head_rows L1089-1103 (dive A)",
+          "action": "Census fully sparse-constrained decode steps; if >=10% prototype an lm_head row gather",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-11",
+          "source": "production :8083 launch record + AK recipe np1 (dive A)",
+          "action": "Add production-shape surfaces N=16,32 and ragged {1,8,8,8} to the 27B GPU AK campaign",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-12",
+          "source": "intake-2386 test_q35_kernels noise-floor tolerance (dive A)",
+          "action": "Add a noise-floor-relative model-level tolerance as a candidate gate component for non-bit-exact kernels",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-13",
+          "source": "llama-model.cpp:2091-2098 + ops.cpp:11292-11302 (dive A)",
+          "action": "Guard CPU GATED_DELTA_NET against a BF16 state and audit that no CPU launcher inherits GGML_CUDA_GDN_STATE_BF16",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LK-14",
+          "source": "intake-2386 c1 kernels.py:L561-562 (dive A)",
+          "action": "Do not cite Locals' bf16 98 tok/s row as hardware evidence (preset fragh->mlx fallback confound)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-1",
+          "source": "intake-2388 App D.8/E.3 + json-schema-to-grammar.cpp:L228 (dive B1)",
+          "action": "Count grammar-forced tokens with the production tokenizer on logged REVIEW/typed-decision outputs, llama.cpp vs compact grammar",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-2",
+          "source": "typed-decision-plane.md L155-161 + intake-2388 s5.5 (dive B1)",
+          "action": "Replay review/typed-decision/repair logs and classify parse failures by finish_reason (length vs malformed)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-3",
+          "source": "orchestrator code_utils.py L40 / repair.py L123-137 (dive B1)",
+          "action": "Persist finish_reason, n_tokens and site with the repair counters and review parse events to a durable sink",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-4",
+          "source": "intake-2388 s5.5 App G budget mask (dive B1)",
+          "action": "Experimental-branch budget-aware closure for json_schema/tool-call grammars, gated on 100% valid at feasible budgets",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-5",
+          "source": "intake-2388 forced spans + intake-2402 jump-forward (dive B1)",
+          "action": "Experimental-branch forced-continuation-as-certain-draft plus compact-whitespace json_schema option",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-6",
+          "source": "common/sampling.cpp L726-727 + speculative-decoding-mtp-refresh.md L408 (dive B1)",
+          "action": "Amend SPEC-GRAM.1 to time the temp>0 residual verify with a json_schema and count full-vocab grammar passes per step",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-7",
+          "source": "intake-2394 draft masking table 1 (dive B1)",
+          "action": "Apply the target grammar mask to MTP/DFlash2 draft logits with clone/rollback; A/B acceptance on one json_schema class",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-8",
+          "source": "orchestrator tool_registry.py L727-762 + helpers.py L1340-1349 (dive B1)",
+          "action": "Replay turn-1 grammar_enforced REPL outputs and classify; tighten generate_gbnf_grammar to CALL( or drop it",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-9",
+          "source": "common/chat.cpp L2883/L2915 (dive B1)",
+          "action": "Unit-check llama-server on a truncated native tool call and a non-partial parse FAIL (HTTP 500) with crafted strings on an experimental build",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-10",
+          "source": "intake-2388 walk kernel (dive B1)",
+          "action": "Keep the table-free vectorised/GPU mask walk as a design note; reopen on GPU-side grammar sampling or LG-6 >=5% of step",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-11",
+          "source": "intake-2388 s5.5 parallel fields (dive B1)",
+          "action": "Record that certified parallel fields save passes but not wall time",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-12",
+          "source": "intake-2390 (dive B1)",
+          "action": "Re-dive Gram2Token when the OpenReview PDF or repo is reachable",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LG-13",
+          "source": "CLAUDE.md belief-kernel wiring rule (dive B1)",
+          "action": "Wire parse-failure/repair counters (LG-3) into the belief kernel: source-table row + program task",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-1",
+          "source": "intake-2386 c5 server.py L2077-2104 (dive B2)",
+          "action": "Render-test every role's GGUF chat template for the turn k->k+1 prefix property under enable_thinking=false using captured traces",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-2",
+          "source": "intake-2386 c5 (dive B2)",
+          "action": "If LS-1 shows a break, prototype a prefix-stable Qwen template variant and A/B it",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-3",
+          "source": "server-common.cpp:1116 + KPF-18.3 (dive B2)",
+          "action": "Tabulate cache_n/prompt_n by role x endpoint x turn index for hybrid roles from per-call serving records",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-4",
+          "source": "server-context.cpp:4430-4447,3641-3647 (dive B2)",
+          "action": "Add message_delimiters to orchestrator /completion payloads behind a flag so v10 checkpoints at harness-chosen junctions",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-5",
+          "source": "repl-turn-efficiency.md A/B (dive B2)",
+          "action": "Add a hybrid-checkpoint arm to the repaired RTE-Prefix A/B or record that the frontdoor model is not hybrid",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-6",
+          "source": "intake-2386 c7 server.py _tokens_for (dive B2)",
+          "action": "Offline: compare len(tokenize(reply_text)) with predicted_n over logged replies to size non-canonical retokenization",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-7",
+          "source": "intake-2386 c7 (dive B2)",
+          "action": "Build exact token-id replay for /completion prefixes",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-8",
+          "source": "intake-2386 c8 hybrid_batch._launch L1200 (dive B2)",
+          "action": "Prototype shortest-remaining-first and per-slot prompt cap among prefilling slots on a llama.cpp-experimental branch",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-9",
+          "source": "intake-2386 c8 p99.9 ITL (dive B2)",
+          "action": "Record p99.9 inter-token gap per call in serving records",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-10",
+          "source": "intake-2386 DiskPromptCache (dive B2)",
+          "action": "Post-reload warm restore of each role's system-prompt trunk from saved slot files",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-11",
+          "source": "intake-2386 c13 test_session_checkpoint (dive B2)",
+          "action": "Tokenizer-only prefix-property tests with captured-client fixtures as the static guard DSC (Z) asks for",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-12",
+          "source": "intake-2386 c9 (dive B2)",
+          "action": "Record Locals' memory-guard/growth-trim design as not porting (llama.cpp preallocates KV)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-13",
+          "source": "intake-2386 c10 server.py L866-940 (dive B2)",
+          "action": "Measure consecutive identical (name,args) tool-call rate and successors in the conversation stores; choose TOC-SP-9 vs model-voiced steering",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-14",
+          "source": "intake-2386 c10 _looping/_line_looping (dive B2)",
+          "action": "Score Locals' loop-detector thresholds (and an in-grammar variant with grace) against labelled loops",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-15",
+          "source": "intake-2386 c12 harness.py L673-695 (dive B2)",
+          "action": "Prototype check-after-write observation plus check-gated FINAL in the REPL behind a flag",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-16",
+          "source": "intake-2386 c12 (dive B2)",
+          "action": "Add tests-as-judge selector, per-part combination and tail-cut to the RUS-1 best-of-K arm",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LS-17",
+          "source": "intake-2386 c12 at_once (dive B2)",
+          "action": "Derive per-role agent concurrency caps from prompt-cache capacity, checked against logged evictions",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-1",
+          "source": "intake-2387 c5 store readers (dive C)",
+          "action": "Build a read-only projector from Claude/Codex/opencode stores into Beacon-subset events (private, non-git)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-2",
+          "source": "intake-2387 c3 rules + INCIDENT_LOG (dive C)",
+          "action": "Run 8 guard-class predicates retrospectively over sampled sessions per harness",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-3",
+          "source": "intake-2387 approval-denied rule (dive C)",
+          "action": "Log every PreToolUse guard denial to one private JSONL with an observed-fidelity marker",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-4",
+          "source": "intake-2387 c7 + intake-1968 (dive C)",
+          "action": "Measure incident-class recurrence before/after each origin rule, split prose vs hook",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-5",
+          "source": "intake-2387 c2 candidate.go (dive C)",
+          "action": "Precondition-gated local-judge selection (task_success first) to pick sessions to mine",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-6",
+          "source": "intake-2387 c1 SKILL.md lesson shape (dive C)",
+          "action": "Require transcript-evidence pointers and trigger-phrased applicability in new incident/feedback lessons",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-7",
+          "source": "intake-2387 c0,c4 (dive C)",
+          "action": "Decline installing the Beacon product",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-8",
+          "source": "intake-2387 c0 event-schema (dive C)",
+          "action": "Adopt Beacon's action vocabulary, collection_method/fidelity, prompt.id/tool.call.id, content markers as the LB-1 schema",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-9",
+          "source": "CLAUDE.md belief-kernel wiring rule (dive C)",
+          "action": "Add a vidya source row for dev-harness transcript rule findings (diagnostic, aggregate-only)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-10",
+          "source": "orch src/trace/ingest_agent_audit.py:24 (dive C)",
+          "action": "Point ingest_agent_audit at the agent_audit-*.log shards instead of the frozen legacy file",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-11",
+          "source": "intake-2387 c3 spec (dive C)",
+          "action": "Adopt the threat-rules format (CEL + match/no_match fixtures + maturity ladder) for new hook predicates",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-12",
+          "source": "intake-2387 c2 evaluator (dive C)",
+          "action": "Feed Beacon's 3-question System One rubric into TD-19/TD-17 as a local typed-decision workload; never hosted",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-13",
+          "source": "OP-PUBLICREPOS + F3 preflight (dive C)",
+          "action": "Commit only aggregate counts and rule text from transcript analysis; route exports through raw_trace_publish_preflight",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LB-14",
+          "source": "intake-2387 (dive C)",
+          "action": "Record that Beacon yields no AutoKernel hypotheses",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-1",
+          "source": "Claude Code 30-day transcript cleanup (dive D)",
+          "action": "Set Claude cleanupPeriodDays or snapshot first so transcripts stop being deleted at 30 days",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-2",
+          "source": "intake-2389 c0 collector (dive D)",
+          "action": "Build a private TraceLab-schema extractor (Claude+Codex via the Apache-2.0 pipeline plus an opencode reader)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-3",
+          "source": "intake-2389 s7.1-7.2 (dive D)",
+          "action": "Step-level prefix hit and gap CDF for qwen-gpu/qwen-local opencode sessions as the interim B4a baseline",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-4",
+          "source": "intake-2389 s7.4 (dive D)",
+          "action": "Run the eviction sweep on our gap CDF to size the DRAM cache-ram per server",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-5",
+          "source": "intake-2389 Table 9 (dive D)",
+          "action": "Measure append bimodality and decide on an append-aware prefill route",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-6",
+          "source": "orch logs/serving_calls (dive D)",
+          "action": "Find why serving_calls.jsonl has only 19 records despite a live hook; restore recording",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-7",
+          "source": "dev-harness tool errors sample (dive D)",
+          "action": "Hook-denial and tool-error census; tune hooks and allowlist entries",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-8",
+          "source": "~/.claude/history.jsonl + memory dir (dive D)",
+          "action": "Operator-correction recurrence mining vs memory-file dates",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-9",
+          "source": "~/.codex thread_turns (dive D)",
+          "action": "Codex AK-lane turn-failure census",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-10",
+          "source": "~/.codex thread_items (dive D)",
+          "action": "AK/dev wall time by executable from thread_items",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-11",
+          "source": "NIB2-84 reaper (dive D)",
+          "action": "Require an export-content-stripped-extract-first step in the ~/.codex reaper and the opencode event reaper",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-12",
+          "source": "intake-2392 App E (dive D)",
+          "action": "Pilot CODESKILL-prompt-assisted, human-applied skill candidates judged by recurrence vs memory files",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-13",
+          "source": "CLAUDE.md belief-kernel wiring rule (dive D)",
+          "action": "File source rows and VB write-side tasks for the mining reports before their first run",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-14",
+          "source": "OP-PUBLICREPOS (dive D)",
+          "action": "Privacy gate: trace-derived outputs only in a private gitignored dir; extend the PII guard to transcript-JSON shapes",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-15",
+          "source": "planner_archive (dive D)",
+          "action": "Add the resumed-vs-fresh planner cost split to F3/RTG-09",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-16",
+          "source": "intake-2392 c0 (dive D)",
+          "action": "Do not use CODESKILL's +11.03/+5.10 as evidence for learned skill management",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "LT-17",
+          "source": "intake-2389 c3 (dive D)",
+          "action": "Cite TraceLab amplification as 5.3x (s7.3), never 3.8x",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-1",
+          "source": "Claude 30-day roll (W1a)",
+          "action": "Copy new Claude Code transcripts daily before the 30-day roll; confirm the retention key",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-2",
+          "source": "intake-2396 App B.3 (W1a)",
+          "action": "Build the lesson registry (feedback files, INC entries, CLAUDE.md rules) with date, channels, mechanical detector",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-3",
+          "source": "intake-2395/2396 (W1a)",
+          "action": "Pilot interrupted time series on 3-5 mechanical lessons: violations per 1,000 Bash calls pre/post with matched controls",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-4",
+          "source": "~/.claude/history.jsonl (W1a)",
+          "action": "Operator-correction recurrence per lesson from history.jsonl, keyword pass first",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-5",
+          "source": "intake-2396 App B.3 (W1a)",
+          "action": "Write the self-excluded/campaign-grouped leakage clause plus regression-to-mean controls into the HIL-2 checklist",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-6",
+          "source": "intake-2396 (W1a)",
+          "action": "Add the leakage clause, a student-memory control arm and a k-sweep to the SkillBank/M-12 A/B",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-7",
+          "source": "intake-2395 levels (W1a)",
+          "action": "Report delivered-context rate: P(feedback body Read given the trigger situation) from transcripts",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-8",
+          "source": "MEMORY.md injection (W1a)",
+          "action": "Trim-vs-full MEMORY.md index A/B on trap tasks",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-9",
+          "source": "intake-2397 judge agreement (W1a)",
+          "action": "Validate a pushback classifier on ~100 operator-labelled prompts before any use",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-10",
+          "source": "intake-2395 repeated-call metric (W1a)",
+          "action": "Note for the HIL-12 loop detector: test-after-edit is legitimate repetition",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-11",
+          "source": "intake-2397 (W1a)",
+          "action": "Do not use SWE-chat's 46% pushback as an EPYC target",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2A-12",
+          "source": "intake-2396 reactive injection (W1a)",
+          "action": "Hook-enforced reactive hints at the failing tool call for lessons memory text alone does not hold",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-1",
+          "source": "UFH14-B4i + intake-2400 (W1b)",
+          "action": "Decompose B4i's ON-arm per-turn penalty into save/clear/load/re-prefill terms from existing logs",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-2",
+          "source": "UFH14-B4g (W1b)",
+          "action": "If L2B-1 is ambiguous, add a -lv 4 prompt_save/prompt_load timing re-run to the B4g-1 scratch relaunch",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-3",
+          "source": "HSF-4 + B4i (W1b)",
+          "action": "Correct the HSF-4 reload-60-820x note with the B4i-implied restore rate (measured-low, one rep)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-4",
+          "source": "intake-2389 s7.4 + HSF-3.1a (W1b)",
+          "action": "Run the idealized timeout sweep on HSF-3.1a session-keyed gaps once >=50 keyed sessions per class exist",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-5",
+          "source": "intake-2398 deadlock guard (W1b)",
+          "action": "State pool-full behaviour with 4 idle contexts resident in B4j's package",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-6",
+          "source": "intake-2398 queueing term (W1b)",
+          "action": "Add Continuum's queueing-delay term as a cause label in G5",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-7",
+          "source": "intake-2398 (W1b)",
+          "action": "Record Continuum as the second TTL-with-FCFS contract alongside ThunderAgent under KVU-14",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-8",
+          "source": "intake-2399 look-ahead eviction (W1b)",
+          "action": "Keep FIFO/LRU --cache-ram; value-aware eviction only if B4a's >5% two-window rule fires",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-9",
+          "source": "hybrid checkpoints (W1b)",
+          "action": "Add a hybrid-checkpoint-coverage term to any retention estimate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-10",
+          "source": "intake-2399 AttentionStore (W1b)",
+          "action": "Do not adopt SSD/tiered KV on capacity grounds; revisit only if L2B-1 shows a bandwidth-bound restore path",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2B-11",
+          "source": "intake-2399 s3.4 (W1b)",
+          "action": "Do not port position-decoupled KV truncation",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-1",
+          "source": "intake-2401 fast_forward.md (W1c)",
+          "action": "Count the forced-token share (compact vs flexible whitespace) on captured json_schema and tool-call outputs",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-2",
+          "source": "intake-2401 + llguidance.cpp (W1c)",
+          "action": "Add an LLAMA_LLGUIDANCE=ON experimental arm to SPEC-GRAM.1 (test-grammar-llguidance, mask vs GBNF timing)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-3",
+          "source": "sampling.cpp L211 GGML_ABORT (W1c)",
+          "action": "Replace the %llguidance GGML_ABORT with a thrown error on the experimental line and add a request-level test",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-4",
+          "source": "intake-2401 compute_ff_tokens (W1c)",
+          "action": "Grammar-forced draft: inject compute_ff_tokens output as the step's draft in the verify batch",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-5",
+          "source": "intake-2401 validate_tokens (W1c)",
+          "action": "Use llg validate_tokens for the 1-token check, full mask only on rejection",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-6",
+          "source": "intake-2401 v1.0.1 pin (W1c)",
+          "action": "Bump the llguidance pin to current (mask caching) in any ON candidate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-7",
+          "source": "intake-2401 whitespace_flexible (W1c)",
+          "action": "Emit x-guidance whitespace_flexible=false in orchestrator json_schema requests once ON",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-8",
+          "source": "docs/llguidance.md L34-38,L53 (W1c)",
+          "action": "Gate ON on a schema-equivalence check and on fail-open behaviour",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-9",
+          "source": "HIP host mask (W1c)",
+          "action": "Overlap the step t+1 mask with the GPU forward (HIP)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2C-10",
+          "source": "intake-2402 (W1c)",
+          "action": "SGLang-style whole-text retokenize and restart",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-1",
+          "source": "intake-2403 (W1d)",
+          "action": "Write the dev-harness transcript projector crosswalk to OTel GenAI names as detail_json keys, with fidelity observed/inferred",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-2",
+          "source": "intake-2403 token semantics (W1d)",
+          "action": "Projector rules with unit tests: Claude usage dedupe by requestId; cache tokens added back into OTel input_tokens",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-3",
+          "source": "intake-2403 Development status (W1d)",
+          "action": "Stamp semconv commit and schema on projected events; never claim conformance",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-4",
+          "source": "Claude Code beta tracing (W1d)",
+          "action": "Decide whether to enable Claude Code native OTel tracing in one throwaway session",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-5",
+          "source": "intake-2404 (W1d)",
+          "action": "Add an optional AIPerf-TraceLab cross-check arm to KPF-64's later live window",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-6",
+          "source": "intake-2404 limits (W1d)",
+          "action": "Record that AIPerf/TraceLab cannot size --cache-ram for shared system prompts or test subagent joins",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-7",
+          "source": "intake-2405 + D7 (W1d)",
+          "action": "Streaming mixed-arrival D7 probe spec reporting pooled ITL p99/p99.9/max with stall count",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-8",
+          "source": "intake-2405 (W1d)",
+          "action": "Add ~40 lines of streaming gap capture to the own client; stock InferenceX only as a one-time parity check",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-9",
+          "source": "intake-2405 (W1d)",
+          "action": "Never cite a p99.9 ITL without the stall-arrival count and sample total",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-10",
+          "source": "intake-2404/2405 (W1d)",
+          "action": "Decline adopting agentx-harness/AIPerf as EPYC's serving gate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L2D-11",
+          "source": "intake-2389/2404 (W1d)",
+          "action": "Cross-check KPF-64's ideal prefix bound against the public TraceLab columns",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-1",
+          "source": "LR-9 + 30-day roll (W2a)",
+          "action": "Copy-only nightly snapshot of ~/.claude/projects, ~/.codex/sessions, ~/.claude/history.jsonl and an opencode.db .backup to a raid0 archive; never move or delete originals",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-2",
+          "source": "intake-2407 entireio/cli (W2a)",
+          "action": "Do not adopt Entire CLI as the preservation layer",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-3",
+          "source": "intake-2407 importer (W2a)",
+          "action": "Build the session->commit join offline from commit SHAs in tool results; add committed-line survival as a second outcome",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-4",
+          "source": "intake-2406 App F.2.4 (W2a)",
+          "action": "Hand-label ~100 operator prompts and score a local judge with SWE-chat's prompt before pushback may be an outcome",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-5",
+          "source": "Claude transcripts interrupt markers (W2a)",
+          "action": "Count 'Request interrupted by user' markers per session/turn as the first mechanical operator-correction series",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-6",
+          "source": "intake-2397 (W2a)",
+          "action": "Pre-register in the lesson-registry spec: pushback = upper bound; never-lessoned classes as control series",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-7",
+          "source": "intake-2410 ERL (W2a)",
+          "action": "Add random-k arm, k-sweep and injected-token cost line to any lesson A/B design",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-8",
+          "source": "transcript usage fields (W2a)",
+          "action": "Measure the always-on prefix size (CLAUDE.md + MEMORY.md index) in tokens per turn from transcript usage",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-9",
+          "source": "intake-2406 HF gated dataset (W2a)",
+          "action": "Request SWE-chat dataset access and test P(pushback given skill invoked)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-10",
+          "source": "intake-2409 (W2a)",
+          "action": "Cite 2605.18854 as a second data point for observation-masking-first compaction; no change",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3A-11",
+          "source": "intake-2408 (W2a)",
+          "action": "Require paired accuracy-per-cost (BM25 baseline) for any LLM-mediated lesson consolidation",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-1",
+          "source": "B4i turns.jsonl re-analysis (W2b)",
+          "action": "Attribute the ON-arm pre-eval stall (TTFT-prompt_ms 43.5 s vs 1.0 s) with -lv 4 on a scratch server: neighbour idle-saves vs prompt_load vs draft resync",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-2",
+          "source": "intake-2398 per-tool CDF (W2b)",
+          "action": "Add response tool names and finish_reason to dispatch.v1 so HSF-3 gaps are keyed by the preceding tool",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-3",
+          "source": "intake-2398 eq. 2 (W2b)",
+          "action": "Compute tau* per tool and class from HSF-3.1 data; compare tau*, flat tau, infinite pin, zero",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-4",
+          "source": "opencode.db part table (W2b)",
+          "action": "Read-only per-tool start/end extraction from opencode.db local-provider sessions as a proxy tool-gap CDF",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-5",
+          "source": "intake-2398 program FCFS (W2b)",
+          "action": "Plumb the session key into SharedKVPoolAdmission as a program-level first-arrival priority",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-6",
+          "source": "server-context.cpp:1601-1700 (W2b)",
+          "action": "Amend B4j's pool-full section: explicit id_slot reuse destroys the victim; only id_slot=-1 LRU demotes to --cache-ram",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-7",
+          "source": "server-context.cpp:2469-2483 (W2b)",
+          "action": "Experimental-branch design for a per-request retain hint",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-8",
+          "source": "intake-2412 Pensieve (W2b)",
+          "action": "Record V = Cost/T as the victim-ordering key with the hybrid limit",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3B-9",
+          "source": "intake-2413 Preble (W2b)",
+          "action": "Add Preble's M_i and L_i to the HSF placement KV-recovery term when 2+ instances of one GGUF exist",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-1",
+          "source": "intake-2415 MaskBench + sampling.cpp L553-634 (W2c)",
+          "action": "Add reject count and reject-resample time to SPEC-GRAM.1 step (1)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-2",
+          "source": "intake-2415 (W2c)",
+          "action": "Measure the forced-token share on our real tool-call/json_schema completions offline with the llguidance matcher and lineup tokenizers",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-3",
+          "source": "intake-2414/2401 (W2c)",
+          "action": "Build the LLAMA_LLGUIDANCE=ON experimental arm",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-4",
+          "source": "intake-2401 header (W2c)",
+          "action": "Prototype forced-span-as-draft via compute_ff_tokens fed to the existing speculative verify",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-5",
+          "source": "intake-2415 (W2c)",
+          "action": "Record the mask cost model in SPEC-GRAM.1's retained knowledge",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-6",
+          "source": "intake-2415 (W2c)",
+          "action": "Re-key the 35-40% compact forced-share hand estimate to the measured 13/15% (max 29%) wherever cited",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-7",
+          "source": "intake-2416 (W2c)",
+          "action": "SGLang-style string-level jump-forward with retokenize-and-requeue",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3C-8",
+          "source": "intake-2415 (W2c)",
+          "action": "Enforce compact whitespace in our json_schema grammar to raise forced share",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-1",
+          "source": "intake-2417/2418 (W2d)",
+          "action": "Make the KPF-64 adapter link sub-agent transcripts to parents and replay bursts; add a sessions>slots burst arm",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-2",
+          "source": "intake-2418 v7 card (W2d)",
+          "action": "Compute fan-out stats from our own Claude transcripts and compare with Weka v7 (42.5% of requests, peak <=10)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-3",
+          "source": "intake-2418 (W2d)",
+          "action": "Compute the ideal never-evicted prefix share on Weka v7-256k with KPF-64's definition",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-4",
+          "source": "intake-2418 think-time (W2d)",
+          "action": "Add adapter-emitted think-time gaps and --think-scale to the KPF-64 driver",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-5",
+          "source": "intake-2417 (W2d)",
+          "action": "Do not adopt trace_replay_tester.py for llama-server",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-6",
+          "source": "intake-2419/2403 (W2d)",
+          "action": "Projection uses the 5 gen_ai.* names Claude emits; input_tokens = input + cache_read + cache_creation; epyc.* for topology",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-7",
+          "source": "intake-2417 hash chain (W2d)",
+          "action": "Keep block ids as a keyed HMAC chain hash over 64-token blocks so cross-session prefix sharing stays computable without text",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-8",
+          "source": "intake-2419 (W2d)",
+          "action": "Run one short claude -p session with console exporters and content toggles off to confirm emitted fields; persist no setting",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-9",
+          "source": "intake-2419 hook spans (W2d)",
+          "action": "Capture hook_execution_complete to see which hooks cost time or context",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-10",
+          "source": "intake-2419 TRACEPARENT (W2d)",
+          "action": "Pass TRACEPARENT into orchestrator-launched claude -p actors",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-11",
+          "source": "intake-2418 (W2d)",
+          "action": "Weka-to-driver synthetic-content adapter for scale diversity",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3D-12",
+          "source": "intake-2418 caveats (W2d)",
+          "action": "Record the Weka field caveats in any future adapter",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3E-1",
+          "source": "intake-2420/2421 + CMakeLists.txt:55-62 (W2e)",
+          "action": "Decline LK-H7 (BF16 KV CPU FA): the iqk FA kernel is not compiled into v10 and the author measured bf16 ~= fp16",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3E-2",
+          "source": "intake-2421 + iqk_flash_attn.cpp uncompiled (W2e)",
+          "action": "Evaluate wiring the uncompiled iqk CPU FA kernel against mainline FA at production long-context CPU shapes",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L3E-3",
+          "source": "CMakeCache GGML_AVX512_BF16=OFF + -march=native (W2e)",
+          "action": "Record: production CPU build has no iqk FA; AVX512_BF16 comes from -march=native",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-1",
+          "source": "intake-2422/2415 (W3a)",
+          "action": "Offline replay of our logged structured outputs through llguidance compute_ff_tokens with lineup tokenizers: forced share, run-length histogram, 1/(1-f_eff), flexible vs compact",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-2",
+          "source": "intake-2423 + fast_forward.md (W3a)",
+          "action": "Audit llguidance's 4-token canonical-trim guarantee on each lineup tokenizer with schema-derived forced strings",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-3",
+          "source": "intake-2422 (W3a)",
+          "action": "Experimental branch: matcher ff accessor plus an ff draft source ahead of the chain (verified mode); measure acceptance and tokens/step at np1/np4",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-4",
+          "source": "intake-2422 (W3a)",
+          "action": "Forced-accept variant (no sample/mask, logits on last row only) with grammar-validity and task-accuracy gate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-5",
+          "source": "llguidance ffi.rs v1.0.1 L1253-1259 (W3a)",
+          "action": "Record the v1.0.1 compute_ff_tokens buffer-overflow and the pin-bump requirement",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-6",
+          "source": "common/speculative.cpp L3176 (W3a)",
+          "action": "Design note: an ff round starves the MTP/dspark chain; drafters may need hidden-state rows for ff positions",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4A-7",
+          "source": "intake-2416/2422 (W3a)",
+          "action": "Native-GBNF string-level jump-forward",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4B-1",
+          "source": "intake-2425 + iqk_mul_mat.cpp:1494 #if 0 (W3b)",
+          "action": "Vendor ik fa/ + floats/quantize deps into an experimental branch, add the FLASH_ATTN_EXT hook, run test-backend-ops FLASH_ATTN_EXT -b CPU vs use_ref on AKX-ALL-10 cases",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4B-2",
+          "source": "iqk_flash_attn.cpp TG path (W3b)",
+          "action": "Seed AK with iqk-style GQA-grouped split-K decode for Q38FN as a cpu_fa_schedule candidate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4B-3",
+          "source": "INF-70 be2-fa (W3b)",
+          "action": "Add the iqk-wired build's N=1 vs N=5 row-exactness cells to AKX-ALL-26b",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4B-4",
+          "source": "ops.cpp kv_is_f32_or_f16 (W3b)",
+          "action": "Measure q8_0-KV vs f16-KV CPU FA at depth on v10 for one q8_0-KV CPU role",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4B-5",
+          "source": "ops.cpp mask skip vs iqk 32-row chunks (W3b)",
+          "action": "Record that per-row mask skipping beats 32-row chunk skipping for DS41/QSA top-k masks",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4B-6",
+          "source": "model_registry.yaml ~L2038 vs AKX handoff L51 (W3b)",
+          "action": "Reconcile which GGML_FA_SPLIT_KV value production :8074 actually runs",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-1",
+          "source": "intake-2429 interrupt markers (W3d)",
+          "action": "Count both interrupt markers per 1000 turns (and Codex/opencode analogues) with Wilson CIs, split plain vs tool-use and main vs subagent",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-2",
+          "source": "intake-2429 reason clusters (W3d)",
+          "action": "Operator-label ~100 interrupts plus next message with Anthropic's reason clusters to get marker precision",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-3",
+          "source": "intake-2397 F.2.4 (W3d)",
+          "action": "Port the pushback prompt to local Qwen3.5-9B and calibrate on the L4D-2 labels",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-4",
+          "source": "intake-2426/2429 (W3d)",
+          "action": "Write the lesson-ITS spec: two outcome families, segmented regression, covariates, clustering, nonequivalent control series",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-5",
+          "source": "INCIDENT_LOG surface forms (W3d)",
+          "action": "Count lesson-violation surface forms per 1000 tool calls before/after each lesson date",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-6",
+          "source": "intake-2428 monitor-evasion rubric (W3d)",
+          "action": "Run Transluce's monitor-evasion surface forms as a regex list and hand-audit authorization",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-7",
+          "source": "intake-2427 (W3d)",
+          "action": "SWE-Together-style anchored replay A/B (with/without lesson file) with a validated local user simulator",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-8",
+          "source": "typed-decision ruling (W3d)",
+          "action": "Do not use hosted annotators on our data; adopt their signal definitions as labelling guides only",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-9",
+          "source": "intake-2426/2427/2428 (W3d)",
+          "action": "Do not cite 79% invisible, Transluce ~2%, or SWE-Together -0.92 as coding-agent base rates",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4D-10",
+          "source": "CLAUDE.md belief-kernel rule (W3d)",
+          "action": "Wire the write side for interrupt, pushback and violation series before they exist",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4E-1",
+          "source": "intake-2430 Autellix (W3e)",
+          "action": "Log per-session accumulated service time next to arrival order in the G5 replay so KVU-14's ordering key can be compared offline",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4E-2",
+          "source": "intake-2430 (W3e)",
+          "action": "Add Autellix wait/service-ratio promotion as the anti-starvation candidate in KVU-14 design text",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4E-3",
+          "source": "intake-2431 (W3e)",
+          "action": "Copy the strict train/test task split and record injected-prompt tokens per step in any lesson/exemplar A/B",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4E-4",
+          "source": "intake-2431 (W3e)",
+          "action": "Add a retrieved-raw-successful-trajectory arm alongside distilled lessons in the same A/B",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4E-5",
+          "source": "intake-2433 (W3e)",
+          "action": "Reuse the working-set-80%-of-tier, FIFO cycling, TTFT-ceiling recipe for --cache-ram tier tests",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4E-6",
+          "source": "intake-2432 GTTA (W3e)",
+          "action": "Do not pursue GTTA dynamics grounding or syntactic alignment",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-1",
+          "source": "intake-2435 shared head ~28K tokens (W3c)",
+          "action": "Add a shared-head option to the replay adapter and an arm/report for cross-session head hits",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-2",
+          "source": "intake-2435 (W3c)",
+          "action": "Report both within-session and cross-session-head-aware ideal bounds in the replay study",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-3",
+          "source": "Claude transcript usage fields (W3c)",
+          "action": "Compute the provider-realised cache share from transcript usage for the replayed sessions and compare with the adapter ideal share",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-4",
+          "source": "intake-2437 V2 session_message (W3c)",
+          "action": "Make the replay adapter read opencode V1 and V2 schemas and fail loudly on zero sessions",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-5",
+          "source": "intake-2436/2437 (W3c)",
+          "action": "Projector spec: usage mapping rule, lineage fields, content-tier policy, SQLite-not-OTLP for opencode",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-6",
+          "source": "intake-2435 cch billing header (W3c)",
+          "action": "Record the per-request billing-header prefix hazard for any future plan to point Claude Code at llama-server",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-7",
+          "source": "intake-2435 (W3c)",
+          "action": "Re-check the 40.3% anon prefix result at token level with and without the first system block",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-8",
+          "source": "intake-2436 Statsig default (W3c)",
+          "action": "Surface to the operator that Codex exports metrics to Statsig by default unless analytics is disabled",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L4C-9",
+          "source": "intake-2435 (W3c)",
+          "action": "Do not copy the raw swebench trace dataset into any repo",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-1",
+          "source": "intake-2438 + OTel gen-ai.md L203-212 (W4c)",
+          "action": "Normalize every harness to inclusive OTel usage in the projector, keeping the raw tuple; 4-harness golden-fixture test",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-2",
+          "source": "Claude Code transcript key peek (W4c)",
+          "action": "Dedupe Claude Code usage by message id (content blocks repeat usage)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-3",
+          "source": "intake-2438 token_usage_record (W4c)",
+          "action": "Codex: read token_usage_record, never sum token_count; skip child lines before subagent_history_start_ordinal",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-4",
+          "source": "opencode @4d120d49 session_v2 migration (W4c)",
+          "action": "Replay adapter detects the opencode layout from sqlite_master and never reads V1 and V2 for the same session",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-5",
+          "source": "opencode V2 tool ids per step (W4c)",
+          "action": "Record that V2 tool ids are unique only per assistant step and migrated V1 rows carry message-level tokens only",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-6",
+          "source": "intake-2438 thread_spawn + opencode fork (W4c)",
+          "action": "Model parent edges with an edge kind (spawn vs fork)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-7",
+          "source": "intake-2438 version axes (W4c)",
+          "action": "Record a composite source-schema key on each ingested session for parser-drift detection",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-8",
+          "source": "intake-2438 task_started trace_id (W4c)",
+          "action": "Join Codex rollouts to OTel via trace_id only when Codex OTel is enabled",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5C-9",
+          "source": "intake-2438 sqlite derived and capped (W4c)",
+          "action": "Use Codex sqlite as the primary source",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-1",
+          "source": "intake-2439 + v10 ops.cpp L9464/L9496-9545 (W4a)",
+          "action": "Author a cpu_fa_schedule candidate for verify N=2..8: one KV pass per KV head serving all GQA heads x N rows with fixed per-row reduction order",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-2",
+          "source": "intake-2439/2440 (W4a)",
+          "action": "Add nb=65 (tiled), nb=1 at n_kv>=512 (split) and q8_0-KV columns to the CPU long-context FA surface",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-3",
+          "source": "stack_env.py L116/L206-232 + model_registry.yaml L2041 (W4a)",
+          "action": "Record that the registry split-KV env is not consumed by the launcher and production runs split-KV at N=1, so N=1 and N=5 rows are not row-exact",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-4",
+          "source": "intake-2425 vs intake-2439 (W4a)",
+          "action": "Re-scope the iqk FA expected gain to the f16 verify regime N=2..63 and q8_0 KV, not N=1 f16",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-5",
+          "source": "v10 ops.cpp L9496-9545 (W4a)",
+          "action": "Run the named occupancy profile for the non-split path with the KV type and knob recorded",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-6",
+          "source": "v10 ops.cpp L8934-8937 + qwen4exp.cpp L858-881 (W4a)",
+          "action": "Split the at-depth profile into FA K/V, mask scan, mask build and indexer",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-7",
+          "source": "intake-2439 + ops.cpp one_chunk (W4a)",
+          "action": "Seed extending split-KV decode to q8_0 KV for the q8_0-KV CPU role at N=1 via the tolerance route",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-8",
+          "source": "intake-2440/2441 Zen5 thread evidence (W4a)",
+          "action": "Seed a Zen5 sweep of FA tile and GEMM blocking sizes including the untested AVX-512 GEMM branch for Q38FN prefill at depth",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5A-9",
+          "source": "intake-2442 (W4a)",
+          "action": "Port ik's trailing-suffix mask skip",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-1",
+          "source": "intake-2443 AgentRun schema (W4b)",
+          "action": "Write a pure-python Claude Code/Codex/opencode to AgentRun-JSON converter with capped task-window segments and kept interrupt markers, private output",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-2",
+          "source": "intake-2443 rubric judge pattern (W4b)",
+          "action": "Build a small local rubric judge (rubric text plus JSON schema, response_format json_schema, parse-fail counter) and score it on the operator-labelled sheet",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-3",
+          "source": "intake-2443 (W4b)",
+          "action": "Smoke-test self-hosted Docent pointed at a local llama-server on 5 converted sessions",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-4",
+          "source": "intake-2444 embed-first (W4b)",
+          "action": "Run a no-LLM clustering baseline over tool-error and denial segments (CPU sentence embedding, k-means, mechanical facets)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-5",
+          "source": "intake-2444 facet extraction (W4b)",
+          "action": "Add small-local-model facet extraction, contrastive naming and a single-level hierarchy",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-6",
+          "source": "intake-2444 synthetic reconstruction (W4b)",
+          "action": "Validate clustering by planted recovery of known incident classes; keep mechanical predicates for rare destructive classes",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-7",
+          "source": "intake-2444 privacy thresholds + intake-2428 clustering (W4b)",
+          "action": "Report a cluster only with at least s distinct sessions and d distinct days",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-8",
+          "source": "intake-2445 (W4b)",
+          "action": "Amend the ITS spec: tool-call exposure plus per-turn companion, work-mode strata, specificity proxy, trend term, model/harness change points, agreement reporting for any LLM covariate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-9",
+          "source": "intake-2445 (W4b)",
+          "action": "Add a mechanical verified-outcome family (commit, PR or test pass in segment; zero-change abandonment) to the ITS spec",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-10",
+          "source": "intake-2445 (W4b)",
+          "action": "Record that the expertise study is not evidence on tenure or interrupts",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-11",
+          "source": "intake-2443 default endpoints (W4b)",
+          "action": "Use the Docent client or tracing with its default hosted endpoints",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L5B-12",
+          "source": "CLAUDE.md belief-kernel rule (W4b)",
+          "action": "Extend the vidya source rows to judge outputs and cluster reports (aggregate-only; judge model, rubric hash, n, agreement)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6B-1",
+          "source": "intake-2446 vLLM-bound pipeline (W5b)",
+          "action": "Write a from-scratch local Clio-lite script with facet extraction and naming through an OpenAI-compatible llama-server endpoint",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6B-2",
+          "source": "intake-2446 prompts.py (W5b)",
+          "action": "Use OpenClio's prompts and pipeline shape as the reference for facet, cluster-name and neighborhood prompts",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6B-3",
+          "source": "intake-2446 input format (W5b)",
+          "action": "Map Claude Code, Codex and opencode segments to role/content turns truncated at turn boundaries, deduplicated",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6B-4",
+          "source": "intake-2447 no licence (W5b)",
+          "action": "Use Kura only as an idea (summary-first ordering) if facet-first proves noisy on a small model",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6B-5",
+          "source": "intake-2446/2447 no quality numbers (W5b)",
+          "action": "Measure cluster purity on a hand-labelled sample before trusting cluster names",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6B-6",
+          "source": "intake-2448 Sarkar (W5b)",
+          "action": "Stratify mined failure modes by session type or operator specificity to test the expertise gradient on our traces",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-1",
+          "source": "ik PR 207/332 via intake-2449 dive + ops.cpp L9473-9477 (W5a)",
+          "action": "Run the grouped-KV-pass candidate (12 Q heads per KV head, one KV pass, fixed per-row reduction order) vs anchor on the Q38FN N=1 f16 case at 8k/64k/128k with 96 threads",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-2",
+          "source": "ops.cpp split-KV only at N=1 (W5a)",
+          "action": "Record FA op time per N=1,2,3,4,8 at 96 threads on kv 64k f16 and test the code-derived prediction that N=2 costs about four times N=1",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-3",
+          "source": "ops.cpp L9121/L9234/L9296 tiled gate (W5a)",
+          "action": "Prototype a GQA-grouped multi-row tile (rows = GQA x N per KV head) by lowering the tiled gate and sizing tile GEMMs by tile rows",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-4",
+          "source": "ik PR 351 derived GB/s (W5a)",
+          "action": "Add q8_0 K/V cases and compute effective attention GB/s at N=1 and N=4",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-5",
+          "source": "ggml-org PR 27478 (W5a)",
+          "action": "Port the blocked online softmax (rescale once per block, several K.Q per Q load, F32 V accumulate) and measure attention-only delta at D=256",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-6",
+          "source": "ggml-org issue 29774 / PR 29810 (W5a)",
+          "action": "Add a long-KV large-magnitude-V case to the float64 FA reference probe to test the F16 V-accumulator overflow on the f16 vec path",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-7",
+          "source": "ggml-org PR 19422 Zen5 sweep (W5a)",
+          "action": "Sweep FA tile and GEMM blocking sizes on EPYC for prefill at depth",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-8",
+          "source": "ik PR 1935 disabled mask-trim (W5a)",
+          "action": "Port ik's mask-block skip",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-9",
+          "source": "intake-2449/2450 (W5a)",
+          "action": "Count barriers and op dispatches in a verify graph before considering ik-style graph fusions",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L6A-10",
+          "source": "am17an AVX-512 follow-up search (W5a)",
+          "action": "Record NOT-FOUND for a dedicated AVX-512 simd-gemm tuning branch; closest are merged PR 29423 and a measured Zen5 sweep",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-1",
+          "source": "intake-2452 + ops.cpp L9473-9477 (W6a)",
+          "action": "Extend the CPU long-context FA case set to N=1..5 and q8_0 KV and record active-thread count per op",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-2",
+          "source": "intake-2452/2453 (W6a)",
+          "action": "Seed a bit-exact N=1 f16 candidate grouping the 12 query heads per KV chunk with the anchor's chunk boundaries and reduction order",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-3",
+          "source": "intake-2452 + ggml-cpu.c L3536 (W6a)",
+          "action": "Seed split-KV extended to N<=5 and q8_0 with a fixed-order merge and row-exactness-across-N acceptance",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-4",
+          "source": "ggml-cpu.c L3536 work size (W6a)",
+          "action": "Include the graph-plan work-size extension for N>1 partials in that candidate brief",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-5",
+          "source": "ops.cpp kv_is_f32_or_f16 (W6a)",
+          "action": "Record that q8_0 KV has no split-KV or tile path in v10 (24 of 96 threads busy at N=1)",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-6",
+          "source": "intake-2451..2454 (W6a)",
+          "action": "Correct the earlier mechanism attribution: grouping for FA is PR 332, PR 207 is non-FA, PR 171 is a thread policy, PR 899 a q_step=12 specialisation",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7A-7",
+          "source": "intake-2454 (W6a)",
+          "action": "Treat 'no per-row thread split once a multi-row tile exists' as a design constraint",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-1",
+          "source": "intake-2455 (W6b)",
+          "action": "Point the upstream-report task at the existing upstream issue and PR with our repro, probe data and hybrid fix results, and record the link",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-2",
+          "source": "intake-2455 (W6b)",
+          "action": "At the v11 rebase, if the upstream PR has merged, reconcile our hybrid accumulator with upstream's always-F32 fused accumulate",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-3",
+          "source": "intake-2455 cost data (W6b)",
+          "action": "Use upstream's fused-F32 cost data in the decode A/B decision and run it on the architect's real decode path at N=1 and N=5",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-4",
+          "source": "intake-2455 + run_base.log probe (W6b)",
+          "action": "Re-rank the dense MTP head long-context acceptance check up: v10 has no fix and the architect declares 262144 context",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-5",
+          "source": "intake-2456 (W6b)",
+          "action": "Record that PR 27478's D=256 regression is from an opt-out build only and a port must keep F32 or hybrid accumulator semantics",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-6",
+          "source": "intake-2455 (W6b)",
+          "action": "Record that the large-V overflow is already reproduced and fixed in the champion; keep only the float64 reference case",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-7",
+          "source": "intake-2457 + ops.cpp L9235-9246 (W6b)",
+          "action": "Record that v10's tiled kernel applies softcap after padding; a gate for any future softcap or unmasked CPU role",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-8",
+          "source": "intake-2457 (W6b)",
+          "action": "Adopt PR 29423 for LLM serving",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "L7B-9",
+          "source": "intake-2458 (W6b)",
+          "action": "If Q38FN attention is ever placed on the MI210, check the HIP route for D=256 GQA-12 decode instead of porting ik's CUDA kernel",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "SA-1",
+          "source": "Stage-1 preliminary actionable (intake-2386)",
+          "action": "Turn Locals' small-batch kernel mechanisms into AutoKernel hypotheses for EPYC CPU and MI210",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "SA-2",
+          "source": "Stage-1 preliminary actionable (intake-2386, intake-2388)",
+          "action": "Assess GPU-resident grammar masks and forced-token skipping for our tool-call serving",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "SA-3",
+          "source": "Stage-1 preliminary actionable (intake-2386)",
+          "action": "Assess recurrent-state snapshot placement for hybrid prefix-cache reuse",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "SA-4",
+          "source": "Stage-1 preliminary actionable (intake-2387)",
+          "action": "Assess cross-harness trace capture for our dev, user-facing and orchestration harnesses",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "SA-5",
+          "source": "Stage-1 preliminary actionable (intake-2389)",
+          "action": "Characterize our own agent-conversation stores with TraceLab's method",
+          "terminal_mapping": null
+        },
+        {
+          "ledger_id": "SA-6",
+          "source": "Stage-1 preliminary actionable (intake-2392)",
+          "action": "Assess trace-to-skill distillation against our memory and feedback practice",
+          "terminal_mapping": null
+        }
+      ],
+      "stage2_waves": {
+        "stage2": "intake-2386..2394 (5 dives)",
+        "2b_w1": "2395-2405",
+        "2b_w2": "2406-2421",
+        "2b_w3": "2422-2437",
+        "2b_w4": "2438-2445",
+        "2b_w5": "2446-2450",
+        "2b_w6": "2451-2458 (final; operator-authorized six-wave limit reached)"
+      },
+      "stage3_plan": {
+        "path": "/mnt/raid0/llm/tmp/intake-locals-beacon-20261022/STAGE3_PLAN.md",
+        "sha256": "c0a151cb72c54258dff258609a239282a34a355a5d0f4ada821509d71d68e9d4",
+        "status": "presented-for-approval"
+      }
     }
   ]
 }
