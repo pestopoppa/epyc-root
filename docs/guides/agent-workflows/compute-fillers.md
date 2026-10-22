@@ -22,6 +22,16 @@ Early-ending compute blocks leave gaps. Registered **fillers** use them, without
 - Mutual exclusion: refuses to start while the scheduled runner for the same results file is live (its server port listening, or the per-arm runner lock held) and reports it as `.ended rc=4`.
 - Test before arming: `bash -n`, then a dry-run with a fake grant in a temp grants dir (`FILLER_GRANTS_DIR`) and a stub runner (`FILLER_STUB_CMD`) proving poll, start, end, cleanup, `.ended`.
 
+## Owner duties (2026-10-22)
+
+Operator directive, relayed by the calendar owner. Every session that owns a filler is bound by these.
+
+1. **Watch your own jobs.** Keep a zero-token watcher on your armed PIDs and their end/FAILED/SKIPPED flags and grant `.ended`/`.complete` files. On any change, investigate WHY, fix it, and re-queue through FILLERS.md and grant requests without waiting for the operator. A run over 1.5x its estimate is a failure to explain.
+2. **RAM admission.** Host RAM is booked. FILLERS.md column 6 ("peak host RAM GiB") = private/anon peak + file-mapped weight bytes. Every subagent brief that loads a model runs `/mnt/raid0/llm/tmp/compute-flags/ram_admit.sh <peak_host_GiB> [ds41]` first and stops if it refuses. At most one DS41-class CPU server runs on the host at a time.
+3. **Quiet windows.** While a quiet-host timing window is active, subagent briefs forbid clones, builds, tests, servers and heavy scripts. Any activity that happens anyway is logged in that run's HOST_ACTIVITY_DISCLOSURES file.
+4. **Before idling for the night,** list every armed job with its end flag and confirm a watcher covers each one.
+5. **Wrap-up** at each task boundary.
+
 ## Reference implementation
 
 CT-18 Skill-Inject: `/mnt/raid0/llm/tmp/ct18-run-20261021/filler_worker.sh` (`ct18-worker`, CPU) and `filler_arch.sh` (`ct18-arch`, mi210_0 + host threads 184-191). They are generated from one template; `.ended` rc 124 = hard end, 4 = refused, 2 = unusable grant, 143 = launcher signalled.
