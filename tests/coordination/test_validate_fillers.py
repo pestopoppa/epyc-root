@@ -74,7 +74,7 @@ def test_prior_forms_accepted(tmp_path, prior):
     assert cli("--file", table(tmp_path, row(prior=prior)), "--row", "r1", "--for-grant").returncode == 0
 
 
-@pytest.mark.parametrize("eff", ["n/a (build)", "exact identity", "+/-5 pp at n=20", "tg 2.00%"])
+@pytest.mark.parametrize("eff", ["n/a (build)", "exact identity", "gates pass exactly", "+/-5 pp at n=20", "tg 2.00%"])
 def test_effect_forms_accepted(tmp_path, eff):
     assert cli("--file", table(tmp_path, row(eff=eff)), "--row", "r1", "--for-grant").returncode == 0
 

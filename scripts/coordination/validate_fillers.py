@@ -64,7 +64,7 @@ NONE_RE = re.compile(r"^none(?: found)? \(.*\d{4}-\d{2}-\d{2}.*\)", re.I)
 BASELINE_RE = re.compile(r"champion|candidate|baseline", re.I)
 FLOOR_RE = re.compile(r"[\w/.@+=-]*floor[\w/.@+=-]*\.(?:json|md|jsonl|txt)\b", re.I)
 EFFECT_NUM_RE = re.compile(r"\d")
-EFFECT_QUAL_RE = re.compile(r"\b(exact|identical|identity|zero)\b", re.I)
+EFFECT_QUAL_RE = re.compile(r"\b(exact(?:ly)?|identical|identity|zero)\b", re.I)
 EFFECT_BUILD_RE = re.compile(r"^n/a \(build[^)]*\)", re.I)
 
 
