@@ -78,6 +78,33 @@ Checklist (the dashboard gate — flipped as the phases land):
   - **Keep `GGML_FUSED_DECODE_OFF=1` in production** until this is root-caused.
   - Done when the divergence and the double free are root-caused and fixed (fused ≡ graph within tolerance at
     w ∈ {0.05, 0.3, 1.0}), or the fused path is retired.
+  - *(2026-10-22, workspace-58 subagent, from NEW-10's smoke abort; box stays open: patch unbuilt.)* **Double free
+    root-caused on a real model.** The GSQ-RCO Q38FN IQ3_XXS GGUF aborted the production CPU `llama-completion`
+    (fused path ON, i.e. without `GGML_FUSED_DECODE_OFF=1`) on the first decode token with the same "double free or
+    corruption (out)". Chain:
+    1. GSQ stores `blk.*.ffn_down_shexp` as IQ4_NL (40 layers incl. layer 0; UD-IQ4_XS stores Q8_0). IQ4_NL is not on
+       the `GGML_IQK=1` repack exclusion list (`repack.cpp`), so CPU_REPACK interleaves it (`iq4_nl_8x8`). Fused
+       `lora_mm`/FusedMM does a plain per-row `vec_dot` at `data + row*nb[1]`, reading interleaved bytes as block
+       scales, so the shared-expert down goes NaN at layer 0.
+    2. Layer 1's `fused_moe` gets all-NaN router logits; no prob beats -INF, `best` stays -1, and
+       `probs[-1] = -INFINITY` overwrites the malloc chunk size (0xff800000); the vector's `free()` then aborts "(out)".
+    3. Second, latent bug: GSQ's `blk.1.ple_conv1d` is F16 and `fused_ple` read it through a `float*` (twice the
+       tensor's bytes, garbage values). The graph already casts it to F32 (`build_ple`).
+    - Patch `14c57cbe9` on llama.cpp `experimental/new10-ple-type-fix-20261022` (worktree
+      `/mnt/raid0/llm/worktrees/llama-new10-ple-fix-20261022`, `src/models/qwen4exp-fused.cpp` +101/-7, UNBUILT):
+      `fused_weights_supported()` refuses the fused path (one `LLAMA_LOG_WARN`, falls through to the graph) if any
+      row-gathered weight is repacked, except `fused_moe`'s IQ4_NL `ffn_down_exps` which has a repack-aware mirror, or
+      any raw-`float*` tensor is not F32; `fused_ple` widens `ple_conv1d` to F32 via `to_float` (tap stride uses
+      `kern`); `best < 0` now `GGML_ABORT`s with a diagnostic; the bring-up prints and per-token `/tmp/qwen4exp-builds`
+      dumps are gated on `GGML_FUSED_DECODE_TRACE`. Graph path untouched; production keeps `GGML_FUSED_DECODE_OFF=1`.
+    - Whether the synthetic-weight divergence at w=0.05 has the same cause is not yet shown (the repro's synthetic
+      weights are not repacked IQ4_NL); the ASAN repro below answers it.
+  - [ ] **FD-DIV-1a — build `14c57cbe9` and run three smokes (correctness, one build-role grant).** (1) GSQ IQ3_XXS
+    with the fused path ON under the patch is byte-identical to the same model with `GGML_FUSED_DECODE_OFF=1`
+    (the refusal falls through to the graph); (2) UD-IQ4_XS, patched build vs the production v10 store build,
+    byte-identical greedy output; (3) optional: the FD-DIV-1 repro (`45d8f2937` `QFR_*` knobs) under ASAN at
+    w ∈ {0.05, 0.3, 1.0}. Experimental branch only; v10 stays frozen; a fold goes through the champion route with a
+    v11 manifest row. (filed 2026-10-22, workspace-58)
 
 ## Validation strategy (learned the hard way — the arch test is self-consistent and cannot see graph-math errors)
 
