@@ -47,6 +47,10 @@ Expected record fields (all REQUIRED unless marked optional; absent -> CaptureEr
                     rule_id str, alpha, b_a0right_a1wrong, c_a0wrong_a1right, n_pairs, p_one_sided,
                     mean_score_diff_a1_minus_a0 (value), a0_record_sha256, a1_record_sha256 (the paired
                     cell record files' digests)
+  verdict optional: n_discordant (== b + c), interpretation in {"FAIL","NOT-FAIL-underpowered","NOT-FAIL"}
+                    (underpowered = n_discordant < 10), min_losses_to_fail_given_discordant (int|null),
+                    power_note (str). Carried as extra.n_discordant / extra.interpretation; they NEVER change
+                    the grade. NOT-FAIL is harm DETECTION only, not an equivalence or safety claim.
 
 Projection: cell value = ``value``, reps = ``n_units`` (reps_basis names the unit); verdict value =
 the mean paired score difference, reps = ``n_pairs`` (basis "pairs"), verdict/b/c/p/alpha ride in
@@ -95,6 +99,7 @@ CELL_METRICS = {"mean_score": "higher_better", "accuracy": "higher_better",
                 "no_answer_rate": "lower_better"}
 VERDICTS = ("PASS", "FAIL", "INCONCLUSIVE", "NOT-FAIL")
 VERDICT_METRIC = "yarn_net_paired_score_diff_a1_minus_a0"
+INTERPRETATIONS = ("FAIL", "NOT-FAIL-underpowered", "NOT-FAIL")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 RULER_PIN = re.compile(r"^[0-9a-f]{7,40}$")
 RULER_WORDS_SOURCE = "essay_vocab_hyphen_pairs"
@@ -206,6 +211,11 @@ def record_problems(rec: Any, *, where: str = "record") -> list[str]:
             need(k, lambda v: bool(ns.SHA256.match(str(v))), "must be a 64-hex digest")
         if not p and (rec["b_a0right_a1wrong"] + rec["c_a0wrong_a1right"] > rec["n_pairs"] or rec["n_pairs"] == 0):
             p.append(f"{where}: discordants exceed pairs or n_pairs is 0")
+        if "n_discordant" in rec and not (ns.nonneg_int(rec["n_discordant"]) and not p and
+                                          rec["n_discordant"] == rec["b_a0right_a1wrong"] + rec["c_a0wrong_a1right"]):
+            p.append(f"{where}: n_discordant must equal b + c")
+        if "interpretation" in rec and rec["interpretation"] not in INTERPRETATIONS:
+            p.append(f"{where}: interpretation must be one of {INTERPRETATIONS}")
     return p
 
 
@@ -216,6 +226,10 @@ def validate_row(row: Any) -> list[str]:
     e = row["extra"]
     rec = e.get("decision")
     p += record_problems(rec, where="extra.decision")
+    if isinstance(rec, dict):
+        for k in ("n_discordant", "interpretation"):
+            if (k in e) != (rec.get("record_kind") == "verdict" and k in rec) or (k in e and e[k] != rec.get(k)):
+                p.append(f"extra.{k} must mirror decision.{k}")
     if isinstance(rec, dict) and not p:
         if rec["mock"] != e.get("mock") or e.get("mock") != e.get("fixture"):
             p.append("extra.mock/fixture must equal decision.mock (fixture rows are explicitly marked)")
@@ -279,6 +293,9 @@ def write_belief_measurements(
             metric, value, reps = VERDICT_METRIC, rec["mean_score_diff_a1_minus_a0"], rec["n_pairs"]
             direction, basis, category = "higher_better", "pairs", "CANDIDATE"
         e = {"decision": rec, "mock": rec["mock"], "fixture": bool(fixture)}
+        for k in ("n_discordant", "interpretation"):  # optional power extras; never graded
+            if rec["record_kind"] == "verdict" and k in rec:
+                e[k] = rec[k]
         row = {
             "schema": CAPTURE_SCHEMA, "run_id": run_id, "producer": producer, "emitted_at": when,
             "date": when[:10], "metric": metric, "value": value, "unit": "fraction" if rec["record_kind"] == "cell" else "score_diff",

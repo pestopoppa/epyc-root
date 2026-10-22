@@ -369,6 +369,8 @@ Constructibility of the real-token targets (needs at least 8 of 16 contexts with
 
 **YARN-JUDGE-1 item note (2026-10-21).** The blind 50-item labelling sheet (stratified from logged simpleqa and hotpotqa eval answers, seed 20261021, no judge verdict column) is `/mnt/raid0/llm/tmp/yarn-judge1-kit/labels_sheet.csv` (sha256 `97e4861f3fc1dc20f300fb5bf974d92846fb979de1905073fad2d0dfe33de5ca`; items in `items.jsonl` beside it). Filling `human_label` (1 correct / 0 incorrect, `?` to skip) is an operator item; serving the judge on the worker model is a window item for main. Not done, not ticked. (Superseded 2026-10-22: labels by codex-luna-low + rules under operator delegation; judge = cloud sonnet-5-5-low. See YARN-JUDGE-1b to 1d.)
 
+**YARN-AGG-1 power caveat (2026-10-22).** NOT-FAIL is harm-detection only; an equivalence claim needs a pre-registered margin (see M15 / DP-E). `decision.json` now carries `n_discordant`, `min_losses_to_fail_given_discordant`, `power_note` and `interpretation` (FAIL / NOT-FAIL-underpowered / NOT-FAIL; underpowered = fewer than 10 discordant pairs); the verdict rule is unchanged.
+
 **YARN-AGG-1 item note (2026-10-21).** Spec filed and the Oolong subset fetched and re-measured with the model's tokenizer, so the acceptance clause is met except the served-server `/tokenize` cross-check. Left unticked for main to decide; the runs per arm still need their own windows.
 
 ## Completed Scope

@@ -206,3 +206,25 @@ def test_ruler_pins_required_and_published_comparison_refused():
     assert y.record_problems(bad)
     bad = dict(base, comparable_to_published=True)
     assert y.record_problems(bad)
+
+
+def test_power_extras_optional_carried_and_never_change_grade(tmp_path):
+    base = write(tmp_path, [verdict(mock=False, verdict="NOT-FAIL")])
+    (a,) = y.native_rows(base)
+    pa = y.project(a)
+    assert "n_discordant" not in a["row"]["extra"]  # optional: old records still accepted
+    d = verdict(mock=False, verdict="NOT-FAIL", n_discordant=3, interpretation="NOT-FAIL-underpowered",
+                min_losses_to_fail_given_discordant=None, power_note="x")
+    sub = tmp_path / "w"
+    sub.mkdir()
+    (b,) = y.native_rows(write(sub, [d]))
+    assert b["row"]["extra"]["n_discordant"] == 3 and b["row"]["extra"]["interpretation"] == "NOT-FAIL-underpowered"
+    assert y.project(b).extra["interpretation"] == "NOT-FAIL-underpowered"
+    assert (y.project(b).value, y.project(b).reps) == (pa.value, pa.reps)
+
+
+def test_power_extras_validated(tmp_path):
+    with pytest.raises(y.CaptureError, match="n_discordant"):
+        write(tmp_path, [verdict(mock=False, verdict="NOT-FAIL", n_discordant=7)])
+    with pytest.raises(y.CaptureError, match="interpretation"):
+        write(tmp_path, [verdict(mock=False, verdict="NOT-FAIL", interpretation="SAFE")])
