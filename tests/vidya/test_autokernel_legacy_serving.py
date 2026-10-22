@@ -186,15 +186,23 @@ def test_producer_time_store_ingest_is_idempotent(source, tmp_path):
     ledger = Ledger(tmp_path / "scoped-ledger.jsonl")
     as_of = datetime.now(timezone.utc).isoformat()
     first = ingest_scoped_store(ledger, path.parent.parent, as_of=as_of)
-    # Two v1 arm claims plus, since P1-B, one v2 capture claim beside them.
-    assert first["receipts_read"] == 1 and first["new_claims"] == 3
-    assert first["v2_projected"] == 1
-    assert first["frames_appended"] == 9 and ledger.verify() == []
+    # Two v1 arm claims, one v2 capture claim (P1-B), and one lane-C experiment-row claim: the
+    # producer fixture also writes `experiments.db`, which `scoped_ingest` projects through
+    # `autokernel_experiments` (P1-C). Four claims, three frames each.
+    assert first["receipts_read"] == 1 and first["new_claims"] == 4
+    assert first["v2_projected"] == 1 and first["experiments_projected"] == 1
+    assert first["frames_appended"] == 12 and ledger.verify() == []
+    ids = sorted(r.frame["assertion"]["claim_id"].split(":")[0] for r in ledger.read_all()
+                 if r.frame["frame_type"].endswith("claim_proposed/v1"))
+    assert ids == ["clm_ak-exp", "clm_legacy-serving", "clm_legacy-serving", "clm_legacy-serving-v2"]
     sources = [r.frame for r in ledger.read_all() if r.frame["frame_type"].endswith("source_observed/v1")]
-    assert all(f["assertion"]["applicability"]["model_file"] == "/fixture-model" for f in sources)
+    legacy = [f for f in sources if "legacy-serving" in json.dumps(f["assertion"].get("claim_id", f["assertion"]))]
+    assert len(legacy) == 3
+    assert all(f["assertion"]["applicability"]["model_file"] == "/fixture-model" for f in legacy)
     second = ingest_scoped_store(ledger, path.parent.parent, as_of=as_of)
     assert second["receipts_known"] == 1 and second["receipts_read"] == 0
-    assert second["frames_appended"] == 0 and len(ledger) == 9
+    assert second["new_claims"] == 0 and second["already_present"] >= 1
+    assert second["frames_appended"] == 0 and len(ledger) == 12
 
 
 # --- P1-B: one value-bearing v2 claim per capture, from three REAL captures --------------------

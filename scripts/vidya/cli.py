@@ -588,7 +588,7 @@ _FILE_SOURCES = (
     "hil15a-auc", "repl-preview",
     "rus2-probe", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg",
     "hil17-attribution-ladder", "hil-lb1-loop-score",
-    "ak-width-dimension",
+    "ak-width-dimension", "ak-width-cells-cpu",
 )
 
 

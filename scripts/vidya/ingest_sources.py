@@ -342,8 +342,16 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "
                 "DECISION.json and parent/ + keep/ cells.jsonl); the comparison is re-derived from "
-                "both cell tables and refused if it differs; CPU half not read",
+                "both cell tables and refused if it differs; CPU half is `ak-width-cells-cpu`",
            task="VB-AKX-ALL-26-CELLS-WIRE / VB-AKRSG-INGEST"),
+    Source("ak-width-cells-cpu", "autokernel_width_cells_cpu",
+           _files("cells.jsonl.gz", "*/cells.jsonl.gz"),
+           default=Path("/mnt/raid0/llm/epyc-inference-research/artifacts/akx_all_26_cpu_20261020"),
+           note="AKX-ALL-26 CPU width-invariance cell table (`cells.jsonl.gz`, schema "
+                "`akx-all-26.cell.v1`, beside group_headers.jsonl, summary.json, ADDENDUM.sha256); "
+                "every verdict, A/A flag, control pattern and summary count is re-derived from the "
+                "rep digests and refused if it differs; two count tuples per (route, nth)",
+           task="VB-AKX-ALL-26-CELLS-WIRE"),
     Source("tale-budget", "tale_budget",
            _files("*.beliefs.jsonl", "**/*.beliefs.jsonl"),
            note="PRB-T4 `prb_t4_tale_gpu.py --out` dirs (`<results>.beliefs.jsonl` beside each "
