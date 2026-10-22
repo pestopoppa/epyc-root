@@ -100,8 +100,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
 | OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) EVL-32 | 2026-08-30 |
-| OP-BELIEF-DP1 | DP-1: retrofit projection of historical AutoKernel records (graded Judged, flagged retrofit). Gates P1-F and P1-LAND; options in DESIGN.md §9. | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) DP-1 | 2026-10-21 |
-| OP-BELIEF-DP4 | DP-4: AutoPilot PASS rule A (counterfactual-confirmed), B (declared + reviewer) or C (AutoKernel carries PASS, AutoPilot no-harm only); recommend A with AP3 gate on for spec_draft/kv_profile on the 27B and 35B roles, else C. Gates P1-N only. DESIGN.md §10 and §12.6. | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) DP-4 | 2026-10-21 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -138,10 +136,10 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 61 | 1146 | 37 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
-| research-evaluation | 43 | 536 | 18 | 2026-07-29 |
+| research-evaluation | 43 | 535 | 18 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 52 | 654 | 18 | 2026-07-29 |
-| user-facing-harness | 14 | 131 | 17 | 2026-07-29 |
+| routing-and-optimization | 52 | 657 | 18 | 2026-07-29 |
+| user-facing-harness | 14 | 131 | 18 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

@@ -31,6 +31,7 @@ weights with extra sidecar files under misleading labels (intake-2197#record).
 - [ ] SEC-ART-1.1 — run the registry backfill (HF tree API read-only; network go-ahead given 2026-10-21 by workspace-f8 for metadata reads only) then flip strict mode
 - [ ] **SEC-ART-2 — Launch-time GGUF fingerprint check.** Hash each lineup GGUF in full at registration; at launch compare a stat fingerprint (size, mtime, inode) and re-hash only on change; the launcher refuses a role whose GGUF does not match its pin; a test uses a touched copy.
 - [ ] **SEC-ART-3 — Uploader class and review record for tool-bearing roles.** Add an uploader_class field (first-party / allowlisted re-quantizer / community) to the registry; a stack-change gate refuses to give a community fine-tune tool access without a recorded review covering provenance, a base-model diff where a base exists, and a label-vs-function check of every launch flag that changes generation (intake-2191#07, intake-2199#03, intake-2197#record).
+  - *(2026-10-21, operator.)* Allowlist decided (option B): `unsloth` and `lmstudio-community` are allowlisted re-quantizers; a one-time review of the frontdoor and worker GGUFs comes first, before the field is populated for them.
 - [ ] **SEC-ART-4 — Enforce served-template pins at launch.** Add a 64-hex served_template_sha256 for every lineup role; before llama-server starts, the launcher hashes the effective template (GGUF tokenizer.chat_template or the --chat-template-file bytes) and refuses on mismatch; a test uses a one-byte-modified template copy (today the 12-hex pin is read only by an offline certification check; intake-2200#05).
 - [ ] **SEC-ART-5 — Upstream template diff at onboarding.** new-model records upstream_template_sha256, served_template_sha256 and a reviewed diff path for every GGUF; validate_model_registry.py requires them for lineup roles.
 - [ ] **SEC-ART-6 — Read-only template store.** Serve template override files from a location agent sessions cannot rewrite (or a content-addressed path named by sha256), referenced from the registry, so the launch check is not the only barrier.
@@ -53,7 +54,7 @@ weights with extra sidecar files under misleading labels (intake-2197#record).
 
 ## Open Questions
 
-- Which uploaders count as allowlisted re-quantizers for SEC-ART-3 (operator policy input when the field lands)?
+- ~~Which uploaders count as allowlisted re-quantizers for SEC-ART-3?~~ Answered 2026-10-21 (operator): `unsloth` and `lmstudio-community`.
 - Full re-hash cost at registration for the largest lineup GGUFs (SEC-ART-2 measures it once; launch uses a stat fingerprint).
 
 ## Notes
