@@ -48,7 +48,7 @@
     "intake-2493"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2504,
+  "next_intake_id": 2511,
   "expansion_cap": 10,
   "expansion_count": 3,
   "expansion_entries": [
@@ -6933,21 +6933,30 @@
     {
       "session_id": "intake-kernel-followup-20261022",
       "started_at": "2026-10-22T16:40:00Z",
-      "last_checkpoint": "2026-10-22T18:54:11Z",
+      "last_checkpoint": "2026-10-22T19:29:58Z",
       "stage": 2,
-      "phase": "stage2-dives-complete; close-out gate OPEN (dive-surfaced sources await operator selection for Stage-2b)",
+      "phase": "stage2b-complete; close-out gate CLOSED (operator selection 2026-10-22 dived, declines recorded); Stage 3 plan next",
       "lane": "/mnt/raid0/llm/worktrees/f8-intake-kernel-followup",
       "branch": "intake/kernel-followup-20261022",
       "owner": "workspace-f8 (subagent prepared; main session applies/lands)",
       "topic": "Follow-up kernel intake approved 2026-10-22 in intake-locals-beacon-20261022 (steering seq 10): ik_llama.cpp FlashMLA PRs 277/243, ik q8_0 repack work (commits 2bf2fa8ba = PR 1212, d5498c446 = PR 1215) plus ik issue 1205, and ggml-org/llama.cpp PR 28576. Bears on AKX-ALL-LB3/LB4, AKX-ALL-9/10/12, V11-FA-7, CH-18.c.",
-      "concurrency_note": "Allocated against origin/main 04b091f4b: index max intake-2493 and top-level next_intake_id 2494 (larger of the two = 2494). Top-level next_intake_id bumped 2494 -> 2504 so the next allocator does not collide; nothing else in the top-level (intake-ist-slq-20261022) record was changed.",
+      "concurrency_note": "Allocated against origin/main 04b091f4b: index max intake-2493 and top-level next_intake_id 2494 (larger of the two = 2494). Top-level next_intake_id bumped 2494 -> 2504 so the next allocator does not collide; nothing else in the top-level (intake-ist-slq-20261022) record was changed. Stage-2b allocated against origin/main 1b8e9d259: index max intake-2503, top-level and session next_intake_id 2504 (equal); new entries intake-2504..2510; both bumped to 2511.",
       "urls_processed": [
         "https://github.com/ikawrakow/ik_llama.cpp/pull/277",
         "https://github.com/ikawrakow/ik_llama.cpp/pull/243",
         "https://github.com/ikawrakow/ik_llama.cpp/pull/1212",
         "https://github.com/ikawrakow/ik_llama.cpp/pull/1215",
         "https://github.com/ikawrakow/ik_llama.cpp/issues/1205",
-        "https://github.com/ggml-org/llama.cpp/pull/28576"
+        "https://github.com/ggml-org/llama.cpp/pull/28576",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/2442",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/2710",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/2165",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/2511",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/1935",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/1880",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/1923",
+        "https://github.com/ikawrakow/ik_llama.cpp/pull/2287 (folded into intake-2506)",
+        "https://github.com/ikawrakow/ik_llama.cpp/issues/809 (folded into intake-2509)"
       ],
       "source_resolution": {
         "ik commit 2bf2fa8ba437e6559f204d91a51c77f79061d3c5": "PR 1212 (gh api commits/{sha}/pulls)",
@@ -6965,10 +6974,17 @@
         "intake-2500",
         "intake-2501",
         "intake-2502",
-        "intake-2503"
+        "intake-2503",
+        "intake-2504",
+        "intake-2505",
+        "intake-2506",
+        "intake-2507",
+        "intake-2508",
+        "intake-2509",
+        "intake-2510"
       ],
       "entries_remaining": [],
-      "next_intake_id": 2504,
+      "next_intake_id": 2511,
       "expansion_cap": 10,
       "expansion_count": 4,
       "expansion_entries": [
@@ -7012,22 +7028,33 @@
           "disposition": "context-only",
           "plan_ref": null,
           "reason": "Sets the Stage-2 selection (executed as this round); authorizes no handoff, stub or index-row write."
+        },
+        {
+          "seq": 3,
+          "stage": 2,
+          "ts": "2026-10-22T19:00:00Z",
+          "verbatim": "The operator selected (2026-10-22) these 6 to ingest and dive: ik_llama.cpp #2442 and #2710: the work-size fixes. They bear on intake-2501 and actionable LIN-2. ik #2165 \"DS4\" together with ik #2511 (sinks in the indexed T=1 FA branch): the closest upstream template for DS41 decode with indexer-gathered KV and sinks. They bear on intake-2496 and LIN-1. Fold #2287 into this dive. ik #1935: why upstream disabled in-kernel trimming. It gates D2498-5 before any fold. ik #1880: the mask union over all rows, which fixes ik issue #809. Fold #809 into it. ik #1923: the empty-mask check. Declined by the operator: ik #2287 and #809: folded in above. ik #1214: unrelated. ik #391: only if the D2497 A/B shows a regression. ik #240: lineage only. ggml #26046: already analysed in V11-FA-1. ggml #28907: does not bear on the overflow. (relayed by workspace-f8 in the Stage-2b dispatch)",
+          "disposition": "context-only",
+          "plan_ref": null,
+          "reason": "Closes the Stage-2 dive-surfaced gate (selection executed as Stage-2b intake-2504..2510; declines recorded in bearing entries' dive_corrections); authorizes no handoff, stub or index-row write."
         }
       ],
       "actionable_ledger": [
         {
           "ledger_id": "LIN-1",
           "source": "intake-2496 Stage-2 dive (dives/, 2026-10-22)",
-          "action": "Fold sinks into the nek2==1 iqk merges (#1212 and #277 paths) with the GQA merge block (once per row after the partial loop, before the norm), pass sinks->data from the ops.cpp hook, and lift the hook sinks decline only after FLASH_ATTN_EXT cases at the DS41 shape (1 KV head, 64 heads, sinks, nb=1, n_kv 8192/12032/12288/16384/65536) match the ggml reference at 96 threads.",
+          "action": "Fold sinks into the nek2==1 iqk merges (#1212 and #277 paths) with the GQA merge block (once per row after the partial loop, before the norm), pass sinks->data from the ops.cpp hook, and lift the hook sinks decline only after FLASH_ATTN_EXT cases match the ggml reference. AMENDED by Stage-2b: (A) scope = CORRECTNESS enabler (DS41 SWA layers 0-1, stock-mask DS41-shape cases), not expected to be a decode lever on DS41 compressed layers: iqk computes KQ for whole blocks and the port trims only trailing blocks, while the mainline anchor skips -inf cells, so on the dense top-k mask iqk would do ~the full compressed length per head vs ~the selected rows (code-reading inference; iqk GEMM-batched row cost and KV-split gain unmeasured); any LIN-1 timing uses the real top-k mask and predeclares that a stock-mask win does not transfer. (B) add the gathered shape (n_kv 640/768, 64 heads, 1 KV head, sinks), which lands on the #277 gcd grid at 96 threads. (C) gate with per-head-DISTINCT sinks at nth {1,16,32,64,96} (= D2507-1). (D) no upstream template exists: ik never folds sinks at the nek2==1 merges (nullptr at 7945404 L411/L463, c12b5ac L391/L443) and routes non-indexed DS4 sinks calls to generic ggml FA (IQK_DISABLED); the only in-tree fold pattern is the GQA merge.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528), new sub-box",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "amended_by": "intake-2506/intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)"
         },
         {
           "ledger_id": "LIN-2",
           "source": "intake-2501 Stage-2 dive (dives/, 2026-10-22)",
-          "action": "Replace the port iqk_fa_work_buffer_size with ik master narrowed-nek1 formula (ik #2442/#2710) or assert size >= need at the call; add one FLASH_ATTN_EXT run with -inf prefix/suffix masks that trigger the runtime trim at 96 threads under ASan or a guard-page work buffer. Today the mainline prefill tile term masks the gap (0 modelled shortfalls). Supersedes the Stage-1 intake-2501 sanitizer action.",
+          "action": "Adopt ik #2442 + #2710 verbatim in the port iqk_fa_work_buffer_size (both diffs apply at offset -11; result = ik master c12b5ac L50-L90 minus the ik-only indexer pre-block; 0 shortfalls over nth 1..128, n_kv to 131072, all trims in dives/stage2b/worksize/scan_2442_2710.json). Gate it with a deterministic consumer-vs-sizer enumeration test (the port's split paths P1/P2/P3 slot counts <= sizer, as the #2442/#2710 authors did), NOT an ASan/guard-page run: while the mainline prefill tile term dominates the graph-plan MAX a sanitizer cannot fire (vacuous pass). Keep the -inf prefix/suffix trim cases as correctness cases.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528), new sub-box before LB4.5 (L538)",
-          "proposed_disposition": "propose-task"
+          "proposed_disposition": "propose-task",
+          "amended_by": "intake-2504/intake-2505 Stage-2b dive (dives/stage2b, 2026-10-22)"
         },
         {
           "ledger_id": "LIN-3",
@@ -7041,7 +7068,9 @@
           "source": "intake-2494 Stage-2 dive (dives/, 2026-10-22)",
           "action": "When LIN-1 lands, time the DS41 shape at n_kv 8192, 12032, 12288, 16384 (both sides of the 4*nth switch and the worst #277 grid at 12032) inside AKX-ALL-LB3 (d).",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB3 (L526)",
-          "proposed_disposition": "trigger-gated (LIN-1); durable prose, no checkbox now"
+          "proposed_disposition": "trigger-gated (LIN-1); durable prose, no checkbox now",
+          "amended_by": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "note": "Stage-2b: LIN-1 is re-scoped as a correctness enabler; if this timing ever runs it must use the real DS41 top-k mask, not the stock mask (AKX-ALL-10), and is not expected to be a decode win on compressed layers."
         },
         {
           "ledger_id": "LIN-5",
@@ -7105,9 +7134,10 @@
         {
           "ledger_id": "D2498-3",
           "source": "intake-2498 Stage-2 dive (dives/, 2026-10-22)",
-          "action": "Write zeros in the three split-KV combines when M == -inf (mirrors dd756036a), add a deadrow case at n_kv 256 with <=16 threads, and NaN-prefill the candidate output so stale results cannot pass.",
+          "action": "Write zeros in the three split-KV combines when M == -inf (mirrors dd756036a), add a deadrow case at n_kv 256 with <=16 threads, and NaN-prefill the candidate output so stale results cannot pass. AMENDED (D2510-1): also add an all -inf TG row at n_kv > 256 (e.g. 512 and 8192, rk2 > 1, neq1 = 1): the n_kv 256 case never enters the runtime range trim, and at n_kv > 256 the port narrows nek1 to 0 (code reading: zeros expected = mainline); ik master aborts there (#1923).",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528)",
-          "proposed_disposition": "propose-task (low)"
+          "proposed_disposition": "propose-task (low)",
+          "amended_by": "intake-2510 Stage-2b dive (dives/stage2b, 2026-10-22)"
         },
         {
           "ledger_id": "D2498-4",
@@ -7122,7 +7152,8 @@
           "source": "intake-2498 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Before any fold (LB4.5), learn why ik #1935 disabled in-kernel KV trimming upstream.",
           "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4.5 (L538)",
-          "proposed_disposition": "knowledge-only (via the Stage-2b dive of ik #1935 if selected)"
+          "proposed_disposition": "knowledge-only (RESOLVED by intake-2508 Stage-2b)",
+          "resolution": "#1935 disabled only the template per-tile early termination (mask_effective_nk1), because a one-cell-per-block scan can skip the block holding a sparse SWA row's visible entries (S > 0 assert). The port's fa_kv_extent tests every cell of every row, so it is not exposed; the LB4.5 fold needs no change for it. The iqk_flash_attn.cpp TG range trim is still live upstream."
         },
         {
           "ledger_id": "D2500-1",
@@ -7179,6 +7210,90 @@
           "source": "intake-2499 Stage-2 dive (dives/, 2026-10-22)",
           "action": "Cite only the on-path #28576 perf rows (nb>=512 MMA-routed); never the nb=1, deepseek2/MLA or model-table tg rows.",
           "proposed_owner": "intake entry (reader_should_conclude)",
+          "proposed_disposition": "knowledge-only"
+        },
+        {
+          "ledger_id": "D2504-1",
+          "source": "intake-2504/intake-2505 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Never quote the #2442/#2710 authors' Xeon/P100/DeepSeek-V2-Lite crash cells, thread counts or MiB tables as EPYC evidence; EPYC evidence is the arithmetic scan only.",
+          "proposed_owner": "intake entries (reader_should_conclude)",
+          "proposed_disposition": "knowledge-only"
+        },
+        {
+          "ledger_id": "D2508-1",
+          "source": "intake-2508 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Narrow Stage-2 wording \"ik disabled the trim (#1935)\" to the template trailing trim; applied as dated dive_corrections on intake-2498 and intake-2500.",
+          "proposed_owner": "intake entries (applied in Stage 2b)",
+          "proposed_disposition": "knowledge-only (done)"
+        },
+        {
+          "ledger_id": "D2509-1",
+          "source": "intake-2509 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Port fa_kv_extent already unions all rows and cells (no #809 class bug); never cite #1880 sweep-bench numbers or its \"7 sites\".",
+          "proposed_owner": "intake entries",
+          "proposed_disposition": "knowledge-only"
+        },
+        {
+          "ledger_id": "D2510-1",
+          "source": "intake-2510 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Add an all -inf TG mask row at n_kv > 256 (512, 8192; rk2 > 1, neq1 = 1) to test-fa-rowexact, expecting zeros equal to the mainline reference (folded into D2498-3).",
+          "proposed_owner": "handoffs/active/autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (with D2498-3)",
+          "proposed_disposition": "propose-task (fold into D2498-3)"
+        },
+        {
+          "ledger_id": "D2506-1",
+          "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "DS41-C123.1 amend: CPU kernel template for gathered decode attention = ik #2165 T=1 indexed branch (iqk_flash_attn.cpp L193-L240 @ 7945404) WITH #2511 sinks+first and #2287 K==V reuse (master c12b5ac L165-L216); port the sink_stride change with it (iqk_flash_impl.h, iqk_fa_templates.h normalize_and_store_1row, all iqk_fa_*.cpp) since the port reads one sink per call (port iqk_fa_templates.h L1129 @ 9a338d4f1).",
+          "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259)",
+          "proposed_disposition": "propose-task"
+        },
+        {
+          "ledger_id": "D2506-2",
+          "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "DS41-C123.1 gate amend: bit-identity of gather vs mask path holds only with the same kernel and row order; pin gather(ggml FA) vs mask(ggml FA) = bitwise, gather(iqk) vs gather(ggml) = tolerance-class.",
+          "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259)",
+          "proposed_disposition": "propose-task"
+        },
+        {
+          "ledger_id": "D2506-3",
+          "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Port hazards for C123.1/DSA-IDX.1: (a) bound mask->index writes in release builds (ik relies on assert, ggml.c L23899 @ 7945404); (b) reuse K as V only when row_size_k == row_size_v (#2287 compares pointers only); (c) index-from-mask assumes a binary mask (selected = mask == 0).",
+          "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259); llama-cpp-dsa-contribution.md DSA-IDX.1 (L272)",
+          "proposed_disposition": "propose-task (fold into D2506-1 text)"
+        },
+        {
+          "ledger_id": "D2506-4",
+          "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "C123.1 verify widths 2-3: ik per-row N>1 branch keeps only N threads busy (iqk_flash_attn.cpp L242-L253 @ 7945404); use a (row x head) split.",
+          "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123.1 (L1714 @ lane 1b8e9d259)",
+          "proposed_disposition": "propose-task"
+        },
+        {
+          "ledger_id": "D2506-5",
+          "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "ik disables iqk FA on every non-indexed DS4 sinks node ('numerical correctness', build_deepseek4.cpp L617-L621 @ 7945404) - same policy as our hook's sinks decline (port ops.cpp L10052-L10055); keep the decline until LIN-1's gate passes.",
+          "proposed_owner": "autokernel-all-devices-all-dimensions.md AKX-ALL-LB4 (L528)",
+          "proposed_disposition": "knowledge-only"
+        },
+        {
+          "ledger_id": "D2506-6",
+          "source": "intake-2506 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Author hybrid profile (CONCAT ~10%, GET_ROWS ~6%) agrees in direction with DS41-C123 concat thesis; CUDA-hybrid, not CPU/EPYC evidence.",
+          "proposed_owner": "deepseek-v41-flash-evaluation.md DS41-C123 (L1193)",
+          "proposed_disposition": "knowledge-only"
+        },
+        {
+          "ledger_id": "D2507-1",
+          "source": "intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Any FA path holding several heads per call with sinks (gathered T=1, LIN-1 merges, AKX-ALL-10 DS41 cases) is tested with per-head-DISTINCT sinks at nth in {1,16,32,64,96}: bitwise vs nth=1 within a path, tolerance vs the ggml reference. Uniform sinks or nth=1 alone cannot catch the #2511 class.",
+          "proposed_owner": "autokernel-all-devices-all-dimensions.md AKX-ALL-10 (L219, DS41 cases L222)",
+          "proposed_disposition": "propose-task"
+        },
+        {
+          "ledger_id": "D2507-2",
+          "source": "intake-2507 Stage-2b dive (dives/stage2b, 2026-10-22)",
+          "action": "Do not cite #2511 as nth-invariance beyond -t 16 vs -t 1 (1-row q tiles at nth >= 64 unclaimed).",
+          "proposed_owner": null,
           "proposed_disposition": "knowledge-only"
         }
       ],
@@ -7273,84 +7388,239 @@
           "id_or_url": "ik_llama.cpp PR #2442 \"iqk: reserve the flash-attention work buffer for the narrowed nek1\" (commit 90370d1a16, 2026-09-15)",
           "what_it_would_settle": "Upstream form and test of the LIN-2 work-size fix.",
           "bears_on": "intake-2501, intake-2496",
-          "recommendation": "ingest-and-dive"
+          "recommendation": "ingest-and-dive",
+          "operator_disposition": "selected",
+          "disposition_detail": "intake-2504"
         },
         {
           "id_or_url": "ik_llama.cpp PR #2710 \"iqk: reserve the MLA flash-attention work buffer for every consumer branch\" (commit c1a02bb554, 2026-10-20)",
           "what_it_would_settle": "The nek2==1 sizing fix; whether a crash report motivated it.",
           "bears_on": "intake-2501, intake-2496",
-          "recommendation": "ingest-and-dive"
+          "recommendation": "ingest-and-dive",
+          "operator_disposition": "selected",
+          "disposition_detail": "intake-2505"
         },
         {
           "id_or_url": "ik_llama.cpp PR #2165 \"DS4: slowly approaching a meaningful performance\" (7945404458, 2026-07-22) with PR #2511 \"iqk: offset sinks by the first head in the indexed T=1 FA branch\" (d412fc7535, 2026-09-23)",
           "what_it_would_settle": "How ik runs a DeepSeek-V4-class decode on CPU with an indexer-gathered KV and sinks; closest upstream template for the DS41 shape and LIN-1.",
           "bears_on": "intake-2496, intake-2494",
-          "recommendation": "ingest-and-dive"
+          "recommendation": "ingest-and-dive",
+          "operator_disposition": "selected",
+          "disposition_detail": "intake-2506 (+ #2511 as intake-2507)"
         },
         {
           "id_or_url": "ik_llama.cpp PR #2287 \"DSA: do not copy V rows when V == K\" (5763a901de)",
           "what_it_would_settle": "V==K reuse in the indexed branch.",
           "bears_on": "intake-2496",
-          "recommendation": "decline unless #2165 is dived (fold into that dive)"
+          "recommendation": "decline unless #2165 is dived (fold into that dive)",
+          "operator_disposition": "folded",
+          "disposition_detail": "into the intake-2506 dive (operator: fold #2287 into the #2165 dive)"
         },
         {
           "id_or_url": "ik_llama.cpp PR #1923 \"CPU FA: Check for empty attention mask\" (b50b0919d5, 2026-06-08)",
           "what_it_would_settle": "All-masked-row behaviour of the trim (master aborts; the port does not); bears on D2498-3.",
           "bears_on": "intake-2496, intake-2498",
-          "recommendation": "ingest-and-dive (small)"
+          "recommendation": "ingest-and-dive (small)",
+          "operator_disposition": "selected",
+          "disposition_detail": "intake-2510"
         },
         {
           "id_or_url": "ik_llama.cpp PR #1935 (commit a38d292, 2026-06-09; adds return nk1, disabling in-kernel KV trimming)",
           "what_it_would_settle": "Why upstream master does no trimming; gates D2498-5 before any fold.",
           "bears_on": "intake-2498, intake-2500, intake-2496",
-          "recommendation": "ingest-and-dive"
+          "recommendation": "ingest-and-dive",
+          "operator_disposition": "selected",
+          "disposition_detail": "intake-2508"
         },
         {
           "id_or_url": "ik_llama.cpp PR #1880 (commit 4fbd0c4, 2026-05-26, \"Fixes #809\"; mask_effective_nk1 union over rows)",
           "what_it_would_settle": "The last-row mask assumption and multi-sequence breakage.",
           "bears_on": "intake-2498, intake-2496",
-          "recommendation": "ingest-and-dive"
+          "recommendation": "ingest-and-dive",
+          "operator_disposition": "selected",
+          "disposition_detail": "intake-2509"
         },
         {
           "id_or_url": "ik_llama.cpp issue #809",
           "what_it_would_settle": "Multi-sequence mask breakage report.",
           "bears_on": "intake-2498",
-          "recommendation": "decline: fold into the #1880 dive"
+          "recommendation": "decline: fold into the #1880 dive",
+          "operator_disposition": "folded",
+          "disposition_detail": "into the intake-2509 dive (operator: fold #809 into #1880)"
         },
         {
           "id_or_url": "ik_llama.cpp PR #1214",
           "what_it_would_settle": "Named by the maintainer as the fix home.",
           "bears_on": "intake-2498",
-          "recommendation": "decline: unrelated op-offload PR; the name is a typo for #1212"
+          "recommendation": "decline: unrelated op-offload PR; the name is a typo for #1212",
+          "operator_disposition": "declined",
+          "disposition_detail": "operator: unrelated"
         },
         {
           "id_or_url": "ik_llama.cpp PR #391 (commit 8a2d61108, \"Fix DeepSeek q8_0 cache\")",
           "what_it_would_settle": "Original rationale for the removed GQA>=8 repack term.",
           "bears_on": "intake-2497",
-          "recommendation": "decline for now: ingest only if the D2497 A/B finds an N=5 regression"
+          "recommendation": "decline for now: ingest only if the D2497 A/B finds an N=5 regression",
+          "operator_disposition": "declined",
+          "disposition_detail": "operator: only if the D2497 A/B shows a regression"
         },
         {
           "id_or_url": "ik_llama.cpp PR #240 (FlashMLA origin)",
           "what_it_would_settle": "Lineage only.",
           "bears_on": "intake-2495",
-          "recommendation": "decline: nothing load-bearing"
+          "recommendation": "decline: nothing load-bearing",
+          "operator_disposition": "declined",
+          "disposition_detail": "operator: lineage only"
         },
         {
           "id_or_url": "ggml-org/llama.cpp PR #26046 (removes rocWMMA FA)",
           "what_it_would_settle": "v11 routing consequence.",
           "bears_on": "intake-2499",
-          "recommendation": "decline: already analysed in artifacts/v11-fa-path-audit-20261004 and measured in V11-FA-1; ingest only if V11-FA-4 reopens"
+          "recommendation": "decline: already analysed in artifacts/v11-fa-path-audit-20261004 and measured in V11-FA-1; ingest only if V11-FA-4 reopens",
+          "operator_disposition": "declined",
+          "disposition_detail": "operator: already analysed in V11-FA-1"
         },
         {
           "id_or_url": "ggml-org/llama.cpp PR #28907 (fattn-mma CDNA dkq>256 at large batch)",
           "what_it_would_settle": "TFLOPS comparator in V11-FA-1.",
           "bears_on": "intake-2499",
-          "recommendation": "decline: does not bear on the overflow question (also refused at Stage 1)"
+          "recommendation": "decline: does not bear on the overflow question (also refused at Stage 1)",
+          "operator_disposition": "declined",
+          "disposition_detail": "operator: does not bear on the overflow"
         }
       ],
       "stage2_closeout": {
-        "status": "OPEN",
-        "next": "Present dive_surfaced_sources to the operator with per-item recommendations; selected items run as a Stage-2b combined pass (uncapped); declines get recorded in the bearing entry dive_corrections. Stage 3 waits for this gate."
+        "status": "CLOSED",
+        "closed_at": "2026-10-22T19:29:58Z",
+        "operator_selection": "ingest-and-dive: #2442, #2710, #2165 + #2511 (#2287 folded), #1935, #1880 (#809 folded), #1923 -> intake-2504..2510 (steering seq 3)",
+        "declines_recorded": {
+          "#1214": "intake-2498 dive_corrections",
+          "#391": "intake-2497 dive_corrections",
+          "#240": "intake-2495 dive_corrections",
+          "ggml #26046": "intake-2499 dive_corrections",
+          "ggml #28907": "intake-2499 dive_corrections",
+          "#2287": "folded into intake-2506",
+          "#809": "folded into intake-2509"
+        },
+        "next": "Stage 3 (plan mode): newly surfaced Stage-2b sources are listed in stage2b.newly_surfaced_sources_not_chased with decline recommendations for the operator; no further wave was chased."
+      },
+      "stage2b": {
+        "lane": "/mnt/raid0/llm/worktrees/f8-intake-kf-s2b",
+        "branch": "intake/kernel-followup-s2b-20261022",
+        "base": "origin/main 1b8e9d259",
+        "dive_dir": "/mnt/raid0/llm/tmp/intake-kernel-followup-20261022/dives/stage2b",
+        "selection": "Operator selection 2026-10-22 (steering seq 3): #2442, #2710, #2165 + #2511 (#2287 folded), #1935, #1880 (#809 folded), #1923.",
+        "entries": {
+          "intake-2504": "#2442",
+          "intake-2505": "#2710",
+          "intake-2506": "#2165 (+#2287)",
+          "intake-2507": "#2511",
+          "intake-2508": "#1935",
+          "intake-2509": "#1880 (+issue #809)",
+          "intake-2510": "#1923"
+        },
+        "dedup": "Unbounded normalized sweep over all 2499 url values of origin/main 1b8e9d259 research/intake_index.yaml (pull/ and issues/ forms for every number); curl -sIL: all 9 URLs 200 with 0 redirects; no collision. Prior mentions of #1935/#1880/#809/#2442/#2710 exist only in Stage-2 prose of intake-2498/2500/2501.",
+        "sources_fetched": "dives/stage2b/raw: gh api pulls/issue comments/review comments/reviews JSON + raw PR .diff for #2442 #2710 #2165 #2511 #2287 #1935 #1880 #1923 and issue #809 (sha256-12 in raw/SHA256SUMS.short), retrieved 2026-10-22T19:06:39Z-19:07:16Z one at a time; dives/stage2b/src/ik-pr2: depth-2 fetch of the eight merge commits plus #2165 head (RETRIEVED_AT). Reused: dives/src/ik-master @ c12b5ac33be7. Port read-only @ 9a338d4f1.",
+        "verdicts": {
+          "intake-2504": "dive-verified FULL, adopt_component. Formula nstep_k = min(nek2*ceil(nek1/32), 4*nth + nek2) for nek2 > 1; proved by the author; 0 shortfalls in our scan; applies to the port.",
+          "intake-2505": "dive-verified FULL, adopt_component. nek2 == 1: nth slots, or max(nth, min(ceil(nek1/32), 4*nth)) when nth >= rk2; DS41 at 96 threads 12.38 -> 49.5 MiB; covers trims and small-rk2 MQA.",
+          "intake-2506": "dive-verified PARTIAL (CUDA, model-loader, convert files unread), worth_investigating. T=1 indexed branch = head split + shared gather, sink per head at normalisation; ik routes non-indexed DS4 sinks FA to generic ggml (IQK_DISABLED) and has NO nek2==1 sinks fold; our DS41 graph is dense concat + top-k mask, so LIN-1 is a correctness enabler not a decode lever (code reading).",
+          "intake-2507": "dive-verified FULL. Unoffset sinks pointer in the head-split branch (present from #2165 through #2287); one-line fix; bit-identity claimed only for -t 16 vs -t 1.",
+          "intake-2508": "dive-verified FULL, already_integrated. #1935 disables the template one-cell-per-block early termination (SWA sparse rows -> S>0 assert); TG range trim still live upstream; port all-cell fa_kv_extent not exposed. Settles D2498-5.",
+          "intake-2509": "dive-verified FULL, already_integrated. Union over rows at 4 sites (body says 7); #809 attribution is the contributor's (issue closed stale); port has no per-row union bug.",
+          "intake-2510": "dive-verified FULL, worth_investigating. ik aborts on an empty TG mask row; the port narrows to nek1 = 0 and writes zeros (code reading, untested) -> D2510-1."
+        },
+        "questions": {
+          "#2442/#2710": "Exact formula as above (ik master L50-L90). Covers the narrowed-nek1 trim and small-rk2 MQA (0 shortfalls, nth 1..128 x n_kv 96..16384 all trims for DS41/MQA2/GQA12x2; n_kv to 131072 at 48/96/192). Port can adopt directly (patch applies, consumers identical to master apart from comments); gate by enumeration, not ASan.",
+          "#2165/#2511/#2287": "Sinks enter the T=1 indexed branch per head at final normalisation via sink_stride (stride 1) with heads split over threads; #2511 offsets the pointer by the thread's first head. Not a template for LIN-1 as written: ik has no nek2==1 merge fold and disables iqk for non-indexed DS4 sinks nodes; our DS41 graph has no indexer; LIN-1 re-scoped to correctness. Determinism: head split has no KV merge; author shows -t 16 == -t 1 bitwise only.",
+          "#1935": "Reason: the template scan tests one cell per k_step block, missing sparse SWA entries -> fully masked tile -> S>0 assert. Port fa_kv_extent scans all cells of all rows: hazard absent.",
+          "#1880/#809, #1923": "Port has no per-row mask-union bug (union over all rows and cells, remainder untrimmed). Empty-mask edge: port narrows nek1 to 0 and writes zeros (no abort), untested -> D2510-1 (amends D2498-3)."
+        },
+        "second_reader": {
+          "main_entries": {
+            "method": "Different agent (sonnet) re-found every quote (exact substring, line +/-2), recomputed sha256, judged yes/partial/no per anchor and per claim, and spot-checked dive_corrections. File: dives/stage2b/second-reader/results_main.json.",
+            "mechanical": "50/50 anchors re-found, all sha256 match (7 anchors added after review were re-found by anchors/build_anchors.py, which fails on a miss).",
+            "judgment": "anchors 39 yes / 11 partial / 0 no; claims 16 yes / 9 partial / 0 no.",
+            "fixed_after_review": [
+              "intake-2504 c3 reworded: max-over-nodes coverage is the author's unchecked assumption (anchor added); #2710 link stated as cross-reference.",
+              "intake-2504 c4: anchors added for no-perf-change, Xeon 8260 + P100 hardware and the Titan V second machine; claim names the second machine.",
+              "intake-2508 c2: anchor added for the n_swa pre-trim (ik master L289).",
+              "intake-2509 c0 REATTRIBUTED: the #809 attribution is the contributor's (issue closed stale), mechanism stands.",
+              "intake-2509 c1: the 7-site count anchored in the conversation; \"earlier revision\" labelled inference.",
+              "intake-2505 dive_corrections narrowed: nth 1..128 sweep ran for DS41/MQA2/GQA12x2 only; MLA16/128 at the 9 listed thread counts."
+            ],
+            "open_partials_for_stage3_operator": [
+              "intake-2505 c4 and intake-2504 c5: our arithmetic/apply-check results, supported by the scan json and applycheck dir, not by a source quote.",
+              "intake-2509 c4: #809 details checked against issue JSON but only three lines anchored.",
+              "intake-2510 c3: timeline from PR metadata, unanchored by design (no causal claim made).",
+              "intake-2505 dive_corrections: \"49.5 MiB stays below the 56.6 MB prefill term\" rests on intake-2501's figure."
+            ],
+            "disagreements": "None contradict a claim; partials are coverage gaps or labelled inference."
+          },
+          "ds4_entries": {
+            "method": "Different agent (sonnet): mechanical re-find + sha256, yes/partial/no per anchor and claim, four spot checks. File: dives/stage2b/second-reader/results_ds4.json.",
+            "mechanical": "45/45 anchors re-found (2506: 33, 2507: 12), all sha256 match.",
+            "judgment": "claims: 2506 c0,c1,c3,c5 yes; c2,c4,c6 partial; 2507 c0-c3 yes; c4,c5 partial.",
+            "fixed_after_review": [
+              "2506 c2 narrowed to the #2165 merge; ik master DFlash drafter FA (sinks, no flag, no index) added as an open edge; \"dropped sinks\" motive labelled inference.",
+              "2506 c4: row-size precondition labelled as our reading; F32-cast DS4 paths have distinct K/V buffers.",
+              "2506 c6: \"up to the last block holding a selected cell\"; speed conclusion worded as expectation from code reading, unmeasured; LIN-1 amend A softened accordingly.",
+              "2506 dive_corrections: revisions added to L1269/L42 (ik @ 7945404).",
+              "2507 c4/c5: dates and approval attributed to PR metadata/reviews JSON."
+            ],
+            "open_partials_for_stage3_operator": [
+              "2506 c6 / LIN-1 amend A: the decode-speed expectation is unmeasured inference; a cheap kernel-level count or timing at the real top-k mask would settle it.",
+              "2506 c2: master DFlash drafter path not settled.",
+              "2506 c5: start value 9.68 t/s is in the body, not the anchored table row."
+            ],
+            "disagreements": "None contradict a claim; partials fixed by rewording or carried here."
+          }
+        },
+        "newly_surfaced_sources_not_chased": [
+          {
+            "id_or_url": "ik_llama.cpp PR #2110 and #2147 (DS4 predecessors named in #2165 body)",
+            "what_it_would_settle": "why ik chose IQK_DISABLED for non-indexed DS4 FA",
+            "bears_on": "intake-2506 claim 2",
+            "recommendation": "decline - code fact settled at the merge; rationale changes no action"
+          },
+          {
+            "id_or_url": "https://github.com/fairydreaming/llama.cpp/tree/dsv4",
+            "what_it_would_settle": "whether a mainline DS4 implementation gathers rows for CPU decode attention",
+            "bears_on": "intake-2506 claim 5; DS41-C123.1",
+            "recommendation": "decline - branch not PR, comparator only, not EPYC evidence"
+          },
+          {
+            "id_or_url": "#2165 comment 5029984969 (joelfarthing, dsa_attn.cu 768 softmax specialisation OOB)",
+            "what_it_would_settle": "CUDA DSA softmax-with-sinks bug",
+            "bears_on": "none (no GPU DSA work planned)",
+            "recommendation": "decline - CUDA-only; knowledge for a future HIP DSA port"
+          },
+          {
+            "id_or_url": "ik src/llama-dsv4.cpp planner sentinel rows (review comment 3631548107, link @ 3861e045)",
+            "what_it_would_settle": "compressor-overlap semantics for negative previous positions",
+            "bears_on": "DS41-B5 (DI-038)",
+            "recommendation": "decline - first-party model.py remains the oracle"
+          },
+          {
+            "id_or_url": "ik master build_deepseek4.cpp L1957-L1962 @ c12b5ac (DFlash drafter FA adds sinks without IQK_DISABLED)",
+            "what_it_would_settle": "whether ik can drop sinks at a nek2==1 merge on that path",
+            "bears_on": "intake-2506 claim 2",
+            "recommendation": "decline - on disk already; no DS41 consumer"
+          },
+          {
+            "id_or_url": "ik_llama.cpp issue #1910 (closed by PR #1935)",
+            "what_it_would_settle": "The original SWA failure report behind #1935 (model, thread count, mask shape).",
+            "bears_on": "intake-2508",
+            "recommendation": "decline: #1935 body states the mechanism; the port is not exposed by construction"
+          },
+          {
+            "id_or_url": "ik_llama.cpp issue #805 (named by the maintainer as the same issue as #809)",
+            "what_it_would_settle": "Whether the #809 crash class had a second reporter or a different cause.",
+            "bears_on": "intake-2509",
+            "recommendation": "decline: #809 was closed stale; the port has no per-row union bug"
+          }
+        ],
+        "generators": "stage2b/{anchors/build_anchors.py, worksize/scan_2442_2710.py, worksize/applycheck, ds4/tools/*, apply/*.py}"
       }
     }
   ],
