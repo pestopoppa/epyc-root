@@ -42,6 +42,9 @@ Operator directive, relayed by the calendar owner. Every session that owns a fil
 3. **Quiet windows.** While a quiet-host timing window is active, subagent briefs forbid clones, builds, tests, servers and heavy scripts. Any activity that happens anyway is logged in that run's HOST_ACTIVITY_DISCLOSURES file.
 4. **Before idling for the night,** list every armed job with its end flag and confirm a watcher covers each one.
 5. **Wrap-up** at each task boundary.
+6. **Re-arming after killing a poller.** The dead launcher's orphaned `sleep 45` child keeps the launcher lock fd, so an immediate re-arm exits with "another launcher ... already running". Capture the child sleep (`pgrep -P <pid>`) before killing, then wait for it or kill it too, and only then re-arm. Seen twice on 2026-10-22.
+7. **Never edit a job script a running poller may execute.** Version it instead (the `kpf64_job2.sh` pattern).
+8. **Two pollers can split one experiment** only over disjoint result dirs. Analysis and the done-marker go to whichever job sees all arms complete.
 
 ## RAM admission (2026-10-22)
 
