@@ -194,3 +194,10 @@ Pre-existing reds observed, not caused here: `test_campaign_footprint` (three lo
 ## AKX-ALL-LB4 iqk CPU FA: correctness gate passed on the experimental branch
 
 Three port bugs fixed on `experimental/locals-kernel-fixes-20261022` (c64cd9c14, dd756036a, 629b545e0); the decisive one was the iqk kernel's binary-mask assumption against FLASH_ATTN_EXT's additive mask. FLASH_ATTN_EXT backend-ops 5182/5182; long-ctx f16 residual failures are the reference's F16 accumulator (pass with GGML_FA_VKQ_F32=1). q2 debug grant f8-lb4-debug (workspace-58) closed 13:07Z. Follow-ups AKX-ALL-LB4.2-.5 filed.
+
+## Per-task wrap-up 2026-10-22 (evening, workspace-f8, gap sweep after 1cab565da)
+
+- Swept root `1cab565da..origin/main` against the progress shard and handoffs: KVU-LB1.a, Packets A/B1/C/D, KVU-12.1/KPF-18-S1 verdicts, KVU-12.1a/VB-KVU-PF.2, opencode snapshot repointing, UTM-LB1.D and AKX-ALL-LB4 already carried checkbox state, progress lines and follow-ups. No flips needed.
+- Gap (a): the KPF-64 replay adapter opens the live `opencode.db`, contrary to the read-only-snapshot ruling. Filed `KPF-64.1` (repoint to snapshots, add vault sources; explicit decline for the live Claude/Codex JSONL as an additional source).
+- Verified present: CTC-Q-G (ticked), AKX-ALL-LB4.2-.5 (open). CTC-Q-B stays open: workspace-58 wires `grant_ok.sh` and ticks it.
+- Observation for the record (another session's, not f8's): the cs8l-asr2 stage-3 subagent ran a job without a grant. Noted only; no action here.
