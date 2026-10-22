@@ -1,8 +1,8 @@
-From 33268e5b43fc49b0ffa82acd4448ac3420112844 Mon Sep 17 00:00:00 2001
+From dc48371e85988de922d6d1a9080ac43c25954b0c Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
 Date: Thu, 22 Oct 2026 19:27:37 +0000
-Subject: [PATCH] autokernel serving: every task of OUR pinned server inside
- cpu_list before measuring (re-pin + refuse + post-run re-check)
+Subject: [PATCH 1/2] autokernel serving: every task of OUR pinned server
+ inside cpu_list before measuring (re-pin + refuse + post-run re-check)
 
 Finding (workspace-58, 2026-10-22): a `taskset -c 184-191` HIP llama-server
 had ONE early ROCr thread on 0-191; installed ROCr 6.2 os::CreateThread hands
@@ -387,6 +387,48 @@ index 000000000..e582d529d
 +        la.parse_cpu_list(recipe.cpu_list)
 +        checked += 1
 +    assert checked >= 1
+-- 
+2.51.0
+
+
+From c70f2bae4394bc72b0527d7caecb76e923eeb2eb Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Thu, 22 Oct 2026 19:40:36 +0000
+Subject: [PATCH 2/2] autokernel serving: record operator decisions D1 (refuse)
+ and D2 (A/A re-check before env knob, GPS-PIN-3)
+
+STACKCHG-GPUPIN-20261022, operator 2026-10-22. Comment only; no behaviour change.
+D1: a task still outside cpu_list after re-pin raises ServerDied (already the
+behaviour). D2: the ROCr env knob is NOT added to the AK loader until one GPU
+AutoKernel A/A is re-checked at the next GPU AK window; then GPS-PIN-3 threads
+it through resolved_recipe, unified_planner, production_enrollment,
+runtime_identity and legacy_targets as one AutoKernel identity change.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ scripts/kernel_rnd/autokernel/loop/serving.py | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/kernel_rnd/autokernel/loop/serving.py b/scripts/kernel_rnd/autokernel/loop/serving.py
+index a9c74c85d..fdcb2e707 100644
+--- a/scripts/kernel_rnd/autokernel/loop/serving.py
++++ b/scripts/kernel_rnd/autokernel/loop/serving.py
+@@ -1116,9 +1116,12 @@ def _measure_once(recipe: Recipe, build_dir: Path, port: int,
+                 # Layer 2 only. The ROCr env knob (layer 1, HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0)
+                 # is NOT set here: the loader env is identity-bearing across resolved_recipe,
+                 # unified_planner, production_enrollment, runtime_identity and legacy_targets,
+-                # so adding a loader key is an AutoKernel identity change for its owner
+-                # (STACKCHG-GPUPIN-20261022 D2). `affinity.escapes_end` records whether a
+-                # thread created after this pin (e.g. a later ROCr thread) escaped.
++                # so adding a loader key is an AutoKernel identity change for its owner.
++                # Operator 2026-10-22, STACKCHG-GPUPIN-20261022: D1 = REFUSE on a stray thread
++                # (the raise below; no warn mode). D2 = re-check one GPU AK A/A at the next GPU
++                # AK window BEFORE the env knob is added here (pending task GPS-PIN-3, which
++                # threads it through the five identity sites). `affinity.escapes_end` records
++                # whether a thread created after this pin (e.g. a later ROCr thread) escaped.
+                 if recipe.cpu_list:
+                     pin = launch_affinity.pin_own_child(srv.pid, recipe.cpu_list)
+                     affinity_pin = None if pin is None else pin.as_dict()
 -- 
 2.51.0
 

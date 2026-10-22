@@ -1,8 +1,8 @@
-From 370ebd1c55fef53a532f3c983386082b76d73caf Mon Sep 17 00:00:00 2001
+From db2a50bfa5d7783e44d5ff9ef2ffe47042d7ef13 Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
 Date: Thu, 22 Oct 2026 18:51:59 +0000
-Subject: [PATCH] launch_affinity: every thread of a pinned launch stays on its
- placement (ROCr knob + re-pin + status assertion)
+Subject: [PATCH 1/2] launch_affinity: every thread of a pinned launch stays on
+ its placement (ROCr knob + re-pin + status assertion)
 
 Finding (workspace-58, 2026-10-22): a `taskset -c 184-191 numactl --membind=3`
 HIP llama-server had 196 threads; 195 read Cpus_allowed_list 184-191, ONE early
@@ -558,10 +558,10 @@ index 00000000..4dfd62de
 +if __name__ == "__main__":
 +    sys.exit(main())
 diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
-index a63a00b1..cbe949b5 100644
+index 96747684..3f77aad1 100644
 --- a/scripts/server/orchestrator_stack.py
 +++ b/scripts/server/orchestrator_stack.py
-@@ -136,6 +136,11 @@ from scripts.server.stack_paths import (
+@@ -137,6 +137,11 @@ from scripts.server.stack_paths import (
      SLOT_SAVE_DIR,
      STATE_FILE,
  )
@@ -573,7 +573,7 @@ index a63a00b1..cbe949b5 100644
  from scripts.server.stack_numa_evict import (
      placement_summary,
      pre_evict_gib_for_role,
-@@ -1801,6 +1806,34 @@ def _apply_diag_env_override(env: dict[str, str], diag_env_override: dict[str, s
+@@ -1856,6 +1861,34 @@ def _apply_diag_env_override(env: dict[str, str], diag_env_override: dict[str, s
          print(f"    [EXPERIMENT] diagnostic env override: {diag_env_override}")
  
  
@@ -605,10 +605,10 @@ index a63a00b1..cbe949b5 100644
 +    return False
 +
 +
+ @_refuse_on_artifact_integrity_error
  def start_server(
      port: int,
-     roles: list[str],
-@@ -1901,6 +1934,9 @@ def start_server(
+@@ -1957,6 +1990,9 @@ def start_server(
              # other branch (2026-09-26).
              _strip_ambient_ggml(env, _role_env_overrides(source_role), label="eval_batch")
              _apply_diag_env_override(env, diag_env_override)
@@ -618,7 +618,7 @@ index a63a00b1..cbe949b5 100644
              _launch = _log_banner.write_launch_banner(
                  log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
              )
-@@ -1917,6 +1953,10 @@ def start_server(
+@@ -1973,6 +2009,10 @@ def start_server(
          print("    Waiting for health...")
  
          if wait_for_health(port, timeout=max(_HEALTH_SERVER_STARTUP, 180)):
@@ -629,7 +629,7 @@ index a63a00b1..cbe949b5 100644
              print("    [OK] Eval-batch frontdoor ready")
              return ProcessInfo(
                  role=primary_role,
-@@ -1974,6 +2014,9 @@ def start_server(
+@@ -2030,6 +2070,9 @@ def start_server(
                  preserve=_role_env_overrides(source_role),
              )
              _apply_diag_env_override(env, diag_env_override)
@@ -639,7 +639,7 @@ index a63a00b1..cbe949b5 100644
              _launch = _log_banner.write_launch_banner(
                  log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
              )
-@@ -1990,6 +2033,10 @@ def start_server(
+@@ -2046,6 +2089,10 @@ def start_server(
          print("    Waiting for health...")
  
          if wait_for_health(port, timeout=max(_HEALTH_SERVER_STARTUP, 300)):
@@ -650,7 +650,7 @@ index a63a00b1..cbe949b5 100644
              print("    [OK] GPU shadow lane ready")
              return ProcessInfo(
                  role=primary_role,
-@@ -2048,6 +2095,9 @@ def start_server(
+@@ -2104,6 +2151,9 @@ def start_server(
                  preserve=_role_env_overrides(roles[0]),
              )
              _apply_diag_env_override(env, diag_env_override)
@@ -660,7 +660,7 @@ index a63a00b1..cbe949b5 100644
              _launch = _log_banner.write_launch_banner(
                  log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
              )
-@@ -2066,6 +2116,10 @@ def start_server(
+@@ -2122,6 +2172,10 @@ def start_server(
          # VL models take longer to load (mmproj + main model)
          timeout = _HEALTH_VISION_SERVER if vision_type == "escalation" else _HEALTH_WORKER_SERVER
          if wait_for_health(port, timeout=timeout):
@@ -671,7 +671,7 @@ index a63a00b1..cbe949b5 100644
              print(f"    [OK] Vision server {vision_type or 'worker'} ready")
              return ProcessInfo(
                  role=roles[0],
-@@ -2114,6 +2168,9 @@ def start_server(
+@@ -2170,6 +2224,9 @@ def start_server(
                  env.update(env_override)
                  print(f"    [EXPERIMENT] env override: {env_override}")
              # NOTE: Do NOT set OMP_NUM_THREADS=1 - it disables parallel tensor repack (2.2x slower loading)
@@ -681,7 +681,7 @@ index a63a00b1..cbe949b5 100644
              _launch = _log_banner.write_launch_banner(
                  log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
              )
-@@ -2130,6 +2187,10 @@ def start_server(
+@@ -2186,6 +2243,10 @@ def start_server(
          print("    Waiting for health...")
  
          if wait_for_health(port, timeout=60):  # Faster timeout for small model
@@ -692,7 +692,7 @@ index a63a00b1..cbe949b5 100644
              print(f"    [OK] Embedder #{instance_idx} ready")
              return ProcessInfo(
                  role=roles[0],  # Use actual role name (embedder, embedder_1, etc.)
-@@ -2193,6 +2254,9 @@ def start_server(
+@@ -2249,6 +2310,9 @@ def start_server(
                  _write_llama_marker(port, roles, source=_FLEET_SRC_STACK, tmp_dir=_PATHS["tmp_dir"])
              except Exception as exc:
                  print(f"    [WARN] Failed to write llama fleet marker for port {port}: {exc}")
@@ -702,7 +702,7 @@ index a63a00b1..cbe949b5 100644
              _launch = _log_banner.write_launch_banner(
                  log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
              )
-@@ -2215,6 +2279,10 @@ def start_server(
+@@ -2271,6 +2335,10 @@ def start_server(
              else _HEALTH_WORKER_SERVER
          )
          if wait_for_health(port, timeout=timeout):
@@ -713,7 +713,7 @@ index a63a00b1..cbe949b5 100644
              print(f"    [OK] Worker {worker_type} ready")
              # 2026-05-09: per-thread renice to nice=19 for binary_override roles
              # (ik_llama.cpp PR #1744 / gemma4 MTP). Reason: PR #1744's OMP_WAIT_POLICY=active
-@@ -2301,6 +2369,9 @@ def start_server(
+@@ -2357,6 +2425,9 @@ def start_server(
              _write_llama_marker(port, roles, source=_FLEET_SRC_STACK, tmp_dir=_PATHS["tmp_dir"])
          except Exception as exc:
              print(f"    [WARN] Failed to write llama fleet marker for port {port}: {exc}")
@@ -723,7 +723,7 @@ index a63a00b1..cbe949b5 100644
          _launch = _log_banner.write_launch_banner(
              log, port=port, roles=roles, argv=spawn_prefix + cmd, env=env, binary=cmd[0]
          )
-@@ -2318,6 +2389,10 @@ def start_server(
+@@ -2374,6 +2445,10 @@ def start_server(
      # Wait for health
      print("    Waiting for health...")
      if wait_for_health(port, timeout=180):
@@ -734,7 +734,7 @@ index a63a00b1..cbe949b5 100644
          print("    [OK] Server ready")
          # INF-70/C7: placement observation, not a gate. The weights are faulted
          # in by the time health passes, so this is the one moment the operator
-@@ -2935,6 +3010,9 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
+@@ -2991,6 +3066,9 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
          return None
  
      env = _build_aux_env(service, ld_paths)
@@ -744,7 +744,7 @@ index a63a00b1..cbe949b5 100644
      # A missing LD_PRELOAD object is NOT fatal to the dynamic loader: glibc prints a
      # warning and runs the binary without it. For the CPU TTS that silently means
      # 96 spinning threads on a 16-core cpuset instead of 16 (see nprocs_shim.c), so
-@@ -2978,6 +3056,10 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
+@@ -3034,6 +3112,10 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
      )
  
      if wait_for_health(service.port, timeout=service.health_timeout, path=service.health_path):
@@ -756,10 +756,10 @@ index a63a00b1..cbe949b5 100644
          # The TTS server returns HTTP 200 with ZERO audio bytes for a request it
          # cannot satisfy (e.g. an unknown `voice`), and whisper will answer
 diff --git a/scripts/server/stack_commands.py b/scripts/server/stack_commands.py
-index 0f73df2f..fa260737 100644
+index 65feab48..f7716807 100644
 --- a/scripts/server/stack_commands.py
 +++ b/scripts/server/stack_commands.py
-@@ -1242,6 +1242,24 @@ def _episodic_embedding_status_line() -> str:
+@@ -1250,6 +1250,24 @@ def _episodic_embedding_status_line() -> str:
      )
  
  
@@ -784,7 +784,7 @@ index 0f73df2f..fa260737 100644
  def runtime_attestation_warnings(
      state: dict[str, ProcessInfo] | None = None,
  ) -> list[str]:
-@@ -1300,6 +1318,8 @@ def runtime_attestation_warnings(
+@@ -1308,6 +1326,8 @@ def runtime_attestation_warnings(
          if warning:
              warnings.append(warning)
          warnings.extend(_runtime_attestation_warnings(name, info, cmdline, launch_contract))
@@ -793,7 +793,7 @@ index 0f73df2f..fa260737 100644
      return warnings
  
  
-@@ -2564,6 +2584,8 @@ def cmd_status(args: argparse.Namespace) -> int:
+@@ -2572,6 +2592,8 @@ def cmd_status(args: argparse.Namespace) -> int:
          attestation_warnings.extend(
              _runtime_attestation_warnings(name, info, cmdline, launch_contract)
          )
@@ -1160,6 +1160,77 @@ index 00000000..12275b35
 +    assert "apply_pinned_launch_env(env, spawn_prefix)" in src
 +    assert "_post_health_affinity_gate(" in src
 +    assert src.index("apply_pinned_launch_env") < src.index("subprocess.Popen")
+-- 
+2.51.0
+
+
+From ca0beb4bf7007206b84bbabaa5629b2d0a1b04af Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Thu, 22 Oct 2026 19:40:19 +0000
+Subject: [PATCH 2/2] launch_affinity: record operator decision D1 (refuse on a
+ stray thread, no warn mode)
+
+STACKCHG-GPUPIN-20261022, operator 2026-10-22: D1 = REFUSE the launch when a task
+still escapes the declared placement after re-pin. The gate already refused;
+this records the decision in the code and adds a test that no flag or env
+downgrades it to a warning.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+---
+ scripts/server/launch_affinity.py    |  3 ++-
+ scripts/server/orchestrator_stack.py |  4 ++++
+ tests/unit/test_launch_affinity.py   | 12 ++++++++++++
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/server/launch_affinity.py b/scripts/server/launch_affinity.py
+index 4dfd62de..5839ef8b 100644
+--- a/scripts/server/launch_affinity.py
++++ b/scripts/server/launch_affinity.py
+@@ -281,7 +281,8 @@ def enforce_launch_affinity(
+     declared no placement) and for a pid that is not a direct child of this
+     launcher (it is never touched: prove OUR pid before acting on it -- a recycled
+     pid or a test double must not get another process re-pinned). Otherwise the
+-    PinResult; the caller treats ``not result.ok`` as a failed launch.
++    PinResult; the caller treats ``not result.ok`` as a failed launch (operator
++    decision D1, 2026-10-22: refuse, no warn-only mode).
+ 
+     The spawn is ``taskset -c ... [numactl ...] llama-server``: both wrappers
+     exec, so the Popen pid IS the server and its parent is this launcher.
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 3f77aad1..c02d0408 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -1873,6 +1873,10 @@ def _post_health_affinity_gate(
+     placement. An unpinned spawn, or a pid that is not this launcher's child, is
+     never touched (returns True). Read by `status` again later
+     (stack_commands -> launch_affinity.affinity_attestation_warnings).
++
++    OPERATOR DECISION D1 (STACKCHG-GPUPIN-20261022, 2026-10-22): REFUSE. There is
++    deliberately no warn-only mode, flag or env override: a launch that cannot hold
++    its declared placement does not come up.
+     """
+     try:
+         result = enforce_launch_affinity(pid, spawn_prefix, label=label)
+diff --git a/tests/unit/test_launch_affinity.py b/tests/unit/test_launch_affinity.py
+index 12275b35..6923c95b 100644
+--- a/tests/unit/test_launch_affinity.py
++++ b/tests/unit/test_launch_affinity.py
+@@ -350,3 +350,15 @@ def test_aux_launch_source_applies_env_and_gate():
+     assert "apply_pinned_launch_env(env, spawn_prefix)" in src
+     assert "_post_health_affinity_gate(" in src
+     assert src.index("apply_pinned_launch_env") < src.index("subprocess.Popen")
++
++
++def test_d1_refuse_has_no_warn_mode_or_bypass(monkeypatch):
++    """Operator decision D1 (2026-10-22): refuse, with no flag or env that downgrades to warn."""
++    import inspect
++
++    from scripts.server import orchestrator_stack as osk
++
++    src = inspect.getsource(osk._post_health_affinity_gate)
++    assert "kill_process(pid)" in src and "return False" in src
++    assert "environ" not in src and "getenv" not in src
++    assert "environ" not in inspect.getsource(la.enforce_launch_affinity)
 -- 
 2.51.0
 

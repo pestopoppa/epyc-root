@@ -1,13 +1,61 @@
 # STACKCHG-GPUPIN-20261022: every thread of a pinned serving launch stays on its placement
 
-**Status: PREPARED (phases 0-5). The operator signs next (phase 6).**
-Nothing was applied to a real tree, nothing was pushed or merged, and no process was started, stopped,
-reloaded or re-pinned. No production kernel tree or kernel-store file was touched; the change is
-launcher-side only.
+**Status: PREPARED, with D1 and D2 decided. The operator signs and lands it with ONE command (phase 6).**
+Nothing has been applied to a real tree, pushed or merged. No process was started, stopped, reloaded or
+re-pinned. No production kernel tree or kernel-store file was touched; the change is launcher-side only.
 
-**Signing token (proposed):** `RATIFY-STACKCHG-GPUPIN-20261022`. There is no ratify script yet. The main
-thread should author it from the stack-change template, as `ratify_stackchg_kvpool_20261003.sh` was
-authored, pinning the two patch sha256 values listed in section 3. The operator runs it.
+**Sign and land** (the operator runs it; it reloads nothing):
+
+```
+! RATIFY_OPERATOR='<your name>' bash /mnt/raid0/llm/worktrees/ws58-gpu-pin-root-20261022/scripts/operator/ratify_stackchg_gpupin_20261022.sh --apply --attest RATIFY-STACKCHG-GPUPIN-20261022
+```
+
+- Dry-run first, which pushes nothing and writes no receipt: the same path with `--dry-run`.
+- After landing: run it with `--verify`.
+- The script is `scripts/operator/ratify_stackchg_gpupin_20261022.sh`. It was authored from the
+  stack-change and lane-landing ratify templates (`stack-change-kvpool-20261003/ratify_*.sh`,
+  `scripts/operator/ratify_corpus_retrieval_off_20261021.sh`).
+- It does not need a TTY: the `--attest` token is the typed confirmation, and the signer is checked by
+  `scripts/operator/lib/ratify_operator.sh`.
+
+## Decision summary (options, tradeoffs, recommendation)
+
+**What changes.** Every CPU-pinned serving launch keeps ALL of its threads on its declared CPUs, in
+three layers:
+1. **Env.** Stack launches get `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0`. Without it, ROCr 6.2 deliberately
+   widens every thread it creates to 0-191.
+2. **Re-pin.** After health, any task of OUR pid outside the placement is re-pinned. If one still
+   escapes, the launch is refused.
+3. **Detection.** `status` and attestation check every task, not just the main thread.
+
+This applies to the :8083 GPU host lane, the CPU roles, the embedders, whisper/tts, the serving gate and
+the AutoKernel serving loader. The AutoKernel loader gets layer 2 only (D2). There are no lineup,
+topology, registry or kernel changes.
+
+**What it costs.**
+- One env var in each pinned launch's environment. It is inert for CPU binaries.
+- About a millisecond of `/proc` reads at launch and on each `status`.
+- A new failure mode: a launch whose placement cannot be held does not come up.
+- Each role's next reload is needed before the change takes effect for that role. Until a live GPU
+  server is reloaded, `status` reports its escaped thread.
+- AutoKernel GPU serving floors were calibrated with that one ROCr thread free. The AK loader now
+  re-pins it before measuring, so a GPU A/A re-check is owed (D2).
+
+**Rollback.**
+- `git revert` the landed orchestrator and research commits; the receipt records their SHAs.
+- The owners then reload the same roles.
+- No data, derived-file or symlink changes. A live pid can be re-pinned without a restart with
+  `scripts/server/launch_affinity.py --repin <pid> <cpus>`.
+
+**Decisions.**
+
+| id | question | options | decided |
+|---|---|---|---|
+| D1 | escape after re-pin | refuse / warn and keep serving | **REFUSE**, no warn mode (operator 2026-10-22); baked into both repos and covered by a test |
+| D2 | ROCr env knob in the AutoKernel loader | add now / A/A first / never | **A/A first.** Re-check one GPU AK A/A at the next GPU AK window, then add the knob through the five AK identity sites as task **GPS-PIN-3**. Not code in this package (operator 2026-10-22) |
+| D3 | kernel-enforced cgroup-v2 cpuset | adopt / not | **OPEN, conditional on P1.** Adopt only if probe P1 shows the knob does not hold, or a self-widening thread is ever reported. Not needed otherwise |
+
+**Recommendation:** sign and land. Then run P1 in a gpu-quiet gap; its result settles D3.
 
 ## 0. Intent
 
@@ -115,12 +163,21 @@ placement at health plus detection afterwards. The kernel-enforced next step is 
 
 | repo | branch | worktree | commit |
 |---|---|---|---|
-| epyc-orchestrator | `ws58/gpu-host-thread-pinning-20261022` | `/mnt/raid0/llm/worktrees/ws58-gpu-pin-orch-20261022` | `370ebd1c55fef53a532f3c983386082b76d73caf` (base origin/main `d0e0e477`) |
-| epyc-inference-research | `ws58/gpu-host-thread-pinning-20261022` | `/mnt/raid0/llm/worktrees/ws58-gpu-pin-research-20261022` | `33268e5b43fc49b0ffa82acd4448ac3420112844` (base origin/main `ea3c98434`) |
-| epyc-root (this package and the progress file only) | `ws58/gpu-host-thread-pinning-20261022` | `/mnt/raid0/llm/worktrees/ws58-gpu-pin-root-20261022` | this commit |
+| epyc-orchestrator | `ws58/gpu-host-thread-pinning-20261022` | `/mnt/raid0/llm/worktrees/ws58-gpu-pin-orch-20261022` | `db2a50bf` + `ca0beb4b` (D1); rebased onto origin/main `bbc74d5c` (it resolves one conflict with SEC-ART `@_refuse_on_artifact_integrity_error`) |
+| epyc-inference-research | `ws58/gpu-host-thread-pinning-20261022` | `/mnt/raid0/llm/worktrees/ws58-gpu-pin-research-20261022` | `dc48371e8` + `c70f2bae4` (D1/D2 note); rebased onto origin/main `0a71fd5d6` |
+| epyc-root (this package, the ratify script, the progress section) | `ws58/gpu-host-thread-pinning-20261022` | `/mnt/raid0/llm/worktrees/ws58-gpu-pin-root-20261022` | this branch |
 
-The patches are in `patches/*.patch` (`git format-patch` of each branch against origin/main) and their
-sha256 values are in `patches/SHA256SUMS`.
+- The patches are in `patches/*.patch`, one `git format-patch` mbox of each branch against origin/main,
+  two commits each. Their sha256 values are in `patches/SHA256SUMS` and are pinned in the ratify script.
+- **How the script lands them:**
+  - It runs `git am` of each pinned patch on a FRESH origin/main, in a scratch worktree, so a moved main
+    does not make the package stale unless the patch no longer applies.
+  - It checks a path allow-list and runs the file-scoped tests.
+  - It pushes under the serialized push lock.
+  - For root, it copies the pinned package files and the script onto a fresh origin/main and commits
+    them together with the receipt.
+- **The progress-file section is NOT landed by the script.** It is the main thread's file, and appends
+  to it conflict, so the main thread lands it with its own wrap-up.
 
 **Orchestrator** (5 files plus 1 test):
 - `scripts/server/launch_affinity.py` (new): parse/format, `prefix_cpuset`, `apply_pinned_launch_env`,
@@ -138,7 +195,7 @@ sha256 values are in `patches/SHA256SUMS`.
 - `scripts/benchmark/serving_gate.py` (the deploy gate's own server): it applies the layer-1 env, runs
   the post-health `enforce_launch_affinity` (and fails on an escape), and re-checks after warm-up when it
   stops. The re-check is recorded per arm as `affinity_escapes_at_stop`.
-- `tests/unit/test_launch_affinity.py`: 34 tests. They cover the /proc fixture with the exact finding,
+- `tests/unit/test_launch_affinity.py`: 35 tests, including D1's no-bypass test. They cover the /proc fixture with the exact finding,
   sub-mask preservation, a thread born mid-walk, ESRCH vs EPERM, the PPid guard, the CLI, the
   attestation row, all six branches with a pinned prefix, the failed-gate kill, the unpinned path left
   untouched, and the aux source order.
@@ -165,7 +222,7 @@ sha256 values are in `patches/SHA256SUMS`.
 - Orchestrator: `test_launch_affinity.py`, `test_launch_env_every_branch.py`, `test_generate_attestation.py`,
   `test_stack_log_banner.py`, `test_embedding_placement.py`, `test_aux_service_env.py`,
   `test_diag_env_override.py`, `test_build_server_command_helpers.py`, `test_ufh12_arms.py` and
-  `test_stack_numa_evict.py`: **316 passed**.
+  `test_stack_numa_evict.py`: **317 passed** after the rebase.
 - Orchestrator files that reference `cmd_status` / `runtime_attestation_warnings`: **298 passed, 2
   failed**. Both failures are in `test_stack_change_pipeline.py`, they come from promotion-gate command
   code this change does not touch (`uv run pytest` shape vs `REPO_ROOT / target`), and both pre-exist.
@@ -195,10 +252,13 @@ sha256 values are in `patches/SHA256SUMS`.
 
 ### Operator decisions (each blocks only its own item)
 
-- **D1. Launch-time refusal vs warn.** Recommend **refuse**: a declared placement that does not hold is
-  not a served placement, and layers 1 and 2 make a residual escape a real defect. The alternative is a
-  `[WARN]` line plus a status warning, with the launch kept up.
-- **D2. AutoKernel loader env (layer 1 for AK).** As shipped, the AK loader gets layer 2 only.
+- **D1. Launch-time refusal vs warn.** DECIDED 2026-10-22: **REFUSE**. There is no warn mode, flag or
+  env override. The orchestrator gate kills OUR pid and returns None, the serving gate raises, and the
+  AK loader raises `ServerDied`. The rejected alternative was a `[WARN]` line plus a status warning,
+  with the launch kept up.
+- **D2. AutoKernel loader env (layer 1 for AK).** DECIDED 2026-10-22: first re-check one GPU AK A/A at
+  the next GPU AK window, then add the knob. This is pending task **GPS-PIN-3**, not code in this
+  package. As shipped, the AK loader gets layer 2 only.
   - This is correct at health: the re-pin happens before the first request.
   - `escapes_end` REPORTS any thread created later. It does not prevent one.
   - Every existing GPU floor was calibrated with one ROCr thread free on 0-191. After this change the
@@ -209,8 +269,8 @@ sha256 values are in `patches/SHA256SUMS`.
   - The alternative is to mark every GPU floor stale now and re-calibrate.
   - The thread is the ROCr async/event thread and is mostly idle, so no material shift is expected.
     That is a hypothesis, not a measurement.
-- **D3. cgroup-v2 cpuset.** Adopt only if P1 fails or a self-widening thread is ever reported. It needs
-  the cpuset-controller probe that was refused here.
+- **D3. cgroup-v2 cpuset.** OPEN, conditional on P1. Adopt only if P1 fails or a self-widening thread
+  is ever reported. It needs the cpuset-controller probe that was refused here.
 
 ## 5. Bring-up and verification plan (phases 7-8, after signature)
 
