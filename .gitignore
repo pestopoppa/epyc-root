@@ -199,3 +199,7 @@ logs/.current_session.*
 !coordination/session-bus/alarm_state.json
 !coordination/session-bus/alarms.jsonl
 !coordination/session-bus/retirements
+
+# F3-LB1: dev-harness per-session projections/AgentRun segments are PRIVATE (never committed).
+# Default root is /mnt/raid0/llm/private/dev-harness-traces (outside every work tree); belt-and-braces:
+dev-harness-traces/

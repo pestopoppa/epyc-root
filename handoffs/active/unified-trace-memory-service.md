@@ -149,9 +149,45 @@ existing writers (unchanged):
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
-- [ ] **UTM-LB1 — Verify the existing conversation backup is live and covers each of the nine dev-harness stores, read-only: confirm the nightly cloud-llm-vault sync (02:00Z, immutable), the 14 retained ai-sessions tarballs in claude-backups (backup.log status) and the micron snapshots (keep 60) are current, then check per store whether the vault or a tarball holds it and from which date: Claude Code transcripts with subagent transcripts, ~/.claude/history.jsonl, the Claude memory dirs, Codex rollouts, the Codex state sqlite, opencode.db, the per-agent agent_audit shards and orchestrator logs, serving_calls.jsonl and planner_archive; report every store NOT covered as a gap for the operator; build no parallel backup, copy nothing and change no retention setting (live ~/.claude/projects keeps about 30 days, but the vault retains transcripts from 2026-08-02) (intake-2389, intake-2397).**
-- [ ] **UTM-LB2 — Build the private dev-harness transcript projector reading from the existing backup (cloud-llm-vault copies and the ai-sessions tarballs; live stores only for data newer than the last nightly sync) over Claude Code JSONL, Codex rollouts and opencode V1/V2, read-only, into events with OTel GenAI names in detail_json (operation, tool call id, usage normalized to inclusive OTel input tokens per each harness's convention with the raw tuple kept, conversation and agent lineage), Beacon-style collection_method and observed/inferred fidelity markers, keyed-HMAC 64-token block hashes, Claude usage dedupe by message id, Codex usage read from token_usage_record (never summed token_count), spawn-vs-fork edge kinds, a composite source-schema key per session, the semconv commit stamped, and a session-to-commit join from commit hashes in tool results; outputs private only (intake-2387, intake-2403, intake-2419, intake-2434#record, intake-2438).**
-- [ ] **UTM-LB3 — Point the agent_audit ingester at the per-agent agent_audit shard files; its default is the frozen legacy /workspace/logs/agent_audit.log (src/trace/ingest_agent_audit.py:24) (intake-2387).**
+- [x] **UTM-LB1 — Verify the existing conversation backup is live and covers each of the nine dev-harness stores, read-only: confirm the nightly cloud-llm-vault sync (02:00Z, immutable), the 14 retained ai-sessions tarballs in claude-backups (backup.log status) and the micron snapshots (keep 60) are current, then check per store whether the vault or a tarball holds it and from which date: Claude Code transcripts with subagent transcripts, ~/.claude/history.jsonl, the Claude memory dirs, Codex rollouts, the Codex state sqlite, opencode.db, the per-agent agent_audit shards and orchestrator logs, serving_calls.jsonl and planner_archive; report every store NOT covered as a gap for the operator; build no parallel backup, copy nothing and change no retention setting (live ~/.claude/projects keeps about 30 days, but the vault retains transcripts from 2026-08-02) (intake-2389, intake-2397).** ✅ 2026-10-22
+  - Checker: `scripts/system/backup_coverage.py report|precondition` (read-only; root branch `f8/locals-b1-root-20261022`).
+    Job is LIVE: backup.log `STATUS OK` 2026-10-22T02:16:37Z, LAST_STATUS 11:43Z (an extra root-owned run at 11:28Z
+    also wrote `opencode-{epyc,host-daniele}-20261022-132850.db.zst` — not logged in backup.log); vault 31G/34194 files
+    immutable. Coverage (tarball = `ai-sessions-20261022-132850` listing): Claude transcripts+subagents COVERED (vault
+    6681 files, content from 2026-02-03; tarball 1854); Claude memory COVERED (vault 443, tarball 381); Codex rollouts
+    COVERED (vault 20548, content from 2026-04-13; tarball 20548); opencode.db PARTIAL (one-off .db.zst only);
+    NOT COVERED: `~/.claude/history.jsonl`, Codex `state_5`/`thread_history_1` sqlite, agent_audit shards + orchestrator
+    logs, `serving_calls.jsonl`, `planner_archive.jsonl` (all only on raid0 md127; micron snapshots hold the vault only).
+    Job anomalies: only 6 of 14 ai-sessions tarballs on disk (Oct 4–17 missing although ROTATE logs "kept 14"); no
+    BACKUP/STATUS lines 2026-08-03..10-03 (62 d; rsync code-23 errors on immutable host/claude dirs); host:claude count
+    flat at 1714–1715 since 10-04; `/mnt/micron` not mounted in the container (only the log attests 31 snapshots).
+  - [ ] **UTM-LB1.D — operator decision on the uncovered stores** (decision package below; blocks only NIB2-LB1.2).
+    Options: (A) extend the EXISTING root cron job's include list to history.jsonl, the Codex state sqlite (online
+    `.backup`, not a raw copy of a live WAL db), `/workspace/logs/agent_audit*.log`, orchestrator `logs/` incl.
+    serving_calls + planner_archive, and make the 2026-10-22 opencode `.db.zst` step nightly + logged — one job, no
+    parallel backup; cost ~+0.5–1 GB/night (opencode zst 0.64 GB, codex sqlite ~8 GB raw → compressed). (B) accept
+    raid0-only for the small derived logs (agent_audit 1.9 MB, planner_archive 12 MB, serving_calls 188 KB are
+    reproducible-ish telemetry) and back up only history.jsonl + opencode — cheapest, loses audit history on a disk
+    loss. (C) status quo — every uncovered store dies with md127; the opencode event reaper keeps pruning an uncovered
+    store. Recommendation: (A), plus explain the missing Oct 4–17 tarballs and the 62-day gap. The operator owns the
+    root cron job; no agent builds a backup.
+- [x] **UTM-LB2 — Build the private dev-harness transcript projector reading from the existing backup (cloud-llm-vault copies and the ai-sessions tarballs; live stores only for data newer than the last nightly sync) over Claude Code JSONL, Codex rollouts and opencode V1/V2, read-only, into events with OTel GenAI names in detail_json (operation, tool call id, usage normalized to inclusive OTel input tokens per each harness's convention with the raw tuple kept, conversation and agent lineage), Beacon-style collection_method and observed/inferred fidelity markers, keyed-HMAC 64-token block hashes, Claude usage dedupe by message id, Codex usage read from token_usage_record (never summed token_count), spawn-vs-fork edge kinds, a composite source-schema key per session, the semconv commit stamped, and a session-to-commit join from commit hashes in tool results; outputs private only (intake-2387, intake-2403, intake-2419, intake-2434#record, intake-2438).** ✅ 2026-10-22
+  - `scripts/dev_harness/{dh_sources,projector,dh_privacy}.py`; outputs `dev-harness-{event,session,commit-join,projection-run}.v1`
+    under `/mnt/raid0/llm/private/dev-harness-traces/projections/<run>/` (0700/0600; content → keyed-HMAC 64-token
+    block hashes, key in `keys/`). Semconv stamped `semantic-conventions-genai@9ffc7e00` (gen-ai-dev/1.42.0-dev).
+    Sample run `sample-20261022` (8 Claude + 8 Codex + 4 opencode main sessions, 66 units incl. 46 subagents, 16006
+    events, 2.2 s, 64 MB RSS, nice 19); 27 tests in `tests/dev_harness/`. opencode is read from the live db
+    `immutable=1` because no backup holds it (UTM-LB1).
+  - [ ] **UTM-LB2.1 — Full-corpus projector + AgentRun run** under `nice -n 19`, off the inference windows:
+    `python3 scripts/dev_harness/projector.py --claude 0 --codex 0 --opencode 0 --max-file-mb 0 --run-id full-<date>`
+    then the same flags on `agentrun.py`; repeat with `--tenant host` / `--tenant twyne` if wanted. Estimate from the
+    sample (~45 MB/s single core): ~31 GB vault → ~12–15 min each, ~6 GB + ~4.5 GB private output (raid0 has 608 GB).
+  - [ ] **UTM-LB2.2 — Ingest projector events into the unified trace store** (`src/trace/`, new EventSource for
+    dev-harness events, detail_json passthrough, dedupe on (source_path, source_line)), private DB path only.
+- [x] **UTM-LB3 — Point the agent_audit ingester at the per-agent agent_audit shard files; its default is the frozen legacy /workspace/logs/agent_audit.log (src/trace/ingest_agent_audit.py:24) (intake-2387).** ✅ 2026-10-22
+  - orchestrator `08670ddd` (branch `f8/locals-b1-orch-20261022`): `parse_source()` reads every
+    `agent_audit*.log` under `/workspace/logs` (same glob as root `agent_log_files()`), CLI `--agent-audit` takes a
+    file or a dir; 18 passed in `tests/unit/test_trace_store.py`.
 - [ ] **UTM-LB4 — Run one short claude -p session with the console OTel exporter and every content toggle off, to list the fields this harness version emits (ttft, hook events, compaction, agent lineage); persist no setting and change no global env (intake-2419).**
 
 Trigger-gated (no checkbox until the trigger fires):

@@ -625,7 +625,12 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
-- [ ] **VB-LB1 — Wire the write side before first run: add source-table rows (diagnostic, aggregate-only) for the dev-harness mining reports, the structured-output repair and finish_reason counters, the opencode prefix/gap baseline and the interrupt and violation series (intake-2387, intake-2388, intake-2389, intake-2429).**
+- [x] **VB-LB1 — Wire the write side before first run: add source-table rows (diagnostic, aggregate-only) for the dev-harness mining reports, the structured-output repair and finish_reason counters, the opencode prefix/gap baseline and the interrupt and violation series (intake-2387, intake-2388, intake-2389, intake-2429).** ✅ 2026-10-22
+  - Four rows added to `scripts/vidya/adapters/README.md` (dev-harness mining reports, UFH14-LB2 repair/finish_reason
+    counters, UFH14-LB8 opencode prefix/gap baseline, DHM-1/DHM-3 interrupt + violation series), all diagnostic and
+    aggregate-only, carrier = `dev-harness-aggregate.v1` via `dh_privacy.publish_aggregate`.
+  - [ ] **VB-LB1.1 — Adapter projecting `dev-harness-aggregate.v1` documents into ClaimTuples** (diagnostic class,
+    existing ladder via `claim_tuple.grade()`; no new grading rule); first input = the first DHM report.
 
 ## Cross-cutting concerns
 

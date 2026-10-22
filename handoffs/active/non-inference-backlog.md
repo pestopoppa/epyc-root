@@ -936,3 +936,11 @@ The published 220-completion boundary remains historical. This acceptance adds t
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
 - [ ] **NIB2-LB1 — Before the planned ~/.codex retention reaper or the opencode event reaper deletes anything, require proof that the cloud-llm-vault copy or an ai-sessions tarball already holds the rows to be deleted, and export a content-stripped extract first only for a store the backup coverage check reports as not covered (intake-2389).**
+  - [x] **NIB2-LB1.1 — precondition tool + rule** ✅ 2026-10-22: `scripts/system/backup_coverage.py precondition --store
+    <store> [--rows-before ts]` (exit 0 covered and fresh, 3 not covered, 4 backup older than the rows); rule written into
+    `docs/guides/agent-workflows/cleanup-reference-check.md`. Today: `codex_rollouts` → 0 (its apply is disabled anyway);
+    `opencode_db` → 3 (partial: one-off `.db.zst` only).
+  - [ ] **NIB2-LB1.2 — wire the precondition into `opencode_event_reaper.sh`** (or retire the requirement for `event`
+    revision rows): blocked on the operator's UTM-LB1.D decision — the task's fallback (a content-stripped extract for an
+    uncovered store) is a new copy job the 2026-10-22 ruling forbids, and gating now would stop a reaper bounding
+    1.7 GB/h growth. Edit the script only while the daemon is stopped (never edit a running .sh).

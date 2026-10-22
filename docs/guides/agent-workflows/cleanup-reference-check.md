@@ -49,6 +49,17 @@ permanently disabled (exit 4, report-only). The authoritative list is the `NEVER
 there first. If a harness store's growth matters, **report it** (the report-only reaper, `host_hygiene_tick.py`'s
 grower ranking) and leave the decision to the operator.
 
+**Reaper precondition (NIB2-LB1, 2026-10-22).** Any reaper that deletes rows or files of a harness store — a
+future `~/.codex` retention apply path, `opencode_event_reaper.sh`'s `event` pruning, or anything new — must first
+prove the EXISTING backup already holds what it deletes: `python3 scripts/system/backup_coverage.py precondition
+--store <store> --rows-before <newest-row-ts>` exits 0 only when the store is `covered` by the cloud-llm-vault or an
+ai-sessions tarball, the nightly job is live, and the newest backup evidence postdates the rows. Exit 3 (store not
+covered) or 4 (backup older than the rows) means **do not delete — the operator decides**; no agent builds a
+parallel backup, snapshot or extract to satisfy it (operator ruling 2026-10-22). Coverage per store is reported by
+`backup_coverage.py report` (UTM-LB1). Standing state at filing: `codex_rollouts` covered (apply disabled anyway);
+`opencode_db` only `partial` (a first `opencode-*.db.zst` snapshot appeared 2026-10-22, no nightly cadence proven),
+so the running opencode event reaper is the open case in the UTM-LB1 decision package.
+
 One operator-approved exception exists: `scripts/system/opencode_event_reaper.sh`. It prunes only opencode's
 `event` streaming table in idle sessions and never sessions, messages or parts. It is not a precedent for any other
 reaper. The doctrine half is prepared for ratification into `agents/shared/OPERATING_CONSTRAINTS.md` →

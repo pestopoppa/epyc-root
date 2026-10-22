@@ -31,6 +31,14 @@ measured recurrence rather than on anecdote. Measurement only; hook and policy e
 - [ ] **DHM-5 — Measure the always-on prefix (CLAUDE.md plus the MEMORY.md index) in tokens per turn from transcript usage fields, per harness (intake-2408, intake-2410).**
 - [ ] **DHM-6 — Draft the guard-denial ledger proposal: every PreToolUse refusal appends ts, hook, session, harness, rule and fidelity=observed to one private JSONL (enables detecting a command executed after its denial); hook edits stay human-applied (intake-2387).**
 - [ ] **DHM-7 — Write a pure-python converter from Claude Code, Codex and opencode transcripts to AgentRun-style JSON (tool calls and results, both interrupt markers kept, sessions split into capped task-window segments, private output), then run a no-LLM clustering baseline over tool-error and denial segments (CPU sentence embedding, k-means, mechanical facets) validated by planted recovery of known incident classes, reporting a cluster only with at least 3 distinct sessions and 2 distinct days (intake-2443, intake-2444).**
+  - [x] **DHM-7.1 — converter** ✅ 2026-10-22: `scripts/dev_harness/agentrun.py` (stdlib; Docent AgentRun shape
+    written from scratch) → `/mnt/raid0/llm/private/dev-harness-traces/agentrun/<run>/<harness>/<unit>.seg-NNN.json`
+    + `index.jsonl`; task windows split at operator prompts and capped (120 msgs / 60k chars / 4k per message); both
+    Claude markers kept verbatim, Codex/opencode aborts as synthesized markers. Sample `sample-20261022`: 291
+    segments (122 with a tool error, 64 with a denial, 3 with an interrupt), 1.4 s.
+  - [ ] **DHM-7.2 — no-LLM clustering baseline** over the index's tool-error/denial segments (CPU sentence embedding,
+    k-means, mechanical facets, planted recovery, ≥3 sessions and ≥2 days per reported cluster); needs the full run
+    (UTM-LB2.1) for the day spread.
 
 ## Open Questions
 

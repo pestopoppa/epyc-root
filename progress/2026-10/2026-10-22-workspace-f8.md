@@ -109,3 +109,18 @@ Orchestrator branch `f8/locals-a-orch-20261022` (6 commits on origin/main `1e707
 - Reads were read-only and bounded: `opencode.db` opened `mode=ro` with `PRAGMA query_only`, `nice -n 19`, LIMITed sessions; the vault was read, never written. No server, model load, build or background process.
 - Checklist sync: flips 4 (UFH14-LB9, HSF-LB1, RTE-PFX-LB1, TOC-SP-LB1); new `- [ ]` 7 (UFH14-LB2.1, LB3.1, LB6.1, LB6.2, LB9.1, KPF-LB1.1; LB2/LB3/LB6/KPF-LB1 parents stay open).
 - Lesson: a recorder that swallows every exception cannot be told apart from a recorder that was never reached; a 19-record census over 17 days was the only signal. Fail-open writers need a per-process drop counter.
+## Locals B1 — dev-harness trace substrate (subagent, branches `f8/locals-b1-{root,orch}-20261022`)
+
+- UTM-LB1: existing backup verified read-only with new `scripts/system/backup_coverage.py` (job live, STATUS OK 02:16Z
+  and 11:43Z). Covered: Claude transcripts+subagents, Claude memory, Codex rollouts (vault + tarball). Partial: opencode.db
+  (one-off `.db.zst` from a root run at 11:28Z). Not covered: history.jsonl, Codex state sqlite, agent_audit + orchestrator
+  logs, serving_calls, planner_archive. Anomalies: 6/14 tarballs present, 62-day log gap 08-03..10-03. Decision package
+  filed as UTM-LB1.D; nothing copied, no backup built.
+- UTM-LB2 projector + F3-LB1.1 privacy gate + DHM-7.1 AgentRun converter in `scripts/dev_harness/`; private root
+  `/mnt/raid0/llm/private/dev-harness-traces`. The PII hook `[transcript]` scan (F3-LB1.2) is prepared but uncommitted:
+  D9 refuses a hooks change without an operator `D9-ack:`. Sample `sample-20261022`
+  (20 main sessions / 66 units): projector 2.2 s, converter 1.4 s, nice 19. 17 committed tests + 10 hook tests (uncommitted) + 92 PII hook tests pass.
+- UTM-LB3: orchestrator `08670ddd`, agent_audit ingester reads the per-agent shard directory.
+- VB-LB1: four aggregate-only source rows in `scripts/vidya/adapters/README.md`; adapter follow-up VB-LB1.1.
+- NIB2-LB1.1: `backup_coverage.py precondition` plus the rule in `cleanup-reference-check.md`; wiring it into the opencode
+  event reaper (NIB2-LB1.2) waits on UTM-LB1.D (the extract fallback would be a copy job, which the ruling forbids).
