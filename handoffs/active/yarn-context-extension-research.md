@@ -157,7 +157,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     Evidence: `artifacts/yarn-native-window-20261005/summary.md`.
   - [ ] **YARN native-window inertness — make YaRN inert inside the native window (dynamic/per-request YaRN or DCA only).** 
     (filed 2026-10-05, workspace-ec) Static YaRN ×2 costs 1.3% at depth 0 and 7.6% at 34k decode, MTP acceptance drops 53% → 48%,
-    and greedy outputs diverge on 7/20. It FAILS the operator rule "YaRN must not regress inside native window". Deploy only
+    and greedy outputs diverge on 7/20. The speed costs fail the operator rule "YaRN must not regress inside native window"; the 7/20 divergence is NOT itself a quality regression (operator 2026-10-22: "changing answers within native windows and regressing quality are not necessarily the same thing") - quality is decided by the scored net-paired gate YARN-AGG-1(i). Deploy only
     dynamic/per-request YaRN or DCA (active beyond native length only). Done when the frontdoor stack ships one of these approaches.
     - *(2026-10-06, intake ctxext-ec Stage 3)* Candidates and gates are in the intake plan: CTX-1 (YARN-MSCALE-AB) decides how cheap inertness is; CTX-KSHIFT settles the K-shift primitive; CTX-JETLONG-COST gates a cached-correction port; YARN-OPTION-D-DECISION chooses D / F / Jet-Long. Full-read dive findings: intake-1900, 1906, 1907, 1911, 1918, 1919, 1921.
 - [ ] **YARN-E2 — (conditional on E1 passing) a stack-change package for an on-demand long-context mode.** The
