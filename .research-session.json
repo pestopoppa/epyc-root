@@ -1,8 +1,8 @@
 {
   "session_id": "intake-underdog-bark-20261021",
   "started_at": "2026-10-21T00:00:00Z",
-  "stage": "stage1-complete",
-  "phase": "stage1",
+  "stage": "stage2-waves-1-4-in-flight",
+  "phase": "stage2",
   "lane": "/mnt/raid0/llm/worktrees/intake-underdog-bark-20261021",
   "branch": "lane/intake-underdog-bark-20261021",
   "topic": "ConwayResearch/Underdog-Bark-3.0-Clean (HF, ASR not TTS; hf sha 6d34ed86)",
@@ -27,7 +27,48 @@
     "intake-2345"
   ],
   "expansion_refused": [],
-  "steering_ledger": [],
+  "steering_ledger": [
+    {
+      "seq": 1,
+      "stage": 1,
+      "verbatim": "Stage 2 coverage for the four Stage-1 entries (answer to the Stage-1 question): parakeet-redux (Recommended), Underdog Bark Clean + Plus (Recommended), parakeet-ultra (Recommended)",
+      "disposition": "applied",
+      "plan_ref": null,
+      "reason": "Dived as Stage-2 on intake-2341/2342/2343/2344 (dive dirs /mnt/raid0/llm/tmp/dive-2341, dive-2343, dive-2344 and companions)."
+    },
+    {
+      "seq": 2,
+      "stage": 2,
+      "verbatim": "I pre-approve two stage 2 waves of literature expansions where I approve deep dives of all recommended sources (if required)",
+      "disposition": "applied",
+      "plan_ref": null,
+      "reason": "Waves 1 and 2 (13 Stage-2b sources) were dived without a per-source prompt; reports in the dive dirs listed in progress/2026-10/2026-10-22-3c4ca599.md."
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "verbatim": "Wave-2 close-out selections: Group 1 omnivoice.cpp, FireRedVAD, TEN VAD, FD-Bench (all Recommended); Group 2 TurboBias 2.0, NeMo PR #14277, Nemotron 3.5 blogs+repo, Cache-aware paper 2312.17279 (all Recommended); Group 3 Lebryk 2608.19936, AA streaming latency ranking (Recommended); flagged items: Dive wavo only",
+      "disposition": "applied",
+      "plan_ref": null,
+      "reason": "Wave 3 (11 sources) dived. Declined with reason: mudler/LocalAI (a serving stack, not an STT method), handy-computer parakeet-tdt-0.6b-v3-gguf (redundant runner host), nvidia multitalker-parakeet-streaming (multi-speaker only, out of scope today: MONITOR)."
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "Wave-3 close-out selections: Group 1 TurboBias v1 (Recommended), Contextual Earnings-22 (Recommended), and the free text: Haven't we already collected plenty of knowledge of the parakeet and nemotron architectures? They've appeared over and over in various research-intake sessions.; Group 2 TEN turn-detection, CrispASR, sherpa-onnx, FireRedLID (Recommended); Group 3 RW-Voice-EQ Bench, Voxtral Mini Realtime, Magpie TTS multilingual, audio.cpp HIP op-tests (Recommended); Group 4 guynich VAD datasets (Recommended), OmniVoice paper",
+      "disposition": "applied",
+      "plan_ref": null,
+      "reason": "Wave 4 dispatched 2026-10-22 ~08:09Z (12 dives, dirs /mnt/raid0/llm/tmp/dive-{turbobias1,contextual-earnings22,ten-turn-detection,crispasr,sherpa-onnx,fireredlid,rw-voice-eq,voxtral-mini-realtime,magpie-tts-multilingual,audio-cpp,guynich-vad-eval,omnivoice-paper}). The free-text question DECLINED the FastConformer/Parakeet/Nemotron architecture source and the NeMo docs page was not selected: wave-4 briefs say cite existing intake entries instead of re-deriving the architectures. Unselected Group-1..4 items are declined per the contract (list in the wave-3 close-out question)."
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "verbatim": "don't forget to have every subagent update logs, progress report, relevant handoffs, and belief kernel (if applicable). Make sure you run dedicated throough /wrap-up at major work boundaries or before compaction occurs",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Process steering: carried into every wave brief and into wrap-up 3 (this record)."
+    }
+  ],
   "prior_sessions": [
     {
       "session_id": "intake-harness-cluster-20261020-amendment-dpf",
@@ -48719,5 +48760,6 @@
         ]
       }
     }
-  ]
+  ],
+  "integration_status": "PENDING (owner: main session 3c4ca599). entry.yaml / entry_update.yaml files sit in /mnt/raid0/llm/tmp/dive-*/ (waves 1-3 done, wave 4 running) and are NOT yet in research/intake_index.yaml; no ids minted beyond 2345 (next_intake_id 2346). See progress/2026-10/2026-10-22-3c4ca599.md."
 }
