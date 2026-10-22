@@ -81,7 +81,8 @@ CPU, no state change). This is recorded in the session `process_deviations`.
   - NEW-14 names NEW-12 only "if approved".
 - **Declined by the operator, recorded in the exl3 intake notes:** EXL3-X0D ("not worth it"), EXL3-LB1E, EXL3-EAR2, and
   the SLQ checkpoint download (A-L2).
-- **Pending the operator:** NEW-12 (the disk question), and M1-M4 trigger prose and K1-K2 knowledge rows (not filed).
+- **Held by the operator:** NEW-12 ("stick to NEW-10 and then we reassess later"), filed as a held note with no checkbox; lean form if ever run. NEW-10 now records the operator download call (IQ3_XXS first, ~65 GB).
+- **Pending the operator:** M1-M4 trigger prose and K1-K2 knowledge rows (not filed).
 - **Entry dispositions:** 9 entries.
   - integrated: 2461, 2464, 2467, 2483, 2484, 2485, 2491.
   - declined: 2462, 2481.

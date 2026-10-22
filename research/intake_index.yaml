@@ -355002,7 +355002,8 @@
   verdict: adopt_patterns
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   authors:
   - Max Kleinegger
@@ -355200,6 +355201,10 @@
     worth_investigating -> adopt_patterns, relevance high -> medium. || 2026-10-22 Stage-2 close-out, dive-surfaced sources:
     arXiv:2601.14277 (title unverified; surfaced by web search as a Jan-2026 study of llama.cpp quantization formats on Llam
     — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources)'
+  integration_disposition: monitor
+  disposition_evidence:
+  - NEW-12 held by the operator 2026-10-22 ("stick to NEW-10 and then we reassess later"); recorded as a held note (no checkbox)
+    in iqk-iquant-enablement.md; reassess after NEW-10 IQ3_XXS quality result.
 - id: intake-2467
   arxiv_id: '2609.26333'
   url: https://github.com/IST-DASLab/disaggregated-quantization
@@ -355666,7 +355671,8 @@
   verdict: adopt_patterns
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   authors:
   - Oliver Sieberling
@@ -355799,6 +355805,10 @@
     says only 2-4 bit practically used). Added Table 3 and Table 8 numbers with locators and the derived 1.18M token-forwards
     per generation. credibility 3 -> 4 (peer-reviewed ICML 2025 per README, code matches the paper, but authors'' own baselines).
     The additive DP baseline losing to uniform is the transferable warning.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - NEW-12 held by the operator 2026-10-22 ("stick to NEW-10 and then we reassess later"); recorded as a held note (no checkbox)
+    in iqk-iquant-enablement.md; reassess after NEW-10 IQ3_XXS quality result.
 - id: intake-2470
   arxiv_id: '2605.00649'
   url: https://github.com/IST-DASLab/RCO
@@ -355813,7 +355823,8 @@
   verdict: adopt_patterns
   ingested_date: '2026-10-22'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   authors:
   - Michael Helcig
@@ -356013,6 +356024,10 @@
     -> adopt_patterns. || 2026-10-22 Stage-2 close-out, dive-surfaced sources: MxMoE (github.com/cat538/MxMoE; Duanmu et al.
     2025) — ingested-and-dived in Stage 2b or folded (see session dive_surfaced_sources); IST-DASLab GSQ code release (referenced
     by intake-2207) — declined: Already tracked as the NEW-10 trigger; nothing new to ingest until a release exists.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - NEW-12 held by the operator 2026-10-22 ("stick to NEW-10 and then we reassess later"); recorded as a held note (no checkbox)
+    in iqk-iquant-enablement.md; reassess after NEW-10 IQ3_XXS quality result.
 - id: intake-2471
   arxiv_id: '2602.03537'
   url: https://github.com/IST-DASLab/MatGPTQ
@@ -358447,7 +358462,8 @@
   ingested_date: '2026-10-22'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/iqk-iquant-enablement.md
   handoffs_created: []
   key_claims:
   - 'Method (paper S4.2, code bits_solver.py): a binary ILP picks ONE hardware-supported scheme per (expert, linear block)
@@ -358687,6 +358703,10 @@
     CUDA templates NOT read. Clone: /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-G/src-MxMoE at a2b034d. Nothing executed.
     | DIVE 2026-10-22: second reader 2026-10-22 (wave 3, /mnt/raid0/llm/tmp/intake-ist-slq-20261022/dive-H/patch.yaml second_reader):
     yes 13, partial 4, no 0.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - NEW-12 held by the operator 2026-10-22 ("stick to NEW-10 and then we reassess later"); recorded as a held note (no checkbox)
+    in iqk-iquant-enablement.md; reassess after NEW-10 IQ3_XXS quality result.
 - id: intake-2488
   arxiv_id: '2608.25188'
   url: https://arxiv.org/abs/2608.25188

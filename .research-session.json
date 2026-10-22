@@ -93,6 +93,15 @@
       "disposition": "planned",
       "plan_ref": "P2",
       "reason": "Applied as the partial Stage-4 below."
+    },
+    {
+      "seq": 5,
+      "stage": 3,
+      "ts": "2026-10-22T14:15:30Z",
+      "verbatim": "stick to NEW-10 and then we reassess later",
+      "disposition": "planned",
+      "plan_ref": "P3",
+      "reason": "NEW-12 filed as a held note (no checkbox); NEW-10 download call recorded."
     }
   ],
   "actionable_ledger": [
@@ -62418,7 +62427,8 @@
       "EXL3-EAR1: \"measurements ride EXL3-X0D Step 1\" -> next scheduled KLD pass (NEW-10/NEW-13), X0D declined",
       "VB-QUANTCMP-WIRE: \"before EXL3-X0D Step 1 runs\" -> \"before the first EAR-bearing run (EXL3-EAR1)\"",
       "NEW-14: \"NEW-10, NEW-12 and T2\" -> \"NEW-10 and T2 (and NEW-12, if approved)\"",
-      "all six: provenance \"operator-approved 2026-10-22\" added"
+      "all six: provenance \"operator-approved 2026-10-22\" added",
+      "NEW-14: \"(and NEW-12, if approved)\" -> \"(and NEW-12, if it is ever un-held)\""
     ],
     "declined_by_operator": [
       "EXL3-X0D",
@@ -62427,7 +62437,6 @@
       "A-L2 SLQ checkpoint download"
     ],
     "pending_operator": [
-      "NEW-12 (P3; disk question)",
       "M1",
       "M2",
       "M3",
@@ -62435,6 +62444,16 @@
       "K1",
       "K2"
     ],
-    "note": "stage3_filing not persisted: the approved plan is a subset of the presented payload, so the v2 Stage-4 plan-mode check is run only once the pending items are ruled and a final payload is cut."
+    "note": "stage3_filing not persisted: the approved plan is a subset of the presented payload, so the v2 Stage-4 plan-mode check is run only once the pending items are ruled and a final payload is cut.",
+    "held_by_operator": [
+      {
+        "item": "NEW-12",
+        "ruling": "stick to NEW-10 and then we reassess later (operator 2026-10-22)",
+        "filed_as": "held note, no checkbox, in iqk-iquant-enablement.md",
+        "reassess": "after NEW-10 IQ3_XXS quality result",
+        "lean_form": "one candidate at a time, no P0 ISTA comparison, ~190 GB peak, Q8_0 source deleted at the end"
+      }
+    ],
+    "new10_note": "Operator disk/download call 2026-10-22 recorded under NEW-10: IQ3_XXS first (~65 GB), IQ3_S only if needed; booked by workspace-58."
   }
 }
