@@ -270,3 +270,34 @@ def test_git_checkout_copies_are_pruned(tmp_path):
     (wt / "summary.json").write_text(json.dumps({"model": MODEL}))
     j = json.loads(cli("--json", "--model", MODEL, *roots).stdout)
     assert j["candidates"] == []
+
+
+@pytest.mark.parametrize("path,expected", [
+    ("/x/tmp/inference-backlog-audit-20261021/REPORT.md", True),
+    ("/x/tmp/compute-flags/FILLERS.md", True),
+    ("/x/tmp/compute-flags/FILLERS.md.bak-pre-qb3", True),
+    ("/x/tmp/compute-flags/f8-booking-list-20261023.md", True),
+    ("/x/handoffs/active/kv-prefix-fork.md", True),
+    ("/x/handoffs/active/master-handoff-index.md", True),
+    ("/x/docs/some-index.md", True),
+    ("/x/tmp/inf70/agents/b7-ple/REPORT.md", False),
+    ("/x/tmp/kpf18-run-g1/records/kpf18-1.json", False),
+    ("/x/tmp/run/summary.md", False),
+])
+def test_is_task_document(path, expected):
+    assert pc.is_task_document(path) is expected
+
+
+def test_task_document_is_listed_but_never_the_prior(tmp_path):
+    roots = empty_roots(tmp_path)
+    book = tmp_path / "tmp" / "compute-flags"
+    book.mkdir()
+    (book / "f8-booking-list.md").write_text(f"KVU-12.1 {MODEL} prompt_n\n")
+    j = json.loads(cli("--json", "--model", MODEL, "--decision", "KVU-12.1", *roots).stdout)
+    assert j["candidates"] and j["candidates"][0]["task_doc"] is True
+    assert j["prior"].startswith("prior=none")
+    run = tmp_path / "tmp" / "kvu12-run"
+    run.mkdir()
+    (run / "summary.json").write_text(json.dumps({"model": MODEL, "item": "KVU-12.1"}))
+    j = json.loads(cli("--json", "--model", MODEL, "--decision", "KVU-12.1", *roots).stdout)
+    assert j["prior"] == f"prior={run / 'summary.json'}"

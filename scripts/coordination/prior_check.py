@@ -90,6 +90,11 @@ The last text line (and the `prior` key of --json) is exactly one of
     prior=none (checked <UTC ts, Z>)        nothing qualified, or the only strong
                                             candidates are STALE-speed / RETRACTED
 
+Booking-source documents are never emitted as `prior=` (they stay in the list, flagged
+`TASK-DOC`): FILLERS.md*, files named *booking*, *-index.md, *handoff*, master-handoff-index.md,
+CURRENT-CAMPAIGN.md, any .md under handoffs/, compute-flags/ or bookings/, and REPORT.md under an
+audit/booking directory.  They describe a task; they are not results.
+
 A validator parses the first whitespace-delimited token after `prior=`.  `none (checked ...)`
 means "the lookup ran and found nothing citable", not "nobody has looked": the timestamp is the
 evidence of when.  A path is a LEAD the booker must open and cite or reject in the row's
@@ -697,12 +702,34 @@ def src_files(q: Query, root: str, label: str, depth: int, deadline: float, note
 
 # --------------------------------------------------------------------------- output
 
+TASK_DOC_NAMES = {"master-handoff-index.md", "current-campaign.md", "fillers.md"}
+
+
+def is_task_document(path: str) -> bool:
+    """True for files that DESCRIBE work (a booking, a handoff, an index, an audit report):
+    they mention a task id and a model, but they are not a result of running it."""
+    low = path.lower()
+    name = os.path.basename(low)
+    comps = set(low.split("/"))
+    if name in TASK_DOC_NAMES or name.startswith("fillers.md."):
+        return True
+    if "booking" in name or name.endswith("-index.md") or "handoff" in name:
+        return True
+    if name.endswith(".md") and comps & {"handoffs", "compute-flags", "bookings"}:
+        return True
+    if name == "report.md" and any("audit" in c or "booking" in c for c in comps):
+        return True
+    return False
+
+
 def decide_prior(cands: list[dict], ts: str, q: Query | None = None) -> tuple[str, dict | None]:
     for c in cands:
         if c["score"] < PRIOR_MIN_SCORE:
             break
         if c.get("retracted"):
             continue
+        if c.get("task_doc"):
+            continue  # a booking/handoff/index/audit document describes a task; it is not a result
         if "ledger-no-applicability" in c.get("matched", []):
             continue  # an intake/claim record with no measurement scope is not a prior result
         if q is not None and q.has_specific and not c.get("specific"):
@@ -785,6 +812,10 @@ def run(argv: list[str] | None = None) -> int:
         except Exception as exc:  # a source failing must never hide the others
             notes.append(f"{name}: failed ({type(exc).__name__}: {exc})")
     # tie-break: stronger score first, then newest
+    for c in cands:
+        if is_task_document(str(c.get("path", ""))):
+            c["task_doc"] = True
+            c["matched"].append("TASK-DOC (describes a task, not a result; never prior=)")
     cands.sort(key=lambda c: (c["score"], c.get("date") or ""), reverse=True)
     prior, best = decide_prior(cands, ts, q)
     top = cands[:max(a.top, 1)]
