@@ -53,7 +53,8 @@ Matching
 Plain case-insensitive substring tests on the file text + path (ledger: the frame text), with
 weights: execution digest 4.0, recipe hash 3.5 (a recipe FILE is hashed sha256; --argv is
 whitespace-normalised and hashed), model stem 3.0 (family prefix of the first three name tokens
-1.5), tag 1.5, argv-flag overlap 1.0, build 2.0, each metric/decision keyword 1.0 (cap 3).
+1.5), tag 1.5, argv-flag overlap 1.0, build 2.0, each --metric keyword 1.0 (cap 3), each
+--decision keyword 2.0 (cap 4; decisions are item ids such as KVU-12.1, i.e. specific).
 If any of model/recipe/digest/tag was supplied, a candidate must match at least one of them (a
 metric-only hit on an unrelated model is noise).  Candidates that do not mention a supplied
 keyword are kept but marked `metric-not-seen`.  Nothing is inferred from the absence of a
@@ -79,12 +80,14 @@ The `prior=` contract (queue rows / GRANT lines)
 -------------------------------------------------
 The last text line (and the `prior` key of --json) is exactly one of
 
-    prior=<absolute path> [(<flag>)]        a candidate that scored >= 4.0 (identity AND
-                                            substance) and is not STALE-speed; <flag> is
+    prior=<absolute path> [(<flag>)]        a candidate that scored >= 3.5 and, when a
+                                            tag/recipe/digest/decision was given, matched
+                                            one of THOSE (model + a generic metric alone is
+                                            only a lead), and is not STALE-speed; <flag> is
                                             absent for a clean same-build hit, else one of
                                             STALE-transferable | STALE | build-unknown |
                                             RETRACTED
-    prior=none (checked <UTC ts, Z>)        nothing scored >= 4.0, or the only strong
+    prior=none (checked <UTC ts, Z>)        nothing qualified, or the only strong
                                             candidates are STALE-speed / RETRACTED
 
 A validator parses the first whitespace-delimited token after `prior=`.  `none (checked ...)`
@@ -112,9 +115,10 @@ DEFAULT_TMP = "/mnt/raid0/llm/tmp"
 DEFAULT_AK = "/mnt/raid0/llm/autokernel/campaigns"
 DEFAULT_RESEARCH = "/workspace/repos/epyc-inference-research/artifacts"
 
-PRIOR_MIN_SCORE = 4.0
+PRIOR_MIN_SCORE = 3.5
 W_DIGEST, W_RECIPE, W_MODEL, W_FAMILY = 4.0, 3.5, 3.0, 1.5
 W_TAG, W_ARGV, W_BUILD, W_METRIC, METRIC_CAP = 1.5, 1.0, 2.0, 1.0, 3.0
+W_DECISION, DECISION_CAP = 2.0, 4.0
 
 HEAD_JSON = 256 * 1024
 HEAD_JSONL, TAIL_JSONL = 128 * 1024, 32 * 1024
@@ -123,7 +127,7 @@ MAX_RESEARCH_FILE = 4 * 1024 * 1024
 MAX_JSONL = 512 * 1024 * 1024
 TMP_DEPTH, RESEARCH_DEPTH = 4, 3
 MAX_DIRS = 30000
-PRUNE_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "models", "worktrees",
+PRUNE_DIRS = {".git", "worktree", "research-wt", "node_modules", "__pycache__", ".venv", "venv", "models", "worktrees",
               "src-store", ".gemini", ".mypy_cache", ".pytest_cache", "site-packages"}
 PRUNE_PREFIXES = ("build", "src", "llama.cpp", "ik_llama", "cmake-build")
 RECORD_NAME = re.compile(r"^(run_record|summary|results?|verdict|report|decision)[^/]*\.(json|md)$",
@@ -164,7 +168,8 @@ class Query:
         self.stem = ""
         self.family = ""
         self.model_sha = (a.model_sha256 or "").lower()
-        self.metrics = [m.lower() for m in (a.metric or []) + (a.decision or []) if m.strip()]
+        self.metrics = [m.lower() for m in (a.metric or []) if m.strip()]
+        self.decisions = [m.lower() for m in (a.decision or []) if m.strip()]
         self.tags = [t.lower() for t in (a.tag or []) if t.strip()]
         self.build = (a.build or "").lower()
         self.digest = (a.digest or "").lower()
@@ -196,6 +201,12 @@ class Query:
             self.recipe_names.add(r.lower())
 
     @property
+    def has_specific(self) -> bool:
+        """Terms that single out ONE piece of work (not just the model + a generic metric)."""
+        return bool(self.digest or self.recipe_hashes or self.recipe_names or self.tags
+                    or self.decisions)
+
+    @property
     def ident_supplied(self) -> bool:
         return bool(self.stem or self.model_sha or self.recipe_hashes or self.recipe_names
                     or self.digest or self.tags)
@@ -205,7 +216,7 @@ class Query:
         t = [x for x in (self.stem, self.family, self.model_sha[:16], self.digest[:16],
                          self.build) if x]
         t += [h[:16] for h in self.recipe_hashes] + list(self.recipe_names) + self.tags
-        t += self.metrics
+        t += self.metrics + self.decisions
         return t
 
 
@@ -299,23 +310,32 @@ def score_candidate(q: Query, text: str, path: str, extra_builds: set[str] | Non
             stale = "build-unknown"
 
     kw_hits = [m for m in q.metrics if m in hay]
+    dec_hits = [m for m in q.decisions if m in hay]
     if kw_hits:
         matched.append("kw:" + ",".join(kw_hits[:4]))
         score += min(W_METRIC * len(kw_hits), METRIC_CAP)
+    if dec_hits:
+        matched.append("decision:" + ",".join(dec_hits[:4]))
+        score += min(W_DECISION * len(dec_hits), DECISION_CAP)
+    specific = bool(dec_hits or any(
+        m.split(":")[0] in ("execution_digest", "recipe_hash", "tag", "argv-flags")
+        or m.startswith("recipe:") for m in matched))
+    any_kw = bool(kw_hits or dec_hits)
 
     if q.ident_supplied:
         if ident <= 0:
             return None
     else:
-        if not kw_hits and not ("build" in " ".join(matched)):
+        if not any_kw and not ("build" in " ".join(matched)):
             return None
-    if q.metrics and not kw_hits:
+    if (q.metrics or q.decisions) and not any_kw:
         matched.append("metric-not-seen")
         score -= 1.0
     if score <= 0:
         return None
     return {"score": round(score, 2), "matched": matched, "stale": stale,
-            "builds_found": sorted(builds)[:4], "axis": classify_axis(axis_text or text)}
+            "builds_found": sorted(builds)[:4], "axis": classify_axis(axis_text or text),
+            "specific": specific}
 
 
 def file_date(text: str, path: str) -> str:
@@ -357,6 +377,8 @@ def walk(root: str, max_depth: int, deadline: float, notes: list[str], label: st
             it = list(os.scandir(d))
         except OSError:
             continue
+        if depth >= 1 and any(x.name == ".git" for x in it):
+            continue  # a repo checkout / worktree copy: source files, not run records
         for e in it:
             try:
                 if e.is_symlink():
@@ -428,9 +450,10 @@ def src_ledger(q: Query, path: str, deadline: float, notes: list[str]) -> list[d
         app = a.get("applicability") or {}
         cl = claims.get(sid, {})
         evid = cl.get("evid", [])
-        parts = [json.dumps(app, sort_keys=True), a.get("title", ""), a.get("locator", ""),
-                 a.get("source_kind", ""), sid]
+        parts = [json.dumps(app, sort_keys=True), a.get("title"), a.get("locator"),
+                 a.get("source_kind"), sid]
         parts += [t for _, t in cl.get("claim", [])]
+        parts = [str(x) for x in parts if x]  # frames may carry null title/locator/display_text
         metric_vals = []
         for e in evid:
             if e.get("metric"):
@@ -446,8 +469,8 @@ def src_ledger(q: Query, path: str, deadline: float, notes: list[str]) -> list[d
         for key, val in _walk_kv(app):
             if key in ("build_sha", "epoch") and isinstance(val, str) and HEX.match(val):
                 extra_builds.add(val.lower())
-        res = score_candidate(q, text, a.get("locator", ""), extra_builds,
-                              axis_text=a.get("title", "") + " " + " ".join(metric_vals))
+        res = score_candidate(q, text, str(a.get("locator") or ""), extra_builds,
+                              axis_text=str(a.get("title") or "") + " " + " ".join(metric_vals))
         if not res:
             continue
         dig = [v for k, v in _walk_kv(app) if k == "execution_digest" and isinstance(v, str)]
@@ -458,7 +481,7 @@ def src_ledger(q: Query, path: str, deadline: float, notes: list[str]) -> list[d
         is_ret = sid in retracted_src
         res.update(source="ledger", path=a.get("locator") or f"{path}#{sid}",
                    ref=f"{path}#seq={rec['seq']}", date=a.get("revision_observed") or rec["created"],
-                   note=("; ".join(metric_vals[:2]) or a.get("title", "")),
+                   note=("; ".join(metric_vals[:2]) or str(a.get("title") or "")),
                    retracted=is_ret)
         out.append(res)
     notes.append(f"ledger: parsed {parsed} measurement frames, {len(src)} sources")
@@ -506,7 +529,7 @@ def src_autokernel(q: Query, root: str, deadline: float, notes: list[str]) -> li
     except OSError as exc:
         notes.append(f"autokernel: {exc}")
         return out
-    nterms = [t for t in q.metrics]
+    nterms = q.metrics + q.decisions
     for d in stores:
         if time.monotonic() > deadline:
             notes.append("autokernel: stopped at the time budget")
@@ -561,6 +584,7 @@ def src_autokernel(q: Query, root: str, deadline: float, notes: list[str]) -> li
                     else:
                         base = dict(base)
                         base["score"] = round(base["score"] + min(1.0 * len(nterms), 3.0), 2)
+                        base["specific"] = base.get("specific") or bool(q.decisions)
                         if "metric-not-seen" in base["matched"]:
                             base["score"] = round(base["score"] + 1.0, 2)  # undo the penalty
                         base["matched"] = [m for m in base["matched"] if m != "metric-not-seen"] \
@@ -673,12 +697,16 @@ def src_files(q: Query, root: str, label: str, depth: int, deadline: float, note
 
 # --------------------------------------------------------------------------- output
 
-def decide_prior(cands: list[dict], ts: str) -> tuple[str, dict | None]:
+def decide_prior(cands: list[dict], ts: str, q: Query | None = None) -> tuple[str, dict | None]:
     for c in cands:
         if c["score"] < PRIOR_MIN_SCORE:
             break
         if c.get("retracted"):
             continue
+        if "ledger-no-applicability" in c.get("matched", []):
+            continue  # an intake/claim record with no measurement scope is not a prior result
+        if q is not None and q.has_specific and not c.get("specific"):
+            continue  # model + a generic metric alone is a lead, not a prior
         if c["stale"] == "STALE-speed":
             continue
         flag = ""
@@ -758,13 +786,13 @@ def run(argv: list[str] | None = None) -> int:
             notes.append(f"{name}: failed ({type(exc).__name__}: {exc})")
     # tie-break: stronger score first, then newest
     cands.sort(key=lambda c: (c["score"], c.get("date") or ""), reverse=True)
-    prior, best = decide_prior(cands, ts)
+    prior, best = decide_prior(cands, ts, q)
     top = cands[:max(a.top, 1)]
     elapsed = round(time.monotonic() - t0, 2)
     if a.json:
         print(json.dumps({"schema": "epyc.prior_check.v1", "checked": ts, "elapsed_s": elapsed,
                           "query": {"model": a.model, "recipe": a.recipe, "argv": a.argv,
-                                    "metric": (a.metric or []) + (a.decision or []),
+                                    "metric": a.metric or [], "decision": a.decision or [],
                                     "build": a.build, "digest": a.digest, "tag": a.tag},
                           "prior": prior, "candidates": top, "notes": notes,
                           "total_candidates": len(cands)}, indent=1))

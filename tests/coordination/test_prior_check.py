@@ -250,3 +250,23 @@ def test_budget_exhaustion_still_exits_zero_and_reports(tmp_path):
     r = cli("--json", "--model", MODEL, "--budget-s", "1", *roots)
     assert r.returncode == 0
     json.loads(r.stdout)
+
+
+def test_ledger_frames_with_null_title_locator_or_display_text(tmp_path):
+    roots = empty_roots(tmp_path)
+    rows = new_schema()
+    rows[0]["frame"]["assertion"]["locator"] = None
+    rows[1]["frame"]["assertion"]["display_text"] = None
+    write_ledger(tmp_path / "ledger.jsonl", rows)
+    j = json.loads(cli("--json", "--model", MODEL, "--build", BUILD, *roots).stdout)
+    assert not any("ledger: failed" in n for n in j["notes"])
+    assert j["candidates"]
+
+
+def test_git_checkout_copies_are_pruned(tmp_path):
+    roots = empty_roots(tmp_path)
+    wt = tmp_path / "tmp" / "wtcopy"
+    (wt / ".git").mkdir(parents=True)
+    (wt / "summary.json").write_text(json.dumps({"model": MODEL}))
+    j = json.loads(cli("--json", "--model", MODEL, *roots).stdout)
+    assert j["candidates"] == []
