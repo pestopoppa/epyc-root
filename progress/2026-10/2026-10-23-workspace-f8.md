@@ -349,3 +349,19 @@ ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was ali
   - `gpu-serving-tie-in-program.md` (1): GPU-ZOS-1a.
   - `speculative-decoding-mtp-refresh.md` (1): SPEC-GRAM.1(2).
   - `agentic-serving-harness-fixes.md` (1): UFH14-LB7.
+
+### Wrap-up gates
+
+| Gate | Result |
+|---|---|
+| Index regen + `index_state.py --check` | rc 0, 0 problems (after syncing with origin/main at `17d538c84`) |
+| Prune candidates (generated signal) | 0, so nothing was pruned or archived |
+| README freshness | clean |
+| Wiki | Sweep 19 compiled the 7-source delta into 4 pages: benchmark-methodology, inference-serving, kv-cache and hardware-optimization. Lint: 0 errors. Bare `--touch` left a delta of 0. See the note below. |
+| `vidya sync --check` | FRESH: intake-2510, lag 0 |
+| Index rows | prepared for the owning session, not applied |
+
+**Wiki watermark note.** 3c4ca599's sweep 15 (`0f0506337`, 13:52Z) ran a bare `--touch`, which advanced the manifest over
+f8's 10:09-10:50Z handoff commits without compiling them. Sweep 19 compiled that content too: LBH-1/2 close-out, KPF-13.1
+rules v3, the KPF-17.4 drafter-SWA finding, the B4j idle-slot code reading and FU3. Sweep 19 also corrects sweep 17's
+grant-writer attribution of the rc 75.
