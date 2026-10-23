@@ -275,12 +275,65 @@ prefills only the suffix.
   - *(2026-10-23 14:35Z, f8; plain-MTP CPU leg `kpf13-1a-mtp-v3-cpu`, rc 0, rules v3 sha `7466b774bfb5…`, `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf13-1-reduced/mtp-cpu/VERDICT.json`.)* Under the predeclared rule: K=3 same-shape controls on every judged arm, `decision_grade` true. default A 12/12 PASS, B 12/12 PASS, skip A 12/12 PASS (spread_dn 4, spread_da 1). Decisions: `restore_faithful` true; `trigger_port_30141` false; `investigate` false; `fork_equals_cache_hit` true (A and B both PASS); `kpf19_1_choice` = keep the full drafter KV through the fork, no re-prefill. The `info_vs_twin` column (A 7/12, 6/12, skip-A 8/12 PASS; all FAIL with `acceptance_drop` true) is the cold-twin comparison, which the predeclaration marks 'W = cold twins (informational only)' and 'Not quoted': it is NOT gating and does not enter any decision. It repeats the v1/KPF-13 repro finding (a cold twin takes a different batch shape), so no acceptance-drop trigger. This is the plain-MTP leg only; the DFlash2 GPU leg (above) has no result and `kpf13_1a_skip_load_dft_plain` is NOT_MEASURED there by rule (SWA drafter keeps `load_dft`).
   - *(same, 13.1a.)* `kpf13_1a_skip_load_dft_plain` = **NO**: restore_faithful holds and skip A PASSes, but the skip A runs are not equal to the default A runs cell by cell on tokens / draft_n / draft_n_accepted (the YES rule requires all three), so skipping `load_dft` for plain drafters is not shown output-equivalent; keep `load_dft`. Ticked: rules v3 and the 13.1a decision. KPF-13.1 itself stays open (its DFlash2 run has no result).
   - *(2026-10-23 14:51Z, f8; recorded by the late-afternoon wrap-up.)* **`kpf13-1-reduced` fixed and RE-ARMED (operator-approved).** Driver fix research `922113ff7` (branch `f8/kpf-readback-fix-20261023`): on GPU runs, the launch read-back exempts up to 2 threads with a full CPU mask (the ROCm runtime helper) and records them in the run record; 85/85 tests. The detached pin and `PINSHA` moved `6a1dc7f94` -> `922113ff7`; DRY rc 0. The numactl shim now also sets `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (the GPS-PIN-1 knob); `runtime_threads_unpinned_count 0` in the record proves it held. Launcher pid 3733854, booked after `gpu-zos-1a`. The run box stays open until it reports.
+  - *(2026-10-23 15:48Z, f8; read-out of `kpf13-1-reduced`, the DFlash2 GPU leg, rc 0, rules v3 sha `7466b774bfb5…`, `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf13-1-reduced/VERDICT.json`.)* **Rule verdict: A FAIL (9/12 PASS, 3 FAIL, 0 INVALID) and B FAIL (11/12 PASS, 1 FAIL, 0 INVALID).** `decision_grade` is true (K=3 on every judged arm). The decisions, as the rule names them:
+    - `restore_faithful` false.
+    - `trigger_port_30141` **false**: no cell has draft_n_accepted below min - spread_da, and `acceptance_drop` is false on both arms.
+    - `investigate` **true**.
+    - `kpf19_1_choice` = "neither passes: investigate".
+    - `fork_equals_cache_hit` false.
+    - `kpf13_1a_skip_load_dft_plain` NOT_MEASURED (SWA drafter, by rule).
+    - Not gating: the `info_vs_twin` column (A 6/12, B 3/12, `acceptance_drop` true) is the cold-twin comparison that the rule marks INFORMATIONAL ONLY. It enters no verdict and no decision, and it does not trigger #30141. The near-tie label is also "never part of a verdict" under v3, so the rule has no GPU near-tie pass.
+    - Reason classification of the 4 failing cells. Every one fails on tokens only; acceptance is inside the interval in all 4.
+
+      | Cell | Arm | First divergence | Gap | Near-tie? | Controls agree pairwise |
+      |---|---|---|---|---|---|
+      | g0-S2 | A | token 2 | 0.0075 | yes (band 0.0316) | 64/64 |
+      | g1-S2 | A | token 24 | 0.0059 | yes | 64/64 |
+      | g3-S2 | A | token 38 | 0.0034 | yes | 64/64 |
+      | g2-S1 | B | token 48 | 0.0167 | yes | 64/64 |
+
+      Result: 4 of 4 are deterministic near-tie divergences. None is a real (non-near-tie) divergence, and none is an acceptance drop.
+    - Not run-to-run noise. In every failing cell the 3 same-shape controls are token-identical, and A1 == A2 and B1 == B2 in all 12 cells. The fork path lands on the other side of a near-tie every time. All 3 A failures are S=2 cells. In g0-S2 and g1-S2 the restore child equals the cold twins bit for bit (tokens and draft counts), and the CA control differs from both.
+    - GPU determinism, measured in this run over all same-shape repeats in 12 cells:
+      - W1 == W2 in 12/12 cells (tokens and draft counts).
+      - CA1 == CA2 == CA3 in 12/12.
+      - CB1 == CB2 in 12/12.
+      - The one control that does not reproduce is CB3, with the same partition (cache_n T-N, prompt_n N+S). It differs from CB1/CB2 in 8/12 cells (6 on tokens). In 8/12 it reproduces CA's tokens instead.
+      - CB3 is the only control that follows CA3 rather than an A fork in the predeclared order. So this is order-dependent state carried between requests, not random noise.
+      - CB3 alone sets the pooled spread (spread_dn 48, spread_da 7, against 4 and 1 on the CPU leg), and it widened every acceptance interval.
+    - Versus the CPU leg (`mtp-cpu`, default A/B 12/12 PASS): the two legs differ in more than the device.
+      - Model: 35B-A3B-MTP on CPU, 27B on GPU.
+      - Drafter: plain MTP vs DFlash2 SWA.
+      - Binary: p1r2 CPU vs a1f0c8cf9 GPU.
+      - Prompt set: different.
+
+      So the GPU FAIL cannot be attributed to the device alone. HIP graphs were DISABLED for the server (GPU-LEAK-1 shim; `gl1_guard.log` shows the variable on pid 1251034), and the predeclaration treats graphs as numerics-neutral.
+    - Pinning knob: `runtime_threads_unpinned_count` is NOT in the record.
+      - The driver computes it (`922113ff7`, `judge_thread_affinity`), but the record's `argv_readback` projection keeps 6 keys and drops it. Nothing under `out/` carries it.
+      - The read-back passed, so at most 2 threads had a full CPU mask. The recorded main-thread `cpus_allowed` is 184-191.
+      - The claim in the 14:51Z note above ("the count in the record proves it held") cannot be checked for this run. See KPF-GL2.
+      - This does not affect the verdict: helper-thread affinity does not change numerics.
+    - Instrument deviation, stated: the predeclaration names driver pin `6a1dc7f94`, and the run used `922113ff7` (the read-back fix, operator-approved, 14:51Z note). The rules sha is unchanged and the judge is untouched. PREDECLARATION.md has no written amendment for the pin move.
+    - The box stays open, because the rule's outcome is `investigate`, not a decision. KPF-19.1's restore-vs-re-prefill choice is decided for plain MTP (CPU leg) and still open for DFlash2. Child: KPF-13.1b.
+  - [ ] **KPF-13.1b — resolve the `investigate` outcome of the DFlash2 GPU leg (filed 2026-10-23, f8 read-out).** Decide whether the 4 deterministic near-tie divergences come from the target-side restore or from the draft path.
+    - Why the draft path is possible: DFlash2 drafts differ between restore and control, because the restore does not carry the per-seq selector RNG (rule `restore_does_not_carry`). Different drafts give different verify batch shapes, and that can move GPU target numerics across a near-tie.
+    - Next step: predeclare rules v4 before compute, since v3 has no GPU clause. Then re-run the 4 failing cells (A g0/g1/g3-S2, B g2-S1) and 2 passing cells as a check, on the same image, argv and graphs-disabled shim, with speculation OFF (no `-md`) and K=3 controls.
+      - A == CA without the drafter clears the target restore and puts the divergence on the draft path.
+      - A != CA is a target-restore defect.
+    - Also: add `--draft-debug` on a drafter-on pass to log the first draft block. Bring the CB3 order effect into scope with a CB repeat that follows an A fork and one that follows a CA.
+    - Graphs-ON is not the discriminating variable, because graphs were off for every arm.
+    - Cost: correctness class, about 15 min GPU on one load.
 - [x] **KPF-GL1 — prove at first run that the graphs-disabled env reached each f8 GPU server (GPU-LEAK-1 mitigation; filed 2026-10-23, f8 wrap-up).** `kpf13-1-reduced` and `kpf17-4-19-1a-27b-dflash2` use the PATH shim: read `out/gl1_guard.log`. `env has GGML_CUDA_DISABLE_GRAPHS=1` passes. `WARN ... LACKS` means the shim did not take: record the run's VRAM headroom as unmitigated in its RUN_RECORD and fix the shim before the next window. `kpf18-s1-remainder` and `locals-kpf-lb1-1-27b-completion-turns` set the variable with an explicit `env` in the launch argv: check the record's `launch_prefix` or argv field. Zero compute: read after each first run.
   - *(2026-10-23 14:05Z, f8 wrap-up.)* 2 of 4 jobs are proved; KPF-GL1 stays open until the other two first run.
   - *(2026-10-23 14:20Z, f8; ticked.)* The other two proved, both from their aborted first launch: `kpf13-1-reduced/out/gl1_guard.log` (server pid 3403273, port 18973) and `kpf17-4-19-1a-27b-dflash2/out/gl1_guard.log` (pid 3406356, port 18974) each read `env has GGML_CUDA_DISABLE_GRAPHS=1 (graphs disabled); VRAM limit 61440 MiB`, so the numactl PATH shim delivered the variable to the server env. `kpf18-s1-remainder` and the first two were proved earlier (launch_prefix / argv). All 4 of 4. The re-arms reuse the same shim; a `LACKS` warning in a later run reopens this.
     - `kpf18-s1-remainder` (running since 13:56Z): the server's `/proc/<pid>/environ` carries `GGML_CUDA_DISABLE_GRAPHS=1` (read-only check).
     - `locals-kpf-lb1-1-27b-completion-turns`: the RUN_RECORD argv starts `env GGML_CUDA_DISABLE_GRAPHS=1`.
     - Still open: the two shim jobs, `kpf13-1-reduced` and `kpf17-4-19-1a-27b-dflash2`.
+- [ ] **KPF-GL2 — persist the GPU affinity read-back in the run record (filed 2026-10-23, f8 read-out).**
+  - The gap: `kpf13_restore_ab.py` @ `922113ff7` computes `runtime_threads_unpinned`, `runtime_threads_unpinned_count` and `cpus_allowed_non_exempt` in the server read-back, but the record's `argv_readback` projection (`exe_matches_binary` … `slot_fork_mode`) drops all three.
+  - Effect: none of today's 5 completed f8 GPU launch records carries the count (kpf13 default; kpf174 honest, mut_partial_noop, flag_on, mut_no_transfer). The `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (GPS-PIN-1) knob is therefore unproven for those runs. This does not affect their verdicts.
+  - Fix: on the research branch, add the three keys to that projection, with a test that a GPU read-back with one exempt thread round-trips into the record. Move the pins at the next re-arm.
+  - Until the fix lands: prove the knob live by sampling `/proc/<pid>/task/*/status` during the run.
 - [x] **KPF-14: launch ordering and seq-bit safety.** ✅ 2026-10-04
   - Take the fork at launch, before the `[TAG_IDLE_SLOT_CLEAR]` loop (L2469-2484), so an idle source is not
     cleared first.
@@ -347,11 +400,35 @@ prefills only the suffix.
 - [ ] **KPF-17.4 — SWA checkpoint range correctness ([TAG_CHECKPOINTS_FIX_POS_MIN]).** RE-TARGETED 2026-10-21 (backlog audit §1): the Gemma-class target is retired from production; run on the Qwen3.8-27B target + the `Qwen3.8-27B-DFlash2-Q8_0.gguf` SWA drafter (`sliding_window` 2048 on all 5 layers), TOGETHER with KPF-19.1a in ONE server load (same build, same argv; sweep S2). On the SWA drafter cache, save a checkpoint, restore it and compare next-token and logits against a no-checkpoint run; record each checkpoint's recorded pos_min against the actual cache pos_min (v10, the champion and the fork all carry the open TODO that the saved data covers [pos_min, pos_max], which is not true for SWA). Gate any pinned-junction use on SWA caches on the result. Deterministic conformance on CPU with a mutation case (use the recorded range instead of the real window must fail); take any upstream follow-up only through CH-18, never as a patch.
   - *(2026-10-20)* Correctness result: SWA checkpoint data always covers its own resume window and the recorded pos_min is never above the real one (iSWA `seq_pos_min` counts masked-but-unpruned cells, llama-kv-cache-iswa.cpp:156; `state_write` skips them, llama-kv-cache.cpp:2209), so a pinned-junction fork on an SWA cache cannot produce wrong output. Conservative choice kept: range not re-recorded (recording the real range would make upstream's `pos_min < pos_next - n_swa` gate reject every junction checkpoint).
   - *(2026-10-21 sync from `progress/2026-10/2026-10-20-workspace-f8.md`.)* The 23:00-23:35Z queue re-run reported real KPF-17.4 failures: SWA checkpoint recorded range != restored range, continuation max|d| 0.33, fork-vs-fresh divergence, and the `no_posmax_guard` mutation undetected (a diagnosis subagent was dispatched). The fix pass recorded under KPF-17.1 classed the jobs 22/23 failures as oracle/setup bugs (batch-boundary float floor with top-1 unchanged, idle-slot purge, an abort case that never aborted, SWA checkpoint sizes), not fork defects, and proved the pos_max guard with `LLAMA_KPF_MUTATE=abort_keeps_tail`. So the code-reading result above stands, but no clean re-run of the SWA range comparison is recorded yet; KPF-17.1a (job 24) is the re-check.
-  - [ ] **KPF-17.4a — measure the long-context SWA fork loss** (found by code reading): once context exceeds the SWA cache (~n_swa × n_seq + n_ubatch) recorded and real pos_min coincide, the gate rejects junction checkpoints and the fork falls back to full reprocessing (correct output, lost speed). RE-TARGETED 2026-10-21: measure on the Qwen3.8-27B + DFlash2 SWA drafter (n_swa 2048) at a context above that bound, in the same load as KPF-19.1a (the "Gemma-class" target is retired); the fix is upstream TAG_CHECKPOINTS_FIX_POS_MIN via CH-18.
+  - [x] **KPF-17.4a — measure the long-context SWA fork loss** (found by code reading): once context exceeds the SWA cache (~n_swa × n_seq + n_ubatch) recorded and real pos_min coincide, the gate rejects junction checkpoints and the fork falls back to full reprocessing (correct output, lost speed). RE-TARGETED 2026-10-21: measure on the Qwen3.8-27B + DFlash2 SWA drafter (n_swa 2048) at a context above that bound, in the same load as KPF-19.1a (the "Gemma-class" target is retired); the fix is upstream TAG_CHECKPOINTS_FIX_POS_MIN via CH-18. ✅ 2026-10-23
   - *(2026-10-23, workspace-f8.)* The "SWA range fix" blocker is STALE: the 2026-10-20 failures were oracle defects fixed by f3a3bb4b1 and verified by queue job 24 (`swa-cpp-normal OK`, `use_recorded_range` detected). Real gap: on 27B + DFlash2 the SWA cache is the DRAFTER (27B target is hybrid without SWA) and neither test saw it; new harness `kpf174_swa_drafter.py` (same branch) forks across drafter-window-overwritten junctions with `honest` / `mut_partial_noop` / `flag_on` / `mut_no_transfer` launches. Needs new GPU image gpu-20261023-82c16126f-kpf191 (build row `kpf17-4-19-1a-gpu-build`); run row `kpf17-4-19-1a-27b-dflash2` ARMED behind a build precondition. Stated deviation: 19.1a compares to the same-shape control, not cold fresh (KPF-13 batch-partition lesson); accepted by the owner.
   - *(2026-10-23, f8 wrap-up.)* GPU-LEAK-1: `kpf17-4-19-1a-27b-dflash2` sends about 60 requests on the honest load and about 30 on each mutation or flag load, so it now runs with graphs disabled. It uses the same job-local `numactl` PATH shim and `gl1_guard` (61440 MiB, own pid only) as `kpf13-1-reduced`. Its build prerequisite `kpf17-4-19-1a-gpu-build` is first on q2. First-run proof: KPF-GL1.
   - *(2026-10-23 14:19Z, f8.)* **`kpf17-4-19-1a-27b-dflash2` ABORTED rc 3 within 8 s of launch (second server pid 3406356, ~14:19:54Z): NOT a result.** Same cause as `kpf13-1-reduced` (the driver's launch read-back rejects the ROCm runtime's single all-CPU helper thread; exemption fix in progress on the research branch). No cell ran; no honest, mutation or flag verdict exists. Run box stays open; re-arm follows the driver fix. The GL1 guard proved the graphs-disabled env reached the server (KPF-GL1).
   - *(2026-10-23 14:51Z, f8; recorded by the late-afternoon wrap-up.)* **`kpf17-4-19-1a-27b-dflash2` fixed and RE-ARMED (operator-approved), with the same fix as `kpf13-1-reduced`.** Driver fix research `922113ff7` (branch `f8/kpf-readback-fix-20261023`): on GPU runs, the launch read-back exempts up to 2 threads with a full CPU mask (the ROCm runtime helper) and records them in the run record; 85/85 tests. The detached pin and `PINSHA` moved `6a1dc7f94` -> `922113ff7`; DRY rc 0. The numactl shim now also sets `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (the GPS-PIN-1 knob); `runtime_threads_unpinned_count 0` in the record proves it held. Launcher pid 3733855, booked after `gpu-zos-1a` and `kpf13-1-reduced`. The run box stays open.
+  - *(2026-10-23 16:03Z, f8; read-out of `kpf17-4-19-1a-27b-dflash2`, rc 0, 4 loads, kpf174 rules sha `26b04e19…`, `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf17-4-19-1a-27b-dflash2/VERDICT.json`.)* **Rule verdict: KPF-17.4 = FAIL, and `pinned_junction_on_swa_drafter_allowed` = false.** honest FAILs (4/6 PASS, 2 FAIL, 0 INVALID); `mut_partial_noop` is DETECTED (2/2 in scope, plus 1 out_of_scope at c3).
+    - Every result is deterministic. The control spread is 0 in all 4 launches (spread_dn 0, spread_da 0; the 3 controls are identical in every cell), and X1 == X2 in all 15 cells.
+    - Reason classification of the honest failures:
+
+      | Cell | First divergence | Gap | Acceptance (draft_n / accepted) vs controls | Cold fresh F vs control |
+      |---|---|---|---|---|
+      | g1-c2148 | token 36 | 0.164 | 106 / 47 vs [99,99] / [48,48] | agree on all 64 tokens |
+      | g2-c2148 | token 39 | 0.493 | 105 / 48 vs [88,88] / [50,50] | agree to token 59 |
+
+      Neither gap is near-tie: the rule band is the 0.001 floor, and both gaps are 5x or more the 0.0316 band measured on GPU in KPF-13.1. In g1 both no-fork paths agree, so the fork is the outlier.
+    - Class: real divergence, deterministic, confined to the c1 junction (n_swa + 100 = 2148, pruned from the source's live drafter window). The acceptance miss follows the token divergence, so it is not a separate acceptance-drop finding. c2 = 4096 (pruned) and c3 = 10240 (> swa_cells 8704) PASS in both groups.
+    - The c1 token divergence does not depend on how the drafter is treated. honest, `flag_on`, `mut_no_transfer` and `mut_partial_noop` all diverge at token 36 with the same gap 0.164; only draft_n moves (106 for honest and flag_on, 120 for both mutants). That points at the target-side state restored at c1, not the drafter window. Qwen3.8-27B is hybrid GDN, and the target checkpoint at 2148 is the end of the first source request's prefill. This is an untested hypothesis; KPF-17.4b tests it.
+    - Mutation sensitivity holds. Both mutants fail at every junction they touch, by acceptance (draft_n +14 to +21 over the controls) even where the tokens agree, so the oracle does see drafter-window loss.
+    - Conditions:
+      - Device: GPU (MI210). HIP graphs were DISABLED for all 4 servers (`gl1_guard.log`: pids 1335839, 1361580, 1369687, 1389382).
+      - No CPU baseline: `kpf174_swa_drafter.py` is new and has never run on CPU.
+      - `runtime_threads_unpinned_count` is not recorded (see KPF-GL2).
+      - The driver pin moved `6a1dc7f94` -> `922113ff7` without an amendment in PREDECLARATION.md. Only the read-back changed; the rules sha is the same.
+    - The box stays open (FAIL).
+  - *(same run, KPF-17.4a: a measurement with no pass word; ticked.)* fork_taken is true and loss_tokens is 0 for every arm run in 6/6 junction cells (g1 and g2 × c 2148, 4096, 10240). That includes c3 = 10240 > swa_cells 8704. This confirms the code-reading prediction: the gate reads the target n_swa, which is 0 on qwen35, so it never rejects. This pair shows no long-context fork loss. Output correctness at c3 PASSed in honest (g1, g2).
+  - [ ] **KPF-17.4b — localize the c1-junction divergence (filed 2026-10-23, f8 read-out; blocks KPF-17.4 and KPF-19.1a).** Use the same image (`gpu-20261023-82c16126f-kpf191`), argv and shim, with K=3 controls, and predeclare before compute. About 15-20 min GPU on one load.
+    1. Run the g1/g2 c=2148 cells with speculation OFF. If X != C there, it is a target-restore defect at c1, independent of the drafter.
+    2. Sweep the junction over c ∈ {2049, 2148, 2560, 3072, 4096} to find where the failure starts. The driver's junction list is fixed today, so this needs a driver option.
+    3. Optional: run the same c1 cell on the CPU build of `82c16126f`, to separate GPU numerics from fork state.
 - [ ] **KPF-18: P1 gate (GPU window, :8083 production argv on the fork build; workspace-ec).** The matched
   instrument is the same binary with `--slot-fork-min-tokens 0` vs on, in alternating windows. Done when ALL hold:
   1. **Equivalence vs fresh.** Prompt set ≥ 32 trunk/suffix pairs (trunk 8k-80k, suffix 0.5-8k), greedy, DFlash2
@@ -462,6 +539,14 @@ prefills only the suffix.
   - *(2026-10-21, KPF-17.1c pass)* Confirmed by job 27 (35B+MTP, `dd5bb0d3b`): `dft_partial_noop` PASSES with the flag off and on, and child draft stats equal the fresh run. One mechanism detail matters for KPF-13.1: today's `load_dft` after `seq_cp_attn` is not merely redundant. `llama_kv_cache::state_read_meta` seq_rm's the destination and writes a PRIVATE copy of the same drafter cells, so every fork of a plain-drafter slot pays one drafter-KV copy that sharing would avoid.
   - *(2026-10-21, backlog audit verification; box LEFT OPEN.)* Verified on the current build: job 28 STEPs 191-flag-off / 191-flag-on OK, 191-partial-noop-off/on-passes OK (expected on a plain drafter), 191-mut-dft_no_transfer-off/on DETECTED (`/mnt/raid0/llm/tmp/kv-prefix-fork/kpf-19-1-17-3/queue-results/28-kpf-19-1-17-3/steps.txt`). NOT verified: the "done when" clause's second leg, the same case on the CH-18 build that carries #30514 with the PARTIAL_ONLY-revert mutation failing there (no such run exists; it is carried by KPF-19.1a) and the DFlash2 SWA drafter run (KPF-19.1a). Tick when the CH-18-build leg lands.
   - [ ] **KPF-19.1a — DFlash2 SWA-drafter fork run (correctness, CPU, no exclusive window; also part of KPF-18 S1 on the GPU fork build, and run together with KPF-17.4/17.4a in one load).** On the job-28 build run `test_kpf191` with `KPF_SPEC_TYPE` set to the DFlash2 draft type on the Qwen3.8-27B target + `Qwen3.8-27B-DFlash2-Q8_0.gguf`, flag off and on: child tokens and draft_n / draft_n_accepted equal the fresh run; `dft_no_transfer` must FAIL. Budget ~40 min under a build-role claim on a non-q3 quarter. Also needed before a rebase taking #30514: the same case on the CH-18 build (copy job 28, point B/WT there).
+    - *(2026-10-23 16:03Z, f8; read-out of the same run as KPF-17.4.)* **Rule verdict: KPF-19.1a = FAIL.**
+      - honest FAILs.
+      - `flag_on` FAILs, with 2/3 PASS. Its single failure, g1-c2148, is identical to honest's (token 36, gap 0.164, draft_n 106), so `--slot-fork-dft-full` does not change it.
+      - `mut_no_transfer` is DETECTED 3/3: by acceptance at c2 and c3, and by tokens plus acceptance at c1.
+      - Class: the same real divergence at c1 as KPF-17.4.
+      - Stated deviation (predeclared): the comparison is against the same-shape control, not the cold fresh run. The informational `A_vs_fresh` column also fails at c1, and at g1-c4096 on draft counts only.
+      - This was the GPU fork build. The CPU job-28 leg the task text names has not run on the 27B.
+      - The box stays open. Next: KPF-17.4b (shared cause).
 
 ### P2: cache-aware dispatch, orchestrator side (workspace-ec as stack owner) — effort M, ~1-2 weeks
 
