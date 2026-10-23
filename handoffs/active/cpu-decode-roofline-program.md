@@ -175,6 +175,12 @@ at 153 GB/s in the configuration that serves.
 > **Post-BIOS supersession — appended 2026-09-26 (research intake; rows above are pre-BIOS and are not edited).** On 2026-09-21 the operator applied memory interleave ON + DDR5 5600 MT/s (C8, :282-289). Current host facts: theoretical **537.6 GB/s**; C0 read-sum **446.8 GB/s at t96** (410.4 at t48; gemv-2560 478.9) — epyc-inference-research/data/bios-postreboot-20260921/; re-read 2026-09-26 under load average 17–21: **449.4 GB/s** at t96. The ~170 GB/s global cap in :149 is gone. Superseded as current-host facts: :146 "460.8 today", :147, :149, :150–151, and the "153 GB/s of a 460.8 GB/s machine" above. Recomputed roofline at the same 4.16 GB/token: **9.3 ms (107 t/s)** at 446.8 GB/s, **7.7 ms (129 t/s)** at 537.6 — computed, not measured. The D0/B1 split at :152 and the "~70 ms dispatch floor" do not survive: the post-BIOS C5 re-anchor shed 39 ms/token (98.6 → 59.5 ms, tg128 t48, build 10151, uniform IQ4_XS research artifact), more than the row's entire 27 ms bandwidth budget (progress/2026-09/2026-09-21.md:91-138); re-deriving :152 post-BIOS is INF-70 work.
 
 > **Thread count at depth — appended 2026-10-20.** First served measurement of Q38FN at real context depth (research `data/q38fn-threads-depth-20261020/SUMMARY.md`, commit 23119ea4e; llama-bench rows at `data/cpu-model-characterization/q38fn-ud-iq4xs-b0ba1d427-20261020/llama_bench_stdout.json`; UD-IQ4_XS served file, binary b0ba1d427, MTP on). llama-bench d0: tg128 t48 31.2 vs t96 24.8, pp512 212 vs 231. Served, `-tb` (which in this binary also drives MTP verify) at 96 lifts shallow-depth prefill +21-29%; at >=8k depth prefill and decode are flat across 48/96 threads within session drift, while depth alone costs -55% decode / -60% prefill by 128k. The t48 decode optimum survives, but thread count is not the long-context lever.
+>
+> *(2026-10-23, workspace-f8: protocol defect.)* The four llama-bench d0 rows in
+> `llama_bench_stdout.json` all say `"autokernel_hardened": true` with no `--autokernel-harden` requested
+> (llama-bench uninitialised `autokernel_harden`, V11-103). Both thread arms ran the same (hardened) protocol, so the
+> t48-vs-t96 direction is comparable, but the absolute numbers are hardened-protocol readings, not ordinary bench
+> numbers. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
 
 ## Axis C — measurement (FIRST; cheap, and it makes every other axis legible)
 

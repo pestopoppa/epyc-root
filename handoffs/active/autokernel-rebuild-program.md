@@ -2883,3 +2883,88 @@ kernel/AutoKernel surfaces; each item below was raised, then dropped on purpose.
   - 2026-10-22 (3c4ca599 wrap-up) real-server shakedown `s5-akrsg-shakedown` COMPLETE 13:09Z: PASS, `epyc.autokernel.serving_ab.v1` OK, A/A pipeline-only, cpu-20260921-ffc1bac82 both arms, ports owned, linkage OK, teardown verified; run dir `/mnt/raid0/llm/tmp/akrsg-out/run-20261022T130855Z/`. The `/metrics` mapping was exercised against a real llama-server for the first time.
   - *Build note (2026-10-21).* AKR-SG-1: the "existing driver" is the closed-round client inside `serving._measure_once`. `loop/loadgen_selfcheck.py` adds the scheduling log, requested-versus-achieved rate, the void rule (median delay above 10 ms, or achieved rate more than 5% off the request, or fewer starts than requested) and `session_headline` (denominator = all sessions started). `serving._measure_once` consults it only after `loadgen_selfcheck.enable()`; off by default, so the serving path is unchanged. A void raises `LoadDriverVoided` (a `MeasurementInvalid`), never an averaged value. Test: `loop/test_loadgen_selfcheck.py` (injected 50 ms delay voids the run). AKR-SG-2: decision taken at the start is the OWN CLIENT, not a wrapper over inference-perf (no llama-server adapter, vLLM-only metrics, python>=3.12 and transformers 5.13 pins; the adapter alone costs 0.5-1 day and the paired statistic is still to build). `loop/paired_loadgen.py` runs A,B per pair in a fixed order with seed = base_seed + pair index, reports per-pair deltas, estimates the floor from an A/A run of the same alternation (or accepts a supplied floor that must state its unit) and emits `epyc.autokernel.serving_ab.v1`. Test on a toy endpoint: `loop/test_paired_loadgen.py`. The `/metrics` name mapping is not built (no run needs queue and KV series yet); real-server runs need a window.
   - *(2026-10-21, dpf-specs.)* `loop/paired_loadgen.py` + `test_paired_loadgen.py` (epyc-inference-research research ba1f758a4); toy-endpoint paired run emits a valid `serving_ab.v1` record with delta and floor. Own client chosen over wrapping inference-perf (reasons in the build note above). `/metrics` mapping not built; real-server runs need a window.
+
+## LBH — llama-bench ran the hardened protocol unrequested (2026-10-23)
+
+**Defect (verified in source at `49550eda5`).** `tools/llama-bench/llama-bench.cpp` `parse_cmd_params()` declared
+`cmd_params params;` (an aggregate with no default member initialisers) and copied only some scalars from
+`cmd_params_defaults`; `autokernel_harden`, `autokernel_seed` and `autokernel_ready_timeout_ms` were never copied.
+`autokernel_harden` was therefore read from an uninitialised stack slot, and about half of llama-bench processes ran the
+`--autokernel-harden` protocol without the flag: 2 x reps contexts, a depth fill per context, ordinary/full-device-sync
+hybrid pairs, no per-rep progress lines. Their JSON/JSONL rows say `"autokernel_hardened": true`; markdown and CSV
+output has no hardened column, so a markdown row from an affected build cannot be classified from the row alone
+(stderr without per-rep progress lines is the tell). Introduced by `0492c2319` (2026-08-11); present in v10
+`ffc1bac82`, `dd3d9721c` and the champion `49550eda5`, so every llama-bench binary built from the production or champion
+line since 2026-08-11 is affected. Found by KVU-LB1.b run 1 (`kv-unified-stack-rollout.md`, root `fb29455a4`).
+Fix: `experimental/llama-bench-harden-init-20261023` @ `141e4bcf5` (fold CH-28 / manifest V11-103).
+
+**Which records are exposed.** Only llama-bench runs WITHOUT `--autokernel-harden`. Rows from runs that passed the flag
+are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors and serving A/Bs (`serving-floor.*`,
+`serving_ab.*`, DS41/Q38FN `matched_process_v2` floors) are measured through llama-server and are outside the defect.
+`autokernel_ready_timeout_ms` was also garbage when `--autokernel-ready-*` was used without
+`--autokernel-ready-timeout-ms`.
+
+**First count (2026-10-23, read-only, aggregate only):** scanner `harden_scan.py` (nice 19, regular files only, json/jsonl only; markdown/CSV rows are not counted).
+- **AK campaign stores** (`/mnt/raid0/llm/autokernel/campaigns`, all 139 campaigns, every store and floor dir): 12 files
+  carry the field (the `events.jsonl` of `ak-iqk-v9-20260813-r29..r43` and two A/A controls), 320 rows, all hardened,
+  all REQUESTED (`--autokernel-harden` is in the recorded argv). **0 unrequested.** The serving floors
+  (`serving-floor.*.json`, `runtime-source-floors/`) are llama-server measurements and carry no such field.
+- **`/mnt/raid0/llm/tmp`, files modified in the last 30 days:** 53 files carry the field; 22 of them have hardened rows
+  (50 hardened rows; the other 31 files hold 147 ordinary rows); none of the 22 has `--autokernel-harden` in its
+  run dir or parent, and no file mixes the two. Unique sources: `cpu-backlog-20261004/c4` (17 of the 28 arm files of
+  the DS41-C112 bisect run `runs/20261004T104009Z`, 34 rows, spread over every ABAB round and both arms),
+  `ds41-w5-20261021/runs-aba/bench-B-sept-q4.json` (2 rows; its argv has no harden flag; its 1017 partner
+  `bench-B-1017.json` ran ordinary), `f8-launchers-20261022/.../run1-dd3d9721c-20261023/s2-F32.jsonl` (2 rows, KVU-LB1.b),
+  and three tmp research-worktree copies of the research characterization file below.
+- **Research repo:** `benchmarks/results` has no file with the field (0 of 0); `artifacts/` none; `data/` 8 files, 7
+  of them requested AK control receipts (2026-08-11/13) and 1 unrequested:
+  `data/cpu-model-characterization/q38fn-ud-iq4xs-b0ba1d427-20261020/llama_bench_stdout.json` (4/4 rows hardened).
+- **Rate:** 22 of 53 recent files carrying the field, about 42%, consistent with an uninitialised bool.
+
+- [ ] **LBH-1 — scan every stored llama-bench result since 2026-08-11 for unrequested hardened rows.** Cover research
+      `benchmarks/results`, `data/`, `artifacts/`; `/mnt/raid0/llm/autokernel/campaigns` (every store, including
+      `runtime-source-floors` and calibration/baseline-honesty receipts); every floor record and floor store
+      (`floor-store/`, DS41/Q38FN/27B floors, `gpu_cpu_noise` `reps.jsonl`); `/mnt/raid0/llm/tmp/**` and root
+      `artifacts/**`. A row is UNREQUESTED-HARDENED when `"autokernel_hardened": true` and the producing argv (launcher
+      script, `.cmd`/`.argv`, `config_echo`, `RUN_RECORD`, `launches-*.jsonl`) lacks `--autokernel-harden`; it is
+      REQUEST-UNKNOWN when no argv survives. For markdown/CSV outputs from a defect-window build, classify from stderr
+      (no per-rep progress lines = hardened) or mark request-unknown. Skip non-regular files (pytest fixtures leave
+      FIFOs named `*.json` under `tmp/`; a naive reader blocks on them). Output: one JSONL manifest row per file
+      (path, build commit, rows true/false, request evidence, class) plus totals, written to a research artifact dir
+      with SHA256SUMS.
+- [ ] **LBH-2 — list every floor and verdict that consumed an affected row, and re-grade or invalidate it.** From the
+      LBH-1 manifest, follow each file to the handoff, doc, ledger row or belief tuple that cites it (`git grep` the path
+      and its run dir across root and research). For each: (a) mixed protocols inside one floor or one A/B arm =
+      INVALID (the floor's spread includes a protocol switch); (b) a single-protocol comparison where both arms ran
+      hardened = protocol-mislabelled, re-grade under the hardened protocol's scope; (c) hardened vs ordinary across arms
+      = INVALID. Record the disposition next to the original claim (dated note, never a silent edit). Known so far (from the first count):
+      1. **DS41-W5 segment B llama-bench, 1017 vs Sept Q4** (research `data/ds41-1017-w5-20261021/SUMMARY.md` (c),
+         cited in `deepseek-v41-flash-evaluation.md` W5: "tg128 -5.1%, pp512 -29.9% for 1017"): the Sept arm ran
+         hardened and the 1017 arm ordinary, so the comparison crosses protocols: INVALID until re-measured. The
+         -29.9% is also the premise of DS41-W8a / AK seed S5 (`akm-ds41-1017-mxfp4-mmid-gemm-tiles`); re-measure
+         before S5 spends compute.
+      2. **DS41-C112 bisect (c4)** (`deepseek-v41-flash-evaluation.md` "Resolved by c4: first bad = `9b148baab`"):
+         17 of 28 arm files hardened, mixed inside every ABAB pair. Re-analyse on like-protocol pairs only, or
+         re-run on a V11-103 build; the `GGML_MMID_SLAB=0` same-binary discriminator stands only if it holds on
+         like-protocol pairs.
+      3. **CPU decode roofline "thread count at depth" d0 anchor** (`cpu-decode-roofline-program.md`, research
+         `data/cpu-model-characterization/q38fn-ud-iq4xs-b0ba1d427-20261020/llama_bench_stdout.json`: 4/4 rows
+         hardened, t48 tg128 31.2 vs t96 24.8, pp512 212 vs 231): one protocol on both arms, so re-grade as a
+         hardened-protocol reading, not an ordinary-bench number.
+      4. **KVU-LB1.b run 1 s2** (already ruled INVALID, `kv-unified-stack-rollout.md`).
+      Done when every manifest row carries a disposition and every cited claim has its note.
+- [ ] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,
+      owner of `kernel_rnd/autokernel/execution/microbench.py` applies).** Today the check runs one way only:
+      `LlamaBenchExpectation.check_row` (`microbench.py:1978`, `:2006`) calls `_check_autokernel_hardening` (`:1765`,
+      rejects not-hardened when requested) only when `autokernel_seed is not None`, and `parse_llama_bench_json`
+      (`:1635`, `:1713`) reads a missing key as False. Proposal: (1) in `check_row`, when the command did not request
+      hardening, reject a row with `autokernel_hardened` true (`reason: unrequested_hardened_protocol`); (2) treat a
+      missing key as unknown, not False, for builds that emit the field; (3) the five scripts with inline flag
+      assertions (`run_autokernel_gpu_discovery.py:1162,1320`, `run_autokernel_gpu_factorial.py:146`,
+      `run_autokernel_cpu_lane_calibration.py:198`, `run_autokernel_cpu_baseline_honesty.py:96`) compare the flag with
+      their own argv instead of asserting true; (4) `loop/production.py:419` records `hardened` from argv: cross-check
+      it against the row; (5) the canonical-recipe launch path (`lib/canonical_recipe.py`
+      `build_canonical_bench_command:869`, `benchmark/bench_canonical.sh`) and the one-off parsers
+      (`benchmark/ab_probe.py`, `benchmark/gpu_cpu_noise/*`, `kernel_rnd/kernel_eval.sh:159-167`) adopt the shared
+      check; (6) unit tests: requested+hardened accept, unrequested+hardened reject, requested+ordinary reject. Keep the
+      guard after V11-103 lands: it is what keeps old binaries honest.

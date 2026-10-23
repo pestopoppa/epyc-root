@@ -1034,6 +1034,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   `70e7133a1`). It travels with the held keeps, which were not folded (DS41-C125), so the champion carries neither.
   Cross-model prefill is now part of the fold check: every 2026-10-04 fold ran a Q38FN arm (5g/Yfa/W gates, ledger in
   `autokernel-champion-aggregate.md`). Z vs X on Q38FN read −1.40% overall (5 pairs, no calibrated floor).
+  *(2026-10-23, workspace-f8: protocol defect.)* 17 of the 28 c4 arm files carry `"autokernel_hardened": true`
+  without `--autokernel-harden` (llama-bench uninitialised `autokernel_harden`, V11-103), mixed inside every ABAB
+  pair, so the bisect compared protocols as well as commits. The first-bad verdict stands only if it holds on
+  like-protocol pairs or a V11-103 re-run. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
 - [ ] DS41-C113 — **the DS41 launchers depend on a scratch worktree path.** (filed 2026-10-04; INC-20261004-cleanup-removed-load-bearing-worktree) `ds41_watchdog.sh`, `swap_*.sh` in
   `/mnt/raid0/llm/tmp/ds41-scope-20260926/` export `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`; its removal on 2026-10-04 crashed DS41 (02:25Z, relaunched 02:36Z).
   Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
@@ -1384,6 +1388,11 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       12.87 (A1) -> 15.01 -> 16.34 -> 15.99 (A2); A1 is a cold-state outlier. GPU impact B2 (on) vs A2 (off)
       +2.2%, within drift: no measurable penalty on full-host CPU decode. Each 1017 server holds ~276 GiB private
       RAM plus ~463 GiB mapped; two concurrent servers caused the 15:57Z earlyoom kills.
+      *(2026-10-23, workspace-f8: protocol defect; the served numbers above are unaffected.)* The llama-bench pair
+      crosses protocols: `bench-B-sept-q4.json` rows say `"autokernel_hardened": true` with no `--autokernel-harden` in
+      its argv, while `bench-B-1017.json` ran ordinary (llama-bench uninitialised `autokernel_harden`, V11-103). The
+      tg128 -5.1% and pp512 -29.9% are therefore INVALID until re-measured on a V11-103 build, and the DS41-W8a /
+      S5 premise needs that re-measure first. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
   - [ ] **DS41-W5a — NMSE spot checks for the MXFP4 expert path.** The CPU-only build has no second backend,
     so `test-backend-ops` has nothing to compare against. Use a served-shape MUL_MAT_ID MXFP4 case set (the
     `served_shape_cases.py` lane profile from the 1017 GGUF) against an f32-dequant reference, cap 5e-4.
