@@ -14,6 +14,7 @@
   - GPU-ZOS-1a needs per-step decode timers that no :8083 log era carries. They come from `experimental/gpu-zos-debug-timings-20261023` @ `b5a524605`, which adds the CMake option `LLAMA_SERVER_DEBUG_TIMINGS` (default OFF) to the champion. The build job's strings gate must fail on the champion image (negative control) and pass on the new one. The measure job re-proves the four timer strings in the exact binary it loads.
   - SPEC-GRAM.1 part 2 likewise adds grammar counters and `draft_n_steps` to the server response on `experimental/spec-gram-bench-20261023` @ `ecd0d822c`.
   - Neither touches production ([gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md), [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md)).
+- **A failing gate step can be the probe's defect, so read the step before rebuilding.** The DEBUG_TIMINGS build passed 9 of 10 steps and failed define-scope. The probe was `grep -rl -- '-DDEBUG_TIMINGS' DIR --include=flags.make`: an option placed after `--` is read as a file operand, so grep searched every file and counted the define's 8 correct occurrences in `compile_commands.json` as a leak. With the options moved before the pattern, the define is in 1 of 127 `flags.make` files, server-context's. The criterion was unchanged, there was no rebuild, the binary hashes were re-verified, and the re-run was recorded as a dated amendment (`AMENDMENT-define-scope.md`).
 
 ### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
 

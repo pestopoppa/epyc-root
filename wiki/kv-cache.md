@@ -24,9 +24,11 @@
 
   UFH14-LB7 is armed to attribute the 43.5 s pre-prefill stall from `-lv 4` TRACE lines. Its predeclared verdicts are OWNER, SHARED, UNATTRIBUTED, NOT_REPRODUCED and INSTRUMENT_FAIL ([agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md), UFH14-B4j.1).
 
+- **KPF-LB1.1: the orchestrator's rebuilt-prompt /completion path keeps most of its prefix cache, so no `message_delimiters` flag.** A 12-turn REPL transcript was self-captured on a private 27B server (`coder_escalation`, orch `f3ab78b2`) and replayed on both lanes on a restarted server. /completion turns 2+ had a median hit of **0.818** (token-weighted 0.814), against **0.951** (0.953) for chat with `message_delimiters`; 0 of 11 turns fell below 10% on either lane. The predeclared trigger (/completion re-prefilling below 10% while chat does not) did not fire, so the verdict is NO_CHANGE. The roughly 13-point gap is recorded, not acted on. One transcript and one role, graphs disabled (GPU-LEAK-1 mitigation) ([kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) KPF-LB1.1).
+
 ### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
 
-- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-13.1 rules v3, KPF-13.1a, KPF-17.4, KPF-18-S1 remainder)
+- [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) (KPF-13.1 rules v3, KPF-13.1a, KPF-17.4, KPF-18-S1 remainder, KPF-LB1.1 verdict)
 - [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) (UFH14-LB7, B4j findings, UFH14-B4j.1)
 - [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) (SPEC-GRAM.1 part 2 armed on the MTP lane)
 - [workspace-f8 progress, 2026-10-23 afternoon](../progress/2026-10/2026-10-23-workspace-f8.md)
