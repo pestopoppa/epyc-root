@@ -4,6 +4,8 @@ Early-ending compute blocks leave gaps. Registered **fillers** use them, without
 
 - Registry: `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` (one row per filler: id, owner, launcher + PID, resources, minimum useful window, max private RAM, STOP file, status). This is a separate file from the calendar; never edit the calendar from it.
 - Grants dir: `/mnt/raid0/llm/tmp/compute-flags/grants/`.
+- How the calendar owner PACKS the queue onto the host (bins, derived classes, grant-writer invariants,
+  the operator STATUS/ETA report, `queue_status.py`): project skill `.claude/skills/inference-backlog-scheduling/`.
 
 ## Protocol
 

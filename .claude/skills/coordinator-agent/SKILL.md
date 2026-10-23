@@ -14,6 +14,10 @@ does not restate them:
   `/clear`, close, pre-reboot, and reading another session's liveness. (Extracted from
   `OPERATING_CONSTRAINTS.md` on 2026-07-30; that file now points here.)
 - `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* (reload ownership).
+- `.claude/skills/inference-backlog-scheduling/SKILL.md` — how the inference backlog is packed onto
+  the host (bins, derived classes, grant-writer invariants, the STATUS/ETA report) and
+  `docs/guides/agent-workflows/compute-fillers.md`, the grant/FILLERS protocol it runs on. The
+  coordinator never writes a grant; it makes sure a calendar owner exists and routes to it.
 
 Governing principle — **BUS_PROTOCOL rule 9**: a fresh coordinator reconstructs its entire state
 from bus files alone. That is why this skill needs no arguments and no operator input to start.
@@ -93,6 +97,12 @@ scripts/session/verify_llama_cpp.sh
 # never from a name pattern; if the stack status does not surface an autopilot pid,
 # that gap is fixed THERE, not by reaching for pgrep.
 ps -o pid,lstart,args -p <autopilot-pid-from-stack-status>
+
+# compute calendar and queue (the grant protocol has run OUTSIDE the daemon since 2026-10-21):
+# the calendar file, the queue, open grants and which grant writers are alive. queue_status.py
+# reads files only (FILLERS.md, grants/, writer .pid files) — state from files, not a dial.
+ls -t /mnt/raid0/llm/tmp/compute-calendar-*.md | head -1
+/usr/bin/python3 -I .claude/skills/inference-backlog-scheduling/scripts/queue_status.py | head -40
 ```
 
 ### 0b-bis. THE SINGLE CONTROL SURFACE — `fleet_control.sh`
@@ -125,6 +135,14 @@ performs the salvage commit. It prints the `git -C <lane> status` to check after
 Prefer `pause`, then let them drain.
 
 ### 0c. Bring the supervision tier back, and PROVE the alarm reaches a human (D3)
+
+> **Operator ruling 2026-09-23 — bus_supervisor and the coordinator-daemon STAY DOWN.** Relaunching
+> them restarts automatic dispatch, nudges and window grants, which changes fleet behaviour; the
+> operator did not want that. Run the *status* and *alarm* checks below and record the answers, but
+> **do not run the two `nohup` launches without a fresh operator go** (recorded in
+> `handoffs/active/non-inference-backlog.md` → NIB2-81). While the daemon is down nothing grants
+> compute windows by rule: the compute-calendar owner does, under
+> `.claude/skills/inference-backlog-scheduling` (Phase 3 step 5).
 
 This replaces the cron dead-man the operator declined. Reboots are operator-only, so a
 human is present at exactly this moment — that is what makes manual relaunch sound, and it
@@ -184,7 +202,9 @@ authoritative instrument is `scripts/coordination/tmux_adapter.py`'s runtime che
 refusal citing runtime state is a finding about the world, not an obstacle to retry past. Full
 rule: `agents/shared/SESSION_LIFECYCLE.md` → *Reading another session's liveness*.
 
-**Bringing up the daemon and its watchdog is YOUR job, not an escalation.** They are part of the
+**Bringing up the daemon and its watchdog is YOUR job, not an escalation** (subject to the
+2026-09-23 stay-down ruling in 0c: while it stands, the job is to *ask*, with the ruling cited, not
+to start them). They are part of the
 coordinator-agent spawn — operator correction, 2026-07-29, verbatim, against an earlier version of
 this skill that told you to report and wait: *"no they're not. They're part of the coordinator-agent
 spawn"*. If the daemon is dead, start the **supervisor**:
@@ -413,6 +433,30 @@ occupancy line behind a staleness guard. Your inbox is split MUST-ACT (you are t
 a disposition is owed) from FYI (`cc`; cursor-cleared, no ack). Before this split, 83% of what sat
 in an inbox belonged to someone else.
 
+**5. The compute backlog — route it, never pack it yourself.** Since 2026-10-21 the inference
+backlog is packed by the **compute-calendar owner** (workspace-58 that week; the `inference`
+roster slot when it is staffed) under `.claude/skills/inference-backlog-scheduling`: items are
+FILLERS.md rows, windows are `grants/<id>.grant` files written by versioned writer scripts after
+`grant_ok.sh`, and the append-only calendar REVISION log is the record. What the coordinator owns
+in that loop:
+
+- **There is always a calendar owner.** If no session holds the duty, that is the first decision
+  package of the session, not a gap to note.
+- **Queued means armed.** A compute row is QUEUED only when its status is ARMED, `ready=y` and a
+  live launcher polls its id; everything else is BACKLOG with `blocker=<missing launcher | harness
+  fix | build | operator decision>` and an owner (operator ruling 2026-10-22). A code blocker is
+  never recorded as a blocker: dispatch a subagent for it in the same turn, and when it clears the
+  owner arms and requests a slot in that same turn.
+- **Idle bins are a reportable condition.** When `queue_status.py` or an owner receipt shows a free
+  quarter or an idle MI210 with ARMED-UNBOOKED rows, route it to the calendar owner with urgency,
+  citing the receipt. Never grant around the owner and never treat a held lock as a busy device.
+- **Owner duty on failures.** Every job owner watches its own `.ended` / FAILED flags with a
+  zero-token watcher, and on any failure finds WHY, fixes, re-queues and relays. A failure that
+  sits unnoticed overnight is a coordination defect to file, not a status line.
+- **Grant requests are typed.** A request carries `id`, regions shape, `min_window` s, `minutes`,
+  `RAM` GiB (+`ds41`), launcher `pid` and the class evidence; relay it with `SendMessage` and a
+  flag file. The coordinator never writes a grant file.
+
 ### Nudging — the only safe path
 
 ```bash
@@ -493,6 +537,11 @@ Compact, scannable, no preamble:
    The operator's standing expectation is that you keep **every** main saturated with backlog work,
    so name what each main is being dispatched *to* — reporting that a main exists, or that it is
    idle and available, is not a dispatch plan.
+8. **Compute calendar** — who owns it; live grant writers; the owner's STATUS block (COMPLETED /
+   RUNNING / BOOKED / ARMED-UNBOOKED / BACKLOG-with-blocker per session, IDLE NOW, CRITICAL PATH
+   ETA — format in `.claude/skills/inference-backlog-scheduling/SKILL.md` §6), quoted from the
+   owner or from `queue_status.py` output, never re-derived. BACKLOG rows blocked on code are
+   listed with the subagent dispatched for each.
 
 **Receipts, not dials — the report carries no reading you took yourself.** The coordinator never
 produces a hardware or utilisation reading. Any figure with units of **%, t/s, VRAM, load, or
